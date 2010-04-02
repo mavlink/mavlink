@@ -1,0 +1,138 @@
+
+typedef struct __heartbeat_t 
+{
+	uint8_t type; ///< Type of the MAV (quadrotor, helicopter, etc.)
+
+} heartbeat_t;
+
+typedef struct __boot_t 
+{
+	uint32_t version; ///< The onboard software version
+
+} boot_t;
+
+typedef struct __action_t 
+{
+	uint8_t target; ///< The system executing the action
+	uint8_t action; ///< The action id
+
+} action_t;
+
+typedef struct __set_mode_t 
+{
+	uint8_t target; ///< The system setting the mode
+	uint8_t mode; ///< The new mode
+
+} set_mode_t;
+
+typedef struct __manual_control_t 
+{
+	uint8_t target; ///< The system to be controlled
+	float roll; ///< roll
+	float pitch; ///< pitch
+	float yaw; ///< yaw
+	float thrust; ///< thrust
+	uint8_t roll_manual; ///< roll control enabled auto:0, manual:1
+	uint8_t pitch_manual; ///< pitch auto:0, manual:1
+	uint8_t yaw_manual; ///< yaw auto:0, manual:1
+	uint8_t thrust_manual; ///< thrust auto:0, manual:1
+
+} manual_control_t;
+
+typedef struct __raw_sensor_t 
+{
+	uint32_t msec; ///< Timestamp (milliseconds)
+	uint32_t xacc; ///< X acceleration (mg raw)
+	uint32_t yacc; ///< Y acceleration (mg raw)
+	uint32_t zacc; ///< Z acceleration (mg raw)
+	uint32_t xgyro; ///< Angular speed around X axis (adc units)
+	uint32_t ygyro; ///< Angular speed around Y axis (adc units)
+	uint32_t zgyro; ///< Angular speed around Z axis (adc units)
+	uint32_t xmag; ///< X Magnetic field (milli tesla)
+	uint32_t ymag; ///< Y Magnetic field (milli tesla)
+	uint32_t zmag; ///< Z Magnetic field (milli tesla)
+	int32_t baro; ///< Barometric pressure (hecto Pascal)
+	uint32_t gdist; ///< Ground distance (meters)
+	int32_t temp; ///< Temperature (degrees celcius)
+
+} raw_sensor_t;
+
+typedef struct __raw_imu_t 
+{
+	uint32_t msec; ///< Timestamp (milliseconds)
+	uint32_t xacc; ///< X acceleration (mg raw)
+	uint32_t yacc; ///< Y acceleration (mg raw)
+	uint32_t zacc; ///< Z acceleration (mg raw)
+	uint32_t xgyro; ///< Angular speed around X axis (adc units)
+	uint32_t ygyro; ///< Angular speed around Y axis (adc units)
+	uint32_t zgyro; ///< Angular speed around Z axis (adc units)
+	uint32_t xmag; ///< X Magnetic field (milli tesla)
+	uint32_t ymag; ///< Y Magnetic field (milli tesla)
+	uint32_t zmag; ///< Z Magnetic field (milli tesla)
+
+} raw_imu_t;
+
+typedef struct __raw_aux_t 
+{
+	uint32_t adc1; ///< ADC1 (J405 ADC3, LPC2148 AD0.6)
+	uint32_t adc2; ///< ADC2 (J405 ADC5, LPC2148 AD0.2)
+	uint32_t adc3; ///< ADC3 (J405 ADC6, LPC2148 AD0.1)
+	uint32_t adc4; ///< ADC4 (J405 ADC7, LPC2148 AD1.3)
+	uint32_t vbat; ///< Battery voltage
+	int32_t temp; ///< Temperature (degrees celcius)
+	int32_t baro; ///< Barometric pressure (hecto Pascal)
+
+} raw_aux_t;
+
+typedef struct __sys_status_t 
+{
+	uint8_t mode; ///< System mode
+	uint8_t status; ///< System status flag
+	uint16_t vbat; ///< Battery voltage
+	uint8_t motor_block; ///< Motor block status flag
+	uint16_t packet_drop; ///< Dropped packets
+
+} sys_status_t;
+
+typedef struct __set_cam_shutter_t 
+{
+	uint16_t cam_id; ///< Camera id
+	uint8_t cam_mode; ///< Camera mode: 0 = auto, 1 = manual
+	uint8_t trigger_pin; ///< Trigger pin, 0-3 for PtGrey FireFly
+	uint16_t interval; ///< Shutter interval, in microseconds
+	uint16_t exposure; ///< Exposure time, in microseconds
+	float gain; ///< Camera gain
+
+} set_cam_shutter_t;
+
+typedef struct __param_request_read_t 
+{
+	uint16_t param_id; ///< Camera id
+
+} param_request_read_t;
+
+typedef struct __param_value_t 
+{
+	uint16_t param_id; ///< Onboard parameter id
+	float param_value; ///< Onboard parameter value
+
+} param_value_t;
+
+typedef struct __param_write_t 
+{
+	uint16_t param_id; ///< Onboard parameter id
+	float param_value; ///< Onboard parameter value
+
+} param_write_t;
+
+typedef struct __attitude_t 
+{
+	uint32_t msec; ///< Timestamp (milliseconds)
+	float roll; ///< Roll angle (rad)
+	float pitch; ///< Pitch angle (rad)
+	float yaw; ///< Yaw angle (rad)
+	float rollspeed; ///< Roll angular speed (rad/s)
+	float pitchspeed; ///< Pitch angular speed (rad/s)
+	float yawspeed; ///< Yaw angular speed (rad/s)
+
+} attitude_t;
