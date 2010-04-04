@@ -80,12 +80,6 @@ enum MAV_TYPE
 #define MAVLINK_MAX_PACKET_LEN (MAVLINK_MAX_PAYLOAD_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES) ///< Maximum packet length
 //#define MAVLINK_MAX_DATA_LEN MAVLINK_MAX_PACKET_LEN - MAVLINK_STX_LEN
 
-#define MAVLINK_DEFAULT_ACID 42 ///< Default Aircraft ID, 42 for historical reasons
-
-#ifndef ACID
-#define ACID MAVLINK_DEFAULT_ACID
-#endif
-
 typedef struct __mavlink_message {
 	uint8_t len;     ///< Length of payload
 	uint8_t seq;     ///< Sequence of packet
