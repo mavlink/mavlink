@@ -6,12 +6,12 @@
 #ifndef MAVLINK_H
 #define MAVLINK_H
 
-#include "protocol.h"
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "protocol.h"
+
 #include "generated/mavlink_message_heartbeat.h"
 #include "generated/mavlink_message_boot.h"
 #include "generated/mavlink_message_action.h"
@@ -31,3 +31,4 @@ extern "C" {
 }
 #endif
 #endif
+
