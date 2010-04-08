@@ -5,15 +5,15 @@
 typedef struct __raw_imu_t 
 {
 	uint32_t msec; ///< Timestamp (milliseconds)
-	uint32_t xacc; ///< X acceleration (mg raw)
-	uint32_t yacc; ///< Y acceleration (mg raw)
-	uint32_t zacc; ///< Z acceleration (mg raw)
+	int32_t xacc; ///< X acceleration (mg raw)
+	int32_t yacc; ///< Y acceleration (mg raw)
+	int32_t zacc; ///< Z acceleration (mg raw)
 	uint32_t xgyro; ///< Angular speed around X axis (adc units)
 	uint32_t ygyro; ///< Angular speed around Y axis (adc units)
 	uint32_t zgyro; ///< Angular speed around Z axis (adc units)
-	uint32_t xmag; ///< X Magnetic field (milli tesla)
-	uint32_t ymag; ///< Y Magnetic field (milli tesla)
-	uint32_t zmag; ///< Z Magnetic field (milli tesla)
+	int32_t xmag; ///< X Magnetic field (milli tesla)
+	int32_t ymag; ///< Y Magnetic field (milli tesla)
+	int32_t zmag; ///< Z Magnetic field (milli tesla)
 
 } raw_imu_t;
 
@@ -32,21 +32,21 @@ typedef struct __raw_imu_t
  * @param zmag Z Magnetic field (milli tesla)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t message_raw_imu_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint32_t msec, uint32_t xacc, uint32_t yacc, uint32_t zacc, uint32_t xgyro, uint32_t ygyro, uint32_t zgyro, uint32_t xmag, uint32_t ymag, uint32_t zmag)
+static inline uint16_t message_raw_imu_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint32_t msec, int32_t xacc, int32_t yacc, int32_t zacc, uint32_t xgyro, uint32_t ygyro, uint32_t zgyro, int32_t xmag, int32_t ymag, int32_t zmag)
 {
 	msg->msgid = MAVLINK_MSG_ID_RAW_IMU;
 	uint16_t i = 0;
 
 	i += put_uint32_t_by_index(msec, i, msg->payload); //Timestamp (milliseconds)
-	i += put_uint32_t_by_index(xacc, i, msg->payload); //X acceleration (mg raw)
-	i += put_uint32_t_by_index(yacc, i, msg->payload); //Y acceleration (mg raw)
-	i += put_uint32_t_by_index(zacc, i, msg->payload); //Z acceleration (mg raw)
+	i += put_int32_t_by_index(xacc, i, msg->payload); //X acceleration (mg raw)
+	i += put_int32_t_by_index(yacc, i, msg->payload); //Y acceleration (mg raw)
+	i += put_int32_t_by_index(zacc, i, msg->payload); //Z acceleration (mg raw)
 	i += put_uint32_t_by_index(xgyro, i, msg->payload); //Angular speed around X axis (adc units)
 	i += put_uint32_t_by_index(ygyro, i, msg->payload); //Angular speed around Y axis (adc units)
 	i += put_uint32_t_by_index(zgyro, i, msg->payload); //Angular speed around Z axis (adc units)
-	i += put_uint32_t_by_index(xmag, i, msg->payload); //X Magnetic field (milli tesla)
-	i += put_uint32_t_by_index(ymag, i, msg->payload); //Y Magnetic field (milli tesla)
-	i += put_uint32_t_by_index(zmag, i, msg->payload); //Z Magnetic field (milli tesla)
+	i += put_int32_t_by_index(xmag, i, msg->payload); //X Magnetic field (milli tesla)
+	i += put_int32_t_by_index(ymag, i, msg->payload); //Y Magnetic field (milli tesla)
+	i += put_int32_t_by_index(zmag, i, msg->payload); //Z Magnetic field (milli tesla)
 
 	return finalize_message(msg, system_id, component_id, i);
 }
@@ -60,7 +60,7 @@ static inline uint16_t message_raw_imu_encode(uint8_t system_id, uint8_t compone
 
 #include "global_data.h"
 
-static inline void message_raw_imu_send(mavlink_channel_t chan, uint32_t msec, uint32_t xacc, uint32_t yacc, uint32_t zacc, uint32_t xgyro, uint32_t ygyro, uint32_t zgyro, uint32_t xmag, uint32_t ymag, uint32_t zmag)
+static inline void message_raw_imu_send(mavlink_channel_t chan, uint32_t msec, int32_t xacc, int32_t yacc, int32_t zacc, uint32_t xgyro, uint32_t ygyro, uint32_t zgyro, int32_t xmag, int32_t ymag, int32_t zmag)
 {
 	mavlink_message_t msg;
 	message_raw_imu_pack(global_data.param[PARAM_SYSTEM_ID], global_data.param[PARAM_COMPONENT_ID], &msg, msec, xacc, yacc, zacc, xgyro, ygyro, zgyro, xmag, ymag, zmag);
@@ -90,14 +90,14 @@ static inline uint32_t message_raw_imu_get_msec(const mavlink_message_t* msg)
  *
  * @return X acceleration (mg raw)
  */
-static inline uint32_t message_raw_imu_get_xacc(const mavlink_message_t* msg)
+static inline int32_t message_raw_imu_get_xacc(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint32_t))[0];
 	r.b[2] = (msg->payload+sizeof(uint32_t))[1];
 	r.b[1] = (msg->payload+sizeof(uint32_t))[2];
 	r.b[0] = (msg->payload+sizeof(uint32_t))[3];
-	return (uint32_t)r.i;
+	return (int32_t)r.i;
 }
 
 /**
@@ -105,14 +105,14 @@ static inline uint32_t message_raw_imu_get_xacc(const mavlink_message_t* msg)
  *
  * @return Y acceleration (mg raw)
  */
-static inline uint32_t message_raw_imu_get_yacc(const mavlink_message_t* msg)
+static inline int32_t message_raw_imu_get_yacc(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t))[3];
-	return (uint32_t)r.i;
+	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t))[3];
+	return (int32_t)r.i;
 }
 
 /**
@@ -120,14 +120,14 @@ static inline uint32_t message_raw_imu_get_yacc(const mavlink_message_t* msg)
  *
  * @return Z acceleration (mg raw)
  */
-static inline uint32_t message_raw_imu_get_zacc(const mavlink_message_t* msg)
+static inline int32_t message_raw_imu_get_zacc(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
-	return (uint32_t)r.i;
+	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t))[3];
+	return (int32_t)r.i;
 }
 
 /**
@@ -138,10 +138,10 @@ static inline uint32_t message_raw_imu_get_zacc(const mavlink_message_t* msg)
 static inline uint32_t message_raw_imu_get_xgyro(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
+	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t))[3];
 	return (uint32_t)r.i;
 }
 
@@ -153,10 +153,10 @@ static inline uint32_t message_raw_imu_get_xgyro(const mavlink_message_t* msg)
 static inline uint32_t message_raw_imu_get_ygyro(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
+	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t))[3];
 	return (uint32_t)r.i;
 }
 
@@ -168,10 +168,10 @@ static inline uint32_t message_raw_imu_get_ygyro(const mavlink_message_t* msg)
 static inline uint32_t message_raw_imu_get_zgyro(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
+	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
 	return (uint32_t)r.i;
 }
 
@@ -180,14 +180,14 @@ static inline uint32_t message_raw_imu_get_zgyro(const mavlink_message_t* msg)
  *
  * @return X Magnetic field (milli tesla)
  */
-static inline uint32_t message_raw_imu_get_xmag(const mavlink_message_t* msg)
+static inline int32_t message_raw_imu_get_xmag(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
-	return (uint32_t)r.i;
+	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
+	return (int32_t)r.i;
 }
 
 /**
@@ -195,14 +195,14 @@ static inline uint32_t message_raw_imu_get_xmag(const mavlink_message_t* msg)
  *
  * @return Y Magnetic field (milli tesla)
  */
-static inline uint32_t message_raw_imu_get_ymag(const mavlink_message_t* msg)
+static inline int32_t message_raw_imu_get_ymag(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
-	return (uint32_t)r.i;
+	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(int32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(int32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(int32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(int32_t))[3];
+	return (int32_t)r.i;
 }
 
 /**
@@ -210,14 +210,14 @@ static inline uint32_t message_raw_imu_get_ymag(const mavlink_message_t* msg)
  *
  * @return Z Magnetic field (milli tesla)
  */
-static inline uint32_t message_raw_imu_get_zmag(const mavlink_message_t* msg)
+static inline int32_t message_raw_imu_get_zmag(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
-	return (uint32_t)r.i;
+	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(int32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(int32_t)+sizeof(int32_t))[3];
+	return (int32_t)r.i;
 }
 
 static inline void message_raw_imu_decode(const mavlink_message_t* msg, raw_imu_t* raw_imu)

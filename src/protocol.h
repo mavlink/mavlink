@@ -1,5 +1,5 @@
-#ifndef  _PROTOCOL_H_
-#define  _PROTOCOL_H_
+#ifndef  _MAVLINK_PROTOCOL_H_
+#define  _MAVLINK_PROTOCOL_H_
 
 #include "string.h"
 #include "checksum.h"
@@ -139,7 +139,10 @@ static void mavlink_parse_state_initialize(mavlink_status_t* initStatus)
 	 *
 	 * @endcode
 	 */
-static uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
+#ifndef CPU_ARM7
+
+#endif
+uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
 #if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
         static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
@@ -430,4 +433,4 @@ static inline void send_debug_string(mavlink_channel_t chan, uint8_t* string)
 }
 #endif
 
-#endif /* _PROTOCOL_H_ */
+#endif /* _MAVLINK_PROTOCOL_H_ */
