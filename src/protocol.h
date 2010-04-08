@@ -139,10 +139,7 @@ static void mavlink_parse_state_initialize(mavlink_status_t* initStatus)
 	 *
 	 * @endcode
 	 */
-#ifndef CPU_ARM7
-
-#endif
-uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
+static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
 #if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
         static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
