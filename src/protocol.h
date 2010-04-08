@@ -1,7 +1,7 @@
 #ifndef  _PROTOCOL_H_
 #define  _PROTOCOL_H_
 
-//#include "string.h"
+#include "string.h"
 #include "checksum.h"
 
 #include "mavlink_types.h"
@@ -40,7 +40,7 @@ static inline uint16_t finalize_message(mavlink_message_t* msg, uint8_t system_i
 static inline uint16_t message_to_send_buffer(uint8_t* buffer, const mavlink_message_t* msg)
 {
 	*(buffer+0) = MAVLINK_STX; ///< Start transmit
-	memcpy((buffer+1), (uint8_t*)(void*)msg, msg->len + MAVLINK_CORE_HEADER_LEN); ///< Core header plus payload
+	memcpy((buffer+1), msg, msg->len + MAVLINK_CORE_HEADER_LEN); ///< Core header plus payload
         *(buffer + msg->len + MAVLINK_CORE_HEADER_LEN + 1) = msg->ck_a;
         *(buffer + msg->len + MAVLINK_CORE_HEADER_LEN + 2) = msg->ck_b;
         return msg->len + MAVLINK_NUM_NON_PAYLOAD_BYTES;
@@ -142,11 +142,11 @@ static void mavlink_parse_state_initialize(mavlink_status_t* initStatus)
 static uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
 #if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
-        static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB];
-        static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB];
+        static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
+        static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB_HIGH];
 #else
-	static mavlink_status_t m_mavlink_status[COMM_NB_HIGH];
-	static mavlink_message_t m_mavlink_message[COMM_NB_HIGH];
+	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB];
+	static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB];
 #endif
 	// Initializes only once, values keep unchanged after first initialization
         mavlink_parse_state_initialize(&m_mavlink_status[chan]);
@@ -408,7 +408,7 @@ static inline void mavlink_send_uart(mavlink_channel_t chan, mavlink_message_t* 
 	// ARM7 MCU board implementation
 	// Create pointer on message struct
 	// Send STX
-	comm_send_ch(chan, COMM_STX);
+	comm_send_ch(chan, MAVLINK_STX);
 	comm_send_ch(chan, msg->len);
 	comm_send_ch(chan, msg->seq);
 	comm_send_ch(chan, msg->sysid);
@@ -422,7 +422,7 @@ static inline void mavlink_send_uart(mavlink_channel_t chan, mavlink_message_t* 
 	comm_send_ch(chan, msg->ck_b);
 }
 
-static inline void send_debug_string(CommChannel_t chan, uint8_t* string)
+static inline void send_debug_string(mavlink_channel_t chan, uint8_t* string)
 {
 	while(*string){
 		comm_send_ch(chan, *string++);
