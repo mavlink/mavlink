@@ -24,6 +24,7 @@ enum MAV_MODE
 {
 	MAV_MODE_UNINIT = 0,
 			MAV_MODE_LOCKED,
+			MAV_MODE_READY,
 			MAV_MODE_MANUAL,
 			MAV_MODE_GUIDED,
 			MAV_MODE_AUTO,
@@ -39,7 +40,7 @@ enum MAV_STATE
 			MAV_STATE_CALIBRATING,
 			MAV_STATE_STANDBY,
 			MAV_STATE_ACTIVE,
-                        MAV_STATE_LANDING,
+			MAV_STATE_LANDING,
 			MAV_STATE_CRITICAL,
 			MAV_STATE_EMERGENCY,
 			MAV_STATE_POWEROFF
@@ -87,7 +88,7 @@ typedef struct __mavlink_message {
 	uint8_t sysid;   ///< ID of message sender system/aircraft
 	uint8_t compid;  ///< ID of the message sender component
 	uint8_t msgid;   ///< ID of message in payload
-        uint8_t payload[MAVLINK_MAX_PAYLOAD_LEN]; ///< Payload data, ALIGNMENT IMPORTANT ON MCU
+	uint8_t payload[MAVLINK_MAX_PAYLOAD_LEN]; ///< Payload data, ALIGNMENT IMPORTANT ON MCU
 	uint8_t ck_a;    ///< Checksum high byte
 	uint8_t ck_b;    ///< Checksum low byte
 } mavlink_message_t;
