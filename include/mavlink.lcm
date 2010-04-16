@@ -164,6 +164,32 @@ typedef struct __attitude_t
 
 } attitude_t;
 
+typedef struct __position_t 
+{
+	uint32_t msec; ///< Timestamp (milliseconds)
+	float x; ///< X Position
+	float y; ///< Y Position
+	float z; ///< Z Position
+	float vx; ///< X Speed
+	float vy; ///< Y Speed
+	float vz; ///< Z Speed
+
+} position_t;
+
+typedef struct __pattern_detected_t 
+{
+	float confidence; ///< Confidence of detection
+	int8_t file[100]; ///< Pattern file name
+
+} pattern_detected_t;
+
+typedef struct __statustext_t 
+{
+	uint8_t severity; ///< Severity of status, 0 = info message, 255 = critical fault
+	int8_t text[254]; ///< Status text message, without null termination character
+
+} statustext_t;
+
 typedef struct __debug_t 
 {
 	uint8_t ind; ///< index of debug variable

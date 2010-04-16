@@ -395,7 +395,16 @@ static inline uint8_t put_float_by_index(float b, uint8_t bindex, uint8_t* buffe
 	return put_int32_t_by_index(g.i, bindex, buffer);
 }
 
-static inline uint8_t put_array_by_index(uint8_t* b, uint8_t length, uint8_t bindex, uint8_t* buffer)
+/**
+ * @brief Place an array into the buffer
+ *
+ * @param b the array to add
+ * @param length size of the array (for strings: length WITHOUT '\0' char)
+ * @param bindex the position in the packet
+ * @param buffer packet buffer
+ * @return new position of the last used byte in the buffer
+ */
+static inline uint8_t put_array_by_index(const int8_t* b, uint8_t length, uint8_t bindex, uint8_t* buffer)
 {
 	memcpy(buffer+bindex, b, length);
 	return length;
