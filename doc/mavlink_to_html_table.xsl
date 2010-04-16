@@ -10,9 +10,9 @@
    <th class="mavlink_message_id"><xsl:value-of select="@id" /></th>
    </tr>
    <tr>
-   <th>field</th>
-   <th>data type</th>
-   <th>description</th>
+   <th class="mavlink_field">field</th>
+   <th class="mavlink_type">data type</th>
+   <th class="mavlink_comment">description</th>
    </tr>
    <xsl:apply-templates />
 </xsl:for-each>
