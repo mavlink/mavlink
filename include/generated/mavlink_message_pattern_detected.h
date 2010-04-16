@@ -6,6 +6,7 @@ typedef struct __pattern_detected_t
 {
 	float confidence; ///< Confidence of detection
 	int8_t file[100]; ///< Pattern file name
+	uint8_t detected; ///< Accepted as true detection, 0 no, 1 yes
 
 } pattern_detected_t;
 
@@ -14,32 +15,34 @@ typedef struct __pattern_detected_t
  *
  * @param confidence Confidence of detection
  * @param file Pattern file name
+ * @param detected Accepted as true detection, 0 no, 1 yes
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t message_pattern_detected_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, float confidence, const int8_t* file)
+static inline uint16_t message_pattern_detected_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, float confidence, const int8_t* file, uint8_t detected)
 {
 	msg->msgid = MAVLINK_MSG_ID_PATTERN_DETECTED;
 	uint16_t i = 0;
 
 	i += put_float_by_index(confidence, i, msg->payload); //Confidence of detection
 	i += put_array_by_index(file, 100, i, msg->payload); //Pattern file name
+	i += put_uint8_t_by_index(detected, i, msg->payload); //Accepted as true detection, 0 no, 1 yes
 
 	return finalize_message(msg, system_id, component_id, i);
 }
 
 static inline uint16_t message_pattern_detected_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const pattern_detected_t* pattern_detected)
 {
-	return message_pattern_detected_pack(system_id, component_id, msg, pattern_detected->confidence, pattern_detected->file);
+	return message_pattern_detected_pack(system_id, component_id, msg, pattern_detected->confidence, pattern_detected->file, pattern_detected->detected);
 }
 
 #if !defined(_WIN32) && !defined(__linux) && !defined(__APPLE__)
 
 #include "global_data.h"
 
-static inline void message_pattern_detected_send(mavlink_channel_t chan, float confidence, const int8_t* file)
+static inline void message_pattern_detected_send(mavlink_channel_t chan, float confidence, const int8_t* file, uint8_t detected)
 {
 	mavlink_message_t msg;
-	message_pattern_detected_pack(global_data.param[PARAM_SYSTEM_ID], global_data.param[PARAM_COMPONENT_ID], &msg, confidence, file);
+	message_pattern_detected_pack(global_data.param[PARAM_SYSTEM_ID], global_data.param[PARAM_COMPONENT_ID], &msg, confidence, file, detected);
 	mavlink_send_uart(chan, &msg);
 }
 
@@ -73,8 +76,19 @@ static inline uint16_t message_pattern_detected_get_file(const mavlink_message_t
 	return 100;
 }
 
+/**
+ * @brief Get field detected from pattern_detected message
+ *
+ * @return Accepted as true detection, 0 no, 1 yes
+ */
+static inline uint8_t message_pattern_detected_get_detected(const mavlink_message_t* msg)
+{
+	return (uint8_t)(msg->payload+sizeof(float)+100)[0];
+}
+
 static inline void message_pattern_detected_decode(const mavlink_message_t* msg, pattern_detected_t* pattern_detected)
 {
 	pattern_detected->confidence = message_pattern_detected_get_confidence(msg);
 	message_pattern_detected_get_file(msg, pattern_detected->file);
+	pattern_detected->detected = message_pattern_detected_get_detected(msg);
 }
