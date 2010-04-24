@@ -410,7 +410,7 @@ static inline uint8_t put_array_by_index(const int8_t* b, uint8_t length, uint8_
 	return length;
 }
 
-#if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
+#if !(defined linux) && !(defined __linux) && !(defined  __MACH__) && !(defined _WIN32)
 
 // To make MAVLink work on your MCU, define a similar function
 
