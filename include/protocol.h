@@ -410,7 +410,24 @@ static inline uint8_t put_array_by_index(const int8_t* b, uint8_t length, uint8_
 	return length;
 }
 
-#ifdef CPU_ARM7
+#if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
+
+// To make MAVLink work on your MCU, define a similar function
+
+/*
+void comm_send_ch(mavlink_channel_t chan, uint8_t ch)
+{
+    if (chan == MAVLINK_COMM_0)
+    {
+        uart0_transmit(ch);
+    }
+    if (chan == MAVLINK_COMM_1)
+    {
+    	uart1_transmit(ch);
+    }
+}
+ */
+
 
 static inline void mavlink_send_uart(mavlink_channel_t chan, mavlink_message_t* msg)
 {
