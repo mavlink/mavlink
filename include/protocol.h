@@ -279,13 +279,25 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 	return status->msg_received;
 }
 
-typedef union __generic_32bit
+typedef union __generic_16bit
 {
-	uint8_t b[4];
-	float f;
-	int32_t i;
+	uint8_t b[2];
 	int16_t s;
-} generic_32bit;
+} generic_16bit;
+
+typedef union __generic_32bit
+	{
+		uint8_t b[4];
+		float f;
+		int32_t i;
+		int16_t s;
+	} generic_32bit;
+
+typedef union __generic_64bit
+	{
+		uint8_t b[8];
+		int64_t ll; ///< Long long (64 bit)
+	} generic_64bit;
 
 /**
  * @brief Place an unsigned byte into the buffer
@@ -325,9 +337,8 @@ static inline uint8_t put_int8_by_index(int8_t b, int8_t bindex, uint8_t* buffer
  */
 static inline uint8_t put_uint16_t_by_index(uint16_t b, const uint8_t bindex, uint8_t* buffer)
 {
-	///< Increment byte pointer, then cast to two byte type and assign two byte value
-	buffer[bindex] = (uint8_t)(b & 0xFF); ///< High byte
-	buffer[bindex+1] = (uint8_t)(b >> 8); ///< Low byte
+	buffer[bindex]   = (b>>8)&0xff;
+	buffer[bindex+1] = (b & 0xff);
 	return sizeof(b);
 }
 
@@ -339,11 +350,9 @@ static inline uint8_t put_uint16_t_by_index(uint16_t b, const uint8_t bindex, ui
  * @param buffer the packet buffer
  * @return the new position of the last used byte in the buffer
  */
-static inline uint8_t put_int_16_t_by_index(int16_t b, uint8_t bindex, uint8_t* buffer)
+static inline uint8_t put_int16_t_by_index(int16_t b, uint8_t bindex, uint8_t* buffer)
 {
-	*(buffer+bindex) = (uint8_t)(b & 0xFF); ///< High byte
-	*(buffer+bindex+1) = (uint8_t)(b >> 8); ///< Low byte
-	return sizeof(b);
+	return put_uint16_t_by_index(b, bindex, buffer);
 }
 
 /**
@@ -378,6 +387,40 @@ static inline uint8_t put_int32_t_by_index(int32_t b, uint8_t bindex, uint8_t* b
 	buffer[bindex+2] = (b>>8)&0xff;
 	buffer[bindex+3] = (b & 0xff);
 	return sizeof(b);
+}
+
+/**
+ * @brief Place four unsigned bytes into the buffer
+ *
+ * @param b the bytes to add
+ * @param bindex the position in the packet
+ * @param buffer the packet buffer
+ * @return the new position of the last used byte in the buffer
+ */
+static inline uint8_t put_uint64_t_by_index(uint64_t b, const uint8_t bindex, uint8_t* buffer)
+{
+	buffer[bindex]   = (b>>56)&0xff;
+	buffer[bindex+1] = (b>>48)&0xff;
+	buffer[bindex+2] = (b>>40)&0xff;
+	buffer[bindex+3] = (b>>32)&0xff;
+	buffer[bindex+4] = (b>>24)&0xff;
+	buffer[bindex+5] = (b>>16)&0xff;
+	buffer[bindex+6] = (b>>8)&0xff;
+	buffer[bindex+7] = (b & 0xff);
+	return sizeof(b);
+}
+
+/**
+ * @brief Place four signed bytes into the buffer
+ *
+ * @param b the bytes to add
+ * @param bindex the position in the packet
+ * @param buffer the packet buffer
+ * @return the new position of the last used byte in the buffer
+ */
+static inline uint8_t put_int64_t_by_index(int64_t b, uint8_t bindex, uint8_t* buffer)
+{
+	return put_uint64_t_by_index(b, bindex, buffer);
 }
 
 /**

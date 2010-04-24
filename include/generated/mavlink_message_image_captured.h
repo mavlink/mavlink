@@ -56,9 +56,9 @@ static inline void message_image_captured_send(mavlink_channel_t chan, uint16_t 
  */
 static inline uint16_t message_image_captured_get_exposure(const mavlink_message_t* msg)
 {
-	generic_32bit r;
-	r.b[3] = (msg->payload)[0];
-	r.b[1] = (msg->payload)[1];
+	generic_16bit r;
+	r.b[1] = (msg->payload)[0];
+	r.b[0] = (msg->payload)[1];
 	return (uint16_t)r.s;
 }
 

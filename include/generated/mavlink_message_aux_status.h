@@ -50,9 +50,9 @@ static inline void message_aux_status_send(mavlink_channel_t chan, uint16_t load
  */
 static inline uint16_t message_aux_status_get_load(const mavlink_message_t* msg)
 {
-	generic_32bit r;
-	r.b[3] = (msg->payload)[0];
-	r.b[1] = (msg->payload)[1];
+	generic_16bit r;
+	r.b[1] = (msg->payload)[0];
+	r.b[0] = (msg->payload)[1];
 	return (uint16_t)r.s;
 }
 

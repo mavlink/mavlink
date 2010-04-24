@@ -82,9 +82,9 @@ static inline uint8_t message_sys_status_get_status(const mavlink_message_t* msg
  */
 static inline uint16_t message_sys_status_get_vbat(const mavlink_message_t* msg)
 {
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[0];
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[1];
+	generic_16bit r;
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[0];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[1];
 	return (uint16_t)r.s;
 }
 
@@ -105,9 +105,9 @@ static inline uint8_t message_sys_status_get_motor_block(const mavlink_message_t
  */
 static inline uint16_t message_sys_status_get_packet_drop(const mavlink_message_t* msg)
 {
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t))[0];
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t))[1];
+	generic_16bit r;
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t))[0];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t))[1];
 	return (uint16_t)r.s;
 }
 

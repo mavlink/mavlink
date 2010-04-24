@@ -47,44 +47,28 @@
      <field name="yaw_manual" type="uint8_t">yaw auto:0, manual:1</field>
      <field name="thrust_manual" type="uint8_t">thrust auto:0, manual:1</field>
    </message>
- 
-   <message name="RAW_SENSOR" id="100">
-     <field name="msec"  type="uint32_t">Timestamp (milliseconds)</field>
-     <field name="xacc"  type="int32_t">X acceleration (mg raw)</field>
-     <field name="yacc"  type="int32_t">Y acceleration (mg raw)</field>
-     <field name="zacc"  type="int32_t">Z acceleration (mg raw)</field>
-     <field name="xgyro" type="uint32_t">Angular speed around X axis (adc units)</field>
-     <field name="ygyro" type="uint32_t">Angular speed around Y axis (adc units)</field>
-     <field name="zgyro" type="uint32_t">Angular speed around Z axis (adc units)</field>
-     <field name="xmag"  type="uint32_t">X Magnetic field (milli tesla)</field>
-     <field name="ymag"  type="uint32_t">Y Magnetic field (milli tesla)</field>
-     <field name="zmag"  type="uint32_t">Z Magnetic field (milli tesla)</field>
-     <field name="baro"  type="int32_t">Barometric pressure (hecto Pascal)</field>
-     <field name="gdist" type="uint32_t">Ground distance (meters)</field>
-     <field name="temp"  type="int32_t">Temperature (degrees celcius)</field>
-   </message>
 
    <message name="RAW_IMU" id="101">
-     <field name="msec"  type="uint32_t">Timestamp (milliseconds)</field>
-     <field name="xacc"  type="int32_t">X acceleration (mg raw)</field>
-     <field name="yacc"  type="int32_t">Y acceleration (mg raw)</field>
-     <field name="zacc"  type="int32_t">Z acceleration (mg raw)</field>
-     <field name="xgyro" type="uint32_t">Angular speed around X axis (adc units)</field>
-     <field name="ygyro" type="uint32_t">Angular speed around Y axis (adc units)</field>
-     <field name="zgyro" type="uint32_t">Angular speed around Z axis (adc units)</field>
-     <field name="xmag"  type="int32_t">X Magnetic field (milli tesla)</field>
-     <field name="ymag"  type="int32_t">Y Magnetic field (milli tesla)</field>
-     <field name="zmag"  type="int32_t">Z Magnetic field (milli tesla)</field>
+     <field name="msec"  type="uint64_t">Timestamp (milliseconds)</field>
+     <field name="xacc"  type="int16_t">X acceleration (mg raw)</field>
+     <field name="yacc"  type="int16_t">Y acceleration (mg raw)</field>
+     <field name="zacc"  type="int16_t">Z acceleration (mg raw)</field>
+     <field name="xgyro" type="uint16_t">Angular speed around X axis (adc units)</field>
+     <field name="ygyro" type="uint16_t">Angular speed around Y axis (adc units)</field>
+     <field name="zgyro" type="uint16_t">Angular speed around Z axis (adc units)</field>
+     <field name="xmag"  type="int16_t">X Magnetic field (milli tesla)</field>
+     <field name="ymag"  type="int16_t">Y Magnetic field (milli tesla)</field>
+     <field name="zmag"  type="int16_t">Z Magnetic field (milli tesla)</field>
    </message>
 
    <message name="RAW_AUX" id="102">
-     <field name="adc1" type="uint32_t">ADC1 (J405 ADC3, LPC2148 AD0.6)</field>
-     <field name="adc2" type="uint32_t">ADC2 (J405 ADC5, LPC2148 AD0.2)</field>
-     <field name="adc3" type="uint32_t">ADC3 (J405 ADC6, LPC2148 AD0.1)</field>
-     <field name="adc4" type="uint32_t">ADC4 (J405 ADC7, LPC2148 AD1.3)</field>
-     <field name="vbat" type="uint32_t">Battery voltage</field>
-     <field name="temp"  type="int32_t">Temperature (degrees celcius)</field>
-     <field name="baro"  type="int32_t">Barometric pressure (hecto Pascal)</field>
+     <field name="adc1" type="uint16_t">ADC1 (J405 ADC3, LPC2148 AD0.6)</field>
+     <field name="adc2" type="uint16_t">ADC2 (J405 ADC5, LPC2148 AD0.2)</field>
+     <field name="adc3" type="uint16_t">ADC3 (J405 ADC6, LPC2148 AD0.1)</field>
+     <field name="adc4" type="uint16_t">ADC4 (J405 ADC7, LPC2148 AD1.3)</field>
+     <field name="vbat" type="uint16_t">Battery voltage</field>
+     <field name="temp"  type="int16_t">Temperature (degrees celcius)</field>
+     <field name="baro"  type="int16_t">Barometric pressure (hecto Pascal)</field>
    </message>
 
    <message name="SYS_STATUS" id="103">
@@ -100,7 +84,7 @@
    </message>
 
    <message name="SET_CAM_SHUTTER" id="70">
-     <field name="cam_id" type="uint16_t">Camera id</field>
+     <field name="cam_no" type="uint8_t">Camera id</field>
      <field name="cam_mode" type="uint8_t">Camera mode: 0 = auto, 1 = manual</field>
      <field name="trigger_pin" type="uint8_t">Trigger pin, 0-3 for PtGrey FireFly</field>
      <field name="interval" type="uint16_t">Shutter interval, in microseconds</field>
@@ -115,7 +99,7 @@
    </message>
 
    <message name="IMAGE_AVAILABLE" id="72">
-     <field name="cam_id" type="uint32_t">Camera id</field>
+     <field name="cam_id" type="uint64_t">Camera id</field>
      <field name="cam_no" type="uint8_t">Camera # (starts with 0)</field>
      <field name="timestamp" type="uint32_t">Timestamp</field>
      <field name="img_seq" type="uint32_t">The image sequence number</field>
@@ -144,7 +128,7 @@
    </message>
 
    <message name="ATTITUDE" id="90">
-     <field name="msec"  type="uint32_t">Timestamp (milliseconds)</field>
+     <field name="msec"  type="uint64_t">Timestamp (milliseconds)</field>
      <field name="roll"  type="float">Roll angle (rad)</field>
      <field name="pitch" type="float">Pitch angle (rad)</field>
      <field name="yaw"   type="float">Yaw angle (rad)</field>
@@ -154,7 +138,7 @@
    </message>
 
    <message name="POSITION" id="91">
-     <field name="msec"  type="uint32_t">Timestamp (milliseconds)</field>
+     <field name="msec"  type="uint64_t">Timestamp (milliseconds)</field>
      <field name="x"  type="float">X Position</field>
      <field name="y" type="float">Y Position</field>
      <field name="z"   type="float">Z Position</field>

@@ -4,7 +4,7 @@
 
 typedef struct __attitude_t 
 {
-	uint32_t msec; ///< Timestamp (milliseconds)
+	uint64_t msec; ///< Timestamp (milliseconds)
 	float roll; ///< Roll angle (rad)
 	float pitch; ///< Pitch angle (rad)
 	float yaw; ///< Yaw angle (rad)
@@ -26,12 +26,12 @@ typedef struct __attitude_t
  * @param yawspeed Yaw angular speed (rad/s)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t message_attitude_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint32_t msec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
+static inline uint16_t message_attitude_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t msec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
 {
 	msg->msgid = MAVLINK_MSG_ID_ATTITUDE;
 	uint16_t i = 0;
 
-	i += put_uint32_t_by_index(msec, i, msg->payload); //Timestamp (milliseconds)
+	i += put_uint64_t_by_index(msec, i, msg->payload); //Timestamp (milliseconds)
 	i += put_float_by_index(roll, i, msg->payload); //Roll angle (rad)
 	i += put_float_by_index(pitch, i, msg->payload); //Pitch angle (rad)
 	i += put_float_by_index(yaw, i, msg->payload); //Yaw angle (rad)
@@ -51,7 +51,7 @@ static inline uint16_t message_attitude_encode(uint8_t system_id, uint8_t compon
 
 #include "global_data.h"
 
-static inline void message_attitude_send(mavlink_channel_t chan, uint32_t msec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
+static inline void message_attitude_send(mavlink_channel_t chan, uint64_t msec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
 {
 	mavlink_message_t msg;
 	message_attitude_pack(global_data.param[PARAM_SYSTEM_ID], global_data.param[PARAM_COMPONENT_ID], &msg, msec, roll, pitch, yaw, rollspeed, pitchspeed, yawspeed);
@@ -66,14 +66,18 @@ static inline void message_attitude_send(mavlink_channel_t chan, uint32_t msec, 
  *
  * @return Timestamp (milliseconds)
  */
-static inline uint32_t message_attitude_get_msec(const mavlink_message_t* msg)
+static inline uint64_t message_attitude_get_msec(const mavlink_message_t* msg)
 {
-	generic_32bit r;
-	r.b[3] = (msg->payload)[0];
-	r.b[2] = (msg->payload)[1];
-	r.b[1] = (msg->payload)[2];
-	r.b[0] = (msg->payload)[3];
-	return (uint32_t)r.i;
+	generic_64bit r;
+	r.b[7] = (msg->payload)[0];
+	r.b[6] = (msg->payload)[1];
+	r.b[5] = (msg->payload)[2];
+	r.b[4] = (msg->payload)[3];
+	r.b[3] = (msg->payload)[4];
+	r.b[2] = (msg->payload)[5];
+	r.b[1] = (msg->payload)[6];
+	r.b[0] = (msg->payload)[7];
+	return (uint64_t)r.ll;
 }
 
 /**
@@ -84,10 +88,10 @@ static inline uint32_t message_attitude_get_msec(const mavlink_message_t* msg)
 static inline float message_attitude_get_roll(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t))[3];
+	r.b[3] = (msg->payload+sizeof(uint64_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint64_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint64_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint64_t))[3];
 	return (float)r.f;
 }
 
@@ -99,10 +103,10 @@ static inline float message_attitude_get_roll(const mavlink_message_t* msg)
 static inline float message_attitude_get_pitch(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint64_t)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint64_t)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint64_t)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -114,10 +118,10 @@ static inline float message_attitude_get_pitch(const mavlink_message_t* msg)
 static inline float message_attitude_get_yaw(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -129,10 +133,10 @@ static inline float message_attitude_get_yaw(const mavlink_message_t* msg)
 static inline float message_attitude_get_rollspeed(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -144,10 +148,10 @@ static inline float message_attitude_get_rollspeed(const mavlink_message_t* msg)
 static inline float message_attitude_get_pitchspeed(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -159,10 +163,10 @@ static inline float message_attitude_get_pitchspeed(const mavlink_message_t* msg
 static inline float message_attitude_get_yawspeed(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[3];
 	return (float)r.f;
 }
 

@@ -60,48 +60,30 @@ typedef struct __attitude_control_t
 
 } attitude_control_t;
 
-typedef struct __raw_sensor_t 
-{
-	uint32_t msec; ///< Timestamp (milliseconds)
-	int32_t xacc; ///< X acceleration (mg raw)
-	int32_t yacc; ///< Y acceleration (mg raw)
-	int32_t zacc; ///< Z acceleration (mg raw)
-	uint32_t xgyro; ///< Angular speed around X axis (adc units)
-	uint32_t ygyro; ///< Angular speed around Y axis (adc units)
-	uint32_t zgyro; ///< Angular speed around Z axis (adc units)
-	uint32_t xmag; ///< X Magnetic field (milli tesla)
-	uint32_t ymag; ///< Y Magnetic field (milli tesla)
-	uint32_t zmag; ///< Z Magnetic field (milli tesla)
-	int32_t baro; ///< Barometric pressure (hecto Pascal)
-	uint32_t gdist; ///< Ground distance (meters)
-	int32_t temp; ///< Temperature (degrees celcius)
-
-} raw_sensor_t;
-
 typedef struct __raw_imu_t 
 {
-	uint32_t msec; ///< Timestamp (milliseconds)
-	int32_t xacc; ///< X acceleration (mg raw)
-	int32_t yacc; ///< Y acceleration (mg raw)
-	int32_t zacc; ///< Z acceleration (mg raw)
-	uint32_t xgyro; ///< Angular speed around X axis (adc units)
-	uint32_t ygyro; ///< Angular speed around Y axis (adc units)
-	uint32_t zgyro; ///< Angular speed around Z axis (adc units)
-	int32_t xmag; ///< X Magnetic field (milli tesla)
-	int32_t ymag; ///< Y Magnetic field (milli tesla)
-	int32_t zmag; ///< Z Magnetic field (milli tesla)
+	uint64_t msec; ///< Timestamp (milliseconds)
+	int16_t xacc; ///< X acceleration (mg raw)
+	int16_t yacc; ///< Y acceleration (mg raw)
+	int16_t zacc; ///< Z acceleration (mg raw)
+	uint16_t xgyro; ///< Angular speed around X axis (adc units)
+	uint16_t ygyro; ///< Angular speed around Y axis (adc units)
+	uint16_t zgyro; ///< Angular speed around Z axis (adc units)
+	int16_t xmag; ///< X Magnetic field (milli tesla)
+	int16_t ymag; ///< Y Magnetic field (milli tesla)
+	int16_t zmag; ///< Z Magnetic field (milli tesla)
 
 } raw_imu_t;
 
 typedef struct __raw_aux_t 
 {
-	uint32_t adc1; ///< ADC1 (J405 ADC3, LPC2148 AD0.6)
-	uint32_t adc2; ///< ADC2 (J405 ADC5, LPC2148 AD0.2)
-	uint32_t adc3; ///< ADC3 (J405 ADC6, LPC2148 AD0.1)
-	uint32_t adc4; ///< ADC4 (J405 ADC7, LPC2148 AD1.3)
-	uint32_t vbat; ///< Battery voltage
-	int32_t temp; ///< Temperature (degrees celcius)
-	int32_t baro; ///< Barometric pressure (hecto Pascal)
+	uint16_t adc1; ///< ADC1 (J405 ADC3, LPC2148 AD0.6)
+	uint16_t adc2; ///< ADC2 (J405 ADC5, LPC2148 AD0.2)
+	uint16_t adc3; ///< ADC3 (J405 ADC6, LPC2148 AD0.1)
+	uint16_t adc4; ///< ADC4 (J405 ADC7, LPC2148 AD1.3)
+	uint16_t vbat; ///< Battery voltage
+	int16_t temp; ///< Temperature (degrees celcius)
+	int16_t baro; ///< Barometric pressure (hecto Pascal)
 
 } raw_aux_t;
 
@@ -123,7 +105,7 @@ typedef struct __aux_status_t
 
 typedef struct __set_cam_shutter_t 
 {
-	uint16_t cam_id; ///< Camera id
+	uint8_t cam_no; ///< Camera id
 	uint8_t cam_mode; ///< Camera mode: 0 = auto, 1 = manual
 	uint8_t trigger_pin; ///< Trigger pin, 0-3 for PtGrey FireFly
 	uint16_t interval; ///< Shutter interval, in microseconds
@@ -142,7 +124,7 @@ typedef struct __image_captured_t
 
 typedef struct __image_available_t 
 {
-	uint32_t cam_id; ///< Camera id
+	uint64_t cam_id; ///< Camera id
 	uint8_t cam_no; ///< Camera # (starts with 0)
 	uint32_t timestamp; ///< Timestamp
 	uint32_t img_seq; ///< The image sequence number
@@ -179,7 +161,7 @@ typedef struct __param_write_t
 
 typedef struct __attitude_t 
 {
-	uint32_t msec; ///< Timestamp (milliseconds)
+	uint64_t msec; ///< Timestamp (milliseconds)
 	float roll; ///< Roll angle (rad)
 	float pitch; ///< Pitch angle (rad)
 	float yaw; ///< Yaw angle (rad)
@@ -191,7 +173,7 @@ typedef struct __attitude_t
 
 typedef struct __position_t 
 {
-	uint32_t msec; ///< Timestamp (milliseconds)
+	uint64_t msec; ///< Timestamp (milliseconds)
 	float x; ///< X Position
 	float y; ///< Y Position
 	float z; ///< Z Position
