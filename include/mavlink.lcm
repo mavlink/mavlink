@@ -132,6 +132,31 @@ typedef struct __set_cam_shutter_t
 
 } set_cam_shutter_t;
 
+typedef struct __image_captured_t 
+{
+	uint16_t exposure; ///< Exposure time, in microseconds
+	float gain; ///< Camera gain
+	uint32_t timestamp; ///< Timestamp
+
+} image_captured_t;
+
+typedef struct __image_available_t 
+{
+	uint32_t cam_id; ///< Camera id
+	uint8_t cam_no; ///< Camera # (starts with 0)
+	uint32_t timestamp; ///< Timestamp
+	uint32_t img_seq; ///< The image sequence number
+	uint32_t img_buf_index; ///< Position of the image in the buffer, starts with 0
+	uint16_t width; ///< Image width
+	uint16_t height; ///< Image height
+	uint16_t depth; ///< Image depth
+	uint8_t channels; ///< Image channels
+	int32_t key; ///< Shared memory area key
+	uint16_t exposure; ///< Exposure time, in microseconds
+	float gain; ///< Camera gain
+
+} image_available_t;
+
 typedef struct __param_request_read_t 
 {
 	uint16_t param_id; ///< Camera id
