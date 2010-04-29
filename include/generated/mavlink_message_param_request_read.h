@@ -4,22 +4,22 @@
 
 typedef struct __param_request_read_t 
 {
-	uint16_t param_id; ///< Camera id
+	int8_t param_id[15]; ///< Onboard parameter id
 
 } param_request_read_t;
 
 /**
  * @brief Send a param_request_read message
  *
- * @param param_id Camera id
+ * @param param_id Onboard parameter id
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t message_param_request_read_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t param_id)
+static inline uint16_t message_param_request_read_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const int8_t* param_id)
 {
 	msg->msgid = MAVLINK_MSG_ID_PARAM_REQUEST_READ;
 	uint16_t i = 0;
 
-	i += put_uint16_t_by_index(param_id, i, msg->payload); //Camera id
+	i += put_array_by_index(param_id, 15, i, msg->payload); //Onboard parameter id
 
 	return finalize_message(msg, system_id, component_id, i);
 }
@@ -33,7 +33,7 @@ static inline uint16_t message_param_request_read_encode(uint8_t system_id, uint
 
 #include "global_data.h"
 
-static inline void message_param_request_read_send(mavlink_channel_t chan, uint16_t param_id)
+static inline void message_param_request_read_send(mavlink_channel_t chan, const int8_t* param_id)
 {
 	mavlink_message_t msg;
 	message_param_request_read_pack(global_data.param[PARAM_SYSTEM_ID], global_data.param[PARAM_COMPONENT_ID], &msg, param_id);
@@ -46,17 +46,16 @@ static inline void message_param_request_read_send(mavlink_channel_t chan, uint1
 /**
  * @brief Get field param_id from param_request_read message
  *
- * @return Camera id
+ * @return Onboard parameter id
  */
-static inline uint16_t message_param_request_read_get_param_id(const mavlink_message_t* msg)
+static inline uint16_t message_param_request_read_get_param_id(const mavlink_message_t* msg, int8_t* r_data)
 {
-	generic_16bit r;
-	r.b[1] = (msg->payload)[0];
-	r.b[0] = (msg->payload)[1];
-	return (uint16_t)r.s;
+
+	memcpy(r_data, msg->payload, 15);
+	return 15;
 }
 
 static inline void message_param_request_read_decode(const mavlink_message_t* msg, param_request_read_t* param_request_read)
 {
-	param_request_read->param_id = message_param_request_read_get_param_id(msg);
+	message_param_request_read_get_param_id(msg, param_request_read->param_id);
 }
