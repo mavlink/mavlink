@@ -13,6 +13,8 @@ typedef struct __mavlink_set_cam_shutter_t
 
 } mavlink_set_cam_shutter_t;
 
+
+
 /**
  * @brief Send a set_cam_shutter message
  *

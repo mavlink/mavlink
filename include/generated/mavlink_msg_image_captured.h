@@ -10,6 +10,8 @@ typedef struct __mavlink_image_captured_t
 
 } mavlink_image_captured_t;
 
+
+
 /**
  * @brief Send a image_captured message
  *

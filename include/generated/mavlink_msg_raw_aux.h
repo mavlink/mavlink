@@ -14,6 +14,8 @@ typedef struct __mavlink_raw_aux_t
 
 } mavlink_raw_aux_t;
 
+
+
 /**
  * @brief Send a raw_aux message
  *

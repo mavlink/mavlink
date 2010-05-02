@@ -14,6 +14,8 @@ typedef struct __mavlink_position_t
 
 } mavlink_position_t;
 
+
+
 /**
  * @brief Send a position message
  *

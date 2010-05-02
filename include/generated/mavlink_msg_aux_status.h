@@ -8,6 +8,8 @@ typedef struct __mavlink_aux_status_t
 
 } mavlink_aux_status_t;
 
+
+
 /**
  * @brief Send a aux_status message
  *

@@ -9,6 +9,8 @@ typedef struct __mavlink_set_mode_t
 
 } mavlink_set_mode_t;
 
+
+
 /**
  * @brief Send a set_mode message
  *

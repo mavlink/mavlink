@@ -10,6 +10,8 @@ typedef struct __mavlink_request_static_calibration_t
 
 } mavlink_request_static_calibration_t;
 
+
+
 /**
  * @brief Send a request_static_calibration message
  *

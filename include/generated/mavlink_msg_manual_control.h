@@ -16,6 +16,8 @@ typedef struct __mavlink_manual_control_t
 
 } mavlink_manual_control_t;
 
+
+
 /**
  * @brief Send a manual_control message
  *

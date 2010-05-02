@@ -12,6 +12,8 @@ typedef struct __mavlink_request_dynamic_gyro_calibration_t
 
 } mavlink_request_dynamic_gyro_calibration_t;
 
+
+
 /**
  * @brief Send a request_dynamic_gyro_calibration message
  *

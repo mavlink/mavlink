@@ -8,6 +8,8 @@ typedef struct __mavlink_heartbeat_t
 
 } mavlink_heartbeat_t;
 
+
+
 /**
  * @brief Send a heartbeat message
  *

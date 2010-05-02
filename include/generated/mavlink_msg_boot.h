@@ -8,6 +8,8 @@ typedef struct __mavlink_boot_t
 
 } mavlink_boot_t;
 
+
+
 /**
  * @brief Send a boot message
  *

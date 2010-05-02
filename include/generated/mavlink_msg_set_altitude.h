@@ -9,6 +9,8 @@ typedef struct __mavlink_set_altitude_t
 
 } mavlink_set_altitude_t;
 
+
+
 /**
  * @brief Send a set_altitude message
  *

@@ -19,6 +19,8 @@ typedef struct __mavlink_image_available_t
 
 } mavlink_image_available_t;
 
+
+
 /**
  * @brief Send a image_available message
  *

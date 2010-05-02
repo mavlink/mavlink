@@ -9,6 +9,8 @@ typedef struct __mavlink_statustext_t
 
 } mavlink_statustext_t;
 
+#define MAVLINK_MSG_STATUSTEXT_FIELD_TEXT_LEN 254
+
 /**
  * @brief Send a statustext message
  *

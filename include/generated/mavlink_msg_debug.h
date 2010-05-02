@@ -9,6 +9,8 @@ typedef struct __mavlink_debug_t
 
 } mavlink_debug_t;
 
+
+
 /**
  * @brief Send a debug message
  *

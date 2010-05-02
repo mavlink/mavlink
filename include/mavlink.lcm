@@ -195,12 +195,21 @@ typedef struct __mavlink_param_value_t
 
 } mavlink_param_value_t;
 
-typedef struct __mavlink_param_write_t 
+typedef struct __mavlink_param_set_t 
 {
-	uint16_t param_id; ///< Onboard parameter id
+	uint8_t target_system; ///< System ID
+	uint8_t target_component; ///< Component ID
+	int8_t param_id[15]; ///< Onboard parameter id
 	float param_value; ///< Onboard parameter value
 
-} mavlink_param_write_t;
+} mavlink_param_set_t;
+
+typedef struct __mavlink_param_write_storage_t 
+{
+	uint8_t target_system; ///< System ID
+	uint8_t target_component; ///< Component ID
+
+} mavlink_param_write_storage_t;
 
 typedef struct __mavlink_attitude_t 
 {

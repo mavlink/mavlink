@@ -14,6 +14,8 @@ typedef struct __mavlink_attitude_t
 
 } mavlink_attitude_t;
 
+
+
 /**
  * @brief Send a attitude message
  *

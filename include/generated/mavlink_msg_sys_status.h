@@ -12,6 +12,8 @@ typedef struct __mavlink_sys_status_t
 
 } mavlink_sys_status_t;
 
+
+
 /**
  * @brief Send a sys_status message
  *
