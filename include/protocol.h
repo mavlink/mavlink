@@ -16,7 +16,7 @@
  * @param system_id Id of the sending (this) system, 1-127
  * @param length Message length, usually just the counter incremented while packing the message
  */
-static inline uint16_t finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, uint16_t length)
+static inline uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, uint16_t length)
 {
 	// This code part is the same for all messages;
 
@@ -37,7 +37,7 @@ static inline uint16_t finalize_message(mavlink_message_t* msg, uint8_t system_i
 /**
  * @brief Pack a message to send it over a serial byte stream
  */
-static inline uint16_t message_to_send_buffer(uint8_t* buffer, const mavlink_message_t* msg)
+static inline uint16_t mavlink_msg_to_send_buffer(uint8_t* buffer, const mavlink_message_t* msg)
 {
 	*(buffer+0) = MAVLINK_STX; ///< Start transmit
 	memcpy((buffer+1), msg, msg->len + MAVLINK_CORE_HEADER_LEN); ///< Core header plus payload
@@ -50,7 +50,7 @@ static inline uint16_t message_to_send_buffer(uint8_t* buffer, const mavlink_mes
 /**
  * @brief Get the required buffer size for this message
  */
-static inline uint16_t message_get_send_buffer_length(const mavlink_message_t* msg)
+static inline uint16_t mavlink_msg_get_send_buffer_length(const mavlink_message_t* msg)
 {
         return msg->len + MAVLINK_NUM_NON_PAYLOAD_BYTES;
 }
@@ -453,11 +453,14 @@ static inline uint8_t put_array_by_index(const int8_t* b, uint8_t length, uint8_
 	return length;
 }
 
-#if !(defined linux) && !(defined __linux) && !(defined  __MACH__) && !(defined _WIN32)
+#ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
 // To make MAVLink work on your MCU, define a similar function
 
 /*
+ 
+#include "mavlink_types.h"
+ 
 void comm_send_ch(mavlink_channel_t chan, uint8_t ch)
 {
     if (chan == MAVLINK_COMM_0)
@@ -489,13 +492,6 @@ static inline void mavlink_send_uart(mavlink_channel_t chan, mavlink_message_t* 
 	}
 	comm_send_ch(chan, msg->ck_a);
 	comm_send_ch(chan, msg->ck_b);
-}
-
-static inline void send_debug_string(mavlink_channel_t chan, uint8_t* string)
-{
-	while(*string){
-		comm_send_ch(chan, *string++);
-	}
 }
 #endif
 

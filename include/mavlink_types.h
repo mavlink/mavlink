@@ -82,6 +82,14 @@ enum MAV_TYPE
 #define MAVLINK_MAX_PACKET_LEN (MAVLINK_MAX_PAYLOAD_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES) ///< Maximum packet length
 //#define MAVLINK_MAX_DATA_LEN MAVLINK_MAX_PACKET_LEN - MAVLINK_STX_LEN
 
+typedef struct __mavlink_system {
+	uint8_t sysid;   ///< Used by the MAVLink message_xx_send() convenience function
+	uint8_t compid;  ///< Used by the MAVLink message_xx_send() convenience function
+	uint8_t type;    ///< Unused, can be used by user to store the system's type
+	uint8_t state;   ///< Unused, can be used by user to store the system's state
+	uint8_t mode;    ///< Unused, can be used by user to store the system's mode
+} mavlink_system_t;
+
 typedef struct __mavlink_message {
 	uint8_t len;     ///< Length of payload
 	uint8_t seq;     ///< Sequence of packet
