@@ -442,7 +442,7 @@ static inline uint8_t put_float_by_index(float b, uint8_t bindex, uint8_t* buffe
  * @brief Place an array into the buffer
  *
  * @param b the array to add
- * @param length size of the array (for strings: length WITHOUT '\0' char)
+ * @param length size of the array (for strings: length WITH '\0' char)
  * @param bindex the position in the packet
  * @param buffer packet buffer
  * @return new position of the last used byte in the buffer
@@ -451,6 +451,42 @@ static inline uint8_t put_array_by_index(const int8_t* b, uint8_t length, uint8_
 {
 	memcpy(buffer+bindex, b, length);
 	return length;
+}
+
+/**
+ * @brief Place a string into the buffer
+ *
+ * @param b the string to add
+ * @param maxlength size of the array (for strings: length WITHOUT '\0' char)
+ * @param bindex the position in the packet
+ * @param buffer packet buffer
+ * @return new position of the last used byte in the buffer
+ */
+static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint8_t bindex, uint8_t* buffer)
+{
+    uint16_t length = 0;
+    // Copy string into buffer, ensuring not to exceed the buffer size
+    int i;
+    for (i = 0; i < maxlength; i++)
+    {
+        length++;
+        // String characters
+        if (i < (maxlength - 1))
+        {
+            buffer[bindex+i] = b[i];
+            // Stop at null character
+            if (b[i] == '\0')
+            {
+                break;
+            }
+        }
+        // Enforce null termination at end of buffer
+        else if (i == (maxlength - 1))
+        {
+            buffer[i] = '\0';
+        }
+    }
+    return length;
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
