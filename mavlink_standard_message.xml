@@ -118,16 +118,19 @@
      <field name="gain" type="float">Camera gain</field>
    </message>
 
-   <message name="IMAGE_CAPTURED" id="71">
-     <field name="exposure" type="uint16_t">Exposure time, in microseconds</field>
-     <field name="gain" type="float">Camera gain</field>
-     <field name="timestamp" type="uint32_t">Timestamp</field>
+   <message name="IMAGE_TRIGGERED" id="71">
+     <field name="timestamp" type="uint64_t">Timestamp</field>
    </message>
 
-   <message name="IMAGE_AVAILABLE" id="72">
+   <message name="IMAGE_TRIGGER_CONTROL" id="72">
+     <field name="enable" type="uint8_t">0 to disable, 1 to enable</field>
+   </message>
+
+   <message name="IMAGE_AVAILABLE" id="73">
      <field name="cam_id" type="uint64_t">Camera id</field>
      <field name="cam_no" type="uint8_t">Camera # (starts with 0)</field>
-     <field name="timestamp" type="uint32_t">Timestamp</field>
+     <field name="timestamp" type="uint64_t">Timestamp</field>
+     <field name="valid_until" type="uint64_t">Until which timestamp this buffer will stay valid</field>
      <field name="img_seq" type="uint32_t">The image sequence number</field>
      <field name="img_buf_index" type="uint32_t">Position of the image in the buffer, starts with 0</field>
      <field name="width" type="uint16_t">Image width</field>
@@ -135,7 +138,7 @@
      <field name="depth" type="uint16_t">Image depth</field>
      <field name="channels" type="uint8_t">Image channels</field>
      <field name="key" type="int32_t">Shared memory area key</field>
-     <field name="exposure" type="uint16_t">Exposure time, in microseconds</field>
+     <field name="exposure" type="uint32_t">Exposure time, in microseconds</field>
      <field name="gain" type="float">Camera gain</field>
    </message>
 

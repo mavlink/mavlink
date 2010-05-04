@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Monday, May 3 2010, 12:41 UTC
+ *	 Generated on Tuesday, May 4 2010, 12:56 UTC
  */
 #ifndef MAVLINK_H
 #define MAVLINK_H
@@ -28,7 +28,8 @@ extern "C" {
 #include "generated/mavlink_msg_sys_status.h"
 #include "generated/mavlink_msg_aux_status.h"
 #include "generated/mavlink_msg_set_cam_shutter.h"
-#include "generated/mavlink_msg_image_captured.h"
+#include "generated/mavlink_msg_image_triggered.h"
+#include "generated/mavlink_msg_image_trigger_control.h"
 #include "generated/mavlink_msg_image_available.h"
 #include "generated/mavlink_msg_param_request_read.h"
 #include "generated/mavlink_msg_param_request_list.h"

@@ -148,19 +148,24 @@ typedef struct __mavlink_set_cam_shutter_t
 
 } mavlink_set_cam_shutter_t;
 
-typedef struct __mavlink_image_captured_t 
+typedef struct __mavlink_image_triggered_t 
 {
-	uint16_t exposure; ///< Exposure time, in microseconds
-	float gain; ///< Camera gain
-	uint32_t timestamp; ///< Timestamp
+	uint64_t timestamp; ///< Timestamp
 
-} mavlink_image_captured_t;
+} mavlink_image_triggered_t;
+
+typedef struct __mavlink_image_trigger_control_t 
+{
+	uint8_t enable; ///< 0 to disable, 1 to enable
+
+} mavlink_image_trigger_control_t;
 
 typedef struct __mavlink_image_available_t 
 {
 	uint64_t cam_id; ///< Camera id
 	uint8_t cam_no; ///< Camera # (starts with 0)
-	uint32_t timestamp; ///< Timestamp
+	uint64_t timestamp; ///< Timestamp
+	uint64_t valid_until; ///< Until which timestamp this buffer will stay valid
 	uint32_t img_seq; ///< The image sequence number
 	uint32_t img_buf_index; ///< Position of the image in the buffer, starts with 0
 	uint16_t width; ///< Image width
@@ -168,7 +173,7 @@ typedef struct __mavlink_image_available_t
 	uint16_t depth; ///< Image depth
 	uint8_t channels; ///< Image channels
 	int32_t key; ///< Shared memory area key
-	uint16_t exposure; ///< Exposure time, in microseconds
+	uint32_t exposure; ///< Exposure time, in microseconds
 	float gain; ///< Camera gain
 
 } mavlink_image_available_t;
