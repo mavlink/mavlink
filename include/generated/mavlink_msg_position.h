@@ -1,10 +1,10 @@
 // MESSAGE POSITION PACKING
 
-#define MAVLINK_MSG_ID_POSITION 91
+#define MAVLINK_MSG_ID_POSITION 92
 
 typedef struct __mavlink_position_t 
 {
-	uint64_t msec; ///< Timestamp (milliseconds)
+	uint64_t usec; ///< Timestamp (milliseconds)
 	float x; ///< X Position
 	float y; ///< Y Position
 	float z; ///< Z Position
@@ -19,7 +19,7 @@ typedef struct __mavlink_position_t
 /**
  * @brief Send a position message
  *
- * @param msec Timestamp (milliseconds)
+ * @param usec Timestamp (milliseconds)
  * @param x X Position
  * @param y Y Position
  * @param z Z Position
@@ -28,12 +28,12 @@ typedef struct __mavlink_position_t
  * @param vz Z Speed
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_position_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t msec, float x, float y, float z, float vx, float vy, float vz)
+static inline uint16_t mavlink_msg_position_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float x, float y, float z, float vx, float vy, float vz)
 {
 	msg->msgid = MAVLINK_MSG_ID_POSITION;
 	uint16_t i = 0;
 
-	i += put_uint64_t_by_index(msec, i, msg->payload); //Timestamp (milliseconds)
+	i += put_uint64_t_by_index(usec, i, msg->payload); //Timestamp (milliseconds)
 	i += put_float_by_index(x, i, msg->payload); //X Position
 	i += put_float_by_index(y, i, msg->payload); //Y Position
 	i += put_float_by_index(z, i, msg->payload); //Z Position
@@ -46,15 +46,15 @@ static inline uint16_t mavlink_msg_position_pack(uint8_t system_id, uint8_t comp
 
 static inline uint16_t mavlink_msg_position_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_position_t* position)
 {
-	return mavlink_msg_position_pack(system_id, component_id, msg, position->msec, position->x, position->y, position->z, position->vx, position->vy, position->vz);
+	return mavlink_msg_position_pack(system_id, component_id, msg, position->usec, position->x, position->y, position->z, position->vx, position->vy, position->vz);
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_position_send(mavlink_channel_t chan, uint64_t msec, float x, float y, float z, float vx, float vy, float vz)
+static inline void mavlink_msg_position_send(mavlink_channel_t chan, uint64_t usec, float x, float y, float z, float vx, float vy, float vz)
 {
 	mavlink_message_t msg;
-	mavlink_msg_position_pack(mavlink_system.sysid, mavlink_system.compid, &msg, msec, x, y, z, vx, vy, vz);
+	mavlink_msg_position_pack(mavlink_system.sysid, mavlink_system.compid, &msg, usec, x, y, z, vx, vy, vz);
 	mavlink_send_uart(chan, &msg);
 }
 
@@ -62,11 +62,11 @@ static inline void mavlink_msg_position_send(mavlink_channel_t chan, uint64_t ms
 // MESSAGE POSITION UNPACKING
 
 /**
- * @brief Get field msec from position message
+ * @brief Get field usec from position message
  *
  * @return Timestamp (milliseconds)
  */
-static inline uint64_t mavlink_msg_position_get_msec(const mavlink_message_t* msg)
+static inline uint64_t mavlink_msg_position_get_usec(const mavlink_message_t* msg)
 {
 	generic_64bit r;
 	r.b[7] = (msg->payload)[0];
@@ -172,7 +172,7 @@ static inline float mavlink_msg_position_get_vz(const mavlink_message_t* msg)
 
 static inline void mavlink_msg_position_decode(const mavlink_message_t* msg, mavlink_position_t* position)
 {
-	position->msec = mavlink_msg_position_get_msec(msg);
+	position->usec = mavlink_msg_position_get_usec(msg);
 	position->x = mavlink_msg_position_get_x(msg);
 	position->y = mavlink_msg_position_get_y(msg);
 	position->z = mavlink_msg_position_get_z(msg);

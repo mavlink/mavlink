@@ -228,9 +228,28 @@ typedef struct __mavlink_attitude_t
 
 } mavlink_attitude_t;
 
+typedef struct __mavlink_vision_position_estimate_t 
+{
+	uint64_t usec; ///< Timestamp (milliseconds)
+	float x; ///< Global X Position
+	float y; ///< Global Y Position
+	float z; ///< Global Z Position
+	float r1; ///< World-to-body rotation matrix first column, first row
+	float r2; ///< Rotation matrix second column, first row
+	float r3; ///< Rotation matrix third column, first row
+	float r4; ///< Rotation matrix first column, second row
+	float r5; ///< Rotation matrix second column, second row
+	float r6; ///< Rotation matrix third column, second row
+	float r7; ///< Rotation matrix first column, third row
+	float r8; ///< Rotation matrix second column, third row
+	float r9; ///< Rotation matrix third column, third row
+	uint8_t confidence; ///< Confidence about the position. 0 = 0%, 255 = 100%
+
+} mavlink_vision_position_estimate_t;
+
 typedef struct __mavlink_position_t 
 {
-	uint64_t msec; ///< Timestamp (milliseconds)
+	uint64_t usec; ///< Timestamp (milliseconds)
 	float x; ///< X Position
 	float y; ///< Y Position
 	float z; ///< Z Position
