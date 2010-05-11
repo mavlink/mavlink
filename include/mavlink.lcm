@@ -234,6 +234,9 @@ typedef struct __mavlink_vision_position_estimate_t
 	float x; ///< Global X Position
 	float y; ///< Global Y Position
 	float z; ///< Global Z Position
+	float roll; ///< Roll angle in rad
+	float pitch; ///< Pitch angle in rad
+	float yaw; ///< Yaw angle in rad
 	float r1; ///< World-to-body rotation matrix first column, first row
 	float r2; ///< Rotation matrix second column, first row
 	float r3; ///< Rotation matrix third column, first row
@@ -258,6 +261,18 @@ typedef struct __mavlink_position_t
 	float vz; ///< Z Speed
 
 } mavlink_position_t;
+
+typedef struct __mavlink_waypoint_t 
+{
+	int8_t name[20]; ///< Name of the Waypoint
+	int8_t id[20]; ///< ID
+	int8_t priority[20]; ///< Priority
+	int8_t x[20]; ///< x position
+	int8_t y[20]; ///< y position
+	int8_t z[20]; ///< z position
+	int8_t yaw[20]; ///< yaw orientation
+
+} mavlink_waypoint_t;
 
 typedef struct __mavlink_pattern_detected_t 
 {
