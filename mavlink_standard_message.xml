@@ -74,42 +74,8 @@
      <field name="thrust_manual" type="uint8_t">thrust auto:0, manual:1</field>
    </message>
 
-   <message name="RAW_IMU" id="101">
-     <field name="msec"  type="uint64_t">Timestamp (milliseconds)</field>
-     <field name="xacc"  type="int16_t">X acceleration (mg raw)</field>
-     <field name="yacc"  type="int16_t">Y acceleration (mg raw)</field>
-     <field name="zacc"  type="int16_t">Z acceleration (mg raw)</field>
-     <field name="xgyro" type="uint16_t">Angular speed around X axis (adc units)</field>
-     <field name="ygyro" type="uint16_t">Angular speed around Y axis (adc units)</field>
-     <field name="zgyro" type="uint16_t">Angular speed around Z axis (adc units)</field>
-     <field name="xmag"  type="int16_t">X Magnetic field (milli tesla)</field>
-     <field name="ymag"  type="int16_t">Y Magnetic field (milli tesla)</field>
-     <field name="zmag"  type="int16_t">Z Magnetic field (milli tesla)</field>
-   </message>
 
-   <message name="RAW_AUX" id="102">
-     <field name="adc1" type="uint16_t">ADC1 (J405 ADC3, LPC2148 AD0.6)</field>
-     <field name="adc2" type="uint16_t">ADC2 (J405 ADC5, LPC2148 AD0.2)</field>
-     <field name="adc3" type="uint16_t">ADC3 (J405 ADC6, LPC2148 AD0.1)</field>
-     <field name="adc4" type="uint16_t">ADC4 (J405 ADC7, LPC2148 AD1.3)</field>
-     <field name="vbat" type="uint16_t">Battery voltage</field>
-     <field name="temp"  type="int16_t">Temperature (degrees celcius)</field>
-     <field name="baro"  type="int16_t">Barometric pressure (hecto Pascal)</field>
-   </message>
-
-   <message name="SYS_STATUS" id="103">
-     <field name="mode" type="uint8_t">System mode</field>
-     <field name="status" type="uint8_t">System status flag</field>
-     <field name="vbat" type="uint16_t">Battery voltage</field>
-     <field name="motor_block" type="uint8_t">Motor block status flag</field>
-     <field name="packet_drop" type="uint16_t">Dropped packets</field>
-   </message>
-
-   <message name="AUX_STATUS" id="104">
-     <field name="load" type="uint16_t">Maximum usage in percent of the mainloop time, should be always below 100</field>
-   </message>
-
-   <message name="SET_CAM_SHUTTER" id="70">
+ <message name="SET_CAM_SHUTTER" id="70">
      <field name="cam_no" type="uint8_t">Camera id</field>
      <field name="cam_mode" type="uint8_t">Camera mode: 0 = auto, 1 = manual</field>
      <field name="trigger_pin" type="uint8_t">Trigger pin, 0-3 for PtGrey FireFly</field>
@@ -211,15 +177,53 @@
    </message>
 
 
-   <message name="WAYPOINT" id="92">
+   <message name="WAYPOINT" id="93">
      <field name="name" type="array[20]">Name of the Waypoint</field>
-     <field name="id" type="array[20]">ID</field>
-     <field name="priority" type="array[20]">Priority</field>
-     <field name="x" type="array[20]">x position</field>
-     <field name="y" type="array[20]">y position</field>
-     <field name="z" type="array[20]">z position</field>
-     <field name="yaw" type="array[20]">yaw orientation</field>
+     <field name="id" type="uint16_t">ID</field>
+     <field name="priority" type="uint16_t">Priority</field>
+     <field name="x" type="float">x position</field>
+     <field name="y" type="float">y position</field>
+     <field name="z" type="float">z position</field>
+     <field name="yaw" type="float">yaw orientation</field>
+     <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
    </message>
+
+   <message name="RAW_IMU" id="101">
+     <field name="msec"  type="uint64_t">Timestamp (milliseconds)</field>
+     <field name="xacc"  type="int16_t">X acceleration (mg raw)</field>
+     <field name="yacc"  type="int16_t">Y acceleration (mg raw)</field>
+     <field name="zacc"  type="int16_t">Z acceleration (mg raw)</field>
+     <field name="xgyro" type="uint16_t">Angular speed around X axis (adc units)</field>
+     <field name="ygyro" type="uint16_t">Angular speed around Y axis (adc units)</field>
+     <field name="zgyro" type="uint16_t">Angular speed around Z axis (adc units)</field>
+     <field name="xmag"  type="int16_t">X Magnetic field (milli tesla)</field>
+     <field name="ymag"  type="int16_t">Y Magnetic field (milli tesla)</field>
+     <field name="zmag"  type="int16_t">Z Magnetic field (milli tesla)</field>
+   </message>
+
+   <message name="RAW_AUX" id="102">
+     <field name="adc1" type="uint16_t">ADC1 (J405 ADC3, LPC2148 AD0.6)</field>
+     <field name="adc2" type="uint16_t">ADC2 (J405 ADC5, LPC2148 AD0.2)</field>
+     <field name="adc3" type="uint16_t">ADC3 (J405 ADC6, LPC2148 AD0.1)</field>
+     <field name="adc4" type="uint16_t">ADC4 (J405 ADC7, LPC2148 AD1.3)</field>
+     <field name="vbat" type="uint16_t">Battery voltage</field>
+     <field name="temp"  type="int16_t">Temperature (degrees celcius)</field>
+     <field name="baro"  type="int16_t">Barometric pressure (hecto Pascal)</field>
+   </message>
+
+   <message name="SYS_STATUS" id="103">
+     <field name="mode" type="uint8_t">System mode</field>
+     <field name="status" type="uint8_t">System status flag</field>
+     <field name="vbat" type="uint16_t">Battery voltage</field>
+     <field name="motor_block" type="uint8_t">Motor block status flag</field>
+     <field name="packet_drop" type="uint16_t">Dropped packets</field>
+   </message>
+
+   <message name="AUX_STATUS" id="104">
+     <field name="load" type="uint16_t">Maximum usage in percent of the mainloop time, should be always below 100</field>
+   </message>
+
+  
 
 
   <message name="PATTERN_DETECTED" id= "200">
