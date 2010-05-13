@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Monday, May 10 2010, 17:03 UTC
+ *	 Generated on Thursday, May 13 2010, 13:59 UTC
  */
 #ifndef MAVLINK_H
 #define MAVLINK_H
@@ -23,10 +23,6 @@ extern "C" {
 #include "generated/mavlink_msg_request_static_calibration.h"
 #include "generated/mavlink_msg_manual_control.h"
 #include "generated/mavlink_msg_attitude_control.h"
-#include "generated/mavlink_msg_raw_imu.h"
-#include "generated/mavlink_msg_raw_aux.h"
-#include "generated/mavlink_msg_sys_status.h"
-#include "generated/mavlink_msg_aux_status.h"
 #include "generated/mavlink_msg_set_cam_shutter.h"
 #include "generated/mavlink_msg_image_triggered.h"
 #include "generated/mavlink_msg_image_trigger_control.h"
@@ -40,6 +36,11 @@ extern "C" {
 #include "generated/mavlink_msg_vision_position_estimate.h"
 #include "generated/mavlink_msg_position.h"
 #include "generated/mavlink_msg_waypoint.h"
+#include "generated/mavlink_msg_marker.h"
+#include "generated/mavlink_msg_raw_imu.h"
+#include "generated/mavlink_msg_raw_aux.h"
+#include "generated/mavlink_msg_sys_status.h"
+#include "generated/mavlink_msg_aux_status.h"
 #include "generated/mavlink_msg_pattern_detected.h"
 #include "generated/mavlink_msg_statustext.h"
 #include "generated/mavlink_msg_debug.h"
