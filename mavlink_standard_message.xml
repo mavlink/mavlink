@@ -31,7 +31,7 @@
   <message name="REQUEST_DATA_STREAM" id="23">
      <field name="target_system" type="uint8_t">The target requested to send the message stream.</field>
      <field name="target_component" type="uint8_t">The target requested to send the message stream.</field>
-     <field name="req_stream_id" type="uint8_t">The ID of the requested stream</field>
+     <field name="req_stream_id" type="uint8_t">The ID of the requested message type</field>
      <field name="req_message_rate" type="uint16_t">The requested interval between two messages of this type</field>
      <field name="start_stop" type="uint8_t">1 to start sending, 0 to stop sending.</field>
    </message>
@@ -178,7 +178,6 @@
 
 
    <message name="WAYPOINT" id="93">
-     <field name="name" type="array[20]">Name of the Waypoint</field>
      <field name="id" type="uint16_t">ID</field>
      <field name="priority" type="uint16_t">Priority</field>
      <field name="x" type="float">x position</field>
@@ -243,6 +242,15 @@
      <field name="y" type="float">y position</field>
      <field name="z" type="float">z position</field>
      <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
+   </message>
+   <message name="MARKER" id="100">
+     <field name="id" type="uint16_t">ID</field>
+     <field name="x" type="float">x position</field>
+     <field name="y" type="float">y position</field>
+     <field name="z" type="float">z position</field>
+     <field name="roll" type="float">roll orientation</field>
+     <field name="pitch" type="float">pitch orientation</field>
+     <field name="yaw" type="float">yaw orientation</field>
    </message>
 
    <message name="RAW_IMU" id="101">

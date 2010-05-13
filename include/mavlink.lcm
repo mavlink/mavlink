@@ -42,7 +42,7 @@ typedef struct __mavlink_request_data_stream_t
 {
 	uint8_t target_system; ///< The target requested to send the message stream.
 	uint8_t target_component; ///< The target requested to send the message stream.
-	uint8_t req_stream_id; ///< The ID of the requested stream
+	uint8_t req_stream_id; ///< The ID of the requested message type
 	uint16_t req_message_rate; ///< The requested interval between two messages of this type
 	uint8_t start_stop; ///< 1 to start sending, 0 to stop sending.
 
@@ -221,7 +221,6 @@ typedef struct __mavlink_position_t
 
 typedef struct __mavlink_waypoint_t 
 {
-	int8_t name[20]; ///< Name of the Waypoint
 	uint16_t id; ///< ID
 	uint16_t priority; ///< Priority
 	float x; ///< x position
@@ -298,6 +297,18 @@ typedef struct __mavlink_position_control_setpoint_t
 	float yaw; ///< yaw orientation in radians, 0 = NORTH
 
 } mavlink_position_control_setpoint_t;
+
+typedef struct __mavlink_marker_t 
+{
+	uint16_t id; ///< ID
+	float x; ///< x position
+	float y; ///< y position
+	float z; ///< z position
+	float roll; ///< roll orientation
+	float pitch; ///< pitch orientation
+	float yaw; ///< yaw orientation
+
+} mavlink_marker_t;
 
 typedef struct __mavlink_raw_imu_t 
 {
