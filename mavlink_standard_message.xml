@@ -184,8 +184,65 @@
      <field name="x" type="float">x position</field>
      <field name="y" type="float">y position</field>
      <field name="z" type="float">z position</field>
-     <field name="yaw" type="float">yaw orientation</field>
+     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
      <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
+   </message>
+
+   <message name="WAYPOINT_SET" id="94">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="name" type="array[20]">Name of the Waypoint</field>
+     <field name="id" type="uint16_t">ID</field>
+     <field name="priority" type="uint16_t">Priority</field>
+     <field name="x" type="float">x position</field>
+     <field name="y" type="float">y position</field>
+     <field name="z" type="float">z position</field>
+     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
+     <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
+   </message>
+
+  <message name="WAYPOINT_SET_ACTIVE" id="95">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="id" type="uint16_t">ID</field>
+   </message>
+
+  <message name="WAYPOINT_REQUEST_LIST" id="96">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+   </message>
+
+   <message name="WAYPOINT_REACHED" id="97">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="name" type="array[20]">Name of the Waypoint</field>
+     <field name="id" type="uint16_t">ID</field>
+     <field name="priority" type="uint16_t">Priority</field>
+     <field name="x" type="float">x position</field>
+     <field name="y" type="float">y position</field>
+     <field name="z" type="float">z position</field>
+     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
+     <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
+   </message>
+
+   <!-- Message sent to the MAV to set a new position as reference for the controller -->
+   <message name="POSITION_CONTROL_SETPOINT_SET" id="98">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="id" type="uint16_t">ID of waypoint, 0 for plain position</field>
+     <field name="x" type="float">x position</field>
+     <field name="y" type="float">y position</field>
+     <field name="z" type="float">z position</field>
+     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
+   </message>
+
+  <!-- Message sent by the MAV once it sets a new position as reference in the controller -->
+   <message name="POSITION_CONTROL_SETPOINT" id="99">
+     <field name="id" type="uint16_t">ID of waypoint, 0 for plain position</field>
+     <field name="x" type="float">x position</field>
+     <field name="y" type="float">y position</field>
+     <field name="z" type="float">z position</field>
+     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
    </message>
 
    <message name="RAW_IMU" id="101">
