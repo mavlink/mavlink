@@ -5,7 +5,7 @@
 typedef struct __mavlink_waypoint_t 
 {
 	uint16_t id; ///< ID
-	uint16_t priority; ///< Priority
+	uint16_t priority; ///< priority
 	float x; ///< x position
 	float y; ///< y position
 	float z; ///< z position
@@ -20,7 +20,7 @@ typedef struct __mavlink_waypoint_t
  * @brief Send a waypoint message
  *
  * @param id ID
- * @param priority Priority
+ * @param priority priority
  * @param x x position
  * @param y y position
  * @param z z position
@@ -34,7 +34,7 @@ static inline uint16_t mavlink_msg_waypoint_pack(uint8_t system_id, uint8_t comp
 	uint16_t i = 0;
 
 	i += put_uint16_t_by_index(id, i, msg->payload); //ID
-	i += put_uint16_t_by_index(priority, i, msg->payload); //Priority
+	i += put_uint16_t_by_index(priority, i, msg->payload); //priority
 	i += put_float_by_index(x, i, msg->payload); //x position
 	i += put_float_by_index(y, i, msg->payload); //y position
 	i += put_float_by_index(z, i, msg->payload); //z position
@@ -77,7 +77,7 @@ static inline uint16_t mavlink_msg_waypoint_get_id(const mavlink_message_t* msg)
 /**
  * @brief Get field priority from waypoint message
  *
- * @return Priority
+ * @return priority
  */
 static inline uint16_t mavlink_msg_waypoint_get_priority(const mavlink_message_t* msg)
 {

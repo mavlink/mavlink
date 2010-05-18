@@ -1,6 +1,6 @@
 // MESSAGE SYS_STATUS PACKING
 
-#define MAVLINK_MSG_ID_SYS_STATUS 103
+#define MAVLINK_MSG_ID_SYS_STATUS 140
 
 typedef struct __mavlink_sys_status_t 
 {

@@ -1,6 +1,6 @@
 // MESSAGE RAW_AUX PACKING
 
-#define MAVLINK_MSG_ID_RAW_AUX 102
+#define MAVLINK_MSG_ID_RAW_AUX 131
 
 typedef struct __mavlink_raw_aux_t 
 {
