@@ -6,7 +6,7 @@ typedef struct __mavlink_request_data_stream_t
 {
 	uint8_t target_system; ///< The target requested to send the message stream.
 	uint8_t target_component; ///< The target requested to send the message stream.
-	uint8_t req_stream_id; ///< The ID of the requested stream
+	uint8_t req_stream_id; ///< The ID of the requested message type
 	uint16_t req_message_rate; ///< The requested interval between two messages of this type
 	uint8_t start_stop; ///< 1 to start sending, 0 to stop sending.
 
@@ -19,7 +19,7 @@ typedef struct __mavlink_request_data_stream_t
  *
  * @param target_system The target requested to send the message stream.
  * @param target_component The target requested to send the message stream.
- * @param req_stream_id The ID of the requested stream
+ * @param req_stream_id The ID of the requested message type
  * @param req_message_rate The requested interval between two messages of this type
  * @param start_stop 1 to start sending, 0 to stop sending.
  * @return length of the message in bytes (excluding serial stream start sign)
@@ -31,7 +31,7 @@ static inline uint16_t mavlink_msg_request_data_stream_pack(uint8_t system_id, u
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); //The target requested to send the message stream.
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //The target requested to send the message stream.
-	i += put_uint8_t_by_index(req_stream_id, i, msg->payload); //The ID of the requested stream
+	i += put_uint8_t_by_index(req_stream_id, i, msg->payload); //The ID of the requested message type
 	i += put_uint16_t_by_index(req_message_rate, i, msg->payload); //The requested interval between two messages of this type
 	i += put_uint8_t_by_index(start_stop, i, msg->payload); //1 to start sending, 0 to stop sending.
 
@@ -78,7 +78,7 @@ static inline uint8_t mavlink_msg_request_data_stream_get_target_component(const
 /**
  * @brief Get field req_stream_id from request_data_stream message
  *
- * @return The ID of the requested stream
+ * @return The ID of the requested message type
  */
 static inline uint8_t mavlink_msg_request_data_stream_get_req_stream_id(const mavlink_message_t* msg)
 {

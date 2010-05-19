@@ -5,11 +5,11 @@
 typedef struct __mavlink_waypoint_t 
 {
 	uint16_t id; ///< ID
-	uint16_t priority; ///< Priority
+	uint16_t priority; ///< priority
 	float x; ///< x position
 	float y; ///< y position
 	float z; ///< z position
-	float yaw; ///< yaw orientation
+	float yaw; ///< yaw orientation in radians, 0 = NORTH
 	uint16_t autocontinue; ///< autocontinue to next wp
 
 } mavlink_waypoint_t;
@@ -20,11 +20,11 @@ typedef struct __mavlink_waypoint_t
  * @brief Send a waypoint message
  *
  * @param id ID
- * @param priority Priority
+ * @param priority priority
  * @param x x position
  * @param y y position
  * @param z z position
- * @param yaw yaw orientation
+ * @param yaw yaw orientation in radians, 0 = NORTH
  * @param autocontinue autocontinue to next wp
  * @return length of the message in bytes (excluding serial stream start sign)
  */
@@ -34,11 +34,11 @@ static inline uint16_t mavlink_msg_waypoint_pack(uint8_t system_id, uint8_t comp
 	uint16_t i = 0;
 
 	i += put_uint16_t_by_index(id, i, msg->payload); //ID
-	i += put_uint16_t_by_index(priority, i, msg->payload); //Priority
+	i += put_uint16_t_by_index(priority, i, msg->payload); //priority
 	i += put_float_by_index(x, i, msg->payload); //x position
 	i += put_float_by_index(y, i, msg->payload); //y position
 	i += put_float_by_index(z, i, msg->payload); //z position
-	i += put_float_by_index(yaw, i, msg->payload); //yaw orientation
+	i += put_float_by_index(yaw, i, msg->payload); //yaw orientation in radians, 0 = NORTH
 	i += put_uint16_t_by_index(autocontinue, i, msg->payload); //autocontinue to next wp
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
@@ -77,7 +77,7 @@ static inline uint16_t mavlink_msg_waypoint_get_id(const mavlink_message_t* msg)
 /**
  * @brief Get field priority from waypoint message
  *
- * @return Priority
+ * @return priority
  */
 static inline uint16_t mavlink_msg_waypoint_get_priority(const mavlink_message_t* msg)
 {
@@ -135,7 +135,7 @@ static inline float mavlink_msg_waypoint_get_z(const mavlink_message_t* msg)
 /**
  * @brief Get field yaw from waypoint message
  *
- * @return yaw orientation
+ * @return yaw orientation in radians, 0 = NORTH
  */
 static inline float mavlink_msg_waypoint_get_yaw(const mavlink_message_t* msg)
 {
