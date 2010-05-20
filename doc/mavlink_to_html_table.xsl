@@ -4,6 +4,13 @@
 
 <xsl:template match="/">
    <table border="1" cellspacing="10" cellpadding="5" class="sortable">
+   <thead>
+   <tr>
+     <th colspan="2">Packet Name</th>
+     <th>Packet ID</th>
+   </tr>
+   </thead>
+   <tbody>
 <xsl:for-each select="messages/message">
    <tr>
    <th colspan="2" class="mavlink_message_name"><xsl:value-of select="@name" /></th>
@@ -16,6 +23,7 @@
    </tr>
    <xsl:apply-templates />
 </xsl:for-each>
+  </tbody>
   </table>
 </xsl:template>
 
