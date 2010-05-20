@@ -15,7 +15,7 @@
    <thead>
    <tr>
      <th class="mavlink_field_header">Field Name</th>
-     <th class="mavlink_field_header">Field Type</th>
+     <th class="mavlink_field_header">Type</th>
      <th class="mavlink_field_header">Description</th>
    </tr>
    </thead>
