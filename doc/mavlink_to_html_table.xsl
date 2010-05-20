@@ -3,7 +3,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:template match="/">
-   <table border="1" cellspacing="10" cellpadding="5" class="mavlink">
+   <table border="1" cellspacing="10" cellpadding="5" class="sortable">
 <xsl:for-each select="messages/message">
    <tr>
    <th colspan="2" class="mavlink_message_name"><xsl:value-of select="@name" /></th>
