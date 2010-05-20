@@ -7,7 +7,7 @@
 <xsl:for-each select="messages/message">
 
    <h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3>
-     <i><xsl:value-of select="//message" /><br /></i>
+     <i>Comment on message content<br /></i>
 
    <table border="1" cellspacing="10" cellpadding="5" class="sortable">
    <thead>
@@ -18,11 +18,10 @@
    </tr>
    </thead>
    <tbody>
-   <tr>
    <xsl:apply-templates />
-</xsl:for-each>
   </tbody>
   </table>
+</xsl:for-each>
 </xsl:template>
 
 <xsl:template match="//field">
