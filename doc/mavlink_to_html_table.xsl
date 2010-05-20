@@ -8,9 +8,6 @@
 </xsl:template>
 
 <xsl:template match="//message">
-   <h4>MAVLink Messages</h4>
-<xsl:for-each select="messages/message">
-
    <h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3>
      <i>Comment on message content<br /></i>
 
@@ -26,7 +23,6 @@
    <xsl:apply-templates />
   </tbody>
   </table>
-</xsl:for-each>
 </xsl:template>
 
 <xsl:template match="//field">
