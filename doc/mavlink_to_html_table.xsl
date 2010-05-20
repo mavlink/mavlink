@@ -3,24 +3,22 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:template match="/">
+   <h4>MAVLink Messages</h4>
+<xsl:for-each select="messages/message">
+
+   <h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3>
+     <i><xsl:value-of select="//message" /><br /></i>
+
    <table border="1" cellspacing="10" cellpadding="5" class="sortable">
    <thead>
    <tr>
-     <th colspan="2">Packet Name</th>
-     <th>Packet ID</th>
+     <th class="mavlink_field_header">Field Name</th>
+     <th class="mavlink_field_header">Field Type</th>
+     <th class="mavlink_field_header">Description</th>
    </tr>
    </thead>
    <tbody>
-<xsl:for-each select="messages/message">
    <tr>
-   <th colspan="2" class="mavlink_message_name"><xsl:value-of select="@name" /></th>
-   <th class="mavlink_message_id"><xsl:value-of select="@id" /></th>
-   </tr>
-   <tr>
-   <th class="mavlink_field">field</th>
-   <th class="mavlink_type">data type</th>
-   <th class="mavlink_comment">description</th>
-   </tr>
    <xsl:apply-templates />
 </xsl:for-each>
   </tbody>
