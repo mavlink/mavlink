@@ -9,7 +9,7 @@
 
 <xsl:template match="//message">
    <h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3>
-     <i><xsl:value-of select="messages/message" /><br /><br /></i>
+     <!--<i><xsl:value-of select="messages/message" /><br /><br /></i>-->
 
    <table class="sortable">
    <thead>
@@ -29,7 +29,7 @@
    <tr class="mavlink_field">
    <td class="mavlink_name"><xsl:value-of select="@name" /></td>
    <td class="mavlink_type"><xsl:value-of select="@type" /></td>
-   <td class="mavlink_comment"><xsl:value-of select="messages/message/field" /></td>
+   <td class="mavlink_comment"><xsl:value-of select="//messages/message/field" /></td>
    </tr>
 </xsl:template>
 
