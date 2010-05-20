@@ -4,6 +4,11 @@
 
 <xsl:template match="/">
    <h4>MAVLink Messages</h4>
+   <xsl:apply-templates />
+</xsl:template>
+
+<xsl:template match="//message">
+   <h4>MAVLink Messages</h4>
 <xsl:for-each select="messages/message">
 
    <h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3>
