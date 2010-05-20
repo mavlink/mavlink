@@ -9,7 +9,7 @@
 
 <xsl:template match="//message">
    <h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3>
-     <i>Comment on message content<br /></i>
+     <i><xsl:value-of select="//message" /><br /><br /></i>
 
    <table border="1" cellspacing="10" cellpadding="5" class="sortable">
    <thead>
