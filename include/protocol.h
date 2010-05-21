@@ -60,6 +60,15 @@ union checksum_ {
 	uint8_t c[2];
 };
 
+union __mavlink_bitfield {
+	uint8_t uint8;
+	int8_t int8;
+	uint16_t uint16;
+	int16_t int16;
+	uint32_t uint32;
+	int32_t int32;
+}
+
 
 static inline void mavlink_start_checksum(mavlink_message_t* msg)
 {
@@ -487,6 +496,21 @@ static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint
         }
     }
     return length;
+}
+
+/**
+ * @brief Put a bitfield of length n (up to 255 * 8 bit) into the buffer
+ *
+ * @param b the value to add, will be encoded in the bitfield
+ * @param maxlength size of the array (for strings: length WITHOUT '\0' char)
+ * @param bindex the position in the packet
+ * @param buffer packet buffer
+ * @return new position of the last used byte in the buffer
+ */
+static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t maxlength, uint8_t bindex, uint8_t bitindex, uint8_t mask, uint8_t* buffer)
+{
+	uint16_t length = 0;
+	
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
