@@ -296,8 +296,64 @@
      <field name="load" type="uint16_t">Maximum usage in percent of the mainloop time, should be always below 100</field>
    </message>
 
-  
+  <message name="WATCHDOG_HEARTBEAT" id="160">
+    <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
+    <field name="process_count" type="uint16_t">Number of processes</field>
+  </message>
 
+  <message name="WATCHDOG_PROCESS_INFO" id="161">
+    <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
+    <field name="process_id" type="uint16_t">Process ID</field>
+    <field name="name" type="array[100]">Process name</field>
+    <field name="arguments" type="array[147]">Process arguments</field>
+    <field name="timeout" type="float">Timeout (seconds)</field>
+  </message>
+
+  <message name="WATCHDOG_PROCESS_STATUS" id="162">
+    <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
+    <field name="process_id" type="uint16_t">Process ID</field>
+    <field name="state" type="uint8_t">Is running / finished / suspended / crashed</field>
+    <field name="muted" type="uint8_t">Is muted</field>
+    <field name="pid" type="int32_t">PID</field>
+    <field name="crashes" type="uint16_t">Number of crashes</field>
+  </message>
+
+  <message name="WATCHDOG_REQUEST_PROCESS_INFO" id="163">
+    <field name="target_system_id" type="uint8_t">Target system ID</field>
+    <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
+    <field name="process_id" type="uint16_t">Process ID</field>
+  </message>
+
+  <message name="WATCHDOG_REQUEST_PROCESS_STATUS" id="164">
+    <field name="target_system_id" type="uint8_t">Target system ID</field>
+    <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
+    <field name="process_id" type="uint16_t">Process ID</field>
+  </message>
+
+  <message name="WATCHDOG_PROCESS_START" id="165">
+    <field name="target_system_id" type="uint8_t">Target system ID</field>
+    <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
+    <field name="process_id" type="uint16_t">Process ID</field>
+  </message>
+
+  <message name="WATCHDOG_PROCESS_RESTART" id="166">
+    <field name="target_system_id" type="uint8_t">Target system ID</field>
+    <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
+    <field name="process_id" type="uint16_t">Process ID</field>
+  </message>
+
+  <message name="WATCHDOG_PROCESS_STOP" id="167">
+    <field name="target_system_id" type="uint8_t">Target system ID</field>
+    <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
+    <field name="process_id" type="uint16_t">Process ID</field>
+  </message>
+
+  <message name="WATCHDOG_PROCESS_MUTE" id="168">
+    <field name="target_system_id" type="uint8_t">Target system ID</field>
+    <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
+    <field name="process_id" type="uint16_t">Process ID</field>
+    <field name="mute" type="uint8_t">Mute or unmute</field>
+  </message>
 
   <message name="PATTERN_DETECTED" id= "200">
     <field name="confidence" type="float">Confidence of detection</field>
