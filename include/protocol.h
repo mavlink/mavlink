@@ -67,7 +67,7 @@ union __mavlink_bitfield {
 	int16_t int16;
 	uint32_t uint32;
 	int32_t int32;
-}
+};
 
 
 static inline void mavlink_start_checksum(mavlink_message_t* msg)
@@ -476,7 +476,7 @@ static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint
     uint16_t length = 0;
     // Copy string into buffer, ensuring not to exceed the buffer size
     int i;
-    for (i = 0; i < maxlength; i++)
+    for (i = 1; i < maxlength; i++)
     {
         length++;
         // String characters
@@ -495,22 +495,47 @@ static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint
             buffer[i] = '\0';
         }
     }
+    // Write length into first field
+    put_uint8_t_by_index(length, bindex, buffer);
     return length;
 }
 
 /**
- * @brief Put a bitfield of length n (up to 255 * 8 bit) into the buffer
+ * @brief Put a bitfield of length 1-32 bit into the buffer
  *
  * @param b the value to add, will be encoded in the bitfield
- * @param maxlength size of the array (for strings: length WITHOUT '\0' char)
+ * @param bits number of bits to use to encode b, e.g. 1 for boolean, 2, 3, etc.
  * @param bindex the position in the packet
  * @param buffer packet buffer
  * @return new position of the last used byte in the buffer
  */
-static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t maxlength, uint8_t bindex, uint8_t bitindex, uint8_t mask, uint8_t* buffer)
+static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t bindex, uint8_t bit_index, uint8_t* r_bit_index, uint8_t* buffer)
 {
 	uint16_t length = 0;
+	uint16_t bits_remain = bits;
+	// Transform number into network order
+	generic_32bit bin;
+	generic_32bit bout;
+	bout.b[0] = bin.b[3];
+	bout.b[1] = bin.b[2];
+	bout.b[2] = bin.b[1];
+	bout.b[3] = bin.b[0];
 	
+	// Mask and shift bytes
+	uint8_t i_bit_index = bit_index;
+	uint8_t i_byte_index = bindex;
+	if (bit_index > 0)
+	{
+		// If bits were available at start, they were available
+		// in the byte before the current index
+		i_byte_index--;
+	}
+	while (bits_remain > 0)
+	{
+
+	}
+	*r_bit_index = i_bit_index;
+	return length;
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS

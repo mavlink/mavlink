@@ -3,6 +3,13 @@
 
 #include "inttypes.h"
 
+enum MAV_CLASS {
+	MAV_CLASS_GENERIC = 0,
+			MAV_CLASS_PIXHAWK = 1,
+			MAV_CLASS_SLUGS = 2,
+			MAV_CLASS_ARDUPILOT = 3
+};
+
 enum MAV_ACTION {
 	MAV_ACTION_HOLD = 0,
 			MAV_ACTION_MOTORS_START = 1,
