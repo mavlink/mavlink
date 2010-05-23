@@ -1,36 +1,12 @@
 <?xml version="1.0"?>
+<include>../mavlink_standard_messages.xml</include>
 <messages>
- 
-   <message name="HEARTBEAT" id="0">
-     The heartbeat message just shows that a system is present.
-     <field name="type" type="uint8_t">Type of the MAV (quadrotor, helicopter, etc.)</field>
-   </message>
- 
-   <message name="BOOT" id="1">
-     <field name="version" type="uint32_t">The onboard software version</field>
-   </message>
-
-   <message name="SYSTEM_TIME" id="2">
-     The system time is the time of the master clock, typically the computer clock of the main onboard computer.
-     <field name="time_usec" type="uint64_t">Timestamp of the master clock in microseconds since UNIX epoch.</field>
-   </message>
-
-   <message name="ACTION" id="20">
-     <field name="target" type="uint8_t">The system executing the action</field>
-     <field name="action" type="uint8_t">The action id</field>
-   </message>
-
-   <message name="SET_MODE" id="21">
-     <field name="target" type="uint8_t">The system setting the mode</field>
-     <field name="mode" type="uint8_t">The new mode</field>
-   </message>
-
-   <message name="SET_ALTITUDE" id="22">
+   <message name="SET_ALTITUDE" id="50">
      <field name="target" type="uint8_t">The system setting the altitude</field>
      <field name="mode" type="uint32_t">The new altitude in meters</field>
    </message>
 
-  <message name="REQUEST_DATA_STREAM" id="23">
+  <message name="REQUEST_DATA_STREAM" id="51">
      <field name="target_system" type="uint8_t">The target requested to send the message stream.</field>
      <field name="target_component" type="uint8_t">The target requested to send the message stream.</field>
      <field name="req_stream_id" type="uint8_t">The ID of the requested message type</field>
@@ -38,7 +14,7 @@
      <field name="start_stop" type="uint8_t">1 to start sending, 0 to stop sending.</field>
    </message>
 
-   <message name="REQUEST_DYNAMIC_GYRO_CALIBRATION" id="24">
+   <message name="REQUEST_DYNAMIC_GYRO_CALIBRATION" id="52">
      <field name="target_system" type="uint8_t">The system which should auto-calibrate</field>
 <field name="target_component" type="uint8_t">The system component which should auto-calibrate</field>
      <field name="mode" type="float">The current ground-truth rpm</field>
@@ -46,13 +22,13 @@
       <field name="time" type="uint16_t">The time to average over in ms</field>
    </message>
 
-   <message name="REQUEST_STATIC_CALIBRATION" id="25">
+   <message name="REQUEST_STATIC_CALIBRATION" id="53">
      <field name="target_system" type="uint8_t">The system which should auto-calibrate</field>
 <field name="target_component" type="uint8_t">The system component which should auto-calibrate</field>
       <field name="time" type="uint16_t">The time to average over in ms</field>
    </message>
 
-   <message name="MANUAL_CONTROL" id="50">
+   <message name="MANUAL_CONTROL" id="54">
      <field name="target" type="uint8_t">The system to be controlled</field>
      <field name="roll" type="float">roll</field>
      <field name="pitch" type="float">pitch</field>
@@ -64,7 +40,7 @@
      <field name="thrust_manual" type="uint8_t">thrust auto:0, manual:1</field>
    </message>
 
-  <message name="ATTITUDE_CONTROL" id="51">
+  <message name="ATTITUDE_CONTROL" id="55">
      <field name="target" type="uint8_t">The system to be controlled</field>
      <field name="roll" type="float">roll</field>
      <field name="pitch" type="float">pitch</field>
@@ -111,44 +87,6 @@
      <field name="gain" type="float">Camera gain</field>
    </message>
 
-   <message name="PARAM_REQUEST_READ" id="80">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="param_id" type="array[15]">Onboard parameter id</field>
-   </message>
-
-   <message name="PARAM_REQUEST_LIST" id="81">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-   </message>
-
-   <message name="PARAM_VALUE" id="82">
-     <field name="param_id" type="array[15]">Onboard parameter id</field>
-     <field name="param_value" type="float">Onboard parameter value</field>
-   </message>
-
-   <message name="PARAM_SET" id="83">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="param_id" type="array[15]">Onboard parameter id</field>
-     <field name="param_value" type="float">Onboard parameter value</field>
-   </message>
-
-   <message name="PARAM_WRITE_STORAGE" id="84">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-   </message>
-
-   <message name="ATTITUDE" id="90">
-     <field name="msec"  type="uint64_t">Timestamp (milliseconds)</field>
-     <field name="roll"  type="float">Roll angle (rad)</field>
-     <field name="pitch" type="float">Pitch angle (rad)</field>
-     <field name="yaw"   type="float">Yaw angle (rad)</field>
-     <field name="rollspeed"  type="float">Roll angular speed (rad/s)</field>
-     <field name="pitchspeed" type="float">Pitch angular speed (rad/s)</field>
-     <field name="yawspeed"   type="float">Yaw angular speed (rad/s)</field>
-   </message>
-
    <message name="VISION_POSITION_ESTIMATE" id="91">
      <field name="usec" type="uint64_t">Timestamp (milliseconds)</field>
      <field name="x"   type="float">Global X Position</field>
@@ -168,17 +106,6 @@
      <field name="r9"  type="float">Rotation matrix third column, third row</field>
      <field name="confidence" type="uint8_t">Confidence about the position. 0 = 0%, 255 = 100%</field>
    </message>
-
-   <message name="POSITION" id="92">
-     <field name="usec" type="uint64_t">Timestamp (milliseconds)</field>
-     <field name="x"   type="float">X Position</field>
-     <field name="y"   type="float">Y Position</field>
-     <field name="z"   type="float">Z Position</field>
-     <field name="vx"  type="float">X Speed</field>
-     <field name="vy"  type="float">Y Speed</field>
-     <field name="vz"  type="float">Z Speed</field>
-   </message>
-
 
    <message name="WAYPOINT" id="93">
      <field name="id" type="uint16_t">ID</field>
@@ -329,17 +256,6 @@
     <field name="confidence" type="float">Confidence of detection</field>
     <field name="file" type="array[100]">Pattern file name</field>
     <field name="detected" type="uint8_t">Accepted as true detection, 0 no, 1 yes</field>
-   </message>
-
-  <message name="STATUSTEXT" id= "254">
-    <field name="severity" type="uint8_t">Severity of status, 0 = info message, 255 = critical fault</field>
-    <field name="text" type="array[50]">Status text message, without null termination character</field>
-   </message>
-
-
-<message name="DEBUG" id="255">
-     <field name="ind"  type="uint8_t">index of debug variable</field>
-     <field name="value"  type="float">DEBUG value</field>
    </message>
 
 </messages>

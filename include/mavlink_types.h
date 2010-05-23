@@ -75,6 +75,14 @@ enum MAV_TYPE
 			OCU = 6
 };
 
+enum MAV_AUTOPILOT_TYPE
+{
+    MAV_AUTOPILOT_GENERIC = 0,
+    MAV_AUTOPILOT_PIXHAWK = 1,
+    MAV_AUTOPILOT_SLUGS = 2,
+    MAV_AUTOPILOT_ARDUPILOT = 3
+};
+
 #define MAVLINK_STX 0x55 ///< Packet start sign
 #define MAVLINK_STX_LEN 1 ///< Length of start sign
 #define MAVLINK_MAX_PAYLOAD_LEN 255 ///< Maximum payload length

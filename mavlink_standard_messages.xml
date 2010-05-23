@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<messages>
+   <message name="HEARTBEAT" id="0">
+     The heartbeat message just shows that a system is present.
+     <field name="type" type="uint8_t">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
+     <field name="autopilot" type="uint8_t">Type of the Autopilot: 0: Generic, 1: PIXHAWK, 2: SLUGS, 3: Ardupilot (up to 15 types), defined in MAV_AUTOPILOT_TYPE ENUM</field>
+   </message>
+ 
+   <message name="BOOT" id="1">
+     <field name="version" type="uint32_t">The onboard software version</field>
+   </message>
+
+   <message name="SYSTEM_TIME" id="2">
+     The system time is the time of the master clock, typically the computer clock of the main onboard computer.
+     <field name="time_usec" type="uint64_t">Timestamp of the master clock in microseconds since UNIX epoch.</field>
+   </message>
+
+   <message name="ACTION" id="10">
+     <field name="target" type="uint8_t">The system executing the action</field>
+     <field name="action" type="uint8_t">The action id</field>
+   </message>
+
+   <message name="SET_MODE" id="11">
+     <field name="target" type="uint8_t">The system setting the mode</field>
+     <field name="mode" type="uint8_t">The new mode</field>
+   </message>
+   
+   <message name="PARAM_REQUEST_READ" id="20">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="param_id" type="array[15]">Onboard parameter id</field>
+   </message>
+
+   <message name="PARAM_REQUEST_LIST" id="21">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+   </message>
+
+   <message name="PARAM_VALUE" id="22">
+     <field name="param_id" type="array[15]">Onboard parameter id</field>
+     <field name="param_value" type="float">Onboard parameter value</field>
+   </message>
+
+   <message name="PARAM_SET" id="23">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="param_id" type="array[15]">Onboard parameter id</field>
+     <field name="param_value" type="float">Onboard parameter value</field>
+   </message>
+
+   <message name="PARAM_WRITE_STORAGE" id="24">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+   </message>
+
+   <message name="ATTITUDE" id="30">
+     <field name="usec"  type="uint64_t">Timestamp (microseconds)</field>
+     <field name="roll"  type="float">Roll angle (rad)</field>
+     <field name="pitch" type="float">Pitch angle (rad)</field>
+     <field name="yaw"   type="float">Yaw angle (rad)</field>
+     <field name="rollspeed"  type="float">Roll angular speed (rad/s)</field>
+     <field name="pitchspeed" type="float">Pitch angular speed (rad/s)</field>
+     <field name="yawspeed"   type="float">Yaw angular speed (rad/s)</field>
+   </message>
+
+   <message name="POSITION" id="31">
+     <field name="usec" type="uint64_t">Timestamp (milliseconds)</field>
+     <field name="x"   type="float">X Position</field>
+     <field name="y"   type="float">Y Position</field>
+     <field name="z"   type="float">Z Position</field>
+     <field name="vx"  type="float">X Speed</field>
+     <field name="vy"  type="float">Y Speed</field>
+     <field name="vz"  type="float">Z Speed</field>
+   </message>
+
+   <message name="SYS_STATUS" id="32">
+     <field name="mode" type="uint8_t">System mode</field>
+     <field name="nav_mode" type="uint8_t">Navigation mode</field>
+     <field name="status" type="uint8_t">System status flag</field>
+     <field name="vbat" type="uint16_t">Battery voltage</field>
+     <field name="motor_block" type="uint8_t">Motor block status flag</field>
+     <field name="packet_drop" type="uint16_t">Dropped packets</field>
+   </message>
+   
+   <!-- MESSAGE IDs 50 - 250: Space for custom messages in individual projectname_messages.xml files -->
+
+  <message name="STATUSTEXT" id= "254">
+    <field name="severity" type="uint8_t">Severity of status, 0 = info message, 255 = critical fault</field>
+    <field name="text" type="array[50]">Status text message, without null termination character</field>
+   </message>
+
+
+<message name="DEBUG" id="255">
+     <field name="ind"  type="uint8_t">index of debug variable</field>
+     <field name="value"  type="float">DEBUG value</field>
+   </message>
+
+</messages>
