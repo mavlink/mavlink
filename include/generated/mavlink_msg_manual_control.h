@@ -1,6 +1,6 @@
 // MESSAGE MANUAL_CONTROL PACKING
 
-#define MAVLINK_MSG_ID_MANUAL_CONTROL 50
+#define MAVLINK_MSG_ID_MANUAL_CONTROL 54
 
 typedef struct __mavlink_manual_control_t 
 {

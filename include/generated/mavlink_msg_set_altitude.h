@@ -1,6 +1,6 @@
 // MESSAGE SET_ALTITUDE PACKING
 
-#define MAVLINK_MSG_ID_SET_ALTITUDE 22
+#define MAVLINK_MSG_ID_SET_ALTITUDE 50
 
 typedef struct __mavlink_set_altitude_t 
 {

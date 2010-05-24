@@ -1,6 +1,6 @@
 // MESSAGE POSITION PACKING
 
-#define MAVLINK_MSG_ID_POSITION 92
+#define MAVLINK_MSG_ID_POSITION 31
 
 typedef struct __mavlink_position_t 
 {

@@ -1,10 +1,10 @@
 // MESSAGE ATTITUDE PACKING
 
-#define MAVLINK_MSG_ID_ATTITUDE 90
+#define MAVLINK_MSG_ID_ATTITUDE 30
 
 typedef struct __mavlink_attitude_t 
 {
-	uint64_t msec; ///< Timestamp (milliseconds)
+	uint64_t usec; ///< Timestamp (microseconds)
 	float roll; ///< Roll angle (rad)
 	float pitch; ///< Pitch angle (rad)
 	float yaw; ///< Yaw angle (rad)
@@ -19,7 +19,7 @@ typedef struct __mavlink_attitude_t
 /**
  * @brief Send a attitude message
  *
- * @param msec Timestamp (milliseconds)
+ * @param usec Timestamp (microseconds)
  * @param roll Roll angle (rad)
  * @param pitch Pitch angle (rad)
  * @param yaw Yaw angle (rad)
@@ -28,12 +28,12 @@ typedef struct __mavlink_attitude_t
  * @param yawspeed Yaw angular speed (rad/s)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_attitude_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t msec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
+static inline uint16_t mavlink_msg_attitude_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
 {
 	msg->msgid = MAVLINK_MSG_ID_ATTITUDE;
 	uint16_t i = 0;
 
-	i += put_uint64_t_by_index(msec, i, msg->payload); //Timestamp (milliseconds)
+	i += put_uint64_t_by_index(usec, i, msg->payload); //Timestamp (microseconds)
 	i += put_float_by_index(roll, i, msg->payload); //Roll angle (rad)
 	i += put_float_by_index(pitch, i, msg->payload); //Pitch angle (rad)
 	i += put_float_by_index(yaw, i, msg->payload); //Yaw angle (rad)
@@ -46,15 +46,15 @@ static inline uint16_t mavlink_msg_attitude_pack(uint8_t system_id, uint8_t comp
 
 static inline uint16_t mavlink_msg_attitude_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_attitude_t* attitude)
 {
-	return mavlink_msg_attitude_pack(system_id, component_id, msg, attitude->msec, attitude->roll, attitude->pitch, attitude->yaw, attitude->rollspeed, attitude->pitchspeed, attitude->yawspeed);
+	return mavlink_msg_attitude_pack(system_id, component_id, msg, attitude->usec, attitude->roll, attitude->pitch, attitude->yaw, attitude->rollspeed, attitude->pitchspeed, attitude->yawspeed);
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_attitude_send(mavlink_channel_t chan, uint64_t msec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
+static inline void mavlink_msg_attitude_send(mavlink_channel_t chan, uint64_t usec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
 {
 	mavlink_message_t msg;
-	mavlink_msg_attitude_pack(mavlink_system.sysid, mavlink_system.compid, &msg, msec, roll, pitch, yaw, rollspeed, pitchspeed, yawspeed);
+	mavlink_msg_attitude_pack(mavlink_system.sysid, mavlink_system.compid, &msg, usec, roll, pitch, yaw, rollspeed, pitchspeed, yawspeed);
 	mavlink_send_uart(chan, &msg);
 }
 
@@ -62,11 +62,11 @@ static inline void mavlink_msg_attitude_send(mavlink_channel_t chan, uint64_t ms
 // MESSAGE ATTITUDE UNPACKING
 
 /**
- * @brief Get field msec from attitude message
+ * @brief Get field usec from attitude message
  *
- * @return Timestamp (milliseconds)
+ * @return Timestamp (microseconds)
  */
-static inline uint64_t mavlink_msg_attitude_get_msec(const mavlink_message_t* msg)
+static inline uint64_t mavlink_msg_attitude_get_usec(const mavlink_message_t* msg)
 {
 	generic_64bit r;
 	r.b[7] = (msg->payload)[0];
@@ -172,7 +172,7 @@ static inline float mavlink_msg_attitude_get_yawspeed(const mavlink_message_t* m
 
 static inline void mavlink_msg_attitude_decode(const mavlink_message_t* msg, mavlink_attitude_t* attitude)
 {
-	attitude->msec = mavlink_msg_attitude_get_msec(msg);
+	attitude->usec = mavlink_msg_attitude_get_usec(msg);
 	attitude->roll = mavlink_msg_attitude_get_roll(msg);
 	attitude->pitch = mavlink_msg_attitude_get_pitch(msg);
 	attitude->yaw = mavlink_msg_attitude_get_yaw(msg);

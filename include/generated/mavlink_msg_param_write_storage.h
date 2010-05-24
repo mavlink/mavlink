@@ -1,6 +1,6 @@
 // MESSAGE PARAM_WRITE_STORAGE PACKING
 
-#define MAVLINK_MSG_ID_PARAM_WRITE_STORAGE 84
+#define MAVLINK_MSG_ID_PARAM_WRITE_STORAGE 24
 
 typedef struct __mavlink_param_write_storage_t 
 {

@@ -1,6 +1,6 @@
 // MESSAGE PARAM_SET PACKING
 
-#define MAVLINK_MSG_ID_PARAM_SET 83
+#define MAVLINK_MSG_ID_PARAM_SET 23
 
 typedef struct __mavlink_param_set_t 
 {

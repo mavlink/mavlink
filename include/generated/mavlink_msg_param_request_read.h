@@ -1,6 +1,6 @@
 // MESSAGE PARAM_REQUEST_READ PACKING
 
-#define MAVLINK_MSG_ID_PARAM_REQUEST_READ 80
+#define MAVLINK_MSG_ID_PARAM_REQUEST_READ 20
 
 typedef struct __mavlink_param_request_read_t 
 {

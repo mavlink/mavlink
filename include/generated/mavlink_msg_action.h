@@ -1,6 +1,6 @@
 // MESSAGE ACTION PACKING
 
-#define MAVLINK_MSG_ID_ACTION 20
+#define MAVLINK_MSG_ID_ACTION 10
 
 typedef struct __mavlink_action_t 
 {

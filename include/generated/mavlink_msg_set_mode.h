@@ -1,6 +1,6 @@
 // MESSAGE SET_MODE PACKING
 
-#define MAVLINK_MSG_ID_SET_MODE 21
+#define MAVLINK_MSG_ID_SET_MODE 11
 
 typedef struct __mavlink_set_mode_t 
 {

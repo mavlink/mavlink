@@ -1,6 +1,6 @@
 // MESSAGE PARAM_VALUE PACKING
 
-#define MAVLINK_MSG_ID_PARAM_VALUE 82
+#define MAVLINK_MSG_ID_PARAM_VALUE 22
 
 typedef struct __mavlink_param_value_t 
 {

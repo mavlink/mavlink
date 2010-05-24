@@ -1,6 +1,6 @@
 // MESSAGE PARAM_REQUEST_LIST PACKING
 
-#define MAVLINK_MSG_ID_PARAM_REQUEST_LIST 81
+#define MAVLINK_MSG_ID_PARAM_REQUEST_LIST 21
 
 typedef struct __mavlink_param_request_list_t 
 {
