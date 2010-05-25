@@ -515,12 +515,27 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t b
 	uint16_t bits_remain = bits;
 	// Transform number into network order
 	generic_32bit bin;
+        bin.i = b;
 	generic_32bit bout;
 	bout.b[0] = bin.b[3];
 	bout.b[1] = bin.b[2];
 	bout.b[2] = bin.b[1];
 	bout.b[3] = bin.b[0];
 	
+	// buffer in
+	// 01100000 01000000 00000000 11110001
+	// buffer out
+	// 11110001 00000000 01000000 01100000
+
+	// Existing partly filled byte (four free slots)
+	// 0111xxxx
+
+	// Mask n free bits
+	// 00001111 = 2^0 + 2^1 + 2^2 + 2^3 = 2^n - 1
+
+	// Shift n bits into the right position
+	// out = in >> n;
+
 	// Mask and shift bytes
 	uint8_t i_bit_index = bit_index;
 	uint8_t i_byte_index = bindex;
@@ -532,7 +547,18 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t b
 	}
 	while (bits_remain > 0)
 	{
-
+		uint8_t curr_bits_n = bits_remain << 3; // mod 8
+		if (curr_bits_n > 1)
+		bits_remain -= curr_bits_n; // These bits are handled now
+		i_byte_index++; // These bits consume one byte
+		length++;       // One byte consumed by this field
+		// Put these bits into the buffer
+		// Operating now bitwise
+		uint8_t curr_bits = bout.b[length] >> (8 - curr_bits_n);
+		// Clear bits of previous byte
+                buffer[i_byte_index] &= (0xFF >> (8 - curr_bits_n));
+                buffer[i_byte_index] |= curr_bits;
+                i_byte_index++;
 	}
 	*r_bit_index = i_bit_index;
 	return length;
