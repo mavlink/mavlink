@@ -1,6 +1,6 @@
 // MESSAGE WAYPOINT_CLEAR_LIST PACKING
 
-#define MAVLINK_MSG_ID_WAYPOINT_CLEAR_LIST 97
+#define MAVLINK_MSG_ID_WAYPOINT_CLEAR_LIST 98
 
 typedef struct __mavlink_waypoint_clear_list_t 
 {

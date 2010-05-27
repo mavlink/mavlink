@@ -248,9 +248,11 @@ typedef struct __mavlink_vision_position_estimate_t
 
 typedef struct __mavlink_waypoint_t 
 {
-	uint16_t id; ///< ID
-	uint16_t priority; ///< priority
-	uint8_t active; ///< false:0, true:1
+	uint8_t target_system; ///< System ID
+	uint8_t target_component; ///< Component ID
+	uint16_t seq; ///< Sequence
+	uint8_t type; ///< 0: global, 1: local
+	uint8_t current; ///< false:0, true:1
 	float x; ///< x position
 	float y; ///< y position
 	float z; ///< z position
@@ -259,28 +261,21 @@ typedef struct __mavlink_waypoint_t
 
 } mavlink_waypoint_t;
 
-typedef struct __mavlink_waypoint_set_t 
+typedef struct __mavlink_waypoint_request_t 
 {
 	uint8_t target_system; ///< System ID
 	uint8_t target_component; ///< Component ID
-	uint16_t id; ///< ID
-	uint16_t priority; ///< Priority
-	uint8_t active; ///< false:0, true:1
-	float x; ///< x position
-	float y; ///< y position
-	float z; ///< z position
-	float yaw; ///< yaw orientation in radians, 0 = NORTH
-	uint16_t autocontinue; ///< autocontinue to next wp
+	uint16_t seq; ///< Sequence
 
-} mavlink_waypoint_set_t;
+} mavlink_waypoint_request_t;
 
-typedef struct __mavlink_waypoint_set_active_t 
+typedef struct __mavlink_waypoint_set_current_t 
 {
 	uint8_t target_system; ///< System ID
 	uint8_t target_component; ///< Component ID
-	uint16_t id; ///< ID
+	uint16_t seq; ///< Sequence
 
-} mavlink_waypoint_set_active_t;
+} mavlink_waypoint_set_current_t;
 
 typedef struct __mavlink_waypoint_request_list_t 
 {
@@ -288,6 +283,14 @@ typedef struct __mavlink_waypoint_request_list_t
 	uint8_t target_component; ///< Component ID
 
 } mavlink_waypoint_request_list_t;
+
+typedef struct __mavlink_waypoint_count_t 
+{
+	uint8_t target_system; ///< System ID
+	uint8_t target_component; ///< Component ID
+	uint16_t count; ///< Number of Waypoints in the Sequence
+
+} mavlink_waypoint_count_t;
 
 typedef struct __mavlink_waypoint_clear_list_t 
 {
@@ -300,15 +303,46 @@ typedef struct __mavlink_waypoint_reached_t
 {
 	uint8_t target_system; ///< System ID
 	uint8_t target_component; ///< Component ID
-	uint16_t id; ///< ID
-	uint16_t priority; ///< Priority
-	float x; ///< x position
-	float y; ///< y position
-	float z; ///< z position
-	float yaw; ///< yaw orientation in radians, 0 = NORTH
-	uint16_t autocontinue; ///< autocontinue to next wp
+	uint16_t seq; ///< Sequence
 
 } mavlink_waypoint_reached_t;
+
+typedef struct __mavlink_waypoint_error_t 
+{
+	uint8_t target_system; ///< System ID
+	uint8_t target_component; ///< Component ID
+	uint8_t type; ///< 0: OK, 1: Error
+
+} mavlink_waypoint_error_t;
+
+typedef struct __mavlink_waypoint_set_global_reference_t 
+{
+	uint8_t target_system; ///< System ID
+	uint8_t target_component; ///< Component ID
+	float global_x; ///< global x position
+	float global_y; ///< global y position
+	float global_z; ///< global z position
+	float global_yaw; ///< global yaw orientation in radians, 0 = NORTH
+	float local_x; ///< local x position that matches the global x position
+	float local_y; ///< local y position that matches the global y position
+	float local_z; ///< local z position that matches the global z position
+	float local_yaw; ///< local yaw that matches the global yaw orientation
+
+} mavlink_waypoint_set_global_reference_t;
+
+typedef struct __mavlink_waypoint_set_safety_area_t 
+{
+	uint8_t target_system; ///< System ID
+	uint8_t target_component; ///< Component ID
+	uint8_t type; ///< 0: global, 1: local
+	float x1; ///< x position 1
+	float y1; ///< y position 1
+	float z1; ///< z position 1
+	float x2; ///< x position 2
+	float y2; ///< y position 2
+	float z2; ///< z position 2
+
+} mavlink_waypoint_set_safety_area_t;
 
 typedef struct __mavlink_position_control_setpoint_set_t 
 {
