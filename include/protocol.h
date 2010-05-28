@@ -270,11 +270,11 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 	// If a message has been sucessfully decoded, check index
 	if (status->msg_received == 1)
 	{
-                while(status->current_seq != rxmsg->seq)
-		{
-			status->packet_rx_drop_count++;
-                        status->current_seq++;
-		}
+        //while(status->current_seq != rxmsg->seq)
+		//{
+		//	status->packet_rx_drop_count++;
+        //               status->current_seq++;
+		//}
 		status->current_seq = rxmsg->seq;
 		// Initial condition: If no packet has been received so far, drop count is undefined
 		if (status->packet_rx_success_count == 0) status->packet_rx_drop_count = 0;
@@ -282,9 +282,9 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 		status->packet_rx_success_count++;
 	}
 
-        r_mavlink_status->current_seq = status->current_seq+1;
+    r_mavlink_status->current_seq = status->current_seq+1;
 	r_mavlink_status->packet_rx_success_count = status->packet_rx_success_count;
-	r_mavlink_status->packet_rx_drop_count = status->packet_rx_drop_count;
+	r_mavlink_status->packet_rx_drop_count = status->parse_error;
 	return status->msg_received;
 }
 
