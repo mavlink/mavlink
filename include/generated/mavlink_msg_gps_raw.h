@@ -1,8 +1,8 @@
-// MESSAGE GPS_POSITION PACKING
+// MESSAGE GPS_RAW PACKING
 
-#define MAVLINK_MSG_ID_GPS_POSITION 32
+#define MAVLINK_MSG_ID_GPS_RAW 32
 
-typedef struct __mavlink_gps_position_t 
+typedef struct __mavlink_gps_raw_t 
 {
 	uint64_t usec; ///< Timestamp (microseconds since unix epoch)
 	float lat; ///< X Position
@@ -12,12 +12,12 @@ typedef struct __mavlink_gps_position_t
 	float vy; ///< Y Speed
 	float vz; ///< Z Speed
 
-} mavlink_gps_position_t;
+} mavlink_gps_raw_t;
 
 
 
 /**
- * @brief Send a gps_position message
+ * @brief Send a gps_raw message
  *
  * @param usec Timestamp (microseconds since unix epoch)
  * @param lat X Position
@@ -28,9 +28,9 @@ typedef struct __mavlink_gps_position_t
  * @param vz Z Speed
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_gps_position_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float lat, float lon, float alt, float vx, float vy, float vz)
+static inline uint16_t mavlink_msg_gps_raw_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float lat, float lon, float alt, float vx, float vy, float vz)
 {
-	msg->msgid = MAVLINK_MSG_ID_GPS_POSITION;
+	msg->msgid = MAVLINK_MSG_ID_GPS_RAW;
 	uint16_t i = 0;
 
 	i += put_uint64_t_by_index(usec, i, msg->payload); //Timestamp (microseconds since unix epoch)
@@ -44,29 +44,29 @@ static inline uint16_t mavlink_msg_gps_position_pack(uint8_t system_id, uint8_t 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
 
-static inline uint16_t mavlink_msg_gps_position_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_gps_position_t* gps_position)
+static inline uint16_t mavlink_msg_gps_raw_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_gps_raw_t* gps_raw)
 {
-	return mavlink_msg_gps_position_pack(system_id, component_id, msg, gps_position->usec, gps_position->lat, gps_position->lon, gps_position->alt, gps_position->vx, gps_position->vy, gps_position->vz);
+	return mavlink_msg_gps_raw_pack(system_id, component_id, msg, gps_raw->usec, gps_raw->lat, gps_raw->lon, gps_raw->alt, gps_raw->vx, gps_raw->vy, gps_raw->vz);
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_gps_position_send(mavlink_channel_t chan, uint64_t usec, float lat, float lon, float alt, float vx, float vy, float vz)
+static inline void mavlink_msg_gps_raw_send(mavlink_channel_t chan, uint64_t usec, float lat, float lon, float alt, float vx, float vy, float vz)
 {
 	mavlink_message_t msg;
-	mavlink_msg_gps_position_pack(mavlink_system.sysid, mavlink_system.compid, &msg, usec, lat, lon, alt, vx, vy, vz);
+	mavlink_msg_gps_raw_pack(mavlink_system.sysid, mavlink_system.compid, &msg, usec, lat, lon, alt, vx, vy, vz);
 	mavlink_send_uart(chan, &msg);
 }
 
 #endif
-// MESSAGE GPS_POSITION UNPACKING
+// MESSAGE GPS_RAW UNPACKING
 
 /**
- * @brief Get field usec from gps_position message
+ * @brief Get field usec from gps_raw message
  *
  * @return Timestamp (microseconds since unix epoch)
  */
-static inline uint64_t mavlink_msg_gps_position_get_usec(const mavlink_message_t* msg)
+static inline uint64_t mavlink_msg_gps_raw_get_usec(const mavlink_message_t* msg)
 {
 	generic_64bit r;
 	r.b[7] = (msg->payload)[0];
@@ -81,11 +81,11 @@ static inline uint64_t mavlink_msg_gps_position_get_usec(const mavlink_message_t
 }
 
 /**
- * @brief Get field lat from gps_position message
+ * @brief Get field lat from gps_raw message
  *
  * @return X Position
  */
-static inline float mavlink_msg_gps_position_get_lat(const mavlink_message_t* msg)
+static inline float mavlink_msg_gps_raw_get_lat(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint64_t))[0];
@@ -96,11 +96,11 @@ static inline float mavlink_msg_gps_position_get_lat(const mavlink_message_t* ms
 }
 
 /**
- * @brief Get field lon from gps_position message
+ * @brief Get field lon from gps_raw message
  *
  * @return Y Position
  */
-static inline float mavlink_msg_gps_position_get_lon(const mavlink_message_t* msg)
+static inline float mavlink_msg_gps_raw_get_lon(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float))[0];
@@ -111,11 +111,11 @@ static inline float mavlink_msg_gps_position_get_lon(const mavlink_message_t* ms
 }
 
 /**
- * @brief Get field alt from gps_position message
+ * @brief Get field alt from gps_raw message
  *
  * @return Z Position
  */
-static inline float mavlink_msg_gps_position_get_alt(const mavlink_message_t* msg)
+static inline float mavlink_msg_gps_raw_get_alt(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float))[0];
@@ -126,11 +126,11 @@ static inline float mavlink_msg_gps_position_get_alt(const mavlink_message_t* ms
 }
 
 /**
- * @brief Get field vx from gps_position message
+ * @brief Get field vx from gps_raw message
  *
  * @return X Speed
  */
-static inline float mavlink_msg_gps_position_get_vx(const mavlink_message_t* msg)
+static inline float mavlink_msg_gps_raw_get_vx(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
@@ -141,11 +141,11 @@ static inline float mavlink_msg_gps_position_get_vx(const mavlink_message_t* msg
 }
 
 /**
- * @brief Get field vy from gps_position message
+ * @brief Get field vy from gps_raw message
  *
  * @return Y Speed
  */
-static inline float mavlink_msg_gps_position_get_vy(const mavlink_message_t* msg)
+static inline float mavlink_msg_gps_raw_get_vy(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
@@ -156,11 +156,11 @@ static inline float mavlink_msg_gps_position_get_vy(const mavlink_message_t* msg
 }
 
 /**
- * @brief Get field vz from gps_position message
+ * @brief Get field vz from gps_raw message
  *
  * @return Z Speed
  */
-static inline float mavlink_msg_gps_position_get_vz(const mavlink_message_t* msg)
+static inline float mavlink_msg_gps_raw_get_vz(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
@@ -170,13 +170,13 @@ static inline float mavlink_msg_gps_position_get_vz(const mavlink_message_t* msg
 	return (float)r.f;
 }
 
-static inline void mavlink_msg_gps_position_decode(const mavlink_message_t* msg, mavlink_gps_position_t* gps_position)
+static inline void mavlink_msg_gps_raw_decode(const mavlink_message_t* msg, mavlink_gps_raw_t* gps_raw)
 {
-	gps_position->usec = mavlink_msg_gps_position_get_usec(msg);
-	gps_position->lat = mavlink_msg_gps_position_get_lat(msg);
-	gps_position->lon = mavlink_msg_gps_position_get_lon(msg);
-	gps_position->alt = mavlink_msg_gps_position_get_alt(msg);
-	gps_position->vx = mavlink_msg_gps_position_get_vx(msg);
-	gps_position->vy = mavlink_msg_gps_position_get_vy(msg);
-	gps_position->vz = mavlink_msg_gps_position_get_vz(msg);
+	gps_raw->usec = mavlink_msg_gps_raw_get_usec(msg);
+	gps_raw->lat = mavlink_msg_gps_raw_get_lat(msg);
+	gps_raw->lon = mavlink_msg_gps_raw_get_lon(msg);
+	gps_raw->alt = mavlink_msg_gps_raw_get_alt(msg);
+	gps_raw->vx = mavlink_msg_gps_raw_get_vx(msg);
+	gps_raw->vy = mavlink_msg_gps_raw_get_vy(msg);
+	gps_raw->vz = mavlink_msg_gps_raw_get_vz(msg);
 }

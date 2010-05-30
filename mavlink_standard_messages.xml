@@ -66,6 +66,36 @@
      <field name="target_component" type="uint8_t">Component ID</field>
    </message>
 
+   <message name="PID_SET" id="25">
+     Set PID values.
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="pid_id" type="uint8_t">PID ID</field>
+     <field name="k_p" type="float">P</field>
+     <field name="k_i" type="float">I</field>
+     <field name="k_d" type="float">D</field>
+   </message>
+
+   <message name="RAW_IMU" id="28">
+     <field name="usec"  type="uint64_t">Timestamp (microseconds since UNIX epoch)</field>
+     <field name="xacc"  type="int16_t">X acceleration (mg raw)</field>
+     <field name="yacc"  type="int16_t">Y acceleration (mg raw)</field>
+     <field name="zacc"  type="int16_t">Z acceleration (mg raw)</field>
+     <field name="xgyro" type="uint16_t">Angular speed around X axis (adc units)</field>
+     <field name="ygyro" type="uint16_t">Angular speed around Y axis (adc units)</field>
+     <field name="zgyro" type="uint16_t">Angular speed around Z axis (adc units)</field>
+     <field name="xmag"  type="int16_t">X Magnetic field (milli tesla)</field>
+     <field name="ymag"  type="int16_t">Y Magnetic field (milli tesla)</field>
+     <field name="zmag"  type="int16_t">Z Magnetic field (milli tesla)</field>
+   </message>
+
+  <message name="RAW_PRESSURE" id="29">
+     <field name="usec"  type="uint64_t">Timestamp (microseconds since UNIX epoch)</field>
+     <field name="press_abs"  type="int32_t">Absolute pressure (hectopascal)</field>
+     <field name="press_diff1"  type="int32_t">Differential pressure 1 (hectopascal)</field>
+     <field name="press_diff2"  type="int32_t">Differential pressure 2 (hectopascal)</field>
+   </message>
+
    <message name="ATTITUDE" id="30">
     The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right).
      <field name="usec"  type="uint64_t">Timestamp (microseconds)</field>
@@ -88,7 +118,7 @@
      <field name="vz"  type="float">Z Speed</field>
    </message>
 
-   <message name="GPS_POSITION" id="32">
+   <message name="GPS_RAW" id="32">
      The global position, as returned by the Global Positioning System (GPS). This is
 NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate.
      <field name="usec" type="uint64_t">Timestamp (microseconds since unix epoch)</field>
@@ -167,17 +197,32 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="chan5_function" type="uint8_t">RC channel 5 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
    </message>
 
-   <message name="WAYPOINT" id="40">
+   <message name="WAYPOINT" id="39">
      Message encoding a waypoint. This message is emitted to announce
-     the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon
+     the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
+     <field name="seq" type="uint16_t">Sequence</field>
+     <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
+     <field name="orbit" type="uint8_t">Orbit to circle around the waypoint, in meters</field>
+     <field name="current" type="uint8_t">false:0, true:1</field>
+     <field name="x" type="float">local: x position, global: latitude</field>
+     <field name="y" type="float">y position: global: longitude</field>
+     <field name="z" type="float">z position: global: altitude</field>
+     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
+     <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
+   </message>
+
+   <message name="WAYPOINT_SET" id="40">
+     Message setting a waypoint. This message is emitted to announce
+     the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
-     <field name="type" type="uint8_t">0: global, 1: local</field>
+     <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
+     <field name="orbit" type="uint8_t">Orbit to circle around the waypoint, in meters</field>
      <field name="current" type="uint8_t">false:0, true:1</field>
-     <field name="x" type="float">x position</field>
-     <field name="y" type="float">y position</field>
-     <field name="z" type="float">z position</field>
+     <field name="x" type="float">local: x position, global: latitude</field>
+     <field name="y" type="float">y position: global: longitude</field>
+     <field name="z" type="float">z position: global: altitude</field>
      <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
      <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
    </message>
