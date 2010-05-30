@@ -1,6 +1,6 @@
 // MESSAGE WAYPOINT_ERROR PACKING
 
-#define MAVLINK_MSG_ID_WAYPOINT_ERROR 100
+#define MAVLINK_MSG_ID_WAYPOINT_ERROR 47
 
 typedef struct __mavlink_waypoint_error_t 
 {

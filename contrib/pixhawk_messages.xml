@@ -108,84 +108,6 @@
      <field name="confidence" type="uint8_t">Confidence about the position. 0 = 0%, 255 = 100%</field>
    </message>
 
-   <message name="WAYPOINT" id="93">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="seq" type="uint16_t">Sequence</field>
-     <field name="type" type="uint8_t">0: global, 1: local</field>
-     <field name="current" type="uint8_t">false:0, true:1</field>
-     <field name="x" type="float">x position</field>
-     <field name="y" type="float">y position</field>
-     <field name="z" type="float">z position</field>
-     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
-     <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
-   </message>
-
-   <message name="WAYPOINT_REQUEST" id="94">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="seq" type="uint16_t">Sequence</field>
-   </message>
-
-  <message name="WAYPOINT_SET_CURRENT" id="95">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="seq" type="uint16_t">Sequence</field>
-   </message>
-
-  <message name="WAYPOINT_REQUEST_LIST" id="96">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-   </message>
-
-   <message name="WAYPOINT_COUNT" id="97">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="count" type="uint16_t">Number of Waypoints in the Sequence</field>
-   </message>
-
-  <message name="WAYPOINT_CLEAR_LIST" id="98">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-   </message>
-
-   <message name="WAYPOINT_REACHED" id="99">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="seq" type="uint16_t">Sequence</field>
-   </message>
-
-   <message name="WAYPOINT_ERROR" id="100">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="type" type="uint8_t">0: OK, 1: Error</field>
-   </message>
-
-   <message name="WAYPOINT_SET_GLOBAL_REFERENCE" id="101">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="global_x" type="float">global x position</field>
-     <field name="global_y" type="float">global y position</field>
-     <field name="global_z" type="float">global z position</field>
-     <field name="global_yaw" type="float">global yaw orientation in radians, 0 = NORTH</field>
-     <field name="local_x" type="float">local x position that matches the global x position</field>
-     <field name="local_y" type="float">local y position that matches the global y position</field>
-     <field name="local_z" type="float">local z position that matches the global z position</field>
-     <field name="local_yaw" type="float">local yaw that matches the global yaw orientation</field>
-   </message>
-
-   <message name="WAYPOINT_SET_SAFETY_AREA" id="102">
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="type" type="uint8_t">0: global, 1: local</field>
-     <field name="x1" type="float">x position 1</field>
-     <field name="y1" type="float">y position 1</field>
-     <field name="z1" type="float">z position 1</field>
-     <field name="x2" type="float">x position 2</field>
-     <field name="y2" type="float">y position 2</field>
-     <field name="z2" type="float">z position 2</field>
-   </message>
-
    <!-- Message sent to the MAV to set a new position as reference for the controller -->
    <message name="POSITION_CONTROL_SETPOINT_SET" id="110">
      <field name="target_system" type="uint8_t">System ID</field>
@@ -240,7 +162,12 @@
    </message>
 
    <message name="AUX_STATUS" id="141">
-     <field name="load" type="uint16_t">Maximum usage in percent of the mainloop time, should be always below 100</field>
+     <field name="load" type="uint16_t">Maximum usage in percent of the mainloop time, (0%: 0, 100%: 1000) should be always below 1000</field>
+     <field name="i2c0_err_count" type="uint16_t">Number of I2C errors since startup</field>
+<field name="i2c1_err_count" type="uint16_t">Number of I2C errors since startup</field>
+  <field name="spi0_err_count" type="uint16_t">Number of I2C errors since startup</field>
+<field name="spi1_err_count" type="uint16_t">Number of I2C errors since startup</field>
+  <field name="uart_total_err_count" type="uint16_t">Number of I2C errors since startup</field>
    </message>
 
   <message name="WATCHDOG_HEARTBEAT" id="160">

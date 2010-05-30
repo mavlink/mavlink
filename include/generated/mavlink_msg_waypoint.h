@@ -1,6 +1,6 @@
 // MESSAGE WAYPOINT PACKING
 
-#define MAVLINK_MSG_ID_WAYPOINT 93
+#define MAVLINK_MSG_ID_WAYPOINT 40
 
 typedef struct __mavlink_waypoint_t 
 {

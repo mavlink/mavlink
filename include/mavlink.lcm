@@ -32,6 +32,13 @@ typedef struct __mavlink_set_mode_t
 
 } mavlink_set_mode_t;
 
+typedef struct __mavlink_set_nav_mode_t 
+{
+	uint8_t target; ///< The system setting the mode
+	uint8_t nav_mode; ///< The new navigation mode
+
+} mavlink_set_nav_mode_t;
+
 typedef struct __mavlink_param_request_read_t 
 {
 	uint8_t target_system; ///< System ID
@@ -82,9 +89,9 @@ typedef struct __mavlink_attitude_t
 
 } mavlink_attitude_t;
 
-typedef struct __mavlink_position_t 
+typedef struct __mavlink_local_position_t 
 {
-	uint64_t usec; ///< Timestamp (milliseconds)
+	uint64_t usec; ///< Timestamp (microseconds since unix epoch)
 	float x; ///< X Position
 	float y; ///< Y Position
 	float z; ///< Z Position
@@ -92,159 +99,93 @@ typedef struct __mavlink_position_t
 	float vy; ///< Y Speed
 	float vz; ///< Z Speed
 
-} mavlink_position_t;
+} mavlink_local_position_t;
+
+typedef struct __mavlink_gps_position_t 
+{
+	uint64_t usec; ///< Timestamp (microseconds since unix epoch)
+	float lat; ///< X Position
+	float lon; ///< Y Position
+	float alt; ///< Z Position
+	float vx; ///< X Speed
+	float vy; ///< Y Speed
+	float vz; ///< Z Speed
+
+} mavlink_gps_position_t;
+
+typedef struct __mavlink_global_position_t 
+{
+	uint64_t usec; ///< Timestamp (microseconds since unix epoch)
+	float lat; ///< X Position
+	float lon; ///< Y Position
+	float alt; ///< Z Position
+	float vx; ///< X Speed
+	float vy; ///< Y Speed
+	float vz; ///< Z Speed
+
+} mavlink_global_position_t;
 
 typedef struct __mavlink_sys_status_t 
 {
-	uint8_t mode; ///< System mode
-	uint8_t nav_mode; ///< Navigation mode
-	uint8_t status; ///< System status flag
-	uint16_t vbat; ///< Battery voltage
+	uint8_t mode; ///< System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+	uint8_t nav_mode; ///< Navigation mode, see MAV_NAV_MODE ENUM
+	uint8_t status; ///< System status flag, see MAV_STATUS ENUM
+	uint16_t vbat; ///< Battery voltage, in millivolts
 	uint8_t motor_block; ///< Motor block status flag
 	uint16_t packet_drop; ///< Dropped packets
 
 } mavlink_sys_status_t;
 
-typedef struct __mavlink_statustext_t 
+typedef struct __mavlink_rc_channels_raw_t 
 {
-	uint8_t severity; ///< Severity of status, 0 = info message, 255 = critical fault
-	int8_t text[50]; ///< Status text message, without null termination character
+	uint16_t chan1; ///< RC channel 1 value, in microseconds
+	uint16_t chan2; ///< RC channel 2 value, in microseconds
+	uint16_t chan3; ///< RC channel 3 value, in microseconds
+	uint16_t chan4; ///< RC channel 3 value, in microseconds
+	uint16_t chan5; ///< RC channel 3 value, in microseconds
 
-} mavlink_statustext_t;
+} mavlink_rc_channels_raw_t;
 
-typedef struct __mavlink_debug_t 
+typedef struct __mavlink_rc_channels_trim_set_t 
 {
-	uint8_t ind; ///< index of debug variable
-	float value; ///< DEBUG value
+	uint16_t chan1_min; ///< RC channel 1 min value, in microseconds
+	uint16_t chan1_zero; ///< RC channel 1 zero value, in microseconds
+	uint16_t chan1_max; ///< RC channel 1 max value, in microseconds
+	uint16_t chan2_min; ///< RC channel 2 min value, in microseconds
+	uint16_t chan2_zero; ///< RC channel 2 zero value, in microseconds
+	uint16_t chan2_max; ///< RC channel 2 max value, in microseconds
+	uint16_t chan3_min; ///< RC channel 3 min value, in microseconds
+	uint16_t chan3_zero; ///< RC channel 3 zero value, in microseconds
+	uint16_t chan3_max; ///< RC channel 3 max value, in microseconds
+	uint16_t chan4_min; ///< RC channel 4 min value, in microseconds
+	uint16_t chan4_zero; ///< RC channel 4 zero value, in microseconds
+	uint16_t chan4_max; ///< RC channel 4 max value, in microseconds
+	uint16_t chan5_min; ///< RC channel 5 min value, in microseconds
+	uint16_t chan5_zero; ///< RC channel 5 zero value, in microseconds
+	uint16_t chan5_max; ///< RC channel 5 max value, in microseconds
 
-} mavlink_debug_t;
+} mavlink_rc_channels_trim_set_t;
 
-typedef struct __mavlink_set_altitude_t 
+typedef struct __mavlink_rc_channels_mapping_t 
 {
-	uint8_t target; ///< The system setting the altitude
-	uint32_t mode; ///< The new altitude in meters
+	uint8_t chan1_function; ///< RC channel 1 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
+	uint8_t chan2_function; ///< RC channel 2 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
+	uint8_t chan3_function; ///< RC channel 3 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
+	uint8_t chan4_function; ///< RC channel 4 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
+	uint8_t chan5_function; ///< RC channel 5 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
 
-} mavlink_set_altitude_t;
+} mavlink_rc_channels_mapping_t;
 
-typedef struct __mavlink_request_data_stream_t 
+typedef struct __mavlink_rc_channels_mapping_set_t 
 {
-	uint8_t target_system; ///< The target requested to send the message stream.
-	uint8_t target_component; ///< The target requested to send the message stream.
-	uint8_t req_stream_id; ///< The ID of the requested message type
-	uint16_t req_message_rate; ///< The requested interval between two messages of this type
-	uint8_t start_stop; ///< 1 to start sending, 0 to stop sending.
+	uint8_t target_system; ///< System ID
+	uint8_t chan1_function; ///< RC channel 1 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
+	uint8_t chan2_function; ///< RC channel 2 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
+	uint8_t chan3_function; ///< RC channel 3 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
+	uint8_t chan4_function; ///< RC channel 4 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
+	uint8_t chan5_function; ///< RC channel 5 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
 
-} mavlink_request_data_stream_t;
-
-typedef struct __mavlink_request_dynamic_gyro_calibration_t 
-{
-	uint8_t target_system; ///< The system which should auto-calibrate
-	uint8_t target_component; ///< The system component which should auto-calibrate
-	float mode; ///< The current ground-truth rpm
-	uint8_t axis; ///< The axis to calibrate: 0 roll, 1 pitch, 2 yaw
-	uint16_t time; ///< The time to average over in ms
-
-} mavlink_request_dynamic_gyro_calibration_t;
-
-typedef struct __mavlink_request_static_calibration_t 
-{
-	uint8_t target_system; ///< The system which should auto-calibrate
-	uint8_t target_component; ///< The system component which should auto-calibrate
-	uint16_t time; ///< The time to average over in ms
-
-} mavlink_request_static_calibration_t;
-
-typedef struct __mavlink_manual_control_t 
-{
-	uint8_t target; ///< The system to be controlled
-	float roll; ///< roll
-	float pitch; ///< pitch
-	float yaw; ///< yaw
-	float thrust; ///< thrust
-	uint8_t roll_manual; ///< roll control enabled auto:0, manual:1
-	uint8_t pitch_manual; ///< pitch auto:0, manual:1
-	uint8_t yaw_manual; ///< yaw auto:0, manual:1
-	uint8_t thrust_manual; ///< thrust auto:0, manual:1
-
-} mavlink_manual_control_t;
-
-typedef struct __mavlink_attitude_control_t 
-{
-	uint8_t target; ///< The system to be controlled
-	float roll; ///< roll
-	float pitch; ///< pitch
-	float yaw; ///< yaw
-	float thrust; ///< thrust
-	uint8_t roll_manual; ///< roll control enabled auto:0, manual:1
-	uint8_t pitch_manual; ///< pitch auto:0, manual:1
-	uint8_t yaw_manual; ///< yaw auto:0, manual:1
-	uint8_t thrust_manual; ///< thrust auto:0, manual:1
-
-} mavlink_attitude_control_t;
-
-typedef struct __mavlink_set_cam_shutter_t 
-{
-	uint8_t cam_no; ///< Camera id
-	uint8_t cam_mode; ///< Camera mode: 0 = auto, 1 = manual
-	uint8_t trigger_pin; ///< Trigger pin, 0-3 for PtGrey FireFly
-	uint16_t interval; ///< Shutter interval, in microseconds
-	uint16_t exposure; ///< Exposure time, in microseconds
-	float gain; ///< Camera gain
-
-} mavlink_set_cam_shutter_t;
-
-typedef struct __mavlink_image_triggered_t 
-{
-	uint64_t timestamp; ///< Timestamp
-	uint32_t seq; ///< IMU seq
-
-} mavlink_image_triggered_t;
-
-typedef struct __mavlink_image_trigger_control_t 
-{
-	uint8_t enable; ///< 0 to disable, 1 to enable
-
-} mavlink_image_trigger_control_t;
-
-typedef struct __mavlink_image_available_t 
-{
-	uint64_t cam_id; ///< Camera id
-	uint8_t cam_no; ///< Camera # (starts with 0)
-	uint64_t timestamp; ///< Timestamp
-	uint64_t valid_until; ///< Until which timestamp this buffer will stay valid
-	uint32_t img_seq; ///< The image sequence number
-	uint32_t img_buf_index; ///< Position of the image in the buffer, starts with 0
-	uint16_t width; ///< Image width
-	uint16_t height; ///< Image height
-	uint16_t depth; ///< Image depth
-	uint8_t channels; ///< Image channels
-	uint32_t key; ///< Shared memory area key
-	uint32_t exposure; ///< Exposure time, in microseconds
-	float gain; ///< Camera gain
-
-} mavlink_image_available_t;
-
-typedef struct __mavlink_vision_position_estimate_t 
-{
-	uint64_t usec; ///< Timestamp (milliseconds)
-	float x; ///< Global X Position
-	float y; ///< Global Y Position
-	float z; ///< Global Z Position
-	float roll; ///< Roll angle in rad
-	float pitch; ///< Pitch angle in rad
-	float yaw; ///< Yaw angle in rad
-	float r1; ///< World-to-body rotation matrix first column, first row
-	float r2; ///< Rotation matrix second column, first row
-	float r3; ///< Rotation matrix third column, first row
-	float r4; ///< Rotation matrix first column, second row
-	float r5; ///< Rotation matrix second column, second row
-	float r6; ///< Rotation matrix third column, second row
-	float r7; ///< Rotation matrix first column, third row
-	float r8; ///< Rotation matrix second column, third row
-	float r9; ///< Rotation matrix third column, third row
-	uint8_t confidence; ///< Confidence about the position. 0 = 0%, 255 = 100%
-
-} mavlink_vision_position_estimate_t;
+} mavlink_rc_channels_mapping_set_t;
 
 typedef struct __mavlink_waypoint_t 
 {
@@ -292,12 +233,12 @@ typedef struct __mavlink_waypoint_count_t
 
 } mavlink_waypoint_count_t;
 
-typedef struct __mavlink_waypoint_clear_list_t 
+typedef struct __mavlink_waypoint_clear_all_t 
 {
 	uint8_t target_system; ///< System ID
 	uint8_t target_component; ///< Component ID
 
-} mavlink_waypoint_clear_list_t;
+} mavlink_waypoint_clear_all_t;
 
 typedef struct __mavlink_waypoint_reached_t 
 {
@@ -330,7 +271,7 @@ typedef struct __mavlink_waypoint_set_global_reference_t
 
 } mavlink_waypoint_set_global_reference_t;
 
-typedef struct __mavlink_waypoint_set_safety_area_t 
+typedef struct __mavlink_safety_set_allowed_area_t 
 {
 	uint8_t target_system; ///< System ID
 	uint8_t target_component; ///< Component ID
@@ -342,116 +283,18 @@ typedef struct __mavlink_waypoint_set_safety_area_t
 	float y2; ///< y position 2
 	float z2; ///< z position 2
 
-} mavlink_waypoint_set_safety_area_t;
+} mavlink_safety_set_allowed_area_t;
 
-typedef struct __mavlink_position_control_setpoint_set_t 
+typedef struct __mavlink_statustext_t 
 {
-	uint8_t target_system; ///< System ID
-	uint8_t target_component; ///< Component ID
-	uint16_t id; ///< ID of waypoint, 0 for plain position
-	float x; ///< x position
-	float y; ///< y position
-	float z; ///< z position
-	float yaw; ///< yaw orientation in radians, 0 = NORTH
+	uint8_t severity; ///< Severity of status, 0 = info message, 255 = critical fault
+	int8_t text[50]; ///< Status text message, without null termination character
 
-} mavlink_position_control_setpoint_set_t;
+} mavlink_statustext_t;
 
-typedef struct __mavlink_position_control_setpoint_t 
+typedef struct __mavlink_debug_t 
 {
-	uint16_t id; ///< ID of waypoint, 0 for plain position
-	float x; ///< x position
-	float y; ///< y position
-	float z; ///< z position
-	float yaw; ///< yaw orientation in radians, 0 = NORTH
+	uint8_t ind; ///< index of debug variable
+	float value; ///< DEBUG value
 
-} mavlink_position_control_setpoint_t;
-
-typedef struct __mavlink_marker_t 
-{
-	uint16_t id; ///< ID
-	float x; ///< x position
-	float y; ///< y position
-	float z; ///< z position
-	float roll; ///< roll orientation
-	float pitch; ///< pitch orientation
-	float yaw; ///< yaw orientation
-
-} mavlink_marker_t;
-
-typedef struct __mavlink_raw_imu_t 
-{
-	uint64_t msec; ///< Timestamp (milliseconds)
-	int16_t xacc; ///< X acceleration (mg raw)
-	int16_t yacc; ///< Y acceleration (mg raw)
-	int16_t zacc; ///< Z acceleration (mg raw)
-	uint16_t xgyro; ///< Angular speed around X axis (adc units)
-	uint16_t ygyro; ///< Angular speed around Y axis (adc units)
-	uint16_t zgyro; ///< Angular speed around Z axis (adc units)
-	int16_t xmag; ///< X Magnetic field (milli tesla)
-	int16_t ymag; ///< Y Magnetic field (milli tesla)
-	int16_t zmag; ///< Z Magnetic field (milli tesla)
-
-} mavlink_raw_imu_t;
-
-typedef struct __mavlink_raw_aux_t 
-{
-	uint16_t adc1; ///< ADC1 (J405 ADC3, LPC2148 AD0.6)
-	uint16_t adc2; ///< ADC2 (J405 ADC5, LPC2148 AD0.2)
-	uint16_t adc3; ///< ADC3 (J405 ADC6, LPC2148 AD0.1)
-	uint16_t adc4; ///< ADC4 (J405 ADC7, LPC2148 AD1.3)
-	uint16_t vbat; ///< Battery voltage
-	int16_t temp; ///< Temperature (degrees celcius)
-	int16_t baro; ///< Barometric pressure (hecto Pascal)
-
-} mavlink_raw_aux_t;
-
-typedef struct __mavlink_aux_status_t 
-{
-	uint16_t load; ///< Maximum usage in percent of the mainloop time, should be always below 100
-
-} mavlink_aux_status_t;
-
-typedef struct __mavlink_watchdog_heartbeat_t 
-{
-	uint16_t watchdog_id; ///< Watchdog ID
-	uint16_t process_count; ///< Number of processes
-
-} mavlink_watchdog_heartbeat_t;
-
-typedef struct __mavlink_watchdog_process_info_t 
-{
-	uint16_t watchdog_id; ///< Watchdog ID
-	uint16_t process_id; ///< Process ID
-	int8_t name[100]; ///< Process name
-	int8_t arguments[147]; ///< Process arguments
-	int32_t timeout; ///< Timeout (seconds)
-
-} mavlink_watchdog_process_info_t;
-
-typedef struct __mavlink_watchdog_process_status_t 
-{
-	uint16_t watchdog_id; ///< Watchdog ID
-	uint16_t process_id; ///< Process ID
-	uint8_t state; ///< Is running / finished / suspended / crashed
-	uint8_t muted; ///< Is muted
-	int32_t pid; ///< PID
-	uint16_t crashes; ///< Number of crashes
-
-} mavlink_watchdog_process_status_t;
-
-typedef struct __mavlink_watchdog_command_t 
-{
-	uint8_t target_system_id; ///< Target system ID
-	uint16_t watchdog_id; ///< Watchdog ID
-	uint16_t process_id; ///< Process ID
-	uint8_t command_id; ///< Command ID
-
-} mavlink_watchdog_command_t;
-
-typedef struct __mavlink_pattern_detected_t 
-{
-	float confidence; ///< Confidence of detection
-	int8_t file[100]; ///< Pattern file name
-	uint8_t detected; ///< Accepted as true detection, 0 no, 1 yes
-
-} mavlink_pattern_detected_t;
+} mavlink_debug_t;

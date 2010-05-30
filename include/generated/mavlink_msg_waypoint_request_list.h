@@ -1,6 +1,6 @@
 // MESSAGE WAYPOINT_REQUEST_LIST PACKING
 
-#define MAVLINK_MSG_ID_WAYPOINT_REQUEST_LIST 96
+#define MAVLINK_MSG_ID_WAYPOINT_REQUEST_LIST 43
 
 typedef struct __mavlink_waypoint_request_list_t 
 {
