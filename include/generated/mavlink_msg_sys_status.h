@@ -1,13 +1,13 @@
 // MESSAGE SYS_STATUS PACKING
 
-#define MAVLINK_MSG_ID_SYS_STATUS 32
+#define MAVLINK_MSG_ID_SYS_STATUS 34
 
 typedef struct __mavlink_sys_status_t 
 {
-	uint8_t mode; ///< System mode
-	uint8_t nav_mode; ///< Navigation mode
-	uint8_t status; ///< System status flag
-	uint16_t vbat; ///< Battery voltage
+	uint8_t mode; ///< System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+	uint8_t nav_mode; ///< Navigation mode, see MAV_NAV_MODE ENUM
+	uint8_t status; ///< System status flag, see MAV_STATUS ENUM
+	uint16_t vbat; ///< Battery voltage, in millivolts
 	uint8_t motor_block; ///< Motor block status flag
 	uint16_t packet_drop; ///< Dropped packets
 
@@ -18,10 +18,10 @@ typedef struct __mavlink_sys_status_t
 /**
  * @brief Send a sys_status message
  *
- * @param mode System mode
- * @param nav_mode Navigation mode
- * @param status System status flag
- * @param vbat Battery voltage
+ * @param mode System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+ * @param nav_mode Navigation mode, see MAV_NAV_MODE ENUM
+ * @param status System status flag, see MAV_STATUS ENUM
+ * @param vbat Battery voltage, in millivolts
  * @param motor_block Motor block status flag
  * @param packet_drop Dropped packets
  * @return length of the message in bytes (excluding serial stream start sign)
@@ -31,10 +31,10 @@ static inline uint16_t mavlink_msg_sys_status_pack(uint8_t system_id, uint8_t co
 	msg->msgid = MAVLINK_MSG_ID_SYS_STATUS;
 	uint16_t i = 0;
 
-	i += put_uint8_t_by_index(mode, i, msg->payload); //System mode
-	i += put_uint8_t_by_index(nav_mode, i, msg->payload); //Navigation mode
-	i += put_uint8_t_by_index(status, i, msg->payload); //System status flag
-	i += put_uint16_t_by_index(vbat, i, msg->payload); //Battery voltage
+	i += put_uint8_t_by_index(mode, i, msg->payload); //System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+	i += put_uint8_t_by_index(nav_mode, i, msg->payload); //Navigation mode, see MAV_NAV_MODE ENUM
+	i += put_uint8_t_by_index(status, i, msg->payload); //System status flag, see MAV_STATUS ENUM
+	i += put_uint16_t_by_index(vbat, i, msg->payload); //Battery voltage, in millivolts
 	i += put_uint8_t_by_index(motor_block, i, msg->payload); //Motor block status flag
 	i += put_uint16_t_by_index(packet_drop, i, msg->payload); //Dropped packets
 
@@ -61,7 +61,7 @@ static inline void mavlink_msg_sys_status_send(mavlink_channel_t chan, uint8_t m
 /**
  * @brief Get field mode from sys_status message
  *
- * @return System mode
+ * @return System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
  */
 static inline uint8_t mavlink_msg_sys_status_get_mode(const mavlink_message_t* msg)
 {
@@ -71,7 +71,7 @@ static inline uint8_t mavlink_msg_sys_status_get_mode(const mavlink_message_t* m
 /**
  * @brief Get field nav_mode from sys_status message
  *
- * @return Navigation mode
+ * @return Navigation mode, see MAV_NAV_MODE ENUM
  */
 static inline uint8_t mavlink_msg_sys_status_get_nav_mode(const mavlink_message_t* msg)
 {
@@ -81,7 +81,7 @@ static inline uint8_t mavlink_msg_sys_status_get_nav_mode(const mavlink_message_
 /**
  * @brief Get field status from sys_status message
  *
- * @return System status flag
+ * @return System status flag, see MAV_STATUS ENUM
  */
 static inline uint8_t mavlink_msg_sys_status_get_status(const mavlink_message_t* msg)
 {
@@ -91,7 +91,7 @@ static inline uint8_t mavlink_msg_sys_status_get_status(const mavlink_message_t*
 /**
  * @brief Get field vbat from sys_status message
  *
- * @return Battery voltage
+ * @return Battery voltage, in millivolts
  */
 static inline uint16_t mavlink_msg_sys_status_get_vbat(const mavlink_message_t* msg)
 {

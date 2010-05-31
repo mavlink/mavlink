@@ -1,6 +1,6 @@
 // MESSAGE WAYPOINT_COUNT PACKING
 
-#define MAVLINK_MSG_ID_WAYPOINT_COUNT 97
+#define MAVLINK_MSG_ID_WAYPOINT_COUNT 44
 
 typedef struct __mavlink_waypoint_count_t 
 {

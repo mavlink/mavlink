@@ -1,6 +1,6 @@
 // MESSAGE WAYPOINT_REACHED PACKING
 
-#define MAVLINK_MSG_ID_WAYPOINT_REACHED 99
+#define MAVLINK_MSG_ID_WAYPOINT_REACHED 46
 
 typedef struct __mavlink_waypoint_reached_t 
 {

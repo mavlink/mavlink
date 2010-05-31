@@ -22,27 +22,38 @@
    </message>
 
    <message name="SET_MODE" id="11">
+   Set the system mode, as defined by enum MAV_MODE in mavlink/include/mavlink_types.h
      <field name="target" type="uint8_t">The system setting the mode</field>
      <field name="mode" type="uint8_t">The new mode</field>
    </message>
+
+   <message name="SET_NAV_MODE" id="12">
+   Set the system navigation mode, as defined by enum MAV_NAV_MODE in mavlink/include/mavlink_types.h
+     <field name="target" type="uint8_t">The system setting the mode</field>
+     <field name="nav_mode" type="uint8_t">The new navigation mode</field>
+   </message>
    
    <message name="PARAM_REQUEST_READ" id="20">
+     Request to read the onboard parameters.
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="param_id" type="array[15]">Onboard parameter id</field>
    </message>
 
    <message name="PARAM_REQUEST_LIST" id="21">
+     Request all parameters of this component.
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
    </message>
 
    <message name="PARAM_VALUE" id="22">
+     Emit the value of a onboard parameter.
      <field name="param_id" type="array[15]">Onboard parameter id</field>
      <field name="param_value" type="float">Onboard parameter value</field>
    </message>
 
    <message name="PARAM_SET" id="23">
+     Set a parameter value TEMPORARILY to RAM. It will be reset to default on system reboot.
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="param_id" type="array[15]">Onboard parameter id</field>
@@ -50,11 +61,43 @@
    </message>
 
    <message name="PARAM_WRITE_STORAGE" id="24">
+     Set the current parameter value (currently active in RAM) PERMANTLY to EEPROM/HDD. It will be the new default value.
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
    </message>
 
+   <message name="PID_SET" id="25">
+     Set PID values.
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="pid_id" type="uint8_t">PID ID</field>
+     <field name="k_p" type="float">P</field>
+     <field name="k_i" type="float">I</field>
+     <field name="k_d" type="float">D</field>
+   </message>
+
+   <message name="RAW_IMU" id="28">
+     <field name="usec"  type="uint64_t">Timestamp (microseconds since UNIX epoch)</field>
+     <field name="xacc"  type="int16_t">X acceleration (mg raw)</field>
+     <field name="yacc"  type="int16_t">Y acceleration (mg raw)</field>
+     <field name="zacc"  type="int16_t">Z acceleration (mg raw)</field>
+     <field name="xgyro" type="uint16_t">Angular speed around X axis (adc units)</field>
+     <field name="ygyro" type="uint16_t">Angular speed around Y axis (adc units)</field>
+     <field name="zgyro" type="uint16_t">Angular speed around Z axis (adc units)</field>
+     <field name="xmag"  type="int16_t">X Magnetic field (milli tesla)</field>
+     <field name="ymag"  type="int16_t">Y Magnetic field (milli tesla)</field>
+     <field name="zmag"  type="int16_t">Z Magnetic field (milli tesla)</field>
+   </message>
+
+  <message name="RAW_PRESSURE" id="29">
+     <field name="usec"  type="uint64_t">Timestamp (microseconds since UNIX epoch)</field>
+     <field name="press_abs"  type="int32_t">Absolute pressure (hectopascal)</field>
+     <field name="press_diff1"  type="int32_t">Differential pressure 1 (hectopascal)</field>
+     <field name="press_diff2"  type="int32_t">Differential pressure 2 (hectopascal)</field>
+   </message>
+
    <message name="ATTITUDE" id="30">
+    The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right).
      <field name="usec"  type="uint64_t">Timestamp (microseconds)</field>
      <field name="roll"  type="float">Roll angle (rad)</field>
      <field name="pitch" type="float">Pitch angle (rad)</field>
@@ -64,8 +107,9 @@
      <field name="yawspeed"   type="float">Yaw angular speed (rad/s)</field>
    </message>
 
-   <message name="POSITION" id="31">
-     <field name="usec" type="uint64_t">Timestamp (milliseconds)</field>
+   <message name="LOCAL_POSITION" id="31">
+     The filtered local position (e.g. fused computer vision and accelerometers).
+     <field name="usec" type="uint64_t">Timestamp (microseconds since unix epoch)</field>
      <field name="x"   type="float">X Position</field>
      <field name="y"   type="float">Y Position</field>
      <field name="z"   type="float">Z Position</field>
@@ -74,13 +118,178 @@
      <field name="vz"  type="float">Z Speed</field>
    </message>
 
-   <message name="SYS_STATUS" id="32">
-     <field name="mode" type="uint8_t">System mode</field>
-     <field name="nav_mode" type="uint8_t">Navigation mode</field>
-     <field name="status" type="uint8_t">System status flag</field>
-     <field name="vbat" type="uint16_t">Battery voltage</field>
+   <message name="GPS_RAW" id="32">
+     The global position, as returned by the Global Positioning System (GPS). This is
+NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate.
+     <field name="usec" type="uint64_t">Timestamp (microseconds since unix epoch)</field>
+     <field name="lat"   type="float">X Position</field>
+     <field name="lon"   type="float">Y Position</field>
+     <field name="alt"   type="float">Z Position</field>
+     <field name="vx"  type="float">X Speed</field>
+     <field name="vy"  type="float">Y Speed</field>
+     <field name="vz"  type="float">Z Speed</field>
+   </message>
+
+   <message name="GLOBAL_POSITION" id="33">
+     The filtered global position (e.g. fused GPS and accelerometers).
+     <field name="usec" type="uint64_t">Timestamp (microseconds since unix epoch)</field>
+     <field name="lat"   type="float">X Position</field>
+     <field name="lon"   type="float">Y Position</field>
+     <field name="alt"   type="float">Z Position</field>
+     <field name="vx"  type="float">X Speed</field>
+     <field name="vy"  type="float">Y Speed</field>
+     <field name="vz"  type="float">Z Speed</field>
+   </message>
+
+   <message name="SYS_STATUS" id="34">
+     <field name="mode" type="uint8_t">System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h</field>
+     <field name="nav_mode" type="uint8_t">Navigation mode, see MAV_NAV_MODE ENUM</field>
+     <field name="status" type="uint8_t">System status flag, see MAV_STATUS ENUM</field>
+     <field name="vbat" type="uint16_t">Battery voltage, in millivolts</field>
      <field name="motor_block" type="uint8_t">Motor block status flag</field>
      <field name="packet_drop" type="uint16_t">Dropped packets</field>
+   </message>
+
+   <message name="RC_CHANNELS_RAW" id="35">
+     The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.
+     <field name="chan1" type="uint16_t">RC channel 1 value, in microseconds</field>
+     <field name="chan2" type="uint16_t">RC channel 2 value, in microseconds</field>
+     <field name="chan3" type="uint16_t">RC channel 3 value, in microseconds</field>
+     <field name="chan4" type="uint16_t">RC channel 3 value, in microseconds</field>
+     <field name="chan5" type="uint16_t">RC channel 3 value, in microseconds</field>
+   </message>
+
+   <message name="RC_CHANNELS_TRIM_SET" id="36">
+     Trim values to scale the RAW RC channel values. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.
+     <field name="chan1_min" type="uint16_t">RC channel 1 min value, in microseconds</field>
+     <field name="chan1_zero" type="uint16_t">RC channel 1 zero value, in microseconds</field>
+     <field name="chan1_max" type="uint16_t">RC channel 1 max value, in microseconds</field>
+     <field name="chan2_min" type="uint16_t">RC channel 2 min value, in microseconds</field>
+     <field name="chan2_zero" type="uint16_t">RC channel 2 zero value, in microseconds</field>
+     <field name="chan2_max" type="uint16_t">RC channel 2 max value, in microseconds</field>
+     <field name="chan3_min" type="uint16_t">RC channel 3 min value, in microseconds</field>
+     <field name="chan3_zero" type="uint16_t">RC channel 3 zero value, in microseconds</field>
+     <field name="chan3_max" type="uint16_t">RC channel 3 max value, in microseconds</field>
+     <field name="chan4_min" type="uint16_t">RC channel 4 min value, in microseconds</field>
+     <field name="chan4_zero" type="uint16_t">RC channel 4 zero value, in microseconds</field>
+     <field name="chan4_max" type="uint16_t">RC channel 4 max value, in microseconds</field>
+     <field name="chan5_min" type="uint16_t">RC channel 5 min value, in microseconds</field>
+     <field name="chan5_zero" type="uint16_t">RC channel 5 zero value, in microseconds</field>
+     <field name="chan5_max" type="uint16_t">RC channel 5 max value, in microseconds</field>
+   </message>
+
+   <message name="RC_CHANNELS_MAPPING" id="37">
+     Mapping defining which functions each RC channel has
+     <field name="chan1_function" type="uint8_t">RC channel 1 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+     <field name="chan2_function" type="uint8_t">RC channel 2 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+     <field name="chan3_function" type="uint8_t">RC channel 3 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+     <field name="chan4_function" type="uint8_t">RC channel 4 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+     <field name="chan5_function" type="uint8_t">RC channel 5 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+   </message>
+
+   <message name="RC_CHANNELS_MAPPING_SET" id="38">
+     Mapping defining which functions each RC channel has.
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="chan1_function" type="uint8_t">RC channel 1 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+     <field name="chan2_function" type="uint8_t">RC channel 2 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+     <field name="chan3_function" type="uint8_t">RC channel 3 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+     <field name="chan4_function" type="uint8_t">RC channel 4 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+     <field name="chan5_function" type="uint8_t">RC channel 5 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h</field>
+   </message>
+
+   <message name="WAYPOINT" id="39">
+     Message encoding a waypoint. This message is emitted to announce
+     the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
+     <field name="seq" type="uint16_t">Sequence</field>
+     <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
+     <field name="orbit" type="uint8_t">Orbit to circle around the waypoint, in meters</field>
+     <field name="current" type="uint8_t">false:0, true:1</field>
+     <field name="x" type="float">local: x position, global: latitude</field>
+     <field name="y" type="float">y position: global: longitude</field>
+     <field name="z" type="float">z position: global: altitude</field>
+     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
+     <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
+   </message>
+
+   <message name="WAYPOINT_SET" id="40">
+     Message setting a waypoint. This message is emitted to announce
+     the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="seq" type="uint16_t">Sequence</field>
+     <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
+     <field name="orbit" type="uint8_t">Orbit to circle around the waypoint, in meters</field>
+     <field name="current" type="uint8_t">false:0, true:1</field>
+     <field name="x" type="float">local: x position, global: latitude</field>
+     <field name="y" type="float">y position: global: longitude</field>
+     <field name="z" type="float">z position: global: altitude</field>
+     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
+     <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
+   </message>
+
+   <message name="WAYPOINT_REQUEST" id="41">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="seq" type="uint16_t">Sequence</field>
+   </message>
+
+  <message name="WAYPOINT_SET_CURRENT" id="42">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="seq" type="uint16_t">Sequence</field>
+   </message>
+
+  <message name="WAYPOINT_REQUEST_LIST" id="43">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+   </message>
+
+   <message name="WAYPOINT_COUNT" id="44">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="count" type="uint16_t">Number of Waypoints in the Sequence</field>
+   </message>
+
+  <message name="WAYPOINT_CLEAR_ALL" id="45">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+   </message>
+
+   <message name="WAYPOINT_REACHED" id="46">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="seq" type="uint16_t">Sequence</field>
+   </message>
+
+   <message name="WAYPOINT_ERROR" id="47">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="type" type="uint8_t">0: OK, 1: Error</field>
+   </message>
+
+   <message name="WAYPOINT_SET_GLOBAL_REFERENCE" id="48">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="global_x" type="float">global x position</field>
+     <field name="global_y" type="float">global y position</field>
+     <field name="global_z" type="float">global z position</field>
+     <field name="global_yaw" type="float">global yaw orientation in radians, 0 = NORTH</field>
+     <field name="local_x" type="float">local x position that matches the global x position</field>
+     <field name="local_y" type="float">local y position that matches the global y position</field>
+     <field name="local_z" type="float">local z position that matches the global z position</field>
+     <field name="local_yaw" type="float">local yaw that matches the global yaw orientation</field>
+   </message>
+
+   <message name="SAFETY_SET_ALLOWED_AREA" id="49">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="type" type="uint8_t">0: global, 1: local</field>
+     <field name="x1" type="float">x position 1</field>
+     <field name="y1" type="float">y position 1</field>
+     <field name="z1" type="float">z position 1</field>
+     <field name="x2" type="float">x position 2</field>
+     <field name="y2" type="float">y position 2</field>
+     <field name="z2" type="float">z position 2</field>
    </message>
    
    <!-- MESSAGE IDs 50 - 250: Space for custom messages in individual projectname_messages.xml files -->
