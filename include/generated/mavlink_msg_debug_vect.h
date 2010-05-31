@@ -4,14 +4,14 @@
 
 typedef struct __mavlink_debug_vect_t 
 {
-	int8_t name[5]; ///< Name
+	int8_t name[10]; ///< Name
 	float x; ///< x
 	float y; ///< y
 	float z; ///< z
 
 } mavlink_debug_vect_t;
 
-#define MAVLINK_MSG_DEBUG_VECT_FIELD_NAME_LEN 5
+#define MAVLINK_MSG_DEBUG_VECT_FIELD_NAME_LEN 10
 
 /**
  * @brief Send a debug_vect message
@@ -27,7 +27,7 @@ static inline uint16_t mavlink_msg_debug_vect_pack(uint8_t system_id, uint8_t co
 	msg->msgid = MAVLINK_MSG_ID_DEBUG_VECT;
 	uint16_t i = 0;
 
-	i += put_array_by_index(name, 5, i, msg->payload); //Name
+	i += put_array_by_index(name, 10, i, msg->payload); //Name
 	i += put_float_by_index(x, i, msg->payload); //x
 	i += put_float_by_index(y, i, msg->payload); //y
 	i += put_float_by_index(z, i, msg->payload); //z
@@ -60,8 +60,8 @@ static inline void mavlink_msg_debug_vect_send(mavlink_channel_t chan, const int
 static inline uint16_t mavlink_msg_debug_vect_get_name(const mavlink_message_t* msg, int8_t* r_data)
 {
 
-	memcpy(r_data, msg->payload, 5);
-	return 5;
+	memcpy(r_data, msg->payload, 10);
+	return 10;
 }
 
 /**
@@ -72,10 +72,10 @@ static inline uint16_t mavlink_msg_debug_vect_get_name(const mavlink_message_t* 
 static inline float mavlink_msg_debug_vect_get_x(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+5)[0];
-	r.b[2] = (msg->payload+5)[1];
-	r.b[1] = (msg->payload+5)[2];
-	r.b[0] = (msg->payload+5)[3];
+	r.b[3] = (msg->payload+10)[0];
+	r.b[2] = (msg->payload+10)[1];
+	r.b[1] = (msg->payload+10)[2];
+	r.b[0] = (msg->payload+10)[3];
 	return (float)r.f;
 }
 
@@ -87,10 +87,10 @@ static inline float mavlink_msg_debug_vect_get_x(const mavlink_message_t* msg)
 static inline float mavlink_msg_debug_vect_get_y(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+5+sizeof(float))[0];
-	r.b[2] = (msg->payload+5+sizeof(float))[1];
-	r.b[1] = (msg->payload+5+sizeof(float))[2];
-	r.b[0] = (msg->payload+5+sizeof(float))[3];
+	r.b[3] = (msg->payload+10+sizeof(float))[0];
+	r.b[2] = (msg->payload+10+sizeof(float))[1];
+	r.b[1] = (msg->payload+10+sizeof(float))[2];
+	r.b[0] = (msg->payload+10+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -102,10 +102,10 @@ static inline float mavlink_msg_debug_vect_get_y(const mavlink_message_t* msg)
 static inline float mavlink_msg_debug_vect_get_z(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+5+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+5+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+5+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+5+sizeof(float)+sizeof(float))[3];
+	r.b[3] = (msg->payload+10+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+10+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+10+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+10+sizeof(float)+sizeof(float))[3];
 	return (float)r.f;
 }
 
