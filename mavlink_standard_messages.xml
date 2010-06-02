@@ -16,6 +16,14 @@
      <field name="time_usec" type="uint64_t">Timestamp of the master clock in microseconds since UNIX epoch.</field>
    </message>
 
+   <message name="PING" id="3">
+     A ping message either requesting or responding to a ping.
+     <field name="seq" type="uint32_t">PING sequence</field>
+     <field name="target_system" type="uint8_t">0: request ping from all receiving systems, if greater than 0: message is a ping response and number is the system id of the requesting system</field>
+     <field name="target_component" type="uint8_t">0: request ping from all receiving components, if greater than 0: message is a ping response and number is the system id of the requesting system</field>
+     <field name="time" type="uint64_t">Unix timestamp in microseconds</field>
+   </message>
+
    <message name="ACTION" id="10">
      <field name="target" type="uint8_t">The system executing the action</field>
      <field name="action" type="uint8_t">The action id</field>
