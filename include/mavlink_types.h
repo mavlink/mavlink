@@ -83,6 +83,13 @@ enum MAV_AUTOPILOT_TYPE
     MAV_AUTOPILOT_ARDUPILOT = 3
 };
 
+enum MAV_COMPONENT {
+	MAV_COMP_ID_GPS,
+	MAV_COMP_ID_WAYPOINTPLANNER,
+	MAV_COMP_ID_IMU = 200
+};
+
+
 #define MAVLINK_STX 0x55 ///< Packet start sign
 #define MAVLINK_STX_LEN 1 ///< Length of start sign
 #define MAVLINK_MAX_PAYLOAD_LEN 255 ///< Maximum payload length
