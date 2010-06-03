@@ -18,6 +18,15 @@ typedef struct __mavlink_system_time_t
 
 } mavlink_system_time_t;
 
+typedef struct __mavlink_ping_t 
+{
+	uint32_t seq; ///< PING sequence
+	uint8_t target_system; ///< 0: request ping from all receiving systems, if greater than 0: message is a ping response and number is the system id of the requesting system
+	uint8_t target_component; ///< 0: request ping from all receiving components, if greater than 0: message is a ping response and number is the system id of the requesting system
+	uint64_t time; ///< Unix timestamp in microseconds
+
+} mavlink_ping_t;
+
 typedef struct __mavlink_action_t 
 {
 	uint8_t target; ///< The system executing the action
