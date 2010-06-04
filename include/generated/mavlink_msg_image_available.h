@@ -17,6 +17,8 @@ typedef struct __mavlink_image_available_t
 	uint32_t key; ///< Shared memory area key
 	uint32_t exposure; ///< Exposure time, in microseconds
 	float gain; ///< Camera gain
+	float roll; ///< Roll angle in rad
+	float pitch; ///< Pitch angle in rad
 
 } mavlink_image_available_t;
 
@@ -38,9 +40,11 @@ typedef struct __mavlink_image_available_t
  * @param key Shared memory area key
  * @param exposure Exposure time, in microseconds
  * @param gain Camera gain
+ * @param roll Roll angle in rad
+ * @param pitch Pitch angle in rad
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_image_available_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t cam_id, uint8_t cam_no, uint64_t timestamp, uint64_t valid_until, uint32_t img_seq, uint32_t img_buf_index, uint16_t width, uint16_t height, uint16_t depth, uint8_t channels, uint32_t key, uint32_t exposure, float gain)
+static inline uint16_t mavlink_msg_image_available_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t cam_id, uint8_t cam_no, uint64_t timestamp, uint64_t valid_until, uint32_t img_seq, uint32_t img_buf_index, uint16_t width, uint16_t height, uint16_t depth, uint8_t channels, uint32_t key, uint32_t exposure, float gain, float roll, float pitch)
 {
 	msg->msgid = MAVLINK_MSG_ID_IMAGE_AVAILABLE;
 	uint16_t i = 0;
@@ -58,21 +62,23 @@ static inline uint16_t mavlink_msg_image_available_pack(uint8_t system_id, uint8
 	i += put_uint32_t_by_index(key, i, msg->payload); //Shared memory area key
 	i += put_uint32_t_by_index(exposure, i, msg->payload); //Exposure time, in microseconds
 	i += put_float_by_index(gain, i, msg->payload); //Camera gain
+	i += put_float_by_index(roll, i, msg->payload); //Roll angle in rad
+	i += put_float_by_index(pitch, i, msg->payload); //Pitch angle in rad
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
 
 static inline uint16_t mavlink_msg_image_available_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_image_available_t* image_available)
 {
-	return mavlink_msg_image_available_pack(system_id, component_id, msg, image_available->cam_id, image_available->cam_no, image_available->timestamp, image_available->valid_until, image_available->img_seq, image_available->img_buf_index, image_available->width, image_available->height, image_available->depth, image_available->channels, image_available->key, image_available->exposure, image_available->gain);
+	return mavlink_msg_image_available_pack(system_id, component_id, msg, image_available->cam_id, image_available->cam_no, image_available->timestamp, image_available->valid_until, image_available->img_seq, image_available->img_buf_index, image_available->width, image_available->height, image_available->depth, image_available->channels, image_available->key, image_available->exposure, image_available->gain, image_available->roll, image_available->pitch);
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_image_available_send(mavlink_channel_t chan, uint64_t cam_id, uint8_t cam_no, uint64_t timestamp, uint64_t valid_until, uint32_t img_seq, uint32_t img_buf_index, uint16_t width, uint16_t height, uint16_t depth, uint8_t channels, uint32_t key, uint32_t exposure, float gain)
+static inline void mavlink_msg_image_available_send(mavlink_channel_t chan, uint64_t cam_id, uint8_t cam_no, uint64_t timestamp, uint64_t valid_until, uint32_t img_seq, uint32_t img_buf_index, uint16_t width, uint16_t height, uint16_t depth, uint8_t channels, uint32_t key, uint32_t exposure, float gain, float roll, float pitch)
 {
 	mavlink_message_t msg;
-	mavlink_msg_image_available_pack(mavlink_system.sysid, mavlink_system.compid, &msg, cam_id, cam_no, timestamp, valid_until, img_seq, img_buf_index, width, height, depth, channels, key, exposure, gain);
+	mavlink_msg_image_available_pack(mavlink_system.sysid, mavlink_system.compid, &msg, cam_id, cam_no, timestamp, valid_until, img_seq, img_buf_index, width, height, depth, channels, key, exposure, gain, roll, pitch);
 	mavlink_send_uart(chan, &msg);
 }
 
@@ -270,6 +276,36 @@ static inline float mavlink_msg_image_available_get_gain(const mavlink_message_t
 	return (float)r.f;
 }
 
+/**
+ * @brief Get field roll from image_available message
+ *
+ * @return Roll angle in rad
+ */
+static inline float mavlink_msg_image_available_get_roll(const mavlink_message_t* msg)
+{
+	generic_32bit r;
+	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(uint8_t)+sizeof(uint64_t)+sizeof(uint64_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint64_t)+sizeof(uint8_t)+sizeof(uint64_t)+sizeof(uint64_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint64_t)+sizeof(uint8_t)+sizeof(uint64_t)+sizeof(uint64_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint64_t)+sizeof(uint8_t)+sizeof(uint64_t)+sizeof(uint64_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(float))[3];
+	return (float)r.f;
+}
+
+/**
+ * @brief Get field pitch from image_available message
+ *
+ * @return Pitch angle in rad
+ */
+static inline float mavlink_msg_image_available_get_pitch(const mavlink_message_t* msg)
+{
+	generic_32bit r;
+	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(uint8_t)+sizeof(uint64_t)+sizeof(uint64_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint64_t)+sizeof(uint8_t)+sizeof(uint64_t)+sizeof(uint64_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint64_t)+sizeof(uint8_t)+sizeof(uint64_t)+sizeof(uint64_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint64_t)+sizeof(uint8_t)+sizeof(uint64_t)+sizeof(uint64_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(float)+sizeof(float))[3];
+	return (float)r.f;
+}
+
 static inline void mavlink_msg_image_available_decode(const mavlink_message_t* msg, mavlink_image_available_t* image_available)
 {
 	image_available->cam_id = mavlink_msg_image_available_get_cam_id(msg);
@@ -285,4 +321,6 @@ static inline void mavlink_msg_image_available_decode(const mavlink_message_t* m
 	image_available->key = mavlink_msg_image_available_get_key(msg);
 	image_available->exposure = mavlink_msg_image_available_get_exposure(msg);
 	image_available->gain = mavlink_msg_image_available_get_gain(msg);
+	image_available->roll = mavlink_msg_image_available_get_roll(msg);
+	image_available->pitch = mavlink_msg_image_available_get_pitch(msg);
 }
