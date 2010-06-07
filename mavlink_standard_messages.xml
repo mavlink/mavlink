@@ -132,10 +132,22 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="usec" type="uint64_t">Timestamp (microseconds since unix epoch)</field>
      <field name="lat"   type="float">X Position</field>
      <field name="lon"   type="float">Y Position</field>
-     <field name="alt"   type="float">Z Position</field>
-     <field name="vx"  type="float">X Speed</field>
-     <field name="vy"  type="float">Y Speed</field>
-     <field name="vz"  type="float">Z Speed</field>
+     <field name="alt"   type="float">Z Position in meters</field>
+     <field name="p_lat"  type="float">Uncertainty in meters of latitude</field>
+     <field name="p_lon"  type="float">Uncertainty in meters of longitude</field>
+     <field name="v"  type="float">Overall speed</field>
+     <field name="hdg"  type="float">Heading, in FIXME</field>
+   </message>
+
+   <message name="GPS_STATUS" id="27">
+     The global position, as returned by the Global Positioning System (GPS). This is
+NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate.
+     <field name="usec" type="uint64_t">Timestamp (microseconds since unix epoch)</field>
+     <field name="satellites_visible"   type="uint8_t">Number of satellites visible</field>
+     <field name="satellite_used"   type="array[20]">0: Satellite not used, 1: used for localization</field>
+     <field name="satellite_azimuth"   type="array[20]">Azimuth (0: right on top of receiver) of satellite</field>
+     <field name="satellite_direction"  type="array[20]">Direction of satellite</field>
+     <field name="satellite_snr"  type="array[20]">Signal to noise ratio of satellite</field>
    </message>
 
    <message name="GLOBAL_POSITION" id="33">
