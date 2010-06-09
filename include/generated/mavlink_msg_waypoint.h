@@ -4,6 +4,8 @@
 
 typedef struct __mavlink_waypoint_t 
 {
+	uint8_t target_system; ///< System ID
+	uint8_t target_component; ///< Component ID
 	uint16_t seq; ///< Sequence
 	uint8_t type; ///< 0: global (GPS), 1: local, 2: global orbit, 3: local orbit
 	uint8_t orbit; ///< Orbit to circle around the waypoint, in meters
@@ -21,6 +23,8 @@ typedef struct __mavlink_waypoint_t
 /**
  * @brief Send a waypoint message
  *
+ * @param target_system System ID
+ * @param target_component Component ID
  * @param seq Sequence
  * @param type 0: global (GPS), 1: local, 2: global orbit, 3: local orbit
  * @param orbit Orbit to circle around the waypoint, in meters
@@ -32,11 +36,13 @@ typedef struct __mavlink_waypoint_t
  * @param autocontinue autocontinue to next wp
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_waypoint_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t seq, uint8_t type, uint8_t orbit, uint8_t current, float x, float y, float z, float yaw, uint16_t autocontinue)
+static inline uint16_t mavlink_msg_waypoint_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, uint16_t seq, uint8_t type, uint8_t orbit, uint8_t current, float x, float y, float z, float yaw, uint16_t autocontinue)
 {
 	msg->msgid = MAVLINK_MSG_ID_WAYPOINT;
 	uint16_t i = 0;
 
+	i += put_uint8_t_by_index(target_system, i, msg->payload); //System ID
+	i += put_uint8_t_by_index(target_component, i, msg->payload); //Component ID
 	i += put_uint16_t_by_index(seq, i, msg->payload); //Sequence
 	i += put_uint8_t_by_index(type, i, msg->payload); //0: global (GPS), 1: local, 2: global orbit, 3: local orbit
 	i += put_uint8_t_by_index(orbit, i, msg->payload); //Orbit to circle around the waypoint, in meters
@@ -52,20 +58,40 @@ static inline uint16_t mavlink_msg_waypoint_pack(uint8_t system_id, uint8_t comp
 
 static inline uint16_t mavlink_msg_waypoint_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_waypoint_t* waypoint)
 {
-	return mavlink_msg_waypoint_pack(system_id, component_id, msg, waypoint->seq, waypoint->type, waypoint->orbit, waypoint->current, waypoint->x, waypoint->y, waypoint->z, waypoint->yaw, waypoint->autocontinue);
+	return mavlink_msg_waypoint_pack(system_id, component_id, msg, waypoint->target_system, waypoint->target_component, waypoint->seq, waypoint->type, waypoint->orbit, waypoint->current, waypoint->x, waypoint->y, waypoint->z, waypoint->yaw, waypoint->autocontinue);
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_waypoint_send(mavlink_channel_t chan, uint16_t seq, uint8_t type, uint8_t orbit, uint8_t current, float x, float y, float z, float yaw, uint16_t autocontinue)
+static inline void mavlink_msg_waypoint_send(mavlink_channel_t chan, uint8_t target_system, uint8_t target_component, uint16_t seq, uint8_t type, uint8_t orbit, uint8_t current, float x, float y, float z, float yaw, uint16_t autocontinue)
 {
 	mavlink_message_t msg;
-	mavlink_msg_waypoint_pack(mavlink_system.sysid, mavlink_system.compid, &msg, seq, type, orbit, current, x, y, z, yaw, autocontinue);
+	mavlink_msg_waypoint_pack(mavlink_system.sysid, mavlink_system.compid, &msg, target_system, target_component, seq, type, orbit, current, x, y, z, yaw, autocontinue);
 	mavlink_send_uart(chan, &msg);
 }
 
 #endif
 // MESSAGE WAYPOINT UNPACKING
+
+/**
+ * @brief Get field target_system from waypoint message
+ *
+ * @return System ID
+ */
+static inline uint8_t mavlink_msg_waypoint_get_target_system(const mavlink_message_t* msg)
+{
+	return (uint8_t)(msg->payload)[0];
+}
+
+/**
+ * @brief Get field target_component from waypoint message
+ *
+ * @return Component ID
+ */
+static inline uint8_t mavlink_msg_waypoint_get_target_component(const mavlink_message_t* msg)
+{
+	return (uint8_t)(msg->payload+sizeof(uint8_t))[0];
+}
 
 /**
  * @brief Get field seq from waypoint message
@@ -75,8 +101,8 @@ static inline void mavlink_msg_waypoint_send(mavlink_channel_t chan, uint16_t se
 static inline uint16_t mavlink_msg_waypoint_get_seq(const mavlink_message_t* msg)
 {
 	generic_16bit r;
-	r.b[1] = (msg->payload)[0];
-	r.b[0] = (msg->payload)[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[0];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[1];
 	return (uint16_t)r.s;
 }
 
@@ -87,7 +113,7 @@ static inline uint16_t mavlink_msg_waypoint_get_seq(const mavlink_message_t* msg
  */
 static inline uint8_t mavlink_msg_waypoint_get_type(const mavlink_message_t* msg)
 {
-	return (uint8_t)(msg->payload+sizeof(uint16_t))[0];
+	return (uint8_t)(msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t))[0];
 }
 
 /**
@@ -97,7 +123,7 @@ static inline uint8_t mavlink_msg_waypoint_get_type(const mavlink_message_t* msg
  */
 static inline uint8_t mavlink_msg_waypoint_get_orbit(const mavlink_message_t* msg)
 {
-	return (uint8_t)(msg->payload+sizeof(uint16_t)+sizeof(uint8_t))[0];
+	return (uint8_t)(msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t))[0];
 }
 
 /**
@@ -107,7 +133,7 @@ static inline uint8_t mavlink_msg_waypoint_get_orbit(const mavlink_message_t* ms
  */
 static inline uint8_t mavlink_msg_waypoint_get_current(const mavlink_message_t* msg)
 {
-	return (uint8_t)(msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t))[0];
+	return (uint8_t)(msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t))[0];
 }
 
 /**
@@ -118,10 +144,10 @@ static inline uint8_t mavlink_msg_waypoint_get_current(const mavlink_message_t* 
 static inline float mavlink_msg_waypoint_get_x(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t))[3];
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t))[3];
 	return (float)r.f;
 }
 
@@ -133,10 +159,10 @@ static inline float mavlink_msg_waypoint_get_x(const mavlink_message_t* msg)
 static inline float mavlink_msg_waypoint_get_y(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -148,10 +174,10 @@ static inline float mavlink_msg_waypoint_get_y(const mavlink_message_t* msg)
 static inline float mavlink_msg_waypoint_get_z(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -163,10 +189,10 @@ static inline float mavlink_msg_waypoint_get_z(const mavlink_message_t* msg)
 static inline float mavlink_msg_waypoint_get_yaw(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -178,13 +204,15 @@ static inline float mavlink_msg_waypoint_get_yaw(const mavlink_message_t* msg)
 static inline uint16_t mavlink_msg_waypoint_get_autocontinue(const mavlink_message_t* msg)
 {
 	generic_16bit r;
-	r.b[1] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[0] = (msg->payload+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[1];
 	return (uint16_t)r.s;
 }
 
 static inline void mavlink_msg_waypoint_decode(const mavlink_message_t* msg, mavlink_waypoint_t* waypoint)
 {
+	waypoint->target_system = mavlink_msg_waypoint_get_target_system(msg);
+	waypoint->target_component = mavlink_msg_waypoint_get_target_component(msg);
 	waypoint->seq = mavlink_msg_waypoint_get_seq(msg);
 	waypoint->type = mavlink_msg_waypoint_get_type(msg);
 	waypoint->orbit = mavlink_msg_waypoint_get_orbit(msg);
