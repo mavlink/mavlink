@@ -538,7 +538,7 @@ static inline uint8_t put_uint8_t_by_index(uint8_t b, uint8_t bindex, uint8_t* b
  * @param buffer the packet buffer
  * @return the new position of the last used byte in the buffer
  */
-static inline uint8_t put_int8_by_index(int8_t b, int8_t bindex, uint8_t* buffer)
+static inline uint8_t put_int8_t_by_index(int8_t b, int8_t bindex, uint8_t* buffer)
 {
 	*(buffer + bindex) = (uint8_t)b;
 	return sizeof(b);

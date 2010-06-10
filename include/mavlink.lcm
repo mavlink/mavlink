@@ -363,20 +363,20 @@ typedef struct __mavlink_safety_set_allowed_area_t
 typedef struct __mavlink_attitude_controller_output_t 
 {
 	uint8_t enabled; ///< 1: enabled, 0: disabled
-	uint8_t roll; ///< Attitude roll: 0: 0%, 255: 100%
-	uint8_t pitch; ///< Attitude pitch: 0: 0%, 255: 100%
-	uint8_t yaw; ///< Attitude yaw: 0: 0%, 255: 100%
-	uint8_t thrust; ///< Attitude thrust: 0: 0%, 255: 100%
+	int8_t roll; ///< Attitude roll: -128: -100%, 127: +100%
+	int8_t pitch; ///< Attitude pitch: -128: -100%, 127: +100%
+	int8_t yaw; ///< Attitude yaw: -128: -100%, 127: +100%
+	int8_t thrust; ///< Attitude thrust: -128: -100%, 127: +100%
 
 } mavlink_attitude_controller_output_t;
 
 typedef struct __mavlink_position_controller_output_t 
 {
 	uint8_t enabled; ///< 1: enabled, 0: disabled
-	uint8_t x; ///< Position x: 0: 0%, 255: 100%
-	uint8_t y; ///< Position y: 0: 0%, 255: 100%
-	uint8_t z; ///< Position z: 0: 0%, 255: 100%
-	uint8_t yaw; ///< Position yaw: 0: 0%, 255: 100%
+	int8_t x; ///< Position x: -128: -100%, 127: +100%
+	int8_t y; ///< Position y: -128: -100%, 127: +100%
+	int8_t z; ///< Position z: -128: -100%, 127: +100%
+	int8_t yaw; ///< Position yaw: -128: -100%, 127: +100%
 
 } mavlink_position_controller_output_t;
 
