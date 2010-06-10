@@ -1,6 +1,6 @@
 // MESSAGE IMAGE_AVAILABLE PACKING
 
-#define MAVLINK_MSG_ID_IMAGE_AVAILABLE 73
+#define MAVLINK_MSG_ID_IMAGE_AVAILABLE 103
 
 typedef struct __mavlink_image_available_t 
 {

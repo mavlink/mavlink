@@ -1,6 +1,6 @@
 // MESSAGE PATTERN_DETECTED PACKING
 
-#define MAVLINK_MSG_ID_PATTERN_DETECTED 200
+#define MAVLINK_MSG_ID_PATTERN_DETECTED 160
 
 typedef struct __mavlink_pattern_detected_t 
 {

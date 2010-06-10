@@ -1,6 +1,6 @@
 // MESSAGE VISION_POSITION_ESTIMATE PACKING
 
-#define MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE 91
+#define MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE 111
 
 typedef struct __mavlink_vision_position_estimate_t 
 {

@@ -1,6 +1,6 @@
 // MESSAGE RAW_AUX PACKING
 
-#define MAVLINK_MSG_ID_RAW_AUX 131
+#define MAVLINK_MSG_ID_RAW_AUX 141
 
 typedef struct __mavlink_raw_aux_t 
 {
@@ -10,7 +10,7 @@ typedef struct __mavlink_raw_aux_t
 	uint16_t adc4; ///< ADC4 (J405 ADC7, LPC2148 AD1.3)
 	uint16_t vbat; ///< Battery voltage
 	int16_t temp; ///< Temperature (degrees celcius)
-	int16_t baro; ///< Barometric pressure (hecto Pascal)
+	int32_t baro; ///< Barometric pressure (hecto Pascal)
 
 } mavlink_raw_aux_t;
 
@@ -28,7 +28,7 @@ typedef struct __mavlink_raw_aux_t
  * @param baro Barometric pressure (hecto Pascal)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_raw_aux_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t adc1, uint16_t adc2, uint16_t adc3, uint16_t adc4, uint16_t vbat, int16_t temp, int16_t baro)
+static inline uint16_t mavlink_msg_raw_aux_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t adc1, uint16_t adc2, uint16_t adc3, uint16_t adc4, uint16_t vbat, int16_t temp, int32_t baro)
 {
 	msg->msgid = MAVLINK_MSG_ID_RAW_AUX;
 	uint16_t i = 0;
@@ -39,7 +39,7 @@ static inline uint16_t mavlink_msg_raw_aux_pack(uint8_t system_id, uint8_t compo
 	i += put_uint16_t_by_index(adc4, i, msg->payload); //ADC4 (J405 ADC7, LPC2148 AD1.3)
 	i += put_uint16_t_by_index(vbat, i, msg->payload); //Battery voltage
 	i += put_int16_t_by_index(temp, i, msg->payload); //Temperature (degrees celcius)
-	i += put_int16_t_by_index(baro, i, msg->payload); //Barometric pressure (hecto Pascal)
+	i += put_int32_t_by_index(baro, i, msg->payload); //Barometric pressure (hecto Pascal)
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
@@ -51,7 +51,7 @@ static inline uint16_t mavlink_msg_raw_aux_encode(uint8_t system_id, uint8_t com
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_raw_aux_send(mavlink_channel_t chan, uint16_t adc1, uint16_t adc2, uint16_t adc3, uint16_t adc4, uint16_t vbat, int16_t temp, int16_t baro)
+static inline void mavlink_msg_raw_aux_send(mavlink_channel_t chan, uint16_t adc1, uint16_t adc2, uint16_t adc3, uint16_t adc4, uint16_t vbat, int16_t temp, int32_t baro)
 {
 	mavlink_message_t msg;
 	mavlink_msg_raw_aux_pack(mavlink_system.sysid, mavlink_system.compid, &msg, adc1, adc2, adc3, adc4, vbat, temp, baro);
@@ -144,12 +144,14 @@ static inline int16_t mavlink_msg_raw_aux_get_temp(const mavlink_message_t* msg)
  *
  * @return Barometric pressure (hecto Pascal)
  */
-static inline int16_t mavlink_msg_raw_aux_get_baro(const mavlink_message_t* msg)
+static inline int32_t mavlink_msg_raw_aux_get_baro(const mavlink_message_t* msg)
 {
-	generic_16bit r;
-	r.b[1] = (msg->payload+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(int16_t))[0];
-	r.b[0] = (msg->payload+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(int16_t))[1];
-	return (int16_t)r.s;
+	generic_32bit r;
+	r.b[3] = (msg->payload+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(int16_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(int16_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(int16_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(uint16_t)+sizeof(int16_t))[3];
+	return (int32_t)r.i;
 }
 
 static inline void mavlink_msg_raw_aux_decode(const mavlink_message_t* msg, mavlink_raw_aux_t* raw_aux)

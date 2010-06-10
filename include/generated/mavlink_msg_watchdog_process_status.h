@@ -1,6 +1,6 @@
 // MESSAGE WATCHDOG_PROCESS_STATUS PACKING
 
-#define MAVLINK_MSG_ID_WATCHDOG_PROCESS_STATUS 162
+#define MAVLINK_MSG_ID_WATCHDOG_PROCESS_STATUS 152
 
 typedef struct __mavlink_watchdog_process_status_t 
 {

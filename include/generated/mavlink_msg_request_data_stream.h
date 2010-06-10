@@ -1,6 +1,6 @@
 // MESSAGE REQUEST_DATA_STREAM PACKING
 
-#define MAVLINK_MSG_ID_REQUEST_DATA_STREAM 51
+#define MAVLINK_MSG_ID_REQUEST_DATA_STREAM 81
 
 typedef struct __mavlink_request_data_stream_t 
 {

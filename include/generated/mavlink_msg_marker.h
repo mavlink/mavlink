@@ -1,6 +1,6 @@
 // MESSAGE MARKER PACKING
 
-#define MAVLINK_MSG_ID_MARKER 120
+#define MAVLINK_MSG_ID_MARKER 130
 
 typedef struct __mavlink_marker_t 
 {
