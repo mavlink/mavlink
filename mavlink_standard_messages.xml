@@ -226,7 +226,7 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
      <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
-     <field name="orbit" type="uint8_t">Orbit to circle around the waypoint, in meters</field>
+     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters</field>
      <field name="current" type="uint8_t">false:0, true:1</field>
      <field name="x" type="float">local: x position, global: latitude</field>
      <field name="y" type="float">y position: global: longitude</field>
@@ -236,13 +236,12 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
    </message>
 
    <message name="WAYPOINT_SET" id="40">
-     Message setting a waypoint. This message is emitted to announce
-     the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
+     Message setting a waypoint. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
      <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
-     <field name="orbit" type="uint8_t">Orbit to circle around the waypoint, in meters</field>
+     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters</field>
      <field name="current" type="uint8_t">false:0, true:1</field>
      <field name="x" type="float">local: x position, global: latitude</field>
      <field name="y" type="float">y position: global: longitude</field>
