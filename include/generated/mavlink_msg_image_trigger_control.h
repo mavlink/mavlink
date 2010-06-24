@@ -1,6 +1,6 @@
 // MESSAGE IMAGE_TRIGGER_CONTROL PACKING
 
-#define MAVLINK_MSG_ID_IMAGE_TRIGGER_CONTROL 72
+#define MAVLINK_MSG_ID_IMAGE_TRIGGER_CONTROL 102
 
 typedef struct __mavlink_image_trigger_control_t 
 {

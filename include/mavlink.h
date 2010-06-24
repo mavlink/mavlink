@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Wednesday, June 9 2010, 12:04 UTC
+ *	 Generated on Donnerstag, Juni 24 2010, 09:36 UTC
  */
 #ifndef MAVLINK_H
 #define MAVLINK_H
@@ -51,6 +51,10 @@ extern "C" {
 #include "generated/mavlink_msg_waypoint_error.h"
 #include "generated/mavlink_msg_waypoint_set_global_reference.h"
 #include "generated/mavlink_msg_safety_set_allowed_area.h"
+#include "generated/mavlink_msg_local_position_setpoint_set.h"
+#include "generated/mavlink_msg_local_position_setpoint.h"
+#include "generated/mavlink_msg_attitude_controller_output.h"
+#include "generated/mavlink_msg_position_controller_output.h"
 #include "generated/mavlink_msg_statustext.h"
 #include "generated/mavlink_msg_debug.h"
 #include "generated/mavlink_msg_set_altitude.h"

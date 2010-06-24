@@ -26,6 +26,7 @@
 
    <message name="ACTION" id="10">
      <field name="target" type="uint8_t">The system executing the action</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
      <field name="action" type="uint8_t">The action id</field>
    </message>
 
@@ -222,9 +223,12 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
    <message name="WAYPOINT" id="39">
      Message encoding a waypoint. This message is emitted to announce
      the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
      <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
-     <field name="orbit" type="uint8_t">Orbit to circle around the waypoint, in meters</field>
+     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters</field>
+     <field name="hold_time" type="uint32_t">Time that the MAV should stay inside the orbit before advancing, in milliseconds</field>
      <field name="current" type="uint8_t">false:0, true:1</field>
      <field name="x" type="float">local: x position, global: latitude</field>
      <field name="y" type="float">y position: global: longitude</field>
@@ -234,13 +238,13 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
    </message>
 
    <message name="WAYPOINT_SET" id="40">
-     Message setting a waypoint. This message is emitted to announce
-     the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
+     Message setting a waypoint. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
      <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
-     <field name="orbit" type="uint8_t">Orbit to circle around the waypoint, in meters</field>
+     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters</field>
+     <field name="hold_time" type="uint32_t">Time that the MAV should stay inside the orbit before advancing, in milliseconds</field>
      <field name="current" type="uint8_t">false:0, true:1</field>
      <field name="x" type="float">local: x position, global: latitude</field>
      <field name="y" type="float">y position: global: longitude</field>
@@ -312,6 +316,38 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="x2" type="float">x position 2</field>
      <field name="y2" type="float">y position 2</field>
      <field name="z2" type="float">z position 2</field>
+   </message>
+
+   <message name="LOCAL_POSITION_SETPOINT_SET" id="50">
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="x" type="float">x position 1</field>
+     <field name="y" type="float">y position 1</field>
+     <field name="z" type="float">z position 1</field>
+     <field name="yaw" type="float">x position 2</field>
+   </message>
+
+   <message name="LOCAL_POSITION_SETPOINT" id="51">
+     <field name="x" type="float">x position 1</field>
+     <field name="y" type="float">y position 1</field>
+     <field name="z" type="float">z position 1</field>
+     <field name="yaw" type="float">x position 2</field>
+   </message>
+
+   <message name="ATTITUDE_CONTROLLER_OUTPUT" id="60">
+     <field name="enabled" type="uint8_t">1: enabled, 0: disabled</field>
+     <field name="roll" type="int8_t">Attitude roll: -128: -100%, 127: +100%</field>
+     <field name="pitch" type="int8_t">Attitude pitch: -128: -100%, 127: +100%</field>
+     <field name="yaw" type="int8_t">Attitude yaw: -128: -100%, 127: +100%</field>
+     <field name="thrust" type="int8_t">Attitude thrust: -128: -100%, 127: +100%</field>
+   </message>
+
+   <message name="POSITION_CONTROLLER_OUTPUT" id="61">
+     <field name="enabled" type="uint8_t">1: enabled, 0: disabled</field>
+     <field name="x" type="int8_t">Position x: -128: -100%, 127: +100%</field>
+     <field name="y" type="int8_t">Position y: -128: -100%, 127: +100%</field>
+     <field name="z" type="int8_t">Position z: -128: -100%, 127: +100%</field>
+     <field name="yaw" type="int8_t">Position yaw: -128: -100%, 127: +100%</field>
    </message>
    
    <!-- MESSAGE IDs 50 - 250: Space for custom messages in individual projectname_messages.xml files -->

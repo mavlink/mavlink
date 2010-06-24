@@ -1,6 +1,6 @@
 // MESSAGE WATCHDOG_COMMAND PACKING
 
-#define MAVLINK_MSG_ID_WATCHDOG_COMMAND 163
+#define MAVLINK_MSG_ID_WATCHDOG_COMMAND 153
 
 typedef struct __mavlink_watchdog_command_t 
 {

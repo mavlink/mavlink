@@ -1,6 +1,6 @@
 // MESSAGE SET_CAM_SHUTTER PACKING
 
-#define MAVLINK_MSG_ID_SET_CAM_SHUTTER 70
+#define MAVLINK_MSG_ID_SET_CAM_SHUTTER 100
 
 typedef struct __mavlink_set_cam_shutter_t 
 {

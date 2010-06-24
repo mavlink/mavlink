@@ -1,6 +1,6 @@
 // MESSAGE IMAGE_TRIGGERED PACKING
 
-#define MAVLINK_MSG_ID_IMAGE_TRIGGERED 71
+#define MAVLINK_MSG_ID_IMAGE_TRIGGERED 101
 
 typedef struct __mavlink_image_triggered_t 
 {

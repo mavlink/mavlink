@@ -1,6 +1,6 @@
 // MESSAGE WATCHDOG_HEARTBEAT PACKING
 
-#define MAVLINK_MSG_ID_WATCHDOG_HEARTBEAT 160
+#define MAVLINK_MSG_ID_WATCHDOG_HEARTBEAT 150
 
 typedef struct __mavlink_watchdog_heartbeat_t 
 {
