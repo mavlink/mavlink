@@ -252,6 +252,7 @@ typedef struct __mavlink_waypoint_t
 	uint16_t seq; ///< Sequence
 	uint8_t type; ///< 0: global (GPS), 1: local, 2: global orbit, 3: local orbit
 	float orbit; ///< Orbit to circle around the waypoint, in meters
+	uint32_t hold_time; ///< Time that the MAV should stay inside the orbit before advancing, in milliseconds
 	uint8_t current; ///< false:0, true:1
 	float x; ///< local: x position, global: latitude
 	float y; ///< y position: global: longitude
@@ -268,6 +269,7 @@ typedef struct __mavlink_waypoint_set_t
 	uint16_t seq; ///< Sequence
 	uint8_t type; ///< 0: global (GPS), 1: local, 2: global orbit, 3: local orbit
 	float orbit; ///< Orbit to circle around the waypoint, in meters
+	uint32_t hold_time; ///< Time that the MAV should stay inside the orbit before advancing, in milliseconds
 	uint8_t current; ///< false:0, true:1
 	float x; ///< local: x position, global: latitude
 	float y; ///< y position: global: longitude
