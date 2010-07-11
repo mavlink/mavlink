@@ -135,7 +135,7 @@ typedef enum {
 	MAVLINK_COMM_7,
 	MAVLINK_COMM_8,
 	MAVLINK_COMM_NB,
-	MAVLINK_COMM_NB_HIGH = 512
+	MAVLINK_COMM_NB_HIGH = 16
 } mavlink_channel_t;
 
 typedef enum {
