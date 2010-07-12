@@ -8,9 +8,9 @@ typedef struct __mavlink_local_position_t
 	float x; ///< X Position
 	float y; ///< Y Position
 	float z; ///< Z Position
-	float vx; ///< X Speed
-	float vy; ///< Y Speed
-	float vz; ///< Z Speed
+	float roll; ///< Roll
+	float pitch; ///< Pitch
+	float yaw; ///< Yaw
 
 } mavlink_local_position_t;
 
@@ -23,12 +23,12 @@ typedef struct __mavlink_local_position_t
  * @param x X Position
  * @param y Y Position
  * @param z Z Position
- * @param vx X Speed
- * @param vy Y Speed
- * @param vz Z Speed
+ * @param roll Roll
+ * @param pitch Pitch
+ * @param yaw Yaw
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_local_position_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float x, float y, float z, float vx, float vy, float vz)
+static inline uint16_t mavlink_msg_local_position_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float x, float y, float z, float roll, float pitch, float yaw)
 {
 	msg->msgid = MAVLINK_MSG_ID_LOCAL_POSITION;
 	uint16_t i = 0;
@@ -37,24 +37,24 @@ static inline uint16_t mavlink_msg_local_position_pack(uint8_t system_id, uint8_
 	i += put_float_by_index(x, i, msg->payload); //X Position
 	i += put_float_by_index(y, i, msg->payload); //Y Position
 	i += put_float_by_index(z, i, msg->payload); //Z Position
-	i += put_float_by_index(vx, i, msg->payload); //X Speed
-	i += put_float_by_index(vy, i, msg->payload); //Y Speed
-	i += put_float_by_index(vz, i, msg->payload); //Z Speed
+	i += put_float_by_index(roll, i, msg->payload); //Roll
+	i += put_float_by_index(pitch, i, msg->payload); //Pitch
+	i += put_float_by_index(yaw, i, msg->payload); //Yaw
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
 
 static inline uint16_t mavlink_msg_local_position_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_local_position_t* local_position)
 {
-	return mavlink_msg_local_position_pack(system_id, component_id, msg, local_position->usec, local_position->x, local_position->y, local_position->z, local_position->vx, local_position->vy, local_position->vz);
+	return mavlink_msg_local_position_pack(system_id, component_id, msg, local_position->usec, local_position->x, local_position->y, local_position->z, local_position->roll, local_position->pitch, local_position->yaw);
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_local_position_send(mavlink_channel_t chan, uint64_t usec, float x, float y, float z, float vx, float vy, float vz)
+static inline void mavlink_msg_local_position_send(mavlink_channel_t chan, uint64_t usec, float x, float y, float z, float roll, float pitch, float yaw)
 {
 	mavlink_message_t msg;
-	mavlink_msg_local_position_pack(mavlink_system.sysid, mavlink_system.compid, &msg, usec, x, y, z, vx, vy, vz);
+	mavlink_msg_local_position_pack(mavlink_system.sysid, mavlink_system.compid, &msg, usec, x, y, z, roll, pitch, yaw);
 	mavlink_send_uart(chan, &msg);
 }
 
@@ -126,11 +126,11 @@ static inline float mavlink_msg_local_position_get_z(const mavlink_message_t* ms
 }
 
 /**
- * @brief Get field vx from local_position message
+ * @brief Get field roll from local_position message
  *
- * @return X Speed
+ * @return Roll
  */
-static inline float mavlink_msg_local_position_get_vx(const mavlink_message_t* msg)
+static inline float mavlink_msg_local_position_get_roll(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
@@ -141,11 +141,11 @@ static inline float mavlink_msg_local_position_get_vx(const mavlink_message_t* m
 }
 
 /**
- * @brief Get field vy from local_position message
+ * @brief Get field pitch from local_position message
  *
- * @return Y Speed
+ * @return Pitch
  */
-static inline float mavlink_msg_local_position_get_vy(const mavlink_message_t* msg)
+static inline float mavlink_msg_local_position_get_pitch(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
@@ -156,11 +156,11 @@ static inline float mavlink_msg_local_position_get_vy(const mavlink_message_t* m
 }
 
 /**
- * @brief Get field vz from local_position message
+ * @brief Get field yaw from local_position message
  *
- * @return Z Speed
+ * @return Yaw
  */
-static inline float mavlink_msg_local_position_get_vz(const mavlink_message_t* msg)
+static inline float mavlink_msg_local_position_get_yaw(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint64_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
@@ -176,7 +176,7 @@ static inline void mavlink_msg_local_position_decode(const mavlink_message_t* ms
 	local_position->x = mavlink_msg_local_position_get_x(msg);
 	local_position->y = mavlink_msg_local_position_get_y(msg);
 	local_position->z = mavlink_msg_local_position_get_z(msg);
-	local_position->vx = mavlink_msg_local_position_get_vx(msg);
-	local_position->vy = mavlink_msg_local_position_get_vy(msg);
-	local_position->vz = mavlink_msg_local_position_get_vz(msg);
+	local_position->roll = mavlink_msg_local_position_get_roll(msg);
+	local_position->pitch = mavlink_msg_local_position_get_pitch(msg);
+	local_position->yaw = mavlink_msg_local_position_get_yaw(msg);
 }

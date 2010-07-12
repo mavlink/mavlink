@@ -107,11 +107,6 @@
      <field name="roll" type="float">Roll angle in rad</field>
      <field name="pitch" type="float">Pitch angle in rad</field>
      <field name="yaw" type="float">Yaw angle in rad</field>
-     <field name="vx"   type="float">Global X speed</field>
-     <field name="vy"   type="float">Global Y speed</field>
-     <field name="vz"   type="float">Global Z speed</field>
-     <field name="vyaw" type="float">Yaw angular speed in rad</field>
-     <field name="confidence" type="uint8_t">Confidence about the position. 0 = 0%, 255 = 100%</field>
    </message>
 
    <!-- Message sent to the MAV to set a new position as reference for the controller -->
@@ -163,6 +158,16 @@
   <field name="uart_total_err_count" type="uint16_t">Number of I2C errors since startup</field>
    </message>
 
+   <message name="CONTROL_STATUS" id="143">
+     <field name="position_fix" type="uint8_t">Position fix: 0: lost, 2: 2D position fix, 3: 3D position fix </field>
+     <field name="vision_fix" type="uint8_t">Vision position fix: 0: lost, 1: 2D local position hold, 2: 2D global position fix, 3: 3D global position fix </field>
+     <field name="gps_fix" type="uint8_t">GPS position fix: 0: no reception, 1: Minimum 1 satellite, but no position fix, 2: 2D position fix, 3: 3D position fix </field>
+     <field name="control_att" type="uint8_t">0: Attitude control disabled, 1: enabled</field>
+<field name="control_pos_xy" type="uint8_t">0: X, Y position control disabled, 1: enabled</field>
+<field name="control_pos_z" type="uint8_t">0: Z position control disabled, 1: enabled</field>
+<field name="control_pos_yaw" type="uint8_t">0: Yaw angle control disabled, 1: enabled</field>
+   </message>
+
   <message name="WATCHDOG_HEARTBEAT" id="150">
     <field name="watchdog_id" type="uint16_t">Watchdog ID</field>
     <field name="process_count" type="uint16_t">Number of processes</field>
@@ -193,6 +198,7 @@
   </message>
 
   <message name="PATTERN_DETECTED" id="160">
+    <field name="type" type="uint8_t">0: Pattern, 1: Letter</field>
     <field name="confidence" type="float">Confidence of detection</field>
     <field name="file" type="array[100]">Pattern file name</field>
     <field name="detected" type="uint8_t">Accepted as true detection, 0 no, 1 yes</field>
