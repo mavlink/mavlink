@@ -1,6 +1,6 @@
 // MESSAGE WAYPOINT_SET_CURRENT PACKING
 
-#define MAVLINK_MSG_ID_WAYPOINT_SET_CURRENT 42
+#define MAVLINK_MSG_ID_WAYPOINT_SET_CURRENT 41
 
 typedef struct __mavlink_waypoint_set_current_t 
 {

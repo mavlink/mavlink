@@ -5,7 +5,7 @@
 typedef struct __mavlink_action_t 
 {
 	uint8_t target; ///< The system executing the action
-	uint8_t target_component; ///< Component ID
+	uint8_t target_component; ///< The component executing the action
 	uint8_t action; ///< The action id
 
 } mavlink_action_t;
@@ -16,7 +16,7 @@ typedef struct __mavlink_action_t
  * @brief Send a action message
  *
  * @param target The system executing the action
- * @param target_component Component ID
+ * @param target_component The component executing the action
  * @param action The action id
  * @return length of the message in bytes (excluding serial stream start sign)
  */
@@ -26,7 +26,7 @@ static inline uint16_t mavlink_msg_action_pack(uint8_t system_id, uint8_t compon
 	uint16_t i = 0;
 
 	i += put_uint8_t_by_index(target, i, msg->payload); //The system executing the action
-	i += put_uint8_t_by_index(target_component, i, msg->payload); //Component ID
+	i += put_uint8_t_by_index(target_component, i, msg->payload); //The component executing the action
 	i += put_uint8_t_by_index(action, i, msg->payload); //The action id
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
@@ -62,7 +62,7 @@ static inline uint8_t mavlink_msg_action_get_target(const mavlink_message_t* msg
 /**
  * @brief Get field target_component from action message
  *
- * @return Component ID
+ * @return The component executing the action
  */
 static inline uint8_t mavlink_msg_action_get_target_component(const mavlink_message_t* msg)
 {
