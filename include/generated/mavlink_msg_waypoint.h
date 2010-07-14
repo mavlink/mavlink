@@ -8,14 +8,16 @@ typedef struct __mavlink_waypoint_t
 	uint8_t target_component; ///< Component ID
 	uint16_t seq; ///< Sequence
 	uint8_t type; ///< 0: global (GPS), 1: local, 2: global orbit, 3: local orbit
-	float orbit; ///< Orbit to circle around the waypoint, in meters
-	uint32_t hold_time; ///< Time that the MAV should stay inside the orbit before advancing, in milliseconds
+	float orbit; ///< Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint
+	uint8_t orbit_direction; ///< Direction of the orbit circling: 0: clockwise, 1: counter-clockwise
+	float param1; ///< For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters
+	float param2; ///< For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds
 	uint8_t current; ///< false:0, true:1
-	float x; ///< local: x position, global: latitude
-	float y; ///< y position: global: longitude
+	float x; ///< local: x position, global: longitude
+	float y; ///< y position: global: latitude
 	float z; ///< z position: global: altitude
 	float yaw; ///< yaw orientation in radians, 0 = NORTH
-	uint16_t autocontinue; ///< autocontinue to next wp
+	uint8_t autocontinue; ///< autocontinue to next wp
 
 } mavlink_waypoint_t;
 
@@ -28,17 +30,19 @@ typedef struct __mavlink_waypoint_t
  * @param target_component Component ID
  * @param seq Sequence
  * @param type 0: global (GPS), 1: local, 2: global orbit, 3: local orbit
- * @param orbit Orbit to circle around the waypoint, in meters
- * @param hold_time Time that the MAV should stay inside the orbit before advancing, in milliseconds
+ * @param orbit Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint
+ * @param orbit_direction Direction of the orbit circling: 0: clockwise, 1: counter-clockwise
+ * @param param1 For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters
+ * @param param2 For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds
  * @param current false:0, true:1
- * @param x local: x position, global: latitude
- * @param y y position: global: longitude
+ * @param x local: x position, global: longitude
+ * @param y y position: global: latitude
  * @param z z position: global: altitude
  * @param yaw yaw orientation in radians, 0 = NORTH
  * @param autocontinue autocontinue to next wp
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_waypoint_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, uint16_t seq, uint8_t type, float orbit, uint32_t hold_time, uint8_t current, float x, float y, float z, float yaw, uint16_t autocontinue)
+static inline uint16_t mavlink_msg_waypoint_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, uint16_t seq, uint8_t type, float orbit, uint8_t orbit_direction, float param1, float param2, uint8_t current, float x, float y, float z, float yaw, uint8_t autocontinue)
 {
 	msg->msgid = MAVLINK_MSG_ID_WAYPOINT;
 	uint16_t i = 0;
@@ -47,29 +51,31 @@ static inline uint16_t mavlink_msg_waypoint_pack(uint8_t system_id, uint8_t comp
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //Component ID
 	i += put_uint16_t_by_index(seq, i, msg->payload); //Sequence
 	i += put_uint8_t_by_index(type, i, msg->payload); //0: global (GPS), 1: local, 2: global orbit, 3: local orbit
-	i += put_float_by_index(orbit, i, msg->payload); //Orbit to circle around the waypoint, in meters
-	i += put_uint32_t_by_index(hold_time, i, msg->payload); //Time that the MAV should stay inside the orbit before advancing, in milliseconds
+	i += put_float_by_index(orbit, i, msg->payload); //Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint
+	i += put_uint8_t_by_index(orbit_direction, i, msg->payload); //Direction of the orbit circling: 0: clockwise, 1: counter-clockwise
+	i += put_float_by_index(param1, i, msg->payload); //For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters
+	i += put_float_by_index(param2, i, msg->payload); //For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds
 	i += put_uint8_t_by_index(current, i, msg->payload); //false:0, true:1
-	i += put_float_by_index(x, i, msg->payload); //local: x position, global: latitude
-	i += put_float_by_index(y, i, msg->payload); //y position: global: longitude
+	i += put_float_by_index(x, i, msg->payload); //local: x position, global: longitude
+	i += put_float_by_index(y, i, msg->payload); //y position: global: latitude
 	i += put_float_by_index(z, i, msg->payload); //z position: global: altitude
 	i += put_float_by_index(yaw, i, msg->payload); //yaw orientation in radians, 0 = NORTH
-	i += put_uint16_t_by_index(autocontinue, i, msg->payload); //autocontinue to next wp
+	i += put_uint8_t_by_index(autocontinue, i, msg->payload); //autocontinue to next wp
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
 
 static inline uint16_t mavlink_msg_waypoint_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_waypoint_t* waypoint)
 {
-	return mavlink_msg_waypoint_pack(system_id, component_id, msg, waypoint->target_system, waypoint->target_component, waypoint->seq, waypoint->type, waypoint->orbit, waypoint->hold_time, waypoint->current, waypoint->x, waypoint->y, waypoint->z, waypoint->yaw, waypoint->autocontinue);
+	return mavlink_msg_waypoint_pack(system_id, component_id, msg, waypoint->target_system, waypoint->target_component, waypoint->seq, waypoint->type, waypoint->orbit, waypoint->orbit_direction, waypoint->param1, waypoint->param2, waypoint->current, waypoint->x, waypoint->y, waypoint->z, waypoint->yaw, waypoint->autocontinue);
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_waypoint_send(mavlink_channel_t chan, uint8_t target_system, uint8_t target_component, uint16_t seq, uint8_t type, float orbit, uint32_t hold_time, uint8_t current, float x, float y, float z, float yaw, uint16_t autocontinue)
+static inline void mavlink_msg_waypoint_send(mavlink_channel_t chan, uint8_t target_system, uint8_t target_component, uint16_t seq, uint8_t type, float orbit, uint8_t orbit_direction, float param1, float param2, uint8_t current, float x, float y, float z, float yaw, uint8_t autocontinue)
 {
 	mavlink_message_t msg;
-	mavlink_msg_waypoint_pack(mavlink_system.sysid, mavlink_system.compid, &msg, target_system, target_component, seq, type, orbit, hold_time, current, x, y, z, yaw, autocontinue);
+	mavlink_msg_waypoint_pack(mavlink_system.sysid, mavlink_system.compid, &msg, target_system, target_component, seq, type, orbit, orbit_direction, param1, param2, current, x, y, z, yaw, autocontinue);
 	mavlink_send_uart(chan, &msg);
 }
 
@@ -122,7 +128,7 @@ static inline uint8_t mavlink_msg_waypoint_get_type(const mavlink_message_t* msg
 /**
  * @brief Get field orbit from waypoint message
  *
- * @return Orbit to circle around the waypoint, in meters
+ * @return Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint
  */
 static inline float mavlink_msg_waypoint_get_orbit(const mavlink_message_t* msg)
 {
@@ -135,18 +141,43 @@ static inline float mavlink_msg_waypoint_get_orbit(const mavlink_message_t* msg)
 }
 
 /**
- * @brief Get field hold_time from waypoint message
+ * @brief Get field orbit_direction from waypoint message
  *
- * @return Time that the MAV should stay inside the orbit before advancing, in milliseconds
+ * @return Direction of the orbit circling: 0: clockwise, 1: counter-clockwise
  */
-static inline uint32_t mavlink_msg_waypoint_get_hold_time(const mavlink_message_t* msg)
+static inline uint8_t mavlink_msg_waypoint_get_orbit_direction(const mavlink_message_t* msg)
+{
+	return (uint8_t)(msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float))[0];
+}
+
+/**
+ * @brief Get field param1 from waypoint message
+ *
+ * @return For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters
+ */
+static inline float mavlink_msg_waypoint_get_param1(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float))[3];
-	return (uint32_t)r.i;
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t))[3];
+	return (float)r.f;
+}
+
+/**
+ * @brief Get field param2 from waypoint message
+ *
+ * @return For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds
+ */
+static inline float mavlink_msg_waypoint_get_param2(const mavlink_message_t* msg)
+{
+	generic_32bit r;
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float))[3];
+	return (float)r.f;
 }
 
 /**
@@ -156,36 +187,36 @@ static inline uint32_t mavlink_msg_waypoint_get_hold_time(const mavlink_message_
  */
 static inline uint8_t mavlink_msg_waypoint_get_current(const mavlink_message_t* msg)
 {
-	return (uint8_t)(msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t))[0];
+	return (uint8_t)(msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[0];
 }
 
 /**
  * @brief Get field x from waypoint message
  *
- * @return local: x position, global: latitude
+ * @return local: x position, global: longitude
  */
 static inline float mavlink_msg_waypoint_get_x(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t))[3];
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t))[3];
 	return (float)r.f;
 }
 
 /**
  * @brief Get field y from waypoint message
  *
- * @return y position: global: longitude
+ * @return y position: global: latitude
  */
 static inline float mavlink_msg_waypoint_get_y(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -197,10 +228,10 @@ static inline float mavlink_msg_waypoint_get_y(const mavlink_message_t* msg)
 static inline float mavlink_msg_waypoint_get_z(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -212,10 +243,10 @@ static inline float mavlink_msg_waypoint_get_z(const mavlink_message_t* msg)
 static inline float mavlink_msg_waypoint_get_yaw(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[3];
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float))[3];
 	return (float)r.f;
 }
 
@@ -224,12 +255,9 @@ static inline float mavlink_msg_waypoint_get_yaw(const mavlink_message_t* msg)
  *
  * @return autocontinue to next wp
  */
-static inline uint16_t mavlink_msg_waypoint_get_autocontinue(const mavlink_message_t* msg)
+static inline uint8_t mavlink_msg_waypoint_get_autocontinue(const mavlink_message_t* msg)
 {
-	generic_16bit r;
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint32_t)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[1];
-	return (uint16_t)r.s;
+	return (uint8_t)(msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(uint8_t)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(uint8_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
 }
 
 static inline void mavlink_msg_waypoint_decode(const mavlink_message_t* msg, mavlink_waypoint_t* waypoint)
@@ -239,7 +267,9 @@ static inline void mavlink_msg_waypoint_decode(const mavlink_message_t* msg, mav
 	waypoint->seq = mavlink_msg_waypoint_get_seq(msg);
 	waypoint->type = mavlink_msg_waypoint_get_type(msg);
 	waypoint->orbit = mavlink_msg_waypoint_get_orbit(msg);
-	waypoint->hold_time = mavlink_msg_waypoint_get_hold_time(msg);
+	waypoint->orbit_direction = mavlink_msg_waypoint_get_orbit_direction(msg);
+	waypoint->param1 = mavlink_msg_waypoint_get_param1(msg);
+	waypoint->param2 = mavlink_msg_waypoint_get_param2(msg);
 	waypoint->current = mavlink_msg_waypoint_get_current(msg);
 	waypoint->x = mavlink_msg_waypoint_get_x(msg);
 	waypoint->y = mavlink_msg_waypoint_get_y(msg);

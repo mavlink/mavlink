@@ -35,7 +35,7 @@
    <message name="ACTION_ACK" id="62">
 	This message acknowledges an action. IMPORTANT: The acknowledgement can be also negative, e.g. the MAV rejects a reset message because it is in-flight. The action ids are defined in ENUM MAV_ACTION in mavlink/include/mavlink_types.h
      <field name="action" type="uint8_t">The action id</field>
-     <field name="action" type="uint8_t">0: Action DENIED, 1: Action executed</field>
+     <field name="result" type="uint8_t">0: Action DENIED, 1: Action executed</field>
    </message>
 
    <message name="SET_MODE" id="11">
@@ -51,7 +51,7 @@
    </message>
    
    <message name="PARAM_REQUEST_READ" id="20">
-     Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -> value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots.
+     Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -> value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also http://qgroundcontrol.org/parameter_interface for a full documentation of QGroundControl and IMU code.
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="param_id" type="array[15]">Onboard parameter id</field>
@@ -239,35 +239,39 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
 
    <message name="WAYPOINT" id="39">
      Message encoding a waypoint. This message is emitted to announce
-     the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
+     the presence of a waypoint. It cannot be used to set a waypoint, use WAYPOINT_SET for this purpose. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore y encodes in global mode the latitude, whereas x encodes the longitude and z the GPS altitude (WGS84).
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
      <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
-     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters</field>
-     <field name="hold_time" type="uint32_t">Time that the MAV should stay inside the orbit before advancing, in milliseconds</field>
+     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint</field>
+     <field name="orbit_direction" type="uint8_t">Direction of the orbit circling: 0: clockwise, 1: counter-clockwise</field>
+     <field name="param1" type="float">For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters</field>
+     <field name="param2" type="float">For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds</field>
      <field name="current" type="uint8_t">false:0, true:1</field>
-     <field name="x" type="float">local: x position, global: latitude</field>
-     <field name="y" type="float">y position: global: longitude</field>
+     <field name="x" type="float">local: x position, global: longitude</field>
+     <field name="y" type="float">y position: global: latitude</field>
      <field name="z" type="float">z position: global: altitude</field>
      <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
-     <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
+     <field name="autocontinue" type="uint8_t">autocontinue to next wp</field>
    </message>
 
    <message name="WAYPOINT_SET" id="40">
-     Message setting a waypoint. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore x encodes in global mode the latitude, whereas y encodes the longitude and z the altitude over ground.
+     Message setting a waypoint. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore y encodes in global mode the latitude, whereas x encodes the longitude and z the GPS altitude (WGS 84).
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
      <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
-     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters</field>
-     <field name="hold_time" type="uint32_t">Time that the MAV should stay inside the orbit before advancing, in milliseconds</field>
+     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint</field>
+     <field name="orbit_direction" type="uint8_t">Direction of the orbit circling: 0: clockwise, 1: counter-clockwise</field>
+     <field name="param1" type="float">For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters</field>
+     <field name="param2" type="float">For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds</field>
      <field name="current" type="uint8_t">false:0, true:1</field>
-     <field name="x" type="float">local: x position, global: latitude</field>
-     <field name="y" type="float">y position: global: longitude</field>
+     <field name="x" type="float">local: x position, global: longitude</field>
+     <field name="y" type="float">y position: global: latitude</field>
      <field name="z" type="float">z position: global: altitude</field>
      <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
-     <field name="autocontinue" type="uint16_t">autocontinue to next wp</field>
+     <field name="autocontinue" type="uint8_t">autocontinue to next wp</field>
    </message>
 
    <message name="WAYPOINT_REQUEST" id="41">

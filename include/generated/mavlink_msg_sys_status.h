@@ -7,9 +7,9 @@ typedef struct __mavlink_sys_status_t
 	uint8_t mode; ///< System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
 	uint8_t nav_mode; ///< Navigation mode, see MAV_NAV_MODE ENUM
 	uint8_t status; ///< System status flag, see MAV_STATUS ENUM
-	uint16_t vbat; ///< Battery voltage, in millivolts
-	uint8_t motor_block; ///< Motor block status flag
-	uint16_t packet_drop; ///< Dropped packets
+	uint16_t vbat; ///< Battery voltage, in millivolts (1 = 1 millivolt)
+	uint8_t motor_block; ///< Motor block status flag, 0: Motors can be switched on (and could be either off or on), 1: Mechanical motor block switch is on, motors cannot be switched on (and are definitely off)
+	uint16_t packet_drop; ///< Dropped packets (packets that were corrupted on reception on the MAV)
 
 } mavlink_sys_status_t;
 
@@ -21,9 +21,9 @@ typedef struct __mavlink_sys_status_t
  * @param mode System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
  * @param nav_mode Navigation mode, see MAV_NAV_MODE ENUM
  * @param status System status flag, see MAV_STATUS ENUM
- * @param vbat Battery voltage, in millivolts
- * @param motor_block Motor block status flag
- * @param packet_drop Dropped packets
+ * @param vbat Battery voltage, in millivolts (1 = 1 millivolt)
+ * @param motor_block Motor block status flag, 0: Motors can be switched on (and could be either off or on), 1: Mechanical motor block switch is on, motors cannot be switched on (and are definitely off)
+ * @param packet_drop Dropped packets (packets that were corrupted on reception on the MAV)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_sys_status_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t mode, uint8_t nav_mode, uint8_t status, uint16_t vbat, uint8_t motor_block, uint16_t packet_drop)
@@ -34,9 +34,9 @@ static inline uint16_t mavlink_msg_sys_status_pack(uint8_t system_id, uint8_t co
 	i += put_uint8_t_by_index(mode, i, msg->payload); //System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
 	i += put_uint8_t_by_index(nav_mode, i, msg->payload); //Navigation mode, see MAV_NAV_MODE ENUM
 	i += put_uint8_t_by_index(status, i, msg->payload); //System status flag, see MAV_STATUS ENUM
-	i += put_uint16_t_by_index(vbat, i, msg->payload); //Battery voltage, in millivolts
-	i += put_uint8_t_by_index(motor_block, i, msg->payload); //Motor block status flag
-	i += put_uint16_t_by_index(packet_drop, i, msg->payload); //Dropped packets
+	i += put_uint16_t_by_index(vbat, i, msg->payload); //Battery voltage, in millivolts (1 = 1 millivolt)
+	i += put_uint8_t_by_index(motor_block, i, msg->payload); //Motor block status flag, 0: Motors can be switched on (and could be either off or on), 1: Mechanical motor block switch is on, motors cannot be switched on (and are definitely off)
+	i += put_uint16_t_by_index(packet_drop, i, msg->payload); //Dropped packets (packets that were corrupted on reception on the MAV)
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
@@ -91,7 +91,7 @@ static inline uint8_t mavlink_msg_sys_status_get_status(const mavlink_message_t*
 /**
  * @brief Get field vbat from sys_status message
  *
- * @return Battery voltage, in millivolts
+ * @return Battery voltage, in millivolts (1 = 1 millivolt)
  */
 static inline uint16_t mavlink_msg_sys_status_get_vbat(const mavlink_message_t* msg)
 {
@@ -104,7 +104,7 @@ static inline uint16_t mavlink_msg_sys_status_get_vbat(const mavlink_message_t* 
 /**
  * @brief Get field motor_block from sys_status message
  *
- * @return Motor block status flag
+ * @return Motor block status flag, 0: Motors can be switched on (and could be either off or on), 1: Mechanical motor block switch is on, motors cannot be switched on (and are definitely off)
  */
 static inline uint8_t mavlink_msg_sys_status_get_motor_block(const mavlink_message_t* msg)
 {
@@ -114,7 +114,7 @@ static inline uint8_t mavlink_msg_sys_status_get_motor_block(const mavlink_messa
 /**
  * @brief Get field packet_drop from sys_status message
  *
- * @return Dropped packets
+ * @return Dropped packets (packets that were corrupted on reception on the MAV)
  */
 static inline uint16_t mavlink_msg_sys_status_get_packet_drop(const mavlink_message_t* msg)
 {

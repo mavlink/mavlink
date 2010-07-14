@@ -6,7 +6,7 @@ typedef struct __mavlink_safety_set_allowed_area_t
 {
 	uint8_t target_system; ///< System ID
 	uint8_t target_component; ///< Component ID
-	uint8_t type; ///< 0: global, 1: local
+	uint8_t type; ///< 0: global (GPS), 1: local
 	float x1; ///< x position 1
 	float y1; ///< y position 1
 	float z1; ///< z position 1
@@ -23,7 +23,7 @@ typedef struct __mavlink_safety_set_allowed_area_t
  *
  * @param target_system System ID
  * @param target_component Component ID
- * @param type 0: global, 1: local
+ * @param type 0: global (GPS), 1: local
  * @param x1 x position 1
  * @param y1 y position 1
  * @param z1 z position 1
@@ -39,7 +39,7 @@ static inline uint16_t mavlink_msg_safety_set_allowed_area_pack(uint8_t system_i
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); //System ID
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //Component ID
-	i += put_uint8_t_by_index(type, i, msg->payload); //0: global, 1: local
+	i += put_uint8_t_by_index(type, i, msg->payload); //0: global (GPS), 1: local
 	i += put_float_by_index(x1, i, msg->payload); //x position 1
 	i += put_float_by_index(y1, i, msg->payload); //y position 1
 	i += put_float_by_index(z1, i, msg->payload); //z position 1
@@ -90,7 +90,7 @@ static inline uint8_t mavlink_msg_safety_set_allowed_area_get_target_component(c
 /**
  * @brief Get field type from safety_set_allowed_area message
  *
- * @return 0: global, 1: local
+ * @return 0: global (GPS), 1: local
  */
 static inline uint8_t mavlink_msg_safety_set_allowed_area_get_type(const mavlink_message_t* msg)
 {
