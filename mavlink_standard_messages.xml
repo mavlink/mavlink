@@ -256,35 +256,22 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="autocontinue" type="uint8_t">autocontinue to next wp</field>
    </message>
 
-   <message name="WAYPOINT_SET" id="40">
-     Message setting a waypoint. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore y encodes in global mode the latitude, whereas x encodes the longitude and z the GPS altitude (WGS 84).
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="seq" type="uint16_t">Sequence</field>
-     <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
-     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint</field>
-     <field name="orbit_direction" type="uint8_t">Direction of the orbit circling: 0: clockwise, 1: counter-clockwise</field>
-     <field name="param1" type="float">For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters</field>
-     <field name="param2" type="float">For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds</field>
-     <field name="current" type="uint8_t">false:0, true:1</field>
-     <field name="x" type="float">local: x position, global: longitude</field>
-     <field name="y" type="float">y position: global: latitude</field>
-     <field name="z" type="float">z position: global: altitude</field>
-     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
-     <field name="autocontinue" type="uint8_t">autocontinue to next wp</field>
-   </message>
-
-   <message name="WAYPOINT_REQUEST" id="41">
+   <message name="WAYPOINT_REQUEST" id="40">
      Request the information of the waypoint with the sequence number seq. The response of the system to this message should be a WAYPOINT message.
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
    </message>
 
-  <message name="WAYPOINT_SET_CURRENT" id="42">
+  <message name="WAYPOINT_SET_CURRENT" id="41">
      Set the waypoint with sequence number seq as current waypoint. This means that the MAV will continue to this waypoint on the shortest path (not following the waypoints in-between).
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="seq" type="uint16_t">Sequence</field>
+   </message>
+
+  <message name="WAYPOINT_CURRENT" id="42">
+     Message that announces the sequence number of the current active waypoint. The MAV will fly towards this waypoint.
      <field name="seq" type="uint16_t">Sequence</field>
    </message>
 
@@ -309,8 +296,6 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
 
    <message name="WAYPOINT_REACHED" id="46">
      A certain waypoint has been reached. The system will either hold this position (or circle on the orbit) or (if the autocontinue on the WP was set) continue to the next waypoint.
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
    </message>
 

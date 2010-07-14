@@ -270,25 +270,6 @@ typedef struct __mavlink_waypoint_t
 
 } mavlink_waypoint_t;
 
-typedef struct __mavlink_waypoint_set_t 
-{
-	uint8_t target_system; ///< System ID
-	uint8_t target_component; ///< Component ID
-	uint16_t seq; ///< Sequence
-	uint8_t type; ///< 0: global (GPS), 1: local, 2: global orbit, 3: local orbit
-	float orbit; ///< Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint
-	uint8_t orbit_direction; ///< Direction of the orbit circling: 0: clockwise, 1: counter-clockwise
-	float param1; ///< For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters
-	float param2; ///< For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds
-	uint8_t current; ///< false:0, true:1
-	float x; ///< local: x position, global: longitude
-	float y; ///< y position: global: latitude
-	float z; ///< z position: global: altitude
-	float yaw; ///< yaw orientation in radians, 0 = NORTH
-	uint8_t autocontinue; ///< autocontinue to next wp
-
-} mavlink_waypoint_set_t;
-
 typedef struct __mavlink_waypoint_request_t 
 {
 	uint8_t target_system; ///< System ID
@@ -304,6 +285,12 @@ typedef struct __mavlink_waypoint_set_current_t
 	uint16_t seq; ///< Sequence
 
 } mavlink_waypoint_set_current_t;
+
+typedef struct __mavlink_waypoint_current_t 
+{
+	uint16_t seq; ///< Sequence
+
+} mavlink_waypoint_current_t;
 
 typedef struct __mavlink_waypoint_request_list_t 
 {
@@ -329,8 +316,6 @@ typedef struct __mavlink_waypoint_clear_all_t
 
 typedef struct __mavlink_waypoint_reached_t 
 {
-	uint8_t target_system; ///< System ID
-	uint8_t target_component; ///< Component ID
 	uint16_t seq; ///< Sequence
 
 } mavlink_waypoint_reached_t;
