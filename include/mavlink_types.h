@@ -32,14 +32,14 @@ enum MAV_ACTION {
 enum MAV_MODE
 {
 	MAV_MODE_UNINIT = 0,
-			MAV_MODE_LOCKED = 1,
-			MAV_MODE_READY = 2,
-			MAV_MODE_MANUAL = 3,
-			MAV_MODE_GUIDED = 4,
-			MAV_MODE_AUTO = 5,
-			MAV_MODE_TEST1 = 6,
-			MAV_MODE_TEST2 = 7,
-			MAV_MODE_TEST3 = 8
+			MAV_MODE_LOCKED = 1, ///< Motors are blocked, system is safe
+			MAV_MODE_READY = 2,  ///< System is ready, motors are unblocked, but controllers are inactive
+			MAV_MODE_MANUAL = 3, ///< System is allowed to be active, under manual (RC) control
+			MAV_MODE_GUIDED = 4, ///< System is allowed to be active, under autonomous control, manual setpoint
+			MAV_MODE_AUTO = 5,   ///< System is allowed to be active, under autonomous control and navigation
+			MAV_MODE_TEST1 = 6,  ///< Generic test mode, for custom use
+			MAV_MODE_TEST2 = 7,  ///< Generic test mode, for custom use
+			MAV_MODE_TEST3 = 8   ///< Generic test mode, for custom use
 };
 
 enum MAV_STATE
