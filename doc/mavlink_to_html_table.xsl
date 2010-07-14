@@ -11,7 +11,6 @@
    <h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3>
      <!--<i><xsl:value-of select="messages/message" /><br /><br /></i>-->
 
-   <br /><br />
    <table class="sortable">
    <thead>
    <tr>
