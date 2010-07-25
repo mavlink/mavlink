@@ -20,7 +20,7 @@
    </tr>
    </thead>
    <tbody>
-   <xsl:apply-templates select="//field" />
+   <xsl:apply-templates select="field" />
   </tbody>
   </table>
 </xsl:template>
