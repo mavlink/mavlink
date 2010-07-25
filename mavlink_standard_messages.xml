@@ -2,13 +2,13 @@
 <mavlink>
 <messages>
    <message name="HEARTBEAT" id="0">
-     The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).
+     <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
      <field name="type" type="uint8_t">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
      <field name="autopilot" type="uint8_t">Type of the Autopilot: 0: Generic, 1: PIXHAWK, 2: SLUGS, 3: Ardupilot (up to 15 types), defined in MAV_AUTOPILOT_TYPE ENUM</field>
    </message>
  
    <message name="BOOT" id="1">
-	The boot message indicates that a system is starting. The onboard software version allows to keep track of onboard soft/firmware revisions.
+	<description>The boot message indicates that a system is starting. The onboard software version allows to keep track of onboard soft/firmware revisions.</description>
      <field name="version" type="uint32_t">The onboard software version</field>
    </message>
 
@@ -18,7 +18,7 @@
    </message>
 
    <message name="PING" id="3">
-     A ping message either requesting or responding to a ping. This allows to measure the system latencies, including serial port, radio modem and UDP connections.
+     <description>A ping message either requesting or responding to a ping. This allows to measure the system latencies, including serial port, radio modem and UDP connections.</description>
      <field name="seq" type="uint32_t">PING sequence</field>
      <field name="target_system" type="uint8_t">0: request ping from all receiving systems, if greater than 0: message is a ping response and number is the system id of the requesting system</field>
      <field name="target_component" type="uint8_t">0: request ping from all receiving components, if greater than 0: message is a ping response and number is the system id of the requesting system</field>
@@ -26,7 +26,7 @@
    </message>
 
    <message name="ACTION" id="10">
-	An action message allows to execute a certain onboard action. These include liftoff, land, storing parameters too EEPROM, shutddown, etc. The action ids are defined in ENUM MAV_ACTION in mavlink/include/mavlink_types.h
+	<description>An action message allows to execute a certain onboard action. These include liftoff, land, storing parameters too EEPROM, shutddown, etc. The action ids are defined in ENUM MAV_ACTION in mavlink/include/mavlink_types.h</description>
      <field name="target" type="uint8_t">The system executing the action</field>
      <field name="target_component" type="uint8_t">The component executing the action</field>
      <field name="action" type="uint8_t">The action id</field>
