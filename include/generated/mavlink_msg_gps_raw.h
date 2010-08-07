@@ -34,8 +34,8 @@ typedef struct __mavlink_gps_raw_t
  */
 static inline uint16_t mavlink_msg_gps_raw_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, uint8_t fix_type, float lat, float lon, float alt, float eph, float epv, float v, float hdg)
 {
-	msg->msgid = MAVLINK_MSG_ID_GPS_RAW;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_GPS_RAW;
 
 	i += put_uint64_t_by_index(usec, i, msg->payload); //Timestamp (microseconds since unix epoch)
 	i += put_uint8_t_by_index(fix_type, i, msg->payload); //0-1: no fix, 2: 2D fix, 3: 3D fix

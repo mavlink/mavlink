@@ -26,8 +26,8 @@ typedef struct __mavlink_rc_channels_mapping_t
  */
 static inline uint16_t mavlink_msg_rc_channels_mapping_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t chan1_function, uint8_t chan2_function, uint8_t chan3_function, uint8_t chan4_function, uint8_t chan5_function)
 {
-	msg->msgid = MAVLINK_MSG_ID_RC_CHANNELS_MAPPING;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_RC_CHANNELS_MAPPING;
 
 	i += put_uint8_t_by_index(chan1_function, i, msg->payload); //RC channel 1 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
 	i += put_uint8_t_by_index(chan2_function, i, msg->payload); //RC channel 2 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h

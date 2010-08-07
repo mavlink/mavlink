@@ -18,8 +18,8 @@ typedef struct __mavlink_image_trigger_control_t
  */
 static inline uint16_t mavlink_msg_image_trigger_control_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t enable)
 {
-	msg->msgid = MAVLINK_MSG_ID_IMAGE_TRIGGER_CONTROL;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_IMAGE_TRIGGER_CONTROL;
 
 	i += put_uint8_t_by_index(enable, i, msg->payload); //0 to disable, 1 to enable
 

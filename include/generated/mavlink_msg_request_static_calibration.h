@@ -22,8 +22,8 @@ typedef struct __mavlink_request_static_calibration_t
  */
 static inline uint16_t mavlink_msg_request_static_calibration_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, uint16_t time)
 {
-	msg->msgid = MAVLINK_MSG_ID_REQUEST_STATIC_CALIBRATION;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_REQUEST_STATIC_CALIBRATION;
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); //The system which should auto-calibrate
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //The system component which should auto-calibrate

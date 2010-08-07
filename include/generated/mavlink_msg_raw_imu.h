@@ -36,8 +36,8 @@ typedef struct __mavlink_raw_imu_t
  */
 static inline uint16_t mavlink_msg_raw_imu_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, int16_t xacc, int16_t yacc, int16_t zacc, int16_t xgyro, int16_t ygyro, int16_t zgyro, int16_t xmag, int16_t ymag, int16_t zmag)
 {
-	msg->msgid = MAVLINK_MSG_ID_RAW_IMU;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_RAW_IMU;
 
 	i += put_uint64_t_by_index(usec, i, msg->payload); //Timestamp (microseconds since UNIX epoch)
 	i += put_int16_t_by_index(xacc, i, msg->payload); //X acceleration (mg raw)

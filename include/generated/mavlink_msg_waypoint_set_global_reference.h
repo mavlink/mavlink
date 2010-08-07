@@ -36,8 +36,8 @@ typedef struct __mavlink_waypoint_set_global_reference_t
  */
 static inline uint16_t mavlink_msg_waypoint_set_global_reference_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, float global_x, float global_y, float global_z, float global_yaw, float local_x, float local_y, float local_z, float local_yaw)
 {
-	msg->msgid = MAVLINK_MSG_ID_WAYPOINT_SET_GLOBAL_REFERENCE;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_WAYPOINT_SET_GLOBAL_REFERENCE;
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); //System ID
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //Component ID

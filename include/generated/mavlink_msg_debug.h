@@ -20,8 +20,8 @@ typedef struct __mavlink_debug_t
  */
 static inline uint16_t mavlink_msg_debug_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t ind, float value)
 {
-	msg->msgid = MAVLINK_MSG_ID_DEBUG;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_DEBUG;
 
 	i += put_uint8_t_by_index(ind, i, msg->payload); //index of debug variable
 	i += put_float_by_index(value, i, msg->payload); //DEBUG value

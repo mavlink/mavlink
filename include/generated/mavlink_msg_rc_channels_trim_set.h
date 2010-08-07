@@ -46,8 +46,8 @@ typedef struct __mavlink_rc_channels_trim_set_t
  */
 static inline uint16_t mavlink_msg_rc_channels_trim_set_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t chan1_min, uint16_t chan1_zero, uint16_t chan1_max, uint16_t chan2_min, uint16_t chan2_zero, uint16_t chan2_max, uint16_t chan3_min, uint16_t chan3_zero, uint16_t chan3_max, uint16_t chan4_min, uint16_t chan4_zero, uint16_t chan4_max, uint16_t chan5_min, uint16_t chan5_zero, uint16_t chan5_max)
 {
-	msg->msgid = MAVLINK_MSG_ID_RC_CHANNELS_TRIM_SET;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_RC_CHANNELS_TRIM_SET;
 
 	i += put_uint16_t_by_index(chan1_min, i, msg->payload); //RC channel 1 min value, in microseconds
 	i += put_uint16_t_by_index(chan1_zero, i, msg->payload); //RC channel 1 zero value, in microseconds

@@ -24,8 +24,8 @@ typedef struct __mavlink_param_request_read_t
  */
 static inline uint16_t mavlink_msg_param_request_read_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, const int8_t* param_id, uint16_t param_index)
 {
-	msg->msgid = MAVLINK_MSG_ID_PARAM_REQUEST_READ;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_PARAM_REQUEST_READ;
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); //System ID
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //Component ID

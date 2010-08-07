@@ -18,8 +18,8 @@ typedef struct __mavlink_system_time_t
  */
 static inline uint16_t mavlink_msg_system_time_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t time_usec)
 {
-	msg->msgid = MAVLINK_MSG_ID_SYSTEM_TIME;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_SYSTEM_TIME;
 
 	i += put_uint64_t_by_index(time_usec, i, msg->payload); //Timestamp of the master clock in microseconds since UNIX epoch.
 

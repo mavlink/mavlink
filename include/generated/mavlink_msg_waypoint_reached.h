@@ -18,8 +18,8 @@ typedef struct __mavlink_waypoint_reached_t
  */
 static inline uint16_t mavlink_msg_waypoint_reached_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t seq)
 {
-	msg->msgid = MAVLINK_MSG_ID_WAYPOINT_REACHED;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_WAYPOINT_REACHED;
 
 	i += put_uint16_t_by_index(seq, i, msg->payload); //Sequence
 

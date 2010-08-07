@@ -26,8 +26,8 @@ typedef struct __mavlink_attitude_controller_output_t
  */
 static inline uint16_t mavlink_msg_attitude_controller_output_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t enabled, int8_t roll, int8_t pitch, int8_t yaw, int8_t thrust)
 {
-	msg->msgid = MAVLINK_MSG_ID_ATTITUDE_CONTROLLER_OUTPUT;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_ATTITUDE_CONTROLLER_OUTPUT;
 
 	i += put_uint8_t_by_index(enabled, i, msg->payload); //1: enabled, 0: disabled
 	i += put_int8_t_by_index(roll, i, msg->payload); //Attitude roll: -128: -100%, 127: +100%

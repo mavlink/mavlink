@@ -20,8 +20,8 @@ typedef struct __mavlink_heartbeat_t
  */
 static inline uint16_t mavlink_msg_heartbeat_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t type, uint8_t autopilot)
 {
-	msg->msgid = MAVLINK_MSG_ID_HEARTBEAT;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_HEARTBEAT;
 
 	i += put_uint8_t_by_index(type, i, msg->payload); //Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
 	i += put_uint8_t_by_index(autopilot, i, msg->payload); //Type of the Autopilot: 0: Generic, 1: PIXHAWK, 2: SLUGS, 3: Ardupilot (up to 15 types), defined in MAV_AUTOPILOT_TYPE ENUM
