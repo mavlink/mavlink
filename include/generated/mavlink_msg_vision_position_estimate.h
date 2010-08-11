@@ -30,8 +30,8 @@ typedef struct __mavlink_vision_position_estimate_t
  */
 static inline uint16_t mavlink_msg_vision_position_estimate_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float x, float y, float z, float roll, float pitch, float yaw)
 {
-	msg->msgid = MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE;
 
 	i += put_uint64_t_by_index(usec, i, msg->payload); //Timestamp (milliseconds)
 	i += put_float_by_index(x, i, msg->payload); //Global X position

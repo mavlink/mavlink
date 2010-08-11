@@ -20,8 +20,8 @@ typedef struct __mavlink_set_altitude_t
  */
 static inline uint16_t mavlink_msg_set_altitude_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target, uint32_t mode)
 {
-	msg->msgid = MAVLINK_MSG_ID_SET_ALTITUDE;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_SET_ALTITUDE;
 
 	i += put_uint8_t_by_index(target, i, msg->payload); //The system setting the altitude
 	i += put_uint32_t_by_index(mode, i, msg->payload); //The new altitude in meters

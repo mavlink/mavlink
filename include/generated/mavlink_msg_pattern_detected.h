@@ -24,8 +24,8 @@ typedef struct __mavlink_pattern_detected_t
  */
 static inline uint16_t mavlink_msg_pattern_detected_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t type, float confidence, const int8_t* file, uint8_t detected)
 {
-	msg->msgid = MAVLINK_MSG_ID_PATTERN_DETECTED;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_PATTERN_DETECTED;
 
 	i += put_uint8_t_by_index(type, i, msg->payload); //0: Pattern, 1: Letter
 	i += put_float_by_index(confidence, i, msg->payload); //Confidence of detection

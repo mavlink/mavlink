@@ -20,8 +20,8 @@ typedef struct __mavlink_statustext_t
  */
 static inline uint16_t mavlink_msg_statustext_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t severity, const int8_t* text)
 {
-	msg->msgid = MAVLINK_MSG_ID_STATUSTEXT;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_STATUSTEXT;
 
 	i += put_uint8_t_by_index(severity, i, msg->payload); //Severity of status, 0 = info message, 255 = critical fault
 	i += put_array_by_index(text, 50, i, msg->payload); //Status text message, without null termination character

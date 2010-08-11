@@ -22,8 +22,8 @@ typedef struct __mavlink_action_t
  */
 static inline uint16_t mavlink_msg_action_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target, uint8_t target_component, uint8_t action)
 {
-	msg->msgid = MAVLINK_MSG_ID_ACTION;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_ACTION;
 
 	i += put_uint8_t_by_index(target, i, msg->payload); //The system executing the action
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //The component executing the action

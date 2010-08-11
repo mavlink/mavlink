@@ -19,15 +19,15 @@
 static inline uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, uint16_t length)
 {
 	// This code part is the same for all messages;
-
+	static uint8_t seq = 0;
+	uint16_t checksum;
 	msg->len = length;
 	msg->sysid = system_id;
 	msg->compid = component_id;
 	// One sequence number per component
-	static uint8_t seq = 0;
 	msg->seq = seq++;
 
-	uint16_t checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
+	checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
 	msg->ck_a = (uint8_t)(checksum & 0xFF); ///< High byte
 	msg->ck_b = (uint8_t)(checksum >> 8); ///< Low byte
 
@@ -73,7 +73,7 @@ union __mavlink_bitfield {
 static inline void mavlink_start_checksum(mavlink_message_t* msg)
 {
 	union checksum_ ck;
-	crcInit(&(ck.s));
+	crc_init(&(ck.s));
 	msg->ck_a = ck.c[0];
 	msg->ck_b = ck.c[1];
 }
@@ -83,7 +83,7 @@ static inline void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 	union checksum_ ck;
 	ck.c[0] = msg->ck_a;
 	ck.c[1] = msg->ck_b;
-	crcAccumulate(c, &(ck.s));
+	crc_accumulate(c, &(ck.s));
 	msg->ck_a = ck.c[0];
 	msg->ck_b = ck.c[1];
 }
@@ -734,8 +734,9 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t p
 	uint16_t bits_remain = bits;
 	// Transform number into network order
 	generic_32bit bin;
-	bin.i = b;
 	generic_32bit bout;
+	uint8_t i_bit_index, i_byte_index, curr_bits_n;
+	bin.i = b;
 	bout.b[0] = bin.b[3];
 	bout.b[1] = bin.b[2];
 	bout.b[2] = bin.b[1];
@@ -756,8 +757,8 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t p
 	// out = in >> n;
 
 	// Mask and shift bytes
-	uint8_t i_bit_index = bit_index;
-	uint8_t i_byte_index = packet_index;
+	i_bit_index = bit_index;
+	i_byte_index = packet_index;
 	if (bit_index > 0)
 	{
 		// If bits were available at start, they were available
@@ -766,7 +767,7 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t p
 	}
 	while (bits_remain > 0)
 	{
-		uint8_t curr_bits_n = bits_remain << 3; // mod 8
+		curr_bits_n = bits_remain << 3; // mod 8
 		if (curr_bits_n > 1)
 			bits_remain -= curr_bits_n; // These bits are handled now
 		i_byte_index++; // These bits consume one byte

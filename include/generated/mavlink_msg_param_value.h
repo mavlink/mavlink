@@ -24,8 +24,8 @@ typedef struct __mavlink_param_value_t
  */
 static inline uint16_t mavlink_msg_param_value_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const int8_t* param_id, float param_value, uint16_t param_count, uint16_t param_index)
 {
-	msg->msgid = MAVLINK_MSG_ID_PARAM_VALUE;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_PARAM_VALUE;
 
 	i += put_array_by_index(param_id, 15, i, msg->payload); //Onboard parameter id
 	i += put_float_by_index(param_value, i, msg->payload); //Onboard parameter value

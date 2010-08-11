@@ -18,8 +18,8 @@ typedef struct __mavlink_boot_t
  */
 static inline uint16_t mavlink_msg_boot_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint32_t version)
 {
-	msg->msgid = MAVLINK_MSG_ID_BOOT;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_BOOT;
 
 	i += put_uint32_t_by_index(version, i, msg->payload); //The onboard software version
 

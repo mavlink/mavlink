@@ -34,8 +34,8 @@ typedef struct __mavlink_attitude_control_t
  */
 static inline uint16_t mavlink_msg_attitude_control_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target, float roll, float pitch, float yaw, float thrust, uint8_t roll_manual, uint8_t pitch_manual, uint8_t yaw_manual, uint8_t thrust_manual)
 {
-	msg->msgid = MAVLINK_MSG_ID_ATTITUDE_CONTROL;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_ATTITUDE_CONTROL;
 
 	i += put_uint8_t_by_index(target, i, msg->payload); //The system to be controlled
 	i += put_float_by_index(roll, i, msg->payload); //roll

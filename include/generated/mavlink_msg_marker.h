@@ -30,8 +30,8 @@ typedef struct __mavlink_marker_t
  */
 static inline uint16_t mavlink_msg_marker_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t id, float x, float y, float z, float roll, float pitch, float yaw)
 {
-	msg->msgid = MAVLINK_MSG_ID_MARKER;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_MARKER;
 
 	i += put_uint16_t_by_index(id, i, msg->payload); //ID
 	i += put_float_by_index(x, i, msg->payload); //x position

@@ -26,8 +26,8 @@ typedef struct __mavlink_watchdog_process_info_t
  */
 static inline uint16_t mavlink_msg_watchdog_process_info_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t watchdog_id, uint16_t process_id, const int8_t* name, const int8_t* arguments, int32_t timeout)
 {
-	msg->msgid = MAVLINK_MSG_ID_WATCHDOG_PROCESS_INFO;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_WATCHDOG_PROCESS_INFO;
 
 	i += put_uint16_t_by_index(watchdog_id, i, msg->payload); //Watchdog ID
 	i += put_uint16_t_by_index(process_id, i, msg->payload); //Process ID

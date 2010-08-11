@@ -24,8 +24,8 @@ typedef struct __mavlink_ping_t
  */
 static inline uint16_t mavlink_msg_ping_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint32_t seq, uint8_t target_system, uint8_t target_component, uint64_t time)
 {
-	msg->msgid = MAVLINK_MSG_ID_PING;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_PING;
 
 	i += put_uint32_t_by_index(seq, i, msg->payload); //PING sequence
 	i += put_uint8_t_by_index(target_system, i, msg->payload); //0: request ping from all receiving systems, if greater than 0: message is a ping response and number is the system id of the requesting system

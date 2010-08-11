@@ -30,8 +30,8 @@ typedef struct __mavlink_raw_aux_t
  */
 static inline uint16_t mavlink_msg_raw_aux_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t adc1, uint16_t adc2, uint16_t adc3, uint16_t adc4, uint16_t vbat, int16_t temp, int32_t baro)
 {
-	msg->msgid = MAVLINK_MSG_ID_RAW_AUX;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_RAW_AUX;
 
 	i += put_uint16_t_by_index(adc1, i, msg->payload); //ADC1 (J405 ADC3, LPC2148 AD0.6)
 	i += put_uint16_t_by_index(adc2, i, msg->payload); //ADC2 (J405 ADC5, LPC2148 AD0.2)

@@ -30,8 +30,8 @@ typedef struct __mavlink_local_position_t
  */
 static inline uint16_t mavlink_msg_local_position_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float x, float y, float z, float vx, float vy, float vz)
 {
-	msg->msgid = MAVLINK_MSG_ID_LOCAL_POSITION;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_LOCAL_POSITION;
 
 	i += put_uint64_t_by_index(usec, i, msg->payload); //Timestamp (microseconds since unix epoch)
 	i += put_float_by_index(x, i, msg->payload); //X Position
