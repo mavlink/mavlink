@@ -723,11 +723,12 @@ static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint
  *
  * @param b the value to add, will be encoded in the bitfield
  * @param bits number of bits to use to encode b, e.g. 1 for boolean, 2, 3, etc.
- * @param bindex the position in the packet
- * @param buffer packet buffer
+ * @param packet_index the position in the packet (the index of the first byte to use)
+ * @param bit_index the position in the byte (the index of the first bit to use)
+ * @param buffer packet buffer to write into
  * @return new position of the last used byte in the buffer
  */
-static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t bindex, uint8_t bit_index, uint8_t* r_bit_index, uint8_t* buffer)
+static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t packet_index, uint8_t bit_index, uint8_t* r_bit_index, uint16_t* buffer)
 {
 	uint16_t length = 0;
 	uint16_t bits_remain = bits;
@@ -756,7 +757,7 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t b
 
 	// Mask and shift bytes
 	uint8_t i_bit_index = bit_index;
-	uint8_t i_byte_index = bindex;
+	uint8_t i_byte_index = packet_index;
 	if (bit_index > 0)
 	{
 		// If bits were available at start, they were available
