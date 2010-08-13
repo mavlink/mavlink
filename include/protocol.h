@@ -776,7 +776,7 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t p
 
 		// First pack everything we can into the current 'open' byte
 		curr_bits_n = bits_remain << 3; // Equals  bits_remain mod 8
-		FIXME
+		//FIXME
 		if (bits_remain <= 8 - i_bit_index)
 		{
 			// Enough space
@@ -788,7 +788,7 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t p
 		// Mask out whatever was at that position with ones (xxx11111)
 		buffer[i_byte_index] &= (0xFF >> (8 - curr_bits_n));
 		// Put content to this position, by masking out the non-used part
-		buffer[i_byte_index] |= ((0x00 << curr_bits_n) & curr_bits);
+		buffer[i_byte_index] |= ((0x00 << curr_bits_n) & bout.i);
 
 		// Now proceed to the next byte, if necessary
 		bits_remain -= curr_bits_n;
