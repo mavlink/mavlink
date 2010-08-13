@@ -23,4 +23,7 @@ int main(int argc, char* argv[])
 	bout.b[2] = bin.b[1];
 	bout.b[3] = bin.b[0];
 	printf("Last byte out (big endian) 0x%02x\n", bout.b[3]);
+
+	uint8_t n = 5;
+	printf("Mask is 0x%02x\n", ((uint32_t)(1 << n)) - 1); // = 2^n - 1
 }

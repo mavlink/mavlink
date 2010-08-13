@@ -752,6 +752,7 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t p
 
 	// Mask n free bits
 	// 00001111 = 2^0 + 2^1 + 2^2 + 2^3 = 2^n - 1
+	// = ((uint32_t)(1 << n)) - 1; // = 2^n - 1
 
 	// Shift n bits into the right position
 	// out = in >> n;
@@ -765,8 +766,41 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t p
 		// in the byte before the current index
 		i_byte_index--;
 	}
+
+	// While bits have not been packed yet
 	while (bits_remain > 0)
 	{
+		// Bits still have to be packed
+		// there can be more than 8 bits, so
+		// we might have to pack them into more than one byte
+
+		// First pack everything we can into the current 'open' byte
+		curr_bits_n = bits_remain << 3; // Equals  bits_remain mod 8
+		FIXME
+		if (bits_remain <= 8 - i_bit_index)
+		{
+			// Enough space
+		}
+		else
+		{
+		}
+		// Pack these n bits into the current byte
+		// Mask out whatever was at that position with ones (xxx11111)
+		buffer[i_byte_index] &= (0xFF >> (8 - curr_bits_n));
+		// Put content to this position, by masking out the non-used part
+		buffer[i_byte_index] |= ((0x00 << curr_bits_n) & curr_bits);
+
+		// Now proceed to the next byte, if necessary
+		bits_remain -= curr_bits_n;
+		if (bits_remain > 0)
+		{
+			// Offer another 8 bits / one byte
+			i_byte_index++;
+			i_bit_index = 0;
+		}
+
+
+		// The current number of bits available in the byte
 		curr_bits_n = bits_remain << 3; // mod 8
 		if (curr_bits_n > 1)
 			bits_remain -= curr_bits_n; // These bits are handled now
