@@ -3,6 +3,7 @@
 
 #include "string.h"
 #include "checksum.h"
+#include "inttypes.h"
 
 #include "mavlink_types.h"
 
