@@ -26,4 +26,14 @@ int main(int argc, char* argv[])
 
 	uint8_t n = 5;
 	printf("Mask is 0x%02x\n", ((uint32_t)(1 << n)) - 1); // = 2^n - 1
+	
+	int32_t n = 2;
+	uint8_t bits = 2;
+	
+	uint8_t packet[MAVLINK_MAX_PACKET_LEN];
+	uint8_t packet_index = 0;
+	uint8_t bit_index = 0;
+	
+	put_bitfield_n_by_index(n, bits, packet_index, bit_index, &bit_index, packet);
+	
 }

@@ -728,7 +728,7 @@ static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint
  * @param buffer packet buffer to write into
  * @return new position of the last used byte in the buffer
  */
-static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t packet_index, uint8_t bit_index, uint8_t* r_bit_index, uint16_t* buffer)
+static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t packet_index, uint8_t bit_index, uint8_t* r_bit_index, uint8_t* buffer)
 {
 	uint16_t length = 0;
 	uint16_t bits_remain = bits;
