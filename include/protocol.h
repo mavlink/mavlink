@@ -730,7 +730,6 @@ static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint
  */
 static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t packet_index, uint8_t bit_index, uint8_t* r_bit_index, uint8_t* buffer)
 {
-	uint16_t length = 0;
 	uint16_t bits_remain = bits;
 	// Transform number into network order
 	generic_32bit bin;
@@ -775,20 +774,26 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t p
 		// we might have to pack them into more than one byte
 
 		// First pack everything we can into the current 'open' byte
-		curr_bits_n = bits_remain << 3; // Equals  bits_remain mod 8
+		//curr_bits_n = bits_remain << 3; // Equals  bits_remain mod 8
 		//FIXME
-		if (bits_remain <= 8 - i_bit_index)
+		if (bits_remain <= (8 - i_bit_index))
 		{
 			// Enough space
+			curr_bits_n = bits_remain;
 		}
 		else
 		{
+			curr_bits_n = (8 - i_bit_index);
 		}
+		
 		// Pack these n bits into the current byte
 		// Mask out whatever was at that position with ones (xxx11111)
 		buffer[i_byte_index] &= (0xFF >> (8 - curr_bits_n));
 		// Put content to this position, by masking out the non-used part
 		buffer[i_byte_index] |= ((0x00 << curr_bits_n) & bout.i);
+		
+		// Increment the bit index
+		i_bit_index += curr_bits_n;
 
 		// Now proceed to the next byte, if necessary
 		bits_remain -= curr_bits_n;
@@ -798,24 +803,12 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t p
 			i_byte_index++;
 			i_bit_index = 0;
 		}
-
-
-		// The current number of bits available in the byte
-		curr_bits_n = bits_remain << 3; // mod 8
-		if (curr_bits_n > 1)
-			bits_remain -= curr_bits_n; // These bits are handled now
-		i_byte_index++; // These bits consume one byte
-		length++;       // One byte consumed by this field
-		// Put these bits into the buffer
-		// Operating now bitwise
-		uint8_t curr_bits = bout.b[length] >> (8 - curr_bits_n);
-		// Clear bits of previous byte
-		buffer[i_byte_index] &= (0xFF >> (8 - curr_bits_n));
-		buffer[i_byte_index] |= curr_bits;
-		i_byte_index++;
 	}
+	
 	*r_bit_index = i_bit_index;
-	return length;
+	// If a partly filled byte is present, mark this as consumed
+	if (i_bit_index != 7) i_byte_index++;
+	return i_byte_index - packet_index;
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
