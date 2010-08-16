@@ -24,8 +24,8 @@ typedef struct __mavlink_watchdog_command_t
  */
 static inline uint16_t mavlink_msg_watchdog_command_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system_id, uint16_t watchdog_id, uint16_t process_id, uint8_t command_id)
 {
-	msg->msgid = MAVLINK_MSG_ID_WATCHDOG_COMMAND;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_WATCHDOG_COMMAND;
 
 	i += put_uint8_t_by_index(target_system_id, i, msg->payload); //Target system ID
 	i += put_uint16_t_by_index(watchdog_id, i, msg->payload); //Watchdog ID

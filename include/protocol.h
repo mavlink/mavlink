@@ -19,15 +19,15 @@
 static inline uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, uint16_t length)
 {
 	// This code part is the same for all messages;
-
+	static uint8_t seq = 0;
+	uint16_t checksum;
 	msg->len = length;
 	msg->sysid = system_id;
 	msg->compid = component_id;
 	// One sequence number per component
-	static uint8_t seq = 0;
 	msg->seq = seq++;
 
-	uint16_t checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
+	checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
 	msg->ck_a = (uint8_t)(checksum & 0xFF); ///< High byte
 	msg->ck_b = (uint8_t)(checksum >> 8); ///< Low byte
 
@@ -73,7 +73,7 @@ union __mavlink_bitfield {
 static inline void mavlink_start_checksum(mavlink_message_t* msg)
 {
 	union checksum_ ck;
-	crcInit(&(ck.s));
+	crc_init(&(ck.s));
 	msg->ck_a = ck.c[0];
 	msg->ck_b = ck.c[1];
 }
@@ -83,7 +83,7 @@ static inline void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 	union checksum_ ck;
 	ck.c[0] = msg->ck_a;
 	ck.c[1] = msg->ck_b;
-	crcAccumulate(c, &(ck.s));
+	crc_accumulate(c, &(ck.s));
 	msg->ck_a = ck.c[0];
 	msg->ck_b = ck.c[1];
 }
@@ -723,18 +723,19 @@ static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint
  *
  * @param b the value to add, will be encoded in the bitfield
  * @param bits number of bits to use to encode b, e.g. 1 for boolean, 2, 3, etc.
- * @param bindex the position in the packet
- * @param buffer packet buffer
+ * @param packet_index the position in the packet (the index of the first byte to use)
+ * @param bit_index the position in the byte (the index of the first bit to use)
+ * @param buffer packet buffer to write into
  * @return new position of the last used byte in the buffer
  */
-static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t bindex, uint8_t bit_index, uint8_t* r_bit_index, uint8_t* buffer)
+static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t packet_index, uint8_t bit_index, uint8_t* r_bit_index, uint8_t* buffer)
 {
-	uint16_t length = 0;
 	uint16_t bits_remain = bits;
 	// Transform number into network order
 	generic_32bit bin;
-	bin.i = b;
 	generic_32bit bout;
+	uint8_t i_bit_index, i_byte_index, curr_bits_n;
+	bin.i = b;
 	bout.b[0] = bin.b[3];
 	bout.b[1] = bin.b[2];
 	bout.b[2] = bin.b[1];
@@ -750,36 +751,64 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t b
 
 	// Mask n free bits
 	// 00001111 = 2^0 + 2^1 + 2^2 + 2^3 = 2^n - 1
+	// = ((uint32_t)(1 << n)) - 1; // = 2^n - 1
 
 	// Shift n bits into the right position
 	// out = in >> n;
 
 	// Mask and shift bytes
-	uint8_t i_bit_index = bit_index;
-	uint8_t i_byte_index = bindex;
+	i_bit_index = bit_index;
+	i_byte_index = packet_index;
 	if (bit_index > 0)
 	{
 		// If bits were available at start, they were available
 		// in the byte before the current index
 		i_byte_index--;
 	}
+
+	// While bits have not been packed yet
 	while (bits_remain > 0)
 	{
-		uint8_t curr_bits_n = bits_remain << 3; // mod 8
-		if (curr_bits_n > 1)
-			bits_remain -= curr_bits_n; // These bits are handled now
-		i_byte_index++; // These bits consume one byte
-		length++;       // One byte consumed by this field
-		// Put these bits into the buffer
-		// Operating now bitwise
-		uint8_t curr_bits = bout.b[length] >> (8 - curr_bits_n);
-		// Clear bits of previous byte
+		// Bits still have to be packed
+		// there can be more than 8 bits, so
+		// we might have to pack them into more than one byte
+
+		// First pack everything we can into the current 'open' byte
+		//curr_bits_n = bits_remain << 3; // Equals  bits_remain mod 8
+		//FIXME
+		if (bits_remain <= (8 - i_bit_index))
+		{
+			// Enough space
+			curr_bits_n = bits_remain;
+		}
+		else
+		{
+			curr_bits_n = (8 - i_bit_index);
+		}
+		
+		// Pack these n bits into the current byte
+		// Mask out whatever was at that position with ones (xxx11111)
 		buffer[i_byte_index] &= (0xFF >> (8 - curr_bits_n));
-		buffer[i_byte_index] |= curr_bits;
-		i_byte_index++;
+		// Put content to this position, by masking out the non-used part
+		buffer[i_byte_index] |= ((0x00 << curr_bits_n) & bout.i);
+		
+		// Increment the bit index
+		i_bit_index += curr_bits_n;
+
+		// Now proceed to the next byte, if necessary
+		bits_remain -= curr_bits_n;
+		if (bits_remain > 0)
+		{
+			// Offer another 8 bits / one byte
+			i_byte_index++;
+			i_bit_index = 0;
+		}
 	}
+	
 	*r_bit_index = i_bit_index;
-	return length;
+	// If a partly filled byte is present, mark this as consumed
+	if (i_bit_index != 7) i_byte_index++;
+	return i_byte_index - packet_index;
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS

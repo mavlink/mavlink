@@ -24,8 +24,8 @@ typedef struct __mavlink_image_triggered_t
  */
 static inline uint16_t mavlink_msg_image_triggered_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t timestamp, uint32_t seq, float roll, float pitch)
 {
-	msg->msgid = MAVLINK_MSG_ID_IMAGE_TRIGGERED;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_IMAGE_TRIGGERED;
 
 	i += put_uint64_t_by_index(timestamp, i, msg->payload); //Timestamp
 	i += put_uint32_t_by_index(seq, i, msg->payload); //IMU seq

@@ -32,8 +32,8 @@ typedef struct __mavlink_rc_channels_raw_t
  */
 static inline uint16_t mavlink_msg_rc_channels_raw_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t chan1, uint16_t chan2, uint16_t chan3, uint16_t chan4, uint16_t chan5, uint16_t chan6, uint16_t chan7, uint16_t chan8)
 {
-	msg->msgid = MAVLINK_MSG_ID_RC_CHANNELS_RAW;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_RC_CHANNELS_RAW;
 
 	i += put_uint16_t_by_index(chan1, i, msg->payload); //RC channel 1 value, in microseconds
 	i += put_uint16_t_by_index(chan2, i, msg->payload); //RC channel 2 value, in microseconds

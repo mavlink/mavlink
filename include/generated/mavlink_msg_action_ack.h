@@ -20,8 +20,8 @@ typedef struct __mavlink_action_ack_t
  */
 static inline uint16_t mavlink_msg_action_ack_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t action, uint8_t result)
 {
-	msg->msgid = MAVLINK_MSG_ID_ACTION_ACK;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_ACTION_ACK;
 
 	i += put_uint8_t_by_index(action, i, msg->payload); //The action id
 	i += put_uint8_t_by_index(result, i, msg->payload); //0: Action DENIED, 1: Action executed

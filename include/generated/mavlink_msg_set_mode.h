@@ -20,8 +20,8 @@ typedef struct __mavlink_set_mode_t
  */
 static inline uint16_t mavlink_msg_set_mode_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target, uint8_t mode)
 {
-	msg->msgid = MAVLINK_MSG_ID_SET_MODE;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_SET_MODE;
 
 	i += put_uint8_t_by_index(target, i, msg->payload); //The system setting the mode
 	i += put_uint8_t_by_index(mode, i, msg->payload); //The new mode

@@ -30,8 +30,8 @@ typedef struct __mavlink_control_status_t
  */
 static inline uint16_t mavlink_msg_control_status_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t position_fix, uint8_t vision_fix, uint8_t gps_fix, uint8_t control_att, uint8_t control_pos_xy, uint8_t control_pos_z, uint8_t control_pos_yaw)
 {
-	msg->msgid = MAVLINK_MSG_ID_CONTROL_STATUS;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_CONTROL_STATUS;
 
 	i += put_uint8_t_by_index(position_fix, i, msg->payload); //Position fix: 0: lost, 2: 2D position fix, 3: 3D position fix 
 	i += put_uint8_t_by_index(vision_fix, i, msg->payload); //Vision position fix: 0: lost, 1: 2D local position hold, 2: 2D global position fix, 3: 3D global position fix 

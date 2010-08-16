@@ -44,8 +44,8 @@ typedef struct __mavlink_waypoint_t
  */
 static inline uint16_t mavlink_msg_waypoint_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, uint16_t seq, uint8_t type, float orbit, uint8_t orbit_direction, float param1, float param2, uint8_t current, float x, float y, float z, float yaw, uint8_t autocontinue)
 {
-	msg->msgid = MAVLINK_MSG_ID_WAYPOINT;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_WAYPOINT;
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); //System ID
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //Component ID

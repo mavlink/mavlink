@@ -61,6 +61,7 @@ typedef struct __mavlink_param_request_read_t
 	uint8_t target_system; ///< System ID
 	uint8_t target_component; ///< Component ID
 	int8_t param_id[15]; ///< Onboard parameter id
+	uint16_t param_index; ///< Parameter index
 
 } mavlink_param_request_read_t;
 
@@ -88,17 +89,6 @@ typedef struct __mavlink_param_set_t
 	float param_value; ///< Onboard parameter value
 
 } mavlink_param_set_t;
-
-typedef struct __mavlink_pid_set_t 
-{
-	uint8_t target_system; ///< System ID
-	uint8_t target_component; ///< Component ID
-	uint8_t pid_id; ///< PID ID
-	float k_p; ///< P
-	float k_i; ///< I
-	float k_d; ///< D
-
-} mavlink_pid_set_t;
 
 typedef struct __mavlink_raw_imu_t 
 {
@@ -164,7 +154,6 @@ typedef struct __mavlink_gps_raw_t
 
 typedef struct __mavlink_gps_status_t 
 {
-	uint64_t usec; ///< Timestamp (microseconds since unix epoch)
 	uint8_t satellites_visible; ///< Number of satellites visible
 	int8_t satellite_prn[20]; ///< Global satellite ID
 	int8_t satellite_used[20]; ///< 0: Satellite not used, 1: used for localization
@@ -210,47 +199,6 @@ typedef struct __mavlink_rc_channels_raw_t
 
 } mavlink_rc_channels_raw_t;
 
-typedef struct __mavlink_rc_channels_trim_set_t 
-{
-	uint16_t chan1_min; ///< RC channel 1 min value, in microseconds
-	uint16_t chan1_zero; ///< RC channel 1 zero value, in microseconds
-	uint16_t chan1_max; ///< RC channel 1 max value, in microseconds
-	uint16_t chan2_min; ///< RC channel 2 min value, in microseconds
-	uint16_t chan2_zero; ///< RC channel 2 zero value, in microseconds
-	uint16_t chan2_max; ///< RC channel 2 max value, in microseconds
-	uint16_t chan3_min; ///< RC channel 3 min value, in microseconds
-	uint16_t chan3_zero; ///< RC channel 3 zero value, in microseconds
-	uint16_t chan3_max; ///< RC channel 3 max value, in microseconds
-	uint16_t chan4_min; ///< RC channel 4 min value, in microseconds
-	uint16_t chan4_zero; ///< RC channel 4 zero value, in microseconds
-	uint16_t chan4_max; ///< RC channel 4 max value, in microseconds
-	uint16_t chan5_min; ///< RC channel 5 min value, in microseconds
-	uint16_t chan5_zero; ///< RC channel 5 zero value, in microseconds
-	uint16_t chan5_max; ///< RC channel 5 max value, in microseconds
-
-} mavlink_rc_channels_trim_set_t;
-
-typedef struct __mavlink_rc_channels_mapping_t 
-{
-	uint8_t chan1_function; ///< RC channel 1 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-	uint8_t chan2_function; ///< RC channel 2 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-	uint8_t chan3_function; ///< RC channel 3 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-	uint8_t chan4_function; ///< RC channel 4 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-	uint8_t chan5_function; ///< RC channel 5 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-
-} mavlink_rc_channels_mapping_t;
-
-typedef struct __mavlink_rc_channels_mapping_set_t 
-{
-	uint8_t target_system; ///< System ID
-	uint8_t chan1_function; ///< RC channel 1 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-	uint8_t chan2_function; ///< RC channel 2 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-	uint8_t chan3_function; ///< RC channel 3 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-	uint8_t chan4_function; ///< RC channel 4 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-	uint8_t chan5_function; ///< RC channel 5 function, as defined in ENUM MAVLINK_RC_CHAN_MAPPING in mavlink/include/mavlink_types.h
-
-} mavlink_rc_channels_mapping_set_t;
-
 typedef struct __mavlink_waypoint_t 
 {
 	uint8_t target_system; ///< System ID
@@ -270,25 +218,6 @@ typedef struct __mavlink_waypoint_t
 
 } mavlink_waypoint_t;
 
-typedef struct __mavlink_waypoint_set_t 
-{
-	uint8_t target_system; ///< System ID
-	uint8_t target_component; ///< Component ID
-	uint16_t seq; ///< Sequence
-	uint8_t type; ///< 0: global (GPS), 1: local, 2: global orbit, 3: local orbit
-	float orbit; ///< Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint
-	uint8_t orbit_direction; ///< Direction of the orbit circling: 0: clockwise, 1: counter-clockwise
-	float param1; ///< For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters
-	float param2; ///< For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds
-	uint8_t current; ///< false:0, true:1
-	float x; ///< local: x position, global: longitude
-	float y; ///< y position: global: latitude
-	float z; ///< z position: global: altitude
-	float yaw; ///< yaw orientation in radians, 0 = NORTH
-	uint8_t autocontinue; ///< autocontinue to next wp
-
-} mavlink_waypoint_set_t;
-
 typedef struct __mavlink_waypoint_request_t 
 {
 	uint8_t target_system; ///< System ID
@@ -304,6 +233,12 @@ typedef struct __mavlink_waypoint_set_current_t
 	uint16_t seq; ///< Sequence
 
 } mavlink_waypoint_set_current_t;
+
+typedef struct __mavlink_waypoint_current_t 
+{
+	uint16_t seq; ///< Sequence
+
+} mavlink_waypoint_current_t;
 
 typedef struct __mavlink_waypoint_request_list_t 
 {
@@ -329,8 +264,6 @@ typedef struct __mavlink_waypoint_clear_all_t
 
 typedef struct __mavlink_waypoint_reached_t 
 {
-	uint8_t target_system; ///< System ID
-	uint8_t target_component; ///< Component ID
 	uint16_t seq; ///< Sequence
 
 } mavlink_waypoint_reached_t;
@@ -357,20 +290,6 @@ typedef struct __mavlink_waypoint_set_global_reference_t
 	float local_yaw; ///< local yaw that matches the global yaw orientation
 
 } mavlink_waypoint_set_global_reference_t;
-
-typedef struct __mavlink_safety_set_allowed_area_t 
-{
-	uint8_t target_system; ///< System ID
-	uint8_t target_component; ///< Component ID
-	uint8_t type; ///< 0: global (GPS), 1: local
-	float x1; ///< x position 1
-	float y1; ///< y position 1
-	float z1; ///< z position 1
-	float x2; ///< x position 2
-	float y2; ///< y position 2
-	float z2; ///< z position 2
-
-} mavlink_safety_set_allowed_area_t;
 
 typedef struct __mavlink_local_position_setpoint_set_t 
 {

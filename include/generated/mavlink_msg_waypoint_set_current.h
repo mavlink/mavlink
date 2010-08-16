@@ -1,6 +1,6 @@
 // MESSAGE WAYPOINT_SET_CURRENT PACKING
 
-#define MAVLINK_MSG_ID_WAYPOINT_SET_CURRENT 42
+#define MAVLINK_MSG_ID_WAYPOINT_SET_CURRENT 41
 
 typedef struct __mavlink_waypoint_set_current_t 
 {
@@ -22,8 +22,8 @@ typedef struct __mavlink_waypoint_set_current_t
  */
 static inline uint16_t mavlink_msg_waypoint_set_current_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, uint16_t seq)
 {
-	msg->msgid = MAVLINK_MSG_ID_WAYPOINT_SET_CURRENT;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_WAYPOINT_SET_CURRENT;
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); //System ID
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //Component ID

@@ -26,8 +26,8 @@ typedef struct __mavlink_debug_vect_t
  */
 static inline uint16_t mavlink_msg_debug_vect_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const int8_t* name, uint64_t usec, float x, float y, float z)
 {
-	msg->msgid = MAVLINK_MSG_ID_DEBUG_VECT;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_DEBUG_VECT;
 
 	i += put_array_by_index(name, 10, i, msg->payload); //Name
 	i += put_uint64_t_by_index(usec, i, msg->payload); //Timestamp

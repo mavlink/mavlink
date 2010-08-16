@@ -30,8 +30,8 @@ typedef struct __mavlink_attitude_t
  */
 static inline uint16_t mavlink_msg_attitude_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
 {
-	msg->msgid = MAVLINK_MSG_ID_ATTITUDE;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_ATTITUDE;
 
 	i += put_uint64_t_by_index(usec, i, msg->payload); //Timestamp (microseconds)
 	i += put_float_by_index(roll, i, msg->payload); //Roll angle (rad)

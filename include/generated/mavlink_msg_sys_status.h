@@ -28,8 +28,8 @@ typedef struct __mavlink_sys_status_t
  */
 static inline uint16_t mavlink_msg_sys_status_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t mode, uint8_t nav_mode, uint8_t status, uint16_t vbat, uint8_t motor_block, uint16_t packet_drop)
 {
-	msg->msgid = MAVLINK_MSG_ID_SYS_STATUS;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_SYS_STATUS;
 
 	i += put_uint8_t_by_index(mode, i, msg->payload); //System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
 	i += put_uint8_t_by_index(nav_mode, i, msg->payload); //Navigation mode, see MAV_NAV_MODE ENUM

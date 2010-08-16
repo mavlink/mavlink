@@ -28,8 +28,8 @@ typedef struct __mavlink_aux_status_t
  */
 static inline uint16_t mavlink_msg_aux_status_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t load, uint16_t i2c0_err_count, uint16_t i2c1_err_count, uint16_t spi0_err_count, uint16_t spi1_err_count, uint16_t uart_total_err_count)
 {
-	msg->msgid = MAVLINK_MSG_ID_AUX_STATUS;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_AUX_STATUS;
 
 	i += put_uint16_t_by_index(load, i, msg->payload); //Maximum usage in percent of the mainloop time, (0%: 0, 100%: 1000) should be always below 1000
 	i += put_uint16_t_by_index(i2c0_err_count, i, msg->payload); //Number of I2C errors since startup

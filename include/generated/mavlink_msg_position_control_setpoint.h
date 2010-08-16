@@ -26,8 +26,8 @@ typedef struct __mavlink_position_control_setpoint_t
  */
 static inline uint16_t mavlink_msg_position_control_setpoint_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint16_t id, float x, float y, float z, float yaw)
 {
-	msg->msgid = MAVLINK_MSG_ID_POSITION_CONTROL_SETPOINT;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_POSITION_CONTROL_SETPOINT;
 
 	i += put_uint16_t_by_index(id, i, msg->payload); //ID of waypoint, 0 for plain position
 	i += put_float_by_index(x, i, msg->payload); //x position

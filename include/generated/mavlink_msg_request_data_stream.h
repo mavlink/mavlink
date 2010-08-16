@@ -26,8 +26,8 @@ typedef struct __mavlink_request_data_stream_t
  */
 static inline uint16_t mavlink_msg_request_data_stream_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, uint8_t req_stream_id, uint16_t req_message_rate, uint8_t start_stop)
 {
-	msg->msgid = MAVLINK_MSG_ID_REQUEST_DATA_STREAM;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_REQUEST_DATA_STREAM;
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); //The target requested to send the message stream.
 	i += put_uint8_t_by_index(target_component, i, msg->payload); //The target requested to send the message stream.

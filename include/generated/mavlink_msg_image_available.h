@@ -46,8 +46,8 @@ typedef struct __mavlink_image_available_t
  */
 static inline uint16_t mavlink_msg_image_available_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t cam_id, uint8_t cam_no, uint64_t timestamp, uint64_t valid_until, uint32_t img_seq, uint32_t img_buf_index, uint16_t width, uint16_t height, uint16_t depth, uint8_t channels, uint32_t key, uint32_t exposure, float gain, float roll, float pitch)
 {
-	msg->msgid = MAVLINK_MSG_ID_IMAGE_AVAILABLE;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_IMAGE_AVAILABLE;
 
 	i += put_uint64_t_by_index(cam_id, i, msg->payload); //Camera id
 	i += put_uint8_t_by_index(cam_no, i, msg->payload); //Camera # (starts with 0)

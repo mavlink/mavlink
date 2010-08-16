@@ -28,8 +28,8 @@ typedef struct __mavlink_set_cam_shutter_t
  */
 static inline uint16_t mavlink_msg_set_cam_shutter_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t cam_no, uint8_t cam_mode, uint8_t trigger_pin, uint16_t interval, uint16_t exposure, float gain)
 {
-	msg->msgid = MAVLINK_MSG_ID_SET_CAM_SHUTTER;
 	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_SET_CAM_SHUTTER;
 
 	i += put_uint8_t_by_index(cam_no, i, msg->payload); //Camera id
 	i += put_uint8_t_by_index(cam_mode, i, msg->payload); //Camera mode: 0 = auto, 1 = manual
