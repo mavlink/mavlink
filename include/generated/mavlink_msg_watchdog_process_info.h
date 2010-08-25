@@ -12,7 +12,9 @@ typedef struct __mavlink_watchdog_process_info_t
 
 } mavlink_watchdog_process_info_t;
 
-#define MAVLINK_MSG_WATCHDOG_PROCESS_INFO_FIELD_NAME_LEN 100#define MAVLINK_MSG_WATCHDOG_PROCESS_INFO_FIELD_ARGUMENTS_LEN 147
+#define MAVLINK_MSG_WATCHDOG_PROCESS_INFO_FIELD_NAME_LEN 100
+#define MAVLINK_MSG_WATCHDOG_PROCESS_INFO_FIELD_ARGUMENTS_LEN 147
+
 
 /**
  * @brief Send a watchdog_process_info message
