@@ -4,14 +4,13 @@
 <messages>
    <message name="CPU_LOAD" id="70">
      Sensor and DSC control loads.
-     <field name="target" type="uint8_t">The system reporting the CPU load</field>
      <field name="sensLoad" type="uint8_t">Sensor DSC Load</field>
      <field name="ctrlLoad" type="uint8_t">Control DSC Load</field>
      <field name="batVolt" type="uint16_t">Battery Voltage in millivolts</field>     
    </message>
+   
    <message name="AIR_DATA" id="71">
      Air data for altitude and airspeed computation.
-     <field name="target" type="uint8_t">The system reporting the air data</field>
      <field name="dynamicPressure" type="float">Dynamic pressure (Pa)</field>
      <field name="staticPressure" type="float">Static pressure (Pa)</field>
      <field name="temperature" type="uint16_t">Board temperature</field>     
@@ -19,7 +18,6 @@
    
    <message name="SENSOR_BIAS" id="72">
      Accelerometer and gyro biases.
-     <field name="target" type="uint8_t">The system reporting the biases</field>
      <field name="axBias" type="float">Accelerometer X bias (m/s)</field>
      <field name="ayBias" type="float">Accelerometer Y bias (m/s)</field>
      <field name="azBias" type="float">Accelerometer Z bias (m/s)</field>
@@ -30,28 +28,25 @@
    
   <message name="DIAGNOSTIC" id="73">
      Configurable diagnostic messages.
-     <field name="target" type="uint8_t">The system reporting the diagnostic</field>
      <field name="diagFl1" type="float">Diagnostic float 1</field>
      <field name="diagFl2" type="float">Diagnostic float 2</field>
      <field name="diagFl3" type="float">Diagnostic float 3</field>
      <field name="diagSh1" type="int16_t">Diagnostic short 1</field>
      <field name="diagSh2" type="int16_t">Diagnostic short 2</field>
      <field name="diagSh3" type="int16_t">Diagnostic short 3</field>
-   </message>
+  </message>
    
   <message name="PILOT_CONSOLE" id="74">
      Pilot console PWM messges.
-     <field name="target" type="uint8_t">The system reporting the diagnostic</field>
      <field name="dt" type="uint16_t">Pilot's console throttle command </field>
      <field name="dla" type="uint16_t">Pilot's console left aileron command </field>
      <field name="dra" type="uint16_t">Pilot's console right aileron command </field>
      <field name="dr" type="uint16_t">Pilot's console rudder command </field>
      <field name="de" type="uint16_t">Pilot's console elevator command </field>
-   </message>
+  </message>
    
    <message name="PWM_COMMANDS" id="75">
      PWM Commands from the AP to the control surfaces.
-     <field name="target" type="uint8_t">The system reporting the diagnostic</field>
      <field name="dt_c" type="uint16_t">AutoPilot's throttle command </field>
      <field name="dla_c" type="uint16_t">AutoPilot's left aileron command </field>
      <field name="dra_c" type="uint16_t">AutoPilot's right aileron command </field>
@@ -63,5 +58,43 @@
      <field name="aux1" type="uint16_t">AutoPilot's aux1 command </field>
      <field name="aux2" type="uint16_t">AutoPilot's aux2 command </field>
    </message>
+
+  <message name="SLUGS_NAVIGATION" id="76">
+     Data used in the navigation algorithm.
+     <field name="u_m" type="float">Measured Airspeed prior to the Nav Filter</field>
+     <field name="phi_c" type="float">Commanded Roll</field>
+     <field name="theta_c" type="float">Commanded Pitch</field>
+     <field name="psi_c" type="float">Commanded Yaw</field>
+     <field name="ay_body" type="float">Y component of the body acceleration</field>
+     <field name="totalDist" type="float">Total Distance to Run on this leg of Navigation</field>
+     <field name="dist2Go" type="float">Remaining distance to Run on this leg of Navigation</field>
+     <field name="fromWP" type="uint8_t">Origin WP</field>
+     <field name="toWP" type="uint8_t">Destination WP</field>
+  </message>
+  
+  <message name="DATA_LOG" id="77">
+     Configurable data log probes to be used inside Simulink
+     <field name="fl_1" type="float">Log value 1 </field>
+     <field name="fl_2" type="float">Log value 2 </field>
+     <field name="fl_3" type="float">Log value 3 </field>
+     <field name="fl_4" type="float">Log value 4 </field>
+     <field name="fl_5" type="float">Log value 5 </field>
+     <field name="fl_6" type="float">Log value 6 </field>
+  </message>
+
+  <message name="FILTERED_DATA" id="78">
+     Measured value from the IMU in units after sensor calibration and temperature compensation. Note that this IS NOT the output of the attitude filter, for that see messages 30 and 33.
+     <field name="aX" type="float">Accelerometer X value (m/s^2) </field>
+     <field name="aY" type="float">Accelerometer Y value (m/s^2)</field>
+     <field name="aZ" type="float">Accelerometer Z value (m/s^2)</field>
+     <field name="gX" type="float">Gyro X value (rad/s) </field>
+     <field name="gY" type="float">Gyro Y value (rad/s)</field>
+     <field name="gZ" type="float">Gyro Z value (rad/s)</field>
+     <field name="mX" type="float">Magnetometer X (normalized to 1) </field>
+     <field name="mY" type="float">Magnetometer Y (normalized to 1) </field>
+     <field name="mZ" type="float">Magnetometer Z (normalized to 1) </field>
+   </message>
+
+
 </messages>
 </mavlink>
