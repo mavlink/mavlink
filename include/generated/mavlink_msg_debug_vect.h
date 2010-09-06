@@ -14,6 +14,7 @@ typedef struct __mavlink_debug_vect_t
 
 #define MAVLINK_MSG_DEBUG_VECT_FIELD_NAME_LEN 10
 
+
 /**
  * @brief Send a debug_vect message
  *

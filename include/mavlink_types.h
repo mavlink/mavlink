@@ -26,20 +26,25 @@ enum MAV_ACTION {
 			MAV_ACTION_SET_MANUAL = 12,
 			MAV_ACTION_SET_AUTO = 13,
 			MAV_ACTION_STORAGE_READ = 14,
-			MAV_ACTION_STORAGE_WRITE = 15
+			MAV_ACTION_STORAGE_WRITE = 15,
+			MAV_ACTION_CALIBRATE_RC = 16,
+			MAV_ACTION_CALIBRATE_GYRO = 17,
+			MAV_ACTION_CALIBRATE_MAG = 18,
+			MAV_ACTION_CALIBRATE_ACC = 19,
+			MAV_ACTION_CALIBRATE_PRESSURE = 20
 };
 
 enum MAV_MODE
 {
 	MAV_MODE_UNINIT = 0,
 			MAV_MODE_LOCKED = 1, ///< Motors are blocked, system is safe
-			MAV_MODE_READY = 2,  ///< System is ready, motors are unblocked, but controllers are inactive
-			MAV_MODE_MANUAL = 3, ///< System is allowed to be active, under manual (RC) control
-			MAV_MODE_GUIDED = 4, ///< System is allowed to be active, under autonomous control, manual setpoint
-			MAV_MODE_AUTO = 5,   ///< System is allowed to be active, under autonomous control and navigation
-			MAV_MODE_TEST1 = 6,  ///< Generic test mode, for custom use
-			MAV_MODE_TEST2 = 7,  ///< Generic test mode, for custom use
-			MAV_MODE_TEST3 = 8   ///< Generic test mode, for custom use
+			MAV_MODE_MANUAL = 2, ///< System is allowed to be active, under manual (RC) control
+			MAV_MODE_GUIDED = 3, ///< System is allowed to be active, under autonomous control, manual setpoint
+			MAV_MODE_AUTO = 4,   ///< System is allowed to be active, under autonomous control and navigation
+			MAV_MODE_TEST1 = 5,  ///< Generic test mode, for custom use
+			MAV_MODE_TEST2 = 6,  ///< Generic test mode, for custom use
+			MAV_MODE_TEST3 = 7,   ///< Generic test mode, for custom use
+			MAV_MODE_READY = 8  ///< System is ready, motors are unblocked, but controllers are inactive
 };
 
 enum MAV_STATE
@@ -88,6 +93,7 @@ enum MAV_AUTOPILOT_TYPE
 enum MAV_COMPONENT {
 	MAV_COMP_ID_GPS,
 	MAV_COMP_ID_WAYPOINTPLANNER,
+	MAV_COMP_ID_BLOBTRACKER,
 	MAV_COMP_ID_IMU = 200
 };
 

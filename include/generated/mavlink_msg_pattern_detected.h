@@ -13,6 +13,7 @@ typedef struct __mavlink_pattern_detected_t
 
 #define MAVLINK_MSG_PATTERN_DETECTED_FIELD_FILE_LEN 100
 
+
 /**
  * @brief Send a pattern_detected message
  *

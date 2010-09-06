@@ -109,8 +109,8 @@
      <field name="yaw" type="float">Yaw angle in rad</field>
    </message>
 
-   <!-- Message sent to the MAV to set a new position as reference for the controller -->
    <message name="POSITION_CONTROL_SETPOINT_SET" id="120">
+     <description>Message sent to the MAV to set a new position as reference for the controller</description>
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="id" type="uint16_t">ID of waypoint, 0 for plain position</field>
@@ -118,6 +118,16 @@
      <field name="y" type="float">y position</field>
      <field name="z" type="float">z position</field>
      <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
+   </message>
+
+   <message name="POSITION_CONTROL_OFFSET_SET" id="154">
+     <description>Message sent to the MAV to set a new offset from the currently controlled position</description>
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="x" type="float">x position offset</field>
+     <field name="y" type="float">y position offset</field>
+     <field name="z" type="float">z position offset</field>
+     <field name="yaw" type="float">yaw orientation offset in radians, 0 = NORTH</field>
    </message>
 
   <!-- Message sent by the MAV once it sets a new position as reference in the controller -->
