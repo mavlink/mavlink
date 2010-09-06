@@ -50,36 +50,6 @@
      <field name="nav_mode" type="uint8_t">The new navigation mode</field>
    </message>
    
-   <message name="PARAM_REQUEST_READ" id="20">
-     <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -> value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also http://qgroundcontrol.org/parameter_interface for a full documentation of QGroundControl and IMU code.</description>
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="param_id" type="array[15]">Onboard parameter id</field>
-     <field name="param_index" type="uint16_t">Parameter index</field>
-   </message>
-
-   <message name="PARAM_REQUEST_LIST" id="21">
-     <description>Request all parameters of this component. After his request, all parameters are emitted.</description>
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-   </message>
-
-   <message name="PARAM_VALUE" id="22">
-     <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout.</description>
-     <field name="param_id" type="array[15]">Onboard parameter id</field>
-     <field name="param_value" type="float">Onboard parameter value</field>
-     <field name="param_count" type="uint16_t">Total number of onboard parameters</field>
-     <field name="param_index" type="uint16_t">Index of this onboard parameter</field>
-   </message>
-
-   <message name="PARAM_SET" id="23">
-     <description>Set a parameter value TEMPORARILY to RAM. It will be reset to default on system reboot. Send the ACTION MAV_ACTION_STORAGE_WRITE to PERMANENTLY write the RAM contents to EEPROM. IMPORTANT: The receiving component should acknowledge the new parameter value by sending a param_value message to all communication partners. This will also ensure that multiple GCS all have an up-to-date list of all parameters. If the sending GCS did not receive a PARAM_VALUE message within its timeout time, it should re-send the PARAM_SET message.</description>
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="param_id" type="array[15]">Onboard parameter id</field>
-     <field name="param_value" type="float">Onboard parameter value</field>
-   </message>
-
    <message name="RAW_IMU" id="28">
      <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should always contain the true raw values without any scaling to allow data capture and system debugging.</description>
      <field name="usec"  type="uint64_t">Timestamp (microseconds since UNIX epoch)</field>
@@ -149,17 +119,6 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="satellite_snr"  type="array[20]">Signal to noise ratio of satellite</field>
    </message>
 
-   <message name="GLOBAL_POSITION" id="33">
-     <description>The filtered global position (e.g. fused GPS and accelerometers).</description>
-     <field name="usec" type="uint64_t">Timestamp (microseconds since unix epoch)</field>
-     <field name="lat"   type="float">X Position</field>
-     <field name="lon"   type="float">Y Position</field>
-     <field name="alt"   type="float">Z Position</field>
-     <field name="vx"  type="float">X Speed</field>
-     <field name="vy"  type="float">Y Speed</field>
-     <field name="vz"  type="float">Z Speed</field>
-   </message>
-
    <message name="SYS_STATUS" id="34">
      <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows wether the system is currently active or not and if an emergency occured. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occured it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
      <field name="mode" type="uint8_t">System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h</field>
@@ -168,18 +127,6 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="vbat" type="uint16_t">Battery voltage, in millivolts (1 = 1 millivolt)</field>
      <field name="motor_block" type="uint8_t">Motor block status flag, 0: Motors can be switched on (and could be either off or on), 1: Mechanical motor block switch is on, motors cannot be switched on (and are definitely off)</field>
      <field name="packet_drop" type="uint16_t">Dropped packets (packets that were corrupted on reception on the MAV)</field>
-   </message>
-
-   <message name="RC_CHANNELS_RAW" id="35">
-     <description>The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
-     <field name="chan1" type="uint16_t">RC channel 1 value, in microseconds</field>
-     <field name="chan2" type="uint16_t">RC channel 2 value, in microseconds</field>
-     <field name="chan3" type="uint16_t">RC channel 3 value, in microseconds</field>
-     <field name="chan4" type="uint16_t">RC channel 4 value, in microseconds</field>
-     <field name="chan5" type="uint16_t">RC channel 5 value, in microseconds</field>
-     <field name="chan6" type="uint16_t">RC channel 6 value, in microseconds</field>
-     <field name="chan7" type="uint16_t">RC channel 7 value, in microseconds</field>
-     <field name="chan8" type="uint16_t">RC channel 8 value, in microseconds</field>
    </message>
 
    <message name="WAYPOINT" id="39">
@@ -265,56 +212,6 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="local_yaw" type="float">local yaw that matches the global yaw orientation</field>
    </message>
 
-<!--
-   <message name="SAFETY_SET_ALLOWED_AREA" id="49">
-     Set a safety zone, which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/waypoints to accept and which to reject. Safety areas are often enforced by national or competition regulations.
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="type" type="uint8_t">0: global (GPS), 1: local</field>
-     <field name="x1" type="float">x position 1</field>
-     <field name="y1" type="float">y position 1</field>
-     <field name="z1" type="float">z position 1</field>
-     <field name="x2" type="float">x position 2</field>
-     <field name="y2" type="float">y position 2</field>
-     <field name="z2" type="float">z position 2</field>
-   </message>
--->
-
-   <message name="LOCAL_POSITION_SETPOINT_SET" id="50">
-     <description>Set the setpoint for a local position controller. This is the position in local coordinates the MAV should fly to. This message is sent by the path/waypoint planner to the onboard position controller. As some MAVs have a degree of freedom in yaw (e.g. all helicopters/quadrotors), the desired yaw angle is part of the message.</description>
-     <field name="target_system" type="uint8_t">System ID</field>
-     <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="x" type="float">x position 1</field>
-     <field name="y" type="float">y position 1</field>
-     <field name="z" type="float">z position 1</field>
-     <field name="yaw" type="float">x position 2</field>
-   </message>
-
-   <message name="LOCAL_POSITION_SETPOINT" id="51">
-     <description>Transmit the current local setpoint of the controller to other MAVs (collision avoidance) and to the GCS.</description>
-     <field name="x" type="float">x position 1</field>
-     <field name="y" type="float">y position 1</field>
-     <field name="z" type="float">z position 1</field>
-     <field name="yaw" type="float">x position 2</field>
-   </message>
-
-   <message name="ATTITUDE_CONTROLLER_OUTPUT" id="60">
-     <description>The output of the attitude controller. This output is the control response the controller currently generates and the attitude the MAV would take if it is under control of the attitude controller. The primary use of this message is to check the response and signs of the controller before the actual flight.</description>
-     <field name="enabled" type="uint8_t">1: enabled, 0: disabled</field>
-     <field name="roll" type="int8_t">Attitude roll: -128: -100%, 127: +100%</field>
-     <field name="pitch" type="int8_t">Attitude pitch: -128: -100%, 127: +100%</field>
-     <field name="yaw" type="int8_t">Attitude yaw: -128: -100%, 127: +100%</field>
-     <field name="thrust" type="int8_t">Attitude thrust: -128: -100%, 127: +100%</field>
-   </message>
-
-   <message name="POSITION_CONTROLLER_OUTPUT" id="61">
-     <description>The output of the position controller. The primary use of this message is to check the response and signs of the controller before the actual flight.</description>
-     <field name="enabled" type="uint8_t">1: enabled, 0: disabled</field>
-     <field name="x" type="int8_t">Position x: -128: -100%, 127: +100%</field>
-     <field name="y" type="int8_t">Position y: -128: -100%, 127: +100%</field>
-     <field name="z" type="int8_t">Position z: -128: -100%, 127: +100%</field>
-     <field name="yaw" type="int8_t">Position yaw: -128: -100%, 127: +100%</field>
-   </message>
    
    <!-- MESSAGE IDs 80 - 250: Space for custom messages in individual projectname_messages.xml files -->
 
