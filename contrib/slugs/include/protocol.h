@@ -3,7 +3,6 @@
 
 #include "string.h"
 #include "checksum.h"
-#include "inttypes.h"
 
 #include "mavlink_types.h"
 
@@ -20,15 +19,15 @@
 static inline uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, uint16_t length)
 {
 	// This code part is the same for all messages;
-
+	static uint8_t seq = 0;
+	uint16_t checksum;
 	msg->len = length;
 	msg->sysid = system_id;
 	msg->compid = component_id;
 	// One sequence number per component
-	static uint8_t seq = 0;
 	msg->seq = seq++;
 
-	uint16_t checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
+	checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
 	msg->ck_a = (uint8_t)(checksum & 0xFF); ///< High byte
 	msg->ck_b = (uint8_t)(checksum >> 8); ///< Low byte
 
@@ -42,10 +41,10 @@ static inline uint16_t mavlink_msg_to_send_buffer(uint8_t* buffer, const mavlink
 {
 	*(buffer+0) = MAVLINK_STX; ///< Start transmit
 	memcpy((buffer+1), msg, msg->len + MAVLINK_CORE_HEADER_LEN); ///< Core header plus payload
-        *(buffer + msg->len + MAVLINK_CORE_HEADER_LEN + 1) = msg->ck_a;
-        *(buffer + msg->len + MAVLINK_CORE_HEADER_LEN + 2) = msg->ck_b;
-        return msg->len + MAVLINK_NUM_NON_PAYLOAD_BYTES;
-        return 0;
+	*(buffer + msg->len + MAVLINK_CORE_HEADER_LEN + 1) = msg->ck_a;
+	*(buffer + msg->len + MAVLINK_CORE_HEADER_LEN + 2) = msg->ck_b;
+	return msg->len + MAVLINK_NUM_NON_PAYLOAD_BYTES;
+	return 0;
 }
 
 /**
@@ -53,7 +52,7 @@ static inline uint16_t mavlink_msg_to_send_buffer(uint8_t* buffer, const mavlink
  */
 static inline uint16_t mavlink_msg_get_send_buffer_length(const mavlink_message_t* msg)
 {
-        return msg->len + MAVLINK_NUM_NON_PAYLOAD_BYTES;
+	return msg->len + MAVLINK_NUM_NON_PAYLOAD_BYTES;
 }
 
 union checksum_ {
@@ -74,7 +73,7 @@ union __mavlink_bitfield {
 static inline void mavlink_start_checksum(mavlink_message_t* msg)
 {
 	union checksum_ ck;
-	crcInit(&(ck.s));
+	crc_init(&(ck.s));
 	msg->ck_a = ck.c[0];
 	msg->ck_b = ck.c[1];
 }
@@ -84,7 +83,7 @@ static inline void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 	union checksum_ ck;
 	ck.c[0] = msg->ck_a;
 	ck.c[1] = msg->ck_b;
-	crcAccumulate(c, &(ck.s));
+	crc_accumulate(c, &(ck.s));
 	msg->ck_a = ck.c[0];
 	msg->ck_b = ck.c[1];
 }
@@ -99,67 +98,67 @@ static inline void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
  */
 static void mavlink_parse_state_initialize(mavlink_status_t* initStatus)
 {
-        if ((initStatus->parse_state <= MAVLINK_PARSE_STATE_UNINIT) || (initStatus->parse_state > MAVLINK_PARSE_STATE_GOT_CRC1))
+	if ((initStatus->parse_state <= MAVLINK_PARSE_STATE_UNINIT) || (initStatus->parse_state > MAVLINK_PARSE_STATE_GOT_CRC1))
 	{
-                initStatus->ck_a = 0;
-                initStatus->ck_b = 0;
-                initStatus->msg_received = 0;
-                initStatus->buffer_overrun = 0;
-                initStatus->parse_error = 0;
-                initStatus->parse_state = MAVLINK_PARSE_STATE_UNINIT;
-                initStatus->packet_idx = 0;
-                initStatus->packet_rx_drop_count = 0;
-                initStatus->packet_rx_success_count = 0;
+		initStatus->ck_a = 0;
+		initStatus->ck_b = 0;
+		initStatus->msg_received = 0;
+		initStatus->buffer_overrun = 0;
+		initStatus->parse_error = 0;
+		initStatus->parse_state = MAVLINK_PARSE_STATE_UNINIT;
+		initStatus->packet_idx = 0;
+		initStatus->packet_rx_drop_count = 0;
+		initStatus->packet_rx_success_count = 0;
 	}
 }
 
-	/**
-	 * This is a convenience function which handles the complete MAVLink parsing.
-	 * the function will parse one byte at a time and return the complete packet once
-	 * it could be successfully decoded. Checksum and other failures will be silently
-	 * ignored.
-	 *
-	 * @param chan     ID of the current channel. This allows to parse different channels with this function.
-	 *                 a channel is not a physical message channel like a serial port, but a logic partition of
-	 *                 the communication streams in this case. COMM_NB is the limit for the number of channels
-	 *                 on MCU (e.g. ARM7), while COMM_NB_HIGH is the limit for the number of channels in Linux/Windows
-	 * @param c        The char to barse
-	 *
-	 * @param returnMsg NULL if no message could be decoded, the message data else
-	 * @return 0 if no message could be decoded, 1 else
-	 *
-	 * A typical use scenario of this function call is:
-	 *
-	 * @code
-	 * #include <inttypes.h> // For fixed-width uint8_t type
-	 *
-	 * mavlink_message_t msg;
-	 * int chan = 0;
-	 *
-	 *
-	 * while(serial.bytesAvailable > 0)
-	 * {
-	 *   uint8_t byte = serial.getNextByte();
-	 *   if (mavlink_parse_char(chan, byte, &msg))
-	 *     {
-	 *     printf("Received message with ID %d, sequence: %d from component %d of system %d", msg.msgid, msg.seq, msg.compid, msg.sysid);
-	 *     }
-	 * }
-	 *
-	 *
-	 * @endcode
-	 */
+/**
+ * This is a convenience function which handles the complete MAVLink parsing.
+ * the function will parse one byte at a time and return the complete packet once
+ * it could be successfully decoded. Checksum and other failures will be silently
+ * ignored.
+ *
+ * @param chan     ID of the current channel. This allows to parse different channels with this function.
+ *                 a channel is not a physical message channel like a serial port, but a logic partition of
+ *                 the communication streams in this case. COMM_NB is the limit for the number of channels
+ *                 on MCU (e.g. ARM7), while COMM_NB_HIGH is the limit for the number of channels in Linux/Windows
+ * @param c        The char to barse
+ *
+ * @param returnMsg NULL if no message could be decoded, the message data else
+ * @return 0 if no message could be decoded, 1 else
+ *
+ * A typical use scenario of this function call is:
+ *
+ * @code
+ * #include <inttypes.h> // For fixed-width uint8_t type
+ *
+ * mavlink_message_t msg;
+ * int chan = 0;
+ *
+ *
+ * while(serial.bytesAvailable > 0)
+ * {
+ *   uint8_t byte = serial.getNextByte();
+ *   if (mavlink_parse_char(chan, byte, &msg))
+ *     {
+ *     printf("Received message with ID %d, sequence: %d from component %d of system %d", msg.msgid, msg.seq, msg.compid, msg.sysid);
+ *     }
+ * }
+ *
+ *
+ * @endcode
+ */
 static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
 #if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
-        static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
-        static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB_HIGH];
+	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
+	static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB_HIGH];
 #else
 	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB];
 	static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB];
 #endif
 	// Initializes only once, values keep unchanged after first initialization
-        mavlink_parse_state_initialize(&m_mavlink_status[chan]);
+	mavlink_parse_state_initialize(&m_mavlink_status[chan]);
 
 	mavlink_message_t* rxmsg = &m_mavlink_message[chan]; ///< The currently decoded message
 	mavlink_status_t* status = &m_mavlink_status[chan]; ///< The current decode status
@@ -171,7 +170,7 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 	{
 	case MAVLINK_PARSE_STATE_UNINIT:
 	case MAVLINK_PARSE_STATE_IDLE:
-                if (c == MAVLINK_STX)
+		if (c == MAVLINK_STX)
 		{
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
 			mavlink_start_checksum(rxmsg);
@@ -243,6 +242,11 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 			status->parse_error++;
 			status->msg_received = 0;
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			if (c == MAVLINK_STX)
+			{
+				status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
+				mavlink_start_checksum(rxmsg);
+			}
 		}
 		else
 		{
@@ -256,6 +260,11 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 			status->parse_error++;
 			status->msg_received = 0;
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			if (c == MAVLINK_STX)
+			{
+				status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
+				mavlink_start_checksum(rxmsg);
+			}
 		}
 		else
 		{
@@ -271,10 +280,10 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 	// If a message has been sucessfully decoded, check index
 	if (status->msg_received == 1)
 	{
-        //while(status->current_seq != rxmsg->seq)
+		//while(status->current_seq != rxmsg->seq)
 		//{
 		//	status->packet_rx_drop_count++;
-        //               status->current_seq++;
+		//               status->current_seq++;
 		//}
 		status->current_seq = rxmsg->seq;
 		// Initial condition: If no packet has been received so far, drop count is undefined
@@ -283,7 +292,7 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 		status->packet_rx_success_count++;
 	}
 
-    r_mavlink_status->current_seq = status->current_seq+1;
+	r_mavlink_status->current_seq = status->current_seq+1;
 	r_mavlink_status->packet_rx_success_count = status->packet_rx_success_count;
 	r_mavlink_status->packet_rx_drop_count = status->parse_error;
 	return status->msg_received;
@@ -494,7 +503,7 @@ r_mavlink_status->packet_rx_success_count = status->packet_rx_success_count;
 r_mavlink_status->packet_rx_drop_count = status->parse_error;
 return status->msg_received;
 }
-*/
+ */
 
 
 typedef union __generic_16bit
@@ -504,18 +513,18 @@ typedef union __generic_16bit
 } generic_16bit;
 
 typedef union __generic_32bit
-	{
-		uint8_t b[4];
-		float f;
-		int32_t i;
-		int16_t s;
-	} generic_32bit;
+{
+	uint8_t b[4];
+	float f;
+	int32_t i;
+	int16_t s;
+} generic_32bit;
 
 typedef union __generic_64bit
-	{
-		uint8_t b[8];
-		int64_t ll; ///< Long long (64 bit)
-	} generic_64bit;
+{
+	uint8_t b[8];
+	int64_t ll; ///< Long long (64 bit)
+} generic_64bit;
 
 /**
  * @brief Place an unsigned byte into the buffer
@@ -682,31 +691,31 @@ static inline uint8_t put_array_by_index(const int8_t* b, uint8_t length, uint8_
  */
 static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint8_t bindex, uint8_t* buffer)
 {
-    uint16_t length = 0;
-    // Copy string into buffer, ensuring not to exceed the buffer size
-    int i;
-    for (i = 1; i < maxlength; i++)
-    {
-        length++;
-        // String characters
-        if (i < (maxlength - 1))
-        {
-            buffer[bindex+i] = b[i];
-            // Stop at null character
-            if (b[i] == '\0')
-            {
-                break;
-            }
-        }
-        // Enforce null termination at end of buffer
-        else if (i == (maxlength - 1))
-        {
-            buffer[i] = '\0';
-        }
-    }
-    // Write length into first field
-    put_uint8_t_by_index(length, bindex, buffer);
-    return length;
+	uint16_t length = 0;
+	// Copy string into buffer, ensuring not to exceed the buffer size
+	int i;
+	for (i = 1; i < maxlength; i++)
+	{
+		length++;
+		// String characters
+		if (i < (maxlength - 1))
+		{
+			buffer[bindex+i] = b[i];
+			// Stop at null character
+			if (b[i] == '\0')
+			{
+				break;
+			}
+		}
+		// Enforce null termination at end of buffer
+		else if (i == (maxlength - 1))
+		{
+			buffer[i] = '\0';
+		}
+	}
+	// Write length into first field
+	put_uint8_t_by_index(length, bindex, buffer);
+	return length;
 }
 
 /**
@@ -714,23 +723,24 @@ static inline uint8_t put_string_by_index(const char* b, uint8_t maxlength, uint
  *
  * @param b the value to add, will be encoded in the bitfield
  * @param bits number of bits to use to encode b, e.g. 1 for boolean, 2, 3, etc.
- * @param bindex the position in the packet
- * @param buffer packet buffer
+ * @param packet_index the position in the packet (the index of the first byte to use)
+ * @param bit_index the position in the byte (the index of the first bit to use)
+ * @param buffer packet buffer to write into
  * @return new position of the last used byte in the buffer
  */
-static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t bindex, uint8_t bit_index, uint8_t* r_bit_index, uint8_t* buffer)
+static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t packet_index, uint8_t bit_index, uint8_t* r_bit_index, uint8_t* buffer)
 {
-	uint16_t length = 0;
 	uint16_t bits_remain = bits;
 	// Transform number into network order
 	generic_32bit bin;
-        bin.i = b;
 	generic_32bit bout;
+	uint8_t i_bit_index, i_byte_index, curr_bits_n;
+	bin.i = b;
 	bout.b[0] = bin.b[3];
 	bout.b[1] = bin.b[2];
 	bout.b[2] = bin.b[1];
 	bout.b[3] = bin.b[0];
-	
+
 	// buffer in
 	// 01100000 01000000 00000000 11110001
 	// buffer out
@@ -741,36 +751,64 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t b
 
 	// Mask n free bits
 	// 00001111 = 2^0 + 2^1 + 2^2 + 2^3 = 2^n - 1
+	// = ((uint32_t)(1 << n)) - 1; // = 2^n - 1
 
 	// Shift n bits into the right position
 	// out = in >> n;
 
 	// Mask and shift bytes
-	uint8_t i_bit_index = bit_index;
-	uint8_t i_byte_index = bindex;
+	i_bit_index = bit_index;
+	i_byte_index = packet_index;
 	if (bit_index > 0)
 	{
 		// If bits were available at start, they were available
 		// in the byte before the current index
 		i_byte_index--;
 	}
+
+	// While bits have not been packed yet
 	while (bits_remain > 0)
 	{
-		uint8_t curr_bits_n = bits_remain << 3; // mod 8
-		if (curr_bits_n > 1)
-		bits_remain -= curr_bits_n; // These bits are handled now
-		i_byte_index++; // These bits consume one byte
-		length++;       // One byte consumed by this field
-		// Put these bits into the buffer
-		// Operating now bitwise
-		uint8_t curr_bits = bout.b[length] >> (8 - curr_bits_n);
-		// Clear bits of previous byte
-                buffer[i_byte_index] &= (0xFF >> (8 - curr_bits_n));
-                buffer[i_byte_index] |= curr_bits;
-                i_byte_index++;
+		// Bits still have to be packed
+		// there can be more than 8 bits, so
+		// we might have to pack them into more than one byte
+
+		// First pack everything we can into the current 'open' byte
+		//curr_bits_n = bits_remain << 3; // Equals  bits_remain mod 8
+		//FIXME
+		if (bits_remain <= (8 - i_bit_index))
+		{
+			// Enough space
+			curr_bits_n = bits_remain;
+		}
+		else
+		{
+			curr_bits_n = (8 - i_bit_index);
+		}
+		
+		// Pack these n bits into the current byte
+		// Mask out whatever was at that position with ones (xxx11111)
+		buffer[i_byte_index] &= (0xFF >> (8 - curr_bits_n));
+		// Put content to this position, by masking out the non-used part
+		buffer[i_byte_index] |= ((0x00 << curr_bits_n) & bout.i);
+		
+		// Increment the bit index
+		i_bit_index += curr_bits_n;
+
+		// Now proceed to the next byte, if necessary
+		bits_remain -= curr_bits_n;
+		if (bits_remain > 0)
+		{
+			// Offer another 8 bits / one byte
+			i_byte_index++;
+			i_bit_index = 0;
+		}
 	}
+	
 	*r_bit_index = i_bit_index;
-	return length;
+	// If a partly filled byte is present, mark this as consumed
+	if (i_bit_index != 7) i_byte_index++;
+	return i_byte_index - packet_index;
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
@@ -778,9 +816,9 @@ static inline uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t b
 // To make MAVLink work on your MCU, define a similar function
 
 /*
- 
+
 #include "mavlink_types.h"
- 
+
 void comm_send_ch(mavlink_channel_t chan, uint8_t ch)
 {
     if (chan == MAVLINK_COMM_0)
