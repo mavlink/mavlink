@@ -371,3 +371,20 @@ typedef struct __mavlink_request_rc_channels_t
 	uint8_t enabled; ///< True: start sending data; False: stop sending data
 
 } mavlink_request_rc_channels_t;
+
+typedef struct __mavlink_radio_calibration_t 
+{
+	float aileron[3]; ///< Aileron setpoints: high, center, low
+	float elevator[3]; ///< Elevator setpoints: high, center, low
+	float rudder[3]; ///< Rudder setpoints: high, center, low
+	float gyro[2]; ///< Tail gyro mode/gain setpoints: heading hold, rate mode
+	float pitch[5]; ///< Pitch curve setpoints (every 25%)
+	float throttle[5]; ///< Throttle curve setpoints (every 25%)
+
+} mavlink_radio_calibration_t;
+
+typedef struct __mavlink_request_radio_calibration_t 
+{
+	uint8_t unused; ///< Unused field.  Included to prevent compile time warnings
+
+} mavlink_request_radio_calibration_t;
