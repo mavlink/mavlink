@@ -1,6 +1,6 @@
 // MESSAGE POSITION_TARGET PACKING
 
-#define MAVLINK_MSG_ID_POSITION_TARGET 122
+#define MAVLINK_MSG_ID_POSITION_TARGET 63
 
 typedef struct __mavlink_position_target_t 
 {
