@@ -354,8 +354,9 @@ typedef struct __mavlink_debug_t
 
 } mavlink_debug_t;
 
-typedef struct __mavlink_set_altitude_t 
+typedef struct __mavlink_nav_filter_bias_t 
 {
+<<<<<<< HEAD
 	uint8_t target; ///< The system setting the altitude
 	uint32_t mode; ///< The new altitude in meters
 
@@ -620,14 +621,20 @@ typedef struct __mavlink_watchdog_command_t
 	uint16_t watchdog_id; ///< Watchdog ID
 	uint16_t process_id; ///< Process ID
 	uint8_t command_id; ///< Command ID
+=======
+	uint64_t usec; ///< Timestamp (microseconds)
+	float accel_0; ///< b_f[0]
+	float accel_1; ///< b_f[1]
+	float accel_2; ///< b_f[2]
+	float gyro_0; ///< b_f[0]
+	float gyro_1; ///< b_f[1]
+	float gyro_2; ///< b_f[2]
+>>>>>>> aa24d661e1524e5968242e43522dbf64dd18749c
 
-} mavlink_watchdog_command_t;
+} mavlink_nav_filter_bias_t;
 
-typedef struct __mavlink_pattern_detected_t 
+typedef struct __mavlink_request_rc_channels_t 
 {
-	uint8_t type; ///< 0: Pattern, 1: Letter
-	float confidence; ///< Confidence of detection
-	int8_t file[100]; ///< Pattern file name
-	uint8_t detected; ///< Accepted as true detection, 0 no, 1 yes
+	uint8_t enabled; ///< True: start sending data; False: stop sending data
 
-} mavlink_pattern_detected_t;
+} mavlink_request_rc_channels_t;
