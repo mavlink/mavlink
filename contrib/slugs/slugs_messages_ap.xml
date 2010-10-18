@@ -64,7 +64,7 @@
      <field name="u_m" type="float">Measured Airspeed prior to the Nav Filter</field>
      <field name="phi_c" type="float">Commanded Roll</field>
      <field name="theta_c" type="float">Commanded Pitch</field>
-     <field name="psi_c" type="float">Commanded Yaw</field>
+     <field name="psiDot_c" type="float">Commanded Turn rate</field>
      <field name="ay_body" type="float">Y component of the body acceleration</field>
      <field name="totalDist" type="float">Total Distance to Run on this leg of Navigation</field>
      <field name="dist2Go" type="float">Remaining distance to Run on this leg of Navigation</field>
@@ -105,6 +105,40 @@
      <field name="sec"   type="uint8_t">Sec reported by Gps  </field>
      <field name="visSat"   type="uint8_t">Visible sattelites reported by Gps  </field>
     </message>
+    
+  <message name="MID_LVL_CMDS" id="80">
+     Mid Level commands sent from the GS to the autopilot. These are only sent when being opperated in mid-level commands mode from the ground; for periodic report of these commands generated from the autopilot see message XXXX.
+     <field name="target" type="uint8_t">The system setting the commands</field>
+     <field name="hCommand" type="float">Commanded Airspeed</field>
+     <field name="uCommand" type="float">Log value 2 </field>
+     <field name="rCommand" type="float">Log value 3 </field>
+  </message>    
 
+  <message name="CTRL_SRFC_PT" id="81">
+This message configures the Selective Passthrough mode. it allows to select which control surfaces the Pilot can control from his console. It is implemented as a bitfield as follows: 
+     Position          Bit        Code
+     =================================
+     15-8             Reserved  
+     7                 dt_pass    128
+     6                 dla_pass   64
+     5                 dra_pass   32
+     4                 dr_pass    16
+     3                 dle_pass   8
+     2                 dre_pass   4
+     1                 dlf_pass   2
+     0                 drf_pass   1
+    Where Bit 15 is the MSb. 0 = AP has control of the surface; 1 = Pilot Console has control of the surface.
+     <field name="target" type="uint8_t">The system setting the commands</field>
+     <field name="bitfieldPt" type="uint16_t">Bitfield containing the PT configuration</field>
+  </message>  
+  
+  <message name="PID" id="82">
+     Configure a PID loop.
+     <field name="target" type="uint8_t">The system setting the PID values</field>
+     <field name="pVal" type="float">Proportional gain</field>
+     <field name="iVal" type="float">Integral gain</field>
+     <field name="dVal" type="float">Derivative gain</field>
+     <field name="idx" type="uint8_t">PID loop index</field>
+  </message>
 </messages>
 </mavlink>
