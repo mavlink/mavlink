@@ -1,6 +1,6 @@
 // MESSAGE PWM_COMMANDS PACKING
 
-#define MAVLINK_MSG_ID_PWM_COMMANDS 75
+#define MAVLINK_MSG_ID_PWM_COMMANDS 195
 
 typedef struct __mavlink_pwm_commands_t 
 {

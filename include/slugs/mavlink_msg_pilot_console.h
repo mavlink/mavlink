@@ -1,6 +1,6 @@
 // MESSAGE PILOT_CONSOLE PACKING
 
-#define MAVLINK_MSG_ID_PILOT_CONSOLE 74
+#define MAVLINK_MSG_ID_PILOT_CONSOLE 194
 
 typedef struct __mavlink_pilot_console_t 
 {

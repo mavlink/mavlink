@@ -1,6 +1,6 @@
 // MESSAGE CPU_LOAD PACKING
 
-#define MAVLINK_MSG_ID_CPU_LOAD 70
+#define MAVLINK_MSG_ID_CPU_LOAD 190
 
 typedef struct __mavlink_cpu_load_t 
 {

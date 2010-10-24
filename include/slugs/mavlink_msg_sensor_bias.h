@@ -1,6 +1,6 @@
 // MESSAGE SENSOR_BIAS PACKING
 
-#define MAVLINK_MSG_ID_SENSOR_BIAS 72
+#define MAVLINK_MSG_ID_SENSOR_BIAS 192
 
 typedef struct __mavlink_sensor_bias_t 
 {

@@ -1,6 +1,6 @@
 // MESSAGE DIAGNOSTIC PACKING
 
-#define MAVLINK_MSG_ID_DIAGNOSTIC 73
+#define MAVLINK_MSG_ID_DIAGNOSTIC 193
 
 typedef struct __mavlink_diagnostic_t 
 {

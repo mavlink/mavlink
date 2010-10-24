@@ -1,6 +1,6 @@
 // MESSAGE AIR_DATA PACKING
 
-#define MAVLINK_MSG_ID_AIR_DATA 71
+#define MAVLINK_MSG_ID_AIR_DATA 191
 
 typedef struct __mavlink_air_data_t 
 {
