@@ -20,6 +20,7 @@ extern "C" {
 #include "./mavlink_msg_nav_filter_bias.h"
 #include "./mavlink_msg_request_rc_channels.h"
 #include "./mavlink_msg_radio_calibration.h"
+#include "./mavlink_msg_request_radio_calibration.h"
 #ifdef __cplusplus
 }
 #endif
