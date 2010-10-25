@@ -1,6 +1,6 @@
 // MESSAGE NAV_FILTER_BIAS PACKING
 
-#define MAVLINK_MSG_ID_NAV_FILTER_BIAS 80
+#define MAVLINK_MSG_ID_NAV_FILTER_BIAS 220
 
 typedef struct __mavlink_nav_filter_bias_t 
 {

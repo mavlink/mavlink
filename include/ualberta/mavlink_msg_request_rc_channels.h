@@ -1,6 +1,6 @@
 // MESSAGE REQUEST_RC_CHANNELS PACKING
 
-#define MAVLINK_MSG_ID_REQUEST_RC_CHANNELS 81
+#define MAVLINK_MSG_ID_REQUEST_RC_CHANNELS 221
 
 typedef struct __mavlink_request_rc_channels_t 
 {
