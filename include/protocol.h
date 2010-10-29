@@ -10,7 +10,7 @@
  * @brief Finalize a MAVLink message
  *
  * This function calculates the checksum and sets length and aircraft id correctly.
- * It assumes that the message id and the payload are already correctly set.
+ * It assumes that the message id and the payload are already correctly set. 
  *
  * @param msg Message to finalize
  * @param system_id Id of the sending (this) system, 1-127
