@@ -48,7 +48,8 @@ enum MAV_MODE
 			MAV_MODE_TEST1 = 5,  ///< Generic test mode, for custom use
 			MAV_MODE_TEST2 = 6,  ///< Generic test mode, for custom use
 			MAV_MODE_TEST3 = 7,   ///< Generic test mode, for custom use
-			MAV_MODE_READY = 8  ///< System is ready, motors are unblocked, but controllers are inactive
+			MAV_MODE_READY = 8,  ///< System is ready, motors are unblocked, but controllers are inactive
+			MAV_MODE_RC_TRAINING = 9 ///< System is blocked, only RC valued are read and reported back
 };
 
 enum MAV_STATE
