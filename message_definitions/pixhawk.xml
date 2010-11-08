@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <mavlink>
 <include>common.xml</include>
+
+<enums>
+   <enum name="SLUGS_PID_INDX_IDS" >
+      <description>Slugs parameter interface subsets</description>
+      <entry name = "PID_YAW_DAMPER" value="2" />
+      <entry name = "PID_PITCH">With comment: PID Pitch parameter</entry>
+      <entry name = "PID_ALT_HOLD"  value="50" />
+   </enum>
+</enums>
+
 <messages>
    <message name="SET_ALTITUDE" id="80">
      <field name="target" type="uint8_t">The system setting the altitude</field>
@@ -222,6 +232,37 @@
     <field name="confidence" type="float">Confidence of detection</field>
     <field name="file" type="array[100]">Pattern file name</field>
     <field name="detected" type="uint8_t">Accepted as true detection, 0 no, 1 yes</field>
+   </message>
+
+   <message name="POINT_OF_INTEREST" id="161">
+    <description>Notifies the operator about a point of interest (POI). This can be anything detected by the
+    system. This generic message is intented to help interfacing to generic visualizations and to display
+    the POI on a map.</description>
+    <field name="type" type="uint8_t">0: Notice, 1: Warning, 2: Critical, 3: Emergency, 4: Debug</field>
+    <field name="color" type="uint8_t">0: blue, 1: yellow, 2: red, 3: orange, 4: green, 5: magenta</field>
+    <field name="coordinate_system" type="uint8_t">0: global, 1:local</field>
+    <field name="timeout" type="uint16_t">0: no timeout, >1: timeout in seconds</field>
+    <field name="x" type="float">X Position</field>
+    <field name="y" type="float">Y Position</field>
+    <field name="z" type="float">Z Position</field>
+    <field name="name" type="array[25]">POI name</field>
+   </message>
+
+   <message name="POINT_OF_INTEREST_CONNECTION" id="162">
+    <description>Notifies the operator about the connection of two point of interests (POI). This can be anything detected by the
+    system. This generic message is intented to help interfacing to generic visualizations and to display
+    the POI on a map.</description>
+    <field name="type" type="uint8_t">0: Notice, 1: Warning, 2: Critical, 3: Emergency, 4: Debug</field>
+    <field name="color" type="uint8_t">0: blue, 1: yellow, 2: red, 3: orange, 4: green, 5: magenta</field>
+    <field name="coordinate_system" type="uint8_t">0: global, 1:local</field>
+    <field name="timeout" type="uint16_t">0: no timeout, >1: timeout in seconds</field>
+    <field name="x1" type="float">X1 Position</field>
+    <field name="y1" type="float">Y1 Position</field>
+    <field name="z1" type="float">Z1 Position</field>
+    <field name="x2" type="float">X2 Position</field>
+    <field name="y2" type="float">Y2 Position</field>
+    <field name="z2" type="float">Z2 Position</field>
+    <field name="name" type="array[25]">POI connection name</field>
    </message>
 
 </messages>
