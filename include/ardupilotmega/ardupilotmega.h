@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Sunday, November 14 2010, 07:46 UTC
+ *	 Generated on Sunday, November 14 2010, 17:05 UTC
  */
 #ifndef ARDUPILOTMEGA_H
 #define ARDUPILOTMEGA_H
@@ -17,7 +17,11 @@ extern "C" {
 
 
 #include "../common/common.h"
-#include "./mavlink_msg_aux_status.h"
+// ENUM DEFINITIONS
+
+
+// MESSAGE DEFINITIONS
+
 #ifdef __cplusplus
 }
 #endif
