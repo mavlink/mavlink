@@ -35,6 +35,10 @@ enum MAV_ACTION {
 			MAV_ACTION_REC_START = 21,
 			MAV_ACTION_REC_PAUSE = 22,
 			MAV_ACTION_REC_STOP = 23,
+			MAV_ACTION_TAKEOFF = 24,
+			MAV_ACTION_NAVIGATE = 25,
+			MAV_ACTION_LAND = 26,
+			MAV_ACTION_LOITER = 27,
 			MAV_ACTION_NB        ///< Number of MAV actions
 };
 
@@ -104,6 +108,11 @@ enum MAV_COMPONENT {
 	MAV_COMP_ID_IMU = 200
 };
 
+enum MAV_FRAME
+{
+    MAV_FRAME_GLOBAL = 0,
+    MAV_FRAME_LOCAL = 1
+};
 
 #define MAVLINK_STX 0x55 ///< Packet start sign
 #define MAVLINK_STX_LEN 1 ///< Length of start sign

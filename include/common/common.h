@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Sunday, November 14 2010, 16:32 UTC
+ *	 Generated on Tuesday, November 16 2010, 09:05 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -56,6 +56,7 @@ extern "C" {
 #include "./mavlink_msg_attitude_controller_output.h"
 #include "./mavlink_msg_position_controller_output.h"
 #include "./mavlink_msg_position_target.h"
+#include "./mavlink_msg_state_correction.h"
 #include "./mavlink_msg_statustext.h"
 #include "./mavlink_msg_debug.h"
 #ifdef __cplusplus
