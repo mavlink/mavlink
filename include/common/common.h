@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Tuesday, November 16 2010, 20:30 UTC
+ *	 Generated on Wednesday, November 17 2010, 17:58 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -40,7 +40,8 @@ extern "C" {
 #include "./mavlink_msg_gps_status.h"
 #include "./mavlink_msg_global_position.h"
 #include "./mavlink_msg_sys_status.h"
-#include "./mavlink_msg_rc_channels.h"
+#include "./mavlink_msg_rc_channels_raw.h"
+#include "./mavlink_msg_rc_channels_scaled.h"
 #include "./mavlink_msg_waypoint.h"
 #include "./mavlink_msg_waypoint_request.h"
 #include "./mavlink_msg_waypoint_set_current.h"
