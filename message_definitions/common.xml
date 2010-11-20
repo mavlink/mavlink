@@ -165,12 +165,13 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="mode" type="uint8_t">System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h</field>
      <field name="nav_mode" type="uint8_t">Navigation mode, see MAV_NAV_MODE ENUM</field>
      <field name="status" type="uint8_t">System status flag, see MAV_STATUS ENUM</field>
+     <field name="load" type="uint16_t">Maximum usage in percent of the mainloop time, (0%: 0, 100%: 1000) should be always below 1000</field>
      <field name="vbat" type="uint16_t">Battery voltage, in millivolts (1 = 1 millivolt)</field>
      <field name="motor_block" type="uint8_t">Motor block status flag, 0: Motors can be switched on (and could be either off or on), 1: Mechanical motor block switch is on, motors cannot be switched on (and are definitely off)</field>
      <field name="packet_drop" type="uint16_t">Dropped packets (packets that were corrupted on reception on the MAV)</field>
    </message>
 
-   <message name="RC_CHANNELS" id="35">
+   <message name="RC_CHANNELS_RAW" id="35">
      <description>The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
      <field name="chan1_raw" type="uint16_t">RC channel 1 value, in microseconds</field>
      <field name="chan2_raw" type="uint16_t">RC channel 2 value, in microseconds</field>
@@ -180,15 +181,20 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="chan6_raw" type="uint16_t">RC channel 6 value, in microseconds</field>
      <field name="chan7_raw" type="uint16_t">RC channel 7 value, in microseconds</field>
      <field name="chan8_raw" type="uint16_t">RC channel 8 value, in microseconds</field>
-     <field name="chan1_255" type="uint8_t">RC channel 1 value scaled, 0: 0%, 255: 100%</field>
-     <field name="chan2_255" type="uint8_t">RC channel 2 value scaled, 0: 0%, 255: 100%</field>
-     <field name="chan3_255" type="uint8_t">RC channel 3 value scaled, 0: 0%, 255: 100%</field>
-     <field name="chan4_255" type="uint8_t">RC channel 4 value scaled, 0: 0%, 255: 100%</field>
-     <field name="chan5_255" type="uint8_t">RC channel 5 value scaled, 0: 0%, 255: 100%</field>
-     <field name="chan6_255" type="uint8_t">RC channel 6 value scaled, 0: 0%, 255: 100%</field>
-     <field name="chan7_255" type="uint8_t">RC channel 7 value scaled, 0: 0%, 255: 100%</field>
-     <field name="chan8_255" type="uint8_t">RC channel 8 value scaled, 0: 0%, 255: 100%</field>
-<field name="rssi" type="uint8_t">Receive signal strength indicator, 0: 0%, 255: 100%</field>
+     <field name="rssi" type="uint8_t">Receive signal strength indicator, 0: 0%, 255: 100%</field>
+   </message>
+
+   <message name="RC_CHANNELS_SCALED" id="36">
+     <description>The scaled values of the RC channels received. (-100%) -10000, (0%) 0, (100%) 10000</description>
+     <field name="chan1_scaled" type="int16_t">RC channel 1 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
+     <field name="chan2_scaled" type="int16_t">RC channel 2 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
+     <field name="chan3_scaled" type="int16_t">RC channel 3 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
+     <field name="chan4_scaled" type="int16_t">RC channel 4 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
+     <field name="chan5_scaled" type="int16_t">RC channel 5 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
+     <field name="chan6_scaled" type="int16_t">RC channel 6 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
+     <field name="chan7_scaled" type="int16_t">RC channel 7 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
+     <field name="chan8_scaled" type="int16_t">RC channel 8 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
+     <field name="rssi" type="uint8_t">Receive signal strength indicator, 0: 0%, 255: 100%</field>
    </message>
 
    <message name="WAYPOINT" id="39">
@@ -197,7 +203,8 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
-     <field name="type" type="uint8_t">0: global (GPS), 1: local, 2: global orbit, 3: local orbit</field>
+     <field name="frame" type="uint8_t">The coordinate system of the waypoint. see MAV_FRAME in mavlink_types.h</field>
+     <field name="action" type="uint8_t">The scheduled action for the waypoint. see MAV_ACTION in mavlink_types.h</field>
      <field name="orbit" type="float">Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint</field>
      <field name="orbit_direction" type="uint8_t">Direction of the orbit circling: 0: clockwise, 1: counter-clockwise</field>
      <field name="param1" type="float">For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters</field>
@@ -331,6 +338,59 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="z" type="float">z position</field>
      <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
    </message>
+
+   <message name="STATE_CORRECTION" id="64">
+   <description>Corrects the systems state by adding an error correction term to the position and velocity, and by rotating the attitude by a correction angle.</description>
+     <field name="xErr" type="float">x position error</field>
+     <field name="yErr" type="float">y position error</field>
+     <field name="zErr" type="float">z position error</field>
+     <field name="rollErr" type="float">roll error (radians)</field>
+     <field name="pitchErr" type="float">pitch error (radians)</field>
+     <field name="yawErr" type="float">yaw error (radians)</field>
+     <field name="vxErr" type="float">x velocity</field>
+     <field name="vyErr" type="float">y velocity</field>
+     <field name="vzErr" type="float">z velocity</field>
+   </message>
+
+   <message name="SET_ALTITUDE" id="65">
+     <field name="target" type="uint8_t">The system setting the altitude</field>
+     <field name="mode" type="uint32_t">The new altitude in meters</field>
+   </message>
+
+  <message name="REQUEST_DATA_STREAM" id="66">
+     <field name="target_system" type="uint8_t">The target requested to send the message stream.</field>
+     <field name="target_component" type="uint8_t">The target requested to send the message stream.</field>
+     <field name="req_stream_id" type="uint8_t">The ID of the requested message type</field>
+     <field name="req_message_rate" type="uint16_t">The requested interval between two messages of this type</field>
+     <field name="start_stop" type="uint8_t">1 to start sending, 0 to stop sending.</field>
+   </message>
+
+   <message name="REQUEST_DYNAMIC_GYRO_CALIBRATION" id="67">
+     <field name="target_system" type="uint8_t">The system which should auto-calibrate</field>
+<field name="target_component" type="uint8_t">The system component which should auto-calibrate</field>
+     <field name="mode" type="float">The current ground-truth rpm</field>
+     <field name="axis" type="uint8_t">The axis to calibrate: 0 roll, 1 pitch, 2 yaw</field>
+      <field name="time" type="uint16_t">The time to average over in ms</field>
+   </message>
+
+   <message name="REQUEST_STATIC_CALIBRATION" id="68">
+     <field name="target_system" type="uint8_t">The system which should auto-calibrate</field>
+<field name="target_component" type="uint8_t">The system component which should auto-calibrate</field>
+      <field name="time" type="uint16_t">The time to average over in ms</field>
+   </message>
+
+   <message name="MANUAL_CONTROL" id="69">
+     <field name="target" type="uint8_t">The system to be controlled</field>
+     <field name="roll" type="float">roll</field>
+     <field name="pitch" type="float">pitch</field>
+     <field name="yaw" type="float">yaw</field>
+     <field name="thrust" type="float">thrust</field>
+     <field name="roll_manual" type="uint8_t">roll control enabled auto:0, manual:1</field>
+     <field name="pitch_manual" type="uint8_t">pitch auto:0, manual:1</field>
+     <field name="yaw_manual" type="uint8_t">yaw auto:0, manual:1</field>
+     <field name="thrust_manual" type="uint8_t">thrust auto:0, manual:1</field>
+   </message>
+
    
    <!-- MESSAGE IDs 80 - 250: Space for custom messages in individual projectname_messages.xml files -->
 
