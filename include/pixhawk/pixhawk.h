@@ -30,11 +30,6 @@ enum SLUGS_PID_INDX_IDS
 
 // MESSAGE DEFINITIONS
 
-#include "./mavlink_msg_set_altitude.h"
-#include "./mavlink_msg_request_data_stream.h"
-#include "./mavlink_msg_request_dynamic_gyro_calibration.h"
-#include "./mavlink_msg_request_static_calibration.h"
-#include "./mavlink_msg_manual_control.h"
 #include "./mavlink_msg_attitude_control.h"
 #include "./mavlink_msg_debug_vect.h"
 #include "./mavlink_msg_set_cam_shutter.h"
