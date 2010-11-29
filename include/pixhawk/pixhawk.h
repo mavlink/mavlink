@@ -50,8 +50,6 @@ enum SLUGS_PID_INDX_IDS
 #include "./mavlink_msg_watchdog_process_status.h"
 #include "./mavlink_msg_watchdog_command.h"
 #include "./mavlink_msg_pattern_detected.h"
-#include "./mavlink_msg_point_of_interest.h"
-#include "./mavlink_msg_point_of_interest_connection.h"
 #ifdef __cplusplus
 }
 #endif
