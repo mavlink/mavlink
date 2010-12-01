@@ -6,12 +6,33 @@
 
 #include "mavlink_types.h"
 
+static inline mavlink_status_t* mavlink_get_channel_status(uint8_t chan)
+{
+#if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
+	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
+#else
+	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB];
+#endif
+	return &m_mavlink_status[chan];
+}
+
 /**
- * @brief Finalize a MAVLink message
+ * @brief Finalize a MAVLink message with MAVLINK_COMM_0 as default channel
  *
  * This function calculates the checksum and sets length and aircraft id correctly.
  * It assumes that the message id and the payload are already correctly set. 
  *
+ * @warning This function implicitely assumes the message is sent over channel zero.
+ *          if the message is sent over a different channel it will reach the receiver
+ *          without error, BUT the sequence number might be wrong due to the wrong
+ *          channel sequence counter. This will result is wrongly reported excessive
+ *          packet loss. Please use @see mavlink_{pack|encode}_headerless and then
+ *          @see mavlink_finalize_message_chan before sending for a correct channel
+ *          assignment. Please note that the mavlink_msg_xxx_pack and encode functions
+ *          assign channel zero as default and thus induce possible loss counter errors.\
+ *          They have been left to ensure code compatibility.
+ *
+ * @see mavlink_finalize_message_chan
  * @param msg Message to finalize
  * @param system_id Id of the sending (this) system, 1-127
  * @param length Message length, usually just the counter incremented while packing the message
@@ -19,14 +40,69 @@
 static inline uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, uint16_t length)
 {
 	// This code part is the same for all messages;
-	static uint8_t seq = 0;
 	uint16_t checksum;
 	msg->len = length;
 	msg->sysid = system_id;
 	msg->compid = component_id;
 	// One sequence number per component
-	msg->seq = seq++;
+	msg->seq = mavlink_get_channel_status(MAVLINK_COMM_0)->current_rx_seq;
+        mavlink_get_channel_status(MAVLINK_COMM_0)->current_rx_seq = mavlink_get_channel_status(MAVLINK_COMM_0)->current_rx_seq+1;
+	checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
+	msg->ck_a = (uint8_t)(checksum & 0xFF); ///< High byte
+	msg->ck_b = (uint8_t)(checksum >> 8); ///< Low byte
 
+	return length + MAVLINK_NUM_NON_STX_PAYLOAD_BYTES;
+}
+
+/**
+ * @brief Finalize a MAVLink message with channel assignment
+ *
+ * This function calculates the checksum and sets length and aircraft id correctly.
+ * It assumes that the message id and the payload are already correctly set. This function
+ * can also be used if the message header has already been written before (as in mavlink_msg_xxx_pack
+ * instead of mavlink_msg_xxx_pack_headerless), it just introduces little extra overhead.
+ *
+ * @param msg Message to finalize
+ * @param system_id Id of the sending (this) system, 1-127
+ * @param length Message length, usually just the counter incremented while packing the message
+ */
+static inline uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, uint8_t chan, uint16_t length)
+{
+	// This code part is the same for all messages;
+	uint16_t checksum;
+	msg->len = length;
+	msg->sysid = system_id;
+	msg->compid = component_id;
+	// One sequence number per component
+	msg->seq = mavlink_get_channel_status(chan)->current_rx_seq;
+	mavlink_get_channel_status(chan)->current_rx_seq = mavlink_get_channel_status(chan)->current_rx_seq+1;
+	checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
+	msg->ck_a = (uint8_t)(checksum & 0xFF); ///< High byte
+	msg->ck_b = (uint8_t)(checksum >> 8); ///< Low byte
+
+	return length + MAVLINK_NUM_NON_STX_PAYLOAD_BYTES;
+}
+
+/**
+ * @brief Finalize a MAVLink message
+ *
+ * This function calculates the checksum and sets length and aircraft id correctly.
+ * It assumes that the message id and the payload are already correctly set.
+ *
+ * @param msg Message to finalize
+ * @param system_id Id of the sending (this) system, 1-127
+ * @param length Message length, usually just the counter incremented while packing the message
+ */
+static inline uint16_t mavlink_finalize_message_crc(uint8_t chan, mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, uint16_t length)
+{
+	// This code part is the same for all messages;
+	uint16_t checksum;
+	msg->len = length;
+	msg->sysid = system_id;
+	msg->compid = component_id;
+	// One sequence number per component
+	msg->seq = mavlink_get_channel_status(chan)->current_rx_seq;
+	mavlink_get_channel_status(chan)->current_rx_seq = mavlink_get_channel_status(chan)->current_rx_seq+1;
 	checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
 	msg->ck_a = (uint8_t)(checksum & 0xFF); ///< High byte
 	msg->ck_b = (uint8_t)(checksum >> 8); ///< Low byte
@@ -151,17 +227,15 @@ static void mavlink_parse_state_initialize(mavlink_status_t* initStatus)
 static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
 #if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
-	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
 	static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB_HIGH];
 #else
-	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB];
 	static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB];
 #endif
 	// Initializes only once, values keep unchanged after first initialization
-	mavlink_parse_state_initialize(&m_mavlink_status[chan]);
+	mavlink_parse_state_initialize(mavlink_get_channel_status(chan));
 
 	mavlink_message_t* rxmsg = &m_mavlink_message[chan]; ///< The currently decoded message
-	mavlink_status_t* status = &m_mavlink_status[chan]; ///< The current decode status
+	mavlink_status_t* status = mavlink_get_channel_status(chan); ///< The current decode status
 	int bufferIndex = 0;
 
 	status->msg_received = 0;
@@ -285,14 +359,14 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 		//	status->packet_rx_drop_count++;
 		//               status->current_seq++;
 		//}
-		status->current_seq = rxmsg->seq;
+		status->current_rx_seq = rxmsg->seq;
 		// Initial condition: If no packet has been received so far, drop count is undefined
 		if (status->packet_rx_success_count == 0) status->packet_rx_drop_count = 0;
 		// Count this packet as received
 		status->packet_rx_success_count++;
 	}
 
-	r_mavlink_status->current_seq = status->current_seq+1;
+	r_mavlink_status->current_rx_seq = status->current_rx_seq+1;
 	r_mavlink_status->packet_rx_success_count = status->packet_rx_success_count;
 	r_mavlink_status->packet_rx_drop_count = status->parse_error;
 	return status->msg_received;
