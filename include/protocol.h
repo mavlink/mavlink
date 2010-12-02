@@ -84,33 +84,6 @@ static inline uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uin
 }
 
 /**
- * @brief Finalize a MAVLink message
- *
- * This function calculates the checksum and sets length and aircraft id correctly.
- * It assumes that the message id and the payload are already correctly set.
- *
- * @param msg Message to finalize
- * @param system_id Id of the sending (this) system, 1-127
- * @param length Message length, usually just the counter incremented while packing the message
- */
-static inline uint16_t mavlink_finalize_message_crc(uint8_t chan, mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, uint16_t length)
-{
-	// This code part is the same for all messages;
-	uint16_t checksum;
-	msg->len = length;
-	msg->sysid = system_id;
-	msg->compid = component_id;
-	// One sequence number per component
-	msg->seq = mavlink_get_channel_status(chan)->current_rx_seq;
-	mavlink_get_channel_status(chan)->current_rx_seq = mavlink_get_channel_status(chan)->current_rx_seq+1;
-	checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
-	msg->ck_a = (uint8_t)(checksum & 0xFF); ///< High byte
-	msg->ck_b = (uint8_t)(checksum >> 8); ///< Low byte
-
-	return length + MAVLINK_NUM_NON_STX_PAYLOAD_BYTES;
-}
-
-/**
  * @brief Pack a message to send it over a serial byte stream
  */
 static inline uint16_t mavlink_msg_to_send_buffer(uint8_t* buffer, const mavlink_message_t* msg)
