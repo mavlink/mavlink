@@ -6,6 +6,32 @@
 
 #include "mavlink_types.h"
 
+
+/**
+ * @brief Initialize the communication stack
+ *
+ * This function has to be called before using commParseBuffer() to initialize the different status registers.
+ *
+ * @return Will initialize the different buffers and status registers.
+ */
+static void mavlink_parse_state_initialize(mavlink_status_t* initStatus)
+{
+	if ((initStatus->parse_state <= MAVLINK_PARSE_STATE_UNINIT) || (initStatus->parse_state > MAVLINK_PARSE_STATE_GOT_CRC1))
+	{
+		initStatus->ck_a = 0;
+		initStatus->ck_b = 0;
+		initStatus->msg_received = 0;
+		initStatus->buffer_overrun = 0;
+		initStatus->parse_error = 0;
+		initStatus->parse_state = MAVLINK_PARSE_STATE_UNINIT;
+		initStatus->packet_idx = 0;
+		initStatus->packet_rx_drop_count = 0;
+		initStatus->packet_rx_success_count = 0;
+		initStatus->current_rx_seq = 0;
+		initStatus->current_tx_seq = 0;
+	}
+}
+
 static inline mavlink_status_t* mavlink_get_channel_status(uint8_t chan)
 {
 #if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
@@ -13,6 +39,7 @@ static inline mavlink_status_t* mavlink_get_channel_status(uint8_t chan)
 #else
 	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB];
 #endif
+
 	return &m_mavlink_status[chan];
 }
 
@@ -45,8 +72,8 @@ static inline uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t 
 	msg->sysid = system_id;
 	msg->compid = component_id;
 	// One sequence number per component
-	msg->seq = mavlink_get_channel_status(MAVLINK_COMM_0)->current_rx_seq;
-        mavlink_get_channel_status(MAVLINK_COMM_0)->current_rx_seq = mavlink_get_channel_status(MAVLINK_COMM_0)->current_rx_seq+1;
+	msg->seq = mavlink_get_channel_status(MAVLINK_COMM_0)->current_tx_seq;
+        mavlink_get_channel_status(MAVLINK_COMM_0)->current_tx_seq = mavlink_get_channel_status(MAVLINK_COMM_0)->current_tx_seq+1;
 	checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
 	msg->ck_a = (uint8_t)(checksum & 0xFF); ///< High byte
 	msg->ck_b = (uint8_t)(checksum >> 8); ///< Low byte
@@ -74,8 +101,8 @@ static inline uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uin
 	msg->sysid = system_id;
 	msg->compid = component_id;
 	// One sequence number per component
-	msg->seq = mavlink_get_channel_status(chan)->current_rx_seq;
-	mavlink_get_channel_status(chan)->current_rx_seq = mavlink_get_channel_status(chan)->current_rx_seq+1;
+	msg->seq = mavlink_get_channel_status(chan)->current_tx_seq;
+	mavlink_get_channel_status(chan)->current_tx_seq = mavlink_get_channel_status(chan)->current_tx_seq+1;
 	checksum = crc_calculate((uint8_t*)((void*)msg), length + MAVLINK_CORE_HEADER_LEN);
 	msg->ck_a = (uint8_t)(checksum & 0xFF); ///< High byte
 	msg->ck_b = (uint8_t)(checksum >> 8); ///< Low byte
@@ -135,30 +162,6 @@ static inline void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 	crc_accumulate(c, &(ck.s));
 	msg->ck_a = ck.c[0];
 	msg->ck_b = ck.c[1];
-}
-
-
-/**
- * @brief Initialize the communication stack
- *
- * This function has to be called before using commParseBuffer() to initialize the different status registers.
- *
- * @return Will initialize the different buffers and status registers.
- */
-static void mavlink_parse_state_initialize(mavlink_status_t* initStatus)
-{
-	if ((initStatus->parse_state <= MAVLINK_PARSE_STATE_UNINIT) || (initStatus->parse_state > MAVLINK_PARSE_STATE_GOT_CRC1))
-	{
-		initStatus->ck_a = 0;
-		initStatus->ck_b = 0;
-		initStatus->msg_received = 0;
-		initStatus->buffer_overrun = 0;
-		initStatus->parse_error = 0;
-		initStatus->parse_state = MAVLINK_PARSE_STATE_UNINIT;
-		initStatus->packet_idx = 0;
-		initStatus->packet_rx_drop_count = 0;
-		initStatus->packet_rx_success_count = 0;
-	}
 }
 
 /**
@@ -342,6 +345,7 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 	r_mavlink_status->current_rx_seq = status->current_rx_seq+1;
 	r_mavlink_status->packet_rx_success_count = status->packet_rx_success_count;
 	r_mavlink_status->packet_rx_drop_count = status->parse_error;
+	status->parse_error = 0;
 	return status->msg_received;
 }
 
