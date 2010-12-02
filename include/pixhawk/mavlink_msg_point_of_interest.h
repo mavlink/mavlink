@@ -48,6 +48,23 @@ static inline uint16_t mavlink_msg_point_of_interest_pack(uint8_t system_id, uin
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
 
+static inline uint16_t mavlink_msg_point_of_interest_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint8_t type, uint8_t color, uint8_t coordinate_system, uint16_t timeout, float x, float y, float z, const int8_t* name)
+{
+	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_POINT_OF_INTEREST;
+
+	i += put_uint8_t_by_index(type, i, msg->payload); //0: Notice, 1: Warning, 2: Critical, 3: Emergency, 4: Debug
+	i += put_uint8_t_by_index(color, i, msg->payload); //0: blue, 1: yellow, 2: red, 3: orange, 4: green, 5: magenta
+	i += put_uint8_t_by_index(coordinate_system, i, msg->payload); //0: global, 1:local
+	i += put_uint16_t_by_index(timeout, i, msg->payload); //0: no timeout, >1: timeout in seconds
+	i += put_float_by_index(x, i, msg->payload); //X Position
+	i += put_float_by_index(y, i, msg->payload); //Y Position
+	i += put_float_by_index(z, i, msg->payload); //Z Position
+	i += put_array_by_index(name, 25, i, msg->payload); //POI name
+
+	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, i);
+}
+
 static inline uint16_t mavlink_msg_point_of_interest_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_point_of_interest_t* point_of_interest)
 {
 	return mavlink_msg_point_of_interest_pack(system_id, component_id, msg, point_of_interest->type, point_of_interest->color, point_of_interest->coordinate_system, point_of_interest->timeout, point_of_interest->x, point_of_interest->y, point_of_interest->z, point_of_interest->name);
@@ -58,7 +75,7 @@ static inline uint16_t mavlink_msg_point_of_interest_encode(uint8_t system_id, u
 static inline void mavlink_msg_point_of_interest_send(mavlink_channel_t chan, uint8_t type, uint8_t color, uint8_t coordinate_system, uint16_t timeout, float x, float y, float z, const int8_t* name)
 {
 	mavlink_message_t msg;
-	mavlink_msg_point_of_interest_pack(mavlink_system.sysid, mavlink_system.compid, &msg, type, color, coordinate_system, timeout, x, y, z, name);
+	mavlink_msg_point_of_interest_pack_chan(mavlink_system.sysid, mavlink_system.compid, chan, &msg, type, color, coordinate_system, timeout, x, y, z, name);
 	mavlink_send_uart(chan, &msg);
 }
 
