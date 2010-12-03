@@ -8,12 +8,12 @@ typedef struct __mavlink_point_of_interest_connection_t
 	uint8_t color; ///< 0: blue, 1: yellow, 2: red, 3: orange, 4: green, 5: magenta
 	uint8_t coordinate_system; ///< 0: global, 1:local
 	uint16_t timeout; ///< 0: no timeout, >1: timeout in seconds
-	float x1; ///< X1 Position
-	float y1; ///< Y1 Position
-	float z1; ///< Z1 Position
-	float x2; ///< X2 Position
-	float y2; ///< Y2 Position
-	float z2; ///< Z2 Position
+	float xp1; ///< X1 Position
+	float yp1; ///< Y1 Position
+	float zp1; ///< Z1 Position
+	float xp2; ///< X2 Position
+	float yp2; ///< Y2 Position
+	float zp2; ///< Z2 Position
 	int8_t name[25]; ///< POI connection name
 
 } mavlink_point_of_interest_connection_t;
@@ -28,16 +28,16 @@ typedef struct __mavlink_point_of_interest_connection_t
  * @param color 0: blue, 1: yellow, 2: red, 3: orange, 4: green, 5: magenta
  * @param coordinate_system 0: global, 1:local
  * @param timeout 0: no timeout, >1: timeout in seconds
- * @param x1 X1 Position
- * @param y1 Y1 Position
- * @param z1 Z1 Position
- * @param x2 X2 Position
- * @param y2 Y2 Position
- * @param z2 Z2 Position
+ * @param xp1 X1 Position
+ * @param yp1 Y1 Position
+ * @param zp1 Z1 Position
+ * @param xp2 X2 Position
+ * @param yp2 Y2 Position
+ * @param zp2 Z2 Position
  * @param name POI connection name
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_point_of_interest_connection_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t type, uint8_t color, uint8_t coordinate_system, uint16_t timeout, float x1, float y1, float z1, float x2, float y2, float z2, const int8_t* name)
+static inline uint16_t mavlink_msg_point_of_interest_connection_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t type, uint8_t color, uint8_t coordinate_system, uint16_t timeout, float xp1, float yp1, float zp1, float xp2, float yp2, float zp2, const int8_t* name)
 {
 	uint16_t i = 0;
 	msg->msgid = MAVLINK_MSG_ID_POINT_OF_INTEREST_CONNECTION;
@@ -46,28 +46,48 @@ static inline uint16_t mavlink_msg_point_of_interest_connection_pack(uint8_t sys
 	i += put_uint8_t_by_index(color, i, msg->payload); //0: blue, 1: yellow, 2: red, 3: orange, 4: green, 5: magenta
 	i += put_uint8_t_by_index(coordinate_system, i, msg->payload); //0: global, 1:local
 	i += put_uint16_t_by_index(timeout, i, msg->payload); //0: no timeout, >1: timeout in seconds
-	i += put_float_by_index(x1, i, msg->payload); //X1 Position
-	i += put_float_by_index(y1, i, msg->payload); //Y1 Position
-	i += put_float_by_index(z1, i, msg->payload); //Z1 Position
-	i += put_float_by_index(x2, i, msg->payload); //X2 Position
-	i += put_float_by_index(y2, i, msg->payload); //Y2 Position
-	i += put_float_by_index(z2, i, msg->payload); //Z2 Position
+	i += put_float_by_index(xp1, i, msg->payload); //X1 Position
+	i += put_float_by_index(yp1, i, msg->payload); //Y1 Position
+	i += put_float_by_index(zp1, i, msg->payload); //Z1 Position
+	i += put_float_by_index(xp2, i, msg->payload); //X2 Position
+	i += put_float_by_index(yp2, i, msg->payload); //Y2 Position
+	i += put_float_by_index(zp2, i, msg->payload); //Z2 Position
 	i += put_array_by_index(name, 25, i, msg->payload); //POI connection name
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
 
+static inline uint16_t mavlink_msg_point_of_interest_connection_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint8_t type, uint8_t color, uint8_t coordinate_system, uint16_t timeout, float xp1, float yp1, float zp1, float xp2, float yp2, float zp2, const int8_t* name)
+{
+	uint16_t i = 0;
+	msg->msgid = MAVLINK_MSG_ID_POINT_OF_INTEREST_CONNECTION;
+
+	i += put_uint8_t_by_index(type, i, msg->payload); //0: Notice, 1: Warning, 2: Critical, 3: Emergency, 4: Debug
+	i += put_uint8_t_by_index(color, i, msg->payload); //0: blue, 1: yellow, 2: red, 3: orange, 4: green, 5: magenta
+	i += put_uint8_t_by_index(coordinate_system, i, msg->payload); //0: global, 1:local
+	i += put_uint16_t_by_index(timeout, i, msg->payload); //0: no timeout, >1: timeout in seconds
+	i += put_float_by_index(xp1, i, msg->payload); //X1 Position
+	i += put_float_by_index(yp1, i, msg->payload); //Y1 Position
+	i += put_float_by_index(zp1, i, msg->payload); //Z1 Position
+	i += put_float_by_index(xp2, i, msg->payload); //X2 Position
+	i += put_float_by_index(yp2, i, msg->payload); //Y2 Position
+	i += put_float_by_index(zp2, i, msg->payload); //Z2 Position
+	i += put_array_by_index(name, 25, i, msg->payload); //POI connection name
+
+	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, i);
+}
+
 static inline uint16_t mavlink_msg_point_of_interest_connection_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_point_of_interest_connection_t* point_of_interest_connection)
 {
-	return mavlink_msg_point_of_interest_connection_pack(system_id, component_id, msg, point_of_interest_connection->type, point_of_interest_connection->color, point_of_interest_connection->coordinate_system, point_of_interest_connection->timeout, point_of_interest_connection->x1, point_of_interest_connection->y1, point_of_interest_connection->z1, point_of_interest_connection->x2, point_of_interest_connection->y2, point_of_interest_connection->z2, point_of_interest_connection->name);
+	return mavlink_msg_point_of_interest_connection_pack(system_id, component_id, msg, point_of_interest_connection->type, point_of_interest_connection->color, point_of_interest_connection->coordinate_system, point_of_interest_connection->timeout, point_of_interest_connection->xp1, point_of_interest_connection->yp1, point_of_interest_connection->zp1, point_of_interest_connection->xp2, point_of_interest_connection->yp2, point_of_interest_connection->zp2, point_of_interest_connection->name);
 }
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_point_of_interest_connection_send(mavlink_channel_t chan, uint8_t type, uint8_t color, uint8_t coordinate_system, uint16_t timeout, float x1, float y1, float z1, float x2, float y2, float z2, const int8_t* name)
+static inline void mavlink_msg_point_of_interest_connection_send(mavlink_channel_t chan, uint8_t type, uint8_t color, uint8_t coordinate_system, uint16_t timeout, float xp1, float yp1, float zp1, float xp2, float yp2, float zp2, const int8_t* name)
 {
 	mavlink_message_t msg;
-	mavlink_msg_point_of_interest_connection_pack(mavlink_system.sysid, mavlink_system.compid, &msg, type, color, coordinate_system, timeout, x1, y1, z1, x2, y2, z2, name);
+	mavlink_msg_point_of_interest_connection_pack_chan(mavlink_system.sysid, mavlink_system.compid, chan, &msg, type, color, coordinate_system, timeout, xp1, yp1, zp1, xp2, yp2, zp2, name);
 	mavlink_send_uart(chan, &msg);
 }
 
@@ -118,11 +138,11 @@ static inline uint16_t mavlink_msg_point_of_interest_connection_get_timeout(cons
 }
 
 /**
- * @brief Get field x1 from point_of_interest_connection message
+ * @brief Get field xp1 from point_of_interest_connection message
  *
  * @return X1 Position
  */
-static inline float mavlink_msg_point_of_interest_connection_get_x1(const mavlink_message_t* msg)
+static inline float mavlink_msg_point_of_interest_connection_get_xp1(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t))[0];
@@ -133,11 +153,11 @@ static inline float mavlink_msg_point_of_interest_connection_get_x1(const mavlin
 }
 
 /**
- * @brief Get field y1 from point_of_interest_connection message
+ * @brief Get field yp1 from point_of_interest_connection message
  *
  * @return Y1 Position
  */
-static inline float mavlink_msg_point_of_interest_connection_get_y1(const mavlink_message_t* msg)
+static inline float mavlink_msg_point_of_interest_connection_get_yp1(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(float))[0];
@@ -148,11 +168,11 @@ static inline float mavlink_msg_point_of_interest_connection_get_y1(const mavlin
 }
 
 /**
- * @brief Get field z1 from point_of_interest_connection message
+ * @brief Get field zp1 from point_of_interest_connection message
  *
  * @return Z1 Position
  */
-static inline float mavlink_msg_point_of_interest_connection_get_z1(const mavlink_message_t* msg)
+static inline float mavlink_msg_point_of_interest_connection_get_zp1(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(float)+sizeof(float))[0];
@@ -163,11 +183,11 @@ static inline float mavlink_msg_point_of_interest_connection_get_z1(const mavlin
 }
 
 /**
- * @brief Get field x2 from point_of_interest_connection message
+ * @brief Get field xp2 from point_of_interest_connection message
  *
  * @return X2 Position
  */
-static inline float mavlink_msg_point_of_interest_connection_get_x2(const mavlink_message_t* msg)
+static inline float mavlink_msg_point_of_interest_connection_get_xp2(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
@@ -178,11 +198,11 @@ static inline float mavlink_msg_point_of_interest_connection_get_x2(const mavlin
 }
 
 /**
- * @brief Get field y2 from point_of_interest_connection message
+ * @brief Get field yp2 from point_of_interest_connection message
  *
  * @return Y2 Position
  */
-static inline float mavlink_msg_point_of_interest_connection_get_y2(const mavlink_message_t* msg)
+static inline float mavlink_msg_point_of_interest_connection_get_yp2(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
@@ -193,11 +213,11 @@ static inline float mavlink_msg_point_of_interest_connection_get_y2(const mavlin
 }
 
 /**
- * @brief Get field z2 from point_of_interest_connection message
+ * @brief Get field zp2 from point_of_interest_connection message
  *
  * @return Z2 Position
  */
-static inline float mavlink_msg_point_of_interest_connection_get_z2(const mavlink_message_t* msg)
+static inline float mavlink_msg_point_of_interest_connection_get_zp2(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint16_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
@@ -225,11 +245,11 @@ static inline void mavlink_msg_point_of_interest_connection_decode(const mavlink
 	point_of_interest_connection->color = mavlink_msg_point_of_interest_connection_get_color(msg);
 	point_of_interest_connection->coordinate_system = mavlink_msg_point_of_interest_connection_get_coordinate_system(msg);
 	point_of_interest_connection->timeout = mavlink_msg_point_of_interest_connection_get_timeout(msg);
-	point_of_interest_connection->x1 = mavlink_msg_point_of_interest_connection_get_x1(msg);
-	point_of_interest_connection->y1 = mavlink_msg_point_of_interest_connection_get_y1(msg);
-	point_of_interest_connection->z1 = mavlink_msg_point_of_interest_connection_get_z1(msg);
-	point_of_interest_connection->x2 = mavlink_msg_point_of_interest_connection_get_x2(msg);
-	point_of_interest_connection->y2 = mavlink_msg_point_of_interest_connection_get_y2(msg);
-	point_of_interest_connection->z2 = mavlink_msg_point_of_interest_connection_get_z2(msg);
+	point_of_interest_connection->xp1 = mavlink_msg_point_of_interest_connection_get_xp1(msg);
+	point_of_interest_connection->yp1 = mavlink_msg_point_of_interest_connection_get_yp1(msg);
+	point_of_interest_connection->zp1 = mavlink_msg_point_of_interest_connection_get_zp1(msg);
+	point_of_interest_connection->xp2 = mavlink_msg_point_of_interest_connection_get_xp2(msg);
+	point_of_interest_connection->yp2 = mavlink_msg_point_of_interest_connection_get_yp2(msg);
+	point_of_interest_connection->zp2 = mavlink_msg_point_of_interest_connection_get_zp2(msg);
 	mavlink_msg_point_of_interest_connection_get_name(msg, point_of_interest_connection->name);
 }
