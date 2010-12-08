@@ -7,7 +7,7 @@ enum MAV_CLASS {
 	MAV_CLASS_GENERIC = 0,
 			MAV_CLASS_PIXHAWK = 1,
 			MAV_CLASS_SLUGS = 2,
-			MAV_CLASS_ARDUPILOT = 3
+			MAV_CLASS_ARDUPILOTMEGA = 3
 };
 
 enum MAV_ACTION {
@@ -35,6 +35,10 @@ enum MAV_ACTION {
 			MAV_ACTION_REC_START = 21,
 			MAV_ACTION_REC_PAUSE = 22,
 			MAV_ACTION_REC_STOP = 23,
+			MAV_ACTION_TAKEOFF = 24,
+			MAV_ACTION_NAVIGATE = 25,
+			MAV_ACTION_LAND = 26,
+			MAV_ACTION_LOITER = 27,
 			MAV_ACTION_NB        ///< Number of MAV actions
 };
 
@@ -48,7 +52,8 @@ enum MAV_MODE
 			MAV_MODE_TEST1 = 5,  ///< Generic test mode, for custom use
 			MAV_MODE_TEST2 = 6,  ///< Generic test mode, for custom use
 			MAV_MODE_TEST3 = 7,   ///< Generic test mode, for custom use
-			MAV_MODE_READY = 8  ///< System is ready, motors are unblocked, but controllers are inactive
+			MAV_MODE_READY = 8,  ///< System is ready, motors are unblocked, but controllers are inactive
+			MAV_MODE_RC_TRAINING = 9 ///< System is blocked, only RC valued are read and reported back
 };
 
 enum MAV_STATE
@@ -91,7 +96,7 @@ enum MAV_AUTOPILOT_TYPE
     MAV_AUTOPILOT_GENERIC = 0,
     MAV_AUTOPILOT_PIXHAWK = 1,
     MAV_AUTOPILOT_SLUGS = 2,
-    MAV_AUTOPILOT_ARDUPILOT = 3
+    MAV_AUTOPILOT_ARDUPILOTMEGA = 3
 };
 
 enum MAV_COMPONENT {
@@ -99,8 +104,29 @@ enum MAV_COMPONENT {
 	MAV_COMP_ID_WAYPOINTPLANNER,
 	MAV_COMP_ID_BLOBTRACKER,
 	MAV_COMP_ID_PATHPLANNER,
+	MAV_COMP_ID_AIRSLAM,
 	MAV_COMP_ID_IMU = 200
 };
+
+enum MAV_FRAME
+{
+    MAV_FRAME_GLOBAL = 0,
+    MAV_FRAME_LOCAL = 1
+};
+
+enum MAV_DATA_STREAM{
+    MAV_DATA_STREAM_ALL = 0,
+    MAV_DATA_STREAM_RAW_SENSORS = 1,
+    MAV_DATA_STREAM_EXTENDED_STATUS = 2,
+    MAV_DATA_STREAM_RC_CHANNELS = 3,
+    MAV_DATA_STREAM_RAW_CONTROLLER = 4,
+    MAV_DATA_STREAM_RAW_SENSOR_FUSION = 5,
+    MAV_DATA_STREAM_POSITION = 6,
+    MAV_DATA_STREAM_EXTRA1 = 7,
+    MAV_DATA_STREAM_EXTRA2 = 8,
+    MAV_DATA_STREAM_EXTRA3 = 9
+};
+
 
 
 #define MAVLINK_STX 0x55 ///< Packet start sign
