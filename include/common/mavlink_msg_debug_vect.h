@@ -1,6 +1,6 @@
 // MESSAGE DEBUG_VECT PACKING
 
-#define MAVLINK_MSG_ID_DEBUG_VECT 90
+#define MAVLINK_MSG_ID_DEBUG_VECT 70
 
 typedef struct __mavlink_debug_vect_t 
 {
