@@ -40,6 +40,8 @@ enum MAV_ACTION {
 			MAV_ACTION_LAND = 26,
 			MAV_ACTION_LOITER = 27,
 			MAV_ACTION_SET_ORIGIN = 28,
+			MAV_ACITON_RELAY_ON = 29,
+			MAV_ACTION_RELAY_OFF = 30,
 			MAV_ACTION_NB        ///< Number of MAV actions
 };
 
