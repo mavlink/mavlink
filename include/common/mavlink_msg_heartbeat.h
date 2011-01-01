@@ -115,7 +115,7 @@ static inline uint8_t mavlink_msg_heartbeat_get_autopilot(const mavlink_message_
  */
 static inline uint8_t mavlink_msg_heartbeat_get_mavlink_version(const mavlink_message_t* msg)
 {
-	return 1;
+	return (uint8_t)(msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[0];
 }
 
 /**
