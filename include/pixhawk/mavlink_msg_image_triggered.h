@@ -19,7 +19,10 @@ typedef struct __mavlink_image_triggered_t
 
 
 /**
- * @brief Send a image_triggered message
+ * @brief Pack a image_triggered message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param msg The MAVLink message to compress the data into
  *
  * @param timestamp Timestamp
  * @param seq IMU seq
@@ -37,42 +40,81 @@ static inline uint16_t mavlink_msg_image_triggered_pack(uint8_t system_id, uint8
 	uint16_t i = 0;
 	msg->msgid = MAVLINK_MSG_ID_IMAGE_TRIGGERED;
 
-	i += put_uint64_t_by_index(timestamp, i, msg->payload); //Timestamp
-	i += put_uint32_t_by_index(seq, i, msg->payload); //IMU seq
-	i += put_float_by_index(roll, i, msg->payload); //Roll angle in rad
-	i += put_float_by_index(pitch, i, msg->payload); //Pitch angle in rad
-	i += put_float_by_index(yaw, i, msg->payload); //Yaw angle in rad
-	i += put_float_by_index(local_z, i, msg->payload); //Local frame Z coordinate (height over ground)
-	i += put_float_by_index(lat, i, msg->payload); //GPS X coordinate
-	i += put_float_by_index(lon, i, msg->payload); //GPS Y coordinate
-	i += put_float_by_index(alt, i, msg->payload); //Global frame altitude
+	i += put_uint64_t_by_index(timestamp, i, msg->payload); // Timestamp
+	i += put_uint32_t_by_index(seq, i, msg->payload); // IMU seq
+	i += put_float_by_index(roll, i, msg->payload); // Roll angle in rad
+	i += put_float_by_index(pitch, i, msg->payload); // Pitch angle in rad
+	i += put_float_by_index(yaw, i, msg->payload); // Yaw angle in rad
+	i += put_float_by_index(local_z, i, msg->payload); // Local frame Z coordinate (height over ground)
+	i += put_float_by_index(lat, i, msg->payload); // GPS X coordinate
+	i += put_float_by_index(lon, i, msg->payload); // GPS Y coordinate
+	i += put_float_by_index(alt, i, msg->payload); // Global frame altitude
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
 
+/**
+ * @brief Pack a image_triggered message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param chan The MAVLink channel this message was sent over
+ * @param msg The MAVLink message to compress the data into
+ * @param timestamp Timestamp
+ * @param seq IMU seq
+ * @param roll Roll angle in rad
+ * @param pitch Pitch angle in rad
+ * @param yaw Yaw angle in rad
+ * @param local_z Local frame Z coordinate (height over ground)
+ * @param lat GPS X coordinate
+ * @param lon GPS Y coordinate
+ * @param alt Global frame altitude
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
 static inline uint16_t mavlink_msg_image_triggered_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint64_t timestamp, uint32_t seq, float roll, float pitch, float yaw, float local_z, float lat, float lon, float alt)
 {
 	uint16_t i = 0;
 	msg->msgid = MAVLINK_MSG_ID_IMAGE_TRIGGERED;
 
-	i += put_uint64_t_by_index(timestamp, i, msg->payload); //Timestamp
-	i += put_uint32_t_by_index(seq, i, msg->payload); //IMU seq
-	i += put_float_by_index(roll, i, msg->payload); //Roll angle in rad
-	i += put_float_by_index(pitch, i, msg->payload); //Pitch angle in rad
-	i += put_float_by_index(yaw, i, msg->payload); //Yaw angle in rad
-	i += put_float_by_index(local_z, i, msg->payload); //Local frame Z coordinate (height over ground)
-	i += put_float_by_index(lat, i, msg->payload); //GPS X coordinate
-	i += put_float_by_index(lon, i, msg->payload); //GPS Y coordinate
-	i += put_float_by_index(alt, i, msg->payload); //Global frame altitude
+	i += put_uint64_t_by_index(timestamp, i, msg->payload); // Timestamp
+	i += put_uint32_t_by_index(seq, i, msg->payload); // IMU seq
+	i += put_float_by_index(roll, i, msg->payload); // Roll angle in rad
+	i += put_float_by_index(pitch, i, msg->payload); // Pitch angle in rad
+	i += put_float_by_index(yaw, i, msg->payload); // Yaw angle in rad
+	i += put_float_by_index(local_z, i, msg->payload); // Local frame Z coordinate (height over ground)
+	i += put_float_by_index(lat, i, msg->payload); // GPS X coordinate
+	i += put_float_by_index(lon, i, msg->payload); // GPS Y coordinate
+	i += put_float_by_index(alt, i, msg->payload); // Global frame altitude
 
 	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, i);
 }
 
+/**
+ * @brief Encode a image_triggered struct into a message
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param msg The MAVLink message to compress the data into
+ * @param image_triggered C-struct to read the message contents from
+ */
 static inline uint16_t mavlink_msg_image_triggered_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_image_triggered_t* image_triggered)
 {
 	return mavlink_msg_image_triggered_pack(system_id, component_id, msg, image_triggered->timestamp, image_triggered->seq, image_triggered->roll, image_triggered->pitch, image_triggered->yaw, image_triggered->local_z, image_triggered->lat, image_triggered->lon, image_triggered->alt);
 }
 
+/**
+ * @brief Send a image_triggered message
+ * @param chan MAVLink channel to send the message
+ *
+ * @param timestamp Timestamp
+ * @param seq IMU seq
+ * @param roll Roll angle in rad
+ * @param pitch Pitch angle in rad
+ * @param yaw Yaw angle in rad
+ * @param local_z Local frame Z coordinate (height over ground)
+ * @param lat GPS X coordinate
+ * @param lon GPS Y coordinate
+ * @param alt Global frame altitude
+ */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
 static inline void mavlink_msg_image_triggered_send(mavlink_channel_t chan, uint64_t timestamp, uint32_t seq, float roll, float pitch, float yaw, float local_z, float lat, float lon, float alt)
@@ -224,6 +266,12 @@ static inline float mavlink_msg_image_triggered_get_alt(const mavlink_message_t*
 	return (float)r.f;
 }
 
+/**
+ * @brief Decode a image_triggered message into a struct
+ *
+ * @param msg The message to decode
+ * @param image_triggered C-struct to decode the message contents into
+ */
 static inline void mavlink_msg_image_triggered_decode(const mavlink_message_t* msg, mavlink_image_triggered_t* image_triggered)
 {
 	image_triggered->timestamp = mavlink_msg_image_triggered_get_timestamp(msg);

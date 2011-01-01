@@ -30,7 +30,10 @@ typedef struct __mavlink_image_available_t
 
 
 /**
- * @brief Send a image_available message
+ * @brief Pack a image_available message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param msg The MAVLink message to compress the data into
  *
  * @param cam_id Camera id
  * @param cam_no Camera # (starts with 0)
@@ -59,64 +62,125 @@ static inline uint16_t mavlink_msg_image_available_pack(uint8_t system_id, uint8
 	uint16_t i = 0;
 	msg->msgid = MAVLINK_MSG_ID_IMAGE_AVAILABLE;
 
-	i += put_uint64_t_by_index(cam_id, i, msg->payload); //Camera id
-	i += put_uint8_t_by_index(cam_no, i, msg->payload); //Camera # (starts with 0)
-	i += put_uint64_t_by_index(timestamp, i, msg->payload); //Timestamp
-	i += put_uint64_t_by_index(valid_until, i, msg->payload); //Until which timestamp this buffer will stay valid
-	i += put_uint32_t_by_index(img_seq, i, msg->payload); //The image sequence number
-	i += put_uint32_t_by_index(img_buf_index, i, msg->payload); //Position of the image in the buffer, starts with 0
-	i += put_uint16_t_by_index(width, i, msg->payload); //Image width
-	i += put_uint16_t_by_index(height, i, msg->payload); //Image height
-	i += put_uint16_t_by_index(depth, i, msg->payload); //Image depth
-	i += put_uint8_t_by_index(channels, i, msg->payload); //Image channels
-	i += put_uint32_t_by_index(key, i, msg->payload); //Shared memory area key
-	i += put_uint32_t_by_index(exposure, i, msg->payload); //Exposure time, in microseconds
-	i += put_float_by_index(gain, i, msg->payload); //Camera gain
-	i += put_float_by_index(roll, i, msg->payload); //Roll angle in rad
-	i += put_float_by_index(pitch, i, msg->payload); //Pitch angle in rad
-	i += put_float_by_index(yaw, i, msg->payload); //Yaw angle in rad
-	i += put_float_by_index(local_z, i, msg->payload); //Local frame Z coordinate (height over ground)
-	i += put_float_by_index(lat, i, msg->payload); //GPS X coordinate
-	i += put_float_by_index(lon, i, msg->payload); //GPS Y coordinate
-	i += put_float_by_index(alt, i, msg->payload); //Global frame altitude
+	i += put_uint64_t_by_index(cam_id, i, msg->payload); // Camera id
+	i += put_uint8_t_by_index(cam_no, i, msg->payload); // Camera # (starts with 0)
+	i += put_uint64_t_by_index(timestamp, i, msg->payload); // Timestamp
+	i += put_uint64_t_by_index(valid_until, i, msg->payload); // Until which timestamp this buffer will stay valid
+	i += put_uint32_t_by_index(img_seq, i, msg->payload); // The image sequence number
+	i += put_uint32_t_by_index(img_buf_index, i, msg->payload); // Position of the image in the buffer, starts with 0
+	i += put_uint16_t_by_index(width, i, msg->payload); // Image width
+	i += put_uint16_t_by_index(height, i, msg->payload); // Image height
+	i += put_uint16_t_by_index(depth, i, msg->payload); // Image depth
+	i += put_uint8_t_by_index(channels, i, msg->payload); // Image channels
+	i += put_uint32_t_by_index(key, i, msg->payload); // Shared memory area key
+	i += put_uint32_t_by_index(exposure, i, msg->payload); // Exposure time, in microseconds
+	i += put_float_by_index(gain, i, msg->payload); // Camera gain
+	i += put_float_by_index(roll, i, msg->payload); // Roll angle in rad
+	i += put_float_by_index(pitch, i, msg->payload); // Pitch angle in rad
+	i += put_float_by_index(yaw, i, msg->payload); // Yaw angle in rad
+	i += put_float_by_index(local_z, i, msg->payload); // Local frame Z coordinate (height over ground)
+	i += put_float_by_index(lat, i, msg->payload); // GPS X coordinate
+	i += put_float_by_index(lon, i, msg->payload); // GPS Y coordinate
+	i += put_float_by_index(alt, i, msg->payload); // Global frame altitude
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
 
+/**
+ * @brief Pack a image_available message
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param chan The MAVLink channel this message was sent over
+ * @param msg The MAVLink message to compress the data into
+ * @param cam_id Camera id
+ * @param cam_no Camera # (starts with 0)
+ * @param timestamp Timestamp
+ * @param valid_until Until which timestamp this buffer will stay valid
+ * @param img_seq The image sequence number
+ * @param img_buf_index Position of the image in the buffer, starts with 0
+ * @param width Image width
+ * @param height Image height
+ * @param depth Image depth
+ * @param channels Image channels
+ * @param key Shared memory area key
+ * @param exposure Exposure time, in microseconds
+ * @param gain Camera gain
+ * @param roll Roll angle in rad
+ * @param pitch Pitch angle in rad
+ * @param yaw Yaw angle in rad
+ * @param local_z Local frame Z coordinate (height over ground)
+ * @param lat GPS X coordinate
+ * @param lon GPS Y coordinate
+ * @param alt Global frame altitude
+ * @return length of the message in bytes (excluding serial stream start sign)
+ */
 static inline uint16_t mavlink_msg_image_available_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint64_t cam_id, uint8_t cam_no, uint64_t timestamp, uint64_t valid_until, uint32_t img_seq, uint32_t img_buf_index, uint16_t width, uint16_t height, uint16_t depth, uint8_t channels, uint32_t key, uint32_t exposure, float gain, float roll, float pitch, float yaw, float local_z, float lat, float lon, float alt)
 {
 	uint16_t i = 0;
 	msg->msgid = MAVLINK_MSG_ID_IMAGE_AVAILABLE;
 
-	i += put_uint64_t_by_index(cam_id, i, msg->payload); //Camera id
-	i += put_uint8_t_by_index(cam_no, i, msg->payload); //Camera # (starts with 0)
-	i += put_uint64_t_by_index(timestamp, i, msg->payload); //Timestamp
-	i += put_uint64_t_by_index(valid_until, i, msg->payload); //Until which timestamp this buffer will stay valid
-	i += put_uint32_t_by_index(img_seq, i, msg->payload); //The image sequence number
-	i += put_uint32_t_by_index(img_buf_index, i, msg->payload); //Position of the image in the buffer, starts with 0
-	i += put_uint16_t_by_index(width, i, msg->payload); //Image width
-	i += put_uint16_t_by_index(height, i, msg->payload); //Image height
-	i += put_uint16_t_by_index(depth, i, msg->payload); //Image depth
-	i += put_uint8_t_by_index(channels, i, msg->payload); //Image channels
-	i += put_uint32_t_by_index(key, i, msg->payload); //Shared memory area key
-	i += put_uint32_t_by_index(exposure, i, msg->payload); //Exposure time, in microseconds
-	i += put_float_by_index(gain, i, msg->payload); //Camera gain
-	i += put_float_by_index(roll, i, msg->payload); //Roll angle in rad
-	i += put_float_by_index(pitch, i, msg->payload); //Pitch angle in rad
-	i += put_float_by_index(yaw, i, msg->payload); //Yaw angle in rad
-	i += put_float_by_index(local_z, i, msg->payload); //Local frame Z coordinate (height over ground)
-	i += put_float_by_index(lat, i, msg->payload); //GPS X coordinate
-	i += put_float_by_index(lon, i, msg->payload); //GPS Y coordinate
-	i += put_float_by_index(alt, i, msg->payload); //Global frame altitude
+	i += put_uint64_t_by_index(cam_id, i, msg->payload); // Camera id
+	i += put_uint8_t_by_index(cam_no, i, msg->payload); // Camera # (starts with 0)
+	i += put_uint64_t_by_index(timestamp, i, msg->payload); // Timestamp
+	i += put_uint64_t_by_index(valid_until, i, msg->payload); // Until which timestamp this buffer will stay valid
+	i += put_uint32_t_by_index(img_seq, i, msg->payload); // The image sequence number
+	i += put_uint32_t_by_index(img_buf_index, i, msg->payload); // Position of the image in the buffer, starts with 0
+	i += put_uint16_t_by_index(width, i, msg->payload); // Image width
+	i += put_uint16_t_by_index(height, i, msg->payload); // Image height
+	i += put_uint16_t_by_index(depth, i, msg->payload); // Image depth
+	i += put_uint8_t_by_index(channels, i, msg->payload); // Image channels
+	i += put_uint32_t_by_index(key, i, msg->payload); // Shared memory area key
+	i += put_uint32_t_by_index(exposure, i, msg->payload); // Exposure time, in microseconds
+	i += put_float_by_index(gain, i, msg->payload); // Camera gain
+	i += put_float_by_index(roll, i, msg->payload); // Roll angle in rad
+	i += put_float_by_index(pitch, i, msg->payload); // Pitch angle in rad
+	i += put_float_by_index(yaw, i, msg->payload); // Yaw angle in rad
+	i += put_float_by_index(local_z, i, msg->payload); // Local frame Z coordinate (height over ground)
+	i += put_float_by_index(lat, i, msg->payload); // GPS X coordinate
+	i += put_float_by_index(lon, i, msg->payload); // GPS Y coordinate
+	i += put_float_by_index(alt, i, msg->payload); // Global frame altitude
 
 	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, i);
 }
 
+/**
+ * @brief Encode a image_available struct into a message
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param msg The MAVLink message to compress the data into
+ * @param image_available C-struct to read the message contents from
+ */
 static inline uint16_t mavlink_msg_image_available_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_image_available_t* image_available)
 {
 	return mavlink_msg_image_available_pack(system_id, component_id, msg, image_available->cam_id, image_available->cam_no, image_available->timestamp, image_available->valid_until, image_available->img_seq, image_available->img_buf_index, image_available->width, image_available->height, image_available->depth, image_available->channels, image_available->key, image_available->exposure, image_available->gain, image_available->roll, image_available->pitch, image_available->yaw, image_available->local_z, image_available->lat, image_available->lon, image_available->alt);
 }
 
+/**
+ * @brief Send a image_available message
+ * @param chan MAVLink channel to send the message
+ *
+ * @param cam_id Camera id
+ * @param cam_no Camera # (starts with 0)
+ * @param timestamp Timestamp
+ * @param valid_until Until which timestamp this buffer will stay valid
+ * @param img_seq The image sequence number
+ * @param img_buf_index Position of the image in the buffer, starts with 0
+ * @param width Image width
+ * @param height Image height
+ * @param depth Image depth
+ * @param channels Image channels
+ * @param key Shared memory area key
+ * @param exposure Exposure time, in microseconds
+ * @param gain Camera gain
+ * @param roll Roll angle in rad
+ * @param pitch Pitch angle in rad
+ * @param yaw Yaw angle in rad
+ * @param local_z Local frame Z coordinate (height over ground)
+ * @param lat GPS X coordinate
+ * @param lon GPS Y coordinate
+ * @param alt Global frame altitude
+ */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
 static inline void mavlink_msg_image_available_send(mavlink_channel_t chan, uint64_t cam_id, uint8_t cam_no, uint64_t timestamp, uint64_t valid_until, uint32_t img_seq, uint32_t img_buf_index, uint16_t width, uint16_t height, uint16_t depth, uint8_t channels, uint32_t key, uint32_t exposure, float gain, float roll, float pitch, float yaw, float local_z, float lat, float lon, float alt)
@@ -425,6 +489,12 @@ static inline float mavlink_msg_image_available_get_alt(const mavlink_message_t*
 	return (float)r.f;
 }
 
+/**
+ * @brief Decode a image_available message into a struct
+ *
+ * @param msg The message to decode
+ * @param image_available C-struct to decode the message contents into
+ */
 static inline void mavlink_msg_image_available_decode(const mavlink_message_t* msg, mavlink_image_available_t* image_available)
 {
 	image_available->cam_id = mavlink_msg_image_available_get_cam_id(msg);
