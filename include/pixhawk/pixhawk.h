@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Sunday, October 24 2010, 08:46 UTC
+ *	 Generated on Wednesday, December 1 2010, 12:47 UTC
  */
 #ifndef PIXHAWK_H
 #define PIXHAWK_H
@@ -42,6 +42,8 @@ extern "C" {
 #include "./mavlink_msg_watchdog_process_status.h"
 #include "./mavlink_msg_watchdog_command.h"
 #include "./mavlink_msg_pattern_detected.h"
+#include "./mavlink_msg_data_transmission_handshake.h"
+#include "./mavlink_msg_encapsulated_data.h"
 #ifdef __cplusplus
 }
 #endif
