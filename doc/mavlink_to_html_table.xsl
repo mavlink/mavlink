@@ -33,8 +33,9 @@
    </tr>
 </xsl:template>
 
+<!--
 <xsl:template match="//version">
    <h3>MAVLink Protocol Version: <xsl:value-of select="." /></h3>
-</xsl:template>
+</xsl:template>-->
 
 </xsl:stylesheet>
