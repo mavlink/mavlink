@@ -2,6 +2,11 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
+<xsl:template match="//enums">
+   <h1>MAVLink Type Enumerations</h1>
+   <xsl:apply-templates />
+</xsl:template>
+
 <xsl:template match="//messages">
    <h1>MAVLink Messages</h1>
    <xsl:apply-templates />
@@ -36,5 +41,28 @@
 <xsl:template match="//version">
    <h3>MAVLink Protocol Version: <xsl:value-of select="." /></h3>
 </xsl:template>
+
+<xsl:template match="//enum">
+   <h3 class="mavlink_message_name"><xsl:value-of select="@name" /></h3>
+   <p class="description"><xsl:value-of select="description" /></p>
+
+   <table class="sortable">
+   <thead>
+   <tr>
+     <th class="mavlink_field_header">Field Name</th>
+   </tr>
+   </thead>
+   <tbody>
+   <xsl:apply-templates select="entry" />
+  </tbody>
+  </table>
+</xsl:template>
+
+<xsl:template match="//entry">
+   <tr class="mavlink_field">
+   <td class="mavlink_name"><xsl:value-of select="@name" /></td>
+   </tr>
+</xsl:template>
+
 
 </xsl:stylesheet>
