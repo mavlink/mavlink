@@ -44,8 +44,8 @@
 </xsl:template>
 
 <xsl:template match="//version">
-   <h1>MAVLink Protocol Version:</h1>
-   <p>This file has protocol version: <xsl:value-of select="." /></p>
+   <h1>MAVLink Protocol Version</h1>
+   <p>This file has protocol version: <xsl:value-of select="." />. The version numbers range from 1-255.</p>
 </xsl:template>
 
 <xsl:template match="//enum">
