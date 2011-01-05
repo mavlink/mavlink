@@ -4,7 +4,7 @@
 
 <xsl:template match="//include">
    <h1>MAVLink Include Files</h1>
-   <p><strong><em>Including files:</em><xsl:value-of select="." /></strong></p>
+   <p><strong><em>Including files: </em><xsl:value-of select="." /></strong></p>
 </xsl:template>
 
 <xsl:template match="//enums">
@@ -44,7 +44,8 @@
 </xsl:template>
 
 <xsl:template match="//version">
-   <h3>MAVLink Protocol Version: <xsl:value-of select="." /></h3>
+   <h1>MAVLink Protocol Version:</h1>
+   <p>This file has protocol version: <xsl:value-of select="." /></p>
 </xsl:template>
 
 <xsl:template match="//enum">
