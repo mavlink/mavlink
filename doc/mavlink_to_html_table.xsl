@@ -3,7 +3,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:template match="//messages">
-   <h4>MAVLink Messages</h4>
+   <h1>MAVLink Messages</h4>
    <xsl:apply-templates />
 </xsl:template>
 
@@ -31,6 +31,10 @@
    <td class="mavlink_type"><xsl:value-of select="@type" /></td>
    <td class="mavlink_comment"><xsl:value-of select="." /></td>
    </tr>
+</xsl:template>
+
+<xsl:template match="//version">
+   <h3>MAVLink Protocol Version: <xsl:value-of select="." /></h3>
 </xsl:template>
 
 </xsl:stylesheet>
