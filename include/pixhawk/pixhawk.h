@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Saturday, January 1 2011, 13:03 UTC
+ *	 Generated on Monday, January 3 2011, 11:55 UTC
  */
 #ifndef PIXHAWK_H
 #define PIXHAWK_H
@@ -62,6 +62,8 @@ enum SLUGS_PID_INDX_IDS
 #include "./mavlink_msg_pattern_detected.h"
 #include "./mavlink_msg_point_of_interest.h"
 #include "./mavlink_msg_point_of_interest_connection.h"
+#include "./mavlink_msg_data_transmission_handshake.h"
+#include "./mavlink_msg_encapsulated_data.h"
 #ifdef __cplusplus
 }
 #endif
