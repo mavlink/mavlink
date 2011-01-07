@@ -46,6 +46,7 @@ enum MAV_ACTION {
 			MAV_ACTION_VIDEO_START = 32,
 			MAV_ACTION_VIDEO_STOP = 33,
 			MAV_ACTION_RESET_MAP = 34,
+			MAV_ACTION_RESET_PLAN = 35,
 			MAV_ACTION_NB        ///< Number of MAV actions
 };
 
