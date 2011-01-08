@@ -28,7 +28,7 @@ static inline uint16_t mavlink_msg_encapsulated_data_pack(uint8_t system_id, uin
 	msg->msgid = MAVLINK_MSG_ID_ENCAPSULATED_DATA;
 
 	i += put_uint16_t_by_index(seqnr, i, msg->payload); // sequence number (starting with 0 on every transmission)
-	i += put_array_by_index((int8_t*)data, sizeof(uint8_t)*253, i, msg->payload); // image data bytes
+	i += put_array_by_index((const int8_t*)data, sizeof(uint8_t)*253, i, msg->payload); // image data bytes
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
@@ -49,7 +49,7 @@ static inline uint16_t mavlink_msg_encapsulated_data_pack_chan(uint8_t system_id
 	msg->msgid = MAVLINK_MSG_ID_ENCAPSULATED_DATA;
 
 	i += put_uint16_t_by_index(seqnr, i, msg->payload); // sequence number (starting with 0 on every transmission)
-	i += put_array_by_index((int8_t*)data, sizeof(uint8_t)*253, i, msg->payload); // image data bytes
+	i += put_array_by_index((const int8_t*)data, sizeof(uint8_t)*253, i, msg->payload); // image data bytes
 
 	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, i);
 }
