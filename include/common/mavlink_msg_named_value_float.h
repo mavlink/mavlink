@@ -4,7 +4,7 @@
 
 typedef struct __mavlink_named_value_float_t 
 {
-	int8_t name[10]; ///< Name of the debug variable
+	char name[10]; ///< Name of the debug variable
 	float value; ///< Floating point value
 
 } mavlink_named_value_float_t;
@@ -22,12 +22,12 @@ typedef struct __mavlink_named_value_float_t
  * @param value Floating point value
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_named_value_float_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const int8_t* name, float value)
+static inline uint16_t mavlink_msg_named_value_float_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const char* name, float value)
 {
 	uint16_t i = 0;
 	msg->msgid = MAVLINK_MSG_ID_NAMED_VALUE_FLOAT;
 
-	i += put_array_by_index((const int8_t*)name, sizeof(int8_t)*10, i, msg->payload); // Name of the debug variable
+	i += put_array_by_index((const int8_t*)name, sizeof(char)*10, i, msg->payload); // Name of the debug variable
 	i += put_float_by_index(value, i, msg->payload); // Floating point value
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
@@ -43,12 +43,12 @@ static inline uint16_t mavlink_msg_named_value_float_pack(uint8_t system_id, uin
  * @param value Floating point value
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_named_value_float_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const int8_t* name, float value)
+static inline uint16_t mavlink_msg_named_value_float_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const char* name, float value)
 {
 	uint16_t i = 0;
 	msg->msgid = MAVLINK_MSG_ID_NAMED_VALUE_FLOAT;
 
-	i += put_array_by_index((const int8_t*)name, sizeof(int8_t)*10, i, msg->payload); // Name of the debug variable
+	i += put_array_by_index((const int8_t*)name, sizeof(char)*10, i, msg->payload); // Name of the debug variable
 	i += put_float_by_index(value, i, msg->payload); // Floating point value
 
 	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, i);
@@ -76,7 +76,7 @@ static inline uint16_t mavlink_msg_named_value_float_encode(uint8_t system_id, u
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_named_value_float_send(mavlink_channel_t chan, const int8_t* name, float value)
+static inline void mavlink_msg_named_value_float_send(mavlink_channel_t chan, const char* name, float value)
 {
 	mavlink_message_t msg;
 	mavlink_msg_named_value_float_pack_chan(mavlink_system.sysid, mavlink_system.compid, chan, &msg, name, value);
@@ -91,11 +91,11 @@ static inline void mavlink_msg_named_value_float_send(mavlink_channel_t chan, co
  *
  * @return Name of the debug variable
  */
-static inline uint16_t mavlink_msg_named_value_float_get_name(const mavlink_message_t* msg, int8_t* r_data)
+static inline uint16_t mavlink_msg_named_value_float_get_name(const mavlink_message_t* msg, char* r_data)
 {
 
-	memcpy(r_data, msg->payload, sizeof(int8_t)*10);
-	return sizeof(int8_t)*10;
+	memcpy(r_data, msg->payload, sizeof(char)*10);
+	return sizeof(char)*10;
 }
 
 /**
@@ -106,10 +106,10 @@ static inline uint16_t mavlink_msg_named_value_float_get_name(const mavlink_mess
 static inline float mavlink_msg_named_value_float_get_value(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int8_t)*10)[0];
-	r.b[2] = (msg->payload+sizeof(int8_t)*10)[1];
-	r.b[1] = (msg->payload+sizeof(int8_t)*10)[2];
-	r.b[0] = (msg->payload+sizeof(int8_t)*10)[3];
+	r.b[3] = (msg->payload+sizeof(char)*10)[0];
+	r.b[2] = (msg->payload+sizeof(char)*10)[1];
+	r.b[1] = (msg->payload+sizeof(char)*10)[2];
+	r.b[0] = (msg->payload+sizeof(char)*10)[3];
 	return (float)r.f;
 }
 
