@@ -104,7 +104,7 @@ enum MAV_TYPE
     MAV_HELICOPTER = 4,
     MAV_GROUND = 5,
     OCU = 6
-      };
+};
 
 enum MAV_AUTOPILOT_TYPE
 {
@@ -132,9 +132,10 @@ enum MAV_FRAME
     MAV_FRAME_GLOBAL = 0,
     MAV_FRAME_LOCAL = 1,
     MAV_FRAME_MISSION = 2
-                    };
+};
 
-enum MAV_DATA_STREAM{
+enum MAV_DATA_STREAM
+{
     MAV_DATA_STREAM_ALL = 0,
     MAV_DATA_STREAM_RAW_SENSORS = 1,
     MAV_DATA_STREAM_EXTENDED_STATUS = 2,
@@ -145,11 +146,12 @@ enum MAV_DATA_STREAM{
     MAV_DATA_STREAM_EXTRA1 = 7,
     MAV_DATA_STREAM_EXTRA2 = 8,
     MAV_DATA_STREAM_EXTRA3 = 9
-                         };
+};
 
 
 
-enum DATA_TYPES {
+enum DATA_TYPES
+{
     DATA_TYPE_JPEG_IMAGE = 0,
     DATA_TYPE_RAW_IMAGE = 1,
     DATA_TYPE_KINECT
