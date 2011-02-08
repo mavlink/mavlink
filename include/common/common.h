@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Tuesday, February 8 2011, 08:45 UTC
+ *	 Generated on Tuesday, February 8 2011, 09:45 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -36,8 +36,8 @@ extern "C" {
 #include "./mavlink_msg_system_time.h"
 #include "./mavlink_msg_ping.h"
 #include "./mavlink_msg_system_time_utc.h"
-#include "./mavlink_msg_action.h"
 #include "./mavlink_msg_action_ack.h"
+#include "./mavlink_msg_action.h"
 #include "./mavlink_msg_set_mode.h"
 #include "./mavlink_msg_set_nav_mode.h"
 #include "./mavlink_msg_param_request_read.h"
@@ -72,14 +72,15 @@ extern "C" {
 #include "./mavlink_msg_safety_allowed_area.h"
 #include "./mavlink_msg_attitude_controller_output.h"
 #include "./mavlink_msg_position_controller_output.h"
+#include "./mavlink_msg_nav_controller_output.h"
 #include "./mavlink_msg_position_target.h"
 #include "./mavlink_msg_state_correction.h"
 #include "./mavlink_msg_set_altitude.h"
 #include "./mavlink_msg_request_data_stream.h"
 #include "./mavlink_msg_manual_control.h"
 #include "./mavlink_msg_gps_local_origin_set.h"
-#include "./mavlink_msg_airspeed.h"
 #include "./mavlink_msg_global_position_int.h"
+#include "./mavlink_msg_vfr_hud.h"
 #include "./mavlink_msg_debug_vect.h"
 #include "./mavlink_msg_named_value_float.h"
 #include "./mavlink_msg_named_value_int.h"

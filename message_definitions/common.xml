@@ -32,18 +32,18 @@
     <field name="utc_date" type="uint32_t">GPS UTC date ddmmyy</field>
     <field name="utc_time" type="uint32_t">GPS UTC time hhmmss</field>
   </message>
+  
+     <message name="ACTION_ACK" id="9">
+	<description>This message acknowledges an action. IMPORTANT: The acknowledgement can be also negative, e.g. the MAV rejects a reset message because it is in-flight. The action ids are defined in ENUM MAV_ACTION in mavlink/include/mavlink_types.h</description>
+     <field name="action" type="uint8_t">The action id</field>
+     <field name="result" type="uint8_t">0: Action DENIED, 1: Action executed</field>
+   </message>
 
    <message name="ACTION" id="10">
 	<description>An action message allows to execute a certain onboard action. These include liftoff, land, storing parameters too EEPROM, shutddown, etc. The action ids are defined in ENUM MAV_ACTION in mavlink/include/mavlink_types.h</description>
      <field name="target" type="uint8_t">The system executing the action</field>
      <field name="target_component" type="uint8_t">The component executing the action</field>
      <field name="action" type="uint8_t">The action id</field>
-   </message>
-
-   <message name="ACTION_ACK" id="62">
-	<description>This message acknowledges an action. IMPORTANT: The acknowledgement can be also negative, e.g. the MAV rejects a reset message because it is in-flight. The action ids are defined in ENUM MAV_ACTION in mavlink/include/mavlink_types.h</description>
-     <field name="action" type="uint8_t">The action id</field>
-     <field name="result" type="uint8_t">0: Action DENIED, 1: Action executed</field>
    </message>
 
    <message name="SET_MODE" id="11">
@@ -319,14 +319,15 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="yaw" type="float">x position 2</field>
    </message>
    
-      <message name="CONTROL_STATUS" id="52">
+   <message name="CONTROL_STATUS" id="52">
      <field name="position_fix" type="uint8_t">Position fix: 0: lost, 2: 2D position fix, 3: 3D position fix </field>
      <field name="vision_fix" type="uint8_t">Vision position fix: 0: lost, 1: 2D local position hold, 2: 2D global position fix, 3: 3D global position fix </field>
      <field name="gps_fix" type="uint8_t">GPS position fix: 0: no reception, 1: Minimum 1 satellite, but no position fix, 2: 2D position fix, 3: 3D position fix </field>
+     <field name="ahrs_health" type="uint8_t">Attitude estimation health: 0: poor, 255: excellent</field>
      <field name="control_att" type="uint8_t">0: Attitude control disabled, 1: enabled</field>
-<field name="control_pos_xy" type="uint8_t">0: X, Y position control disabled, 1: enabled</field>
-<field name="control_pos_z" type="uint8_t">0: Z position control disabled, 1: enabled</field>
-<field name="control_pos_yaw" type="uint8_t">0: Yaw angle control disabled, 1: enabled</field>
+     <field name="control_pos_xy" type="uint8_t">0: X, Y position control disabled, 1: enabled</field>
+     <field name="control_pos_z" type="uint8_t">0: Z position control disabled, 1: enabled</field>
+     <field name="control_pos_yaw" type="uint8_t">0: Yaw angle control disabled, 1: enabled</field>
    </message>
    
       <message name="SAFETY_SET_ALLOWED_AREA" id="53">
@@ -370,6 +371,18 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="z" type="int8_t">Position z: -128: -100%, 127: +100%</field>
      <field name="yaw" type="int8_t">Position yaw: -128: -100%, 127: +100%</field>
    </message>
+   
+      <message name="NAV_CONTROLLER_OUTPUT" id="62">
+     <description>Outputs of the APM navigation controller. The primary use of this message is to check the response and signs
+of the controller before actual flight and to assist with tuning controller parameters </description>
+     <field name="nav_roll" type="float">Current desired roll in degrees</field>
+     <field name="nav_pitch" type="float">Current desired pitch in degrees</field>
+     <field name="nav_bearing" type="int16_t">Current desired heading in degrees</field>
+     <field name="target_bearing" type="int16_t">Bearing to current waypoint/target in degrees</field>
+     <field name="wp_dist" type="uint16_t">Distance to active waypoint in meters</field>
+     <field name="alt_error" type="float">Current altitude error in meters</field>
+     <field name="aspd_error" type="float">Current airspeed error in meters/second</field>
+   </message> 
    
    <message name="POSITION_TARGET" id="63">
    <description>The goal position of the system. This position is the input to any navigation or path planning algorithm and does NOT represent the current controller setpoint.</description>
@@ -424,11 +437,6 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
     <field name="altitude" type="int32_t">Altitude(WGS84), expressed as * 1000</field>
   </message>
 
-  <message name="AIRSPEED" id="72">
-    <description>The calculated airspeed </description>
-    <field name="airspeed" type="float">meters/second</field>
-  </message>
-
    <message name="GLOBAL_POSITION_INT" id="73">
      <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up)</description>
      <field name="lat"   type="int32_t">Latitude / X Position, expressed as * 1E7</field>
@@ -439,6 +447,15 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="vz"  type="int16_t">Ground Z Speed (Altitude), expressed as m/s * 100</field>
    </message>
 
+  <message name="VFR_HUD" id="74">
+     <description>Metrics typically displayed on a HUD for fixed wing aircraft</description>
+     <field name="airspeed" type="float">Current airspeed in m/s</field>
+     <field name="groundspeed" type="float">Current ground speed in m/s</field>
+     <field name="heading" type="int16_t">Current heading in degrees</field>
+     <field name="alt" type="uint16_t">Current altitude (MSL), in meters</field>
+     <field name="climb" type="float">Current climb rate in meters/second</field>
+     <field name="throttle" type="uint16_t">Current throttle setting in integer percent, 0 to 100</field>
+   </message> 
    
    <!-- MESSAGE IDs 80 - 250: Space for custom messages in individual projectname_messages.xml files -->
 
