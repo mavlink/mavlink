@@ -1,6 +1,6 @@
 // MESSAGE CONTROL_STATUS PACKING
 
-#define MAVLINK_MSG_ID_CONTROL_STATUS 143
+#define MAVLINK_MSG_ID_CONTROL_STATUS 52
 
 typedef struct __mavlink_control_status_t 
 {
