@@ -206,25 +206,15 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
    </message>
    
      <message name="SERVO_OUTPUT_RAW" id="37">
-    <description>The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM
-modulation is as follows: 1000 microseconds: 0%, 2000 microseconds:
-100%.</description>
-    <field name="servo1_raw" type="uint16_t">Servo output 1, in
-microseconds</field>
-    <field name="servo2_raw" type="uint16_t">Servo output 2 value, in
-microseconds</field>
-    <field name="servo3_raw" type="uint16_t">Servo output 3 value, in
-microseconds</field>
-    <field name="servo4_raw" type="uint16_t">Servo output 4 value, in
-microseconds</field>
-    <field name="servo5_raw" type="uint16_t">Servo output 5 value, in
-microseconds</field>
-    <field name="servo6_raw" type="uint16_t">Servo output 6 value, in
-microseconds</field>
-    <field name="servo7_raw" type="uint16_t">Servo output 7 value, in
-microseconds</field>
-    <field name="servo8_raw" type="uint16_t">Servo output 8 value, in
-microseconds</field>
+    <description>The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.</description>
+    <field name="servo1_raw" type="uint16_t">Servo output 1 value, in microseconds</field>
+    <field name="servo2_raw" type="uint16_t">Servo output 2 value, in microseconds</field>
+    <field name="servo3_raw" type="uint16_t">Servo output 3 value, in microseconds</field>
+    <field name="servo4_raw" type="uint16_t">Servo output 4 value, in microseconds</field>
+    <field name="servo5_raw" type="uint16_t">Servo output 5 value, in microseconds</field>
+    <field name="servo6_raw" type="uint16_t">Servo output 6 value, in microseconds</field>
+    <field name="servo7_raw" type="uint16_t">Servo output 7 value, in microseconds</field>
+    <field name="servo8_raw" type="uint16_t">Servo output 8 value, in microseconds</field>
   </message> 
 
    <message name="WAYPOINT" id="39">
@@ -478,7 +468,7 @@ microseconds</field>
   <message name="STATUSTEXT" id= "254">
     <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
     <field name="severity" type="uint8_t">Severity of status, 0 = info message, 255 = critical fault</field>
-    <field name="text" type="char[50]">Status text message, without null termination character</field>
+    <field name="text" type="int8_t[50]">Status text message, without null termination character</field>
    </message>
 
 <message name="DEBUG" id="255">
