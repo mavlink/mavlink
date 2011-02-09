@@ -73,11 +73,11 @@
    <td class="mavlink_comment"><xsl:value-of select="description" /></td>
    </tr>
    <tr>
-    <td colspan="3"><br /></td>
-   </tr>
-   <tr>
      <td></td>
    	 <xsl:apply-templates select="param" />
+   </tr>
+   <tr>
+    <td colspan="3"><br /></td>
    </tr>
 </xsl:template>
 
