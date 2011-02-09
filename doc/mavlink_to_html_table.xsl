@@ -71,6 +71,12 @@
    <td class="mavlink_type"><xsl:value-of select="@value" /></td>
    <td class="mavlink_name"><xsl:value-of select="@name" /></td>
    <td class="mavlink_comment"><xsl:value-of select="." /></td>
+   <xsl:apply-templates select="param" />
+   </tr>
+</xsl:template>
+
+<xsl:template match="//entry">
+   <td class="mavlink_comment"><xsl:value-of select="." /></td>
    </tr>
 </xsl:template>
 
