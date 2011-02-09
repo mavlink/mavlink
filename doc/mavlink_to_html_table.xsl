@@ -79,8 +79,10 @@
 </xsl:template>
 
 <xsl:template match="//param">
+   <tr>
    <td class="mavlink_mission_param">PARAM #<xsl:value-of select="@index" /></td>
    <td class="mavlink_comment"><xsl:value-of select="." /></td>
+   </tr>
 </xsl:template>
 
 
