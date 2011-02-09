@@ -1,6 +1,23 @@
 <?xml version="1.0"?>
 <mavlink>
 <version>1</version>
+
+<enums>
+   <enum name="MAV_COMMAND" >
+      <description>Commands to be executed by the MAV</description>
+      <entry name="MAV_CMD_NAV_WAYPOINT" value="16">Navigate to waypoint. Mission parameters: Param 1: hold time (ignored by fixed wing), Param 2: acceptance radius, Param 3: Empty, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</entry>
+      <entry name="MAV_CMD_NAV_LOITER_UNLIM" value="17">Loiter around this waypoint an unlimited amount of time. Mission parameters: Param 1: Empty, Param 2: Empty, Param 3: Radius around waypoint, in meters, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</entry>
+      <entry name="MAV_CMD_NAV_LOITER_TURNS"  value="18">Loiter around this waypoint for X turns. Mission parameters: Param 1: turns, Param 2: Empty, Param 3: Radius around waypoint, in meters, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</entry>
+      <entry name="MAV_CMD_NAV_LOITER_TIME"  value="19">Loiter around this waypoint for X turns. Mission parameters: Param 1: time (seconds, decimal), Param 2: Empty, Param 3: Radius around waypoint, in meters, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</entry>
+      <entry name="MAV_CMD_NAV_RETURN_TO_LAUNCH"  value="20">Return to launch location. Mission parameters: Param 1: Empty, Param 2: Empty, Param 3: Empty, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</entry>
+      <entry name="MAV_CMD_NAV_LAND"  value="21">Land at location. Mission parameters: Param 1: Empty, Param 2: Empty, Param 3: Empty, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</entry>
+      <entry name="MAV_CMD_NAV_TAKEOFF"  value="22">Takeoff. Mission parameters: Param 1: Minimum pitch (if airspeed sensor present), desired pitch without sensor, Param 2: Empty, Param 3: Empty, Param 4/X: Empty, Param 5/Y: Empty, Param 6/Z: Altitude, Param 7/Yaw: Yaw angle (if magnetometer present), ignored without magnetometer</entry>
+      <entry name="MAV_CMD_NAV_DELAY"  value="32">Delay mission state machine. Mission parameters: Param 1: Delay in seconds (decimal), Param 2: Empty, Param 3: Empty, Param 4/X: Empty, Param 5/Y: Empty, Param 6/Z: Empty, Param 7/Yaw: Empty</entry>
+      <entry name="MAV_CMD_NAV_CHANGE_ALT"  value="33">Ascend/descend at rate. Mission parameters: Param 1: rate (m/s), Param 2: Finish altitude (m), Param 3: Empty, Param 4/X: Empty, Param 5/Y: Empty, Param 6/Z: Empty, Param 7/Yaw: Empty</entry>
+      <entry name="MAV_CMD_SYS_SET_MODE"  value="34">Set system mode. Mission parameters: Param 1: Mode, as defined by ENUM MAV_MODE, Param 2: Empty, Param 3: Empty, Param 4/X: Empty, Param 5/Y: Empty, Param 6/Z: Empty, Param 7/Yaw: Empty</entry>
+   </enum>
+</enums>
+
 <messages>
    <message name="HEARTBEAT" id="0">
      <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
@@ -225,15 +242,15 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="seq" type="uint16_t">Sequence</field>
      <field name="frame" type="uint8_t">The coordinate system of the waypoint. see MAV_FRAME in mavlink_types.h</field>
      <field name="action" type="uint8_t">The scheduled action for the waypoint. see MAV_ACTION in mavlink_types.h</field>
-     <field name="orbit" type="float">Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint</field>
+     <field name="orbit" type="float">PARAM3 / Orbit to circle around the waypoint, in meters. Set to 0 to fly straight through the waypoint</field>
      <field name="orbit_direction" type="uint8_t">Direction of the orbit circling: 0: clockwise, 1: counter-clockwise</field>
-     <field name="param1" type="float">For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters</field>
-     <field name="param2" type="float">For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds</field>
+     <field name="param1" type="float">PARAM1 / For waypoints of type 0 and 1: Radius in which the waypoint is accepted as reached, in meters</field>
+     <field name="param2" type="float">PARAM2 / For waypoints of type 0 and 1: Time that the MAV should stay inside the orbit before advancing, in milliseconds</field>
      <field name="current" type="uint8_t">false:0, true:1</field>
-     <field name="x" type="float">local: x position, global: longitude</field>
-     <field name="y" type="float">y position: global: latitude</field>
-     <field name="z" type="float">z position: global: altitude</field>
-     <field name="yaw" type="float">yaw orientation in radians, 0 = NORTH</field>
+     <field name="x" type="float">PARAM4 / local: x position, global: longitude</field>
+     <field name="y" type="float">PARAM5 / y position: global: latitude</field>
+     <field name="z" type="float">PARAM6 / z position: global: altitude</field>
+     <field name="yaw" type="float">PARAM7 / yaw orientation in radians, 0 = NORTH</field>
      <field name="autocontinue" type="uint8_t">autocontinue to next wp</field>
    </message>
 
