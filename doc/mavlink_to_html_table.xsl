@@ -75,7 +75,7 @@
    </tr>
 </xsl:template>
 
-<xsl:template match="//entry">
+<xsl:template match="//param">
    <td class="mavlink_comment"><xsl:value-of select="." /></td>
    </tr>
 </xsl:template>
