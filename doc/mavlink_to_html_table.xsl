@@ -37,8 +37,8 @@
 
 <xsl:template match="//field">
    <tr class="mavlink_field">
-   <td class="mavlink_name"><xsl:value-of select="@name" /></td>
-   <td class="mavlink_type"><xsl:value-of select="@type" /></td>
+   <td class="mavlink_name" valign="top"><xsl:value-of select="@name" /></td>
+   <td class="mavlink_type" valign="top"><xsl:value-of select="@type" /></td>
    <td class="mavlink_comment"><xsl:value-of select="." /></td>
    </tr>
 </xsl:template>
@@ -68,9 +68,12 @@
 
 <xsl:template match="//entry">
    <tr class="mavlink_field">
-   <td class="mavlink_type"><xsl:value-of select="@value" /></td>
+   <td class="mavlink_type" valign="top"><xsl:value-of select="@value" /></td>
    <td class="mavlink_name" valign="top"><xsl:value-of select="@name" /></td>
    <td class="mavlink_comment"><xsl:value-of select="description" /></td>
+   </tr>
+   <tr>
+    <td colspan="3">&nbsp;</td>
    </tr>
    <tr>
      <td></td>
