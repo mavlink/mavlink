@@ -8,8 +8,8 @@
       </description>
       <entry name="MAV_CMD_NAV_WAYPOINT" value="16">
         <description>Navigate to waypoint.</description>
-        <param index="1">Hold time (ignored by fixed wing)</param>
-        <param index="2">Acceptance radius</param>
+        <param index="1">Hold time (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
+        <param index="2">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
         <param index="3">Empty</param>
         <param index="4">Latitude</param>
         <param index="5">Longitude</param>
@@ -66,10 +66,46 @@
         <param index="6">Altitude</param>
         <param index="7">Desired yaw angle.</param>
       </entry>
-      <entry name="MAV_CMD_NAV_TAKEOFF"  value="22"><description>Takeoff. Mission parameters: Param 1: Minimum pitch (if airspeed sensor present), desired pitch without sensor, Param 2: Empty, Param 3: Empty, Param 4/X: Empty, Param 5/Y: Empty, Param 6/Z: Altitude, Param 7/Yaw: Yaw angle (if magnetometer present), ignored without magnetometer</description></entry>
-      <entry name="MAV_CMD_NAV_DELAY"  value="32"><description>Delay mission state machine. Mission parameters: Param 1: Delay in seconds (decimal), Param 2: Empty, Param 3: Empty, Param 4/X: Empty, Param 5/Y: Empty, Param 6/Z: Empty, Param 7/Yaw: Empty</description></entry>
-      <entry name="MAV_CMD_NAV_CHANGE_ALT"  value="33"><description>Ascend/descend at rate. Mission parameters: Param 1: rate (m/s), Param 2: Finish altitude (m), Param 3: Empty, Param 4/X: Empty, Param 5/Y: Empty, Param 6/Z: Empty, Param 7/Yaw: Empty</description></entry>
-      <entry name="MAV_CMD_SYS_SET_MODE"  value="34"><description>Set system mode. Mission parameters: Param 1: Mode, as defined by ENUM MAV_MODE, Param 2: Empty, Param 3: Empty, Param 4/X: Empty, Param 5/Y: Empty, Param 6/Z: Empty, Param 7/Yaw: Empty</description></entry>
+      <entry name="MAV_CMD_NAV_TAKEOFF"  value="22">
+        <description>Takeoff from ground / hand</description>
+        <param index="1">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Latitude</param>
+        <param index="5">Longitude</param>
+        <param index="6">Altitude</param>
+        <param index="7">Yaw angle (if magnetometer present), ignored without magnetometer</param>
+      </entry>
+      <entry name="MAV_CMD_NAV_DELAY"  value="32">
+      <description>Delay mission state machine.</description>
+        <param index="1">Delay in seconds (decimal)</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_NAV_CHANGE_ALT"  value="33">
+        <description>Ascend/descend at rate.</description>
+        <param index="1">Descent / Ascend rate (m/s)</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Finish Altitude</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_SYS_SET_MODE"  value="34">
+        <description>Set system mode.</description>
+        <param index="1">Mode, as defined by ENUM MAV_MODE</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
    </enum>
 </enums>
 
