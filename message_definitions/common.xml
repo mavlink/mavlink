@@ -4,9 +4,28 @@
 
 <enums>
    <enum name="MAV_COMMAND" >
-      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. The mission parameters are described in the comment field.</description>
-      <entry name="MAV_CMD_NAV_WAYPOINT" value="16"><description>Navigate to waypoint. Mission parameters: <br /><b>Param 1:</b> hold time (ignored by fixed wing),<br /> <b>Param 2:</b> acceptance radius,<br /><b>Param 3:</b> Empty,<br /> <b>Param 4/X:</b> Latitude,<br /> <b>Param 5/Y:</b> Longitude,<br /> <b>Param 6/Z:</b> Altitude,<br /> <b>Param 7/Yaw:</b> Desired yaw angle.</description><param index="1">Hold time (ignored by fixed wing</param></entry>
-      <entry name="MAV_CMD_NAV_LOITER_UNLIM" value="17"><description>Loiter around this waypoint an unlimited amount of time. Mission parameters: Param 1: Empty, Param 2: Empty, Param 3: Radius around waypoint, in meters, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</description></entry>
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3: Orbit, Param 4: X, Param 5: Y, Param 6: Z, Param 7: Yaw.
+      </description>
+      <entry name="MAV_CMD_NAV_WAYPOINT" value="16">
+        <description>Navigate to waypoint.</description>
+        <param index="1">Hold time (ignored by fixed wing)</param>
+        <param index="2">Acceptance radius</param>
+        <param index="3">Empty</param>
+        <param index="4">Latitude</param>
+        <param index="5">Longitude</param>
+        <param index="6">Altitude</param>
+        <param index="7">Desired yaw angle</param>
+      </entry>
+      <entry name="MAV_CMD_NAV_LOITER_UNLIM" value="17">
+        <description>Loiter around this waypoint an unlimited amount of time</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Radius around waypoint, in meters</param>
+        <param index="4">Latitude</param>
+        <param index="5">Longitude</param>
+        <param index="6">Altitude</param>
+        <param index="7">Desired yaw angle.</param>
+      </entry>
       <entry name="MAV_CMD_NAV_LOITER_TURNS"  value="18"><description>Loiter around this waypoint for X turns. Mission parameters: Param 1: turns, Param 2: Empty, Param 3: Radius around waypoint, in meters, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</description></entry>
       <entry name="MAV_CMD_NAV_LOITER_TIME"  value="19"><description>Loiter around this waypoint for X turns. Mission parameters: Param 1: time (seconds, decimal), Param 2: Empty, Param 3: Radius around waypoint, in meters, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</description></entry>
       <entry name="MAV_CMD_NAV_RETURN_TO_LAUNCH"  value="20"><description>Return to launch location. Mission parameters: Param 1: Empty, Param 2: Empty, Param 3: Empty, Param 4/X: Latitude, Param 5/Y: Longitude, Param 6/Z: Altitude, Param 7/Yaw: Desired yaw angle.</description></entry>
