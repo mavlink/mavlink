@@ -70,7 +70,7 @@
    <tr class="mavlink_field">
    <td class="mavlink_type"><xsl:value-of select="@value" /></td>
    <td class="mavlink_name"><xsl:value-of select="@name" /></td>
-   <td class="mavlink_comment"><xsl:value-of select="." /></td>
+   <td class="mavlink_comment"><xsl:value-of select="description" /></td>
    </tr>
    <tr>
      <td></td>
