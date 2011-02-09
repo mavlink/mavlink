@@ -73,7 +73,7 @@
    <td class="mavlink_comment"><xsl:value-of select="description" /></td>
    </tr>
    <tr>
-    <td colspan="3"></td>
+    <td colspan="3">&nbsp;&nbsp;</td>
    </tr>
    <tr>
      <td></td>
