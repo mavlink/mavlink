@@ -41,7 +41,8 @@ enum MAV_COMMAND
 	MAV_CMD_NAV_DELAY=32, /* Delay mission state machine.Delay in seconds (decimal)EmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_NAV_CHANGE_ALT=33, /* Ascend/descend at rate.Descent / Ascend rate (m/s)EmptyEmptyEmptyEmptyEmptyFinish Altitude*/
 	MAV_CMD_SYS_SET_MODE=34, /* Set system mode.Mode as defined by ENUM MAV_MODEEmptyEmptyEmptyEmptyEmptyEmpty*/
-};
+        MAV_COMMAND_ENUM_END
+    };
 
 /** @brief Data stream IDs. A data stream is not a fixed set of messages, but rather a      recommendation to the autopilot software. Individual autopilot might or might not obey      the recommended messages.       */
 enum MAV_DATA_STREAM
