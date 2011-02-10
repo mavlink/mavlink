@@ -1,6 +1,6 @@
 // MESSAGE SCALED_IMU PACKING
 
-#define MAVLINK_MSG_ID_SCALED_IMU 25
+#define MAVLINK_MSG_ID_SCALED_IMU 26
 
 typedef struct __mavlink_scaled_imu_t 
 {

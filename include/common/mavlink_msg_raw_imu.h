@@ -1,6 +1,6 @@
 // MESSAGE RAW_IMU PACKING
 
-#define MAVLINK_MSG_ID_RAW_IMU 26
+#define MAVLINK_MSG_ID_RAW_IMU 28
 
 typedef struct __mavlink_raw_imu_t 
 {

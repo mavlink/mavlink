@@ -214,7 +214,21 @@
      <field name="param_value" type="float">Onboard parameter value</field>
    </message>
    
-   <message name="SCALED_IMU" id="25">
+         <message name="GPS_RAW_INT" id="25">
+     <description>The global position, as returned by the Global Positioning System (GPS). This is
+NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate. Coordinate frame is right-handed, Z-axis up (GPS frame)</description>
+     <field name="usec" type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
+     <field name="fix_type" type="uint8_t">0-1: no fix, 2: 2D fix, 3: 3D fix</field>
+     <field name="lat"   type="uint32_t">Latitude in 1E7 degrees</field>
+     <field name="lon"   type="uint32_t">Longitude in 1E7 degrees</field>
+     <field name="alt"   type="float">Altitude in meters</field>
+     <field name="eph"  type="float">GPS HDOP</field>
+     <field name="epv"  type="float">GPS VDOP</field>
+     <field name="v"  type="float">GPS ground speed (m/s)</field>
+     <field name="hdg"  type="float">Compass heading in degrees, 0..360 degrees</field>
+   </message>
+   
+   <message name="SCALED_IMU" id="26">
      <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should contain the scaled values to the described units</description>
      <field name="usec"  type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
      <field name="xacc"  type="int16_t">X acceleration (mg)</field>
@@ -227,8 +241,18 @@
      <field name="ymag"  type="int16_t">Y Magnetic field (milli tesla)</field>
      <field name="zmag"  type="int16_t">Z Magnetic field (milli tesla)</field>
    </message>
+   
+   <message name="GPS_STATUS" id="27">
+     <description>The positioning status, as reported by GPS. This message is intended to display status information about each satellite visible to the receiver. See message GLOBAL_POSITION for the global position estimate. This message can contain information for up to 20 satellites.</description>
+     <field name="satellites_visible"   type="uint8_t">Number of satellites visible</field>
+     <field name="satellite_prn"   type="array[20]">Global satellite ID</field>
+     <field name="satellite_used"   type="array[20]">0: Satellite not used, 1: used for localization</field>
+     <field name="satellite_elevation"   type="array[20]">Elevation (0: right on top of receiver, 90: on the horizon) of satellite</field>
+     <field name="satellite_azimuth"  type="array[20]">Direction of satellite, 0: 0 deg, 255: 360 deg.</field>
+     <field name="satellite_snr"  type="array[20]">Signal to noise ratio of satellite</field>
+   </message>
 
-   <message name="RAW_IMU" id="26">
+   <message name="RAW_IMU" id="28">
      <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should always contain the true raw values without any scaling to allow data capture and system debugging.</description>
      <field name="usec"  type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
      <field name="xacc"  type="int16_t">X acceleration (raw)</field>
@@ -242,7 +266,7 @@
      <field name="zmag"  type="int16_t">Z Magnetic field (raw)</field>
    </message>
 
-  <message name="RAW_PRESSURE" id="27">
+  <message name="RAW_PRESSURE" id="29">
      <description>The RAW pressure readings for the typical setup of one absolute pressure and one differential pressure sensor. The sensor values should be the raw, unscaled ADC values.</description>
      <field name="usec"  type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
      <field name="press_abs"  type="float">Absolute pressure (hectopascal)</field>
@@ -251,7 +275,7 @@
      <field name="temperature"  type="int16_t">Raw Temperature measurement (0.01 degrees celsius per tick is default unit)</field>
    </message>
 
-   <message name="ATTITUDE" id="28">
+   <message name="ATTITUDE" id="30">
     <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right).</description>
      <field name="usec"  type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
      <field name="roll"  type="float">Roll angle (rad)</field>
@@ -262,7 +286,7 @@
      <field name="yawspeed"   type="float">Yaw angular speed (rad/s)</field>
    </message>
 
-   <message name="LOCAL_POSITION" id="29">
+   <message name="LOCAL_POSITION" id="31">
      <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame)</description>
      <field name="usec" type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
      <field name="x"   type="float">X Position</field>
@@ -273,7 +297,7 @@
      <field name="vz"  type="float">Z Speed</field>
    </message>
    
-   <message name="GLOBAL_POSITION" id="30">
+   <message name="GLOBAL_POSITION" id="33">
      <description>The filtered global position (e.g. fused GPS and accelerometers). Coordinate frame is right-handed, Z-axis up (GPS frame)</description>
      <field name="usec" type="uint64_t">Timestamp (microseconds since unix epoch)</field>
      <field name="lat"   type="float">Latitude, in degrees</field>
@@ -282,16 +306,6 @@
      <field name="vx"  type="float">X Speed (in Latitude direction, positive: going north)</field>
      <field name="vy"  type="float">Y Speed (in Longitude direction, positive: going east)</field>
      <field name="vz"  type="float">Z Speed (in Altitude direction, positive: going up)</field>
-   </message>
-   
-   <message name="GPS_STATUS" id="31">
-     <description>The positioning status, as reported by GPS. This message is intended to display status information about each satellite visible to the receiver. See message GLOBAL_POSITION for the global position estimate. This message can contain information for up to 20 satellites.</description>
-     <field name="satellites_visible"   type="uint8_t">Number of satellites visible</field>
-     <field name="satellite_prn"   type="array[20]">Global satellite ID</field>
-     <field name="satellite_used"   type="array[20]">0: Satellite not used, 1: used for localization</field>
-     <field name="satellite_elevation"   type="array[20]">Elevation (0: right on top of receiver, 90: on the horizon) of satellite</field>
-     <field name="satellite_azimuth"  type="array[20]">Direction of satellite, 0: 0 deg, 255: 360 deg.</field>
-     <field name="satellite_snr"  type="array[20]">Signal to noise ratio of satellite</field>
    </message>
 
    <message name="GPS_RAW" id="32">
@@ -305,20 +319,6 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="eph"  type="float">GPS HDOP</field>
      <field name="epv"  type="float">GPS VDOP</field>
      <field name="v"  type="float">GPS ground speed</field>
-     <field name="hdg"  type="float">Compass heading in degrees, 0..360 degrees</field>
-   </message>
-   
-   <message name="GPS_RAW_INT" id="33">
-     <description>The global position, as returned by the Global Positioning System (GPS). This is
-NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate. Coordinate frame is right-handed, Z-axis up (GPS frame)</description>
-     <field name="usec" type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
-     <field name="fix_type" type="uint8_t">0-1: no fix, 2: 2D fix, 3: 3D fix</field>
-     <field name="lat"   type="uint32_t">Latitude in 1E7 degrees</field>
-     <field name="lon"   type="uint32_t">Longitude in 1E7 degrees</field>
-     <field name="alt"   type="float">Altitude in meters</field>
-     <field name="eph"  type="float">GPS HDOP</field>
-     <field name="epv"  type="float">GPS VDOP</field>
-     <field name="v"  type="float">GPS ground speed (m/s)</field>
      <field name="hdg"  type="float">Compass heading in degrees, 0..360 degrees</field>
    </message>
 
@@ -378,7 +378,7 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
      <field name="frame" type="uint8_t">The coordinate system of the waypoint. see MAV_FRAME in mavlink_types.h</field>
-     <field name="action" type="uint8_t">The scheduled action for the waypoint. see MAV_COMMAND in common.xml MAVLink specs</field>
+     <field name="command" type="uint8_t">The scheduled action for the waypoint. see MAV_COMMAND in common.xml MAVLink specs</field>
      <field name="current" type="uint8_t">false:0, true:1</field>
      <field name="autocontinue" type="uint8_t">autocontinue to next wp</field>
      <field name="param1" type="float">PARAM1 / For NAV command waypoints: Radius in which the waypoint is accepted as reached, in meters</field>
@@ -593,7 +593,7 @@ of the controller before actual flight and to assist with tuning controller para
      <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up)</description>
      <field name="lat"   type="int32_t">Latitude / X Position, expressed as * 1E7</field>
      <field name="lon"   type="int32_t">Longitude / Y Position, expressed as * 1E7</field>
-     <field name="alt"   type="int32_t">Altitude, expressed as * 1000</field>
+     <field name="alt"   type="int32_t">Altitude in meters, expressed as * 1000 (millimeters)</field>
      <field name="vx"  type="int16_t">Ground X Speed (Latitude), expressed as m/s * 100</field>
      <field name="vy"  type="int16_t">Ground Y Speed (Longitude), expressed as m/s * 100</field>
      <field name="vz"  type="int16_t">Ground Z Speed (Altitude), expressed as m/s * 100</field>
@@ -603,10 +603,10 @@ of the controller before actual flight and to assist with tuning controller para
      <description>Metrics typically displayed on a HUD for fixed wing aircraft</description>
      <field name="airspeed" type="float">Current airspeed in m/s</field>
      <field name="groundspeed" type="float">Current ground speed in m/s</field>
-     <field name="heading" type="int16_t">Current heading in degrees</field>
-     <field name="alt" type="uint16_t">Current altitude (MSL), in meters</field>
-     <field name="climb" type="float">Current climb rate in meters/second</field>
+     <field name="heading" type="int16_t">Current heading in degrees, in compass units (0..360, 0=north)</field>
      <field name="throttle" type="uint16_t">Current throttle setting in integer percent, 0 to 100</field>
+     <field name="alt" type="float">Current altitude (MSL), in meters</field>
+     <field name="climb" type="float">Current climb rate in meters/second</field>
    </message> 
    
    <!-- MESSAGE IDs 80 - 250: Space for custom messages in individual projectname_messages.xml files -->

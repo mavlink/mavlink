@@ -1,6 +1,6 @@
 // MESSAGE GPS_RAW_INT PACKING
 
-#define MAVLINK_MSG_ID_GPS_RAW_INT 33
+#define MAVLINK_MSG_ID_GPS_RAW_INT 25
 
 typedef struct __mavlink_gps_raw_int_t 
 {

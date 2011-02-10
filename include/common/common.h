@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Thursday, February 10 2011, 10:20 UTC
+ *	 Generated on Thursday, February 10 2011, 11:22 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -73,15 +73,15 @@ enum MAV_DATA_STREAM
 #include "./mavlink_msg_param_request_list.h"
 #include "./mavlink_msg_param_value.h"
 #include "./mavlink_msg_param_set.h"
+#include "./mavlink_msg_gps_raw_int.h"
 #include "./mavlink_msg_scaled_imu.h"
+#include "./mavlink_msg_gps_status.h"
 #include "./mavlink_msg_raw_imu.h"
 #include "./mavlink_msg_raw_pressure.h"
 #include "./mavlink_msg_attitude.h"
 #include "./mavlink_msg_local_position.h"
 #include "./mavlink_msg_global_position.h"
-#include "./mavlink_msg_gps_status.h"
 #include "./mavlink_msg_gps_raw.h"
-#include "./mavlink_msg_gps_raw_int.h"
 #include "./mavlink_msg_sys_status.h"
 #include "./mavlink_msg_rc_channels_raw.h"
 #include "./mavlink_msg_rc_channels_scaled.h"

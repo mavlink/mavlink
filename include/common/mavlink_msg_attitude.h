@@ -1,6 +1,6 @@
 // MESSAGE ATTITUDE PACKING
 
-#define MAVLINK_MSG_ID_ATTITUDE 28
+#define MAVLINK_MSG_ID_ATTITUDE 30
 
 typedef struct __mavlink_attitude_t 
 {

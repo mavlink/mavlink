@@ -1,6 +1,6 @@
 // MESSAGE RAW_PRESSURE PACKING
 
-#define MAVLINK_MSG_ID_RAW_PRESSURE 27
+#define MAVLINK_MSG_ID_RAW_PRESSURE 29
 
 typedef struct __mavlink_raw_pressure_t 
 {
