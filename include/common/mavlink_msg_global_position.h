@@ -1,6 +1,6 @@
 // MESSAGE GLOBAL_POSITION PACKING
 
-#define MAVLINK_MSG_ID_GLOBAL_POSITION 33
+#define MAVLINK_MSG_ID_GLOBAL_POSITION 30
 
 typedef struct __mavlink_global_position_t 
 {
