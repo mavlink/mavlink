@@ -3,10 +3,10 @@
 <version>2</version>
 
 <enums>
-   <enum name="MAV_COMMAND" >
+    <enum name="MAV_CMD" >
       <description>Commands to be executed by the MAV. They can be executed on user request,
       or as part of a mission script. If the action is used in a mission, the parameter mapping
-      to the waypoint/mission message is as follows: 
+      to the waypoint/mission message is as follows:
       Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7.
       </description>
       <entry name="MAV_CMD_NAV_WAYPOINT" value="16">
@@ -29,7 +29,7 @@
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
       </entry>
-      <entry name="MAV_CMD_NAV_LOITER_TURNS"  value="18">
+      <entry name="MAV_CMD_NAV_LOITER_TURNS" value="18">
         <description>Loiter around this waypoint for X turns</description>
         <param index="1">Turns</param>
         <param index="2">Empty</param>
@@ -39,7 +39,7 @@
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
       </entry>
-      <entry name="MAV_CMD_NAV_LOITER_TIME"  value="19">
+      <entry name="MAV_CMD_NAV_LOITER_TIME" value="19">
         <description>Loiter around this waypoint for X seconds</description>
         <param index="1">Seconds (decimal)</param>
         <param index="2">Empty</param>
@@ -49,7 +49,7 @@
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
       </entry>
-      <entry name="MAV_CMD_NAV_RETURN_TO_LAUNCH"  value="20">
+      <entry name="MAV_CMD_NAV_RETURN_TO_LAUNCH" value="20">
         <description>Return to launch location</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
@@ -59,7 +59,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry name="MAV_CMD_NAV_LAND"  value="21">
+      <entry name="MAV_CMD_NAV_LAND" value="21">
       <description>Land at location</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
@@ -69,7 +69,7 @@
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
       </entry>
-      <entry name="MAV_CMD_NAV_TAKEOFF"  value="22">
+      <entry name="MAV_CMD_NAV_TAKEOFF" value="22">
         <description>Takeoff from ground / hand</description>
         <param index="1">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
@@ -79,7 +79,17 @@
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
         </entry>
-      <entry name="MAV_CMD_NAV_DELAY"  value="32">
+      <entry name="MAV_CMD_NAV_LAST" value="95">
+      <description>NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumeration</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_CONDITION_DELAY" value="112">
       <description>Delay mission state machine.</description>
         <param index="1">Delay in seconds (decimal)</param>
         <param index="2">Empty</param>
@@ -89,8 +99,8 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry name="MAV_CMD_NAV_CHANGE_ALT" value="33">
-        <description>Ascend/descend at rate.</description>
+      <entry name="MAV_CMD_CONDITION_CHANGE_ALT" value="113">
+        <description>Ascend/descend at rate.  Delay mission state machine until desired altitude reached.</description>
         <param index="1">Descent / Ascend rate (m/s)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -99,12 +109,112 @@
         <param index="6">Empty</param>
         <param index="7">Finish Altitude</param>
       </entry>
-      <entry name="MAV_CMD_SYS_SET_MODE" value="34">
+      <entry name="MAV_CMD_CONDITION_DISTANCE" value="114">
+        <description>Delay mission state machine until within desired distance of next NAV point.</description>
+        <param index="1">Distance (meters)</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_CONDITION_LAST" value="159">
+      <description>NOP - This command is only used to mark the upper limit of the CONDITION commands in the enumeration</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_SET_MODE" value="176">
         <description>Set system mode.</description>
         <param index="1">Mode, as defined by ENUM MAV_MODE</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_JUMP" value="177">
+        <description>Jump to the desired command in the mission list.  Repeat this action only the specified number of times</description>
+        <param index="1">Sequence number</param>
+        <param index="2">Repeat count</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_CHANGE_SPEED" value="178">
+        <description>Change speed and/or throttle set points.</description>
+        <param index="1">Speed type (0=Airspeed, 1=Ground Speed)</param>
+        <param index="2">Speed  (m/s, -1 indicates no change)</param>
+        <param index="3">Throttle  ( Percent, -1 indicates no change)</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_SET_HOME" value="179">
+        <description>Changes the home location either to the current location or a specified location.</description>
+        <param index="1">Use current (1=use current location, 0=use specified location)</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Latitude</param>
+        <param index="6">Longitude</param>
+        <param index="7">Altitude</param>
+      </entry>
+      <entry name="MAV_CMD_DO_SET_PARAMETER" value="180">
+        <description>Set a system parameter.  Caution!  Use of this command requires knowledge of the numeric enumeration value of the parameter.</description>
+        <param index="1">Parameter number</param>
+        <param index="2">Parameter value</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_SET_RELAY" value="181">
+        <description>Set a relay to a condition.</description>
+        <param index="1">Relay number</param>
+        <param index="2">Setting (1=on, 0=off, others possible depending on system hardware)</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_REPEAT_RELAY" value="182">
+        <description>Cycle a relay on and off for a desired number of cyles with a desired period.</description>
+        <param index="1">Relay number</param>
+        <param index="2">Cycle count</param>
+        <param index="3">Cycle time (seconds, decimal)</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_SET_SERVO" value="183">
+        <description>Set a servo to a desired PWM value.</description>
+        <param index="1">Servo number</param>
+        <param index="2">PWM (microseconds, 1000 to 2000 typical)</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_REPEAT_SERVO" value="184">
+        <description>Cycle a between its nominal setting and a desired PWM for a desired number of cyles with a desired period.</description>
+        <param index="1">Servo number</param>
+        <param index="2">PWM (microseconds, 1000 to 2000 typical)</param>
+        <param index="3">Cycle count</param>
+        <param index="4">Cycle time (seconds)</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
@@ -219,9 +329,9 @@
 NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate. Coordinate frame is right-handed, Z-axis up (GPS frame)</description>
      <field name="usec" type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
      <field name="fix_type" type="uint8_t">0-1: no fix, 2: 2D fix, 3: 3D fix</field>
-     <field name="lat"   type="uint32_t">Latitude in 1E7 degrees</field>
-     <field name="lon"   type="uint32_t">Longitude in 1E7 degrees</field>
-     <field name="alt"   type="float">Altitude in meters</field>
+     <field name="lat"   type="int32_t">Latitude in 1E7 degrees</field>
+     <field name="lon"   type="int32_t">Longitude in 1E7 degrees</field>
+     <field name="alt"   type="int32_t">Altitude in 1E3 meters (millimeters)</field>
      <field name="eph"  type="float">GPS HDOP</field>
      <field name="epv"  type="float">GPS VDOP</field>
      <field name="v"  type="float">GPS ground speed (m/s)</field>

@@ -136,13 +136,6 @@ enum MAV_FRAME
     MAV_FRAME_MISSION = 2
 };
 
-enum DATA_TYPES
-{
-    DATA_TYPE_JPEG_IMAGE = 0,
-    DATA_TYPE_RAW_IMAGE = 1,
-    DATA_TYPE_KINECT
-};
-
 #define MAVLINK_STX 0x55 ///< Packet start sign
 #define MAVLINK_STX_LEN 1 ///< Length of start sign
 #define MAVLINK_MAX_PAYLOAD_LEN 255 ///< Maximum payload length
