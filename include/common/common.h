@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Tuesday, February 15 2011, 15:58 UTC
+ *	 Generated on Wednesday, February 16 2011, 19:40 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -64,9 +64,9 @@ enum MAV_DATA_STREAM
 	MAV_DATA_STREAM_RC_CHANNELS=3, /* Enable RC_CHANNELS_SCALED, RC_CHANNELS_RAW, SERVO_OUTPUT_RAW*/
 	MAV_DATA_STREAM_RAW_CONTROLLER=4, /* Enable ATTITUDE_CONTROLLER_OUTPUT, POSITION_CONTROLLER_OUTPUT, NAV_CONTROLLER_OUTPUT.*/
 	MAV_DATA_STREAM_POSITION=6, /* Enable LOCAL_POSITION, GLOBAL_POSITION/GLOBAL_POSITION_INT messages.*/
-	MAV_DATA_STREAM_EXTRA1=250, /* Dependent on the autopilot*/
-	MAV_DATA_STREAM_EXTRA2=251, /* Dependent on the autopilot*/
-	MAV_DATA_STREAM_EXTRA3=252, /* Dependent on the autopilot*/
+	MAV_DATA_STREAM_EXTRA1=10, /* Dependent on the autopilot*/
+	MAV_DATA_STREAM_EXTRA2=11, /* Dependent on the autopilot*/
+	MAV_DATA_STREAM_EXTRA3=12, /* Dependent on the autopilot*/
 	MAV_DATA_STREAM_ENUM_END
 };
 
