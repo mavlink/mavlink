@@ -7,14 +7,14 @@
       <description>Commands to be executed by the MAV. They can be executed on user request,
       or as part of a mission script. If the action is used in a mission, the parameter mapping
       to the waypoint/mission message is as follows:
-      Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7.
-      </description>
+      Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what
+      ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data.</description>
       <entry name="MAV_CMD_NAV_WAYPOINT" value="16">
         <description>Navigate to waypoint.</description>
-        <param index="1">Hold time (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
-        <param index="2">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
-        <param index="3">0 to pass through the WP, if > 0 radius to pass by WP. Allows trajectory control.</param>
-        <param index="4">Desired yaw angle</param>
+        <param index="1">Hold time in decimal seconds. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
+        <param index="2">Acceptance radius in meters (if the sphere with this radius is hit, the waypoint counts as reached)</param>
+        <param index="3">0 to pass through the WP, if > 0 radius in meters to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.</param>
+        <param index="4">Desired yaw angle at waypoint (rotary wing)</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
@@ -569,12 +569,9 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <description>As local waypoints exist, the global waypoint reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="global_x" type="uint32_t">global x position * 1E7</field>
-     <field name="global_y" type="uint32_t">global y position * 1E7</field>
-     <field name="global_z" type="uint32_t">global z position * 1000</field>
-     <field name="local_x" type="float">local x position that matches the global x position</field>
-     <field name="local_y" type="float">local y position that matches the global y position</field>
-     <field name="local_z" type="float">local z position that matches the global z position</field>
+     <field name="latitude" type="uint32_t">global x position * 1E7</field>
+     <field name="longitude" type="uint32_t">global y position * 1E7</field>
+     <field name="altitude" type="uint32_t">global z position * 1000</field>
    </message>
    
    <message name="GPS_LOCAL_ORIGIN_SET" id="49">

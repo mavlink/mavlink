@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Wednesday, February 16 2011, 19:40 UTC
+ *	 Generated on Sunday, February 20 2011, 09:22 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -28,10 +28,10 @@ extern "C" {
 
 // ENUM DEFINITIONS
 
-/** @brief Commands to be executed by the MAV. They can be executed on user request,       or as part of a mission script. If the action is used in a mission, the parameter mapping       to the waypoint/mission message is as follows:       Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7.        */
+/** @brief Commands to be executed by the MAV. They can be executed on user request,       or as part of a mission script. If the action is used in a mission, the parameter mapping       to the waypoint/mission message is as follows:       Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what       ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. */
 enum MAV_CMD
 {
-	MAV_CMD_NAV_WAYPOINT=16, /* Navigate to waypoint.Hold time (ignored by fixed wing, time to stay at waypoint for rotary wing)Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)0 to pass through the WP, if > 0 radius to pass by WP. Allows trajectory control.Desired yaw angleLatitudeLongitudeAltitude*/
+	MAV_CMD_NAV_WAYPOINT=16, /* Navigate to waypoint.Hold time in decimal seconds. (ignored by fixed wing, time to stay at waypoint for rotary wing)Acceptance radius in meters (if the sphere with this radius is hit, the waypoint counts as reached)0 to pass through the WP, if > 0 radius in meters to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.Desired yaw angle at waypoint (rotary wing)LatitudeLongitudeAltitude*/
 	MAV_CMD_NAV_LOITER_UNLIM=17, /* Loiter around this waypoint an unlimited amount of timeEmptyEmptyRadius around waypoint, in meters. If positive loiter clockwise, else counter-clockwiseDesired yaw angle.LatitudeLongitudeAltitude*/
 	MAV_CMD_NAV_LOITER_TURNS=18, /* Loiter around this waypoint for X turnsTurnsEmptyRadius around waypoint, in meters. If positive loiter clockwise, else counter-clockwiseDesired yaw angle.LatitudeLongitudeAltitude*/
 	MAV_CMD_NAV_LOITER_TIME=19, /* Loiter around this waypoint for X secondsSeconds (decimal)EmptyRadius around waypoint, in meters. If positive loiter clockwise, else counter-clockwiseDesired yaw angle.LatitudeLongitudeAltitude*/
