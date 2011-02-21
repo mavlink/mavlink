@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Sunday, February 20 2011, 09:22 UTC
+ *	 Generated on Monday, February 21 2011, 10:37 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -38,10 +38,12 @@ enum MAV_CMD
 	MAV_CMD_NAV_RETURN_TO_LAUNCH=20, /* Return to launch locationEmptyEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_NAV_LAND=21, /* Land at locationEmptyEmptyEmptyDesired yaw angle.LatitudeLongitudeAltitude*/
 	MAV_CMD_NAV_TAKEOFF=22, /* Takeoff from ground / handMinimum pitch (if airspeed sensor present), desired pitch without sensorEmptyEmptyYaw angle (if magnetometer present), ignored without magnetometerLatitudeLongitudeAltitude*/
+	MAV_CMD_NAV_TARGET=80, /* Navigation goalEmptyEmptyEmptyEmptyLatitudeLongitudeAltitude*/
 	MAV_CMD_NAV_LAST=95, /* NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumerationEmptyEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_CONDITION_DELAY=112, /* Delay mission state machine.Delay in seconds (decimal)EmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_CONDITION_CHANGE_ALT=113, /* Ascend/descend at rate.  Delay mission state machine until desired altitude reached.Descent / Ascend rate (m/s)EmptyEmptyEmptyEmptyEmptyFinish Altitude*/
 	MAV_CMD_CONDITION_DISTANCE=114, /* Delay mission state machine until within desired distance of next NAV point.Distance (meters)EmptyEmptyEmptyEmptyEmptyEmpty*/
+	MAV_CMD_CONDITION_YAW=115, /* Reach a certain target angle.target angle: [0-360], 0 is northspeed during yaw change:[deg per second]direction: negative: counter clockwise, positive: clockwise [-1,1]relative offset or absolute angle: [ 1,0]EmptyEmptyEmpty*/
 	MAV_CMD_CONDITION_LAST=159, /* NOP - This command is only used to mark the upper limit of the CONDITION commands in the enumerationEmptyEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_DO_SET_MODE=176, /* Set system mode.Mode, as defined by ENUM MAV_MODEEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_DO_JUMP=177, /* Jump to the desired command in the mission list.  Repeat this action only the specified number of timesSequence numberRepeat countEmptyEmptyEmptyEmptyEmpty*/
