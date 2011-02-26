@@ -79,8 +79,9 @@
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
         </entry>
-      <entry name="MAV_CMD_NAV_TARGET" value="80">
-        <description>Navigation goal</description>
+      <entry name="MAV_CMD_NAV_ORIENTATION_TARGET" value="80">
+        <description>Set the location the system should be heading towards (camera heads or
+        rotary wing aircraft).</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -88,7 +89,17 @@
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
-        </entry>
+      </entry>
+      <entry name="MAV_CMD_NAV_PATHPLANNING" value="81">
+        <description>Control autonomous path planning on the MAV.</description>
+        <param index="1">0: Disable local obstacle avoidance / local path planning (without resetting map), 1: Enable local path planning, 2: Enable and reset local path planning</param>
+        <param index="2">0: Disable full path planning (without resetting map), 1: Enable, 2: Enable and reset map/occupancy grid, 3: Enable and reset planned route, but not occupancy grid</param>
+        <param index="3">Empty</param>
+        <param index="4">Yaw angle at goal, in compass degrees, [0..360]</param>
+        <param index="5">Latitude/X of goal</param>
+        <param index="6">Longitude/Y of goal</param>
+        <param index="7">Altitude/Z of goal</param>
+      </entry>
       <entry name="MAV_CMD_NAV_LAST" value="95">
       <description>NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumeration</description>
         <param index="1">Empty</param>
@@ -230,11 +241,51 @@
         <param index="7">Empty</param>
       </entry>
       <entry name="MAV_CMD_DO_REPEAT_SERVO" value="184">
-        <description>Cycle a between its nominal setting and a desired PWM for a desired number of cyles with a desired period.</description>
+        <description>Cycle a between its nominal setting and a desired PWM for a desired number of cycles with a desired period.</description>
         <param index="1">Servo number</param>
         <param index="2">PWM (microseconds, 1000 to 2000 typical)</param>
         <param index="3">Cycle count</param>
         <param index="4">Cycle time (seconds)</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_CONTROL_VIDEO" value="200">
+        <description>Control onboard camera system.</description>
+        <param index="1">Camera ID (-1 for all)</param>
+        <param index="2">Transmission: 0: disabled, 1: enabled compressed, 2: enabled raw</param>
+        <param index="3">Transmission mode: 0: video stream, >0: single images every n seconds (decimal)</param>
+        <param index="4">Recording: 0: disabled, 1: enabled compressed, 2: enabled raw</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_DO_LAST" value="240">
+      <description>NOP - This command is only used to mark the upper limit of the DO commands in the enumeration</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_PREFLIGHT_CALIBRATION" value="241">
+        <description>Trigger calibration. This command will be only accepted if in pre-flight mode.</description>
+        <param index="1">Gyro calibration: 0: no, 1: yes</param>
+        <param index="2">Magnetometer calibration: 0: no, 1: yes</param>
+        <param index="3">Radio calibration: 0: no, 1: yes</param>
+        <param index="4">Radio calibration: 0: no, 1: yes</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry name="MAV_CMD_PREFLIGHT_STORAGE" value="245">
+        <description>Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.</description>
+        <param index="1">Parameter storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM</param>
+        <param index="2">Mission storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM</param>
+        <param index="3">Reserved</param>
+        <param index="4">Reserved</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
@@ -750,6 +801,24 @@ of the controller before actual flight and to assist with tuning controller para
      <field name="alt" type="float">Current altitude (MSL), in meters</field>
      <field name="climb" type="float">Current climb rate in meters/second</field>
    </message> 
+   
+   <message name="COMMAND" id="75">
+     <description>Send a command with up to four parameters to the MAV</description>
+     <field name="target_system" type="uint8_t">System which should execute the command</field>
+     <field name="target_component" type="uint8_t">Component which should execute the command, 0 for all components</field>
+     <field name="command" type="uint8_t">Command ID, as defined by MAV_CMD enum.</field>
+     <field name="confirmation" type="uint8_t">0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)</field>
+     <field name="param1" type="float">Parameter 1, as defined by MAV_CMD enum.</field>
+     <field name="param2" type="float">Parameter 2, as defined by MAV_CMD enum.</field>
+     <field name="param3" type="float">Parameter 3, as defined by MAV_CMD enum.</field>
+     <field name="param4" type="float">Parameter 4, as defined by MAV_CMD enum.</field>
+   </message>
+   
+   <message name="COMMAND_ACK" id="76">
+     <description>Report status of a command. Includes feedback wether the command was executed</description>
+     <field name="command" type="float">Current airspeed in m/s</field>
+     <field name="result" type="float">1: Action ACCEPTED and EXECUTED, 1: Action TEMPORARY REJECTED/DENIED, 2: Action PERMANENTLY DENIED, 3: Action UNKNOWN/UNSUPPORTED, 4: Requesting CONFIRMATION</field>
+   </message>
    
    <!-- MESSAGE IDs 80 - 250: Space for custom messages in individual projectname_messages.xml files -->
 
