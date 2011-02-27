@@ -274,7 +274,7 @@
         <description>Trigger calibration. This command will be only accepted if in pre-flight mode.</description>
         <param index="1">Gyro calibration: 0: no, 1: yes</param>
         <param index="2">Magnetometer calibration: 0: no, 1: yes</param>
-        <param index="3">Radio calibration: 0: no, 1: yes</param>
+        <param index="3">Ground pressure: 0: no, 1: yes</param>
         <param index="4">Radio calibration: 0: no, 1: yes</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
@@ -569,7 +569,7 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
 
    <message name="WAYPOINT" id="39">
      <description>Message encoding a waypoint. This message is emitted to announce
-     the presence of a waypoint and to set a waypoint on the system. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon. The global and body frame are related as: positive Z-down, positive X(front looking north, positive Y(body:right) looking east. Therefore y encodes in global mode the latitude, whereas x encodes the longitude and z the GPS altitude (WGS84).</description>
+     the presence of a waypoint and to set a waypoint on the system. The waypoint can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed, global frame is Z-up, right handed</description>
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
      <field name="seq" type="uint16_t">Sequence</field>
@@ -581,8 +581,8 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="param2" type="float">PARAM2 / For NAV command waypoints: Time that the MAV should stay inside the PARAM1 radius before advancing, in milliseconds</field>
      <field name="param3" type="float">PARAM3 / For LOITER command waypoints: Orbit to circle around the waypoint, in meters. If positive the orbit direction should be clockwise, if negative the orbit direction should be counter-clockwise.</field>
      <field name="param4" type="float">PARAM4 / For NAV and LOITER command waypoints: Yaw orientation in degrees, [0..360] 0 = NORTH</field>
-     <field name="x" type="float">PARAM5 / local: x position, global: longitude</field>
-     <field name="y" type="float">PARAM6 / y position: global: latitude</field>
+     <field name="x" type="float">PARAM5 / local: x position, global: latitude</field>
+     <field name="y" type="float">PARAM6 / y position: global: longitude</field>
      <field name="z" type="float">PARAM7 / z position: global: altitude</field>
    </message>
 
@@ -640,9 +640,9 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <description>As local waypoints exist, the global waypoint reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
      <field name="target_system" type="uint8_t">System ID</field>
      <field name="target_component" type="uint8_t">Component ID</field>
-     <field name="latitude" type="uint32_t">global x position * 1E7</field>
-     <field name="longitude" type="uint32_t">global y position * 1E7</field>
-     <field name="altitude" type="uint32_t">global z position * 1000</field>
+     <field name="latitude" type="uint32_t">global position * 1E7</field>
+     <field name="longitude" type="uint32_t">global position * 1E7</field>
+     <field name="altitude" type="uint32_t">global position * 1000</field>
    </message>
    
    <message name="GPS_LOCAL_ORIGIN_SET" id="49">
@@ -784,8 +784,8 @@ of the controller before actual flight and to assist with tuning controller para
 
    <message name="GLOBAL_POSITION_INT" id="73">
      <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up)</description>
-     <field name="lat"   type="int32_t">Latitude / X Position, expressed as * 1E7</field>
-     <field name="lon"   type="int32_t">Longitude / Y Position, expressed as * 1E7</field>
+     <field name="lat"   type="int32_t">Latitude, expressed as * 1E7</field>
+     <field name="lon"   type="int32_t">Longitude, expressed as * 1E7</field>
      <field name="alt"   type="int32_t">Altitude in meters, expressed as * 1000 (millimeters)</field>
      <field name="vx"  type="int16_t">Ground X Speed (Latitude), expressed as m/s * 100</field>
      <field name="vy"  type="int16_t">Ground Y Speed (Longitude), expressed as m/s * 100</field>
