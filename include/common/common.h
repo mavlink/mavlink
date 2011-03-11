@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Sunday, February 20 2011, 09:22 UTC
+ *	 Generated on Friday, March 11 2011, 20:30 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -38,10 +38,13 @@ enum MAV_CMD
 	MAV_CMD_NAV_RETURN_TO_LAUNCH=20, /* Return to launch locationEmptyEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_NAV_LAND=21, /* Land at locationEmptyEmptyEmptyDesired yaw angle.LatitudeLongitudeAltitude*/
 	MAV_CMD_NAV_TAKEOFF=22, /* Takeoff from ground / handMinimum pitch (if airspeed sensor present), desired pitch without sensorEmptyEmptyYaw angle (if magnetometer present), ignored without magnetometerLatitudeLongitudeAltitude*/
+	MAV_CMD_NAV_ORIENTATION_TARGET=80, /* Set the location the system should be heading towards (camera heads or         rotary wing aircraft).EmptyEmptyEmptyEmptyLatitudeLongitudeAltitude*/
+	MAV_CMD_NAV_PATHPLANNING=81, /* Control autonomous path planning on the MAV.0: Disable local obstacle avoidance / local path planning (without resetting map), 1: Enable local path planning, 2: Enable and reset local path planning0: Disable full path planning (without resetting map), 1: Enable, 2: Enable and reset map/occupancy grid, 3: Enable and reset planned route, but not occupancy gridEmptyYaw angle at goal, in compass degrees, [0..360]Latitude/X of goalLongitude/Y of goalAltitude/Z of goal*/
 	MAV_CMD_NAV_LAST=95, /* NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumerationEmptyEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_CONDITION_DELAY=112, /* Delay mission state machine.Delay in seconds (decimal)EmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_CONDITION_CHANGE_ALT=113, /* Ascend/descend at rate.  Delay mission state machine until desired altitude reached.Descent / Ascend rate (m/s)EmptyEmptyEmptyEmptyEmptyFinish Altitude*/
 	MAV_CMD_CONDITION_DISTANCE=114, /* Delay mission state machine until within desired distance of next NAV point.Distance (meters)EmptyEmptyEmptyEmptyEmptyEmpty*/
+	MAV_CMD_CONDITION_YAW=115, /* Reach a certain target angle.target angle: [0-360], 0 is northspeed during yaw change:[deg per second]direction: negative: counter clockwise, positive: clockwise [-1,1]relative offset or absolute angle: [ 1,0]EmptyEmptyEmpty*/
 	MAV_CMD_CONDITION_LAST=159, /* NOP - This command is only used to mark the upper limit of the CONDITION commands in the enumerationEmptyEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_DO_SET_MODE=176, /* Set system mode.Mode, as defined by ENUM MAV_MODEEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_DO_JUMP=177, /* Jump to the desired command in the mission list.  Repeat this action only the specified number of timesSequence numberRepeat countEmptyEmptyEmptyEmptyEmpty*/
@@ -51,7 +54,11 @@ enum MAV_CMD
 	MAV_CMD_DO_SET_RELAY=181, /* Set a relay to a condition.Relay numberSetting (1=on, 0=off, others possible depending on system hardware)EmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_DO_REPEAT_RELAY=182, /* Cycle a relay on and off for a desired number of cyles with a desired period.Relay numberCycle countCycle time (seconds, decimal)EmptyEmptyEmptyEmpty*/
 	MAV_CMD_DO_SET_SERVO=183, /* Set a servo to a desired PWM value.Servo numberPWM (microseconds, 1000 to 2000 typical)EmptyEmptyEmptyEmptyEmpty*/
-	MAV_CMD_DO_REPEAT_SERVO=184, /* Cycle a between its nominal setting and a desired PWM for a desired number of cyles with a desired period.Servo numberPWM (microseconds, 1000 to 2000 typical)Cycle countCycle time (seconds)EmptyEmptyEmpty*/
+	MAV_CMD_DO_REPEAT_SERVO=184, /* Cycle a between its nominal setting and a desired PWM for a desired number of cycles with a desired period.Servo numberPWM (microseconds, 1000 to 2000 typical)Cycle countCycle time (seconds)EmptyEmptyEmpty*/
+	MAV_CMD_DO_CONTROL_VIDEO=200, /* Control onboard camera system.Camera ID (-1 for all)Transmission: 0: disabled, 1: enabled compressed, 2: enabled rawTransmission mode: 0: video stream, >0: single images every n seconds (decimal)Recording: 0: disabled, 1: enabled compressed, 2: enabled rawEmptyEmptyEmpty*/
+	MAV_CMD_DO_LAST=240, /* NOP - This command is only used to mark the upper limit of the DO commands in the enumerationEmptyEmptyEmptyEmptyEmptyEmptyEmpty*/
+	MAV_CMD_PREFLIGHT_CALIBRATION=241, /* Trigger calibration. This command will be only accepted if in pre-flight mode.Gyro calibration: 0: no, 1: yesMagnetometer calibration: 0: no, 1: yesGround pressure: 0: no, 1: yesRadio calibration: 0: no, 1: yesEmptyEmptyEmpty*/
+	MAV_CMD_PREFLIGHT_STORAGE=245, /* Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.Parameter storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROMMission storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROMReservedReservedEmptyEmptyEmpty*/
 	MAV_CMD_ENUM_END
 };
 
@@ -93,6 +100,7 @@ enum MAV_DATA_STREAM
 #include "./mavlink_msg_gps_status.h"
 #include "./mavlink_msg_raw_imu.h"
 #include "./mavlink_msg_raw_pressure.h"
+#include "./mavlink_msg_scaled_pressure.h"
 #include "./mavlink_msg_attitude.h"
 #include "./mavlink_msg_local_position.h"
 #include "./mavlink_msg_global_position.h"
@@ -127,6 +135,8 @@ enum MAV_DATA_STREAM
 #include "./mavlink_msg_manual_control.h"
 #include "./mavlink_msg_global_position_int.h"
 #include "./mavlink_msg_vfr_hud.h"
+#include "./mavlink_msg_command.h"
+#include "./mavlink_msg_command_ack.h"
 #include "./mavlink_msg_debug_vect.h"
 #include "./mavlink_msg_named_value_float.h"
 #include "./mavlink_msg_named_value_int.h"
