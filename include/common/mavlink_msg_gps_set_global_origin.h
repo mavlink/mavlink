@@ -6,9 +6,9 @@ typedef struct __mavlink_gps_set_global_origin_t
 {
 	uint8_t target_system; ///< System ID
 	uint8_t target_component; ///< Component ID
-	uint32_t latitude; ///< global x position * 1E7
-	uint32_t longitude; ///< global y position * 1E7
-	uint32_t altitude; ///< global z position * 1000
+	int32_t latitude; ///< global position * 1E7
+	int32_t longitude; ///< global position * 1E7
+	int32_t altitude; ///< global position * 1000
 
 } mavlink_gps_set_global_origin_t;
 
@@ -22,21 +22,21 @@ typedef struct __mavlink_gps_set_global_origin_t
  *
  * @param target_system System ID
  * @param target_component Component ID
- * @param latitude global x position * 1E7
- * @param longitude global y position * 1E7
- * @param altitude global z position * 1000
+ * @param latitude global position * 1E7
+ * @param longitude global position * 1E7
+ * @param altitude global position * 1000
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_gps_set_global_origin_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, uint32_t latitude, uint32_t longitude, uint32_t altitude)
+static inline uint16_t mavlink_msg_gps_set_global_origin_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, int32_t latitude, int32_t longitude, int32_t altitude)
 {
 	uint16_t i = 0;
 	msg->msgid = MAVLINK_MSG_ID_GPS_SET_GLOBAL_ORIGIN;
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); // System ID
 	i += put_uint8_t_by_index(target_component, i, msg->payload); // Component ID
-	i += put_uint32_t_by_index(latitude, i, msg->payload); // global x position * 1E7
-	i += put_uint32_t_by_index(longitude, i, msg->payload); // global y position * 1E7
-	i += put_uint32_t_by_index(altitude, i, msg->payload); // global z position * 1000
+	i += put_int32_t_by_index(latitude, i, msg->payload); // global position * 1E7
+	i += put_int32_t_by_index(longitude, i, msg->payload); // global position * 1E7
+	i += put_int32_t_by_index(altitude, i, msg->payload); // global position * 1000
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
@@ -49,21 +49,21 @@ static inline uint16_t mavlink_msg_gps_set_global_origin_pack(uint8_t system_id,
  * @param msg The MAVLink message to compress the data into
  * @param target_system System ID
  * @param target_component Component ID
- * @param latitude global x position * 1E7
- * @param longitude global y position * 1E7
- * @param altitude global z position * 1000
+ * @param latitude global position * 1E7
+ * @param longitude global position * 1E7
+ * @param altitude global position * 1000
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_gps_set_global_origin_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, uint32_t latitude, uint32_t longitude, uint32_t altitude)
+static inline uint16_t mavlink_msg_gps_set_global_origin_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint8_t target_system, uint8_t target_component, int32_t latitude, int32_t longitude, int32_t altitude)
 {
 	uint16_t i = 0;
 	msg->msgid = MAVLINK_MSG_ID_GPS_SET_GLOBAL_ORIGIN;
 
 	i += put_uint8_t_by_index(target_system, i, msg->payload); // System ID
 	i += put_uint8_t_by_index(target_component, i, msg->payload); // Component ID
-	i += put_uint32_t_by_index(latitude, i, msg->payload); // global x position * 1E7
-	i += put_uint32_t_by_index(longitude, i, msg->payload); // global y position * 1E7
-	i += put_uint32_t_by_index(altitude, i, msg->payload); // global z position * 1000
+	i += put_int32_t_by_index(latitude, i, msg->payload); // global position * 1E7
+	i += put_int32_t_by_index(longitude, i, msg->payload); // global position * 1E7
+	i += put_int32_t_by_index(altitude, i, msg->payload); // global position * 1000
 
 	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, i);
 }
@@ -87,13 +87,13 @@ static inline uint16_t mavlink_msg_gps_set_global_origin_encode(uint8_t system_i
  *
  * @param target_system System ID
  * @param target_component Component ID
- * @param latitude global x position * 1E7
- * @param longitude global y position * 1E7
- * @param altitude global z position * 1000
+ * @param latitude global position * 1E7
+ * @param longitude global position * 1E7
+ * @param altitude global position * 1000
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_gps_set_global_origin_send(mavlink_channel_t chan, uint8_t target_system, uint8_t target_component, uint32_t latitude, uint32_t longitude, uint32_t altitude)
+static inline void mavlink_msg_gps_set_global_origin_send(mavlink_channel_t chan, uint8_t target_system, uint8_t target_component, int32_t latitude, int32_t longitude, int32_t altitude)
 {
 	mavlink_message_t msg;
 	mavlink_msg_gps_set_global_origin_pack_chan(mavlink_system.sysid, mavlink_system.compid, chan, &msg, target_system, target_component, latitude, longitude, altitude);
@@ -126,46 +126,46 @@ static inline uint8_t mavlink_msg_gps_set_global_origin_get_target_component(con
 /**
  * @brief Get field latitude from gps_set_global_origin message
  *
- * @return global x position * 1E7
+ * @return global position * 1E7
  */
-static inline uint32_t mavlink_msg_gps_set_global_origin_get_latitude(const mavlink_message_t* msg)
+static inline int32_t mavlink_msg_gps_set_global_origin_get_latitude(const mavlink_message_t* msg)
 {
 	generic_32bit r;
 	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[0];
 	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[1];
 	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[2];
 	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t))[3];
-	return (uint32_t)r.i;
+	return (int32_t)r.i;
 }
 
 /**
  * @brief Get field longitude from gps_set_global_origin message
  *
- * @return global y position * 1E7
+ * @return global position * 1E7
  */
-static inline uint32_t mavlink_msg_gps_set_global_origin_get_longitude(const mavlink_message_t* msg)
+static inline int32_t mavlink_msg_gps_set_global_origin_get_longitude(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint32_t))[3];
-	return (uint32_t)r.i;
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(int32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(int32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(int32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(int32_t))[3];
+	return (int32_t)r.i;
 }
 
 /**
  * @brief Get field altitude from gps_set_global_origin message
  *
- * @return global z position * 1000
+ * @return global position * 1000
  */
-static inline uint32_t mavlink_msg_gps_set_global_origin_get_altitude(const mavlink_message_t* msg)
+static inline int32_t mavlink_msg_gps_set_global_origin_get_altitude(const mavlink_message_t* msg)
 {
 	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t))[0];
-	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t))[1];
-	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t))[2];
-	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(uint32_t)+sizeof(uint32_t))[3];
-	return (uint32_t)r.i;
+	r.b[3] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(int32_t)+sizeof(int32_t))[0];
+	r.b[2] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(int32_t)+sizeof(int32_t))[1];
+	r.b[1] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(int32_t)+sizeof(int32_t))[2];
+	r.b[0] = (msg->payload+sizeof(uint8_t)+sizeof(uint8_t)+sizeof(int32_t)+sizeof(int32_t))[3];
+	return (int32_t)r.i;
 }
 
 /**
