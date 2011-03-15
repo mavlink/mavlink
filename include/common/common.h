@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Wednesday, March 2 2011, 13:12 UTC
+ *	 Generated on Tuesday, March 15 2011, 19:25 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -87,6 +87,7 @@ enum MAV_DATA_STREAM
 #include "./mavlink_msg_system_time_utc.h"
 #include "./mavlink_msg_change_operator_control.h"
 #include "./mavlink_msg_change_operator_control_ack.h"
+#include "./mavlink_msg_auth_key.h"
 #include "./mavlink_msg_action_ack.h"
 #include "./mavlink_msg_action.h"
 #include "./mavlink_msg_set_mode.h"
