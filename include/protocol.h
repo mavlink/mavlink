@@ -34,12 +34,7 @@ static void mavlink_parse_state_initialize(mavlink_status_t* initStatus)
 
 static inline mavlink_status_t* mavlink_get_channel_status(uint8_t chan)
 {
-#if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
-	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
-#else
-	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB];
-#endif
-
+	static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS];
 	return &m_mavlink_status[chan];
 }
 
@@ -202,11 +197,8 @@ static inline void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
  */
 static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
-#if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
-	static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB_HIGH];
-#else
-	static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB];
-#endif
+	static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NUM_BUFFERS];
+
 	// Initializes only once, values keep unchanged after first initialization
 	mavlink_parse_state_initialize(mavlink_get_channel_status(chan));
 
@@ -391,23 +383,13 @@ static inline uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messag
 /*
 static inline uint8_t mavlink_parse_char_new(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
-	#if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
-	    static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
-	    static uint8_t m_msgbuf[MAVLINK_COMM_NB_HIGH][MAVLINK_MAX_PACKET_LEN * 2];
-	    static uint8_t m_msgbuf_index[MAVLINK_COMM_NB_HIGH];
-	    static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB_HIGH];
-	    static uint8_t m_packet_start[MAVLINK_COMM_NB_HIGH][MAVLINK_PACKET_START_CANDIDATES];
-	    static uint8_t m_packet_start_index_read[MAVLINK_COMM_NB_HIGH];
-	    static uint8_t m_packet_start_index_write[MAVLINK_COMM_NB_HIGH];
-	#else
-	    static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB];
-	    static uint8_t m_msgbuf[MAVLINK_COMM_NB][MAVLINK_MAX_PACKET_LEN * 2];
-	    static uint8_t m_msgbuf_index[MAVLINK_COMM_NB];
-	    static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB];
-	    static uint8_t m_packet_start[MAVLINK_COMM_NB][MAVLINK_PACKET_START_CANDIDATES];
-	    static uint8_t m_packet_start_index_read[MAVLINK_COMM_NB];
-	    static uint8_t m_packet_start_index_write[MAVLINK_COMM_NB];
-	#endif
+	    static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS];
+	    static uint8_t m_msgbuf[MAVLINK_COMM_NUM_BUFFERS][MAVLINK_MAX_PACKET_LEN * 2];
+	    static uint8_t m_msgbuf_index[MAVLINK_COMM_NUM_BUFFERS];
+	    static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NUM_BUFFERS];
+	    static uint8_t m_packet_start[MAVLINK_COMM_NUM_BUFFERS][MAVLINK_PACKET_START_CANDIDATES];
+	    static uint8_t m_packet_start_index_read[MAVLINK_COMM_NUM_BUFFERS];
+	    static uint8_t m_packet_start_index_write[MAVLINK_COMM_NUM_BUFFERS];
 
 	    // Set a packet start candidate index if sign is start sign
 	    if (c == MAVLINK_STX)
@@ -417,13 +399,8 @@ static inline uint8_t mavlink_parse_char_new(uint8_t chan, uint8_t c, mavlink_me
 
 	    // Parse normally, if a CRC mismatch occurs retry with the next packet index
 }
-//#if (defined linux) | (defined __linux) | (defined  __MACH__) | (defined _WIN32)
-//    static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB_HIGH];
-//    static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB_HIGH];
-//#else
-//    static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NB];
-//    static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NB];
-//#endif
+//    static mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS];
+//    static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NUM_BUFFERS];
 //// Initializes only once, values keep unchanged after first initialization
 //    mavlink_parse_state_initialize(&m_mavlink_status[chan]);
 //
