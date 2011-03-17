@@ -3,6 +3,8 @@
 #define MAVLINK_MSG_ID_ATTITUDE_NEW 30
 #define MAVLINK_MSG_LENGTH_ATTITUDE_NEW 8+4+4+4+4+4+4
 
+#ifndef MAVLINK_DEACTIVATE_STRUCTS
+
 typedef struct __mavlink_attitude_new_t 
 {
 	uint64_t usec; ///< Timestamp (microseconds since UNIX epoch or microseconds since system boot)
@@ -92,6 +94,8 @@ static inline uint16_t mavlink_msg_attitude_new_encode(uint8_t system_id, uint8_
 	return mavlink_msg_attitude_new_pack(system_id, component_id, msg, attitude_new->usec, attitude_new->roll, attitude_new->pitch, attitude_new->yaw, attitude_new->rollspeed, attitude_new->pitchspeed, attitude_new->yawspeed);
 }
 
+#endif
+
 /**
  * @brief Send a attitude_new message
  * @param chan MAVLink channel to send the message
@@ -109,8 +113,8 @@ static inline uint16_t mavlink_msg_attitude_new_encode(uint8_t system_id, uint8_
 static inline void mavlink_msg_attitude_new_send(mavlink_channel_t chan, uint64_t usec, float roll, float pitch, float yaw, float rollspeed, float pitchspeed, float yawspeed)
 {
 	uint16_t checksum;
+	comm_send_ch(chan, MAVLINK_STX);
 	crc_init(&checksum);
-	mavlink_send_uart_uint8_t(chan, MAVLINK_STX, &checksum);
 	mavlink_send_uart_uint8_t(chan, MAVLINK_MSG_LENGTH_ATTITUDE_NEW, &checksum);
 	mavlink_send_uart_uint8_t(chan, mavlink_get_channel_status(MAVLINK_COMM_0)->current_tx_seq, &checksum);
 	// Increase sequence
@@ -242,6 +246,8 @@ static inline float mavlink_msg_attitude_new_get_yawspeed(const mavlink_message_
 	return (float)r.f;
 }
 
+#ifndef MAVLINK_DEACTIVATE_STRUCTS
+
 /**
  * @brief Decode a attitude_new message into a struct
  *
@@ -258,3 +264,5 @@ static inline void mavlink_msg_attitude_new_decode(const mavlink_message_t* msg,
 	attitude_new->pitchspeed = mavlink_msg_attitude_new_get_pitchspeed(msg);
 	attitude_new->yawspeed = mavlink_msg_attitude_new_get_yawspeed(msg);
 }
+
+#endif

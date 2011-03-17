@@ -945,14 +945,14 @@ static inline void mavlink_send_uart_int64_t(mavlink_channel_t chan, int64_t b, 
 	mavlink_send_uart_uint64_t(chan, b, checksum);
 }
 
-static inline void mavlink_send_uart_float_t(mavlink_channel_t chan, float b, uint16_t* checksum)
+static inline void mavlink_send_uart_float(mavlink_channel_t chan, float b, uint16_t* checksum)
 {
 	generic_32bit g;
 	g.f = b;
 	mavlink_send_uart_uint32_t(chan, g.i, checksum);
 }
 
-static inline void mavlink_send_uart_double_t(mavlink_channel_t chan, double b, uint16_t* checksum)
+static inline void mavlink_send_uart_double(mavlink_channel_t chan, double b, uint16_t* checksum)
 {
 	generic_64bit g;
 	g.d = b;
