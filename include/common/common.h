@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Tuesday, March 15 2011, 19:25 UTC
+ *	 Generated on Thursday, March 31 2011, 22:06 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -103,7 +103,6 @@ enum MAV_DATA_STREAM
 #include "./mavlink_msg_raw_pressure.h"
 #include "./mavlink_msg_scaled_pressure.h"
 #include "./mavlink_msg_attitude.h"
-#include "./mavlink_msg_attitude_new.h"
 #include "./mavlink_msg_local_position.h"
 #include "./mavlink_msg_global_position.h"
 #include "./mavlink_msg_gps_raw.h"

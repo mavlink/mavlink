@@ -7,7 +7,7 @@ typedef struct __mavlink_scaled_pressure_t
 	uint64_t usec; ///< Timestamp (microseconds since UNIX epoch or microseconds since system boot)
 	float press_abs; ///< Absolute pressure (hectopascal)
 	float press_diff; ///< Differential pressure 1 (hectopascal)
-	int16_t temperature; ///< Raw Temperature measurement (0.01 degrees celsius per tick is default unit)
+	int16_t temperature; ///< Temperature measurement (0.01 degrees celsius)
 
 } mavlink_scaled_pressure_t;
 
@@ -22,7 +22,7 @@ typedef struct __mavlink_scaled_pressure_t
  * @param usec Timestamp (microseconds since UNIX epoch or microseconds since system boot)
  * @param press_abs Absolute pressure (hectopascal)
  * @param press_diff Differential pressure 1 (hectopascal)
- * @param temperature Raw Temperature measurement (0.01 degrees celsius per tick is default unit)
+ * @param temperature Temperature measurement (0.01 degrees celsius)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_scaled_pressure_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t usec, float press_abs, float press_diff, int16_t temperature)
@@ -33,7 +33,7 @@ static inline uint16_t mavlink_msg_scaled_pressure_pack(uint8_t system_id, uint8
 	i += put_uint64_t_by_index(usec, i, msg->payload); // Timestamp (microseconds since UNIX epoch or microseconds since system boot)
 	i += put_float_by_index(press_abs, i, msg->payload); // Absolute pressure (hectopascal)
 	i += put_float_by_index(press_diff, i, msg->payload); // Differential pressure 1 (hectopascal)
-	i += put_int16_t_by_index(temperature, i, msg->payload); // Raw Temperature measurement (0.01 degrees celsius per tick is default unit)
+	i += put_int16_t_by_index(temperature, i, msg->payload); // Temperature measurement (0.01 degrees celsius)
 
 	return mavlink_finalize_message(msg, system_id, component_id, i);
 }
@@ -47,7 +47,7 @@ static inline uint16_t mavlink_msg_scaled_pressure_pack(uint8_t system_id, uint8
  * @param usec Timestamp (microseconds since UNIX epoch or microseconds since system boot)
  * @param press_abs Absolute pressure (hectopascal)
  * @param press_diff Differential pressure 1 (hectopascal)
- * @param temperature Raw Temperature measurement (0.01 degrees celsius per tick is default unit)
+ * @param temperature Temperature measurement (0.01 degrees celsius)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_scaled_pressure_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint64_t usec, float press_abs, float press_diff, int16_t temperature)
@@ -58,7 +58,7 @@ static inline uint16_t mavlink_msg_scaled_pressure_pack_chan(uint8_t system_id, 
 	i += put_uint64_t_by_index(usec, i, msg->payload); // Timestamp (microseconds since UNIX epoch or microseconds since system boot)
 	i += put_float_by_index(press_abs, i, msg->payload); // Absolute pressure (hectopascal)
 	i += put_float_by_index(press_diff, i, msg->payload); // Differential pressure 1 (hectopascal)
-	i += put_int16_t_by_index(temperature, i, msg->payload); // Raw Temperature measurement (0.01 degrees celsius per tick is default unit)
+	i += put_int16_t_by_index(temperature, i, msg->payload); // Temperature measurement (0.01 degrees celsius)
 
 	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, i);
 }
@@ -83,7 +83,7 @@ static inline uint16_t mavlink_msg_scaled_pressure_encode(uint8_t system_id, uin
  * @param usec Timestamp (microseconds since UNIX epoch or microseconds since system boot)
  * @param press_abs Absolute pressure (hectopascal)
  * @param press_diff Differential pressure 1 (hectopascal)
- * @param temperature Raw Temperature measurement (0.01 degrees celsius per tick is default unit)
+ * @param temperature Temperature measurement (0.01 degrees celsius)
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -149,7 +149,7 @@ static inline float mavlink_msg_scaled_pressure_get_press_diff(const mavlink_mes
 /**
  * @brief Get field temperature from scaled_pressure message
  *
- * @return Raw Temperature measurement (0.01 degrees celsius per tick is default unit)
+ * @return Temperature measurement (0.01 degrees celsius)
  */
 static inline int16_t mavlink_msg_scaled_pressure_get_temperature(const mavlink_message_t* msg)
 {
