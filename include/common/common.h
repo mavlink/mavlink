@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://pixhawk.ethz.ch/software/mavlink
- *	 Generated on Saturday, April 16 2011, 04:02 UTC
+ *	 Generated on Saturday, May 7 2011, 14:56 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -38,7 +38,7 @@ enum MAV_CMD
 	MAV_CMD_NAV_RETURN_TO_LAUNCH=20, /* Return to launch locationEmptyEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_NAV_LAND=21, /* Land at locationEmptyEmptyEmptyDesired yaw angle.LatitudeLongitudeAltitude*/
 	MAV_CMD_NAV_TAKEOFF=22, /* Takeoff from ground / handMinimum pitch (if airspeed sensor present), desired pitch without sensorEmptyEmptyYaw angle (if magnetometer present), ignored without magnetometerLatitudeLongitudeAltitude*/
-	MAV_CMD_NAV_ORIENTATION_TARGET=80, /* Set the location the system should be heading towards (camera heads or         rotary wing aircraft).EmptyEmptyEmptyEmptyLatitudeLongitudeAltitude*/
+	MAV_CMD_NAV_ORIENTATION_TARGET=80, /* Set the location the system should be heading towards (camera heads or         rotary wing aircraft).Mode - 0: Track orientation given by next waypoint, 1: Track waypoint with index given (integer), 2: Track lat/lon/alt given, 3: Allow uas to track a target with id given (integer).Mode 1: Waypoint index to track, Mode 3: Target id to track.EmptyEmptyLatitudeLongitudeAltitude*/
 	MAV_CMD_NAV_PATHPLANNING=81, /* Control autonomous path planning on the MAV.0: Disable local obstacle avoidance / local path planning (without resetting map), 1: Enable local path planning, 2: Enable and reset local path planning0: Disable full path planning (without resetting map), 1: Enable, 2: Enable and reset map/occupancy grid, 3: Enable and reset planned route, but not occupancy gridEmptyYaw angle at goal, in compass degrees, [0..360]Latitude/X of goalLongitude/Y of goalAltitude/Z of goal*/
 	MAV_CMD_NAV_LAST=95, /* NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumerationEmptyEmptyEmptyEmptyEmptyEmptyEmpty*/
 	MAV_CMD_CONDITION_DELAY=112, /* Delay mission state machine.Delay in seconds (decimal)EmptyEmptyEmptyEmptyEmptyEmpty*/
