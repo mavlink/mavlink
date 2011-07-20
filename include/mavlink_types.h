@@ -153,7 +153,8 @@ enum MAV_FRAME
     MAV_FRAME_GLOBAL = 0,
     MAV_FRAME_LOCAL = 1,
     MAV_FRAME_MISSION = 2,
-	MAV_FRAME_GLOBAL_RELATIVE_ALT = 3
+	MAV_FRAME_GLOBAL_RELATIVE_ALT = 3,
+	MAV_FRAME_LOCAL_Z_UP = 4
 };
 
 enum MAVLINK_DATA_STREAM_TYPE
@@ -186,6 +187,7 @@ typedef struct __mavlink_system {
     uint8_t type;    ///< Unused, can be used by user to store the system's type
     uint8_t state;   ///< Unused, can be used by user to store the system's state
     uint8_t mode;    ///< Unused, can be used by user to store the system's mode
+	uint8_t nav_mode;    ///< Unused, can be used by user to store the system's navigation mode
 } mavlink_system_t;
 
 typedef struct __mavlink_message {
