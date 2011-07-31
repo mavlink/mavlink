@@ -1,5 +1,9 @@
 /*******************************************************************************
- Copyright (C) 2010  Bryan Godbolt godbolt ( a t ) ualberta.ca
+ 
+ Copyright (C) 2011 Lorenz Meier lm ( a t ) inf.ethz.ch
+                and Bryan Godbolt godbolt ( a t ) ualberta.ca
+ 
+ adapted from example written by Bryan Godbolt godbolt ( a t ) ualberta.ca
  
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -23,7 +27,7 @@
  
  I compiled this program sucessfully on Ubuntu 10.04 with the following command
  
- gcc -I ../../pixhawk/mavlink/include -o udp-server udp-server-test.c
+ gcc -I ../../pixhawk/mavlink/include -o udp-server udp.c
  
  the rt library is needed for the clock_gettime on linux
  */
@@ -56,6 +60,55 @@
 #define BUFFER_LENGTH 2041 // minimum buffer size that can be used with qnx (I don't know why)
 
 uint64_t microsSinceEpoch();
+
+
+// FIXME XXX - TO BE MOVED TO XML
+enum MAVLINK_WPM_STATE
+{
+    MAVLINK_WPM_STATE_IDLE = 0,
+    MAVLINK_WPM_STATE_SENDLIST,
+    MAVLINK_WPM_STATE_SENDLIST_SENDWPS,
+    MAVLINK_WPM_STATE_GETLIST,
+    MAVLINK_WPM_STATE_GETLIST_GETWPS,
+    MAVLINK_WPM_STATE_GETLIST_GOTALL,
+	MAVLINK_WPM_STATE_ENUM_END
+};
+
+enum MAVLINK_WPM_CODE
+{
+    MAVLINK_WPM_CODE_OK = 0,
+    MAVLINK_WPM_CODE_ERR_WAYPOINT_ACTION_NOT_SUPPORTED,
+    MAVLINK_WPM_CODE_ERR_WAYPOINT_FRAME_NOT_SUPPORTED,
+    MAVLINK_WPM_CODE_ERR_WAYPOINT_OUT_OF_BOUNDS,
+    MAVLINK_WPM_CODE_ERR_WAYPOINT_MAX_NUMBER_EXCEEDED,
+    MAVLINK_WPM_CODE_ENUM_END
+};
+
+
+/* WAYPOINT MANAGER - MISSION LIB */
+
+#define MAVLINK_WPM_MAX_WP_COUNT 100
+#define MAVLINK_WPM_CONFIG_IN_FLIGHT_UPDATE  ///< Enable double buffer and in-flight updates
+
+struct _mavlink_wpm_storage {
+	mavlink_waypoint_t waypoints[MAVLINK_WPM_MAX_WP_COUNT];      ///< Currently active waypoints
+#ifdef MAVLINK_WPM_CONFIG_IN_FLIGHT_UPDATE
+	mavlink_waypoint_t rcv_waypoints[MAVLINK_WPM_MAX_WP_COUNT];  ///< Receive buffer for next waypoints
+#endif
+	uint16_t count;
+} mavlink_wpm_storage;
+
+
+
+
+
+
+
+
+
+
+
+
 
 int main(int argc, char* argv[])
 {

@@ -1,6 +1,6 @@
-VERSION = 3.02
+MAVLINK_VERSION = 1.00
 CC      = gcc
-CFLAGS  = -I ../../include/common -Wall -Werror -DVERSION=\"$(VERSION)\"
+CFLAGS  = -I ../../include/common -Wall -Werror -DMAVLINK_VERSION=\"$(MAVLINK_VERSION)\" -std=C99
 LDFLAGS = ""
 
 OBJ = udp.o
