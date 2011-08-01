@@ -143,6 +143,7 @@ struct mavlink_wpm_storage {
 	float accept_range_distance;
 	bool yaw_reached;
 	bool pos_reached;
+	bool idle;
 };
 
 typedef struct mavlink_wpm_storage mavlink_wpm_storage;
@@ -166,6 +167,14 @@ void mavlink_wpm_init(mavlink_wpm_storage* state)
 	state->timestamp_lastaction = 0;
 	state->timestamp_last_send_setpoint = 0;
 	state->timeout = MAVLINK_WPM_PROTOCOL_TIMEOUT_DEFAULT;
+	
+	state->idle = false;      				///< indicates if the system is following the waypoints or is waiting
+	state->current_active_wp_id = -1;		///< id of current waypoint
+	state->yaw_reached = false;						///< boolean for yaw attitude reached
+	state->pos_reached = false;						///< boolean for position reached
+	state->timestamp_lastoutside_orbit = 0;///< timestamp when the MAV was last outside the orbit or had the wrong yaw value
+	state->timestamp_firstinside_orbit = 0;///< timestamp when the MAV was the first time after a waypoint change inside the orbit and had the correct yaw value
+	
 }
 
 /*
@@ -173,13 +182,15 @@ void mavlink_wpm_init(mavlink_wpm_storage* state)
  */
 void mavlink_wpm_send_message(mavlink_message_t* msg)
 {
-	uint16_t len = mavlink_msg_to_send_buffer(buf, &msg);
+	uint16_t len = mavlink_msg_to_send_buffer(buf, msg);
 	uint16_t bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof (struct sockaddr_in));
+
+	printf("SENT %d bytes", bytes_sent);
 }
 
 void mavlink_wpm_send_gcs_string(const char* string)
 {
-	
+	printf(string);
 }
 
 uint64_t mavlink_wpm_get_system_timestamp()
@@ -812,6 +823,8 @@ static void mavlink_wpm_message_handler(const mavlink_message_t* msg)
             mavlink_waypoint_t wp;
             mavlink_msg_waypoint_decode(msg, &wp);
 			
+			if (verbose) printf("GOT WAYPOINT!");
+			
             if((msg->sysid == wpm.current_partner_sysid && msg->compid == wpm.current_partner_compid) && (wp.target_system == mavlink_system.sysid && wp.target_component == mavlink_system.compid))
             {
                 wpm.timestamp_lastaction = now;
@@ -954,7 +967,7 @@ static void mavlink_wpm_message_handler(const mavlink_message_t* msg)
     }
 	
     //check if the current waypoint was reached
-    if (wpm.pos_reached /*wpm.yaw_reached &&*/ && wpm.current_state != MAVLINK_WPM_STATE_IDLE)
+    if (wpm.pos_reached /*wpm.yaw_reached &&*/ && !wpm.idle)
     {
         if (wpm.current_active_wp_id < wpm.size)
         {
@@ -1014,6 +1027,13 @@ static void mavlink_wpm_message_handler(const mavlink_message_t* msg)
 
 int main(int argc, char* argv[])
 {	
+	// Initialize MAVLink
+	mavlink_wpm_init(&wpm);
+	mavlink_system.sysid = 1;
+	mavlink_system.compid = MAV_COMP_ID_WAYPOINTPLANNER;
+	
+	
+	
 	// Create socket
 	sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	
@@ -1073,7 +1093,7 @@ int main(int argc, char* argv[])
     {
 		
 		/*Send Heartbeat */
-		mavlink_msg_heartbeat_pack(1, 200, &msg, MAV_TYPE_HELICOPTER, MAV_CLASS_GENERIC);
+		mavlink_msg_heartbeat_pack(mavlink_system.sysid, 200, &msg, MAV_TYPE_HELICOPTER, MAV_CLASS_GENERIC);
 		len = mavlink_msg_to_send_buffer(buf, &msg);
 		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
 		
@@ -1083,14 +1103,14 @@ int main(int argc, char* argv[])
 		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof (struct sockaddr_in));
 		
 		/* Send Local Position */
-		mavlink_msg_local_position_pack(1, 200, &msg, microsSinceEpoch(), 
+		mavlink_msg_local_position_pack(mavlink_system.sysid, 200, &msg, microsSinceEpoch(), 
 										position[0], position[1], position[2],
 										position[3], position[4], position[5]);
 		len = mavlink_msg_to_send_buffer(buf, &msg);
 		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
 		
 		/* Send attitude */
-		mavlink_msg_attitude_pack(1, 200, &msg, microsSinceEpoch(), 1.2, 1.7, 3.14, 0.01, 0.02, 0.03);
+		mavlink_msg_attitude_pack(mavlink_system.sysid, 200, &msg, microsSinceEpoch(), 1.2, 1.7, 3.14, 0.01, 0.02, 0.03);
 		len = mavlink_msg_to_send_buffer(buf, &msg);
 		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
 		
