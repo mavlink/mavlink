@@ -736,6 +736,24 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
      <field name="p2z" type="float">z position 2 / Altitude 2</field>
    </message>
 
+   <message name="SET_ROLL_PITCH_YAW" id="55">
+     <description>Set roll, pitch and yaw.</description>
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="roll" type="float">Desired roll angle in radians</field>
+     <field name="pitch" type="float">Desired pitch angle in radians</field>
+     <field name="yaw" type="float">Desired yaw angle in radians</field>
+   </message>
+
+   <message name="SET_ROLL_PITCH_YAW_SPEED" id="56">
+     <description>Set roll, pitch and yaw.</description>
+     <field name="target_system" type="uint8_t">System ID</field>
+     <field name="target_component" type="uint8_t">Component ID</field>
+     <field name="roll_speed" type="float">Desired roll angular speed in rad/s</field>
+     <field name="pitch_speed" type="float">Desired pitch angular speed in rad/s</field>
+     <field name="yaw_speed" type="float">Desired yaw angular speed in rad/s</field>
+   </message>
+
    <message name="ATTITUDE_CONTROLLER_OUTPUT" id="60">
      <description>The output of the attitude controller. This output is the control response the controller currently generates and the attitude the MAV would take if it is under control of the attitude controller. The primary use of this message is to check the response and signs of the controller before the actual flight.</description>
      <field name="enabled" type="uint8_t">1: enabled, 0: disabled</field>
