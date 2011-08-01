@@ -117,7 +117,10 @@ enum MAVLINK_WPM_CODES
 #define MAVLINK_WPM_TEXT_FEEDBACK 1						  ///< Report back status information as text
 #define MAVLINK_WPM_SYSTEM_ID 1
 #define MAVLINK_WPM_COMPONENT_ID 1
-#define MAVLINK_WPM_PROTOCOL_TIMEOUT_DEFAULT 100
+#define MAVLINK_WPM_PROTOCOL_TIMEOUT_DEFAULT 2000000
+#define MAVLINK_WPM_SETPOINT_DELAY_DEFAULT 1000000
+#define MAVLINK_WPM_PROTOCOL_DELAY_DEFAULT 40
+
 
 struct mavlink_wpm_storage {
 	mavlink_waypoint_t waypoints[MAVLINK_WPM_MAX_WP_COUNT];      ///< Currently active waypoints
@@ -137,8 +140,8 @@ struct mavlink_wpm_storage {
 	uint64_t timestamp_last_send_setpoint;
 	uint64_t timestamp_firstinside_orbit;
 	uint64_t timestamp_lastoutside_orbit;
-	uint16_t timeout;
-	uint16_t delay_setpoint;
+	uint32_t timeout;
+	uint32_t delay_setpoint;
 	float accept_range_yaw;
 	float accept_range_distance;
 	bool yaw_reached;
@@ -167,7 +170,7 @@ void mavlink_wpm_init(mavlink_wpm_storage* state)
 	state->timestamp_lastaction = 0;
 	state->timestamp_last_send_setpoint = 0;
 	state->timeout = MAVLINK_WPM_PROTOCOL_TIMEOUT_DEFAULT;
-	
+	state->delay_setpoint = MAVLINK_WPM_SETPOINT_DELAY_DEFAULT;
 	state->idle = false;      				///< indicates if the system is following the waypoints or is waiting
 	state->current_active_wp_id = -1;		///< id of current waypoint
 	state->yaw_reached = false;						///< boolean for yaw attitude reached
@@ -190,7 +193,7 @@ void mavlink_wpm_send_message(mavlink_message_t* msg)
 
 void mavlink_wpm_send_gcs_string(const char* string)
 {
-	printf(string);
+	printf("%s",string);
 }
 
 uint64_t mavlink_wpm_get_system_timestamp()
@@ -341,7 +344,7 @@ void mavlink_wpm_send_waypoint(uint8_t sysid, uint8_t compid, uint16_t seq)
 
 void mavlink_wpm_send_waypoint_request(uint8_t sysid, uint8_t compid, uint16_t seq)
 {
-    if (seq < wpm.size)
+    if (seq < wpm.max_size)
     {
         mavlink_message_t msg;
         mavlink_waypoint_request_t wpr;
@@ -356,7 +359,7 @@ void mavlink_wpm_send_waypoint_request(uint8_t sysid, uint8_t compid, uint16_t s
     }
     else
     {
-        if (MAVLINK_WPM_TEXT_FEEDBACK) mavlink_wpm_send_gcs_string("ERROR: Waypoint index out of bounds\n");
+        if (MAVLINK_WPM_TEXT_FEEDBACK) mavlink_wpm_send_gcs_string("ERROR: Waypoint index exceeds list capacity\n");
     }
 }
 
@@ -1102,18 +1105,18 @@ int main(int argc, char* argv[])
 		len = mavlink_msg_to_send_buffer(buf, &msg);
 		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof (struct sockaddr_in));
 		
-		/* Send Local Position */
-		mavlink_msg_local_position_pack(mavlink_system.sysid, 200, &msg, microsSinceEpoch(), 
-										position[0], position[1], position[2],
-										position[3], position[4], position[5]);
-		len = mavlink_msg_to_send_buffer(buf, &msg);
-		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
-		
-		/* Send attitude */
-		mavlink_msg_attitude_pack(mavlink_system.sysid, 200, &msg, microsSinceEpoch(), 1.2, 1.7, 3.14, 0.01, 0.02, 0.03);
-		len = mavlink_msg_to_send_buffer(buf, &msg);
-		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
-		
+//		/* Send Local Position */
+//		mavlink_msg_local_position_pack(mavlink_system.sysid, 200, &msg, microsSinceEpoch(), 
+//										position[0], position[1], position[2],
+//										position[3], position[4], position[5]);
+//		len = mavlink_msg_to_send_buffer(buf, &msg);
+//		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
+//		
+//		/* Send attitude */
+//		mavlink_msg_attitude_pack(mavlink_system.sysid, 200, &msg, microsSinceEpoch(), 1.2, 1.7, 3.14, 0.01, 0.02, 0.03);
+//		len = mavlink_msg_to_send_buffer(buf, &msg);
+//		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
+//		
 		
 		memset(buf, 0, BUFFER_LENGTH);
 		recsize = recvfrom(sock, (void *)buf, BUFFER_LENGTH, 0, (struct sockaddr *)&gcAddr, &fromlen);
