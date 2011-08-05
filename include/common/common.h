@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://qgroundcontrol.org/mavlink/
- *	 Generated on Monday, August 1 2011, 18:13 UTC
+ *	 Generated on Friday, August 5 2011, 07:37 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -28,7 +28,7 @@ extern "C" {
 
 // ENUM DEFINITIONS
 
-/** @brief  Commands to be executed by the MAV. They can be executed on user request,       or as part of a mission script. If the action is used in a mission, the parameter mapping       to the waypoint/mission message is as follows:       Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what       ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. */
+/** @brief  Commands to be executed by the MAV. They can be executed on user request,                 or as part of a mission script. If the action is used in a mission, the parameter mapping                 to the waypoint/mission message is as follows:                 Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what                 ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data.              */
 enum MAV_CMD
 {
 	MAV_CMD_NAV_WAYPOINT=16, /* Navigate to waypoint. | Hold time in decimal seconds. (ignored by fixed wing, time to stay at waypoint for rotary wing) | Acceptance radius in meters (if the sphere with this radius is hit, the waypoint counts as reached) | 0 to pass through the WP, if > 0 radius in meters to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control. | Desired yaw angle at waypoint (rotary wing) | Latitude | Longitude | Altitude | */
@@ -56,13 +56,14 @@ enum MAV_CMD
 	MAV_CMD_DO_SET_SERVO=183, /* Set a servo to a desired PWM value. | Servo number | PWM (microseconds, 1000 to 2000 typical) | Empty | Empty | Empty | Empty | Empty | */
 	MAV_CMD_DO_REPEAT_SERVO=184, /* Cycle a between its nominal setting and a desired PWM for a desired number of cycles with a desired period. | Servo number | PWM (microseconds, 1000 to 2000 typical) | Cycle count | Cycle time (seconds) | Empty | Empty | Empty | */
 	MAV_CMD_DO_CONTROL_VIDEO=200, /* Control onboard camera capturing. | Camera ID (-1 for all) | Transmission: 0: disabled, 1: enabled compressed, 2: enabled raw | Transmission mode: 0: video stream, >0: single images every n seconds (decimal) | Recording: 0: disabled, 1: enabled compressed, 2: enabled raw | Empty | Empty | Empty | */
+	MAV_CMD_DO_SET_ROI=201, /* Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various devices such as cameras. | Region of interest mode. (see MAV_ROI enum) | Waypoint index/ target ID. (see MAV_ROI enum) | ROI index (allows a vehicle to manage multiple cameras etc.) | Empty | x the location of the fixed ROI (see MAV_FRAME) | y | z | */
 	MAV_CMD_DO_LAST=240, /* NOP - This command is only used to mark the upper limit of the DO commands in the enumeration | Empty | Empty | Empty | Empty | Empty | Empty | Empty | */
 	MAV_CMD_PREFLIGHT_CALIBRATION=241, /* Trigger calibration. This command will be only accepted if in pre-flight mode. | Gyro calibration: 0: no, 1: yes | Magnetometer calibration: 0: no, 1: yes | Ground pressure: 0: no, 1: yes | Radio calibration: 0: no, 1: yes | Empty | Empty | Empty | */
 	MAV_CMD_PREFLIGHT_STORAGE=245, /* Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode. | Parameter storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM | Mission storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM | Reserved | Reserved | Empty | Empty | Empty | */
 	MAV_CMD_ENUM_END
 };
 
-/** @brief  Data stream IDs. A data stream is not a fixed set of messages, but rather a      recommendation to the autopilot software. Individual autopilots may or may not obey      the recommended messages.       */
+/** @brief  Data stream IDs. A data stream is not a fixed set of messages, but rather a                 recommendation to the autopilot software. Individual autopilots may or may not obey                 the recommended messages.              */
 enum MAV_DATA_STREAM
 {
 	MAV_DATA_STREAM_ALL=0, /* Enable all data streams | */
@@ -77,7 +78,7 @@ enum MAV_DATA_STREAM
 	MAV_DATA_STREAM_ENUM_END
 };
 
-/** @brief   The ROI (region of interest) for the vehicle. This can be       be used by the vehicle for camera/vehicle attitude alignment (see 	  MAV_CMD_NAV_ROI).       */
+/** @brief   The ROI (region of interest) for the vehicle. This can be                 be used by the vehicle for camera/vehicle attitude alignment (see                 MAV_CMD_NAV_ROI).              */
 enum MAV_ROI
 {
 	MAV_ROI_WPNEXT=0, /* Point toward next waypoint. | */
@@ -145,6 +146,7 @@ enum MAV_ROI
 #include "./mavlink_msg_state_correction.h"
 #include "./mavlink_msg_set_altitude.h"
 #include "./mavlink_msg_request_data_stream.h"
+#include "./mavlink_msg_full_state.h"
 #include "./mavlink_msg_manual_control.h"
 #include "./mavlink_msg_rc_channels_override.h"
 #include "./mavlink_msg_global_position_int.h"
@@ -161,7 +163,7 @@ enum MAV_ROI
 // MESSAGE LENGTHS
 
 #undef MAVLINK_MESSAGE_LENGTHS
-#define MAVLINK_MESSAGE_LENGTHS { 3, 4, 8, 14, 8, 28, 3, 32, 0, 2, 3, 2, 2, 0, 0, 0, 0, 0, 0, 0, 19, 2, 23, 21, 0, 37, 26, 101, 26, 16, 32, 32, 37, 32, 11, 17, 17, 16, 18, 36, 4, 4, 2, 2, 4, 2, 2, 3, 14, 12, 18, 16, 8, 27, 25, 14, 14, 0, 0, 0, 5, 5, 26, 16, 36, 5, 6, 0, 0, 21, 18, 0, 0, 18, 20, 20, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 14, 14, 51 }
+#define MAVLINK_MESSAGE_LENGTHS { 3, 4, 8, 14, 8, 28, 3, 32, 0, 2, 3, 2, 2, 0, 0, 0, 0, 0, 0, 0, 19, 2, 23, 21, 0, 37, 26, 101, 26, 16, 32, 32, 37, 32, 11, 17, 17, 16, 18, 36, 4, 4, 2, 2, 4, 2, 2, 3, 14, 12, 18, 16, 8, 27, 25, 14, 14, 0, 0, 0, 5, 5, 26, 16, 36, 5, 6, 56, 0, 21, 18, 0, 0, 18, 20, 20, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 14, 14, 51 }
 
 #ifdef __cplusplus
 }
