@@ -53,7 +53,10 @@
 #endif
 
 #include <math.h>
+<<<<<<< HEAD
 #include <stdbool.h>
+=======
+>>>>>>> 26a845613229fbb0cb8bee589c12f477fd30a42f
 
 #include <../mavlink_types.h>
 
@@ -64,6 +67,26 @@ mavlink_system_t mavlink_system;
 #include <mavlink.h>
 
 
+<<<<<<< HEAD
+=======
+/* Provide the interface functions for the waypoint manager */
+
+/*
+ *  @brief Sends a MAVLink message over UDP
+ */
+void mavlink_wpm_send_message(mavlink_message_t* msg)
+{
+	uint16_t len = mavlink_msg_to_send_buffer(buf, msg);
+	uint16_t bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof (struct sockaddr_in));
+	
+	printf("SENT %d bytes", bytes_sent);
+}
+
+
+#include <waypoints.h>
+
+
+>>>>>>> 26a845613229fbb0cb8bee589c12f477fd30a42f
 #define BUFFER_LENGTH 2041 // minimum buffer size that can be used with qnx (I don't know why)
 
 char help[] = "--help";
@@ -87,6 +110,7 @@ unsigned int temp = 0;
 uint64_t microsSinceEpoch();
 
 
+<<<<<<< HEAD
 // FIXME XXX - TO BE MOVED TO XML
 enum MAVLINK_WPM_STATES
 {
@@ -1028,6 +1052,8 @@ static void mavlink_wpm_message_handler(const mavlink_message_t* msg)
 
 
 
+=======
+>>>>>>> 26a845613229fbb0cb8bee589c12f477fd30a42f
 int main(int argc, char* argv[])
 {	
 	// Initialize MAVLink
@@ -1105,6 +1131,7 @@ int main(int argc, char* argv[])
 		len = mavlink_msg_to_send_buffer(buf, &msg);
 		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof (struct sockaddr_in));
 		
+<<<<<<< HEAD
 //		/* Send Local Position */
 //		mavlink_msg_local_position_pack(mavlink_system.sysid, 200, &msg, microsSinceEpoch(), 
 //										position[0], position[1], position[2],
@@ -1117,6 +1144,20 @@ int main(int argc, char* argv[])
 //		len = mavlink_msg_to_send_buffer(buf, &msg);
 //		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
 //		
+=======
+		/* Send Local Position */
+		mavlink_msg_local_position_pack(mavlink_system.sysid, 200, &msg, microsSinceEpoch(), 
+										position[0], position[1], position[2],
+										position[3], position[4], position[5]);
+		len = mavlink_msg_to_send_buffer(buf, &msg);
+		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
+		
+		/* Send attitude */
+		mavlink_msg_attitude_pack(mavlink_system.sysid, 200, &msg, microsSinceEpoch(), 1.2, 1.7, 3.14, 0.01, 0.02, 0.03);
+		len = mavlink_msg_to_send_buffer(buf, &msg);
+		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
+		
+>>>>>>> 26a845613229fbb0cb8bee589c12f477fd30a42f
 		
 		memset(buf, 0, BUFFER_LENGTH);
 		recsize = recvfrom(sock, (void *)buf, BUFFER_LENGTH, 0, (struct sockaddr *)&gcAddr, &fromlen);
