@@ -11,6 +11,15 @@ extern "C" {
 #ifndef _ML_OPTIONS_H_
 #define _ML_OPTIONS_H_
 
+/**
+ * Check if user read this file
+ * To stop this error, #define MAVLINK_CONFIGURED
+ */
+	
+//#ifndef MAVLINK_CONFIGURED
+//#error Please read mavlink_options.h in the MAVLink include folder and then #define MAVLINK_CONFIGURED
+//#endif
+	
 
 /**
  *
@@ -63,8 +72,10 @@ extern "C" {
  *  do not define this sybol, then define this symbol in all other files before
  *  including mavlink.h
  *
+ *  Use #define MAVLINK_NO_DATA to disable data auto-inclusion and then include
+ *  #include "mavlink_data.h" AFTER #include "mavlink.h"
+ *
  */
-//#define MAVLINK_NO_DATA
 #ifdef MAVLINK_NO_DATA
   #undef MAVLINK_DATA
 #else
