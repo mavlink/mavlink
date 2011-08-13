@@ -77,31 +77,29 @@ void mavlink_missionlib_send_message(mavlink_message_t* msg);
 void mavlink_missionlib_send_gcs_string(const char* string);
 uint64_t mavlink_missionlib_get_system_timestamp();
 
-void mavlink_pm_reset_params(void);
-
 /* 4: Include waypoint protocol */
 #include "waypoints.h"
 mavlink_wpm_storage wpm;
 
-enum MAVLINK_PM_PARAMETERS
-{
-	MAVLINK_PM_PARAM_SYSTEM_ID,
-	MAVLINK_PM_MAX_PARAM_COUNT // VERY IMPORTANT! KEEP THIS AS LAST ENTRY
-};
 
-extern void mavlink_pm_queued_send();
-
+#include "mavlink_missionlib_data.h"
 #include "mavlink_parameters.h"
+
 mavlink_pm_storage pm;
 
 /**
  * @brief reset all parameters to default
  * @warning DO NOT USE THIS IN FLIGHT!
  */
-void mavlink_pm_reset_params(void)
+void mavlink_pm_reset_params(mavlink_pm_storage* pm)
 {
-	pm.param_values[MAVLINK_PM_PARAM_SYSTEM_ID] = 12;
-	strcpy(pm.param_names[MAVLINK_PM_PARAM_SYSTEM_ID], "SYS_ID");
+	pm->size = MAVLINK_PM_MAX_PARAM_COUNT;
+	// 1) MAVLINK_PM_PARAM_SYSTEM_ID
+	pm->param_values[MAVLINK_PM_PARAM_SYSTEM_ID] = 12;
+	strcpy(pm->param_names[MAVLINK_PM_PARAM_SYSTEM_ID], "SYS_ID");
+	// 2) MAVLINK_PM_PARAM_ATT_K_D
+	pm->param_values[MAVLINK_PM_PARAM_ATT_K_D] = 0.3f;
+	strcpy(pm->param_names[MAVLINK_PM_PARAM_ATT_K_D], "ATT_K_D");
 }
 
 
@@ -181,9 +179,7 @@ int main(int argc, char* argv[])
 	mavlink_wpm_init(&wpm);
 	mavlink_system.sysid = 1;
 	mavlink_system.compid = 20;
-	
-//	mavlink_pm_init(&pm);
-//	mavlink_pm_reset_params();
+	mavlink_pm_reset_params(&pm);
 	
 	
 	
