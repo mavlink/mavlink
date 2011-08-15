@@ -1072,27 +1072,6 @@
                <field type="uint16_t" name="req_message_rate">The requested interval between two messages of this type</field>
                <field type="uint8_t" name="start_stop">1 to start sending, 0 to stop sending.</field>
           </message>
-          <message id="67" name="FULL_STATE">
-               <description>This packet is useful for high throughput
-                applications such as hardware in the loop.
-            </description>
-               <field type="uint64_t" name="usec">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
-               <field type="float" name="roll">Roll angle (rad)</field>
-               <field type="float" name="pitch">Pitch angle (rad)</field>
-               <field type="float" name="yaw">Yaw angle (rad)</field>
-               <field type="float" name="rollspeed">Roll angular speed (rad/s)</field>
-               <field type="float" name="pitchspeed">Pitch angular speed (rad/s)</field>
-               <field type="float" name="yawspeed">Yaw angular speed (rad/s)</field>
-               <field type="int32_t" name="lat">Latitude, expressed as * 1E7</field>
-               <field type="int32_t" name="lon">Longitude, expressed as * 1E7</field>
-               <field type="int32_t" name="alt">Altitude in meters, expressed as * 1000 (millimeters)</field>
-               <field type="int16_t" name="vx">Ground X Speed (Latitude), expressed as m/s * 100</field>
-               <field type="int16_t" name="vy">Ground Y Speed (Longitude), expressed as m/s * 100</field>
-               <field type="int16_t" name="vz">Ground Z Speed (Altitude), expressed as m/s * 100</field>
-               <field type="int16_t" name="xacc">X acceleration (mg)</field>
-               <field type="int16_t" name="yacc">Y acceleration (mg)</field>
-               <field type="int16_t" name="zacc">Z acceleration (mg)</field>
-          </message>
           <message id="69" name="MANUAL_CONTROL">
                <field type="uint8_t" name="target">The system to be controlled</field>
                <field type="float" name="roll">roll</field>
@@ -1152,7 +1131,91 @@
                <field type="float" name="command">Current airspeed in m/s</field>
                <field type="float" name="result">1: Action ACCEPTED and EXECUTED, 1: Action TEMPORARY REJECTED/DENIED, 2: Action PERMANENTLY DENIED, 3: Action UNKNOWN/UNSUPPORTED, 4: Requesting CONFIRMATION</field>
           </message>
-          <!-- MESSAGE IDs 80 - 249: Space for custom messages in individual projectname_messages.xml files -->
+          <!--
+          <message id="80" name="MISSION_ITEM">
+          	   <description>One mission element following the MAV_CMD enumeration</description>
+          	   <field type="uint8_t" name="target_system">System ID</field>
+               <field type="uint8_t" name="target_component">Component ID</field>
+               <field type="uint16_t" name="id">ID</field>
+               <field type="uint16_t" name="id">Total count (size of total mission)</field>
+               <field type="uint8_t" name="frame">The coordinate system of the waypoint. see MAV_FRAME in mavlink_types.h</field>
+               <field type="uint8_t" name="command">The scheduled action for the waypoint. see MAV_COMMAND in common.xml MAVLink specs</field>
+               <field type="uint8_t" name="current">false:0, true:1</field>
+               <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
+               <field type="float" name="param1">PARAM1 / For NAV command waypoints: Radius in which the waypoint is accepted as reached, in meters</field>
+               <field type="float" name="param2">PARAM2 / For NAV command waypoints: Time that the MAV should stay inside the PARAM1 radius before advancing, in milliseconds</field>
+               <field type="float" name="param3">PARAM3 / For LOITER command waypoints: Orbit to circle around the waypoint, in meters. If positive the orbit direction should be clockwise, if negative the orbit direction should be counter-clockwise.</field>
+               <field type="float" name="param4">PARAM4 / For NAV and LOITER command waypoints: Yaw orientation in degrees, [0..360] 0 = NORTH</field>
+               <field type="float" name="x">PARAM5 / local: x position, global: latitude</field>
+               <field type="float" name="y">PARAM6 / y position: global: longitude</field>
+               <field type="float" name="z">PARAM7 / z position: global: altitude</field>
+          </message>
+          <message id="81" name="MISSION_ACK">
+               <description>ACK / NACK for one mission element or a whole mission</description>
+          	   <field type="uint8_t" name="target_system">System ID</field>
+               <field type="uint8_t" name="target_component">Component ID</field>
+               <field type="uint8_t" name="mission_status"></field>
+               <field type="uint16_t" name="begin_item"></field>
+               <field type="uint16_t" name="end_item"></field>
+               <field type="uint8_t" name="packet_seq"></field>
+          </message>
+          <message id="82" name="MISSION_REQUEST">
+               <description>One mission element following the MAV_CMD enumeration</description>
+          	   <field type="uint8_t" name="target_system">System ID</field>
+               <field type="uint8_t" name="target_component">Component ID</field>
+               <field type="uint8_t" name="mission_command">Command id: 0: read whole mission, 1: read mission from begin to end, 2: write mission items from begin to end, 3: clear mission.</field>
+               <field type="uint16_t" name="begin_item"></field>
+               <field type="uint16_t" name="end_item"></field>
+          </message> -->
+                    <message id="90" name="HIL_STATE">
+            <description>Sent from simulation to autopilot. This packet is useful for high throughput
+                applications such as hardware in the loop simulations.
+            </description>
+            <field type="uint64_t" name="time_us">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
+            <field type="float" name="roll">Roll angle (rad)</field>
+            <field type="float" name="pitch">Pitch angle (rad)</field>
+            <field type="float" name="yaw">Yaw angle (rad)</field>
+            <field type="float" name="rollspeed">Roll angular speed (rad/s)</field>
+            <field type="float" name="pitchspeed">Pitch angular speed (rad/s)</field>
+            <field type="float" name="yawspeed">Yaw angular speed (rad/s)</field>
+            <field type="int32_t" name="lat">Latitude, expressed as * 1E7</field>
+            <field type="int32_t" name="lon">Longitude, expressed as * 1E7</field>
+            <field type="int32_t" name="alt">Altitude in meters, expressed as * 1000 (millimeters)</field>
+            <field type="int16_t" name="vx">Ground X Speed (Latitude), expressed as m/s * 100</field>
+            <field type="int16_t" name="vy">Ground Y Speed (Longitude), expressed as m/s * 100</field>
+            <field type="int16_t" name="vz">Ground Z Speed (Altitude), expressed as m/s * 100</field>
+            <field type="int16_t" name="xacc">X acceleration (mg)</field>
+            <field type="int16_t" name="yacc">Y acceleration (mg)</field>
+            <field type="int16_t" name="zacc">Z acceleration (mg)</field>
+        </message>
+        <message id="91" name="HIL_CONTROLS">
+            <description>Sent from autopilot to simulation. Hardware in the loop control outputs</description>
+            <field name="time_us" type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
+            <field name="roll_ailerons" type="float">Control output -1 .. 1</field>
+            <field name="pitch_elevator" type="float">Control output -1 .. 1</field>
+            <field name="yaw_rudder" type="float">Control output -1 .. 1</field>
+            <field name="throttle" type="float">Throttle 0 .. 1</field>
+            <field name="mode" type="uint8_t">System mode (MAV_MODE)</field>
+            <field name="nav_mode" type="uint8_t">Navigation mode (MAV_NAV_MODE)</field>
+        </message>
+        <message id="92" name="HIL_RC_INPUTS_RAW">
+               <description>Sent from simulation to autopilot. The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
+               <field type="uint64_t" name="time_us">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
+               <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds</field>
+               <field type="uint16_t" name="chan2_raw">RC channel 2 value, in microseconds</field>
+               <field type="uint16_t" name="chan3_raw">RC channel 3 value, in microseconds</field>
+               <field type="uint16_t" name="chan4_raw">RC channel 4 value, in microseconds</field>
+               <field type="uint16_t" name="chan5_raw">RC channel 5 value, in microseconds</field>
+               <field type="uint16_t" name="chan6_raw">RC channel 6 value, in microseconds</field>
+               <field type="uint16_t" name="chan7_raw">RC channel 7 value, in microseconds</field>
+               <field type="uint16_t" name="chan8_raw">RC channel 8 value, in microseconds</field>
+               <field type="uint16_t" name="chan9_raw">RC channel 9 value, in microseconds</field>
+               <field type="uint16_t" name="chan10_raw">RC channel 10 value, in microseconds</field>
+               <field type="uint16_t" name="chan11_raw">RC channel 11 value, in microseconds</field>
+               <field type="uint16_t" name="chan12_raw">RC channel 12 value, in microseconds</field>
+               <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 255: 100%</field>
+          </message>
+          <!-- MESSAGE IDs 150 - 240: Space for custom messages in individual projectname_messages.xml files -->
           <message id="250" name="MEMORY_VECT">
                <description>Send raw controller memory. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
                <field type="uint16_t" name="address">Starting address of the debug variables</field>
