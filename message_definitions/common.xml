@@ -42,6 +42,19 @@
                </entry>
           </enum>
           <!-- WARNING: MAV_ACTION Enum is no longer supported - has been removed. Please use MAV_CMD -->
+          <enum name="MAV_SAFETY">
+          		<description>MAV safety override. This is a top-level safety override. Independent of the general state machine this mode shall ensure the safe operation. the MAV_SAFETY state should ONLY be switchable in the MAV_STATE_STANDBY state and NOT in flight.
+          		<entry value="0" name="MAV_SAFETY_HIL">
+          			<description>MAV safety lock set to hardware in the loop simulation. All motors / actuators are blocked, but internet software is full operational.</description>
+          		</entry>
+          		<entry value="1" name="MAV_SAFETY_DISARMED">
+          			<description>MAV safety set to disarmed. Independent of the system mode and navigation mode all actuators are blocked.</description>
+          		</entry>
+          		<entry value="2" name="MAV_SAFETY_ARMED">
+          			<description>MAV safety set to armed. All actuators are active.</description>
+          		</entry>
+          </enum>
+          
           <enum name="MAV_MODE">
                <entry value="0" name="MAV_MODE_UNINIT">
                     <description>System is in undefined state</description>
@@ -636,7 +649,12 @@
           <message id="0" name="HEARTBEAT">
                <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
                <field type="uint8_t" name="type">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
-               <field type="uint8_t" name="autopilot">Type of the Autopilot: 0: Generic, 1: PIXHAWK, 2: SLUGS, 3: Ardupilot (up to 15 types), defined in MAV_AUTOPILOT_TYPE ENUM</field>
+               <field type="uint8_t" name="autopilot">Autopilot type / class. defined in MAV_CLASS ENUM</field>
+               <field type="uint8_t" name="mode">System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h</field>
+               <field type="uint8_t" name="nav_mode">Navigation mode, see MAV_NAV_MODE ENUM</field>
+               <field type="uint8_t" name="status">System status flag, see MAV_STATUS ENUM</field>
+               <field type="uint8_t" name="safety_status">System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation</field>
+               <!--<field type="uint16_t" name="controller_sensor_enabled"-->
                <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version</field>
           </message>
           <message id="1" name="BOOT">

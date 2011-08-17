@@ -262,8 +262,8 @@ int main(int argc, char* argv[])
 		
 		/* Send HIL outputs */
 		float roll_ailerons = 0;   // -1 .. 1
-		float pitch_elevator = 0;  // -1 .. 1
-		float yaw_rudder = 0;      // -1 .. 1
+		float pitch_elevator = -0.2;  // -1 .. 1
+		float yaw_rudder = 0.1;      // -1 .. 1
 		float throttle = 0.9;      //  0 .. 1
 		mavlink_msg_hil_controls_pack_chan(mavlink_system.sysid, mavlink_system.compid, MAVLINK_COMM_0, &msg, microsSinceEpoch(), roll_ailerons, pitch_elevator, yaw_rudder, throttle, mavlink_system.mode, mavlink_system.nav_mode);
 		len = mavlink_msg_to_send_buffer(buf, &msg);
