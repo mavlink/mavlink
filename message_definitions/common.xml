@@ -719,14 +719,19 @@
                <field type="char[32]" name="key">key</field>
           </message>
           <message id="11" name="SET_MODE">
-               <description>Set the system mode, as defined by enum MAV_MODE in mavlink/include/mavlink_types.h. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
+               <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
                <field type="uint8_t" name="target">The system setting the mode</field>
                <field type="uint8_t" name="mode">The new mode</field>
           </message>
-          <message id="12" name="SET_NAV_MODE">
-               <description>Set the system navigation mode, as defined by enum MAV_NAV_MODE in mavlink/include/mavlink_types.h. The navigation mode applies to the whole aircraft and thus all components.</description>
+          <message id="12" name="SET_FLIGHT_MODE">
+               <description>Set the system navigation mode, as defined by enum MAV_FLIGHT_MODE. The navigation mode applies to the whole aircraft and thus all components.</description>
                <field type="uint8_t" name="target">The system setting the mode</field>
-               <field type="uint8_t" name="nav_mode">The new navigation mode</field>
+               <field type="uint8_t" name="flight_mode">The new navigation mode</field>
+          </message>
+          <message id="13" name="SET_SAFETY_MODE">
+               <description>Set the system safety mode, as defined by enum MAV_SAFETY. The navigation mode applies to the whole aircraft and thus all components.</description>
+               <field type="uint8_t" name="target">The system setting the mode</field>
+               <field type="uint8_t" name="safety_mode">The new safety mode. The MAV will reject some mode changes during flight.</field>
           </message>
           <message id="20" name="PARAM_REQUEST_READ">
                <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -> value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also http://qgroundcontrol.org/parameter_interface for a full documentation of QGroundControl and IMU code.</description>
