@@ -2,65 +2,65 @@
 <mavlink>
      <version>3</version>
      <enums>
-          <enum name="MAV_CLASS">
+          <enum name="MAV_AUTOPILOT">
                <description>Micro air vehicle / autopilot classes. This identifies the individual model.</description>
-               <entry value="0" name="MAV_CLASS_GENERIC">
+               <entry value="0" name="MAV_AUTOPILOT_GENERIC">
                     <description>Generic autopilot, full support for everything</description>
                </entry>
-               <entry value="1" name="MAV_CLASS_PIXHAWK">
+               <entry value="1" name="MAV_AUTOPILOT_PIXHAWK">
                     <description>PIXHAWK autopilot, http://pixhawk.ethz.ch</description>
                </entry>
-               <entry value="2" name="MAV_CLASS_SLUGS">
+               <entry value="2" name="MAV_AUTOPILOT_SLUGS">
                     <description>SLUGS autopilot, http://slugsuav.soe.ucsc.edu</description>
                </entry>
-               <entry value="3" name="MAV_CLASS_ARDUPILOTMEGA">
+               <entry value="3" name="MAV_AUTOPILOT_ARDUPILOTMEGA">
                     <description>ArduPilotMega / ArduCopter, http://diydrones.com</description>
                </entry>
-               <entry value="4" name="MAV_CLASS_OPENPILOT">
+               <entry value="4" name="MAV_AUTOPILOT_OPENPILOT">
                     <description>OpenPilot, http://openpilot.org</description>
                </entry>
-               <entry value="5" name="MAV_CLASS_GENERIC_MISSION_WAYPOINTS_ONLY">
+               <entry value="5" name="MAV_AUTOPILOT_GENERIC_MISSION_WAYPOINTS_ONLY">
                     <description>Generic autopilot only supporting simple waypoints</description>
                </entry>
-               <entry value="6" name="MAV_CLASS_GENERIC_MISSION_NAVIGATION_ONLY">
+               <entry value="6" name="MAV_AUTOPILOT_GENERIC_MISSION_NAVIGATION_ONLY">
                     <description>Generic autopilot supporting waypoints and other simple navigation commands</description>
                </entry>
-               <entry value="7" name="MAV_CLASS_GENERIC_MISSION_FULL">
+               <entry value="7" name="MAV_AUTOPILOT_GENERIC_MISSION_FULL">
                     <description>Generic autopilot supporting the full mission command set</description>
                </entry>
-               <entry value="8" name="MAV_CLASS_INVALID">
+               <entry value="8" name="MAV_AUTOPILOT_INVALID">
                     <description>No valid autopilot, e.g. a GCS or other MAVLink component</description>
                </entry>
-               <entry value="9" name="MAV_CLASS_PPZ">
+               <entry value="9" name="MAV_AUTOPILOT_PPZ">
                     <description>PPZ UAV - http://nongnu.org/paparazzi</description>
                </entry>
-               <entry value="10" name="MAV_CLASS_UDB">
+               <entry value="10" name="MAV_AUTOPILOT_UDB">
                     <description>UAV Dev Board</description>
                </entry>
-               <entry value="11" name="MAV_CLASS_FP">
+               <entry value="11" name="MAV_AUTOPILOT_FP">
                     <description>FlexiPilot</description>
                </entry>
           </enum>
           <!-- WARNING: MAV_ACTION Enum is no longer supported - has been removed. Please use MAV_CMD -->
           <enum name="MAV_SAFETY">
-          		<description>MAV safety override. This is a top-level safety override. Independent of the general state machine this mode shall ensure the safe operation. the MAV_SAFETY state should ONLY be switchable in the MAV_STATE_STANDBY state and NOT in flight.
+          		<description>MAV safety override. This is a top-level safety override. Independent of the general state machine this mode shall ensure the safe operation. the MAV_SAFETY state should ONLY be switchable in the MAV_STATE_STANDBY state and NOT in flight.</description>
           		<entry value="0" name="MAV_SAFETY_HIL">
-          			<description>MAV safety lock set to hardware in the loop simulation. All motors / actuators are blocked, but internet software is full operational.</description>
+          			<description>MAV safety lock set to hardware in the loop simulation. All motors / actuators are blocked, but internal software is full operational.</description>
           		</entry>
           		<entry value="1" name="MAV_SAFETY_DISARMED">
-          			<description>MAV safety set to disarmed. Independent of the system mode and navigation mode all actuators are blocked.</description>
+          			<description>MAV safety set to disarmed. Motors are BLOCKED. Independent of the system mode and navigation mode all actuators are blocked.</description>
           		</entry>
           		<entry value="2" name="MAV_SAFETY_ARMED">
-          			<description>MAV safety set to armed. All actuators are active.</description>
+          			<description>MAV safety set to armed. Motors are ready / could be started. All actuators are active.</description>
           		</entry>
           </enum>
           
           <enum name="MAV_MODE">
-               <entry value="0" name="MAV_MODE_UNINIT">
-                    <description>System is in undefined state</description>
+               <entry value="0" name="MAV_MODE_PREFLIGHT">
+                    <description>System is not ready to fly.</description>
                </entry>
-               <entry value="1" name="MAV_MODE_LOCKED">
-                    <description>Motors are blocked, system is safe</description>
+               <entry value="1" name="MAV_MODE_FLY_BY_WIRE">
+                    <description>System is allowed to be active, under assisted but manual (RC) control</description>
                </entry>
                <entry value="2" name="MAV_MODE_MANUAL">
                     <description>System is allowed to be active, under manual (RC) control</description>
@@ -80,40 +80,46 @@
                <entry value="7" name="MAV_MODE_TEST3">
                     <description>Generic test mode, for custom use</description>
                </entry>
-               <entry value="8" name="MAV_MODE_READY">
-                    <description>System is ready, motors are unblocked, but controllers are inactive</description>
-               </entry>
-               <entry name="MAV_MODE_RC_TRAINING">
-                    <description>System is blocked, only RC valued are read and reported back</description>
-               </entry>
           </enum>
-          <enum name="MAV_NAV">
-               <entry value="0" name="MAV_NAV_GROUNDED">
+          <enum name="MAV_FLIGHT_MODE">
+               <entry value="0" name="MAV_FLIGHT_MODE_PREFLIGHT">
                     <description>System is currently on ground.</description>
                </entry>
-               <entry name="MAV_NAV_LIFTOFF">
+               <entry name="MAV_FLIGHT_MODE_AUTO_LIFTOFF">
                     <description>System is during liftoff, not in normal navigation mode yet.</description>
                </entry>
-               <entry name="MAV_NAV_HOLD">
-                    <description>System is holding its current position (rotorcraft or rover / boat).</description>
+               <entry name="MAV_FLIGHT_MODE_AUTO_HOLD">
+                    <description>System is holding its current position and disabled the mission management. Loitering in mission mode is NOT the hold type, but still mission mode.</description>
                </entry>
-               <entry name="MAV_NAV_WAYPOINT">
-                    <description>System is navigating towards the next waypoint.</description>
+               <entry name="MAV_FLIGHT_MODE_AUTO_MISSION">
+                    <description>System is navigating towards the next waypoint and following a mission script.</description>
                </entry>
-               <entry name="MAV_NAV_VECTOR">
-                    <description>System is flying at a defined course and speed.</description>
+               <entry name="MAV_FLIGHT_MODE_AUTO_VECTOR">
+                    <description>System is flying at a defined course and speed. If the vector is not defined by an autonomous approach but constantly by a user, please use MAV_FLIGHT_MODE_FBW_CURSOR_CONTROL</description>
                </entry>
-               <entry name="MAV_NAV_RETURNING">
+               <entry name="MAV_FLIGHT_MODE_AUTO_RETURNING">
                     <description>System is return straight to home position.</description>
                </entry>
-               <entry name="MAV_NAV_LANDING">
+               <entry name="MAV_FLIGHT_MODE_AUTO_LANDING">
                     <description>System is landing.</description>
                </entry>
-               <entry name="MAV_NAV_LOST">
+               <entry name="MAV_FLIGHT_MODE_AUTO_LOST">
                     <description>System lost its position input and is in attitude / flight stabilization only.</description>
                </entry>
-               <entry name="MAV_NAV_LOITER">
-                    <description>System is loitering in wait position. DO NOT USE THIS FOR WAYPOINT LOITER!</description>
+               <entry name="MAV_FLIGHT_MODE_FBW_STABILIZE_ROLL_PITCH">
+                    <description>Fly by wire mode, stabilizing roll and pitch</description>
+               </entry>
+               <entry name="MAV_FLIGHT_MODE_FBW_STABILIZE_ROLL_PITCH_ALTITUDE">
+                    <description>Fly by wire mode, stabilizing roll, pitch and altitude</description>
+               </entry>
+               <entry name="MAV_FLIGHT_MODE_FBW_STABILIZE_ROLL_PITCH_YAW">
+                    <description>Fly by wire mode, stabilizing roll, pitch and yaw</description>
+               </entry>
+               <entry name="MAV_FLIGHT_MODE_FBW_STABILIZE_ROLL_PITCH_YAW_ALTITUDE">
+                    <description>Fly by wire mode, stabilizing roll, pitch, yaw and altitude</description>
+               </entry>
+               <entry name="MAV_FLIGHT_MODE_FBW_CURSOR_CONTROL">
+                    <description>Fly by wire mode, user is only directing the movement, but all flight control is autonomous (similar to MAV_FLIGHT_MODE_AUTO_VECTOR with user input)</description>
                </entry>
           </enum>
           <enum name="MAV_STATE">
@@ -268,7 +274,7 @@
           </enum>
           <enum name="MAV_FRAME">
                <entry value="0" name="MAV_FRAME_GLOBAL">
-                    <description>Global coordinate frame, WGS84 coordinate system.</description>
+                    <description>Global coordinate frame, WGS84 coordinate system. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL)</description>
                </entry>
                <entry value="1" name="MAV_FRAME_LOCAL_NED">
                     <description>Local coordinate frame, Z-up (x: north, y: east, z: down).</description>
@@ -277,7 +283,7 @@
                     <description>NOT a coordinate frame, indicates a mission command.</description>
                </entry>
                <entry value="3" name="MAV_FRAME_GLOBAL_RELATIVE_ALT">
-                    <description>Global coordinate frame, WGS84 coordinate system, relative altitude over ground.</description>
+                    <description>Global coordinate frame, WGS84 coordinate system, relative altitude over ground with respect to the home position. First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at the altitude of the home location.</description>
                </entry>
                <entry value="4" name="MAV_FRAME_LOCAL_ENU">
                     <description>Local coordinate frame, Z-down (x: east, y: north, z: up)</description>
@@ -657,28 +663,43 @@
                <field type="uint8_t" name="nav_mode">Navigation mode, see MAV_NAV_MODE ENUM</field>
                <field type="uint8_t" name="status">System status flag, see MAV_STATUS ENUM</field>
                <field type="uint8_t" name="safety_status">System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation</field>
-               <!--<field type="uint16_t" name="controller_sensor_enabled"-->
+               <field type="uint8_t" name="link_status">Bitmask showing which links are ok / enabled. 0 for disabled/non functional, 1: enabled Indices: 0: RC, 1: UART1, 2: UART2, 3: UART3, 4: UART4, 5: UART5, 6: I2C, 7: CAN</field>
                <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version</field>
           </message>
-          <message id="1" name="BOOT">
-               <description>The boot message indicates that a system is starting. The onboard software version allows to keep track of onboard soft/firmware revisions.</description>
-               <field type="uint32_t" name="version">The onboard software version</field>
+          
+          <message id="1" name="SYS_STATUS">
+               <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows wether the system is currently active or not and if an emergency occured. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occured it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
+               <field type="uint16_t" name="onboard_control_sensors_present">Bitmask showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present. Indices: 0: 3D gyro, 1: 3D acc, 2: 3D mag, 3: absolute pressure, 4: differential pressure, 5: GPS, 6: optical flow, 7: computer vision position, 8: laser based position, 9: external ground-truth (Vicon or Leica). Controllers: 10: 3D angular rate control 11: attitude stabilization, 12: yaw position, 13: z/altitude control, 14: x/y position control, 15: motor outputs / control</field>
+               <field type="uint16_t" name="onboard_control_sensors_enabled">Bitmask showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled. Indices: 0: 3D gyro, 1: 3D acc, 2: 3D mag, 3: absolute pressure, 4: differential pressure, 5: GPS, 6: optical flow, 7: computer vision position, 8: laser based position, 9: external ground-truth (Vicon or Leica). Controllers: 10: 3D angular rate control 11: attitude stabilization, 12: yaw position, 13: z/altitude control, 14: x/y position control, 15: motor outputs / control</field>
+               <field type="uint16_t" name="onboard_control_sensors_health">Bitmask showing which onboard controllers and sensors are operational or have an error:  Value of 0: not enabled. Value of 1: enabled. Indices: 0: 3D gyro, 1: 3D acc, 2: 3D mag, 3: absolute pressure, 4: differential pressure, 5: GPS, 6: optical flow, 7: computer vision position, 8: laser based position, 9: external ground-truth (Vicon or Leica). Controllers: 10: 3D angular rate control 11: attitude stabilization, 12: yaw position, 13: z/altitude control, 14: x/y position control, 15: motor outputs / control</field>
+               <field type="uint16_t" name="load">Maximum usage in percent of the mainloop time, (0%: 0, 100%: 1000) should be always below 1000</field>
+               <field type="uint16_t" name="voltage_battery">Battery voltage, in millivolts (1 = 1 millivolt)</field>
+               <field type="uint16_t" name="current_battery">Battery current, in milliamperes (1 = 1 milliampere)</field>
+               <field type="uint16_t" name="watt">Watts consumed from this battery since startup</field>
+               <field type="uint8_t" name="battery_percent">Remaining battery energy: (0%: 0, 100%: 255)</field>
+               <field type="uint16_t" name="errors_uart">Dropped packets on all links (packets that were corrupted on reception on the MAV)</field>
+               <field type="uint16_t" name="errors_i2c">Dropped packets on all links (packets that were corrupted on reception)</field>
+               <field type="uint16_t" name="errors_spi">Dropped packets on all links (packets that were corrupted on reception)</field>
+               <field type="uint16_t" name="errors_can">Dropped packets on all links (packets that were corrupted on reception)</field>
           </message>
+          
           <message id="2" name="SYSTEM_TIME">
                <description>The system time is the time of the master clock, typically the computer clock of the main onboard computer.</description>
                <field type="uint64_t" name="time_usec">Timestamp of the master clock in microseconds since UNIX epoch.</field>
+               <field type="uint32_t" name="time_boot_ms">Timestamp of the component clock since boot time in milliseconds.</field>
           </message>
-          <message id="3" name="PING">
+          <!-- FIXME to be removed / merged with SYSTEM_TIME -->
+          <message id="3" name="SYSTEM_TIME_UTC">
+               <description>UTC date and time from GPS module</description>
+               <field type="uint32_t" name="utc_date">GPS UTC date ddmmyy</field>
+               <field type="uint32_t" name="utc_time">GPS UTC time hhmmss</field>
+          </message>
+          <message id="4" name="PING">
                <description>A ping message either requesting or responding to a ping. This allows to measure the system latencies, including serial port, radio modem and UDP connections.</description>
                <field type="uint32_t" name="seq">PING sequence</field>
                <field type="uint8_t" name="target_system">0: request ping from all receiving systems, if greater than 0: message is a ping response and number is the system id of the requesting system</field>
                <field type="uint8_t" name="target_component">0: request ping from all receiving components, if greater than 0: message is a ping response and number is the system id of the requesting system</field>
                <field type="uint64_t" name="time">Unix timestamp in microseconds</field>
-          </message>
-          <message id="4" name="SYSTEM_TIME_UTC">
-               <description>UTC date and time from GPS module</description>
-               <field type="uint32_t" name="utc_date">GPS UTC date ddmmyy</field>
-               <field type="uint32_t" name="utc_time">GPS UTC time hhmmss</field>
           </message>
           <message id="5" name="CHANGE_OPERATOR_CONTROL">
                <description>Request to control this MAV</description>
@@ -696,11 +717,6 @@
           <message id="7" name="AUTH_KEY">
                <description>Emit an encrypted signature / key identifying this system. PLEASE NOTE: This protocol has been kept simple, so transmitting the key requires an encrypted channel for true safety.</description>
                <field type="char[32]" name="key">key</field>
-          </message>
-          <message id="9" name="CMD_ACK">
-               <description>This message acknowledges an action. IMPORTANT: The acknowledgement can be also negative, e.g. the MAV rejects a reset message because it is in-flight. The action ids are defined in ENUM MAV_ACTION in mavlink/include/mavlink_types.h</description>
-               <field type="uint8_t" name="cmd">The MAV_CMD ID</field>
-               <field type="uint8_t" name="result">0: Action DENIED, 1: Action executed</field>
           </message>
           <message id="11" name="SET_MODE">
                <description>Set the system mode, as defined by enum MAV_MODE in mavlink/include/mavlink_types.h. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
@@ -850,16 +866,6 @@
                <field type="float" name="hdg">Compass heading in degrees, 0..360 degrees</field>
                <field type="uint8_t" name="satellites_visible">Number of satellites visible</field>
           </message>
-          <message id="34" name="SYS_STATUS">
-               <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows wether the system is currently active or not and if an emergency occured. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occured it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
-               <field type="uint8_t" name="mode">System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h</field>
-               <field type="uint8_t" name="nav_mode">Navigation mode, see MAV_NAV_MODE ENUM</field>
-               <field type="uint8_t" name="status">System status flag, see MAV_STATUS ENUM</field>
-               <field type="uint16_t" name="load">Maximum usage in percent of the mainloop time, (0%: 0, 100%: 1000) should be always below 1000</field>
-               <field type="uint16_t" name="vbat">Battery voltage, in millivolts (1 = 1 millivolt)</field>
-               <field type="uint16_t" name="battery_remaining">Remaining battery energy: (0%: 0, 100%: 1000)</field>
-               <field type="uint16_t" name="packet_drop">Dropped packets (packets that were corrupted on reception on the MAV)</field>
-          </message>
           <message id="35" name="RC_CHANNELS_RAW">
                <description>The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
                <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds</field>
@@ -986,6 +992,7 @@
                <field type="float" name="z">z position</field>
                <field type="float" name="yaw">Desired yaw angle</field>
           </message>
+          <!-- FIXME to be removed in favor of SYSTEM_STATUS extentions -->
           <message id="52" name="CONTROL_STATUS">
                <field type="uint8_t" name="position_fix">Position fix: 0: lost, 2: 2D position fix, 3: 3D position fix </field>
                <field type="uint8_t" name="vision_fix">Vision position fix: 0: lost, 1: 2D local position hold, 2: 2D global position fix, 3: 3D global position fix </field>
@@ -1084,10 +1091,6 @@
                <field type="float" name="vyErr">y velocity</field>
                <field type="float" name="vzErr">z velocity</field>
           </message>
-          <message id="65" name="SET_ALTITUDE">
-               <field type="uint8_t" name="target">The system setting the altitude</field>
-               <field type="uint32_t" name="mode">The new altitude in meters</field>
-          </message>
           <message id="66" name="REQUEST_DATA_STREAM">
                <field type="uint8_t" name="target_system">The target requested to send the message stream.</field>
                <field type="uint8_t" name="target_component">The target requested to send the message stream.</field>
@@ -1143,7 +1146,7 @@
                <field type="float" name="alt">Current altitude (MSL), in meters</field>
                <field type="float" name="climb">Current climb rate in meters/second</field>
           </message>
-          <message id="75" name="COMMAND">
+          <message id="75" name="COMMAND_SHORT">
                <description>Send a command with up to four parameters to the MAV</description>
                <field type="uint8_t" name="target_system">System which should execute the command</field>
                <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
@@ -1154,12 +1157,7 @@
                <field type="float" name="param3">Parameter 3, as defined by MAV_CMD enum.</field>
                <field type="float" name="param4">Parameter 4, as defined by MAV_CMD enum.</field>
           </message>
-          <message id="76" name="COMMAND_ACK">
-               <description>Report status of a command. Includes feedback wether the command was executed</description>
-               <field type="float" name="command">Current airspeed in m/s</field>
-               <field type="float" name="result">1: Action ACCEPTED and EXECUTED, 1: Action TEMPORARY REJECTED/DENIED, 2: Action PERMANENTLY DENIED, 3: Action UNKNOWN/UNSUPPORTED, 4: Requesting CONFIRMATION</field>
-          </message>
-          <message id="77" name="COMMAND_LONG">
+          <message id="76" name="COMMAND_LONG">
                <description>Send a command with up to four parameters to the MAV</description>
                <field type="uint8_t" name="target_system">System which should execute the command</field>
                <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
@@ -1173,6 +1171,12 @@
                <field type="float" name="param3">Parameter 6, as defined by MAV_CMD enum.</field>
                <field type="float" name="param4">Parameter 7, as defined by MAV_CMD enum.</field>
           </message>
+          <message id="77" name="COMMAND_ACK">
+               <description>Report status of a command. Includes feedback wether the command was executed</description>
+               <field type="float" name="command">Current airspeed in m/s</field>
+               <field type="float" name="result">1: Action ACCEPTED and EXECUTED, 1: Action TEMPORARY REJECTED/DENIED, 2: Action PERMANENTLY DENIED, 3: Action UNKNOWN/UNSUPPORTED, 4: Requesting CONFIRMATION</field>
+          </message>
+          
           <!--
           <message id="80" name="MISSION_ITEM">
           	   <description>One mission element following the MAV_CMD enumeration</description>
@@ -1306,5 +1310,4 @@
                <field type="float" name="value">DEBUG value</field>
           </message>
      </messages>
->>>>>>> 26a845613229fbb0cb8bee589c12f477fd30a42f
 </mavlink>

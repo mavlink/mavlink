@@ -1,10 +1,10 @@
 // MESSAGE HIL_CONTROLS PACKING
 
 #define MAVLINK_MSG_ID_HIL_CONTROLS 91
-#define MAVLINK_MSG_ID_HIL_CONTROLS_LEN 26
-#define MAVLINK_MSG_91_LEN 26
-#define MAVLINK_MSG_ID_HIL_CONTROLS_KEY 0xE8
-#define MAVLINK_MSG_91_KEY 0xE8
+#define MAVLINK_MSG_ID_HIL_CONTROLS_LEN 42
+#define MAVLINK_MSG_91_LEN 42
+#define MAVLINK_MSG_ID_HIL_CONTROLS_KEY 0x67
+#define MAVLINK_MSG_91_KEY 0x67
 
 typedef struct __mavlink_hil_controls_t 
 {
@@ -13,6 +13,10 @@ typedef struct __mavlink_hil_controls_t
 	float pitch_elevator;	///< Control output -1 .. 1
 	float yaw_rudder;	///< Control output -1 .. 1
 	float throttle;	///< Throttle 0 .. 1
+	float aux1;	///< Aux 1, -1 .. 1
+	float aux2;	///< Aux 2, -1 .. 1
+	float aux3;	///< Aux 3, -1 .. 1
+	float aux4;	///< Aux 4, -1 .. 1
 	uint8_t mode;	///< System mode (MAV_MODE)
 	uint8_t nav_mode;	///< Navigation mode (MAV_NAV_MODE)
 
@@ -29,11 +33,15 @@ typedef struct __mavlink_hil_controls_t
  * @param pitch_elevator Control output -1 .. 1
  * @param yaw_rudder Control output -1 .. 1
  * @param throttle Throttle 0 .. 1
+ * @param aux1 Aux 1, -1 .. 1
+ * @param aux2 Aux 2, -1 .. 1
+ * @param aux3 Aux 3, -1 .. 1
+ * @param aux4 Aux 4, -1 .. 1
  * @param mode System mode (MAV_MODE)
  * @param nav_mode Navigation mode (MAV_NAV_MODE)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_hil_controls_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t time_us, float roll_ailerons, float pitch_elevator, float yaw_rudder, float throttle, uint8_t mode, uint8_t nav_mode)
+static inline uint16_t mavlink_msg_hil_controls_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint64_t time_us, float roll_ailerons, float pitch_elevator, float yaw_rudder, float throttle, float aux1, float aux2, float aux3, float aux4, uint8_t mode, uint8_t nav_mode)
 {
 	mavlink_hil_controls_t *p = (mavlink_hil_controls_t *)&msg->payload[0];
 	msg->msgid = MAVLINK_MSG_ID_HIL_CONTROLS;
@@ -43,6 +51,10 @@ static inline uint16_t mavlink_msg_hil_controls_pack(uint8_t system_id, uint8_t 
 	p->pitch_elevator = pitch_elevator;	// float:Control output -1 .. 1
 	p->yaw_rudder = yaw_rudder;	// float:Control output -1 .. 1
 	p->throttle = throttle;	// float:Throttle 0 .. 1
+	p->aux1 = aux1;	// float:Aux 1, -1 .. 1
+	p->aux2 = aux2;	// float:Aux 2, -1 .. 1
+	p->aux3 = aux3;	// float:Aux 3, -1 .. 1
+	p->aux4 = aux4;	// float:Aux 4, -1 .. 1
 	p->mode = mode;	// uint8_t:System mode (MAV_MODE)
 	p->nav_mode = nav_mode;	// uint8_t:Navigation mode (MAV_NAV_MODE)
 
@@ -60,11 +72,15 @@ static inline uint16_t mavlink_msg_hil_controls_pack(uint8_t system_id, uint8_t 
  * @param pitch_elevator Control output -1 .. 1
  * @param yaw_rudder Control output -1 .. 1
  * @param throttle Throttle 0 .. 1
+ * @param aux1 Aux 1, -1 .. 1
+ * @param aux2 Aux 2, -1 .. 1
+ * @param aux3 Aux 3, -1 .. 1
+ * @param aux4 Aux 4, -1 .. 1
  * @param mode System mode (MAV_MODE)
  * @param nav_mode Navigation mode (MAV_NAV_MODE)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_hil_controls_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint64_t time_us, float roll_ailerons, float pitch_elevator, float yaw_rudder, float throttle, uint8_t mode, uint8_t nav_mode)
+static inline uint16_t mavlink_msg_hil_controls_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint64_t time_us, float roll_ailerons, float pitch_elevator, float yaw_rudder, float throttle, float aux1, float aux2, float aux3, float aux4, uint8_t mode, uint8_t nav_mode)
 {
 	mavlink_hil_controls_t *p = (mavlink_hil_controls_t *)&msg->payload[0];
 	msg->msgid = MAVLINK_MSG_ID_HIL_CONTROLS;
@@ -74,6 +90,10 @@ static inline uint16_t mavlink_msg_hil_controls_pack_chan(uint8_t system_id, uin
 	p->pitch_elevator = pitch_elevator;	// float:Control output -1 .. 1
 	p->yaw_rudder = yaw_rudder;	// float:Control output -1 .. 1
 	p->throttle = throttle;	// float:Throttle 0 .. 1
+	p->aux1 = aux1;	// float:Aux 1, -1 .. 1
+	p->aux2 = aux2;	// float:Aux 2, -1 .. 1
+	p->aux3 = aux3;	// float:Aux 3, -1 .. 1
+	p->aux4 = aux4;	// float:Aux 4, -1 .. 1
 	p->mode = mode;	// uint8_t:System mode (MAV_MODE)
 	p->nav_mode = nav_mode;	// uint8_t:Navigation mode (MAV_NAV_MODE)
 
@@ -90,7 +110,7 @@ static inline uint16_t mavlink_msg_hil_controls_pack_chan(uint8_t system_id, uin
  */
 static inline uint16_t mavlink_msg_hil_controls_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_hil_controls_t* hil_controls)
 {
-	return mavlink_msg_hil_controls_pack(system_id, component_id, msg, hil_controls->time_us, hil_controls->roll_ailerons, hil_controls->pitch_elevator, hil_controls->yaw_rudder, hil_controls->throttle, hil_controls->mode, hil_controls->nav_mode);
+	return mavlink_msg_hil_controls_pack(system_id, component_id, msg, hil_controls->time_us, hil_controls->roll_ailerons, hil_controls->pitch_elevator, hil_controls->yaw_rudder, hil_controls->throttle, hil_controls->aux1, hil_controls->aux2, hil_controls->aux3, hil_controls->aux4, hil_controls->mode, hil_controls->nav_mode);
 }
 
 
@@ -104,10 +124,14 @@ static inline uint16_t mavlink_msg_hil_controls_encode(uint8_t system_id, uint8_
  * @param pitch_elevator Control output -1 .. 1
  * @param yaw_rudder Control output -1 .. 1
  * @param throttle Throttle 0 .. 1
+ * @param aux1 Aux 1, -1 .. 1
+ * @param aux2 Aux 2, -1 .. 1
+ * @param aux3 Aux 3, -1 .. 1
+ * @param aux4 Aux 4, -1 .. 1
  * @param mode System mode (MAV_MODE)
  * @param nav_mode Navigation mode (MAV_NAV_MODE)
  */
-static inline void mavlink_msg_hil_controls_send(mavlink_channel_t chan, uint64_t time_us, float roll_ailerons, float pitch_elevator, float yaw_rudder, float throttle, uint8_t mode, uint8_t nav_mode)
+static inline void mavlink_msg_hil_controls_send(mavlink_channel_t chan, uint64_t time_us, float roll_ailerons, float pitch_elevator, float yaw_rudder, float throttle, float aux1, float aux2, float aux3, float aux4, uint8_t mode, uint8_t nav_mode)
 {
 	mavlink_header_t hdr;
 	mavlink_hil_controls_t payload;
@@ -118,6 +142,10 @@ static inline void mavlink_msg_hil_controls_send(mavlink_channel_t chan, uint64_
 	payload.pitch_elevator = pitch_elevator;	// float:Control output -1 .. 1
 	payload.yaw_rudder = yaw_rudder;	// float:Control output -1 .. 1
 	payload.throttle = throttle;	// float:Throttle 0 .. 1
+	payload.aux1 = aux1;	// float:Aux 1, -1 .. 1
+	payload.aux2 = aux2;	// float:Aux 2, -1 .. 1
+	payload.aux3 = aux3;	// float:Aux 3, -1 .. 1
+	payload.aux4 = aux4;	// float:Aux 4, -1 .. 1
 	payload.mode = mode;	// uint8_t:System mode (MAV_MODE)
 	payload.nav_mode = nav_mode;	// uint8_t:Navigation mode (MAV_NAV_MODE)
 
@@ -134,7 +162,7 @@ static inline void mavlink_msg_hil_controls_send(mavlink_channel_t chan, uint64_
 	crc_init(&hdr.ck);
 	crc_calculate_mem((uint8_t *)&hdr.len, &hdr.ck, MAVLINK_CORE_HEADER_LEN);
 	crc_calculate_mem((uint8_t *)&payload, &hdr.ck, hdr.len );
-	crc_accumulate( 0xE8, &hdr.ck); /// include key in X25 checksum
+	crc_accumulate( 0x67, &hdr.ck); /// include key in X25 checksum
 	mavlink_send_mem(chan, (uint8_t *)&hdr.ck, MAVLINK_NUM_CHECKSUM_BYTES);
 	MAVLINK_BUFFER_CHECK_END
 }
@@ -195,6 +223,50 @@ static inline float mavlink_msg_hil_controls_get_throttle(const mavlink_message_
 {
 	mavlink_hil_controls_t *p = (mavlink_hil_controls_t *)&msg->payload[0];
 	return (float)(p->throttle);
+}
+
+/**
+ * @brief Get field aux1 from hil_controls message
+ *
+ * @return Aux 1, -1 .. 1
+ */
+static inline float mavlink_msg_hil_controls_get_aux1(const mavlink_message_t* msg)
+{
+	mavlink_hil_controls_t *p = (mavlink_hil_controls_t *)&msg->payload[0];
+	return (float)(p->aux1);
+}
+
+/**
+ * @brief Get field aux2 from hil_controls message
+ *
+ * @return Aux 2, -1 .. 1
+ */
+static inline float mavlink_msg_hil_controls_get_aux2(const mavlink_message_t* msg)
+{
+	mavlink_hil_controls_t *p = (mavlink_hil_controls_t *)&msg->payload[0];
+	return (float)(p->aux2);
+}
+
+/**
+ * @brief Get field aux3 from hil_controls message
+ *
+ * @return Aux 3, -1 .. 1
+ */
+static inline float mavlink_msg_hil_controls_get_aux3(const mavlink_message_t* msg)
+{
+	mavlink_hil_controls_t *p = (mavlink_hil_controls_t *)&msg->payload[0];
+	return (float)(p->aux3);
+}
+
+/**
+ * @brief Get field aux4 from hil_controls message
+ *
+ * @return Aux 4, -1 .. 1
+ */
+static inline float mavlink_msg_hil_controls_get_aux4(const mavlink_message_t* msg)
+{
+	mavlink_hil_controls_t *p = (mavlink_hil_controls_t *)&msg->payload[0];
+	return (float)(p->aux4);
 }
 
 /**
