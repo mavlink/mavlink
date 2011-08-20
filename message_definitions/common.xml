@@ -997,16 +997,12 @@
                <field type="float" name="z">z position</field>
                <field type="float" name="yaw">Desired yaw angle</field>
           </message>
-          <!-- FIXME to be removed in favor of SYSTEM_STATUS extentions -->
-          <message id="52" name="CONTROL_STATUS">
-               <field type="uint8_t" name="position_fix">Position fix: 0: lost, 2: 2D position fix, 3: 3D position fix </field>
-               <field type="uint8_t" name="vision_fix">Vision position fix: 0: lost, 1: 2D local position hold, 2: 2D global position fix, 3: 3D global position fix </field>
-               <field type="uint8_t" name="gps_fix">GPS position fix: 0: no reception, 1: Minimum 1 satellite, but no position fix, 2: 2D position fix, 3: 3D position fix </field>
-               <field type="uint8_t" name="ahrs_health">Attitude estimation health: 0: poor, 255: excellent</field>
-               <field type="uint8_t" name="control_att">0: Attitude control disabled, 1: enabled</field>
-               <field type="uint8_t" name="control_pos_xy">0: X, Y position control disabled, 1: enabled</field>
-               <field type="uint8_t" name="control_pos_z">0: Z position control disabled, 1: enabled</field>
-               <field type="uint8_t" name="control_pos_yaw">0: Yaw angle control disabled, 1: enabled</field>
+          <message id="52" name="GLOBAL_POSITION_SETPOINT_INT">
+               <description>Transmit the current local setpoint of the controller to other MAVs (collision avoidance) and to the GCS.</description>
+               <field type="int32_t" name="latitude">WGS84 Latitude position in degrees * 1E7</field>
+               <field type="int32_t" name="longitude">WGS84 Longitude position in degrees * 1E7</field>
+               <field type="int32_t" name="altitude">WGS84 Altitude in meters * 1000 (positive for up)</field>
+               <field type="int16_t" name="yaw">Desired yaw angle in degrees * 100</field>
           </message>
           <message id="53" name="SAFETY_SET_ALLOWED_AREA">
                <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/waypoints to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
