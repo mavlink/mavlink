@@ -79,11 +79,11 @@
                <entry value="0" name="MAV_FLIGHT_MODE_PREFLIGHT">
                     <description>System is currently on ground.</description>
                </entry>
-               <entry name="MAV_FLIGHT_MODE_AUTO_MANUAL">
+               <entry name="MAV_FLIGHT_MODE_MANUAL">
                     <description>No interaction of the autopilot with the actuator outputs, pure manual flight.</description>
                </entry>
-               <entry name="MAV_FLIGHT_MODE_AUTO_LIFTOFF">
-                    <description>System is during liftoff, not in normal navigation mode yet.</description>
+               <entry name="MAV_FLIGHT_MODE_AUTO_TAKEOFF">
+                    <description>System is during takeoff, not in normal navigation mode yet. Once the plane is moving faster than a few m/s it will lock onto a heading and hold that heading until the desired altitude is reached. Throttle is limited by the RC throttle setting.</description>
                </entry>
                <entry name="MAV_FLIGHT_MODE_AUTO_HOLD">
                     <description>System is holding its current position and disabled the mission management. Loitering in mission mode is NOT the hold type, but still mission mode.</description>
@@ -95,10 +95,10 @@
                     <description>System is flying at a defined course and speed. If the vector is not defined by an autonomous approach but constantly by a user, please use MAV_FLIGHT_MODE_FBW_CURSOR_CONTROL</description>
                </entry>
                <entry name="MAV_FLIGHT_MODE_AUTO_RETURNING">
-                    <description>System is return straight to home position.</description>
+                    <description>System is returning straight to home position. Once it reaches there it will hover or loiter at the autopilot's default holding settings.</description>
                </entry>
                <entry name="MAV_FLIGHT_MODE_AUTO_LANDING">
-                    <description>System is landing.</description>
+                    <description>System is landing. Throttle is controlled by the autopilot. After getting closer than 30 meters, the course will lock to the current heading. Flare, throttle, flaps, gear, and other events can be scripted based on distance to landing point.</description>
                </entry>
                <entry name="MAV_FLIGHT_MODE_AUTO_LOST">
                     <description>System lost its position input and is in attitude / flight stabilization only.</description>
