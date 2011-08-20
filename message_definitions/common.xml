@@ -142,57 +142,6 @@
                     <description>System just initialized its power-down sequence, will shut down now.</description>
                </entry>
           </enum>
-          <enum name="MAV_DATA_STREAM">
-               <description>Data stream IDs. A data stream is not a fixed set of messages, but rather a
-     recommendation to the autopilot software. Individual autopilots may or may not obey
-     the recommended messages.
-     </description>
-               <entry value="0" name="MAV_DATA_STREAM_ALL">
-                    <description>Enable all data streams</description>
-               </entry>
-               <entry value="1" name="MAV_DATA_STREAM_RAW_SENSORS">
-                    <description>Enable IMU_RAW, GPS_RAW, GPS_STATUS packets.</description>
-               </entry>
-               <entry value="2" name="MAV_DATA_STREAM_EXTENDED_STATUS">
-                    <description>Enable GPS_STATUS, CONTROL_STATUS, AUX_STATUS</description>
-               </entry>
-               <entry value="3" name="MAV_DATA_STREAM_RC_CHANNELS">
-                    <description>Enable RC_CHANNELS_SCALED, RC_CHANNELS_RAW, SERVO_OUTPUT_RAW</description>
-               </entry>
-               <entry value="4" name="MAV_DATA_STREAM_RAW_CONTROLLER">
-                    <description>Enable ATTITUDE_CONTROLLER_OUTPUT, POSITION_CONTROLLER_OUTPUT, NAV_CONTROLLER_OUTPUT.</description>
-               </entry>
-               <entry value="6" name="MAV_DATA_STREAM_POSITION">
-                    <description>Enable LOCAL_POSITION, GLOBAL_POSITION/GLOBAL_POSITION_INT messages.</description>
-               </entry>
-               <entry value="10" name="MAV_DATA_STREAM_EXTRA1">
-                    <description>Dependent on the autopilot</description>
-               </entry>
-               <entry value="11" name="MAV_DATA_STREAM_EXTRA2">
-                    <description>Dependent on the autopilot</description>
-               </entry>
-               <entry value="12" name="MAV_DATA_STREAM_EXTRA3">
-                    <description>Dependent on the autopilot</description>
-               </entry>
-          </enum>
-          <enum name="MAV_ROI">
-               <description> The ROI (region of interest) for the vehicle. This can be
-      be used by the vehicle for camera/vehicle attitude alignment (see
-	  MAV_CMD_NAV_ROI).
-     </description>
-               <entry value="0" name="MAV_ROI_WPNEXT">
-                    <description>Point toward next waypoint.</description>
-               </entry>
-               <entry value="1" name="MAV_ROI_WPINDEX">
-                    <description>Point toward given waypoint.</description>
-               </entry>
-               <entry value="2" name="MAV_ROI_LOCATION">
-                    <description>Point toward fixed location.</description>
-               </entry>
-               <entry value="3" name="MAV_ROI_TARGET">
-                    <description>Point toward of given id.</description>
-               </entry>
-          </enum>
           <enum name="MAV_TYPE">
                <entry value="0" name="MAV_TYPE_GENERIC">
                     <description>Generic micro air vehicle.</description>
@@ -644,6 +593,60 @@
                     <param index="7">Empty</param>
                </entry>
           </enum>
+          <enum name="MAV_DATA_STREAM">
+               <description>Data stream IDs. A data stream is not a fixed set of messages, but rather a
+     recommendation to the autopilot software. Individual autopilots may or may not obey
+     the recommended messages.
+     </description>
+               <entry value="0" name="MAV_DATA_STREAM_ALL">
+                    <description>Enable all data streams</description>
+               </entry>
+               <entry value="1" name="MAV_DATA_STREAM_RAW_SENSORS">
+                    <description>Enable IMU_RAW, GPS_RAW, GPS_STATUS packets.</description>
+               </entry>
+               <entry value="2" name="MAV_DATA_STREAM_EXTENDED_STATUS">
+                    <description>Enable GPS_STATUS, CONTROL_STATUS, AUX_STATUS</description>
+               </entry>
+               <entry value="3" name="MAV_DATA_STREAM_RC_CHANNELS">
+                    <description>Enable RC_CHANNELS_SCALED, RC_CHANNELS_RAW, SERVO_OUTPUT_RAW</description>
+               </entry>
+               <entry value="4" name="MAV_DATA_STREAM_RAW_CONTROLLER">
+                    <description>Enable ATTITUDE_CONTROLLER_OUTPUT, POSITION_CONTROLLER_OUTPUT, NAV_CONTROLLER_OUTPUT.</description>
+               </entry>
+               <entry value="6" name="MAV_DATA_STREAM_POSITION">
+                    <description>Enable LOCAL_POSITION, GLOBAL_POSITION/GLOBAL_POSITION_INT messages.</description>
+               </entry>
+               <entry value="10" name="MAV_DATA_STREAM_EXTRA1">
+                    <description>Dependent on the autopilot</description>
+               </entry>
+               <entry value="11" name="MAV_DATA_STREAM_EXTRA2">
+                    <description>Dependent on the autopilot</description>
+               </entry>
+               <entry value="12" name="MAV_DATA_STREAM_EXTRA3">
+                    <description>Dependent on the autopilot</description>
+               </entry>
+          </enum>
+          <enum name="MAV_ROI">
+               <description> The ROI (region of interest) for the vehicle. This can be
+                be used by the vehicle for camera/vehicle attitude alignment (see
+                MAV_CMD_NAV_ROI).
+            </description>
+               <entry value="0" name="MAV_ROI_NONE">
+                    <description>No region of interest.</description>
+               </entry>
+               <entry value="1" name="MAV_ROI_WPNEXT">
+                    <description>Point toward next waypoint.</description>
+               </entry>
+               <entry value="2" name="MAV_ROI_WPINDEX">
+                    <description>Point toward given waypoint.</description>
+               </entry>
+               <entry value="3" name="MAV_ROI_LOCATION">
+                    <description>Point toward fixed location.</description>
+               </entry>
+               <entry value="4" name="MAV_ROI_TARGET">
+                    <description>Point toward of given id.</description>
+               </entry>
+          </enum>
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -725,6 +728,7 @@
                <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout.</description>
                <field type="char[16]" name="param_id">Onboard parameter id</field>
                <field type="float" name="param_value">Onboard parameter value</field>
+               <field type="uint8_t" name="param_type">Onboard parameter type: 0: float, 1: uint8_t, 2: int8_t, 3: uint16_t, 4: int16_t, 5: uint32_t, 6: int32_t</field>
                <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
                <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
           </message>
@@ -734,6 +738,7 @@
                <field type="uint8_t" name="target_component">Component ID</field>
                <field type="char[16]" name="param_id">Onboard parameter id</field>
                <field type="float" name="param_value">Onboard parameter value</field>
+               <field type="uint8_t" name="param_type">Onboard parameter type: 0: float, 1: uint8_t, 2: int8_t, 3: uint16_t, 4: int16_t, 5: uint32_t, 6: int32_t</field>
           </message>
           <message id="25" name="GPS_RAW_INT">
                <description>The global position, as returned by the Global Positioning System (GPS). This is
@@ -1086,9 +1091,14 @@
           <message id="66" name="REQUEST_DATA_STREAM">
                <field type="uint8_t" name="target_system">The target requested to send the message stream.</field>
                <field type="uint8_t" name="target_component">The target requested to send the message stream.</field>
-               <field type="uint8_t" name="req_stream_id">The ID of the requested message type</field>
+               <field type="uint8_t" name="req_stream_id">The ID of the requested data stream</field>
                <field type="uint16_t" name="req_message_rate">The requested interval between two messages of this type</field>
                <field type="uint8_t" name="start_stop">1 to start sending, 0 to stop sending.</field>
+          </message>
+          <message id="67" name="DATA_STREAM">
+               <field type="uint8_t" name="stream_id">The ID of the requested data stream</field>
+               <field type="uint16_t" name="message_rate">The requested interval between two messages of this type</field>
+               <field type="uint8_t" name="on_off">1 stream is enabled, 0 stream is stopped.</field>
           </message>
           <message id="69" name="MANUAL_CONTROL">
                <field type="uint8_t" name="target">The system to be controlled</field>
@@ -1148,6 +1158,20 @@
                <description>Report status of a command. Includes feedback wether the command was executed</description>
                <field type="float" name="command">Current airspeed in m/s</field>
                <field type="float" name="result">1: Action ACCEPTED and EXECUTED, 1: Action TEMPORARY REJECTED/DENIED, 2: Action PERMANENTLY DENIED, 3: Action UNKNOWN/UNSUPPORTED, 4: Requesting CONFIRMATION</field>
+          </message>
+          <message id="77" name="COMMAND_LONG">
+               <description>Send a command with up to four parameters to the MAV</description>
+               <field type="uint8_t" name="target_system">System which should execute the command</field>
+               <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+               <field type="uint8_t" name="command">Command ID, as defined by MAV_CMD enum.</field>
+               <field type="uint8_t" name="confirmation">0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)</field>
+               <field type="float" name="param1">Parameter 1, as defined by MAV_CMD enum.</field>
+               <field type="float" name="param2">Parameter 2, as defined by MAV_CMD enum.</field>
+               <field type="float" name="param3">Parameter 3, as defined by MAV_CMD enum.</field>
+               <field type="float" name="param4">Parameter 4, as defined by MAV_CMD enum.</field>
+               <field type="float" name="param2">Parameter 5, as defined by MAV_CMD enum.</field>
+               <field type="float" name="param3">Parameter 6, as defined by MAV_CMD enum.</field>
+               <field type="float" name="param4">Parameter 7, as defined by MAV_CMD enum.</field>
           </message>
           <!--
           <message id="80" name="MISSION_ITEM">
@@ -1213,6 +1237,10 @@
             <field name="pitch_elevator" type="float">Control output -1 .. 1</field>
             <field name="yaw_rudder" type="float">Control output -1 .. 1</field>
             <field name="throttle" type="float">Throttle 0 .. 1</field>
+            <field name="aux1" type="float">Aux 1, -1 .. 1</field>
+            <field name="aux2" type="float">Aux 2, -1 .. 1</field>
+            <field name="aux3" type="float">Aux 3, -1 .. 1</field>
+            <field name="aux4" type="float">Aux 4, -1 .. 1</field>
             <field name="mode" type="uint8_t">System mode (MAV_MODE)</field>
             <field name="nav_mode" type="uint8_t">Navigation mode (MAV_NAV_MODE)</field>
         </message>
@@ -1232,6 +1260,15 @@
                <field type="uint16_t" name="chan11_raw">RC channel 11 value, in microseconds</field>
                <field type="uint16_t" name="chan12_raw">RC channel 12 value, in microseconds</field>
                <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 255: 100%</field>
+          </message>
+          <message id="100" name="OPTICAL_FLOW">
+               <description>Optical flow from a flow sensor (e.g. optical mouse sensor)</description>
+               <field type="uint64_t" name="time">Timestamp (UNIX)</field>
+               <field type="uint8_t" name="sensor_id">Sensor ID</field>
+               <field type="int16_t" name="flow_x">Flow in pixels in x-sensor direction</field>
+               <field type="int16_t" name="flow_y">Flow in pixels in y-sensor direction</field>
+               <field type="uint8_t" name="quality">Optical flow quality / confidence. 0: bad, 255: maximum quality</field>
+               <field type="float" name="ground_distance">Ground distance in meters</field>
           </message>
           <!-- MESSAGE IDs 150 - 240: Space for custom messages in individual projectname_messages.xml files -->
           <message id="250" name="MEMORY_VECT">
