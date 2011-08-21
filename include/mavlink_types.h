@@ -72,6 +72,15 @@ enum MAV_ACTION
 #define MAVLINK_MAX_PACKET_LEN (MAVLINK_MAX_PAYLOAD_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES) ///< Maximum packet length
 //#define MAVLINK_MAX_DATA_LEN MAVLINK_MAX_PACKET_LEN - MAVLINK_STX_LEN
 
+typedef struct param_union {
+	struct {
+    float param_float;
+    int32_t param_int32;
+    uint32_t param_uint32;
+	};
+	uint8_t type;
+} mavlink_param_union_t;
+
 typedef struct __mavlink_system
 {
     uint8_t sysid;   ///< Used by the MAVLink message_xx_send() convenience function
