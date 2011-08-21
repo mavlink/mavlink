@@ -173,10 +173,10 @@
                <entry value="4" name="MAV_TYPE_HELICOPTER">
                     <description>Normal helicopter with tail rotor.</description>
                </entry>
-               <entry value="5" name="MAV_TYPE_GROUND">
+               <entry value="5" name="MAV_TYPE_ANTENNA_TRACKER">
                     <description>Ground installation</description>
                </entry>
-               <entry value="6" name="MAV_TYPE_OCU">
+               <entry value="6" name="MAV_TYPE_GCS">
                     <description>Operator control unit / ground control station</description>
                </entry>
                <entry value="7" name="MAV_TYPE_AIRSHIP">
@@ -188,13 +188,13 @@
                <entry value="9" name="MAV_TYPE_ROCKET">
                     <description>Rocket</description>
                </entry>
-               <entry value="10" name="MAV_TYPE_UGV_GROUND_ROVER">
+               <entry value="10" name="MAV_TYPE_GROUND_ROVER">
                     <description>Ground rover</description>
                </entry>
-               <entry value="11" name="MAV_TYPE_UGV_SURFACE_SHIP">
+               <entry value="11" name="MAV_TYPE_SURFACE_BOAT">
                     <description>Surface vessel, boat, ship</description>
                </entry>
-               <entry value="12" name="MAV_TYPE_UGV_SUBMARINE">
+               <entry value="12" name="MAV_TYPE_SUBMARINE">
                     <description>Submarine</description>
                </entry>
                <entry value="13" name="MAV_TYPE_HEXAROTOR">
@@ -202,6 +202,12 @@
                </entry>
                <entry value="14" name="MAV_TYPE_OCTOROTOR">
                     <description>Octorotor</description>
+               </entry>
+               <entry value="15" name="MAV_TYPE_TRICOPTER">
+                    <description>Octorotor</description>
+               </entry>
+               <entry value="16" name="MAV_TYPE_FLAPPING_WING">
+                    <description>Flapping wing</description>
                </entry>
           </enum>
           <enum name="MAV_COMPONENT">
@@ -668,9 +674,9 @@
                <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
                <field type="uint8_t" name="type">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
                <field type="uint8_t" name="autopilot">Autopilot type / class. defined in MAV_CLASS ENUM</field>
-               <field type="uint8_t" name="mode">System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h</field>
-               <field type="uint8_t" name="nav_mode">Navigation mode, see MAV_NAV_MODE ENUM</field>
-               <field type="uint8_t" name="status">System status flag, see MAV_STATUS ENUM</field>
+               <field type="uint8_t" name="system_mode">System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h</field>
+               <field type="uint8_t" name="flight_mode">Navigation mode, see MAV_FLIGHT_MODE ENUM</field>
+               <field type="uint8_t" name="system_status">System status flag, see MAV_STATUS ENUM</field>
                <field type="uint8_t" name="safety_status">System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation</field>
                <field type="uint8_t" name="link_status">Bitmask showing which links are ok / enabled. 0 for disabled/non functional, 1: enabled Indices: 0: RC, 1: UART1, 2: UART2, 3: UART3, 4: UART4, 5: UART5, 6: I2C, 7: CAN</field>
                <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version</field>
@@ -1177,9 +1183,9 @@
                <field type="float" name="param2">Parameter 2, as defined by MAV_CMD enum.</field>
                <field type="float" name="param3">Parameter 3, as defined by MAV_CMD enum.</field>
                <field type="float" name="param4">Parameter 4, as defined by MAV_CMD enum.</field>
-               <field type="float" name="param2">Parameter 5, as defined by MAV_CMD enum.</field>
-               <field type="float" name="param3">Parameter 6, as defined by MAV_CMD enum.</field>
-               <field type="float" name="param4">Parameter 7, as defined by MAV_CMD enum.</field>
+               <field type="float" name="param5">Parameter 5, as defined by MAV_CMD enum.</field>
+               <field type="float" name="param6">Parameter 6, as defined by MAV_CMD enum.</field>
+               <field type="float" name="param7">Parameter 7, as defined by MAV_CMD enum.</field>
           </message>
           <message id="77" name="COMMAND_ACK">
                <description>Report status of a command. Includes feedback wether the command was executed</description>

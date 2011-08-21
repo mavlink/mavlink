@@ -3,16 +3,16 @@
 #define MAVLINK_MSG_ID_HEARTBEAT 0
 #define MAVLINK_MSG_ID_HEARTBEAT_LEN 8
 #define MAVLINK_MSG_0_LEN 8
-#define MAVLINK_MSG_ID_HEARTBEAT_KEY 0xB3
-#define MAVLINK_MSG_0_KEY 0xB3
+#define MAVLINK_MSG_ID_HEARTBEAT_KEY 0xA
+#define MAVLINK_MSG_0_KEY 0xA
 
 typedef struct __mavlink_heartbeat_t 
 {
 	uint8_t type;	///< Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
 	uint8_t autopilot;	///< Autopilot type / class. defined in MAV_CLASS ENUM
-	uint8_t mode;	///< System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
-	uint8_t nav_mode;	///< Navigation mode, see MAV_NAV_MODE ENUM
-	uint8_t status;	///< System status flag, see MAV_STATUS ENUM
+	uint8_t system_mode;	///< System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+	uint8_t flight_mode;	///< Navigation mode, see MAV_FLIGHT_MODE ENUM
+	uint8_t system_status;	///< System status flag, see MAV_STATUS ENUM
 	uint8_t safety_status;	///< System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation
 	uint8_t link_status;	///< Bitmask showing which links are ok / enabled. 0 for disabled/non functional, 1: enabled Indices: 0: RC, 1: UART1, 2: UART2, 3: UART3, 4: UART4, 5: UART5, 6: I2C, 7: CAN
 	uint8_t mavlink_version;	///< MAVLink version
@@ -27,23 +27,23 @@ typedef struct __mavlink_heartbeat_t
  *
  * @param type Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
  * @param autopilot Autopilot type / class. defined in MAV_CLASS ENUM
- * @param mode System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
- * @param nav_mode Navigation mode, see MAV_NAV_MODE ENUM
- * @param status System status flag, see MAV_STATUS ENUM
+ * @param system_mode System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+ * @param flight_mode Navigation mode, see MAV_FLIGHT_MODE ENUM
+ * @param system_status System status flag, see MAV_STATUS ENUM
  * @param safety_status System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation
  * @param link_status Bitmask showing which links are ok / enabled. 0 for disabled/non functional, 1: enabled Indices: 0: RC, 1: UART1, 2: UART2, 3: UART3, 4: UART4, 5: UART5, 6: I2C, 7: CAN
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_heartbeat_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t type, uint8_t autopilot, uint8_t mode, uint8_t nav_mode, uint8_t status, uint8_t safety_status, uint8_t link_status)
+static inline uint16_t mavlink_msg_heartbeat_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, uint8_t type, uint8_t autopilot, uint8_t system_mode, uint8_t flight_mode, uint8_t system_status, uint8_t safety_status, uint8_t link_status)
 {
 	mavlink_heartbeat_t *p = (mavlink_heartbeat_t *)&msg->payload[0];
 	msg->msgid = MAVLINK_MSG_ID_HEARTBEAT;
 
 	p->type = type;	// uint8_t:Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
 	p->autopilot = autopilot;	// uint8_t:Autopilot type / class. defined in MAV_CLASS ENUM
-	p->mode = mode;	// uint8_t:System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
-	p->nav_mode = nav_mode;	// uint8_t:Navigation mode, see MAV_NAV_MODE ENUM
-	p->status = status;	// uint8_t:System status flag, see MAV_STATUS ENUM
+	p->system_mode = system_mode;	// uint8_t:System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+	p->flight_mode = flight_mode;	// uint8_t:Navigation mode, see MAV_FLIGHT_MODE ENUM
+	p->system_status = system_status;	// uint8_t:System status flag, see MAV_STATUS ENUM
 	p->safety_status = safety_status;	// uint8_t:System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation
 	p->link_status = link_status;	// uint8_t:Bitmask showing which links are ok / enabled. 0 for disabled/non functional, 1: enabled Indices: 0: RC, 1: UART1, 2: UART2, 3: UART3, 4: UART4, 5: UART5, 6: I2C, 7: CAN
 
@@ -59,23 +59,23 @@ static inline uint16_t mavlink_msg_heartbeat_pack(uint8_t system_id, uint8_t com
  * @param msg The MAVLink message to compress the data into
  * @param type Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
  * @param autopilot Autopilot type / class. defined in MAV_CLASS ENUM
- * @param mode System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
- * @param nav_mode Navigation mode, see MAV_NAV_MODE ENUM
- * @param status System status flag, see MAV_STATUS ENUM
+ * @param system_mode System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+ * @param flight_mode Navigation mode, see MAV_FLIGHT_MODE ENUM
+ * @param system_status System status flag, see MAV_STATUS ENUM
  * @param safety_status System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation
  * @param link_status Bitmask showing which links are ok / enabled. 0 for disabled/non functional, 1: enabled Indices: 0: RC, 1: UART1, 2: UART2, 3: UART3, 4: UART4, 5: UART5, 6: I2C, 7: CAN
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-static inline uint16_t mavlink_msg_heartbeat_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint8_t type, uint8_t autopilot, uint8_t mode, uint8_t nav_mode, uint8_t status, uint8_t safety_status, uint8_t link_status)
+static inline uint16_t mavlink_msg_heartbeat_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, uint8_t type, uint8_t autopilot, uint8_t system_mode, uint8_t flight_mode, uint8_t system_status, uint8_t safety_status, uint8_t link_status)
 {
 	mavlink_heartbeat_t *p = (mavlink_heartbeat_t *)&msg->payload[0];
 	msg->msgid = MAVLINK_MSG_ID_HEARTBEAT;
 
 	p->type = type;	// uint8_t:Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
 	p->autopilot = autopilot;	// uint8_t:Autopilot type / class. defined in MAV_CLASS ENUM
-	p->mode = mode;	// uint8_t:System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
-	p->nav_mode = nav_mode;	// uint8_t:Navigation mode, see MAV_NAV_MODE ENUM
-	p->status = status;	// uint8_t:System status flag, see MAV_STATUS ENUM
+	p->system_mode = system_mode;	// uint8_t:System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+	p->flight_mode = flight_mode;	// uint8_t:Navigation mode, see MAV_FLIGHT_MODE ENUM
+	p->system_status = system_status;	// uint8_t:System status flag, see MAV_STATUS ENUM
 	p->safety_status = safety_status;	// uint8_t:System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation
 	p->link_status = link_status;	// uint8_t:Bitmask showing which links are ok / enabled. 0 for disabled/non functional, 1: enabled Indices: 0: RC, 1: UART1, 2: UART2, 3: UART3, 4: UART4, 5: UART5, 6: I2C, 7: CAN
 
@@ -93,7 +93,7 @@ static inline uint16_t mavlink_msg_heartbeat_pack_chan(uint8_t system_id, uint8_
  */
 static inline uint16_t mavlink_msg_heartbeat_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_heartbeat_t* heartbeat)
 {
-	return mavlink_msg_heartbeat_pack(system_id, component_id, msg, heartbeat->type, heartbeat->autopilot, heartbeat->mode, heartbeat->nav_mode, heartbeat->status, heartbeat->safety_status, heartbeat->link_status);
+	return mavlink_msg_heartbeat_pack(system_id, component_id, msg, heartbeat->type, heartbeat->autopilot, heartbeat->system_mode, heartbeat->flight_mode, heartbeat->system_status, heartbeat->safety_status, heartbeat->link_status);
 }
 
 
@@ -104,13 +104,13 @@ static inline uint16_t mavlink_msg_heartbeat_encode(uint8_t system_id, uint8_t c
  *
  * @param type Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
  * @param autopilot Autopilot type / class. defined in MAV_CLASS ENUM
- * @param mode System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
- * @param nav_mode Navigation mode, see MAV_NAV_MODE ENUM
- * @param status System status flag, see MAV_STATUS ENUM
+ * @param system_mode System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+ * @param flight_mode Navigation mode, see MAV_FLIGHT_MODE ENUM
+ * @param system_status System status flag, see MAV_STATUS ENUM
  * @param safety_status System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation
  * @param link_status Bitmask showing which links are ok / enabled. 0 for disabled/non functional, 1: enabled Indices: 0: RC, 1: UART1, 2: UART2, 3: UART3, 4: UART4, 5: UART5, 6: I2C, 7: CAN
  */
-static inline void mavlink_msg_heartbeat_send(mavlink_channel_t chan, uint8_t type, uint8_t autopilot, uint8_t mode, uint8_t nav_mode, uint8_t status, uint8_t safety_status, uint8_t link_status)
+static inline void mavlink_msg_heartbeat_send(mavlink_channel_t chan, uint8_t type, uint8_t autopilot, uint8_t system_mode, uint8_t flight_mode, uint8_t system_status, uint8_t safety_status, uint8_t link_status)
 {
 	mavlink_header_t hdr;
 	mavlink_heartbeat_t payload;
@@ -118,9 +118,9 @@ static inline void mavlink_msg_heartbeat_send(mavlink_channel_t chan, uint8_t ty
 	MAVLINK_BUFFER_CHECK_START( chan, MAVLINK_MSG_ID_HEARTBEAT_LEN )
 	payload.type = type;	// uint8_t:Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
 	payload.autopilot = autopilot;	// uint8_t:Autopilot type / class. defined in MAV_CLASS ENUM
-	payload.mode = mode;	// uint8_t:System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
-	payload.nav_mode = nav_mode;	// uint8_t:Navigation mode, see MAV_NAV_MODE ENUM
-	payload.status = status;	// uint8_t:System status flag, see MAV_STATUS ENUM
+	payload.system_mode = system_mode;	// uint8_t:System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
+	payload.flight_mode = flight_mode;	// uint8_t:Navigation mode, see MAV_FLIGHT_MODE ENUM
+	payload.system_status = system_status;	// uint8_t:System status flag, see MAV_STATUS ENUM
 	payload.safety_status = safety_status;	// uint8_t:System safety lock state, see MAV_SAFETY enum. Also indicates HIL operation
 	payload.link_status = link_status;	// uint8_t:Bitmask showing which links are ok / enabled. 0 for disabled/non functional, 1: enabled Indices: 0: RC, 1: UART1, 2: UART2, 3: UART3, 4: UART4, 5: UART5, 6: I2C, 7: CAN
 
@@ -138,7 +138,7 @@ static inline void mavlink_msg_heartbeat_send(mavlink_channel_t chan, uint8_t ty
 	crc_init(&hdr.ck);
 	crc_calculate_mem((uint8_t *)&hdr.len, &hdr.ck, MAVLINK_CORE_HEADER_LEN);
 	crc_calculate_mem((uint8_t *)&payload, &hdr.ck, hdr.len );
-	crc_accumulate( 0xB3, &hdr.ck); /// include key in X25 checksum
+	crc_accumulate( 0xA, &hdr.ck); /// include key in X25 checksum
 	mavlink_send_mem(chan, (uint8_t *)&hdr.ck, MAVLINK_NUM_CHECKSUM_BYTES);
 	MAVLINK_BUFFER_CHECK_END
 }
@@ -169,36 +169,36 @@ static inline uint8_t mavlink_msg_heartbeat_get_autopilot(const mavlink_message_
 }
 
 /**
- * @brief Get field mode from heartbeat message
+ * @brief Get field system_mode from heartbeat message
  *
  * @return System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h
  */
-static inline uint8_t mavlink_msg_heartbeat_get_mode(const mavlink_message_t* msg)
+static inline uint8_t mavlink_msg_heartbeat_get_system_mode(const mavlink_message_t* msg)
 {
 	mavlink_heartbeat_t *p = (mavlink_heartbeat_t *)&msg->payload[0];
-	return (uint8_t)(p->mode);
+	return (uint8_t)(p->system_mode);
 }
 
 /**
- * @brief Get field nav_mode from heartbeat message
+ * @brief Get field flight_mode from heartbeat message
  *
- * @return Navigation mode, see MAV_NAV_MODE ENUM
+ * @return Navigation mode, see MAV_FLIGHT_MODE ENUM
  */
-static inline uint8_t mavlink_msg_heartbeat_get_nav_mode(const mavlink_message_t* msg)
+static inline uint8_t mavlink_msg_heartbeat_get_flight_mode(const mavlink_message_t* msg)
 {
 	mavlink_heartbeat_t *p = (mavlink_heartbeat_t *)&msg->payload[0];
-	return (uint8_t)(p->nav_mode);
+	return (uint8_t)(p->flight_mode);
 }
 
 /**
- * @brief Get field status from heartbeat message
+ * @brief Get field system_status from heartbeat message
  *
  * @return System status flag, see MAV_STATUS ENUM
  */
-static inline uint8_t mavlink_msg_heartbeat_get_status(const mavlink_message_t* msg)
+static inline uint8_t mavlink_msg_heartbeat_get_system_status(const mavlink_message_t* msg)
 {
 	mavlink_heartbeat_t *p = (mavlink_heartbeat_t *)&msg->payload[0];
-	return (uint8_t)(p->status);
+	return (uint8_t)(p->system_status);
 }
 
 /**

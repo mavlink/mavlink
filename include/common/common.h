@@ -1,7 +1,7 @@
 /** @file
  *	@brief MAVLink comm protocol.
  *	@see http://qgroundcontrol.org/mavlink/
- *	 Generated on Saturday, August 20 2011, 11:19 UTC
+ *	 Generated on Sunday, August 21 2011, 10:38 UTC
  */
 #ifndef COMMON_H
 #define COMMON_H
@@ -58,14 +58,12 @@ enum MAV_SAFETY
 /** @brief  */
 enum MAV_MODE
 {
-	MAV_MODE_PREFLIGHT=0, /* System is not ready to fly. */
-	MAV_MODE_FLY_BY_WIRE=1, /* System is allowed to be active, under assisted but manual (RC) control */
-	MAV_MODE_MANUAL=2, /* System is allowed to be active, under manual (RC) control */
+	MAV_MODE_PREFLIGHT=0, /* System is not ready to fly, booting, calibrating, etc. */
+	MAV_MODE_STABILIZE=1, /* System is allowed to be active, under assisted RC control. Level of stabilization depends on MAV_FLIGTH_MODE */
+	MAV_MODE_MANUAL=2, /* System is allowed to be active, under manual (RC) control, no stabilization */
 	MAV_MODE_GUIDED=3, /* System is allowed to be active, under autonomous control, manual setpoint */
-	MAV_MODE_AUTO=4, /* System is allowed to be active, under autonomous control and navigation */
-	MAV_MODE_TEST1=5, /* Generic test mode, for custom use */
-	MAV_MODE_TEST2=6, /* Generic test mode, for custom use */
-	MAV_MODE_TEST3=7, /* Generic test mode, for custom use */
+	MAV_MODE_AUTO=4, /* System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by waypoints) */
+	MAV_MODE_TEST=5, /* UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only. */
 	MAV_MODE_ENUM_END
 };
 
@@ -73,18 +71,23 @@ enum MAV_MODE
 enum MAV_FLIGHT_MODE
 {
 	MAV_FLIGHT_MODE_PREFLIGHT=0, /* System is currently on ground. */
-	MAV_FLIGHT_MODE_AUTO_LIFTOFF=1, /* System is during liftoff, not in normal navigation mode yet. */
-	MAV_FLIGHT_MODE_AUTO_HOLD=2, /* System is holding its current position and disabled the mission management. Loitering in mission mode is NOT the hold type, but still mission mode. */
-	MAV_FLIGHT_MODE_AUTO_MISSION=3, /* System is navigating towards the next waypoint and following a mission script. */
-	MAV_FLIGHT_MODE_AUTO_VECTOR=4, /* System is flying at a defined course and speed. If the vector is not defined by an autonomous approach but constantly by a user, please use MAV_FLIGHT_MODE_FBW_CURSOR_CONTROL */
-	MAV_FLIGHT_MODE_AUTO_RETURNING=5, /* System is return straight to home position. */
-	MAV_FLIGHT_MODE_AUTO_LANDING=6, /* System is landing. */
-	MAV_FLIGHT_MODE_AUTO_LOST=7, /* System lost its position input and is in attitude / flight stabilization only. */
-	MAV_FLIGHT_MODE_FBW_STABILIZE_ROLL_PITCH=8, /* Fly by wire mode, stabilizing roll and pitch */
-	MAV_FLIGHT_MODE_FBW_STABILIZE_ROLL_PITCH_ALTITUDE=9, /* Fly by wire mode, stabilizing roll, pitch and altitude */
-	MAV_FLIGHT_MODE_FBW_STABILIZE_ROLL_PITCH_YAW=10, /* Fly by wire mode, stabilizing roll, pitch and yaw */
-	MAV_FLIGHT_MODE_FBW_STABILIZE_ROLL_PITCH_YAW_ALTITUDE=11, /* Fly by wire mode, stabilizing roll, pitch, yaw and altitude */
-	MAV_FLIGHT_MODE_FBW_CURSOR_CONTROL=12, /* Fly by wire mode, user is only directing the movement, but all flight control is autonomous (similar to MAV_FLIGHT_MODE_AUTO_VECTOR with user input) */
+	MAV_FLIGHT_MODE_MANUAL=1, /* No interaction of the autopilot with the actuator outputs, pure manual flight. */
+	MAV_FLIGHT_MODE_AUTO_TAKEOFF=2, /* System is during takeoff, not in normal navigation mode yet. Once the plane is moving faster than a few m/s it will lock onto a heading and hold that heading until the desired altitude is reached. Throttle is limited by the RC throttle setting. */
+	MAV_FLIGHT_MODE_AUTO_HOLD=3, /* System is holding its current position and disabled the mission management. Loitering in mission mode is NOT the hold type, but still mission mode. */
+	MAV_FLIGHT_MODE_AUTO_MISSION=4, /* System is navigating towards the next waypoint and following a mission script. */
+	MAV_FLIGHT_MODE_AUTO_VECTOR=5, /* System is flying at a defined course and speed. If the vector is not defined by an autonomous approach but constantly by a user, please use MAV_FLIGHT_MODE_FBW_CURSOR_CONTROL */
+	MAV_FLIGHT_MODE_AUTO_RETURNING=6, /* System is returning straight to home position. Once it reaches there it will hover or loiter at the autopilot's default holding settings. */
+	MAV_FLIGHT_MODE_AUTO_LANDING=7, /* System is landing. Throttle is controlled by the autopilot. After getting closer than 30 meters, the course will lock to the current heading. Flare, throttle, flaps, gear, and other events can be scripted based on distance to landing point. */
+	MAV_FLIGHT_MODE_AUTO_LOST=8, /* System lost its position input and is in attitude / flight stabilization only. */
+	MAV_FLIGHT_MODE_STABILIZE_RATES_ACRO=9, /* The stick inputs commands angular rates. Only recommended for experienced pilots / acrobatic flight. */
+	MAV_FLIGHT_MODE_STABILIZE_LEVELING=10, /* RC control with stabilization; let go of the sticks and it will level. */
+	MAV_FLIGHT_MODE_STABILIZE_ROLL_PITCH_ABSOLUTE=11, /* The autopilot will hold the roll and pitch specified by the control sticks. Throttle is manual. The plane / quadrotor will not roll past the limits set in the configuration of the autopilot. Great for new pilots learning to fly. */
+	MAV_FLIGHT_MODE_STABILIZE_ROLL_YAW_ALTITUDE=12, /* Requires airspeed sensor. The autopilot will hold the roll specified by the control sticks. Pitch input from the radio is converted to altitude error, which the autopilot will try and adjust to. Throttle is controlled by autopilot. This is the perfect mode to test your autopilot as your radio inout is substituted for the navigation controls. */
+	MAV_FLIGHT_MODE_STABILIZE_ROLL_PITCH_YAW_ALTITUDE=13, /* Fly by wire mode, stabilizing roll, pitch, yaw and altitude. Typical altitude hold for quadrotors where the X / Y position is commanded with the roll / pitch stick. */
+	MAV_FLIGHT_MODE_STABILIZE_CURSOR_CONTROL=14, /* Fly by wire mode, user is only directing the movement, but all flight control is autonomous (similar to MAV_FLIGHT_MODE_AUTO_VECTOR with user input) */
+	MAV_FLIGHT_MODE_TEST1=15, /* Custom test mode, depends on individual autopilot. */
+	MAV_FLIGHT_MODE_TEST2=16, /* Custom test mode, depends on individual autopilot. */
+	MAV_FLIGHT_MODE_TEST3=17, /* Custom test mode, depends on individual autopilot. */
 	MAV_FLIGHT_MODE_ENUM_END
 };
 
@@ -110,16 +113,18 @@ enum MAV_TYPE
 	MAV_TYPE_QUADROTOR=2, /* Quadrotor */
 	MAV_TYPE_COAXIAL=3, /* Coaxial helicopter */
 	MAV_TYPE_HELICOPTER=4, /* Normal helicopter with tail rotor. */
-	MAV_TYPE_GROUND=5, /* Ground installation */
-	MAV_TYPE_OCU=6, /* Operator control unit / ground control station */
+	MAV_TYPE_ANTENNA_TRACKER=5, /* Ground installation */
+	MAV_TYPE_GCS=6, /* Operator control unit / ground control station */
 	MAV_TYPE_AIRSHIP=7, /* Airship, controlled */
 	MAV_TYPE_FREE_BALLOON=8, /* Free balloon, uncontrolled */
 	MAV_TYPE_ROCKET=9, /* Rocket */
-	MAV_TYPE_UGV_GROUND_ROVER=10, /* Ground rover */
-	MAV_TYPE_UGV_SURFACE_SHIP=11, /* Surface vessel, boat, ship */
-	MAV_TYPE_UGV_SUBMARINE=12, /* Submarine */
+	MAV_TYPE_GROUND_ROVER=10, /* Ground rover */
+	MAV_TYPE_SURFACE_BOAT=11, /* Surface vessel, boat, ship */
+	MAV_TYPE_SUBMARINE=12, /* Submarine */
 	MAV_TYPE_HEXAROTOR=13, /* Hexarotor */
 	MAV_TYPE_OCTOROTOR=14, /* Octorotor */
+	MAV_TYPE_TRICOPTER=15, /* Octorotor */
+	MAV_TYPE_FLAPPING_WING=16, /* Flapping wing */
 	MAV_TYPE_ENUM_END
 };
 
@@ -315,7 +320,7 @@ enum MAV_ROI
 // MESSAGE CRC KEYS
 
 #undef MAVLINK_MESSAGE_KEYS
-#define MAVLINK_MESSAGE_KEYS { 179, 218, 22, 76, 226, 126, 117, 186, 0, 144, 0, 249, 172, 16, 0, 0, 0, 0, 0, 0, 33, 34, 191, 55, 0, 166, 28, 99, 28, 21, 243, 240, 91, 21, 111, 43, 192, 234, 22, 197, 192, 192, 166, 34, 233, 34, 166, 158, 142, 60, 10, 75, 20, 247, 234, 161, 116, 56, 245, 0, 0, 0, 62, 75, 185, 18, 42, 80, 0, 127, 200, 0, 0, 212, 251, 20, 38, 22, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 18, 103, 59, 0, 0, 0, 0, 0, 0, 0, 74, 8, 238, 165, 0, 0, 0, 0, 0, 0, 0, 218, 218, 235, 0, 0, 0, 0, 0, 0, 225, 114, 0, 0, 0, 0, 0, 0, 0, 0, 221, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 171, 122, 0, 0, 0, 0, 0, 0, 0, 92, 99, 4, 169, 10, 0, 0, 0, 0, 0, 52, 163, 16, 0, 0, 0, 0, 0, 0, 0, 200, 135, 217, 254, 0, 0, 255, 185, 0, 14, 136, 53, 0, 212, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 73, 239, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 138, 43, 141, 211, 144 }
+#define MAVLINK_MESSAGE_KEYS { 10, 218, 22, 76, 226, 126, 117, 186, 0, 0, 0, 249, 172, 16, 0, 0, 0, 0, 0, 0, 33, 34, 191, 55, 0, 166, 28, 99, 28, 21, 243, 240, 91, 21, 0, 43, 192, 234, 22, 197, 192, 192, 166, 34, 233, 34, 166, 158, 142, 60, 10, 75, 20, 247, 234, 161, 116, 56, 245, 0, 0, 0, 62, 75, 185, 0, 42, 80, 0, 127, 200, 0, 0, 212, 251, 20, 63, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 103, 59, 0, 0, 0, 0, 0, 0, 0, 74, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 138, 43, 141, 211, 144 }
 
 // MESSAGE LENGTHS
 
