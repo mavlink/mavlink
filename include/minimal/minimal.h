@@ -1,7 +1,7 @@
 /** @file
- *	@brief MAVLink comm protocol.
+ *	@brief MAVLink comm protocol generated from minimal.xml
  *	@see http://qgroundcontrol.org/mavlink/
- *	 Generated on Saturday, August 20 2011, 11:07 UTC
+ *	Generated on Wed Aug 24 10:57:48 2011
  */
 #ifndef MINIMAL_H
 #define MINIMAL_H
@@ -10,10 +10,20 @@
 extern "C" {
 #endif
 
+// MESSAGE LENGTHS AND CRCS
 
-#include "../mavlink_protocol.h"
+#undef MAVLINK_MESSAGE_LENGTHS
+#define MAVLINK_MESSAGE_LENGTHS {8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
+#undef MAVLINK_MESSAGE_CRCS
+#define MAVLINK_MESSAGE_CRCS {141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+    
+
+#include "../protocol.h"
 
 #define MAVLINK_ENABLED_MINIMAL
+
+
 
 // MAVLINK VERSION
 
@@ -29,22 +39,11 @@ extern "C" {
 // ENUM DEFINITIONS
 
 
+
 // MESSAGE DEFINITIONS
-
 #include "./mavlink_msg_heartbeat.h"
-
-
-// MESSAGE CRC KEYS
-
-#undef MAVLINK_MESSAGE_KEYS
-#define MAVLINK_MESSAGE_KEYS {  }
-
-// MESSAGE LENGTHS
-
-#undef MAVLINK_MESSAGE_LENGTHS
-#define MAVLINK_MESSAGE_LENGTHS {  }
 
 #ifdef __cplusplus
 }
-#endif
-#endif
+#endif // __cplusplus
+#endif // MINIMAL_H
