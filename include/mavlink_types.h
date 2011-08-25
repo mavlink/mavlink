@@ -67,7 +67,7 @@ typedef struct param_union {
 		uint32_t param_uint32;
 	};
 	uint8_t type;
-} mavlink_param_union_t;
+} mavlink_param_union_t __attribute__ ((aligned(4)));
 
 typedef struct __mavlink_system {
     uint8_t sysid;   ///< Used by the MAVLink message_xx_send() convenience function
