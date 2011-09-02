@@ -5,7 +5,7 @@
 #ifndef MAVLINK_VERSION_H
 #define MAVLINK_VERSION_H
 
-#define MAVLINK_BUILD_DATE "Fri Sep  2 16:30:17 2011"
+#define MAVLINK_BUILD_DATE "Fri Sep  2 17:05:00 2011"
 #define MAVLINK_WIRE_PROTOCOL_VERSION "1.0"
 
 #include "mavlink.h"
