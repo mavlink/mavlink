@@ -16,8 +16,8 @@ typedef struct __mavlink_set_safety_mode_t
 #define MAVLINK_MESSAGE_INFO_SET_SAFETY_MODE { \
 	"SET_SAFETY_MODE", \
 	2, \
-	{  { "target", MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_set_safety_mode_t, target) }, \
-         { "safety_mode", MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_set_safety_mode_t, safety_mode) }, \
+	{  { "target", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_set_safety_mode_t, target) }, \
+         { "safety_mode", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_set_safety_mode_t, safety_mode) }, \
          } \
 }
 
