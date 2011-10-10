@@ -157,6 +157,7 @@ enum MAV_TYPE
 /** @brief  */
 enum MAV_COMPONENT
 {
+	MAV_COMP_ID_ALL=0, /*  | */
 	MAV_COMP_ID_GPS=220, /*  | */
 	MAV_COMP_ID_MISSIONPLANNER=190, /*  | */
 	MAV_COMP_ID_PATHPLANNER=195, /*  | */
