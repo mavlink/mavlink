@@ -89,6 +89,16 @@ enum MAV_MODE_FLAG_DECODE_POSITION
 	MAV_MODE_FLAG_DECODE_POSITION_ENUM_END=2, /*  | */
 };
 
+/** @brief Override command, pauses current mission execution and moves immediately to a position */
+enum MAV_GOTO
+{
+	MAV_GOTO_DO_HOLD=0, /* Hold at the current position. | */
+	MAV_GOTO_DO_CONTINUE=0, /* Continue with the mission execution. | */
+	MAV_GOTO_HOLD_AT_CURRENT_POSITION=0, /* Hold at the current position of the system | */
+	MAV_GOTO_HOLD_AT_SPECIFIED_POSITION=0, /* Hold at the position specified in the parameters of the DO_HOLD action | */
+	MAV_GOTO_ENUM_END=1, /*  | */
+};
+
 /** @brief These defines are predefined OR-combined mode flags. There is no need to use values from this enum, but it
                simplifies the use of the mode flags. Note that manual input is enabled in all modes as a safety override. */
 enum MAV_MODE
@@ -238,7 +248,8 @@ enum MAV_CMD
 	MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS=242, /* Set sensor offsets. This command will be only accepted if in pre-flight mode. |Sensor to adjust the offsets for: 0: gyros, 1: accelerometer, 2: magnetometer, 3: barometer, 4: optical flow| X axis offset (or generic dimension 1), in the sensor's raw units| Y axis offset (or generic dimension 2), in the sensor's raw units| Z axis offset (or generic dimension 3), in the sensor's raw units| Generic dimension 4, in the sensor's raw units| Generic dimension 5, in the sensor's raw units| Generic dimension 6, in the sensor's raw units|  */
 	MAV_CMD_PREFLIGHT_STORAGE=245, /* Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode. |Parameter storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM| Mission storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM| Reserved| Reserved| Empty| Empty| Empty|  */
 	MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN=246, /* Request the reboot or shutdown of system components. |0: Do nothing for autopilot, 1: Reboot autopilot, 2: Shutdown autopilot.| 0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer.| Reserved| Reserved| Empty| Empty| Empty|  */
-	MAV_CMD_ENUM_END=247, /*  | */
+	MAV_CMD_OVERRIDE_GOTO=252, /* Hold / continue the current action |MAV_GOTO_DO_HOLD: hold MAV_GOTO_DO_CONTINUE: continue with mission plan| MAV_GOTO_HOLD_AT_CURRENT_POSITION: Hold at current position MAV_GOTO_HOLD_AT_SPECIFIED_POSITION: hold at specified position| MAV_FRAME coordinate frame of hold point| Desired yaw angle in degrees| Latitude / X position| Longitude / Y position| Altitude / Z position|  */
+	MAV_CMD_ENUM_END=253, /*  | */
 };
 
 /** @brief Data stream IDs. A data stream is not a fixed set of messages, but rather a
