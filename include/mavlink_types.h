@@ -68,7 +68,6 @@ typedef struct param_union {
 		float param_float;
 		int32_t param_int32;
 		uint32_t param_uint32;
-		uint8_t param_uint8[4];
 	};
 	uint8_t type;
 } mavlink_param_union_t;
@@ -79,7 +78,7 @@ typedef struct __mavlink_system {
     uint8_t type;    ///< Unused, can be used by user to store the system's type
     uint8_t state;   ///< Unused, can be used by user to store the system's state
     uint8_t mode;    ///< Unused, can be used by user to store the system's mode
-    uint32_t custom_mode;    ///< Unused, can be used by user to store the system's navigation mode
+    uint8_t nav_mode;    ///< Unused, can be used by user to store the system's navigation mode
 } mavlink_system_t;
 
 typedef struct __mavlink_message {

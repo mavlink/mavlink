@@ -1,6 +1,10 @@
 /** @file
  *	@brief MAVLink comm protocol built from ardupilotmega.xml
  *	@see http://pixhawk.ethz.ch/software/mavlink
+<<<<<<< HEAD
+=======
+ *	 Generated on Saturday, August 13 2011, 08:44 UTC
+>>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
  */
 #ifndef MAVLINK_H
 #define MAVLINK_H

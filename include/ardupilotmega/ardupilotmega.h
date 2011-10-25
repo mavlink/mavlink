@@ -1,6 +1,10 @@
 /** @file
  *	@brief MAVLink comm protocol generated from ardupilotmega.xml
  *	@see http://qgroundcontrol.org/mavlink/
+<<<<<<< HEAD
+=======
+ *	 Generated on Saturday, August 13 2011, 08:44 UTC
+>>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
  */
 #ifndef ARDUPILOTMEGA_H
 #define ARDUPILOTMEGA_H
@@ -43,12 +47,25 @@ extern "C" {
 // ENUM DEFINITIONS
 
 
+<<<<<<< HEAD
 
 // MESSAGE DEFINITIONS
 #include "./mavlink_msg_sensor_offsets.h"
 #include "./mavlink_msg_set_mag_offsets.h"
 #include "./mavlink_msg_meminfo.h"
 #include "./mavlink_msg_ap_adc.h"
+=======
+// MESSAGE DEFINITIONS
+
+#include "./mavlink_msg_sensor_offsets.h"
+#include "./mavlink_msg_set_mag_offsets.h"
+
+
+// MESSAGE LENGTHS
+
+#undef MAVLINK_MESSAGE_LENGTHS
+#define MAVLINK_MESSAGE_LENGTHS { 3, 4, 8, 14, 8, 28, 3, 32, 0, 2, 3, 2, 2, 0, 0, 0, 0, 0, 0, 0, 19, 2, 23, 21, 0, 37, 26, 101, 26, 16, 32, 32, 37, 32, 11, 17, 17, 16, 18, 36, 4, 4, 2, 2, 4, 2, 2, 3, 14, 12, 18, 16, 8, 27, 25, 18, 18, 20, 20, 0, 0, 0, 26, 16, 36, 5, 6, 56, 26, 21, 18, 0, 0, 18, 20, 20, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 14, 14, 51 }
+>>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 
 #ifdef __cplusplus
 }
