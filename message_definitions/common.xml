@@ -102,13 +102,13 @@
                <entry value="0" name="MAV_GOTO_DO_HOLD">
                     <description>Hold at the current position.</description>
                </entry>
-               <entry value="0" name="MAV_GOTO_DO_CONTINUE">
-                    <description>Continue with the mission execution.</description>
+               <entry value="1" name="MAV_GOTO_DO_CONTINUE">
+                    <description>Continue with the next item in mission execution.</description>
                </entry>
-               <entry value="0" name="MAV_GOTO_HOLD_AT_CURRENT_POSITION">
+               <entry value="2" name="MAV_GOTO_HOLD_AT_CURRENT_POSITION">
                     <description>Hold at the current position of the system</description>
                </entry>
-               <entry value="0" name="MAV_GOTO_HOLD_AT_SPECIFIED_POSITION">
+               <entry value="3" name="MAV_GOTO_HOLD_AT_SPECIFIED_POSITION">
                     <description>Hold at the position specified in the parameters of the DO_HOLD action</description>
                </entry>
           </enum>
@@ -656,7 +656,7 @@
                </entry>
                <entry value="252" name="MAV_CMD_OVERRIDE_GOTO">
                     <description>Hold / continue the current action</description>
-                    <param index="1">MAV_GOTO_DO_HOLD: hold MAV_GOTO_DO_CONTINUE: continue with mission plan</param>
+                    <param index="1">MAV_GOTO_DO_HOLD: hold MAV_GOTO_DO_CONTINUE: continue with next item in mission plan</param>
                     <param index="2">MAV_GOTO_HOLD_AT_CURRENT_POSITION: Hold at current position MAV_GOTO_HOLD_AT_SPECIFIED_POSITION: hold at specified position</param>
                     <param index="3">MAV_FRAME coordinate frame of hold point</param>
                     <param index="4">Desired yaw angle in degrees</param>
@@ -748,7 +748,101 @@
                <entry name="MAV_CMD_ACK_ERR_Z_ALT_OUT_OF_RANGE">
                     <description>The Z or altitude value is out of range.</description>
                </entry>
-        </enum>
+          </enum>
+
+          <enum name="MAV_VAR">
+               <description>type of a mavlink parameter</description>
+               <entry value="0" name="MAV_VAR_FLOAT">
+                    <description>32 bit float</description>
+               </entry>
+               <entry value="1" name="MAV_VAR_UINT8">
+                    <description>8 bit unsigned integer</description>
+               </entry>
+               <entry value="2" name="MAV_VAR_INT8">
+                    <description>8 bit signed integer</description>
+               </entry>
+               <entry value="3" name="MAV_VAR_UINT16">
+                    <description>16 bit unsigned integer</description>
+               </entry>
+               <entry value="4" name="MAV_VAR_INT16">
+                    <description>16 bit signed integer</description>
+               </entry>
+               <entry value="5" name="MAV_VAR_UINT32">
+                    <description>32 bit unsigned integer</description>
+               </entry>
+               <entry value="6" name="MAV_VAR_INT32">
+                    <description>32 bit signed integer</description>
+               </entry>
+	  </enum>
+
+          <enum name="MAV_RESULT">
+               <description>result from a mavlink command</description>
+               <entry value="0" name="MAV_RESULT_ACCEPTED">
+                    <description>Command ACCEPTED and EXECUTED</description>
+               </entry>
+               <entry value="1" name="MAV_RESULT_TEMPORARILY_REJECTED">
+                    <description>Command TEMPORARY REJECTED/DENIED</description>
+               </entry>
+               <entry value="2" name="MAV_RESULT_DENIED">
+                    <description>Command PERMANENTLY DENIED</description>
+               </entry>
+               <entry value="3" name="MAV_RESULT_UNSUPPORTED">
+                    <description>Command UNKNOWN/UNSUPPORTED</description>
+               </entry>
+               <entry value="4" name="MAV_RESULT_FAILED">
+                    <description>Command executed, but failed</description>
+               </entry>
+	  </enum>
+
+          <enum name="MAV_MISSION_RESULT">
+               <description>result in a mavlink mission ack</description>
+               <entry value="0" name="MAV_MISSION_ACCEPTED">
+                    <description>mission accepted OK</description>
+               </entry>
+               <entry value="1" name="MAV_MISSION_ERROR">
+                    <description>generic error / not accepting mission commands at all right now</description>
+               </entry>
+               <entry value="2" name="MAV_MISSION_UNSUPPORTED_FRAME">
+                    <description>coordinate frame is not supported</description>
+               </entry>
+               <entry value="3" name="MAV_MISSION_UNSUPPORTED">
+                    <description>command is not supported</description>
+               </entry>
+               <entry value="4" name="MAV_MISSION_NO_SPACE">
+                    <description>mission item exceeds storage space</description>
+               </entry>
+               <entry value="5" name="MAV_MISSION_INVALID">
+                    <description>one of the parameters has an invalid value</description>
+               </entry>
+               <entry value="6" name="MAV_MISSION_INVALID_PARAM1">
+                    <description>param1 has an invalid value</description>
+               </entry>
+               <entry value="7" name="MAV_MISSION_INVALID_PARAM2">
+                    <description>param2 has an invalid value</description>
+               </entry>
+               <entry value="8" name="MAV_MISSION_INVALID_PARAM3">
+                    <description>param3 has an invalid value</description>
+               </entry>
+               <entry value="9" name="MAV_MISSION_INVALID_PARAM4">
+                    <description>param4 has an invalid value</description>
+               </entry>
+               <entry value="10" name="MAV_MISSION_INVALID_PARAM5_X">
+                    <description>x/param5 has an invalid value</description>
+               </entry>
+               <entry value="11" name="MAV_MISSION_INVALID_PARAM6_Y">
+                    <description>y/param6 has an invalid value</description>
+               </entry>
+               <entry value="12" name="MAV_MISSION_INVALID_PARAM7">
+                    <description>param7 has an invalid value</description>
+               </entry>
+               <entry value="13" name="MAV_MISSION_INVALID_SEQUENCE">
+                    <description>received waypoint out of sequence</description>
+               </entry>
+               <entry value="14" name="MAV_MISSION_DENIED">
+                    <description>not accepting any mission commands from this communication partner</description>
+               </entry>
+	  </enum>
+
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -811,7 +905,7 @@
                <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
                <field type="uint8_t" name="target_system">The system setting the mode</field>
                <field type="uint8_t" name="base_mode">The new base mode</field>
-               <field type="uint16_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
+               <field type="uint32_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
           </message>
           <message id="20" name="PARAM_REQUEST_READ">
                <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -> value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also http://qgroundcontrol.org/parameter_interface for a full documentation of QGroundControl and IMU code.</description>
@@ -829,7 +923,7 @@
                <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout.</description>
                <field type="char[16]" name="param_id">Onboard parameter id</field>
                <field type="float" name="param_value">Onboard parameter value</field>
-               <field type="uint8_t" name="param_type">Onboard parameter type: 0: float, 1: uint8_t, 2: int8_t, 3: uint16_t, 4: int16_t, 5: uint32_t, 6: int32_t</field>
+               <field type="uint8_t" name="param_type">Onboard parameter type: see MAV_VAR enum</field>
                <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
                <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
           </message>
@@ -839,7 +933,7 @@
                <field type="uint8_t" name="target_component">Component ID</field>
                <field type="char[16]" name="param_id">Onboard parameter id</field>
                <field type="float" name="param_value">Onboard parameter value</field>
-               <field type="uint8_t" name="param_type">Onboard parameter type: 0: float, 1: uint8_t, 2: int8_t, 3: uint16_t, 4: int16_t, 5: uint32_t, 6: int32_t</field>
+               <field type="uint8_t" name="param_type">Onboard parameter type: see MAV_VAR enum</field>
           </message>
           <message id="24" name="GPS_RAW_INT">
                <description>The global position, as returned by the Global Positioning System (GPS). This is
@@ -1049,7 +1143,7 @@
                <description>Ack message during MISSION handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
-               <field type="uint8_t" name="type">0: OK, 1: generic error / not accepting mission commands at all right now, 2: coordinate frame is not supported, 3: command is not supported, 4: mission item exceeds storage space, 5: one of the parameters has an invalid value, 6: param1 has an invalid value, 7: param2 has an invalid value, 8: param3 has an invalid value, 9: param4 has an invalid value, 10: x/param5 has an invalid value, 11: y:param6 has an invalid value, 12: z:param7 has an invalid value, 13: received waypoint out of sequence, 14: not accepting any mission commands from this communication partner</field>
+               <field type="uint8_t" name="type">See MAV_MISSION_RESULT enum</field>
           </message>
           <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
                <description>As local MISSIONs exist, the global MISSION reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
@@ -1252,7 +1346,7 @@
           <message id="77" name="COMMAND_ACK">
                <description>Report status of a command. Includes feedback wether the command was executed</description>
                <field type="uint16_t" name="command">Command ID, as defined by MAV_CMD enum.</field>
-               <field type="uint8_t" name="result">1: Command ACCEPTED and EXECUTED, 1: Command TEMPORARY REJECTED/DENIED, 2: Command PERMANENTLY DENIED, 3: Command UNKNOWN/UNSUPPORTED, 4: Command executed, but failed</field>
+               <field type="uint8_t" name="result">See MAV_RESULT enum</field>
           </message>
           
           <!--
