@@ -182,7 +182,15 @@ MAVLINK_HELPER void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
  */
 MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
+#if MAVLINK_EXTERNAL_RX_BUFFER
+	// No m_mavlink_message array defined in function,
+	// has to be defined externally
+#ifndef m_mavlink_message
+#error ERROR: IF #define MAVLINK_EXTERNAL_RX_BUFFER IS SET, THE BUFFER HAS TO BE ALLOCATED OUTSIDE OF THIS FUNCTION
+#endif
+#else
 	static mavlink_message_t m_mavlink_message[MAVLINK_COMM_NUM_BUFFERS];
+#endif
 
         /*
 	  default message crc function. You can override this per-system to
