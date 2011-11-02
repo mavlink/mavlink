@@ -217,6 +217,7 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 		{
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
 			rxmsg->len = 0;
+			rxmsg->magic = c;
 			mavlink_start_checksum(rxmsg);
 		}
 		break;
@@ -304,6 +305,7 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 		else
 		{
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_CRC1;
+			_MAV_PAYLOAD(rxmsg)[status->packet_idx] = (char)c;
 		}
 		break;
 
@@ -325,6 +327,7 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 			// Successfully got message
 			status->msg_received = 1;
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			_MAV_PAYLOAD(rxmsg)[status->packet_idx+1] = (char)c;
 			memcpy(r_message, rxmsg, sizeof(mavlink_message_t));
 		}
 		break;
