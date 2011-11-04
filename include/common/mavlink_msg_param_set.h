@@ -51,15 +51,15 @@ static inline uint16_t mavlink_msg_param_set_pack(uint8_t system_id, uint8_t com
 	_mav_put_uint8_t(buf, 5, target_component);
 	_mav_put_uint8_t(buf, 22, param_type);
 	_mav_put_char_array(buf, 6, param_id, 16);
-        memcpy(_MAV_PAYLOAD(msg), buf, 23);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 23);
 #else
 	mavlink_param_set_t packet;
 	packet.param_value = param_value;
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 	packet.param_type = param_type;
-	memcpy(packet.param_id, param_id, sizeof(char)*16);
-        memcpy(_MAV_PAYLOAD(msg), &packet, 23);
+	mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 23);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_PARAM_SET;
@@ -90,15 +90,15 @@ static inline uint16_t mavlink_msg_param_set_pack_chan(uint8_t system_id, uint8_
 	_mav_put_uint8_t(buf, 5, target_component);
 	_mav_put_uint8_t(buf, 22, param_type);
 	_mav_put_char_array(buf, 6, param_id, 16);
-        memcpy(_MAV_PAYLOAD(msg), buf, 23);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 23);
 #else
 	mavlink_param_set_t packet;
 	packet.param_value = param_value;
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 	packet.param_type = param_type;
-	memcpy(packet.param_id, param_id, sizeof(char)*16);
-        memcpy(_MAV_PAYLOAD(msg), &packet, 23);
+	mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 23);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_PARAM_SET;
@@ -146,7 +146,7 @@ static inline void mavlink_msg_param_set_send(mavlink_channel_t chan, uint8_t ta
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 	packet.param_type = param_type;
-	memcpy(packet.param_id, param_id, sizeof(char)*16);
+	mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
 	_mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PARAM_SET, (const char *)&packet, 23, 168);
 #endif
 }

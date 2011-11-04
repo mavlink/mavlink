@@ -51,15 +51,15 @@ static inline uint16_t mavlink_msg_param_value_pack(uint8_t system_id, uint8_t c
 	_mav_put_uint16_t(buf, 6, param_index);
 	_mav_put_uint8_t(buf, 24, param_type);
 	_mav_put_char_array(buf, 8, param_id, 16);
-        memcpy(_MAV_PAYLOAD(msg), buf, 25);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 25);
 #else
 	mavlink_param_value_t packet;
 	packet.param_value = param_value;
 	packet.param_count = param_count;
 	packet.param_index = param_index;
 	packet.param_type = param_type;
-	memcpy(packet.param_id, param_id, sizeof(char)*16);
-        memcpy(_MAV_PAYLOAD(msg), &packet, 25);
+	mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 25);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_PARAM_VALUE;
@@ -90,15 +90,15 @@ static inline uint16_t mavlink_msg_param_value_pack_chan(uint8_t system_id, uint
 	_mav_put_uint16_t(buf, 6, param_index);
 	_mav_put_uint8_t(buf, 24, param_type);
 	_mav_put_char_array(buf, 8, param_id, 16);
-        memcpy(_MAV_PAYLOAD(msg), buf, 25);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 25);
 #else
 	mavlink_param_value_t packet;
 	packet.param_value = param_value;
 	packet.param_count = param_count;
 	packet.param_index = param_index;
 	packet.param_type = param_type;
-	memcpy(packet.param_id, param_id, sizeof(char)*16);
-        memcpy(_MAV_PAYLOAD(msg), &packet, 25);
+	mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 25);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_PARAM_VALUE;
@@ -146,7 +146,7 @@ static inline void mavlink_msg_param_value_send(mavlink_channel_t chan, const ch
 	packet.param_count = param_count;
 	packet.param_index = param_index;
 	packet.param_type = param_type;
-	memcpy(packet.param_id, param_id, sizeof(char)*16);
+	mav_array_memcpy(packet.param_id, param_id, sizeof(char)*16);
 	_mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PARAM_VALUE, (const char *)&packet, 25, 220);
 #endif
 }

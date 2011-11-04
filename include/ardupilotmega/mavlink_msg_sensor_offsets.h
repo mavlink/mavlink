@@ -2,7 +2,6 @@
 
 #define MAVLINK_MSG_ID_SENSOR_OFFSETS 150
 
-<<<<<<< HEAD
 typedef struct __mavlink_sensor_offsets_t
 {
  float mag_declination; ///< magnetic declination (radians)
@@ -42,26 +41,6 @@ typedef struct __mavlink_sensor_offsets_t
          } \
 }
 
-=======
-typedef struct __mavlink_sensor_offsets_t 
-{
-	int16_t mag_ofs_x; ///< magnetometer X offset
-	int16_t mag_ofs_y; ///< magnetometer Y offset
-	int16_t mag_ofs_z; ///< magnetometer Z offset
-	float mag_declination; ///< magnetic declination (radians)
-	int32_t raw_press; ///< raw pressure from barometer
-	int32_t raw_temp; ///< raw temperature from barometer
-	float gyro_cal_x; ///< gyro X calibration
-	float gyro_cal_y; ///< gyro Y calibration
-	float gyro_cal_z; ///< gyro Z calibration
-	float accel_cal_x; ///< accel X calibration
-	float accel_cal_y; ///< accel Y calibration
-	float accel_cal_z; ///< accel Z calibration
-
-} mavlink_sensor_offsets_t;
-
-
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 
 /**
  * @brief Pack a sensor_offsets message
@@ -83,7 +62,6 @@ typedef struct __mavlink_sensor_offsets_t
  * @param accel_cal_z accel Z calibration
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-<<<<<<< HEAD
 static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
 						       int16_t mag_ofs_x, int16_t mag_ofs_y, int16_t mag_ofs_z, float mag_declination, int32_t raw_press, int32_t raw_temp, float gyro_cal_x, float gyro_cal_y, float gyro_cal_z, float accel_cal_x, float accel_cal_y, float accel_cal_z)
 {
@@ -102,7 +80,7 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_
 	_mav_put_int16_t(buf, 38, mag_ofs_y);
 	_mav_put_int16_t(buf, 40, mag_ofs_z);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 42);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 42);
 #else
 	mavlink_sensor_offsets_t packet;
 	packet.mag_declination = mag_declination;
@@ -118,7 +96,7 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_
 	packet.mag_ofs_y = mag_ofs_y;
 	packet.mag_ofs_z = mag_ofs_z;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 42);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 42);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_SENSOR_OFFSETS;
@@ -127,31 +105,6 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_
 
 /**
  * @brief Pack a sensor_offsets message on a channel
-=======
-static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, int16_t mag_ofs_x, int16_t mag_ofs_y, int16_t mag_ofs_z, float mag_declination, int32_t raw_press, int32_t raw_temp, float gyro_cal_x, float gyro_cal_y, float gyro_cal_z, float accel_cal_x, float accel_cal_y, float accel_cal_z)
-{
-	uint16_t i = 0;
-	msg->msgid = MAVLINK_MSG_ID_SENSOR_OFFSETS;
-
-	i += put_int16_t_by_index(mag_ofs_x, i, msg->payload); // magnetometer X offset
-	i += put_int16_t_by_index(mag_ofs_y, i, msg->payload); // magnetometer Y offset
-	i += put_int16_t_by_index(mag_ofs_z, i, msg->payload); // magnetometer Z offset
-	i += put_float_by_index(mag_declination, i, msg->payload); // magnetic declination (radians)
-	i += put_int32_t_by_index(raw_press, i, msg->payload); // raw pressure from barometer
-	i += put_int32_t_by_index(raw_temp, i, msg->payload); // raw temperature from barometer
-	i += put_float_by_index(gyro_cal_x, i, msg->payload); // gyro X calibration
-	i += put_float_by_index(gyro_cal_y, i, msg->payload); // gyro Y calibration
-	i += put_float_by_index(gyro_cal_z, i, msg->payload); // gyro Z calibration
-	i += put_float_by_index(accel_cal_x, i, msg->payload); // accel X calibration
-	i += put_float_by_index(accel_cal_y, i, msg->payload); // accel Y calibration
-	i += put_float_by_index(accel_cal_z, i, msg->payload); // accel Z calibration
-
-	return mavlink_finalize_message(msg, system_id, component_id, i);
-}
-
-/**
- * @brief Pack a sensor_offsets message
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
  * @param system_id ID of this system
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message was sent over
@@ -170,7 +123,6 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_
  * @param accel_cal_z accel Z calibration
  * @return length of the message in bytes (excluding serial stream start sign)
  */
-<<<<<<< HEAD
 static inline uint16_t mavlink_msg_sensor_offsets_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
 							   mavlink_message_t* msg,
 						           int16_t mag_ofs_x,int16_t mag_ofs_y,int16_t mag_ofs_z,float mag_declination,int32_t raw_press,int32_t raw_temp,float gyro_cal_x,float gyro_cal_y,float gyro_cal_z,float accel_cal_x,float accel_cal_y,float accel_cal_z)
@@ -190,7 +142,7 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack_chan(uint8_t system_id, u
 	_mav_put_int16_t(buf, 38, mag_ofs_y);
 	_mav_put_int16_t(buf, 40, mag_ofs_z);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 42);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 42);
 #else
 	mavlink_sensor_offsets_t packet;
 	packet.mag_declination = mag_declination;
@@ -206,32 +158,11 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack_chan(uint8_t system_id, u
 	packet.mag_ofs_y = mag_ofs_y;
 	packet.mag_ofs_z = mag_ofs_z;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 42);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 42);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_SENSOR_OFFSETS;
 	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, 42, 134);
-=======
-static inline uint16_t mavlink_msg_sensor_offsets_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, int16_t mag_ofs_x, int16_t mag_ofs_y, int16_t mag_ofs_z, float mag_declination, int32_t raw_press, int32_t raw_temp, float gyro_cal_x, float gyro_cal_y, float gyro_cal_z, float accel_cal_x, float accel_cal_y, float accel_cal_z)
-{
-	uint16_t i = 0;
-	msg->msgid = MAVLINK_MSG_ID_SENSOR_OFFSETS;
-
-	i += put_int16_t_by_index(mag_ofs_x, i, msg->payload); // magnetometer X offset
-	i += put_int16_t_by_index(mag_ofs_y, i, msg->payload); // magnetometer Y offset
-	i += put_int16_t_by_index(mag_ofs_z, i, msg->payload); // magnetometer Z offset
-	i += put_float_by_index(mag_declination, i, msg->payload); // magnetic declination (radians)
-	i += put_int32_t_by_index(raw_press, i, msg->payload); // raw pressure from barometer
-	i += put_int32_t_by_index(raw_temp, i, msg->payload); // raw temperature from barometer
-	i += put_float_by_index(gyro_cal_x, i, msg->payload); // gyro X calibration
-	i += put_float_by_index(gyro_cal_y, i, msg->payload); // gyro Y calibration
-	i += put_float_by_index(gyro_cal_z, i, msg->payload); // gyro Z calibration
-	i += put_float_by_index(accel_cal_x, i, msg->payload); // accel X calibration
-	i += put_float_by_index(accel_cal_y, i, msg->payload); // accel Y calibration
-	i += put_float_by_index(accel_cal_z, i, msg->payload); // accel Z calibration
-
-	return mavlink_finalize_message_chan(msg, system_id, component_id, chan, i);
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -268,7 +199,6 @@ static inline uint16_t mavlink_msg_sensor_offsets_encode(uint8_t system_id, uint
 
 static inline void mavlink_msg_sensor_offsets_send(mavlink_channel_t chan, int16_t mag_ofs_x, int16_t mag_ofs_y, int16_t mag_ofs_z, float mag_declination, int32_t raw_press, int32_t raw_temp, float gyro_cal_x, float gyro_cal_y, float gyro_cal_z, float accel_cal_x, float accel_cal_y, float accel_cal_z)
 {
-<<<<<<< HEAD
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[42];
 	_mav_put_float(buf, 0, mag_declination);
@@ -309,16 +239,6 @@ static inline void mavlink_msg_sensor_offsets_send(mavlink_channel_t chan, int16
 // MESSAGE SENSOR_OFFSETS UNPACKING
 
 
-=======
-	mavlink_message_t msg;
-	mavlink_msg_sensor_offsets_pack_chan(mavlink_system.sysid, mavlink_system.compid, chan, &msg, mag_ofs_x, mag_ofs_y, mag_ofs_z, mag_declination, raw_press, raw_temp, gyro_cal_x, gyro_cal_y, gyro_cal_z, accel_cal_x, accel_cal_y, accel_cal_z);
-	mavlink_send_uart(chan, &msg);
-}
-
-#endif
-// MESSAGE SENSOR_OFFSETS UNPACKING
-
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 /**
  * @brief Get field mag_ofs_x from sensor_offsets message
  *
@@ -326,14 +246,7 @@ static inline void mavlink_msg_sensor_offsets_send(mavlink_channel_t chan, int16
  */
 static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_x(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_int16_t(msg,  36);
-=======
-	generic_16bit r;
-	r.b[1] = (msg->payload)[0];
-	r.b[0] = (msg->payload)[1];
-	return (int16_t)r.s;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -343,14 +256,7 @@ static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_x(const mavlink_mes
  */
 static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_y(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_int16_t(msg,  38);
-=======
-	generic_16bit r;
-	r.b[1] = (msg->payload+sizeof(int16_t))[0];
-	r.b[0] = (msg->payload+sizeof(int16_t))[1];
-	return (int16_t)r.s;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -360,14 +266,7 @@ static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_y(const mavlink_mes
  */
 static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_z(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_int16_t(msg,  40);
-=======
-	generic_16bit r;
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t))[0];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t))[1];
-	return (int16_t)r.s;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -377,16 +276,7 @@ static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_z(const mavlink_mes
  */
 static inline float mavlink_msg_sensor_offsets_get_mag_declination(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_float(msg,  0);
-=======
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t))[0];
-	r.b[2] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t))[1];
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t))[2];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t))[3];
-	return (float)r.f;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -396,16 +286,7 @@ static inline float mavlink_msg_sensor_offsets_get_mag_declination(const mavlink
  */
 static inline int32_t mavlink_msg_sensor_offsets_get_raw_press(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_int32_t(msg,  4);
-=======
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float))[3];
-	return (int32_t)r.i;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -415,16 +296,7 @@ static inline int32_t mavlink_msg_sensor_offsets_get_raw_press(const mavlink_mes
  */
 static inline int32_t mavlink_msg_sensor_offsets_get_raw_temp(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_int32_t(msg,  8);
-=======
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t))[0];
-	r.b[2] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t))[1];
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t))[2];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t))[3];
-	return (int32_t)r.i;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -434,16 +306,7 @@ static inline int32_t mavlink_msg_sensor_offsets_get_raw_temp(const mavlink_mess
  */
 static inline float mavlink_msg_sensor_offsets_get_gyro_cal_x(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_float(msg,  12);
-=======
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t))[0];
-	r.b[2] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t))[1];
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t))[2];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t))[3];
-	return (float)r.f;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -453,16 +316,7 @@ static inline float mavlink_msg_sensor_offsets_get_gyro_cal_x(const mavlink_mess
  */
 static inline float mavlink_msg_sensor_offsets_get_gyro_cal_y(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_float(msg,  16);
-=======
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float))[3];
-	return (float)r.f;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -472,16 +326,7 @@ static inline float mavlink_msg_sensor_offsets_get_gyro_cal_y(const mavlink_mess
  */
 static inline float mavlink_msg_sensor_offsets_get_gyro_cal_z(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_float(msg,  20);
-=======
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float))[3];
-	return (float)r.f;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -491,16 +336,7 @@ static inline float mavlink_msg_sensor_offsets_get_gyro_cal_z(const mavlink_mess
  */
 static inline float mavlink_msg_sensor_offsets_get_accel_cal_x(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_float(msg,  24);
-=======
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float))[3];
-	return (float)r.f;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -510,16 +346,7 @@ static inline float mavlink_msg_sensor_offsets_get_accel_cal_x(const mavlink_mes
  */
 static inline float mavlink_msg_sensor_offsets_get_accel_cal_y(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_float(msg,  28);
-=======
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[3];
-	return (float)r.f;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -529,16 +356,7 @@ static inline float mavlink_msg_sensor_offsets_get_accel_cal_y(const mavlink_mes
  */
 static inline float mavlink_msg_sensor_offsets_get_accel_cal_z(const mavlink_message_t* msg)
 {
-<<<<<<< HEAD
 	return _MAV_RETURN_float(msg,  32);
-=======
-	generic_32bit r;
-	r.b[3] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[0];
-	r.b[2] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[1];
-	r.b[1] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[2];
-	r.b[0] = (msg->payload+sizeof(int16_t)+sizeof(int16_t)+sizeof(int16_t)+sizeof(float)+sizeof(int32_t)+sizeof(int32_t)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float)+sizeof(float))[3];
-	return (float)r.f;
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }
 
 /**
@@ -549,13 +367,7 @@ static inline float mavlink_msg_sensor_offsets_get_accel_cal_z(const mavlink_mes
  */
 static inline void mavlink_msg_sensor_offsets_decode(const mavlink_message_t* msg, mavlink_sensor_offsets_t* sensor_offsets)
 {
-<<<<<<< HEAD
 #if MAVLINK_NEED_BYTE_SWAP
-=======
-	sensor_offsets->mag_ofs_x = mavlink_msg_sensor_offsets_get_mag_ofs_x(msg);
-	sensor_offsets->mag_ofs_y = mavlink_msg_sensor_offsets_get_mag_ofs_y(msg);
-	sensor_offsets->mag_ofs_z = mavlink_msg_sensor_offsets_get_mag_ofs_z(msg);
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 	sensor_offsets->mag_declination = mavlink_msg_sensor_offsets_get_mag_declination(msg);
 	sensor_offsets->raw_press = mavlink_msg_sensor_offsets_get_raw_press(msg);
 	sensor_offsets->raw_temp = mavlink_msg_sensor_offsets_get_raw_temp(msg);
@@ -565,13 +377,10 @@ static inline void mavlink_msg_sensor_offsets_decode(const mavlink_message_t* ms
 	sensor_offsets->accel_cal_x = mavlink_msg_sensor_offsets_get_accel_cal_x(msg);
 	sensor_offsets->accel_cal_y = mavlink_msg_sensor_offsets_get_accel_cal_y(msg);
 	sensor_offsets->accel_cal_z = mavlink_msg_sensor_offsets_get_accel_cal_z(msg);
-<<<<<<< HEAD
 	sensor_offsets->mag_ofs_x = mavlink_msg_sensor_offsets_get_mag_ofs_x(msg);
 	sensor_offsets->mag_ofs_y = mavlink_msg_sensor_offsets_get_mag_ofs_y(msg);
 	sensor_offsets->mag_ofs_z = mavlink_msg_sensor_offsets_get_mag_ofs_z(msg);
 #else
 	memcpy(sensor_offsets, _MAV_PAYLOAD(msg), 42);
 #endif
-=======
->>>>>>> 50f22e4e58609b41670b9ac86b9d0797d020ed65
 }

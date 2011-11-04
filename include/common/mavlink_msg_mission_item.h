@@ -88,7 +88,7 @@ static inline uint16_t mavlink_msg_mission_item_pack(uint8_t system_id, uint8_t 
 	_mav_put_uint8_t(buf, 35, current);
 	_mav_put_uint8_t(buf, 36, autocontinue);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 37);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 37);
 #else
 	mavlink_mission_item_t packet;
 	packet.param1 = param1;
@@ -106,7 +106,7 @@ static inline uint16_t mavlink_msg_mission_item_pack(uint8_t system_id, uint8_t 
 	packet.current = current;
 	packet.autocontinue = autocontinue;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 37);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 37);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_MISSION_ITEM;
@@ -156,7 +156,7 @@ static inline uint16_t mavlink_msg_mission_item_pack_chan(uint8_t system_id, uin
 	_mav_put_uint8_t(buf, 35, current);
 	_mav_put_uint8_t(buf, 36, autocontinue);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 37);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 37);
 #else
 	mavlink_mission_item_t packet;
 	packet.param1 = param1;
@@ -174,7 +174,7 @@ static inline uint16_t mavlink_msg_mission_item_pack_chan(uint8_t system_id, uin
 	packet.current = current;
 	packet.autocontinue = autocontinue;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 37);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 37);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_MISSION_ITEM;

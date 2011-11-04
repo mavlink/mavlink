@@ -44,6 +44,8 @@ extern "C" {
 
 
 /** @brief Content Types for data transmission handshake */
+#ifndef HAVE_ENUM_DATA_TYPES
+#define HAVE_ENUM_DATA_TYPES
 enum DATA_TYPES
 {
 	DATA_TYPE_JPEG_IMAGE=1, /*  | */
@@ -51,6 +53,7 @@ enum DATA_TYPES
 	DATA_TYPE_KINECT=3, /*  | */
 	DATA_TYPES_ENUM_END=4, /*  | */
 };
+#endif
 
 // MESSAGE DEFINITIONS
 #include "./mavlink_msg_set_cam_shutter.h"

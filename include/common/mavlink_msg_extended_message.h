@@ -44,14 +44,14 @@ static inline uint16_t mavlink_msg_extended_message_pack(uint8_t system_id, uint
 	_mav_put_uint8_t(buf, 1, target_component);
 	_mav_put_uint8_t(buf, 2, protocol_flags);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 3);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 3);
 #else
 	mavlink_extended_message_t packet;
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 	packet.protocol_flags = protocol_flags;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 3);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 3);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_EXTENDED_MESSAGE;
@@ -79,14 +79,14 @@ static inline uint16_t mavlink_msg_extended_message_pack_chan(uint8_t system_id,
 	_mav_put_uint8_t(buf, 1, target_component);
 	_mav_put_uint8_t(buf, 2, protocol_flags);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 3);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 3);
 #else
 	mavlink_extended_message_t packet;
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 	packet.protocol_flags = protocol_flags;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 3);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 3);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_EXTENDED_MESSAGE;

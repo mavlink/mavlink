@@ -44,6 +44,8 @@ extern "C" {
 
 
 /** @brief Micro air vehicle / autopilot classes. This identifies the individual model. */
+#ifndef HAVE_ENUM_MAV_AUTOPILOT
+#define HAVE_ENUM_MAV_AUTOPILOT
 enum MAV_AUTOPILOT
 {
 	MAV_AUTOPILOT_GENERIC=0, /* Generic autopilot, full support for everything | */
@@ -60,36 +62,45 @@ enum MAV_AUTOPILOT
 	MAV_AUTOPILOT_FP=11, /* FlexiPilot | */
 	MAV_AUTOPILOT_ENUM_END=12, /*  | */
 };
+#endif
 
 /** @brief These flags encode the MAV mode. */
+#ifndef HAVE_ENUM_MAV_MODE_FLAG
+#define HAVE_ENUM_MAV_MODE_FLAG
 enum MAV_MODE_FLAG
 {
-	MAV_MODE_FLAG_SAFETY_ARMED=128, /* 0b10000000 MAV safety set to armed. Motors are enabled / running / can start. Ready to fly. | */
-	MAV_MODE_FLAG_MANUAL_INPUT_ENABLED=64, /* 0b01000000 remote control input is enabled. | */
-	MAV_MODE_FLAG_HIL_ENABLED=32, /* 0b00100000 hardware in the loop simulation. All motors / actuators are blocked, but internal software is full operational. | */
-	MAV_MODE_FLAG_STABILIZE_ENABLED=16, /* 0b00010000 system stabilizes electronically its attitude (and optionally position). It needs however further control inputs to move around. | */
-	MAV_MODE_FLAG_GUIDED_ENABLED=8, /* 0b00001000 guided mode enabled, system flies MISSIONs / mission items. | */
-	MAV_MODE_FLAG_AUTO_ENABLED=4, /* 0b00000100 autonomous mode enabled, system finds its own goal positions. Guided flag can be set or not, depends on the actual implementation. | */
-	MAV_MODE_FLAG_TEST_ENABLED=2, /* 0b00000010 system has a test mode enabled. This flag is intended for temporary system tests and should not be used for stable implementations. | */
 	MAV_MODE_FLAG_CUSTOM_MODE_ENABLED=1, /* 0b00000001 Reserved for future use. | */
-	MAV_MODE_FLAG_ENUM_END=2, /*  | */
+	MAV_MODE_FLAG_TEST_ENABLED=2, /* 0b00000010 system has a test mode enabled. This flag is intended for temporary system tests and should not be used for stable implementations. | */
+	MAV_MODE_FLAG_AUTO_ENABLED=4, /* 0b00000100 autonomous mode enabled, system finds its own goal positions. Guided flag can be set or not, depends on the actual implementation. | */
+	MAV_MODE_FLAG_GUIDED_ENABLED=8, /* 0b00001000 guided mode enabled, system flies MISSIONs / mission items. | */
+	MAV_MODE_FLAG_STABILIZE_ENABLED=16, /* 0b00010000 system stabilizes electronically its attitude (and optionally position). It needs however further control inputs to move around. | */
+	MAV_MODE_FLAG_HIL_ENABLED=32, /* 0b00100000 hardware in the loop simulation. All motors / actuators are blocked, but internal software is full operational. | */
+	MAV_MODE_FLAG_MANUAL_INPUT_ENABLED=64, /* 0b01000000 remote control input is enabled. | */
+	MAV_MODE_FLAG_SAFETY_ARMED=128, /* 0b10000000 MAV safety set to armed. Motors are enabled / running / can start. Ready to fly. | */
+	MAV_MODE_FLAG_ENUM_END=129, /*  | */
 };
+#endif
 
 /** @brief These values encode the bit positions of the decode position. These values can be used to read the value of a flag bit by combining the base_mode variable with AND with the flag position value. The result will be either 0 or 1, depending on if the flag is set or not. */
+#ifndef HAVE_ENUM_MAV_MODE_FLAG_DECODE_POSITION
+#define HAVE_ENUM_MAV_MODE_FLAG_DECODE_POSITION
 enum MAV_MODE_FLAG_DECODE_POSITION
 {
-	MAV_MODE_FLAG_DECODE_POSITION_SAFETY=128, /* First bit:  10000000 | */
-	MAV_MODE_FLAG_DECODE_POSITION_MANUAL=64, /* Second bit: 01000000 | */
-	MAV_MODE_FLAG_DECODE_POSITION_HIL=32, /* Third bit:  00100000 | */
-	MAV_MODE_FLAG_DECODE_POSITION_STABILIZE=16, /* Fourth bit: 00010000 | */
-	MAV_MODE_FLAG_DECODE_POSITION_GUIDED=8, /* Fifth bit:  00001000 | */
-	MAV_MODE_FLAG_DECODE_POSITION_AUTO=4, /* Sixt bit:   00000100 | */
-	MAV_MODE_FLAG_DECODE_POSITION_TEST=2, /* Seventh bit: 00000010 | */
 	MAV_MODE_FLAG_DECODE_POSITION_CUSTOM_MODE=1, /* Eighth bit: 00000001 | */
-	MAV_MODE_FLAG_DECODE_POSITION_ENUM_END=2, /*  | */
+	MAV_MODE_FLAG_DECODE_POSITION_TEST=2, /* Seventh bit: 00000010 | */
+	MAV_MODE_FLAG_DECODE_POSITION_AUTO=4, /* Sixt bit:   00000100 | */
+	MAV_MODE_FLAG_DECODE_POSITION_GUIDED=8, /* Fifth bit:  00001000 | */
+	MAV_MODE_FLAG_DECODE_POSITION_STABILIZE=16, /* Fourth bit: 00010000 | */
+	MAV_MODE_FLAG_DECODE_POSITION_HIL=32, /* Third bit:  00100000 | */
+	MAV_MODE_FLAG_DECODE_POSITION_MANUAL=64, /* Second bit: 01000000 | */
+	MAV_MODE_FLAG_DECODE_POSITION_SAFETY=128, /* First bit:  10000000 | */
+	MAV_MODE_FLAG_DECODE_POSITION_ENUM_END=129, /*  | */
 };
+#endif
 
 /** @brief Override command, pauses current mission execution and moves immediately to a position */
+#ifndef HAVE_ENUM_MAV_GOTO
+#define HAVE_ENUM_MAV_GOTO
 enum MAV_GOTO
 {
 	MAV_GOTO_DO_HOLD=0, /* Hold at the current position. | */
@@ -98,26 +109,32 @@ enum MAV_GOTO
 	MAV_GOTO_HOLD_AT_SPECIFIED_POSITION=3, /* Hold at the position specified in the parameters of the DO_HOLD action | */
 	MAV_GOTO_ENUM_END=4, /*  | */
 };
+#endif
 
 /** @brief These defines are predefined OR-combined mode flags. There is no need to use values from this enum, but it
                simplifies the use of the mode flags. Note that manual input is enabled in all modes as a safety override. */
+#ifndef HAVE_ENUM_MAV_MODE
+#define HAVE_ENUM_MAV_MODE
 enum MAV_MODE
 {
 	MAV_MODE_PREFLIGHT=0, /* System is not ready to fly, booting, calibrating, etc. No flag is set. | */
-	MAV_MODE_STABILIZE_DISARMED=80, /* System is allowed to be active, under assisted RC control. | */
-	MAV_MODE_STABILIZE_ARMED=208, /* System is allowed to be active, under assisted RC control. | */
 	MAV_MODE_MANUAL_DISARMED=64, /* System is allowed to be active, under manual (RC) control, no stabilization | */
-	MAV_MODE_MANUAL_ARMED=192, /* System is allowed to be active, under manual (RC) control, no stabilization | */
-	MAV_MODE_GUIDED_DISARMED=88, /* System is allowed to be active, under autonomous control, manual setpoint | */
-	MAV_MODE_GUIDED_ARMED=216, /* System is allowed to be active, under autonomous control, manual setpoint | */
-	MAV_MODE_AUTO_DISARMED=92, /* System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by MISSIONs) | */
-	MAV_MODE_AUTO_ARMED=220, /* System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by MISSIONs) | */
 	MAV_MODE_TEST_DISARMED=66, /* UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only. | */
+	MAV_MODE_STABILIZE_DISARMED=80, /* System is allowed to be active, under assisted RC control. | */
+	MAV_MODE_GUIDED_DISARMED=88, /* System is allowed to be active, under autonomous control, manual setpoint | */
+	MAV_MODE_AUTO_DISARMED=92, /* System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by MISSIONs) | */
+	MAV_MODE_MANUAL_ARMED=192, /* System is allowed to be active, under manual (RC) control, no stabilization | */
 	MAV_MODE_TEST_ARMED=194, /* UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only. | */
-	MAV_MODE_ENUM_END=195, /*  | */
+	MAV_MODE_STABILIZE_ARMED=208, /* System is allowed to be active, under assisted RC control. | */
+	MAV_MODE_GUIDED_ARMED=216, /* System is allowed to be active, under autonomous control, manual setpoint | */
+	MAV_MODE_AUTO_ARMED=220, /* System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by MISSIONs) | */
+	MAV_MODE_ENUM_END=221, /*  | */
 };
+#endif
 
 /** @brief  */
+#ifndef HAVE_ENUM_MAV_STATE
+#define HAVE_ENUM_MAV_STATE
 enum MAV_STATE
 {
 	MAV_STATE_UNINIT=0, /* Uninitialized system, state is unknown. | */
@@ -130,8 +147,11 @@ enum MAV_STATE
 	MAV_STATE_POWEROFF=7, /* System just initialized its power-down sequence, will shut down now. | */
 	MAV_STATE_ENUM_END=8, /*  | */
 };
+#endif
 
 /** @brief  */
+#ifndef HAVE_ENUM_MAV_TYPE
+#define HAVE_ENUM_MAV_TYPE
 enum MAV_TYPE
 {
 	MAV_TYPE_GENERIC=0, /* Generic micro air vehicle. | */
@@ -153,22 +173,15 @@ enum MAV_TYPE
 	MAV_TYPE_FLAPPING_WING=16, /* Flapping wing | */
 	MAV_TYPE_ENUM_END=17, /*  | */
 };
+#endif
 
 /** @brief  */
+#ifndef HAVE_ENUM_MAV_COMPONENT
+#define HAVE_ENUM_MAV_COMPONENT
 enum MAV_COMPONENT
 {
 	MAV_COMP_ID_ALL=0, /*  | */
-	MAV_COMP_ID_GPS=220, /*  | */
-	MAV_COMP_ID_MISSIONPLANNER=190, /*  | */
-	MAV_COMP_ID_PATHPLANNER=195, /*  | */
-	MAV_COMP_ID_MAPPER=180, /*  | */
 	MAV_COMP_ID_CAMERA=100, /*  | */
-	MAV_COMP_ID_IMU=200, /*  | */
-	MAV_COMP_ID_IMU_2=201, /*  | */
-	MAV_COMP_ID_IMU_3=202, /*  | */
-	MAV_COMP_ID_UDP_BRIDGE=240, /*  | */
-	MAV_COMP_ID_UART_BRIDGE=241, /*  | */
-	MAV_COMP_ID_SYSTEM_CONTROL=250, /*  | */
 	MAV_COMP_ID_SERVO1=140, /*  | */
 	MAV_COMP_ID_SERVO2=141, /*  | */
 	MAV_COMP_ID_SERVO3=142, /*  | */
@@ -183,10 +196,23 @@ enum MAV_COMPONENT
 	MAV_COMP_ID_SERVO12=151, /*  | */
 	MAV_COMP_ID_SERVO13=152, /*  | */
 	MAV_COMP_ID_SERVO14=153, /*  | */
-	MAV_COMPONENT_ENUM_END=154, /*  | */
+	MAV_COMP_ID_MAPPER=180, /*  | */
+	MAV_COMP_ID_MISSIONPLANNER=190, /*  | */
+	MAV_COMP_ID_PATHPLANNER=195, /*  | */
+	MAV_COMP_ID_IMU=200, /*  | */
+	MAV_COMP_ID_IMU_2=201, /*  | */
+	MAV_COMP_ID_IMU_3=202, /*  | */
+	MAV_COMP_ID_GPS=220, /*  | */
+	MAV_COMP_ID_UDP_BRIDGE=240, /*  | */
+	MAV_COMP_ID_UART_BRIDGE=241, /*  | */
+	MAV_COMP_ID_SYSTEM_CONTROL=250, /*  | */
+	MAV_COMPONENT_ENUM_END=251, /*  | */
 };
+#endif
 
 /** @brief  */
+#ifndef HAVE_ENUM_MAV_FRAME
+#define HAVE_ENUM_MAV_FRAME
 enum MAV_FRAME
 {
 	MAV_FRAME_GLOBAL=0, /* Global coordinate frame, WGS84 coordinate system. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL) | */
@@ -196,24 +222,30 @@ enum MAV_FRAME
 	MAV_FRAME_LOCAL_ENU=4, /* Local coordinate frame, Z-down (x: east, y: north, z: up) | */
 	MAV_FRAME_ENUM_END=5, /*  | */
 };
+#endif
 
 /** @brief  */
+#ifndef HAVE_ENUM_MAVLINK_DATA_STREAM_TYPE
+#define HAVE_ENUM_MAVLINK_DATA_STREAM_TYPE
 enum MAVLINK_DATA_STREAM_TYPE
 {
-	MAVLINK_DATA_STREAM_IMG_JPEG=0, /*  | */
-	MAVLINK_DATA_STREAM_IMG_BMP=1, /*  | */
-	MAVLINK_DATA_STREAM_IMG_RAW8U=2, /*  | */
-	MAVLINK_DATA_STREAM_IMG_RAW32U=3, /*  | */
-	MAVLINK_DATA_STREAM_IMG_PGM=4, /*  | */
-	MAVLINK_DATA_STREAM_IMG_PNG=5, /*  | */
-	MAVLINK_DATA_STREAM_TYPE_ENUM_END=6, /*  | */
+	MAVLINK_DATA_STREAM_IMG_JPEG=1, /*  | */
+	MAVLINK_DATA_STREAM_IMG_BMP=2, /*  | */
+	MAVLINK_DATA_STREAM_IMG_RAW8U=3, /*  | */
+	MAVLINK_DATA_STREAM_IMG_RAW32U=4, /*  | */
+	MAVLINK_DATA_STREAM_IMG_PGM=5, /*  | */
+	MAVLINK_DATA_STREAM_IMG_PNG=6, /*  | */
+	MAVLINK_DATA_STREAM_TYPE_ENUM_END=7, /*  | */
 };
+#endif
 
 /** @brief Commands to be executed by the MAV. They can be executed on user request,
       or as part of a mission script. If the action is used in a mission, the parameter mapping
       to the waypoint/mission message is as follows:
       Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what
       ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. */
+#ifndef HAVE_ENUM_MAV_CMD
+#define HAVE_ENUM_MAV_CMD
 enum MAV_CMD
 {
 	MAV_CMD_NAV_WAYPOINT=16, /* Navigate to MISSION. |Hold time in decimal seconds. (ignored by fixed wing, time to stay at MISSION for rotary wing)| Acceptance radius in meters (if the sphere with this radius is hit, the MISSION counts as reached)| 0 to pass through the WP, if > 0 radius in meters to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.| Desired yaw angle at MISSION (rotary wing)| Latitude| Longitude| Altitude|  */
@@ -253,11 +285,14 @@ enum MAV_CMD
 	MAV_CMD_MISSION_START=300, /* start running a mission |first_item: the first mission item to run| last_item:  the last mission item to run (after this item is run, the mission ends)|  */
 	MAV_CMD_ENUM_END=301, /*  | */
 };
+#endif
 
 /** @brief Data stream IDs. A data stream is not a fixed set of messages, but rather a
      recommendation to the autopilot software. Individual autopilots may or may not obey
      the recommended messages.
       */
+#ifndef HAVE_ENUM_MAV_DATA_STREAM
+#define HAVE_ENUM_MAV_DATA_STREAM
 enum MAV_DATA_STREAM
 {
 	MAV_DATA_STREAM_ALL=0, /* Enable all data streams | */
@@ -271,11 +306,14 @@ enum MAV_DATA_STREAM
 	MAV_DATA_STREAM_EXTRA3=12, /* Dependent on the autopilot | */
 	MAV_DATA_STREAM_ENUM_END=13, /*  | */
 };
+#endif
 
 /** @brief  The ROI (region of interest) for the vehicle. This can be
                 be used by the vehicle for camera/vehicle attitude alignment (see
                 MAV_CMD_NAV_ROI).
              */
+#ifndef HAVE_ENUM_MAV_ROI
+#define HAVE_ENUM_MAV_ROI
 enum MAV_ROI
 {
 	MAV_ROI_NONE=0, /* No region of interest. | */
@@ -285,23 +323,29 @@ enum MAV_ROI
 	MAV_ROI_TARGET=4, /* Point toward of given id. | */
 	MAV_ROI_ENUM_END=5, /*  | */
 };
+#endif
 
 /** @brief ACK / NACK / ERROR values as a result of MAV_CMDs and for mission item transmission. */
+#ifndef HAVE_ENUM_MAV_CMD_ACK
+#define HAVE_ENUM_MAV_CMD_ACK
 enum MAV_CMD_ACK
 {
-	MAV_CMD_ACK_OK=0, /* Command / mission item is ok. | */
-	MAV_CMD_ACK_ERR_FAIL=1, /* Generic error message if none of the other reasons fails or if no detailed error reporting is implemented. | */
-	MAV_CMD_ACK_ERR_ACCESS_DENIED=2, /* The system is refusing to accept this command from this source / communication partner. | */
-	MAV_CMD_ACK_ERR_NOT_SUPPORTED=3, /* Command or mission item is not supported, other commands would be accepted. | */
-	MAV_CMD_ACK_ERR_COORDINATE_FRAME_NOT_SUPPORTED=4, /* The coordinate frame of this command / mission item is not supported. | */
-	MAV_CMD_ACK_ERR_COORDINATES_OUT_OF_RANGE=5, /* The coordinate frame of this command is ok, but he coordinate values exceed the safety limits of this system. This is a generic error, please use the more specific error messages below if possible. | */
-	MAV_CMD_ACK_ERR_X_LAT_OUT_OF_RANGE=6, /* The X or latitude value is out of range. | */
-	MAV_CMD_ACK_ERR_Y_LON_OUT_OF_RANGE=7, /* The Y or longitude value is out of range. | */
-	MAV_CMD_ACK_ERR_Z_ALT_OUT_OF_RANGE=8, /* The Z or altitude value is out of range. | */
-	MAV_CMD_ACK_ENUM_END=9, /*  | */
+	MAV_CMD_ACK_OK=1, /* Command / mission item is ok. | */
+	MAV_CMD_ACK_ERR_FAIL=2, /* Generic error message if none of the other reasons fails or if no detailed error reporting is implemented. | */
+	MAV_CMD_ACK_ERR_ACCESS_DENIED=3, /* The system is refusing to accept this command from this source / communication partner. | */
+	MAV_CMD_ACK_ERR_NOT_SUPPORTED=4, /* Command or mission item is not supported, other commands would be accepted. | */
+	MAV_CMD_ACK_ERR_COORDINATE_FRAME_NOT_SUPPORTED=5, /* The coordinate frame of this command / mission item is not supported. | */
+	MAV_CMD_ACK_ERR_COORDINATES_OUT_OF_RANGE=6, /* The coordinate frame of this command is ok, but he coordinate values exceed the safety limits of this system. This is a generic error, please use the more specific error messages below if possible. | */
+	MAV_CMD_ACK_ERR_X_LAT_OUT_OF_RANGE=7, /* The X or latitude value is out of range. | */
+	MAV_CMD_ACK_ERR_Y_LON_OUT_OF_RANGE=8, /* The Y or longitude value is out of range. | */
+	MAV_CMD_ACK_ERR_Z_ALT_OUT_OF_RANGE=9, /* The Z or altitude value is out of range. | */
+	MAV_CMD_ACK_ENUM_END=10, /*  | */
 };
+#endif
 
 /** @brief type of a mavlink parameter */
+#ifndef HAVE_ENUM_MAV_VAR
+#define HAVE_ENUM_MAV_VAR
 enum MAV_VAR
 {
 	MAV_VAR_FLOAT=0, /* 32 bit float | */
@@ -313,8 +357,11 @@ enum MAV_VAR
 	MAV_VAR_INT32=6, /* 32 bit signed integer | */
 	MAV_VAR_ENUM_END=7, /*  | */
 };
+#endif
 
 /** @brief result from a mavlink command */
+#ifndef HAVE_ENUM_MAV_RESULT
+#define HAVE_ENUM_MAV_RESULT
 enum MAV_RESULT
 {
 	MAV_RESULT_ACCEPTED=0, /* Command ACCEPTED and EXECUTED | */
@@ -324,8 +371,11 @@ enum MAV_RESULT
 	MAV_RESULT_FAILED=4, /* Command executed, but failed | */
 	MAV_RESULT_ENUM_END=5, /*  | */
 };
+#endif
 
 /** @brief result in a mavlink mission ack */
+#ifndef HAVE_ENUM_MAV_MISSION_RESULT
+#define HAVE_ENUM_MAV_MISSION_RESULT
 enum MAV_MISSION_RESULT
 {
 	MAV_MISSION_ACCEPTED=0, /* mission accepted OK | */
@@ -345,6 +395,7 @@ enum MAV_MISSION_RESULT
 	MAV_MISSION_DENIED=14, /* not accepting any mission commands from this communication partner | */
 	MAV_MISSION_RESULT_ENUM_END=15, /*  | */
 };
+#endif
 
 // MESSAGE DEFINITIONS
 #include "./mavlink_msg_heartbeat.h"

@@ -549,8 +549,8 @@ static void mavlink_test_watchdog_process_info(uint8_t system_id, uint8_t compon
         	packet1.watchdog_id = packet_in.watchdog_id;
         	packet1.process_id = packet_in.process_id;
         
-        	memcpy(packet1.name, packet_in.name, sizeof(char)*100);
-        	memcpy(packet1.arguments, packet_in.arguments, sizeof(char)*147);
+        	mav_array_memcpy(packet1.name, packet_in.name, sizeof(char)*100);
+        	mav_array_memcpy(packet1.arguments, packet_in.arguments, sizeof(char)*147);
         
 
         memset(&packet2, 0, sizeof(packet2));
@@ -701,7 +701,7 @@ static void mavlink_test_pattern_detected(uint8_t system_id, uint8_t component_i
         	packet1.type = packet_in.type;
         	packet1.detected = packet_in.detected;
         
-        	memcpy(packet1.file, packet_in.file, sizeof(char)*100);
+        	mav_array_memcpy(packet1.file, packet_in.file, sizeof(char)*100);
         
 
         memset(&packet2, 0, sizeof(packet2));
@@ -758,7 +758,7 @@ static void mavlink_test_point_of_interest(uint8_t system_id, uint8_t component_
         	packet1.color = packet_in.color;
         	packet1.coordinate_system = packet_in.coordinate_system;
         
-        	memcpy(packet1.name, packet_in.name, sizeof(char)*26);
+        	mav_array_memcpy(packet1.name, packet_in.name, sizeof(char)*26);
         
 
         memset(&packet2, 0, sizeof(packet2));
@@ -821,7 +821,7 @@ static void mavlink_test_point_of_interest_connection(uint8_t system_id, uint8_t
         	packet1.color = packet_in.color;
         	packet1.coordinate_system = packet_in.coordinate_system;
         
-        	memcpy(packet1.name, packet_in.name, sizeof(char)*26);
+        	mav_array_memcpy(packet1.name, packet_in.name, sizeof(char)*26);
         
 
         memset(&packet2, 0, sizeof(packet2));
@@ -917,7 +917,7 @@ static void mavlink_test_encapsulated_data(uint8_t system_id, uint8_t component_
         memset(&packet1, 0, sizeof(packet1));
         	packet1.seqnr = packet_in.seqnr;
         
-        	memcpy(packet1.data, packet_in.data, sizeof(uint8_t)*253);
+        	mav_array_memcpy(packet1.data, packet_in.data, sizeof(uint8_t)*253);
         
 
         memset(&packet2, 0, sizeof(packet2));
@@ -974,7 +974,7 @@ static void mavlink_test_brief_feature(uint8_t system_id, uint8_t component_id, 
         	packet1.orientation = packet_in.orientation;
         	packet1.orientation_assignment = packet_in.orientation_assignment;
         
-        	memcpy(packet1.descriptor, packet_in.descriptor, sizeof(uint8_t)*32);
+        	mav_array_memcpy(packet1.descriptor, packet_in.descriptor, sizeof(uint8_t)*32);
         
 
         memset(&packet2, 0, sizeof(packet2));

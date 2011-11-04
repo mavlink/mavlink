@@ -76,7 +76,7 @@ static inline uint16_t mavlink_msg_command_long_pack(uint8_t system_id, uint8_t 
 	_mav_put_uint8_t(buf, 31, target_component);
 	_mav_put_uint8_t(buf, 32, confirmation);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 33);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 33);
 #else
 	mavlink_command_long_t packet;
 	packet.param1 = param1;
@@ -91,7 +91,7 @@ static inline uint16_t mavlink_msg_command_long_pack(uint8_t system_id, uint8_t 
 	packet.target_component = target_component;
 	packet.confirmation = confirmation;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 33);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 33);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_COMMAND_LONG;
@@ -135,7 +135,7 @@ static inline uint16_t mavlink_msg_command_long_pack_chan(uint8_t system_id, uin
 	_mav_put_uint8_t(buf, 31, target_component);
 	_mav_put_uint8_t(buf, 32, confirmation);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 33);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 33);
 #else
 	mavlink_command_long_t packet;
 	packet.param1 = param1;
@@ -150,7 +150,7 @@ static inline uint16_t mavlink_msg_command_long_pack_chan(uint8_t system_id, uin
 	packet.target_component = target_component;
 	packet.confirmation = confirmation;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 33);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 33);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_COMMAND_LONG;

@@ -56,7 +56,7 @@ static inline uint16_t mavlink_msg_set_position_control_offset_pack(uint8_t syst
 	_mav_put_uint8_t(buf, 16, target_system);
 	_mav_put_uint8_t(buf, 17, target_component);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 18);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 18);
 #else
 	mavlink_set_position_control_offset_t packet;
 	packet.x = x;
@@ -66,7 +66,7 @@ static inline uint16_t mavlink_msg_set_position_control_offset_pack(uint8_t syst
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 18);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 18);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_SET_POSITION_CONTROL_OFFSET;
@@ -100,7 +100,7 @@ static inline uint16_t mavlink_msg_set_position_control_offset_pack_chan(uint8_t
 	_mav_put_uint8_t(buf, 16, target_system);
 	_mav_put_uint8_t(buf, 17, target_component);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 18);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 18);
 #else
 	mavlink_set_position_control_offset_t packet;
 	packet.x = x;
@@ -110,7 +110,7 @@ static inline uint16_t mavlink_msg_set_position_control_offset_pack_chan(uint8_t
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 18);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 18);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_SET_POSITION_CONTROL_OFFSET;

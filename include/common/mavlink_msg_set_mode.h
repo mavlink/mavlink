@@ -44,14 +44,14 @@ static inline uint16_t mavlink_msg_set_mode_pack(uint8_t system_id, uint8_t comp
 	_mav_put_uint8_t(buf, 4, target_system);
 	_mav_put_uint8_t(buf, 5, base_mode);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 6);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 6);
 #else
 	mavlink_set_mode_t packet;
 	packet.custom_mode = custom_mode;
 	packet.target_system = target_system;
 	packet.base_mode = base_mode;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 6);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 6);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_SET_MODE;
@@ -79,14 +79,14 @@ static inline uint16_t mavlink_msg_set_mode_pack_chan(uint8_t system_id, uint8_t
 	_mav_put_uint8_t(buf, 4, target_system);
 	_mav_put_uint8_t(buf, 5, base_mode);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 6);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 6);
 #else
 	mavlink_set_mode_t packet;
 	packet.custom_mode = custom_mode;
 	packet.target_system = target_system;
 	packet.base_mode = base_mode;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 6);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 6);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_SET_MODE;

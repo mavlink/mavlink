@@ -48,7 +48,7 @@ static inline uint16_t mavlink_msg_mission_request_partial_list_pack(uint8_t sys
 	_mav_put_uint8_t(buf, 4, target_system);
 	_mav_put_uint8_t(buf, 5, target_component);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 6);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 6);
 #else
 	mavlink_mission_request_partial_list_t packet;
 	packet.start_index = start_index;
@@ -56,7 +56,7 @@ static inline uint16_t mavlink_msg_mission_request_partial_list_pack(uint8_t sys
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 6);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 6);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_MISSION_REQUEST_PARTIAL_LIST;
@@ -86,7 +86,7 @@ static inline uint16_t mavlink_msg_mission_request_partial_list_pack_chan(uint8_
 	_mav_put_uint8_t(buf, 4, target_system);
 	_mav_put_uint8_t(buf, 5, target_component);
 
-        memcpy(_MAV_PAYLOAD(msg), buf, 6);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 6);
 #else
 	mavlink_mission_request_partial_list_t packet;
 	packet.start_index = start_index;
@@ -94,7 +94,7 @@ static inline uint16_t mavlink_msg_mission_request_partial_list_pack_chan(uint8_
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 
-        memcpy(_MAV_PAYLOAD(msg), &packet, 6);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 6);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_MISSION_REQUEST_PARTIAL_LIST;
