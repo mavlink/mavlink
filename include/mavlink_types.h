@@ -94,6 +94,19 @@ typedef struct __mavlink_message {
 	uint64_t payload64[(MAVLINK_MAX_PAYLOAD_LEN+MAVLINK_NUM_CHECKSUM_BYTES+7)/8];
 } mavlink_message_t;
 
+typedef struct __mavlink_extended_message {
+	uint16_t checksum; /// sent at end of packet
+	uint8_t magic;   ///< protocol magic marker
+	uint8_t len;     ///< Length of payload
+	uint8_t seq;     ///< Sequence of packet
+	uint8_t sysid;   ///< ID of message sender system/aircraft
+	uint8_t compid;  ///< ID of the message sender component
+	uint8_t msgid;   ///< ID of message in payload
+	uint64_t payload64[(MAVLINK_MAX_PAYLOAD_LEN+MAVLINK_NUM_CHECKSUM_BYTES+7)/8];
+	int64_t extended_payload_len;	///< Length of extended payload if any
+	uint8_t* extended_payload;
+} mavlink_extended_message_t;
+
 typedef enum {
 	MAVLINK_TYPE_CHAR     = 0,
 	MAVLINK_TYPE_UINT8_T  = 1,
