@@ -83,6 +83,8 @@ typedef struct __mavlink_system {
     uint8_t nav_mode;    ///< Unused, can be used by user to store the system's navigation mode
 } mavlink_system_t;
 
+#define MAVLINK_MSG_ID_EXTENDED_MESSAGE 255
+
 typedef struct __mavlink_message {
 	uint16_t checksum; /// sent at end of packet
 	uint8_t magic;   ///< protocol magic marker
