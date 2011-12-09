@@ -40,21 +40,12 @@ public:
 		mStreamID = rand() + 1;
 	}
 
-	static std::tr1::shared_ptr<ProtobufManager>& instance(void)
-	{
-		if (mInstance.get() == 0)
-		{
-			mInstance.reset(new ProtobufManager);
-		}
-		return mInstance;
-	}
-
 	bool fragmentMessage(uint8_t system_id, uint8_t component_id,
 						 uint8_t target_system, uint8_t target_component,
 						 const google::protobuf::Message& protobuf_msg,
-						 std::vector<mavlink_extended_message_t>& fragments)
+						 std::vector<mavlink_extended_message_t>& fragments) const
 	{
-		TypeMap::iterator it = mTypeMap.find(protobuf_msg.GetTypeName());
+		TypeMap::const_iterator it = mTypeMap.find(protobuf_msg.GetTypeName());
 		if (it == mTypeMap.end())
 		{
 			std::cout << "# WARNING: Protobuf message with type "
@@ -72,15 +63,7 @@ public:
 
 		for (int i = 0; i < fragmentCount; ++i)
 		{
-			mavlink_extended_message_t fragment;
-
-			fragment.base_msg.magic = MAVLINK_STX;
-			fragment.base_msg.len = kExtendedHeaderSize;
-			fragment.base_msg.seq = mavlink_get_channel_status(MAVLINK_COMM_0)->current_tx_seq;
-			++mavlink_get_channel_status(MAVLINK_COMM_0)->current_tx_seq;
-			fragment.base_msg.sysid = system_id;
-			fragment.base_msg.compid = component_id;
-			fragment.base_msg.msgid = MAVLINK_MSG_ID_EXTENDED_MESSAGE;
+			mavlink_extended_message_t fragment;			
 
 			// write extended header data
 			uint8_t* payload = reinterpret_cast<uint8_t*>(fragment.base_msg.payload64);
@@ -105,17 +88,17 @@ public:
 			memcpy(payload + 9, &offset, 4);
 			memcpy(payload + 13, &flags, 1);
 
+			fragment.base_msg.msgid = MAVLINK_MSG_ID_EXTENDED_MESSAGE;
+			mavlink_finalize_message(&fragment.base_msg, system_id, component_id, kExtendedHeaderSize, 0);
+			
 			// write extended payload data
 			fragment.extended_payload_len = length;
 			memcpy(fragment.extended_payload, &data[offset], length);
 
-			// calculate crc
-			fragment.base_msg.checksum = crc_calculate(reinterpret_cast<uint8_t*>(&data[offset]), length);
-
 			fragments.push_back(fragment);
 			offset += length;
 		}
-
+printf("end\n");
 		if (mVerbose)
 		{
 			std::cerr << "# INFO: Split extended message with size "
@@ -295,8 +278,16 @@ private:
 			return false;
 		}
 
-		uint16_t crc = crc_calculate(msg.extended_payload, fragmentDataSize(msg));
-		if (msg.base_msg.checksum != crc)
+		uint16_t checksum;
+		checksum = crc_calculate(reinterpret_cast<const uint8_t*>(&msg.base_msg.len), MAVLINK_CORE_HEADER_LEN);
+		crc_accumulate_buffer(&checksum, reinterpret_cast<const char*>(&msg.base_msg.payload64), kExtendedHeaderSize);
+#if MAVLINK_CRC_EXTRA
+		static const uint8_t mavlink_message_crcs[256] = MAVLINK_MESSAGE_CRCS;
+		crc_accumulate(mavlink_message_crcs[msg.base_msg.msgid], &checksum);
+#endif
+
+		if (mavlink_ck_a(&(msg.base_msg)) != (uint8_t)(checksum & 0xFF) &&
+		    mavlink_ck_b(&(msg.base_msg)) != (uint8_t)(checksum >> 8))
 		{
 			return false;
 		}
@@ -344,11 +335,7 @@ private:
 	 */
 
 	const int kExtendedPayloadMaxSize;
-
-	static std::tr1::shared_ptr<ProtobufManager> mInstance;
 };
-
-std::tr1::shared_ptr<ProtobufManager> ProtobufManager::mInstance;
 
 }
 
