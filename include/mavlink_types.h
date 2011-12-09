@@ -84,6 +84,9 @@ typedef struct __mavlink_system {
 } mavlink_system_t;
 
 #define MAVLINK_MSG_ID_EXTENDED_MESSAGE 255
+#define MAVLINK_EXTENDED_HEADER_LEN 14
+#define MAVLINK_MAX_EXTENDED_PACKET_LEN 65507
+#define MAVLINK_MAX_EXTENDED_PAYLOAD_LEN (MAVLINK_MAX_EXTENDED_PACKET_LEN - MAVLINK_EXTENDED_HEADER_LEN - MAVLINK_NUM_NON_PAYLOAD_BYTES)
 
 typedef struct __mavlink_message {
 	uint16_t checksum; /// sent at end of packet
@@ -98,8 +101,8 @@ typedef struct __mavlink_message {
 
 typedef struct __mavlink_extended_message {
 	mavlink_message_t base_msg;
-	int64_t extended_payload_len;   ///< Length of extended payload if any
-	uint8_t* extended_payload;
+	int32_t extended_payload_len;   ///< Length of extended payload if any
+	uint8_t extended_payload[MAVLINK_MAX_EXTENDED_PAYLOAD_LEN];
 } mavlink_extended_message_t;
 
 typedef enum {

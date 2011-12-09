@@ -498,18 +498,4 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
 }
 #endif // MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-MAVLINK_HELPER void mavlink_extended_message_t_initialize(mavlink_extended_message_t* msg)
-{
-	msg->extended_payload_len = 0;
-	msg->extended_payload = 0;
-}
-
-MAVLINK_HELPER void mavlink_extended_message_t_finalize(mavlink_extended_message_t* msg)
-{
-	if (msg->extended_payload)
-	{
-		free(msg->extended_payload);
-	}
-}
-
 #endif /* _MAVLINK_HELPERS_H_ */
