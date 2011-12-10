@@ -36,6 +36,12 @@ public:
 			registerType(msg);
 		}
 
+		// register RGBDImage
+		{
+			std::tr1::shared_ptr<px::RGBDImage> msg(new px::RGBDImage);
+			registerType(msg);
+		}
+
 		srand(time(NULL));
 		mStreamID = rand() + 1;
 	}
@@ -98,7 +104,7 @@ public:
 			fragments.push_back(fragment);
 			offset += length;
 		}
-printf("end\n");
+
 		if (mVerbose)
 		{
 			std::cerr << "# INFO: Split extended message with size "
