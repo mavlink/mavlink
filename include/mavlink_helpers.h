@@ -1,8 +1,6 @@
 #ifndef  _MAVLINK_HELPERS_H_
 #define  _MAVLINK_HELPERS_H_
 
-#include <stdlib.h>
-
 #include "string.h"
 #include "checksum.h"
 #include "mavlink_types.h"
@@ -216,7 +214,7 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 	case MAVLINK_PARSE_STATE_UNINIT:
 	case MAVLINK_PARSE_STATE_IDLE:
 		if (c == MAVLINK_STX)
-                {
+		{
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
 			rxmsg->len = 0;
 			rxmsg->magic = c;
@@ -239,9 +237,9 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 		}
 		else
-                {
+		{
 			// NOT counting STX, LENGTH, SEQ, SYSID, COMPID, MSGID, CRC1 and CRC2
-                        rxmsg->len = c;
+			rxmsg->len = c;
 			status->packet_idx = 0;
 			mavlink_update_checksum(rxmsg, c);
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_LENGTH;
@@ -267,14 +265,14 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_COMPID:
-                rxmsg->msgid = c;
+		rxmsg->msgid = c;
 		mavlink_update_checksum(rxmsg, c);
 		if (rxmsg->len == 0)
 		{
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_PAYLOAD;
 		}
 		else
-                {
+		{
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID;
 		}
 		break;
@@ -292,7 +290,7 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 #if MAVLINK_CRC_EXTRA
 		mavlink_update_checksum(rxmsg, MAVLINK_MESSAGE_CRC(rxmsg->msgid));
 #endif
-                if (c != (rxmsg->checksum & 0xFF)) {
+		if (c != (rxmsg->checksum & 0xFF)) {
 			// Check first checksum byte
 			status->parse_error++;
 			status->msg_received = 0;

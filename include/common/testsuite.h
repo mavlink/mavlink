@@ -2526,6 +2526,104 @@ static void mavlink_test_roll_pitch_yaw_speed_thrust_setpoint(uint8_t system_id,
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
+static void mavlink_test_set_quad_motors_setpoint(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_set_quad_motors_setpoint_t packet_in = {
+		5,
+	72,
+	139,
+	206,
+	};
+	mavlink_set_quad_motors_setpoint_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.motorFront_NW = packet_in.motorFront_NW;
+        	packet1.motorRight_NE = packet_in.motorRight_NE;
+        	packet1.motorBack_SE = packet_in.motorBack_SE;
+        	packet1.motorLeft_SW = packet_in.motorLeft_SW;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_set_quad_motors_setpoint_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_set_quad_motors_setpoint_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_set_quad_motors_setpoint_pack(system_id, component_id, &msg , packet1.motorFront_NW , packet1.motorRight_NE , packet1.motorBack_SE , packet1.motorLeft_SW );
+	mavlink_msg_set_quad_motors_setpoint_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_set_quad_motors_setpoint_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.motorFront_NW , packet1.motorRight_NE , packet1.motorBack_SE , packet1.motorLeft_SW );
+	mavlink_msg_set_quad_motors_setpoint_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_set_quad_motors_setpoint_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_set_quad_motors_setpoint_send(MAVLINK_COMM_1 , packet1.motorFront_NW , packet1.motorRight_NE , packet1.motorBack_SE , packet1.motorLeft_SW );
+	mavlink_msg_set_quad_motors_setpoint_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
+static void mavlink_test_quad_swarm_roll_pitch_yaw_thrust(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_quad_swarm_roll_pitch_yaw_thrust_t packet_in = {
+		{ 17235, 17236, 17237, 17238, 17239, 17240, 17241 },
+	{ 17963, 17964, 17965, 17966, 17967, 17968, 17969 },
+	{ 18691, 18692, 18693, 18694, 18695, 18696, 18697 },
+	{ 19419, 19420, 19421, 19422, 19423, 19424, 19425 },
+	};
+	mavlink_quad_swarm_roll_pitch_yaw_thrust_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        
+        	mav_array_memcpy(packet1.roll, packet_in.roll, sizeof(int16_t)*7);
+        	mav_array_memcpy(packet1.pitch, packet_in.pitch, sizeof(int16_t)*7);
+        	mav_array_memcpy(packet1.yaw, packet_in.yaw, sizeof(int16_t)*7);
+        	mav_array_memcpy(packet1.thrust, packet_in.thrust, sizeof(uint16_t)*7);
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_pack(system_id, component_id, &msg , packet1.roll , packet1.pitch , packet1.yaw , packet1.thrust );
+	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.roll , packet1.pitch , packet1.yaw , packet1.thrust );
+	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_send(MAVLINK_COMM_1 , packet1.roll , packet1.pitch , packet1.yaw , packet1.thrust );
+	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
 static void mavlink_test_nav_controller_output(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 	mavlink_message_t msg;
@@ -3829,6 +3927,8 @@ static void mavlink_test_common(uint8_t system_id, uint8_t component_id, mavlink
 	mavlink_test_set_roll_pitch_yaw_speed_thrust(system_id, component_id, last_msg);
 	mavlink_test_roll_pitch_yaw_thrust_setpoint(system_id, component_id, last_msg);
 	mavlink_test_roll_pitch_yaw_speed_thrust_setpoint(system_id, component_id, last_msg);
+	mavlink_test_set_quad_motors_setpoint(system_id, component_id, last_msg);
+	mavlink_test_quad_swarm_roll_pitch_yaw_thrust(system_id, component_id, last_msg);
 	mavlink_test_nav_controller_output(system_id, component_id, last_msg);
 	mavlink_test_state_correction(system_id, component_id, last_msg);
 	mavlink_test_request_data_stream(system_id, component_id, last_msg);
