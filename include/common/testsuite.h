@@ -2532,17 +2532,19 @@ static void mavlink_test_set_quad_motors_setpoint(uint8_t system_id, uint8_t com
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
 	mavlink_set_quad_motors_setpoint_t packet_in = {
-		5,
-	72,
-	139,
-	206,
+		17235,
+	17339,
+	17443,
+	17547,
+	29,
 	};
 	mavlink_set_quad_motors_setpoint_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
-        	packet1.motorFront_NW = packet_in.motorFront_NW;
-        	packet1.motorRight_NE = packet_in.motorRight_NE;
-        	packet1.motorBack_SE = packet_in.motorBack_SE;
-        	packet1.motorLeft_SW = packet_in.motorLeft_SW;
+        	packet1.motor_front_nw = packet_in.motor_front_nw;
+        	packet1.motor_right_ne = packet_in.motor_right_ne;
+        	packet1.motor_back_se = packet_in.motor_back_se;
+        	packet1.motor_left_sw = packet_in.motor_left_sw;
+        	packet1.target_system = packet_in.target_system;
         
         
 
@@ -2552,12 +2554,12 @@ static void mavlink_test_set_quad_motors_setpoint(uint8_t system_id, uint8_t com
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_set_quad_motors_setpoint_pack(system_id, component_id, &msg , packet1.motorFront_NW , packet1.motorRight_NE , packet1.motorBack_SE , packet1.motorLeft_SW );
+	mavlink_msg_set_quad_motors_setpoint_pack(system_id, component_id, &msg , packet1.target_system , packet1.motor_front_nw , packet1.motor_right_ne , packet1.motor_back_se , packet1.motor_left_sw );
 	mavlink_msg_set_quad_motors_setpoint_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_set_quad_motors_setpoint_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.motorFront_NW , packet1.motorRight_NE , packet1.motorBack_SE , packet1.motorLeft_SW );
+	mavlink_msg_set_quad_motors_setpoint_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.target_system , packet1.motor_front_nw , packet1.motor_right_ne , packet1.motor_back_se , packet1.motor_left_sw );
 	mavlink_msg_set_quad_motors_setpoint_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -2570,44 +2572,46 @@ static void mavlink_test_set_quad_motors_setpoint(uint8_t system_id, uint8_t com
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_set_quad_motors_setpoint_send(MAVLINK_COMM_1 , packet1.motorFront_NW , packet1.motorRight_NE , packet1.motorBack_SE , packet1.motorLeft_SW );
+	mavlink_msg_set_quad_motors_setpoint_send(MAVLINK_COMM_1 , packet1.target_system , packet1.motor_front_nw , packet1.motor_right_ne , packet1.motor_back_se , packet1.motor_left_sw );
 	mavlink_msg_set_quad_motors_setpoint_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
-static void mavlink_test_quad_swarm_roll_pitch_yaw_thrust(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+static void mavlink_test_set_quad_swarm_roll_pitch_yaw_thrust(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 	mavlink_message_t msg;
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
-	mavlink_quad_swarm_roll_pitch_yaw_thrust_t packet_in = {
-		{ 17235, 17236, 17237, 17238, 17239, 17240, 17241 },
-	{ 17963, 17964, 17965, 17966, 17967, 17968, 17969 },
-	{ 18691, 18692, 18693, 18694, 18695, 18696, 18697 },
-	{ 19419, 19420, 19421, 19422, 19423, 19424, 19425 },
+	mavlink_set_quad_swarm_roll_pitch_yaw_thrust_t packet_in = {
+		{ 17235, 17236, 17237, 17238, 17239, 17240 },
+	{ 17859, 17860, 17861, 17862, 17863, 17864 },
+	{ 18483, 18484, 18485, 18486, 18487, 18488 },
+	{ 19107, 19108, 19109, 19110, 19111, 19112 },
+	{ 149, 150, 151, 152, 153, 154 },
 	};
-	mavlink_quad_swarm_roll_pitch_yaw_thrust_t packet1, packet2;
+	mavlink_set_quad_swarm_roll_pitch_yaw_thrust_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
         
-        	mav_array_memcpy(packet1.roll, packet_in.roll, sizeof(int16_t)*7);
-        	mav_array_memcpy(packet1.pitch, packet_in.pitch, sizeof(int16_t)*7);
-        	mav_array_memcpy(packet1.yaw, packet_in.yaw, sizeof(int16_t)*7);
-        	mav_array_memcpy(packet1.thrust, packet_in.thrust, sizeof(uint16_t)*7);
+        	mav_array_memcpy(packet1.roll, packet_in.roll, sizeof(int16_t)*6);
+        	mav_array_memcpy(packet1.pitch, packet_in.pitch, sizeof(int16_t)*6);
+        	mav_array_memcpy(packet1.yaw, packet_in.yaw, sizeof(int16_t)*6);
+        	mav_array_memcpy(packet1.thrust, packet_in.thrust, sizeof(uint16_t)*6);
+        	mav_array_memcpy(packet1.target_systems, packet_in.target_systems, sizeof(uint8_t)*6);
         
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_encode(system_id, component_id, &msg, &packet1);
-	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(&msg, &packet2);
+	mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_pack(system_id, component_id, &msg , packet1.roll , packet1.pitch , packet1.yaw , packet1.thrust );
-	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(&msg, &packet2);
+	mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_pack(system_id, component_id, &msg , packet1.target_systems , packet1.roll , packet1.pitch , packet1.yaw , packet1.thrust );
+	mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.roll , packet1.pitch , packet1.yaw , packet1.thrust );
-	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(&msg, &packet2);
+	mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.target_systems , packet1.roll , packet1.pitch , packet1.yaw , packet1.thrust );
+	mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
@@ -2615,12 +2619,12 @@ static void mavlink_test_quad_swarm_roll_pitch_yaw_thrust(uint8_t system_id, uin
         for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
         	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
         }
-	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(last_msg, &packet2);
+	mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_send(MAVLINK_COMM_1 , packet1.roll , packet1.pitch , packet1.yaw , packet1.thrust );
-	mavlink_msg_quad_swarm_roll_pitch_yaw_thrust_decode(last_msg, &packet2);
+	mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_send(MAVLINK_COMM_1 , packet1.target_systems , packet1.roll , packet1.pitch , packet1.yaw , packet1.thrust );
+	mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
@@ -3928,7 +3932,7 @@ static void mavlink_test_common(uint8_t system_id, uint8_t component_id, mavlink
 	mavlink_test_roll_pitch_yaw_thrust_setpoint(system_id, component_id, last_msg);
 	mavlink_test_roll_pitch_yaw_speed_thrust_setpoint(system_id, component_id, last_msg);
 	mavlink_test_set_quad_motors_setpoint(system_id, component_id, last_msg);
-	mavlink_test_quad_swarm_roll_pitch_yaw_thrust(system_id, component_id, last_msg);
+	mavlink_test_set_quad_swarm_roll_pitch_yaw_thrust(system_id, component_id, last_msg);
 	mavlink_test_nav_controller_output(system_id, component_id, last_msg);
 	mavlink_test_state_correction(system_id, component_id, last_msg);
 	mavlink_test_request_data_stream(system_id, component_id, last_msg);
