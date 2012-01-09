@@ -42,6 +42,12 @@ public:
 			registerType(msg);
 		}
 
+		// register ObstacleDenseMap
+		{
+			std::tr1::shared_ptr<px::ObstacleDenseMap> msg(new px::ObstacleDenseMap);
+			registerType(msg);
+		}
+
 		srand(time(NULL));
 		mStreamID = rand() + 1;
 	}
@@ -186,6 +192,11 @@ public:
 				if (offset == 0)
 				{
 					queue.push_back(msg);
+
+					if ((flags & 0x1) != 0x1)
+					{
+						reassemble = true;
+					}
 				}
 				else
 				{
