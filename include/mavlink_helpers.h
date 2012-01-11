@@ -357,10 +357,12 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 		status->packet_rx_success_count++;
 	}
 
+	status->packet_rx_drop_count += status->parse_error;
+	status->parse_error = 0;
+
 	r_mavlink_status->current_rx_seq = status->current_rx_seq+1;
 	r_mavlink_status->packet_rx_success_count = status->packet_rx_success_count;
-	r_mavlink_status->packet_rx_drop_count = status->parse_error;
-	status->parse_error = 0;
+	r_mavlink_status->packet_rx_drop_count = status->packet_rx_drop_count;
 	return status->msg_received;
 }
 
