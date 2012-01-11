@@ -37,7 +37,9 @@ class PointCloudXYZI_PointXYZI;
 class PointCloudXYZRGB;
 class PointCloudXYZRGB_PointXYZRGB;
 class RGBDImage;
-class ObstacleDenseMap;
+class Obstacle;
+class ObstacleList;
+class ObstacleMap;
 
 // ===================================================================
 
@@ -732,14 +734,14 @@ class RGBDImage : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ObstacleDenseMap : public ::google::protobuf::Message {
+class Obstacle : public ::google::protobuf::Message {
  public:
-  ObstacleDenseMap();
-  virtual ~ObstacleDenseMap();
+  Obstacle();
+  virtual ~Obstacle();
   
-  ObstacleDenseMap(const ObstacleDenseMap& from);
+  Obstacle(const Obstacle& from);
   
-  inline ObstacleDenseMap& operator=(const ObstacleDenseMap& from) {
+  inline Obstacle& operator=(const Obstacle& from) {
     CopyFrom(from);
     return *this;
   }
@@ -753,17 +755,244 @@ class ObstacleDenseMap : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const ObstacleDenseMap& default_instance();
+  static const Obstacle& default_instance();
   
-  void Swap(ObstacleDenseMap* other);
+  void Swap(Obstacle* other);
   
   // implements Message ----------------------------------------------
   
-  ObstacleDenseMap* New() const;
+  Obstacle* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const ObstacleDenseMap& from);
-  void MergeFrom(const ObstacleDenseMap& from);
+  void CopyFrom(const Obstacle& from);
+  void MergeFrom(const Obstacle& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional float x = 1;
+  inline bool has_x() const;
+  inline void clear_x();
+  static const int kXFieldNumber = 1;
+  inline float x() const;
+  inline void set_x(float value);
+  
+  // optional float y = 2;
+  inline bool has_y() const;
+  inline void clear_y();
+  static const int kYFieldNumber = 2;
+  inline float y() const;
+  inline void set_y(float value);
+  
+  // optional float z = 3;
+  inline bool has_z() const;
+  inline void clear_z();
+  static const int kZFieldNumber = 3;
+  inline float z() const;
+  inline void set_z(float value);
+  
+  // optional float length = 4;
+  inline bool has_length() const;
+  inline void clear_length();
+  static const int kLengthFieldNumber = 4;
+  inline float length() const;
+  inline void set_length(float value);
+  
+  // optional float width = 5;
+  inline bool has_width() const;
+  inline void clear_width();
+  static const int kWidthFieldNumber = 5;
+  inline float width() const;
+  inline void set_width(float value);
+  
+  // optional float height = 6;
+  inline bool has_height() const;
+  inline void clear_height();
+  static const int kHeightFieldNumber = 6;
+  inline float height() const;
+  inline void set_height(float value);
+  
+  // @@protoc_insertion_point(class_scope:px.Obstacle)
+ private:
+  inline void set_has_x();
+  inline void clear_has_x();
+  inline void set_has_y();
+  inline void clear_has_y();
+  inline void set_has_z();
+  inline void clear_has_z();
+  inline void set_has_length();
+  inline void clear_has_length();
+  inline void set_has_width();
+  inline void clear_has_width();
+  inline void set_has_height();
+  inline void clear_has_height();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  float x_;
+  float y_;
+  float z_;
+  float length_;
+  float width_;
+  float height_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_pixhawk_2eproto();
+  friend void protobuf_AssignDesc_pixhawk_2eproto();
+  friend void protobuf_ShutdownFile_pixhawk_2eproto();
+  
+  void InitAsDefaultInstance();
+  static Obstacle* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ObstacleList : public ::google::protobuf::Message {
+ public:
+  ObstacleList();
+  virtual ~ObstacleList();
+  
+  ObstacleList(const ObstacleList& from);
+  
+  inline ObstacleList& operator=(const ObstacleList& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ObstacleList& default_instance();
+  
+  void Swap(ObstacleList* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ObstacleList* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ObstacleList& from);
+  void MergeFrom(const ObstacleList& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional uint64 utime = 1;
+  inline bool has_utime() const;
+  inline void clear_utime();
+  static const int kUtimeFieldNumber = 1;
+  inline ::google::protobuf::uint64 utime() const;
+  inline void set_utime(::google::protobuf::uint64 value);
+  
+  // repeated .px.Obstacle obstacles = 2;
+  inline int obstacles_size() const;
+  inline void clear_obstacles();
+  static const int kObstaclesFieldNumber = 2;
+  inline const ::px::Obstacle& obstacles(int index) const;
+  inline ::px::Obstacle* mutable_obstacles(int index);
+  inline ::px::Obstacle* add_obstacles();
+  inline const ::google::protobuf::RepeatedPtrField< ::px::Obstacle >&
+      obstacles() const;
+  inline ::google::protobuf::RepeatedPtrField< ::px::Obstacle >*
+      mutable_obstacles();
+  
+  // @@protoc_insertion_point(class_scope:px.ObstacleList)
+ private:
+  inline void set_has_utime();
+  inline void clear_has_utime();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::uint64 utime_;
+  ::google::protobuf::RepeatedPtrField< ::px::Obstacle > obstacles_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_pixhawk_2eproto();
+  friend void protobuf_AssignDesc_pixhawk_2eproto();
+  friend void protobuf_ShutdownFile_pixhawk_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ObstacleList* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ObstacleMap : public ::google::protobuf::Message {
+ public:
+  ObstacleMap();
+  virtual ~ObstacleMap();
+  
+  ObstacleMap(const ObstacleMap& from);
+  
+  inline ObstacleMap& operator=(const ObstacleMap& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ObstacleMap& default_instance();
+  
+  void Swap(ObstacleMap* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ObstacleMap* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ObstacleMap& from);
+  void MergeFrom(const ObstacleMap& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -860,7 +1089,7 @@ class ObstacleDenseMap : public ::google::protobuf::Message {
   inline ::std::string* mutable_data();
   inline ::std::string* release_data();
   
-  // @@protoc_insertion_point(class_scope:px.ObstacleDenseMap)
+  // @@protoc_insertion_point(class_scope:px.ObstacleMap)
  private:
   inline void set_has_utime();
   inline void clear_has_utime();
@@ -904,7 +1133,7 @@ class ObstacleDenseMap : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_pixhawk_2eproto();
   
   void InitAsDefaultInstance();
-  static ObstacleDenseMap* default_instance_;
+  static ObstacleMap* default_instance_;
 };
 // ===================================================================
 
@@ -1694,254 +1923,441 @@ RGBDImage::mutable_camera_matrix() {
 
 // -------------------------------------------------------------------
 
-// ObstacleDenseMap
+// Obstacle
 
-// required uint64 utime = 1;
-inline bool ObstacleDenseMap::has_utime() const {
+// optional float x = 1;
+inline bool Obstacle::has_x() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void ObstacleDenseMap::set_has_utime() {
+inline void Obstacle::set_has_x() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void ObstacleDenseMap::clear_has_utime() {
+inline void Obstacle::clear_has_x() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void ObstacleDenseMap::clear_utime() {
+inline void Obstacle::clear_x() {
+  x_ = 0;
+  clear_has_x();
+}
+inline float Obstacle::x() const {
+  return x_;
+}
+inline void Obstacle::set_x(float value) {
+  set_has_x();
+  x_ = value;
+}
+
+// optional float y = 2;
+inline bool Obstacle::has_y() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Obstacle::set_has_y() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Obstacle::clear_has_y() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Obstacle::clear_y() {
+  y_ = 0;
+  clear_has_y();
+}
+inline float Obstacle::y() const {
+  return y_;
+}
+inline void Obstacle::set_y(float value) {
+  set_has_y();
+  y_ = value;
+}
+
+// optional float z = 3;
+inline bool Obstacle::has_z() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Obstacle::set_has_z() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Obstacle::clear_has_z() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Obstacle::clear_z() {
+  z_ = 0;
+  clear_has_z();
+}
+inline float Obstacle::z() const {
+  return z_;
+}
+inline void Obstacle::set_z(float value) {
+  set_has_z();
+  z_ = value;
+}
+
+// optional float length = 4;
+inline bool Obstacle::has_length() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Obstacle::set_has_length() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Obstacle::clear_has_length() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void Obstacle::clear_length() {
+  length_ = 0;
+  clear_has_length();
+}
+inline float Obstacle::length() const {
+  return length_;
+}
+inline void Obstacle::set_length(float value) {
+  set_has_length();
+  length_ = value;
+}
+
+// optional float width = 5;
+inline bool Obstacle::has_width() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void Obstacle::set_has_width() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void Obstacle::clear_has_width() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void Obstacle::clear_width() {
+  width_ = 0;
+  clear_has_width();
+}
+inline float Obstacle::width() const {
+  return width_;
+}
+inline void Obstacle::set_width(float value) {
+  set_has_width();
+  width_ = value;
+}
+
+// optional float height = 6;
+inline bool Obstacle::has_height() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void Obstacle::set_has_height() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void Obstacle::clear_has_height() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void Obstacle::clear_height() {
+  height_ = 0;
+  clear_has_height();
+}
+inline float Obstacle::height() const {
+  return height_;
+}
+inline void Obstacle::set_height(float value) {
+  set_has_height();
+  height_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ObstacleList
+
+// optional uint64 utime = 1;
+inline bool ObstacleList::has_utime() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ObstacleList::set_has_utime() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ObstacleList::clear_has_utime() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ObstacleList::clear_utime() {
   utime_ = GOOGLE_ULONGLONG(0);
   clear_has_utime();
 }
-inline ::google::protobuf::uint64 ObstacleDenseMap::utime() const {
+inline ::google::protobuf::uint64 ObstacleList::utime() const {
   return utime_;
 }
-inline void ObstacleDenseMap::set_utime(::google::protobuf::uint64 value) {
+inline void ObstacleList::set_utime(::google::protobuf::uint64 value) {
+  set_has_utime();
+  utime_ = value;
+}
+
+// repeated .px.Obstacle obstacles = 2;
+inline int ObstacleList::obstacles_size() const {
+  return obstacles_.size();
+}
+inline void ObstacleList::clear_obstacles() {
+  obstacles_.Clear();
+}
+inline const ::px::Obstacle& ObstacleList::obstacles(int index) const {
+  return obstacles_.Get(index);
+}
+inline ::px::Obstacle* ObstacleList::mutable_obstacles(int index) {
+  return obstacles_.Mutable(index);
+}
+inline ::px::Obstacle* ObstacleList::add_obstacles() {
+  return obstacles_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::px::Obstacle >&
+ObstacleList::obstacles() const {
+  return obstacles_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::px::Obstacle >*
+ObstacleList::mutable_obstacles() {
+  return &obstacles_;
+}
+
+// -------------------------------------------------------------------
+
+// ObstacleMap
+
+// required uint64 utime = 1;
+inline bool ObstacleMap::has_utime() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ObstacleMap::set_has_utime() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ObstacleMap::clear_has_utime() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ObstacleMap::clear_utime() {
+  utime_ = GOOGLE_ULONGLONG(0);
+  clear_has_utime();
+}
+inline ::google::protobuf::uint64 ObstacleMap::utime() const {
+  return utime_;
+}
+inline void ObstacleMap::set_utime(::google::protobuf::uint64 value) {
   set_has_utime();
   utime_ = value;
 }
 
 // required int32 type = 2;
-inline bool ObstacleDenseMap::has_type() const {
+inline bool ObstacleMap::has_type() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void ObstacleDenseMap::set_has_type() {
+inline void ObstacleMap::set_has_type() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void ObstacleDenseMap::clear_has_type() {
+inline void ObstacleMap::clear_has_type() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void ObstacleDenseMap::clear_type() {
+inline void ObstacleMap::clear_type() {
   type_ = 0;
   clear_has_type();
 }
-inline ::google::protobuf::int32 ObstacleDenseMap::type() const {
+inline ::google::protobuf::int32 ObstacleMap::type() const {
   return type_;
 }
-inline void ObstacleDenseMap::set_type(::google::protobuf::int32 value) {
+inline void ObstacleMap::set_type(::google::protobuf::int32 value) {
   set_has_type();
   type_ = value;
 }
 
 // optional float resolution = 3;
-inline bool ObstacleDenseMap::has_resolution() const {
+inline bool ObstacleMap::has_resolution() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void ObstacleDenseMap::set_has_resolution() {
+inline void ObstacleMap::set_has_resolution() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void ObstacleDenseMap::clear_has_resolution() {
+inline void ObstacleMap::clear_has_resolution() {
   _has_bits_[0] &= ~0x00000004u;
 }
-inline void ObstacleDenseMap::clear_resolution() {
+inline void ObstacleMap::clear_resolution() {
   resolution_ = 0;
   clear_has_resolution();
 }
-inline float ObstacleDenseMap::resolution() const {
+inline float ObstacleMap::resolution() const {
   return resolution_;
 }
-inline void ObstacleDenseMap::set_resolution(float value) {
+inline void ObstacleMap::set_resolution(float value) {
   set_has_resolution();
   resolution_ = value;
 }
 
 // optional int32 rows = 4;
-inline bool ObstacleDenseMap::has_rows() const {
+inline bool ObstacleMap::has_rows() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void ObstacleDenseMap::set_has_rows() {
+inline void ObstacleMap::set_has_rows() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void ObstacleDenseMap::clear_has_rows() {
+inline void ObstacleMap::clear_has_rows() {
   _has_bits_[0] &= ~0x00000008u;
 }
-inline void ObstacleDenseMap::clear_rows() {
+inline void ObstacleMap::clear_rows() {
   rows_ = 0;
   clear_has_rows();
 }
-inline ::google::protobuf::int32 ObstacleDenseMap::rows() const {
+inline ::google::protobuf::int32 ObstacleMap::rows() const {
   return rows_;
 }
-inline void ObstacleDenseMap::set_rows(::google::protobuf::int32 value) {
+inline void ObstacleMap::set_rows(::google::protobuf::int32 value) {
   set_has_rows();
   rows_ = value;
 }
 
 // optional int32 cols = 5;
-inline bool ObstacleDenseMap::has_cols() const {
+inline bool ObstacleMap::has_cols() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
-inline void ObstacleDenseMap::set_has_cols() {
+inline void ObstacleMap::set_has_cols() {
   _has_bits_[0] |= 0x00000010u;
 }
-inline void ObstacleDenseMap::clear_has_cols() {
+inline void ObstacleMap::clear_has_cols() {
   _has_bits_[0] &= ~0x00000010u;
 }
-inline void ObstacleDenseMap::clear_cols() {
+inline void ObstacleMap::clear_cols() {
   cols_ = 0;
   clear_has_cols();
 }
-inline ::google::protobuf::int32 ObstacleDenseMap::cols() const {
+inline ::google::protobuf::int32 ObstacleMap::cols() const {
   return cols_;
 }
-inline void ObstacleDenseMap::set_cols(::google::protobuf::int32 value) {
+inline void ObstacleMap::set_cols(::google::protobuf::int32 value) {
   set_has_cols();
   cols_ = value;
 }
 
 // optional int32 mapR0 = 6;
-inline bool ObstacleDenseMap::has_mapr0() const {
+inline bool ObstacleMap::has_mapr0() const {
   return (_has_bits_[0] & 0x00000020u) != 0;
 }
-inline void ObstacleDenseMap::set_has_mapr0() {
+inline void ObstacleMap::set_has_mapr0() {
   _has_bits_[0] |= 0x00000020u;
 }
-inline void ObstacleDenseMap::clear_has_mapr0() {
+inline void ObstacleMap::clear_has_mapr0() {
   _has_bits_[0] &= ~0x00000020u;
 }
-inline void ObstacleDenseMap::clear_mapr0() {
+inline void ObstacleMap::clear_mapr0() {
   mapr0_ = 0;
   clear_has_mapr0();
 }
-inline ::google::protobuf::int32 ObstacleDenseMap::mapr0() const {
+inline ::google::protobuf::int32 ObstacleMap::mapr0() const {
   return mapr0_;
 }
-inline void ObstacleDenseMap::set_mapr0(::google::protobuf::int32 value) {
+inline void ObstacleMap::set_mapr0(::google::protobuf::int32 value) {
   set_has_mapr0();
   mapr0_ = value;
 }
 
 // optional int32 mapC0 = 7;
-inline bool ObstacleDenseMap::has_mapc0() const {
+inline bool ObstacleMap::has_mapc0() const {
   return (_has_bits_[0] & 0x00000040u) != 0;
 }
-inline void ObstacleDenseMap::set_has_mapc0() {
+inline void ObstacleMap::set_has_mapc0() {
   _has_bits_[0] |= 0x00000040u;
 }
-inline void ObstacleDenseMap::clear_has_mapc0() {
+inline void ObstacleMap::clear_has_mapc0() {
   _has_bits_[0] &= ~0x00000040u;
 }
-inline void ObstacleDenseMap::clear_mapc0() {
+inline void ObstacleMap::clear_mapc0() {
   mapc0_ = 0;
   clear_has_mapc0();
 }
-inline ::google::protobuf::int32 ObstacleDenseMap::mapc0() const {
+inline ::google::protobuf::int32 ObstacleMap::mapc0() const {
   return mapc0_;
 }
-inline void ObstacleDenseMap::set_mapc0(::google::protobuf::int32 value) {
+inline void ObstacleMap::set_mapc0(::google::protobuf::int32 value) {
   set_has_mapc0();
   mapc0_ = value;
 }
 
 // optional int32 arrayR0 = 8;
-inline bool ObstacleDenseMap::has_arrayr0() const {
+inline bool ObstacleMap::has_arrayr0() const {
   return (_has_bits_[0] & 0x00000080u) != 0;
 }
-inline void ObstacleDenseMap::set_has_arrayr0() {
+inline void ObstacleMap::set_has_arrayr0() {
   _has_bits_[0] |= 0x00000080u;
 }
-inline void ObstacleDenseMap::clear_has_arrayr0() {
+inline void ObstacleMap::clear_has_arrayr0() {
   _has_bits_[0] &= ~0x00000080u;
 }
-inline void ObstacleDenseMap::clear_arrayr0() {
+inline void ObstacleMap::clear_arrayr0() {
   arrayr0_ = 0;
   clear_has_arrayr0();
 }
-inline ::google::protobuf::int32 ObstacleDenseMap::arrayr0() const {
+inline ::google::protobuf::int32 ObstacleMap::arrayr0() const {
   return arrayr0_;
 }
-inline void ObstacleDenseMap::set_arrayr0(::google::protobuf::int32 value) {
+inline void ObstacleMap::set_arrayr0(::google::protobuf::int32 value) {
   set_has_arrayr0();
   arrayr0_ = value;
 }
 
 // optional int32 arrayC0 = 9;
-inline bool ObstacleDenseMap::has_arrayc0() const {
+inline bool ObstacleMap::has_arrayc0() const {
   return (_has_bits_[0] & 0x00000100u) != 0;
 }
-inline void ObstacleDenseMap::set_has_arrayc0() {
+inline void ObstacleMap::set_has_arrayc0() {
   _has_bits_[0] |= 0x00000100u;
 }
-inline void ObstacleDenseMap::clear_has_arrayc0() {
+inline void ObstacleMap::clear_has_arrayc0() {
   _has_bits_[0] &= ~0x00000100u;
 }
-inline void ObstacleDenseMap::clear_arrayc0() {
+inline void ObstacleMap::clear_arrayc0() {
   arrayc0_ = 0;
   clear_has_arrayc0();
 }
-inline ::google::protobuf::int32 ObstacleDenseMap::arrayc0() const {
+inline ::google::protobuf::int32 ObstacleMap::arrayc0() const {
   return arrayc0_;
 }
-inline void ObstacleDenseMap::set_arrayc0(::google::protobuf::int32 value) {
+inline void ObstacleMap::set_arrayc0(::google::protobuf::int32 value) {
   set_has_arrayc0();
   arrayc0_ = value;
 }
 
 // optional bytes data = 10;
-inline bool ObstacleDenseMap::has_data() const {
+inline bool ObstacleMap::has_data() const {
   return (_has_bits_[0] & 0x00000200u) != 0;
 }
-inline void ObstacleDenseMap::set_has_data() {
+inline void ObstacleMap::set_has_data() {
   _has_bits_[0] |= 0x00000200u;
 }
-inline void ObstacleDenseMap::clear_has_data() {
+inline void ObstacleMap::clear_has_data() {
   _has_bits_[0] &= ~0x00000200u;
 }
-inline void ObstacleDenseMap::clear_data() {
+inline void ObstacleMap::clear_data() {
   if (data_ != &::google::protobuf::internal::kEmptyString) {
     data_->clear();
   }
   clear_has_data();
 }
-inline const ::std::string& ObstacleDenseMap::data() const {
+inline const ::std::string& ObstacleMap::data() const {
   return *data_;
 }
-inline void ObstacleDenseMap::set_data(const ::std::string& value) {
+inline void ObstacleMap::set_data(const ::std::string& value) {
   set_has_data();
   if (data_ == &::google::protobuf::internal::kEmptyString) {
     data_ = new ::std::string;
   }
   data_->assign(value);
 }
-inline void ObstacleDenseMap::set_data(const char* value) {
+inline void ObstacleMap::set_data(const char* value) {
   set_has_data();
   if (data_ == &::google::protobuf::internal::kEmptyString) {
     data_ = new ::std::string;
   }
   data_->assign(value);
 }
-inline void ObstacleDenseMap::set_data(const void* value, size_t size) {
+inline void ObstacleMap::set_data(const void* value, size_t size) {
   set_has_data();
   if (data_ == &::google::protobuf::internal::kEmptyString) {
     data_ = new ::std::string;
   }
   data_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* ObstacleDenseMap::mutable_data() {
+inline ::std::string* ObstacleMap::mutable_data() {
   set_has_data();
   if (data_ == &::google::protobuf::internal::kEmptyString) {
     data_ = new ::std::string;
   }
   return data_;
 }
-inline ::std::string* ObstacleDenseMap::release_data() {
+inline ::std::string* ObstacleMap::release_data() {
   clear_has_data();
   if (data_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;

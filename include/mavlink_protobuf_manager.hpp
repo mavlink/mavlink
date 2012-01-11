@@ -42,9 +42,15 @@ public:
 			registerType(msg);
 		}
 
-		// register ObstacleDenseMap
+		// register ObstacleList
 		{
-			std::tr1::shared_ptr<px::ObstacleDenseMap> msg(new px::ObstacleDenseMap);
+			std::tr1::shared_ptr<px::ObstacleList> msg(new px::ObstacleList);
+			registerType(msg);
+		}
+
+		// register ObstacleMap
+		{
+			std::tr1::shared_ptr<px::ObstacleMap> msg(new px::ObstacleMap);
 			registerType(msg);
 		}
 
