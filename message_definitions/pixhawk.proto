@@ -47,3 +47,35 @@ message RGBDImage
     repeated float camera_matrix = 21;
 }
 
+message Obstacle
+{
+    optional float x = 1;
+    optional float y = 2;
+    optional float z = 3;
+    optional float length = 4;
+    optional float width = 5;
+    optional float height = 6;
+}
+
+message ObstacleList
+{
+    optional uint64 utime = 1;
+    repeated Obstacle obstacles = 2;
+}
+
+message ObstacleMap
+{
+    required uint64 utime = 1;
+    required int32 type = 2;
+
+    optional float resolution = 3;
+    optional int32 rows = 4;
+    optional int32 cols = 5;
+    optional int32 mapR0 = 6;
+    optional int32 mapC0 = 7;
+    optional int32 arrayR0 = 8;
+    optional int32 arrayC0 = 9;
+    
+    optional bytes data = 10;
+}
+
