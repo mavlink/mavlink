@@ -15,6 +15,9 @@
 
 #define MAVLINK_MAX_PACKET_LEN (MAVLINK_MAX_PAYLOAD_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES) ///< Maximum packet length
 
+// EXTENDED message definition - the extended message set is compatible to standard MAVLink message passing
+// but does NOT have to be supported by the platform. The extended message set will NOT consume
+// any memory if the messages are not explicitely used
 #define MAVLINK_MSG_ID_EXTENDED_MESSAGE 255
 #define MAVLINK_EXTENDED_HEADER_LEN 14
 #define MAVLINK_MAX_EXTENDED_PACKET_LEN 65507
