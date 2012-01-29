@@ -54,6 +54,12 @@ public:
 			registerType(msg);
 		}
 
+		// register Path
+		{
+			std::tr1::shared_ptr<px::Path> msg(new px::Path);
+                        registerType(msg);
+		}
+
 		srand(time(NULL));
 		mStreamID = rand() + 1;
 	}

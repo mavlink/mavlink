@@ -41,15 +41,21 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* ObstacleMap_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ObstacleMap_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Waypoint_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Waypoint_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Path_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Path_reflection_ = NULL;
 
 }  // namespace
 
 
-void protobuf_AssignDesc_pixhawk_2eproto() {
-  protobuf_AddDesc_pixhawk_2eproto();
+void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
+  protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();
   const ::google::protobuf::FileDescriptor* file =
     ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
-      "pixhawk.proto");
+      "message_definitions/pixhawk.proto");
   GOOGLE_CHECK(file != NULL);
   PointCloudXYZI_descriptor_ = file->message_type(0);
   static const int PointCloudXYZI_offsets_[1] = {
@@ -212,6 +218,41 @@ void protobuf_AssignDesc_pixhawk_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ObstacleMap));
+  Waypoint_descriptor_ = file->message_type(6);
+  static const int Waypoint_offsets_[6] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, x_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, y_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, z_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, roll_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, pitch_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, yaw_),
+  };
+  Waypoint_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Waypoint_descriptor_,
+      Waypoint::default_instance_,
+      Waypoint_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Waypoint));
+  Path_descriptor_ = file->message_type(7);
+  static const int Path_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Path, waypoints_),
+  };
+  Path_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Path_descriptor_,
+      Path::default_instance_,
+      Path_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Path, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Path, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Path));
 }
 
 namespace {
@@ -219,7 +260,7 @@ namespace {
 GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
 inline void protobuf_AssignDescriptorsOnce() {
   ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
-                 &protobuf_AssignDesc_pixhawk_2eproto);
+                 &protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto);
 }
 
 void protobuf_RegisterTypes(const ::std::string&) {
@@ -240,11 +281,15 @@ void protobuf_RegisterTypes(const ::std::string&) {
     ObstacleList_descriptor_, &ObstacleList::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ObstacleMap_descriptor_, &ObstacleMap::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Waypoint_descriptor_, &Waypoint::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Path_descriptor_, &Path::default_instance());
 }
 
 }  // namespace
 
-void protobuf_ShutdownFile_pixhawk_2eproto() {
+void protobuf_ShutdownFile_message_5fdefinitions_2fpixhawk_2eproto() {
   delete PointCloudXYZI::default_instance_;
   delete PointCloudXYZI_reflection_;
   delete PointCloudXYZI_PointXYZI::default_instance_;
@@ -261,42 +306,49 @@ void protobuf_ShutdownFile_pixhawk_2eproto() {
   delete ObstacleList_reflection_;
   delete ObstacleMap::default_instance_;
   delete ObstacleMap_reflection_;
+  delete Waypoint::default_instance_;
+  delete Waypoint_reflection_;
+  delete Path::default_instance_;
+  delete Path_reflection_;
 }
 
-void protobuf_AddDesc_pixhawk_2eproto() {
+void protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto() {
   static bool already_here = false;
   if (already_here) return;
   already_here = true;
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rpixhawk.proto\022\002px\"\177\n\016PointCloudXYZI\022,\n"
-    "\006points\030\001 \003(\0132\034.px.PointCloudXYZI.PointX"
-    "YZI\032\?\n\tPointXYZI\022\t\n\001x\030\001 \002(\002\022\t\n\001y\030\002 \002(\002\022\t"
-    "\n\001z\030\003 \002(\002\022\021\n\tintensity\030\004 \002(\002\"\201\001\n\020PointCl"
-    "oudXYZRGB\0220\n\006points\030\001 \003(\0132 .px.PointClou"
-    "dXYZRGB.PointXYZRGB\032;\n\013PointXYZRGB\022\t\n\001x\030"
-    "\001 \002(\002\022\t\n\001y\030\002 \002(\002\022\t\n\001z\030\003 \002(\002\022\013\n\003rgb\030\004 \002(\002"
-    "\"\350\002\n\tRGBDImage\022\014\n\004cols\030\001 \002(\r\022\014\n\004rows\030\002 \002"
-    "(\r\022\r\n\005step1\030\003 \002(\r\022\r\n\005type1\030\004 \002(\r\022\022\n\nimag"
-    "eData1\030\005 \002(\014\022\r\n\005step2\030\006 \002(\r\022\r\n\005type2\030\007 \002"
-    "(\r\022\022\n\nimageData2\030\010 \002(\014\022\025\n\rcamera_config\030"
-    "\t \001(\r\022\023\n\013camera_type\030\n \001(\r\022\021\n\ttimestamp\030"
-    "\013 \001(\004\022\014\n\004roll\030\014 \001(\002\022\r\n\005pitch\030\r \001(\002\022\013\n\003ya"
-    "w\030\016 \001(\002\022\013\n\003lon\030\017 \001(\002\022\013\n\003lat\030\020 \001(\002\022\013\n\003alt"
-    "\030\021 \001(\002\022\020\n\010ground_x\030\022 \001(\002\022\020\n\010ground_y\030\023 \001"
-    "(\002\022\020\n\010ground_z\030\024 \001(\002\022\025\n\rcamera_matrix\030\025 "
-    "\003(\002\"Z\n\010Obstacle\022\t\n\001x\030\001 \001(\002\022\t\n\001y\030\002 \001(\002\022\t\n"
-    "\001z\030\003 \001(\002\022\016\n\006length\030\004 \001(\002\022\r\n\005width\030\005 \001(\002\022"
-    "\016\n\006height\030\006 \001(\002\">\n\014ObstacleList\022\r\n\005utime"
-    "\030\001 \001(\004\022\037\n\tobstacles\030\002 \003(\0132\014.px.Obstacle\""
-    "\250\001\n\013ObstacleMap\022\r\n\005utime\030\001 \002(\004\022\014\n\004type\030\002"
-    " \002(\005\022\022\n\nresolution\030\003 \001(\002\022\014\n\004rows\030\004 \001(\005\022\014"
-    "\n\004cols\030\005 \001(\005\022\r\n\005mapR0\030\006 \001(\005\022\r\n\005mapC0\030\007 \001"
-    "(\005\022\017\n\007arrayR0\030\010 \001(\005\022\017\n\007arrayC0\030\t \001(\005\022\014\n\004"
-    "data\030\n \001(\014", 970);
+    "\n!message_definitions/pixhawk.proto\022\002px\""
+    "\177\n\016PointCloudXYZI\022,\n\006points\030\001 \003(\0132\034.px.P"
+    "ointCloudXYZI.PointXYZI\032\?\n\tPointXYZI\022\t\n\001"
+    "x\030\001 \002(\002\022\t\n\001y\030\002 \002(\002\022\t\n\001z\030\003 \002(\002\022\021\n\tintensi"
+    "ty\030\004 \002(\002\"\201\001\n\020PointCloudXYZRGB\0220\n\006points\030"
+    "\001 \003(\0132 .px.PointCloudXYZRGB.PointXYZRGB\032"
+    ";\n\013PointXYZRGB\022\t\n\001x\030\001 \002(\002\022\t\n\001y\030\002 \002(\002\022\t\n\001"
+    "z\030\003 \002(\002\022\013\n\003rgb\030\004 \002(\002\"\350\002\n\tRGBDImage\022\014\n\004co"
+    "ls\030\001 \002(\r\022\014\n\004rows\030\002 \002(\r\022\r\n\005step1\030\003 \002(\r\022\r\n"
+    "\005type1\030\004 \002(\r\022\022\n\nimageData1\030\005 \002(\014\022\r\n\005step"
+    "2\030\006 \002(\r\022\r\n\005type2\030\007 \002(\r\022\022\n\nimageData2\030\010 \002"
+    "(\014\022\025\n\rcamera_config\030\t \001(\r\022\023\n\013camera_type"
+    "\030\n \001(\r\022\021\n\ttimestamp\030\013 \001(\004\022\014\n\004roll\030\014 \001(\002\022"
+    "\r\n\005pitch\030\r \001(\002\022\013\n\003yaw\030\016 \001(\002\022\013\n\003lon\030\017 \001(\002"
+    "\022\013\n\003lat\030\020 \001(\002\022\013\n\003alt\030\021 \001(\002\022\020\n\010ground_x\030\022"
+    " \001(\002\022\020\n\010ground_y\030\023 \001(\002\022\020\n\010ground_z\030\024 \001(\002"
+    "\022\025\n\rcamera_matrix\030\025 \003(\002\"Z\n\010Obstacle\022\t\n\001x"
+    "\030\001 \001(\002\022\t\n\001y\030\002 \001(\002\022\t\n\001z\030\003 \001(\002\022\016\n\006length\030\004"
+    " \001(\002\022\r\n\005width\030\005 \001(\002\022\016\n\006height\030\006 \001(\002\">\n\014O"
+    "bstacleList\022\r\n\005utime\030\001 \001(\004\022\037\n\tobstacles\030"
+    "\002 \003(\0132\014.px.Obstacle\"\250\001\n\013ObstacleMap\022\r\n\005u"
+    "time\030\001 \002(\004\022\014\n\004type\030\002 \002(\005\022\022\n\nresolution\030\003"
+    " \001(\002\022\014\n\004rows\030\004 \001(\005\022\014\n\004cols\030\005 \001(\005\022\r\n\005mapR"
+    "0\030\006 \001(\005\022\r\n\005mapC0\030\007 \001(\005\022\017\n\007arrayR0\030\010 \001(\005\022"
+    "\017\n\007arrayC0\030\t \001(\005\022\014\n\004data\030\n \001(\014\"U\n\010Waypoi"
+    "nt\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\022\t\n\001z\030\003 \001(\001\022\014\n\004r"
+    "oll\030\004 \001(\001\022\r\n\005pitch\030\005 \001(\001\022\013\n\003yaw\030\006 \001(\001\"\'\n"
+    "\004Path\022\037\n\twaypoints\030\001 \003(\0132\014.px.Waypoint", 1118);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "pixhawk.proto", &protobuf_RegisterTypes);
+    "message_definitions/pixhawk.proto", &protobuf_RegisterTypes);
   PointCloudXYZI::default_instance_ = new PointCloudXYZI();
   PointCloudXYZI_PointXYZI::default_instance_ = new PointCloudXYZI_PointXYZI();
   PointCloudXYZRGB::default_instance_ = new PointCloudXYZRGB();
@@ -305,6 +357,8 @@ void protobuf_AddDesc_pixhawk_2eproto() {
   Obstacle::default_instance_ = new Obstacle();
   ObstacleList::default_instance_ = new ObstacleList();
   ObstacleMap::default_instance_ = new ObstacleMap();
+  Waypoint::default_instance_ = new Waypoint();
+  Path::default_instance_ = new Path();
   PointCloudXYZI::default_instance_->InitAsDefaultInstance();
   PointCloudXYZI_PointXYZI::default_instance_->InitAsDefaultInstance();
   PointCloudXYZRGB::default_instance_->InitAsDefaultInstance();
@@ -313,15 +367,17 @@ void protobuf_AddDesc_pixhawk_2eproto() {
   Obstacle::default_instance_->InitAsDefaultInstance();
   ObstacleList::default_instance_->InitAsDefaultInstance();
   ObstacleMap::default_instance_->InitAsDefaultInstance();
-  ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_pixhawk_2eproto);
+  Waypoint::default_instance_->InitAsDefaultInstance();
+  Path::default_instance_->InitAsDefaultInstance();
+  ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_message_5fdefinitions_2fpixhawk_2eproto);
 }
 
 // Force AddDescriptors() to be called at static initialization time.
-struct StaticDescriptorInitializer_pixhawk_2eproto {
-  StaticDescriptorInitializer_pixhawk_2eproto() {
-    protobuf_AddDesc_pixhawk_2eproto();
+struct StaticDescriptorInitializer_message_5fdefinitions_2fpixhawk_2eproto {
+  StaticDescriptorInitializer_message_5fdefinitions_2fpixhawk_2eproto() {
+    protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();
   }
-} static_descriptor_initializer_pixhawk_2eproto_;
+} static_descriptor_initializer_message_5fdefinitions_2fpixhawk_2eproto_;
 
 
 // ===================================================================
@@ -376,7 +432,7 @@ const ::google::protobuf::Descriptor* PointCloudXYZI_PointXYZI::descriptor() {
 }
 
 const PointCloudXYZI_PointXYZI& PointCloudXYZI_PointXYZI::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
 }
 
 PointCloudXYZI_PointXYZI* PointCloudXYZI_PointXYZI::default_instance_ = NULL;
@@ -689,7 +745,7 @@ const ::google::protobuf::Descriptor* PointCloudXYZI::descriptor() {
 }
 
 const PointCloudXYZI& PointCloudXYZI::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
 }
 
 PointCloudXYZI* PointCloudXYZI::default_instance_ = NULL;
@@ -901,7 +957,7 @@ const ::google::protobuf::Descriptor* PointCloudXYZRGB_PointXYZRGB::descriptor()
 }
 
 const PointCloudXYZRGB_PointXYZRGB& PointCloudXYZRGB_PointXYZRGB::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
 }
 
 PointCloudXYZRGB_PointXYZRGB* PointCloudXYZRGB_PointXYZRGB::default_instance_ = NULL;
@@ -1214,7 +1270,7 @@ const ::google::protobuf::Descriptor* PointCloudXYZRGB::descriptor() {
 }
 
 const PointCloudXYZRGB& PointCloudXYZRGB::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
 }
 
 PointCloudXYZRGB* PointCloudXYZRGB::default_instance_ = NULL;
@@ -1465,7 +1521,7 @@ const ::google::protobuf::Descriptor* RGBDImage::descriptor() {
 }
 
 const RGBDImage& RGBDImage::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
 }
 
 RGBDImage* RGBDImage::default_instance_ = NULL;
@@ -2453,7 +2509,7 @@ const ::google::protobuf::Descriptor* Obstacle::descriptor() {
 }
 
 const Obstacle& Obstacle::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
 }
 
 Obstacle* Obstacle::default_instance_ = NULL;
@@ -2839,7 +2895,7 @@ const ::google::protobuf::Descriptor* ObstacleList::descriptor() {
 }
 
 const ObstacleList& ObstacleList::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
 }
 
 ObstacleList* ObstacleList::default_instance_ = NULL;
@@ -3106,7 +3162,7 @@ const ::google::protobuf::Descriptor* ObstacleMap::descriptor() {
 }
 
 const ObstacleMap& ObstacleMap::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
 }
 
 ObstacleMap* ObstacleMap::default_instance_ = NULL;
@@ -3615,6 +3671,607 @@ void ObstacleMap::Swap(ObstacleMap* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = ObstacleMap_descriptor_;
   metadata.reflection = ObstacleMap_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int Waypoint::kXFieldNumber;
+const int Waypoint::kYFieldNumber;
+const int Waypoint::kZFieldNumber;
+const int Waypoint::kRollFieldNumber;
+const int Waypoint::kPitchFieldNumber;
+const int Waypoint::kYawFieldNumber;
+#endif  // !_MSC_VER
+
+Waypoint::Waypoint()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void Waypoint::InitAsDefaultInstance() {
+}
+
+Waypoint::Waypoint(const Waypoint& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Waypoint::SharedCtor() {
+  _cached_size_ = 0;
+  x_ = 0;
+  y_ = 0;
+  z_ = 0;
+  roll_ = 0;
+  pitch_ = 0;
+  yaw_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Waypoint::~Waypoint() {
+  SharedDtor();
+}
+
+void Waypoint::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void Waypoint::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Waypoint::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Waypoint_descriptor_;
+}
+
+const Waypoint& Waypoint::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+}
+
+Waypoint* Waypoint::default_instance_ = NULL;
+
+Waypoint* Waypoint::New() const {
+  return new Waypoint;
+}
+
+void Waypoint::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    x_ = 0;
+    y_ = 0;
+    z_ = 0;
+    roll_ = 0;
+    pitch_ = 0;
+    yaw_ = 0;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Waypoint::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required double x = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &x_)));
+          set_has_x();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(17)) goto parse_y;
+        break;
+      }
+      
+      // required double y = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_y:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &y_)));
+          set_has_y();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(25)) goto parse_z;
+        break;
+      }
+      
+      // optional double z = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_z:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &z_)));
+          set_has_z();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(33)) goto parse_roll;
+        break;
+      }
+      
+      // optional double roll = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_roll:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &roll_)));
+          set_has_roll();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(41)) goto parse_pitch;
+        break;
+      }
+      
+      // optional double pitch = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_pitch:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &pitch_)));
+          set_has_pitch();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(49)) goto parse_yaw;
+        break;
+      }
+      
+      // optional double yaw = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_yaw:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &yaw_)));
+          set_has_yaw();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Waypoint::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required double x = 1;
+  if (has_x()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->x(), output);
+  }
+  
+  // required double y = 2;
+  if (has_y()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->y(), output);
+  }
+  
+  // optional double z = 3;
+  if (has_z()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->z(), output);
+  }
+  
+  // optional double roll = 4;
+  if (has_roll()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(4, this->roll(), output);
+  }
+  
+  // optional double pitch = 5;
+  if (has_pitch()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->pitch(), output);
+  }
+  
+  // optional double yaw = 6;
+  if (has_yaw()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(6, this->yaw(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* Waypoint::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required double x = 1;
+  if (has_x()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->x(), target);
+  }
+  
+  // required double y = 2;
+  if (has_y()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->y(), target);
+  }
+  
+  // optional double z = 3;
+  if (has_z()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->z(), target);
+  }
+  
+  // optional double roll = 4;
+  if (has_roll()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(4, this->roll(), target);
+  }
+  
+  // optional double pitch = 5;
+  if (has_pitch()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->pitch(), target);
+  }
+  
+  // optional double yaw = 6;
+  if (has_yaw()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(6, this->yaw(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int Waypoint::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required double x = 1;
+    if (has_x()) {
+      total_size += 1 + 8;
+    }
+    
+    // required double y = 2;
+    if (has_y()) {
+      total_size += 1 + 8;
+    }
+    
+    // optional double z = 3;
+    if (has_z()) {
+      total_size += 1 + 8;
+    }
+    
+    // optional double roll = 4;
+    if (has_roll()) {
+      total_size += 1 + 8;
+    }
+    
+    // optional double pitch = 5;
+    if (has_pitch()) {
+      total_size += 1 + 8;
+    }
+    
+    // optional double yaw = 6;
+    if (has_yaw()) {
+      total_size += 1 + 8;
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Waypoint::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Waypoint* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Waypoint*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Waypoint::MergeFrom(const Waypoint& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_x()) {
+      set_x(from.x());
+    }
+    if (from.has_y()) {
+      set_y(from.y());
+    }
+    if (from.has_z()) {
+      set_z(from.z());
+    }
+    if (from.has_roll()) {
+      set_roll(from.roll());
+    }
+    if (from.has_pitch()) {
+      set_pitch(from.pitch());
+    }
+    if (from.has_yaw()) {
+      set_yaw(from.yaw());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Waypoint::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Waypoint::CopyFrom(const Waypoint& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Waypoint::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  
+  return true;
+}
+
+void Waypoint::Swap(Waypoint* other) {
+  if (other != this) {
+    std::swap(x_, other->x_);
+    std::swap(y_, other->y_);
+    std::swap(z_, other->z_);
+    std::swap(roll_, other->roll_);
+    std::swap(pitch_, other->pitch_);
+    std::swap(yaw_, other->yaw_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Waypoint::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Waypoint_descriptor_;
+  metadata.reflection = Waypoint_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int Path::kWaypointsFieldNumber;
+#endif  // !_MSC_VER
+
+Path::Path()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void Path::InitAsDefaultInstance() {
+}
+
+Path::Path(const Path& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Path::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Path::~Path() {
+  SharedDtor();
+}
+
+void Path::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void Path::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Path::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Path_descriptor_;
+}
+
+const Path& Path::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+}
+
+Path* Path::default_instance_ = NULL;
+
+Path* Path::New() const {
+  return new Path;
+}
+
+void Path::Clear() {
+  waypoints_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Path::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .px.Waypoint waypoints = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_waypoints:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_waypoints()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(10)) goto parse_waypoints;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Path::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated .px.Waypoint waypoints = 1;
+  for (int i = 0; i < this->waypoints_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->waypoints(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* Path::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated .px.Waypoint waypoints = 1;
+  for (int i = 0; i < this->waypoints_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->waypoints(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int Path::ByteSize() const {
+  int total_size = 0;
+  
+  // repeated .px.Waypoint waypoints = 1;
+  total_size += 1 * this->waypoints_size();
+  for (int i = 0; i < this->waypoints_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->waypoints(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Path::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Path* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Path*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Path::MergeFrom(const Path& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  waypoints_.MergeFrom(from.waypoints_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Path::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Path::CopyFrom(const Path& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Path::IsInitialized() const {
+  
+  for (int i = 0; i < waypoints_size(); i++) {
+    if (!this->waypoints(i).IsInitialized()) return false;
+  }
+  return true;
+}
+
+void Path::Swap(Path* other) {
+  if (other != this) {
+    waypoints_.Swap(&other->waypoints_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Path::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Path_descriptor_;
+  metadata.reflection = Path_reflection_;
   return metadata;
 }
 
