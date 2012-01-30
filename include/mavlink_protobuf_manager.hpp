@@ -162,7 +162,7 @@ public:
 		if (typecode >= mTypeMap.size())
 		{
 			std::cout << "# WARNING: Protobuf message with type code "
-					  << typecode << " is not registered." << std::endl;
+					  << static_cast<int>(typecode) << " is not registered." << std::endl;
 			return false;
 		}
 
