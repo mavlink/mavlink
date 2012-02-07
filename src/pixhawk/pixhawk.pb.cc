@@ -17,6 +17,9 @@ namespace px {
 
 namespace {
 
+const ::google::protobuf::Descriptor* HeaderInfo_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  HeaderInfo_reflection_ = NULL;
 const ::google::protobuf::Descriptor* PointCloudXYZI_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   PointCloudXYZI_reflection_ = NULL;
@@ -51,14 +54,32 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 }  // namespace
 
 
-void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
-  protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();
+void protobuf_AssignDesc_pixhawk_2eproto() {
+  protobuf_AddDesc_pixhawk_2eproto();
   const ::google::protobuf::FileDescriptor* file =
     ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
-      "message_definitions/pixhawk.proto");
+      "pixhawk.proto");
   GOOGLE_CHECK(file != NULL);
-  PointCloudXYZI_descriptor_ = file->message_type(0);
-  static const int PointCloudXYZI_offsets_[1] = {
+  HeaderInfo_descriptor_ = file->message_type(0);
+  static const int HeaderInfo_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeaderInfo, source_sysid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeaderInfo, source_compid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeaderInfo, timestamp_),
+  };
+  HeaderInfo_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      HeaderInfo_descriptor_,
+      HeaderInfo::default_instance_,
+      HeaderInfo_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeaderInfo, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeaderInfo, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(HeaderInfo));
+  PointCloudXYZI_descriptor_ = file->message_type(1);
+  static const int PointCloudXYZI_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PointCloudXYZI, header_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PointCloudXYZI, points_),
   };
   PointCloudXYZI_reflection_ =
@@ -90,8 +111,9 @@ void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PointCloudXYZI_PointXYZI));
-  PointCloudXYZRGB_descriptor_ = file->message_type(1);
-  static const int PointCloudXYZRGB_offsets_[1] = {
+  PointCloudXYZRGB_descriptor_ = file->message_type(2);
+  static const int PointCloudXYZRGB_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PointCloudXYZRGB, header_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PointCloudXYZRGB, points_),
   };
   PointCloudXYZRGB_reflection_ =
@@ -123,8 +145,9 @@ void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PointCloudXYZRGB_PointXYZRGB));
-  RGBDImage_descriptor_ = file->message_type(2);
+  RGBDImage_descriptor_ = file->message_type(3);
   static const int RGBDImage_offsets_[21] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, header_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, cols_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, rows_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, step1_),
@@ -135,7 +158,6 @@ void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, imagedata2_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, camera_config_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, camera_type_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, timestamp_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, roll_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, pitch_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RGBDImage, yaw_),
@@ -158,7 +180,7 @@ void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(RGBDImage));
-  Obstacle_descriptor_ = file->message_type(3);
+  Obstacle_descriptor_ = file->message_type(4);
   static const int Obstacle_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Obstacle, x_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Obstacle, y_),
@@ -178,9 +200,9 @@ void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Obstacle));
-  ObstacleList_descriptor_ = file->message_type(4);
+  ObstacleList_descriptor_ = file->message_type(5);
   static const int ObstacleList_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObstacleList, utime_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObstacleList, header_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObstacleList, obstacles_),
   };
   ObstacleList_reflection_ =
@@ -194,9 +216,9 @@ void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ObstacleList));
-  ObstacleMap_descriptor_ = file->message_type(5);
+  ObstacleMap_descriptor_ = file->message_type(6);
   static const int ObstacleMap_offsets_[10] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObstacleMap, utime_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObstacleMap, header_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObstacleMap, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObstacleMap, resolution_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObstacleMap, rows_),
@@ -218,7 +240,7 @@ void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ObstacleMap));
-  Waypoint_descriptor_ = file->message_type(6);
+  Waypoint_descriptor_ = file->message_type(7);
   static const int Waypoint_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, x_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Waypoint, y_),
@@ -238,8 +260,9 @@ void protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Waypoint));
-  Path_descriptor_ = file->message_type(7);
-  static const int Path_offsets_[1] = {
+  Path_descriptor_ = file->message_type(8);
+  static const int Path_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Path, header_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Path, waypoints_),
   };
   Path_reflection_ =
@@ -260,11 +283,13 @@ namespace {
 GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
 inline void protobuf_AssignDescriptorsOnce() {
   ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
-                 &protobuf_AssignDesc_message_5fdefinitions_2fpixhawk_2eproto);
+                 &protobuf_AssignDesc_pixhawk_2eproto);
 }
 
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    HeaderInfo_descriptor_, &HeaderInfo::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     PointCloudXYZI_descriptor_, &PointCloudXYZI::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -289,7 +314,9 @@ void protobuf_RegisterTypes(const ::std::string&) {
 
 }  // namespace
 
-void protobuf_ShutdownFile_message_5fdefinitions_2fpixhawk_2eproto() {
+void protobuf_ShutdownFile_pixhawk_2eproto() {
+  delete HeaderInfo::default_instance_;
+  delete HeaderInfo_reflection_;
   delete PointCloudXYZI::default_instance_;
   delete PointCloudXYZI_reflection_;
   delete PointCloudXYZI_PointXYZI::default_instance_;
@@ -312,43 +339,49 @@ void protobuf_ShutdownFile_message_5fdefinitions_2fpixhawk_2eproto() {
   delete Path_reflection_;
 }
 
-void protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto() {
+void protobuf_AddDesc_pixhawk_2eproto() {
   static bool already_here = false;
   if (already_here) return;
   already_here = true;
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n!message_definitions/pixhawk.proto\022\002px\""
-    "\177\n\016PointCloudXYZI\022,\n\006points\030\001 \003(\0132\034.px.P"
-    "ointCloudXYZI.PointXYZI\032\?\n\tPointXYZI\022\t\n\001"
-    "x\030\001 \002(\002\022\t\n\001y\030\002 \002(\002\022\t\n\001z\030\003 \002(\002\022\021\n\tintensi"
-    "ty\030\004 \002(\002\"\201\001\n\020PointCloudXYZRGB\0220\n\006points\030"
-    "\001 \003(\0132 .px.PointCloudXYZRGB.PointXYZRGB\032"
-    ";\n\013PointXYZRGB\022\t\n\001x\030\001 \002(\002\022\t\n\001y\030\002 \002(\002\022\t\n\001"
-    "z\030\003 \002(\002\022\013\n\003rgb\030\004 \002(\002\"\350\002\n\tRGBDImage\022\014\n\004co"
-    "ls\030\001 \002(\r\022\014\n\004rows\030\002 \002(\r\022\r\n\005step1\030\003 \002(\r\022\r\n"
-    "\005type1\030\004 \002(\r\022\022\n\nimageData1\030\005 \002(\014\022\r\n\005step"
-    "2\030\006 \002(\r\022\r\n\005type2\030\007 \002(\r\022\022\n\nimageData2\030\010 \002"
-    "(\014\022\025\n\rcamera_config\030\t \001(\r\022\023\n\013camera_type"
-    "\030\n \001(\r\022\021\n\ttimestamp\030\013 \001(\004\022\014\n\004roll\030\014 \001(\002\022"
-    "\r\n\005pitch\030\r \001(\002\022\013\n\003yaw\030\016 \001(\002\022\013\n\003lon\030\017 \001(\002"
-    "\022\013\n\003lat\030\020 \001(\002\022\013\n\003alt\030\021 \001(\002\022\020\n\010ground_x\030\022"
-    " \001(\002\022\020\n\010ground_y\030\023 \001(\002\022\020\n\010ground_z\030\024 \001(\002"
-    "\022\025\n\rcamera_matrix\030\025 \003(\002\"Z\n\010Obstacle\022\t\n\001x"
-    "\030\001 \001(\002\022\t\n\001y\030\002 \001(\002\022\t\n\001z\030\003 \001(\002\022\016\n\006length\030\004"
-    " \001(\002\022\r\n\005width\030\005 \001(\002\022\016\n\006height\030\006 \001(\002\">\n\014O"
-    "bstacleList\022\r\n\005utime\030\001 \001(\004\022\037\n\tobstacles\030"
-    "\002 \003(\0132\014.px.Obstacle\"\250\001\n\013ObstacleMap\022\r\n\005u"
-    "time\030\001 \002(\004\022\014\n\004type\030\002 \002(\005\022\022\n\nresolution\030\003"
-    " \001(\002\022\014\n\004rows\030\004 \001(\005\022\014\n\004cols\030\005 \001(\005\022\r\n\005mapR"
-    "0\030\006 \001(\005\022\r\n\005mapC0\030\007 \001(\005\022\017\n\007arrayR0\030\010 \001(\005\022"
-    "\017\n\007arrayC0\030\t \001(\005\022\014\n\004data\030\n \001(\014\"U\n\010Waypoi"
-    "nt\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\022\t\n\001z\030\003 \001(\001\022\014\n\004r"
-    "oll\030\004 \001(\001\022\r\n\005pitch\030\005 \001(\001\022\013\n\003yaw\030\006 \001(\001\"\'\n"
-    "\004Path\022\037\n\twaypoints\030\001 \003(\0132\014.px.Waypoint", 1118);
+    "\n\rpixhawk.proto\022\002px\"L\n\nHeaderInfo\022\024\n\014sou"
+    "rce_sysid\030\001 \002(\005\022\025\n\rsource_compid\030\002 \002(\005\022\021"
+    "\n\ttimestamp\030\003 \002(\001\"\237\001\n\016PointCloudXYZI\022\036\n\006"
+    "header\030\001 \002(\0132\016.px.HeaderInfo\022,\n\006points\030\002"
+    " \003(\0132\034.px.PointCloudXYZI.PointXYZI\032\?\n\tPo"
+    "intXYZI\022\t\n\001x\030\001 \002(\002\022\t\n\001y\030\002 \002(\002\022\t\n\001z\030\003 \002(\002"
+    "\022\021\n\tintensity\030\004 \002(\002\"\241\001\n\020PointCloudXYZRGB"
+    "\022\036\n\006header\030\001 \002(\0132\016.px.HeaderInfo\0220\n\006poin"
+    "ts\030\002 \003(\0132 .px.PointCloudXYZRGB.PointXYZR"
+    "GB\032;\n\013PointXYZRGB\022\t\n\001x\030\001 \002(\002\022\t\n\001y\030\002 \002(\002\022"
+    "\t\n\001z\030\003 \002(\002\022\013\n\003rgb\030\004 \002(\002\"\365\002\n\tRGBDImage\022\036\n"
+    "\006header\030\001 \002(\0132\016.px.HeaderInfo\022\014\n\004cols\030\002 "
+    "\002(\r\022\014\n\004rows\030\003 \002(\r\022\r\n\005step1\030\004 \002(\r\022\r\n\005type"
+    "1\030\005 \002(\r\022\022\n\nimageData1\030\006 \002(\014\022\r\n\005step2\030\007 \002"
+    "(\r\022\r\n\005type2\030\010 \002(\r\022\022\n\nimageData2\030\t \002(\014\022\025\n"
+    "\rcamera_config\030\n \001(\r\022\023\n\013camera_type\030\013 \001("
+    "\r\022\014\n\004roll\030\014 \001(\002\022\r\n\005pitch\030\r \001(\002\022\013\n\003yaw\030\016 "
+    "\001(\002\022\013\n\003lon\030\017 \001(\002\022\013\n\003lat\030\020 \001(\002\022\013\n\003alt\030\021 \001"
+    "(\002\022\020\n\010ground_x\030\022 \001(\002\022\020\n\010ground_y\030\023 \001(\002\022\020"
+    "\n\010ground_z\030\024 \001(\002\022\025\n\rcamera_matrix\030\025 \003(\002\""
+    "Z\n\010Obstacle\022\t\n\001x\030\001 \001(\002\022\t\n\001y\030\002 \001(\002\022\t\n\001z\030\003"
+    " \001(\002\022\016\n\006length\030\004 \001(\002\022\r\n\005width\030\005 \001(\002\022\016\n\006h"
+    "eight\030\006 \001(\002\"O\n\014ObstacleList\022\036\n\006header\030\001 "
+    "\002(\0132\016.px.HeaderInfo\022\037\n\tobstacles\030\002 \003(\0132\014"
+    ".px.Obstacle\"\271\001\n\013ObstacleMap\022\036\n\006header\030\001"
+    " \002(\0132\016.px.HeaderInfo\022\014\n\004type\030\002 \002(\005\022\022\n\nre"
+    "solution\030\003 \001(\002\022\014\n\004rows\030\004 \001(\005\022\014\n\004cols\030\005 \001"
+    "(\005\022\r\n\005mapR0\030\006 \001(\005\022\r\n\005mapC0\030\007 \001(\005\022\017\n\007arra"
+    "yR0\030\010 \001(\005\022\017\n\007arrayC0\030\t \001(\005\022\014\n\004data\030\n \001(\014"
+    "\"U\n\010Waypoint\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\022\t\n\001z\030"
+    "\003 \001(\001\022\014\n\004roll\030\004 \001(\001\022\r\n\005pitch\030\005 \001(\001\022\013\n\003ya"
+    "w\030\006 \001(\001\"G\n\004Path\022\036\n\006header\030\001 \002(\0132\016.px.Hea"
+    "derInfo\022\037\n\twaypoints\030\002 \003(\0132\014.px.Waypoint", 1320);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "message_definitions/pixhawk.proto", &protobuf_RegisterTypes);
+    "pixhawk.proto", &protobuf_RegisterTypes);
+  HeaderInfo::default_instance_ = new HeaderInfo();
   PointCloudXYZI::default_instance_ = new PointCloudXYZI();
   PointCloudXYZI_PointXYZI::default_instance_ = new PointCloudXYZI_PointXYZI();
   PointCloudXYZRGB::default_instance_ = new PointCloudXYZRGB();
@@ -359,6 +392,7 @@ void protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto() {
   ObstacleMap::default_instance_ = new ObstacleMap();
   Waypoint::default_instance_ = new Waypoint();
   Path::default_instance_ = new Path();
+  HeaderInfo::default_instance_->InitAsDefaultInstance();
   PointCloudXYZI::default_instance_->InitAsDefaultInstance();
   PointCloudXYZI_PointXYZI::default_instance_->InitAsDefaultInstance();
   PointCloudXYZRGB::default_instance_->InitAsDefaultInstance();
@@ -369,15 +403,301 @@ void protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto() {
   ObstacleMap::default_instance_->InitAsDefaultInstance();
   Waypoint::default_instance_->InitAsDefaultInstance();
   Path::default_instance_->InitAsDefaultInstance();
-  ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_message_5fdefinitions_2fpixhawk_2eproto);
+  ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_pixhawk_2eproto);
 }
 
 // Force AddDescriptors() to be called at static initialization time.
-struct StaticDescriptorInitializer_message_5fdefinitions_2fpixhawk_2eproto {
-  StaticDescriptorInitializer_message_5fdefinitions_2fpixhawk_2eproto() {
-    protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();
+struct StaticDescriptorInitializer_pixhawk_2eproto {
+  StaticDescriptorInitializer_pixhawk_2eproto() {
+    protobuf_AddDesc_pixhawk_2eproto();
   }
-} static_descriptor_initializer_message_5fdefinitions_2fpixhawk_2eproto_;
+} static_descriptor_initializer_pixhawk_2eproto_;
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int HeaderInfo::kSourceSysidFieldNumber;
+const int HeaderInfo::kSourceCompidFieldNumber;
+const int HeaderInfo::kTimestampFieldNumber;
+#endif  // !_MSC_VER
+
+HeaderInfo::HeaderInfo()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void HeaderInfo::InitAsDefaultInstance() {
+}
+
+HeaderInfo::HeaderInfo(const HeaderInfo& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void HeaderInfo::SharedCtor() {
+  _cached_size_ = 0;
+  source_sysid_ = 0;
+  source_compid_ = 0;
+  timestamp_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+HeaderInfo::~HeaderInfo() {
+  SharedDtor();
+}
+
+void HeaderInfo::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void HeaderInfo::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* HeaderInfo::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return HeaderInfo_descriptor_;
+}
+
+const HeaderInfo& HeaderInfo::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
+}
+
+HeaderInfo* HeaderInfo::default_instance_ = NULL;
+
+HeaderInfo* HeaderInfo::New() const {
+  return new HeaderInfo;
+}
+
+void HeaderInfo::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    source_sysid_ = 0;
+    source_compid_ = 0;
+    timestamp_ = 0;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool HeaderInfo::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required int32 source_sysid = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &source_sysid_)));
+          set_has_source_sysid();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_source_compid;
+        break;
+      }
+      
+      // required int32 source_compid = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_source_compid:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &source_compid_)));
+          set_has_source_compid();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(25)) goto parse_timestamp;
+        break;
+      }
+      
+      // required double timestamp = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_timestamp:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &timestamp_)));
+          set_has_timestamp();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void HeaderInfo::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required int32 source_sysid = 1;
+  if (has_source_sysid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->source_sysid(), output);
+  }
+  
+  // required int32 source_compid = 2;
+  if (has_source_compid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->source_compid(), output);
+  }
+  
+  // required double timestamp = 3;
+  if (has_timestamp()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->timestamp(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* HeaderInfo::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required int32 source_sysid = 1;
+  if (has_source_sysid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->source_sysid(), target);
+  }
+  
+  // required int32 source_compid = 2;
+  if (has_source_compid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->source_compid(), target);
+  }
+  
+  // required double timestamp = 3;
+  if (has_timestamp()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->timestamp(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int HeaderInfo::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required int32 source_sysid = 1;
+    if (has_source_sysid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->source_sysid());
+    }
+    
+    // required int32 source_compid = 2;
+    if (has_source_compid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->source_compid());
+    }
+    
+    // required double timestamp = 3;
+    if (has_timestamp()) {
+      total_size += 1 + 8;
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void HeaderInfo::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const HeaderInfo* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const HeaderInfo*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void HeaderInfo::MergeFrom(const HeaderInfo& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_source_sysid()) {
+      set_source_sysid(from.source_sysid());
+    }
+    if (from.has_source_compid()) {
+      set_source_compid(from.source_compid());
+    }
+    if (from.has_timestamp()) {
+      set_timestamp(from.timestamp());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void HeaderInfo::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void HeaderInfo::CopyFrom(const HeaderInfo& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool HeaderInfo::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
+  
+  return true;
+}
+
+void HeaderInfo::Swap(HeaderInfo* other) {
+  if (other != this) {
+    std::swap(source_sysid_, other->source_sysid_);
+    std::swap(source_compid_, other->source_compid_);
+    std::swap(timestamp_, other->timestamp_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata HeaderInfo::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = HeaderInfo_descriptor_;
+  metadata.reflection = HeaderInfo_reflection_;
+  return metadata;
+}
 
 
 // ===================================================================
@@ -432,7 +752,7 @@ const ::google::protobuf::Descriptor* PointCloudXYZI_PointXYZI::descriptor() {
 }
 
 const PointCloudXYZI_PointXYZI& PointCloudXYZI_PointXYZI::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 PointCloudXYZI_PointXYZI* PointCloudXYZI_PointXYZI::default_instance_ = NULL;
@@ -703,6 +1023,7 @@ void PointCloudXYZI_PointXYZI::Swap(PointCloudXYZI_PointXYZI* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
+const int PointCloudXYZI::kHeaderFieldNumber;
 const int PointCloudXYZI::kPointsFieldNumber;
 #endif  // !_MSC_VER
 
@@ -712,6 +1033,7 @@ PointCloudXYZI::PointCloudXYZI()
 }
 
 void PointCloudXYZI::InitAsDefaultInstance() {
+  header_ = const_cast< ::px::HeaderInfo*>(&::px::HeaderInfo::default_instance());
 }
 
 PointCloudXYZI::PointCloudXYZI(const PointCloudXYZI& from)
@@ -722,6 +1044,7 @@ PointCloudXYZI::PointCloudXYZI(const PointCloudXYZI& from)
 
 void PointCloudXYZI::SharedCtor() {
   _cached_size_ = 0;
+  header_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -731,6 +1054,7 @@ PointCloudXYZI::~PointCloudXYZI() {
 
 void PointCloudXYZI::SharedDtor() {
   if (this != default_instance_) {
+    delete header_;
   }
 }
 
@@ -745,7 +1069,7 @@ const ::google::protobuf::Descriptor* PointCloudXYZI::descriptor() {
 }
 
 const PointCloudXYZI& PointCloudXYZI::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 PointCloudXYZI* PointCloudXYZI::default_instance_ = NULL;
@@ -755,6 +1079,11 @@ PointCloudXYZI* PointCloudXYZI::New() const {
 }
 
 void PointCloudXYZI::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_header()) {
+      if (header_ != NULL) header_->::px::HeaderInfo::Clear();
+    }
+  }
   points_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -766,8 +1095,21 @@ bool PointCloudXYZI::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .px.PointCloudXYZI.PointXYZI points = 1;
+      // required .px.HeaderInfo header = 1;
       case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_header()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_points;
+        break;
+      }
+      
+      // repeated .px.PointCloudXYZI.PointXYZI points = 2;
+      case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_points:
@@ -776,7 +1118,7 @@ bool PointCloudXYZI::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(10)) goto parse_points;
+        if (input->ExpectTag(18)) goto parse_points;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -799,10 +1141,16 @@ bool PointCloudXYZI::MergePartialFromCodedStream(
 
 void PointCloudXYZI::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .px.PointCloudXYZI.PointXYZI points = 1;
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->header(), output);
+  }
+  
+  // repeated .px.PointCloudXYZI.PointXYZI points = 2;
   for (int i = 0; i < this->points_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->points(i), output);
+      2, this->points(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -813,11 +1161,18 @@ void PointCloudXYZI::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* PointCloudXYZI::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated .px.PointCloudXYZI.PointXYZI points = 1;
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->header(), target);
+  }
+  
+  // repeated .px.PointCloudXYZI.PointXYZI points = 2;
   for (int i = 0; i < this->points_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        1, this->points(i), target);
+        2, this->points(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -830,7 +1185,16 @@ void PointCloudXYZI::SerializeWithCachedSizes(
 int PointCloudXYZI::ByteSize() const {
   int total_size = 0;
   
-  // repeated .px.PointCloudXYZI.PointXYZI points = 1;
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .px.HeaderInfo header = 1;
+    if (has_header()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->header());
+    }
+    
+  }
+  // repeated .px.PointCloudXYZI.PointXYZI points = 2;
   total_size += 1 * this->points_size();
   for (int i = 0; i < this->points_size(); i++) {
     total_size +=
@@ -864,6 +1228,11 @@ void PointCloudXYZI::MergeFrom(const ::google::protobuf::Message& from) {
 void PointCloudXYZI::MergeFrom(const PointCloudXYZI& from) {
   GOOGLE_CHECK_NE(&from, this);
   points_.MergeFrom(from.points_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_header()) {
+      mutable_header()->::px::HeaderInfo::MergeFrom(from.header());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -880,7 +1249,11 @@ void PointCloudXYZI::CopyFrom(const PointCloudXYZI& from) {
 }
 
 bool PointCloudXYZI::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
+  if (has_header()) {
+    if (!this->header().IsInitialized()) return false;
+  }
   for (int i = 0; i < points_size(); i++) {
     if (!this->points(i).IsInitialized()) return false;
   }
@@ -889,6 +1262,7 @@ bool PointCloudXYZI::IsInitialized() const {
 
 void PointCloudXYZI::Swap(PointCloudXYZI* other) {
   if (other != this) {
+    std::swap(header_, other->header_);
     points_.Swap(&other->points_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
@@ -957,7 +1331,7 @@ const ::google::protobuf::Descriptor* PointCloudXYZRGB_PointXYZRGB::descriptor()
 }
 
 const PointCloudXYZRGB_PointXYZRGB& PointCloudXYZRGB_PointXYZRGB::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 PointCloudXYZRGB_PointXYZRGB* PointCloudXYZRGB_PointXYZRGB::default_instance_ = NULL;
@@ -1228,6 +1602,7 @@ void PointCloudXYZRGB_PointXYZRGB::Swap(PointCloudXYZRGB_PointXYZRGB* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
+const int PointCloudXYZRGB::kHeaderFieldNumber;
 const int PointCloudXYZRGB::kPointsFieldNumber;
 #endif  // !_MSC_VER
 
@@ -1237,6 +1612,7 @@ PointCloudXYZRGB::PointCloudXYZRGB()
 }
 
 void PointCloudXYZRGB::InitAsDefaultInstance() {
+  header_ = const_cast< ::px::HeaderInfo*>(&::px::HeaderInfo::default_instance());
 }
 
 PointCloudXYZRGB::PointCloudXYZRGB(const PointCloudXYZRGB& from)
@@ -1247,6 +1623,7 @@ PointCloudXYZRGB::PointCloudXYZRGB(const PointCloudXYZRGB& from)
 
 void PointCloudXYZRGB::SharedCtor() {
   _cached_size_ = 0;
+  header_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1256,6 +1633,7 @@ PointCloudXYZRGB::~PointCloudXYZRGB() {
 
 void PointCloudXYZRGB::SharedDtor() {
   if (this != default_instance_) {
+    delete header_;
   }
 }
 
@@ -1270,7 +1648,7 @@ const ::google::protobuf::Descriptor* PointCloudXYZRGB::descriptor() {
 }
 
 const PointCloudXYZRGB& PointCloudXYZRGB::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 PointCloudXYZRGB* PointCloudXYZRGB::default_instance_ = NULL;
@@ -1280,6 +1658,11 @@ PointCloudXYZRGB* PointCloudXYZRGB::New() const {
 }
 
 void PointCloudXYZRGB::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_header()) {
+      if (header_ != NULL) header_->::px::HeaderInfo::Clear();
+    }
+  }
   points_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -1291,8 +1674,21 @@ bool PointCloudXYZRGB::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .px.PointCloudXYZRGB.PointXYZRGB points = 1;
+      // required .px.HeaderInfo header = 1;
       case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_header()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_points;
+        break;
+      }
+      
+      // repeated .px.PointCloudXYZRGB.PointXYZRGB points = 2;
+      case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_points:
@@ -1301,7 +1697,7 @@ bool PointCloudXYZRGB::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(10)) goto parse_points;
+        if (input->ExpectTag(18)) goto parse_points;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1324,10 +1720,16 @@ bool PointCloudXYZRGB::MergePartialFromCodedStream(
 
 void PointCloudXYZRGB::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .px.PointCloudXYZRGB.PointXYZRGB points = 1;
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->header(), output);
+  }
+  
+  // repeated .px.PointCloudXYZRGB.PointXYZRGB points = 2;
   for (int i = 0; i < this->points_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->points(i), output);
+      2, this->points(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -1338,11 +1740,18 @@ void PointCloudXYZRGB::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* PointCloudXYZRGB::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated .px.PointCloudXYZRGB.PointXYZRGB points = 1;
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->header(), target);
+  }
+  
+  // repeated .px.PointCloudXYZRGB.PointXYZRGB points = 2;
   for (int i = 0; i < this->points_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        1, this->points(i), target);
+        2, this->points(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -1355,7 +1764,16 @@ void PointCloudXYZRGB::SerializeWithCachedSizes(
 int PointCloudXYZRGB::ByteSize() const {
   int total_size = 0;
   
-  // repeated .px.PointCloudXYZRGB.PointXYZRGB points = 1;
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .px.HeaderInfo header = 1;
+    if (has_header()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->header());
+    }
+    
+  }
+  // repeated .px.PointCloudXYZRGB.PointXYZRGB points = 2;
   total_size += 1 * this->points_size();
   for (int i = 0; i < this->points_size(); i++) {
     total_size +=
@@ -1389,6 +1807,11 @@ void PointCloudXYZRGB::MergeFrom(const ::google::protobuf::Message& from) {
 void PointCloudXYZRGB::MergeFrom(const PointCloudXYZRGB& from) {
   GOOGLE_CHECK_NE(&from, this);
   points_.MergeFrom(from.points_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_header()) {
+      mutable_header()->::px::HeaderInfo::MergeFrom(from.header());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -1405,7 +1828,11 @@ void PointCloudXYZRGB::CopyFrom(const PointCloudXYZRGB& from) {
 }
 
 bool PointCloudXYZRGB::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
+  if (has_header()) {
+    if (!this->header().IsInitialized()) return false;
+  }
   for (int i = 0; i < points_size(); i++) {
     if (!this->points(i).IsInitialized()) return false;
   }
@@ -1414,6 +1841,7 @@ bool PointCloudXYZRGB::IsInitialized() const {
 
 void PointCloudXYZRGB::Swap(PointCloudXYZRGB* other) {
   if (other != this) {
+    std::swap(header_, other->header_);
     points_.Swap(&other->points_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
@@ -1433,6 +1861,7 @@ void PointCloudXYZRGB::Swap(PointCloudXYZRGB* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int RGBDImage::kHeaderFieldNumber;
 const int RGBDImage::kColsFieldNumber;
 const int RGBDImage::kRowsFieldNumber;
 const int RGBDImage::kStep1FieldNumber;
@@ -1443,7 +1872,6 @@ const int RGBDImage::kType2FieldNumber;
 const int RGBDImage::kImageData2FieldNumber;
 const int RGBDImage::kCameraConfigFieldNumber;
 const int RGBDImage::kCameraTypeFieldNumber;
-const int RGBDImage::kTimestampFieldNumber;
 const int RGBDImage::kRollFieldNumber;
 const int RGBDImage::kPitchFieldNumber;
 const int RGBDImage::kYawFieldNumber;
@@ -1462,6 +1890,7 @@ RGBDImage::RGBDImage()
 }
 
 void RGBDImage::InitAsDefaultInstance() {
+  header_ = const_cast< ::px::HeaderInfo*>(&::px::HeaderInfo::default_instance());
 }
 
 RGBDImage::RGBDImage(const RGBDImage& from)
@@ -1472,6 +1901,7 @@ RGBDImage::RGBDImage(const RGBDImage& from)
 
 void RGBDImage::SharedCtor() {
   _cached_size_ = 0;
+  header_ = NULL;
   cols_ = 0u;
   rows_ = 0u;
   step1_ = 0u;
@@ -1482,7 +1912,6 @@ void RGBDImage::SharedCtor() {
   imagedata2_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   camera_config_ = 0u;
   camera_type_ = 0u;
-  timestamp_ = GOOGLE_ULONGLONG(0);
   roll_ = 0;
   pitch_ = 0;
   yaw_ = 0;
@@ -1507,6 +1936,7 @@ void RGBDImage::SharedDtor() {
     delete imagedata2_;
   }
   if (this != default_instance_) {
+    delete header_;
   }
 }
 
@@ -1521,7 +1951,7 @@ const ::google::protobuf::Descriptor* RGBDImage::descriptor() {
 }
 
 const RGBDImage& RGBDImage::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 RGBDImage* RGBDImage::default_instance_ = NULL;
@@ -1532,6 +1962,9 @@ RGBDImage* RGBDImage::New() const {
 
 void RGBDImage::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_header()) {
+      if (header_ != NULL) header_->::px::HeaderInfo::Clear();
+    }
     cols_ = 0u;
     rows_ = 0u;
     step1_ = 0u;
@@ -1543,16 +1976,15 @@ void RGBDImage::Clear() {
     }
     step2_ = 0u;
     type2_ = 0u;
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (has_imagedata2()) {
       if (imagedata2_ != &::google::protobuf::internal::kEmptyString) {
         imagedata2_->clear();
       }
     }
-  }
-  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     camera_config_ = 0u;
     camera_type_ = 0u;
-    timestamp_ = GOOGLE_ULONGLONG(0);
     roll_ = 0;
     pitch_ = 0;
     yaw_ = 0;
@@ -1576,10 +2008,24 @@ bool RGBDImage::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required uint32 cols = 1;
+      // required .px.HeaderInfo header = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_header()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_cols;
+        break;
+      }
+      
+      // required uint32 cols = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_cols:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &cols_)));
@@ -1587,12 +2033,12 @@ bool RGBDImage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(16)) goto parse_rows;
+        if (input->ExpectTag(24)) goto parse_rows;
         break;
       }
       
-      // required uint32 rows = 2;
-      case 2: {
+      // required uint32 rows = 3;
+      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_rows:
@@ -1603,12 +2049,12 @@ bool RGBDImage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(24)) goto parse_step1;
+        if (input->ExpectTag(32)) goto parse_step1;
         break;
       }
       
-      // required uint32 step1 = 3;
-      case 3: {
+      // required uint32 step1 = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_step1:
@@ -1619,12 +2065,12 @@ bool RGBDImage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(32)) goto parse_type1;
+        if (input->ExpectTag(40)) goto parse_type1;
         break;
       }
       
-      // required uint32 type1 = 4;
-      case 4: {
+      // required uint32 type1 = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_type1:
@@ -1635,12 +2081,12 @@ bool RGBDImage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(42)) goto parse_imageData1;
+        if (input->ExpectTag(50)) goto parse_imageData1;
         break;
       }
       
-      // required bytes imageData1 = 5;
-      case 5: {
+      // required bytes imageData1 = 6;
+      case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_imageData1:
@@ -1649,12 +2095,12 @@ bool RGBDImage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(48)) goto parse_step2;
+        if (input->ExpectTag(56)) goto parse_step2;
         break;
       }
       
-      // required uint32 step2 = 6;
-      case 6: {
+      // required uint32 step2 = 7;
+      case 7: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_step2:
@@ -1665,12 +2111,12 @@ bool RGBDImage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(56)) goto parse_type2;
+        if (input->ExpectTag(64)) goto parse_type2;
         break;
       }
       
-      // required uint32 type2 = 7;
-      case 7: {
+      // required uint32 type2 = 8;
+      case 8: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_type2:
@@ -1681,12 +2127,12 @@ bool RGBDImage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(66)) goto parse_imageData2;
+        if (input->ExpectTag(74)) goto parse_imageData2;
         break;
       }
       
-      // required bytes imageData2 = 8;
-      case 8: {
+      // required bytes imageData2 = 9;
+      case 9: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_imageData2:
@@ -1695,12 +2141,12 @@ bool RGBDImage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(72)) goto parse_camera_config;
+        if (input->ExpectTag(80)) goto parse_camera_config;
         break;
       }
       
-      // optional uint32 camera_config = 9;
-      case 9: {
+      // optional uint32 camera_config = 10;
+      case 10: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_camera_config:
@@ -1711,12 +2157,12 @@ bool RGBDImage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(80)) goto parse_camera_type;
+        if (input->ExpectTag(88)) goto parse_camera_type;
         break;
       }
       
-      // optional uint32 camera_type = 10;
-      case 10: {
+      // optional uint32 camera_type = 11;
+      case 11: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_camera_type:
@@ -1724,22 +2170,6 @@ bool RGBDImage::MergePartialFromCodedStream(
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &camera_type_)));
           set_has_camera_type();
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(88)) goto parse_timestamp;
-        break;
-      }
-      
-      // optional uint64 timestamp = 11;
-      case 11: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_timestamp:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 input, &timestamp_)));
-          set_has_timestamp();
         } else {
           goto handle_uninterpreted;
         }
@@ -1931,61 +2361,62 @@ bool RGBDImage::MergePartialFromCodedStream(
 
 void RGBDImage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required uint32 cols = 1;
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->header(), output);
+  }
+  
+  // required uint32 cols = 2;
   if (has_cols()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->cols(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->cols(), output);
   }
   
-  // required uint32 rows = 2;
+  // required uint32 rows = 3;
   if (has_rows()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->rows(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->rows(), output);
   }
   
-  // required uint32 step1 = 3;
+  // required uint32 step1 = 4;
   if (has_step1()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->step1(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->step1(), output);
   }
   
-  // required uint32 type1 = 4;
+  // required uint32 type1 = 5;
   if (has_type1()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->type1(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(5, this->type1(), output);
   }
   
-  // required bytes imageData1 = 5;
+  // required bytes imageData1 = 6;
   if (has_imagedata1()) {
     ::google::protobuf::internal::WireFormatLite::WriteBytes(
-      5, this->imagedata1(), output);
+      6, this->imagedata1(), output);
   }
   
-  // required uint32 step2 = 6;
+  // required uint32 step2 = 7;
   if (has_step2()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(6, this->step2(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(7, this->step2(), output);
   }
   
-  // required uint32 type2 = 7;
+  // required uint32 type2 = 8;
   if (has_type2()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(7, this->type2(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(8, this->type2(), output);
   }
   
-  // required bytes imageData2 = 8;
+  // required bytes imageData2 = 9;
   if (has_imagedata2()) {
     ::google::protobuf::internal::WireFormatLite::WriteBytes(
-      8, this->imagedata2(), output);
+      9, this->imagedata2(), output);
   }
   
-  // optional uint32 camera_config = 9;
+  // optional uint32 camera_config = 10;
   if (has_camera_config()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(9, this->camera_config(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(10, this->camera_config(), output);
   }
   
-  // optional uint32 camera_type = 10;
+  // optional uint32 camera_type = 11;
   if (has_camera_type()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(10, this->camera_type(), output);
-  }
-  
-  // optional uint64 timestamp = 11;
-  if (has_timestamp()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(11, this->timestamp(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(11, this->camera_type(), output);
   }
   
   // optional float roll = 12;
@@ -2047,63 +2478,65 @@ void RGBDImage::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* RGBDImage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required uint32 cols = 1;
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->header(), target);
+  }
+  
+  // required uint32 cols = 2;
   if (has_cols()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->cols(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->cols(), target);
   }
   
-  // required uint32 rows = 2;
+  // required uint32 rows = 3;
   if (has_rows()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->rows(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->rows(), target);
   }
   
-  // required uint32 step1 = 3;
+  // required uint32 step1 = 4;
   if (has_step1()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->step1(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->step1(), target);
   }
   
-  // required uint32 type1 = 4;
+  // required uint32 type1 = 5;
   if (has_type1()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->type1(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(5, this->type1(), target);
   }
   
-  // required bytes imageData1 = 5;
+  // required bytes imageData1 = 6;
   if (has_imagedata1()) {
     target =
       ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
-        5, this->imagedata1(), target);
+        6, this->imagedata1(), target);
   }
   
-  // required uint32 step2 = 6;
+  // required uint32 step2 = 7;
   if (has_step2()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(6, this->step2(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(7, this->step2(), target);
   }
   
-  // required uint32 type2 = 7;
+  // required uint32 type2 = 8;
   if (has_type2()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(7, this->type2(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(8, this->type2(), target);
   }
   
-  // required bytes imageData2 = 8;
+  // required bytes imageData2 = 9;
   if (has_imagedata2()) {
     target =
       ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
-        8, this->imagedata2(), target);
+        9, this->imagedata2(), target);
   }
   
-  // optional uint32 camera_config = 9;
+  // optional uint32 camera_config = 10;
   if (has_camera_config()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(9, this->camera_config(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(10, this->camera_config(), target);
   }
   
-  // optional uint32 camera_type = 10;
+  // optional uint32 camera_type = 11;
   if (has_camera_type()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(10, this->camera_type(), target);
-  }
-  
-  // optional uint64 timestamp = 11;
-  if (has_timestamp()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(11, this->timestamp(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(11, this->camera_type(), target);
   }
   
   // optional float roll = 12;
@@ -2168,83 +2601,83 @@ int RGBDImage::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required uint32 cols = 1;
+    // required .px.HeaderInfo header = 1;
+    if (has_header()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->header());
+    }
+    
+    // required uint32 cols = 2;
     if (has_cols()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->cols());
     }
     
-    // required uint32 rows = 2;
+    // required uint32 rows = 3;
     if (has_rows()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->rows());
     }
     
-    // required uint32 step1 = 3;
+    // required uint32 step1 = 4;
     if (has_step1()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->step1());
     }
     
-    // required uint32 type1 = 4;
+    // required uint32 type1 = 5;
     if (has_type1()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->type1());
     }
     
-    // required bytes imageData1 = 5;
+    // required bytes imageData1 = 6;
     if (has_imagedata1()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::BytesSize(
           this->imagedata1());
     }
     
-    // required uint32 step2 = 6;
+    // required uint32 step2 = 7;
     if (has_step2()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->step2());
     }
     
-    // required uint32 type2 = 7;
+    // required uint32 type2 = 8;
     if (has_type2()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->type2());
     }
     
-    // required bytes imageData2 = 8;
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // required bytes imageData2 = 9;
     if (has_imagedata2()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::BytesSize(
           this->imagedata2());
     }
     
-  }
-  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    // optional uint32 camera_config = 9;
+    // optional uint32 camera_config = 10;
     if (has_camera_config()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->camera_config());
     }
     
-    // optional uint32 camera_type = 10;
+    // optional uint32 camera_type = 11;
     if (has_camera_type()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->camera_type());
-    }
-    
-    // optional uint64 timestamp = 11;
-    if (has_timestamp()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt64Size(
-          this->timestamp());
     }
     
     // optional float roll = 12;
@@ -2329,6 +2762,9 @@ void RGBDImage::MergeFrom(const RGBDImage& from) {
   GOOGLE_CHECK_NE(&from, this);
   camera_matrix_.MergeFrom(from.camera_matrix_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_header()) {
+      mutable_header()->::px::HeaderInfo::MergeFrom(from.header());
+    }
     if (from.has_cols()) {
       set_cols(from.cols());
     }
@@ -2350,19 +2786,16 @@ void RGBDImage::MergeFrom(const RGBDImage& from) {
     if (from.has_type2()) {
       set_type2(from.type2());
     }
+  }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (from.has_imagedata2()) {
       set_imagedata2(from.imagedata2());
     }
-  }
-  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (from.has_camera_config()) {
       set_camera_config(from.camera_config());
     }
     if (from.has_camera_type()) {
       set_camera_type(from.camera_type());
-    }
-    if (from.has_timestamp()) {
-      set_timestamp(from.timestamp());
     }
     if (from.has_roll()) {
       set_roll(from.roll());
@@ -2410,13 +2843,17 @@ void RGBDImage::CopyFrom(const RGBDImage& from) {
 }
 
 bool RGBDImage::IsInitialized() const {
-  if ((_has_bits_[0] & 0x000000ff) != 0x000000ff) return false;
+  if ((_has_bits_[0] & 0x000001ff) != 0x000001ff) return false;
   
+  if (has_header()) {
+    if (!this->header().IsInitialized()) return false;
+  }
   return true;
 }
 
 void RGBDImage::Swap(RGBDImage* other) {
   if (other != this) {
+    std::swap(header_, other->header_);
     std::swap(cols_, other->cols_);
     std::swap(rows_, other->rows_);
     std::swap(step1_, other->step1_);
@@ -2427,7 +2864,6 @@ void RGBDImage::Swap(RGBDImage* other) {
     std::swap(imagedata2_, other->imagedata2_);
     std::swap(camera_config_, other->camera_config_);
     std::swap(camera_type_, other->camera_type_);
-    std::swap(timestamp_, other->timestamp_);
     std::swap(roll_, other->roll_);
     std::swap(pitch_, other->pitch_);
     std::swap(yaw_, other->yaw_);
@@ -2509,7 +2945,7 @@ const ::google::protobuf::Descriptor* Obstacle::descriptor() {
 }
 
 const Obstacle& Obstacle::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 Obstacle* Obstacle::default_instance_ = NULL;
@@ -2851,7 +3287,7 @@ void Obstacle::Swap(Obstacle* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int ObstacleList::kUtimeFieldNumber;
+const int ObstacleList::kHeaderFieldNumber;
 const int ObstacleList::kObstaclesFieldNumber;
 #endif  // !_MSC_VER
 
@@ -2861,6 +3297,7 @@ ObstacleList::ObstacleList()
 }
 
 void ObstacleList::InitAsDefaultInstance() {
+  header_ = const_cast< ::px::HeaderInfo*>(&::px::HeaderInfo::default_instance());
 }
 
 ObstacleList::ObstacleList(const ObstacleList& from)
@@ -2871,7 +3308,7 @@ ObstacleList::ObstacleList(const ObstacleList& from)
 
 void ObstacleList::SharedCtor() {
   _cached_size_ = 0;
-  utime_ = GOOGLE_ULONGLONG(0);
+  header_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2881,6 +3318,7 @@ ObstacleList::~ObstacleList() {
 
 void ObstacleList::SharedDtor() {
   if (this != default_instance_) {
+    delete header_;
   }
 }
 
@@ -2895,7 +3333,7 @@ const ::google::protobuf::Descriptor* ObstacleList::descriptor() {
 }
 
 const ObstacleList& ObstacleList::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 ObstacleList* ObstacleList::default_instance_ = NULL;
@@ -2906,7 +3344,9 @@ ObstacleList* ObstacleList::New() const {
 
 void ObstacleList::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    utime_ = GOOGLE_ULONGLONG(0);
+    if (has_header()) {
+      if (header_ != NULL) header_->::px::HeaderInfo::Clear();
+    }
   }
   obstacles_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2919,14 +3359,12 @@ bool ObstacleList::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional uint64 utime = 1;
+      // required .px.HeaderInfo header = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 input, &utime_)));
-          set_has_utime();
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_header()));
         } else {
           goto handle_uninterpreted;
         }
@@ -2967,9 +3405,10 @@ bool ObstacleList::MergePartialFromCodedStream(
 
 void ObstacleList::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // optional uint64 utime = 1;
-  if (has_utime()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->utime(), output);
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->header(), output);
   }
   
   // repeated .px.Obstacle obstacles = 2;
@@ -2986,9 +3425,11 @@ void ObstacleList::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* ObstacleList::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // optional uint64 utime = 1;
-  if (has_utime()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->utime(), target);
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->header(), target);
   }
   
   // repeated .px.Obstacle obstacles = 2;
@@ -3009,11 +3450,11 @@ int ObstacleList::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional uint64 utime = 1;
-    if (has_utime()) {
+    // required .px.HeaderInfo header = 1;
+    if (has_header()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt64Size(
-          this->utime());
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->header());
     }
     
   }
@@ -3052,8 +3493,8 @@ void ObstacleList::MergeFrom(const ObstacleList& from) {
   GOOGLE_CHECK_NE(&from, this);
   obstacles_.MergeFrom(from.obstacles_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_utime()) {
-      set_utime(from.utime());
+    if (from.has_header()) {
+      mutable_header()->::px::HeaderInfo::MergeFrom(from.header());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -3072,13 +3513,17 @@ void ObstacleList::CopyFrom(const ObstacleList& from) {
 }
 
 bool ObstacleList::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
+  if (has_header()) {
+    if (!this->header().IsInitialized()) return false;
+  }
   return true;
 }
 
 void ObstacleList::Swap(ObstacleList* other) {
   if (other != this) {
-    std::swap(utime_, other->utime_);
+    std::swap(header_, other->header_);
     obstacles_.Swap(&other->obstacles_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
@@ -3098,7 +3543,7 @@ void ObstacleList::Swap(ObstacleList* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int ObstacleMap::kUtimeFieldNumber;
+const int ObstacleMap::kHeaderFieldNumber;
 const int ObstacleMap::kTypeFieldNumber;
 const int ObstacleMap::kResolutionFieldNumber;
 const int ObstacleMap::kRowsFieldNumber;
@@ -3116,6 +3561,7 @@ ObstacleMap::ObstacleMap()
 }
 
 void ObstacleMap::InitAsDefaultInstance() {
+  header_ = const_cast< ::px::HeaderInfo*>(&::px::HeaderInfo::default_instance());
 }
 
 ObstacleMap::ObstacleMap(const ObstacleMap& from)
@@ -3126,7 +3572,7 @@ ObstacleMap::ObstacleMap(const ObstacleMap& from)
 
 void ObstacleMap::SharedCtor() {
   _cached_size_ = 0;
-  utime_ = GOOGLE_ULONGLONG(0);
+  header_ = NULL;
   type_ = 0;
   resolution_ = 0;
   rows_ = 0;
@@ -3148,6 +3594,7 @@ void ObstacleMap::SharedDtor() {
     delete data_;
   }
   if (this != default_instance_) {
+    delete header_;
   }
 }
 
@@ -3162,7 +3609,7 @@ const ::google::protobuf::Descriptor* ObstacleMap::descriptor() {
 }
 
 const ObstacleMap& ObstacleMap::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 ObstacleMap* ObstacleMap::default_instance_ = NULL;
@@ -3173,7 +3620,9 @@ ObstacleMap* ObstacleMap::New() const {
 
 void ObstacleMap::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    utime_ = GOOGLE_ULONGLONG(0);
+    if (has_header()) {
+      if (header_ != NULL) header_->::px::HeaderInfo::Clear();
+    }
     type_ = 0;
     resolution_ = 0;
     rows_ = 0;
@@ -3200,14 +3649,12 @@ bool ObstacleMap::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required uint64 utime = 1;
+      // required .px.HeaderInfo header = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 input, &utime_)));
-          set_has_utime();
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_header()));
         } else {
           goto handle_uninterpreted;
         }
@@ -3375,9 +3822,10 @@ bool ObstacleMap::MergePartialFromCodedStream(
 
 void ObstacleMap::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required uint64 utime = 1;
-  if (has_utime()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->utime(), output);
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->header(), output);
   }
   
   // required int32 type = 2;
@@ -3434,9 +3882,11 @@ void ObstacleMap::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* ObstacleMap::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required uint64 utime = 1;
-  if (has_utime()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->utime(), target);
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->header(), target);
   }
   
   // required int32 type = 2;
@@ -3497,11 +3947,11 @@ int ObstacleMap::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required uint64 utime = 1;
-    if (has_utime()) {
+    // required .px.HeaderInfo header = 1;
+    if (has_header()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt64Size(
-          this->utime());
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->header());
     }
     
     // required int32 type = 2;
@@ -3594,8 +4044,8 @@ void ObstacleMap::MergeFrom(const ::google::protobuf::Message& from) {
 void ObstacleMap::MergeFrom(const ObstacleMap& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_utime()) {
-      set_utime(from.utime());
+    if (from.has_header()) {
+      mutable_header()->::px::HeaderInfo::MergeFrom(from.header());
     }
     if (from.has_type()) {
       set_type(from.type());
@@ -3645,12 +4095,15 @@ void ObstacleMap::CopyFrom(const ObstacleMap& from) {
 bool ObstacleMap::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   
+  if (has_header()) {
+    if (!this->header().IsInitialized()) return false;
+  }
   return true;
 }
 
 void ObstacleMap::Swap(ObstacleMap* other) {
   if (other != this) {
-    std::swap(utime_, other->utime_);
+    std::swap(header_, other->header_);
     std::swap(type_, other->type_);
     std::swap(resolution_, other->resolution_);
     std::swap(rows_, other->rows_);
@@ -3731,7 +4184,7 @@ const ::google::protobuf::Descriptor* Waypoint::descriptor() {
 }
 
 const Waypoint& Waypoint::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 Waypoint* Waypoint::default_instance_ = NULL;
@@ -4074,6 +4527,7 @@ void Waypoint::Swap(Waypoint* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int Path::kHeaderFieldNumber;
 const int Path::kWaypointsFieldNumber;
 #endif  // !_MSC_VER
 
@@ -4083,6 +4537,7 @@ Path::Path()
 }
 
 void Path::InitAsDefaultInstance() {
+  header_ = const_cast< ::px::HeaderInfo*>(&::px::HeaderInfo::default_instance());
 }
 
 Path::Path(const Path& from)
@@ -4093,6 +4548,7 @@ Path::Path(const Path& from)
 
 void Path::SharedCtor() {
   _cached_size_ = 0;
+  header_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4102,6 +4558,7 @@ Path::~Path() {
 
 void Path::SharedDtor() {
   if (this != default_instance_) {
+    delete header_;
   }
 }
 
@@ -4116,7 +4573,7 @@ const ::google::protobuf::Descriptor* Path::descriptor() {
 }
 
 const Path& Path::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_message_5fdefinitions_2fpixhawk_2eproto();  return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_pixhawk_2eproto();  return *default_instance_;
 }
 
 Path* Path::default_instance_ = NULL;
@@ -4126,6 +4583,11 @@ Path* Path::New() const {
 }
 
 void Path::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_header()) {
+      if (header_ != NULL) header_->::px::HeaderInfo::Clear();
+    }
+  }
   waypoints_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -4137,8 +4599,21 @@ bool Path::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .px.Waypoint waypoints = 1;
+      // required .px.HeaderInfo header = 1;
       case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_header()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_waypoints;
+        break;
+      }
+      
+      // repeated .px.Waypoint waypoints = 2;
+      case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_waypoints:
@@ -4147,7 +4622,7 @@ bool Path::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(10)) goto parse_waypoints;
+        if (input->ExpectTag(18)) goto parse_waypoints;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -4170,10 +4645,16 @@ bool Path::MergePartialFromCodedStream(
 
 void Path::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .px.Waypoint waypoints = 1;
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->header(), output);
+  }
+  
+  // repeated .px.Waypoint waypoints = 2;
   for (int i = 0; i < this->waypoints_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->waypoints(i), output);
+      2, this->waypoints(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -4184,11 +4665,18 @@ void Path::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Path::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated .px.Waypoint waypoints = 1;
+  // required .px.HeaderInfo header = 1;
+  if (has_header()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->header(), target);
+  }
+  
+  // repeated .px.Waypoint waypoints = 2;
   for (int i = 0; i < this->waypoints_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        1, this->waypoints(i), target);
+        2, this->waypoints(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -4201,7 +4689,16 @@ void Path::SerializeWithCachedSizes(
 int Path::ByteSize() const {
   int total_size = 0;
   
-  // repeated .px.Waypoint waypoints = 1;
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .px.HeaderInfo header = 1;
+    if (has_header()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->header());
+    }
+    
+  }
+  // repeated .px.Waypoint waypoints = 2;
   total_size += 1 * this->waypoints_size();
   for (int i = 0; i < this->waypoints_size(); i++) {
     total_size +=
@@ -4235,6 +4732,11 @@ void Path::MergeFrom(const ::google::protobuf::Message& from) {
 void Path::MergeFrom(const Path& from) {
   GOOGLE_CHECK_NE(&from, this);
   waypoints_.MergeFrom(from.waypoints_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_header()) {
+      mutable_header()->::px::HeaderInfo::MergeFrom(from.header());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -4251,7 +4753,11 @@ void Path::CopyFrom(const Path& from) {
 }
 
 bool Path::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
+  if (has_header()) {
+    if (!this->header().IsInitialized()) return false;
+  }
   for (int i = 0; i < waypoints_size(); i++) {
     if (!this->waypoints(i).IsInitialized()) return false;
   }
@@ -4260,6 +4766,7 @@ bool Path::IsInitialized() const {
 
 void Path::Swap(Path* other) {
   if (other != this) {
+    std::swap(header_, other->header_);
     waypoints_.Swap(&other->waypoints_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);

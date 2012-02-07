@@ -1,5 +1,11 @@
 package px;
 
+message HeaderInfo {
+    required int32 source_sysid = 1;
+    required int32 source_compid = 2;
+    required double timestamp = 3; // in seconds
+}
+
 message PointCloudXYZI {
     message PointXYZI {
         required float x = 1;
@@ -8,7 +14,8 @@ message PointCloudXYZI {
         required float intensity = 4;
     }
 
-    repeated PointXYZI points = 1;
+    required HeaderInfo header = 1;
+    repeated PointXYZI points = 2;
 }
 
 message PointCloudXYZRGB {
@@ -19,22 +26,24 @@ message PointCloudXYZRGB {
         required float rgb = 4;
     }
 
-    repeated PointXYZRGB points = 1;
+    required HeaderInfo header = 1;
+    repeated PointXYZRGB points = 2;
 }
 
 message RGBDImage
 {
-    required uint32 cols = 1;		///< Number of columns in image(s)
-    required uint32 rows = 2;		///< Number of rows in image(s)
-    required uint32 step1 = 3;		///< Step (stride) of image 1
-    required uint32 type1 = 4;		///< Type of image 1
-    required bytes imageData1 = 5;
-    required uint32 step2 = 6;		///< Step (stride) of image 2
-    required uint32 type2 = 7;		///< Type of image 2
-    required bytes imageData2 = 8;
-    optional uint32 camera_config = 9;	///< PxSHM::Camera enumeration
-    optional uint32 camera_type = 10;	///< PxSHM::CameraType enumeration
-    optional uint64 timestamp = 11;
+    required HeaderInfo header = 1;
+
+    required uint32 cols = 2;		///< Number of columns in image(s)
+    required uint32 rows = 3;		///< Number of rows in image(s)
+    required uint32 step1 = 4;		///< Step (stride) of image 1
+    required uint32 type1 = 5;		///< Type of image 1
+    required bytes imageData1 = 6;
+    required uint32 step2 = 7;		///< Step (stride) of image 2
+    required uint32 type2 = 8;		///< Type of image 2
+    required bytes imageData2 = 9;
+    optional uint32 camera_config = 10;	///< PxSHM::Camera enumeration
+    optional uint32 camera_type = 11;	///< PxSHM::CameraType enumeration
     optional float roll = 12;
     optional float pitch = 13;
     optional float yaw = 14;
@@ -59,13 +68,15 @@ message Obstacle
 
 message ObstacleList
 {
-    optional uint64 utime = 1;
+    required HeaderInfo header = 1;
+
     repeated Obstacle obstacles = 2;
 }
 
 message ObstacleMap
 {
-    required uint64 utime = 1;
+    required HeaderInfo header = 1;
+
     required int32 type = 2;
 
     optional float resolution = 3;
@@ -91,5 +102,7 @@ message Waypoint
 
 message Path
 {
-    repeated Waypoint waypoints = 1;
+    required HeaderInfo header = 1;
+
+    repeated Waypoint waypoints = 2;
 }
