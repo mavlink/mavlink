@@ -185,7 +185,7 @@ set(v1.0Definitions
 generateMavlink("v1.0" "${v1.0Definitions}")
 
 # install files
-install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME} FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} FILES_MATCHING PATTERN "*.h")
 
 # pkgconfig
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)
