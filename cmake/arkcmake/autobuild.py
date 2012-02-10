@@ -36,7 +36,7 @@ else:
     print "The script was unable to find a build directory."
     raise SystemExit
 
-makeargs = "-j8"
+makeargs = "-j1"
 cmakecall = ["cmake", ".."]
 build_dir = "build"
 
@@ -45,7 +45,7 @@ build_dir = "build"
 ## (with 'action="append"' to append arg(s) to list)
 usage = "usage: %prog [options] [1-9]"
 parser = OptionParser(usage=usage)
-parser.set_defaults(verbose=False, makeargs="-j8")
+parser.set_defaults(verbose=False, makeargs="-j1")
 parser.add_option("-v", "--verbose",
                 action="store_true", dest="verbose",
                 help="Verbose mode")

@@ -5,10 +5,12 @@ cmake_minimum_required (VERSION 2.8.2)
 
 # global needed variables
 set(APPLICATION_NAME ${PROJECT_NAME})
+set(PROJECT_CONTACT_EMAIL http://groups.google.com/group/mavlink)
+set(PROJECT_CONTACT_VENDOR mavlink)
 
 # set these for release
-set(APPLICATION_VERSION_MAJOR "1")
-set(APPLICATION_VERSION_MINOR "0")
+set(APPLICATION_VERSION_MAJOR "0")
+set(APPLICATION_VERSION_MINOR "9")
 set(APPLICATION_VERSION_PATCH "0")
 
 set(APPLICATION_VERSION "${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH}")
@@ -35,35 +37,52 @@ include(DefinePlatformDefaults)
 include(DefineCompilerFlags)
 include(DefineInstallationPaths)
 
+# find packages
+find_package(PythonInterp)
+
 # cpack
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "MAVLink Micro Air Vehicle Message Marshalling Library")
-set(CPACK_PACKAGE_VENDOR "pixhawk")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "james.goppert@gmail.com")
-set(CPACK_PACKAGE_CONTACT "james.goppert@gmail.com")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/license.txt")
+if(WIN32)
+    add_definitions(-D_WIN32_WINNT=0x0501) # target xp
+	set(CPACK_GENERATOR "NSIS")
+	set(CPACK_SOURCE_GENERATOR "ZIP")
+    set(CMAKE_INSTALL_PREFIX "/usr/local")
+    # There is a bug in NSI that does not handle full unix paths properly. Make
+    # sure there is at least one set of four (4) backlasshes.
+    #set(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
+    #set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\mavlink.exe")
+    set(CPACK_NSIS_DISPLAY_NAME "${PROJECT_NAME}-${APPLICATION_VERSION}")
+    set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\github.com/mavlink/mavlink")
+    set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\github.com/mavlink/mavlink")
+    set(CPACK_NSIS_CONTACT ${PROJECT_CONTACT_EMAIL})
+    set(CPACK_NSIS_MODIFY_PATH ON)
+else()
+    #set(CPACK_STRIP_FILES "bin/ins")
+    #set(CPACK_SOURCE_STRIP_FILES "")
+    if(APPLE)
+        set(CPACK_GENERATOR "PackageMaker")
+        set(CPACK_SOURCE_GENERATOR "TGZ")
+            elseif(UNIX)
+        set(CPACK_GENERATOR "DEB")
+        set(CPACK_SOURCE_GENERATOR "ZIP")
+    else()
+        message(FATAL_ERROR "unknown operating system")
+    endif()
+endif()
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "micro air vehicle message marshalling library")
+set(CPACK_PACKAGE_VENDOR ${PROJECT_VENDOR})
+set(CPACK_PACKAGE_CONTACT ${PROJECT_CONTACT_EMAIL})
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/license.txt")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README")
 set(CPACK_PACKAGE_VERSION_MAJOR "${APPLICATION_VERSION_MAJOR}") 
 set(CPACK_PACKAGE_VERSION_MINOR "${APPLICATION_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${APPLICATION_VERSION_PATCH}")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${CMake_VERSION_MAJOR}.${CMake_VERSION_MINOR}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}-${APPLICATION_VERSION}")
 set(CPACK_SET_DESTDIR TRUE)
 set(CPACK_SOURCE_IGNORE_FILES ${CPACK_SOURCE_IGNORE_FILES}
-    /.git/;/build/;~$;.*\\\\.bin$;.*\\\\.swp$)
+	/.git/;/build/;~$;.*\\\\.bin$;.*\\\\.swp$)
 set(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-
-if(WIN32)
-    set(CPACK_GENERATOR "NSIS")
-    set(CPACK_SOURCE_GENERATOR "ZIP")
-elseif(APPLE)
-    set(CPACK_GENERATOR "PackageMaker")
-    set(CPACK_SOURCE_GENERATOR "TGZ")
-elseif(UNIX)
-    set(CPACK_GENERATOR "DEB")
-    set(CPACK_SOURCE_GENERATOR "TGZ")
-else()
-    message(FATAL_ERROR "unknown operating system")
-endif()
+#set(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
 include(CPack)
 
 # disallow in-source build
@@ -123,6 +142,47 @@ else()
 endif()
 set(EP_INCLUDEDIR ${EP_BASE_DIR}/${EP_INSTALL_PREFIX}/include)
 set(EP_LIBDIR ${EP_BASE_DIR}/${EP_INSTALL_PREFIX}/lib)
+
+# mavlink generation
+macro(generateMavlink version definitions)
+    foreach(definition ${definitions})
+        set(targetName ${definition}-${version})
+        set(definitionAbsPath ${CMAKE_SOURCE_DIR}/message_definitions/${version}/${definition})
+        message(STATUS "processing: ${definitionAbsPath}")
+        add_custom_command( 
+            OUTPUT ${targetName}-stamp
+            COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=C --wire-protocol=0.9 
+                --output=include/${version} ${definitionAbsPath}
+            COMMAND touch ${targetName}-stamp
+            DEPENDS ${definitionAbsPath} ${mavgen}
+            )
+        add_custom_target(${targetName} ALL DEPENDS ${targetName}-stamp)
+    endforeach()
+endmacro()
+
+# build
+set(mavgen ${CMAKE_CURRENT_SOURCE_DIR}/pymavlink/generator/mavgen.py)
+set(v0.9Definitions
+    ardupilotmega.xml
+    common.xml
+    minimal.xml
+    pixhawk.xml
+    slugs.xml
+    test.xml
+    ualberta.xml
+    )
+generateMavlink("v0.9" "${v0.9Definitions}")
+set(v1.0Definitions
+    ardupilotmega.xml
+    common.xml
+    matrixpilot.xml
+    minimal.xml
+    pixhawk.xml
+    slugs.xml
+    test.xml
+    ualberta.xml
+    )
+generateMavlink("v1.0" "${v1.0Definitions}")
 
 # install files
 install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME} FILES_MATCHING PATTERN "*.h")
