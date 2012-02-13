@@ -26,6 +26,7 @@ parser.add_option("--out",   help="MAVLink output port (IP:port)",
                   action='append', default=['127.0.0.1:14550'])
 parser.add_option("--fgout", action='append', default=['127.0.0.1:5503'],
                   help="flightgear FDM NET output (IP:port)")
+parser.add_option("--baudrate", type='int', default=57600, help='baud rate')
 (opts, args) = parser.parse_args()
 
 if opts.mav10:
@@ -57,7 +58,7 @@ class App():
                                                robust_parsing=True)
         self.mout = []
         for m in opts.out:
-            self.mout.append(mavutil.mavudp(m, input=False))
+            self.mout.append(mavutil.mavlink_connection(m, input=False, baud=opts.baudrate))
 
         self.fgout = []
         for f in opts.fgout:
@@ -197,7 +198,6 @@ class App():
 
         if msg.get_type() != "BAD_DATA":
             for m in self.mout:
-                m.write(struct.pack('>Q', timestamp*1.0e6))
                 m.write(msg.get_msgbuf().tostring())
 
         if msg.get_type() == "GPS_RAW":

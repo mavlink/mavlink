@@ -15,6 +15,7 @@ parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', he
 parser.add_option("--planner",dest="planner", action='store_true', help="use planner file format")
 parser.add_option("--robust",dest="robust", action='store_true', help="Enable robust parsing (skip over bad data)")
 parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
+parser.add_option("--deltat", type='float', default=1.0, help="loss threshold in seconds")
 
 (opts, args) = parser.parse_args()
 
@@ -47,7 +48,7 @@ def sigloss(logfile):
         else:
             t = m._timestamp
         if last_t != 0:
-            if t - last_t > 1.0:
+            if t - last_t > opts.deltat:
                 print("Sig lost for %.1fs at %s" % (t-last_t, time.asctime(time.localtime(t))))
         last_t = t
 
