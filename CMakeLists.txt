@@ -1,4 +1,4 @@
-project (mavlink)
+project (mavlink NONE)
 
 # settings
 cmake_minimum_required (VERSION 2.8.2)
@@ -7,7 +7,7 @@ set(PROJECT_CONTACT_VENDOR mavlink)
 set(APPLICATION_VERSION_MAJOR "1")
 set(APPLICATION_VERSION_MINOR "0")
 set(APPLICATION_VERSION_PATCH "0")
-set(LIBRARY_SOVERSION "0.0.0")
+#set(LIBRARY_SOVERSION "0.0.0")
 set(PROJECT_CONTACT_EMAIL http://groups.google.com/group/mavlink)
 set(PROJECT_CONTACT_VENDOR mavlink)
 
@@ -22,11 +22,7 @@ include(CommonSetup)
 set(LIBRARY_VERSION ${APPLICATION_VERSION})
 
 # modules
-include(DefineCMakeDefaults)
-include(DefinePlatformDefaults)
-include(DefineInstallationPaths)
-include(ExternalProject)
-include(CTest)
+#include(CTest)
 
 # cpack
 if(WIN32)
