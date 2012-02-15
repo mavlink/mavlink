@@ -122,6 +122,15 @@ set(v1.0Definitions
     )
 generateMavlink("v1.0" "${v1.0Definitions}")
 
+# testing
+if (BUILD_TEST)
+    if (UNIX) 
+        include_directories(${CMAKE_CURRENT_BINARY_DIR}/include/v0.9/common)
+        # TODO fix udp example
+        #add_executable(mavlink_udp examples/linux/mavlink_udp.c)
+    endif()
+endif()
+
 # install files
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} FILES_MATCHING PATTERN "*.h")
 
