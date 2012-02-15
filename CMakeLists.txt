@@ -45,7 +45,6 @@ if(WIN32)
     add_definitions(-D_WIN32_WINNT=0x0501) # target xp
 	set(CPACK_GENERATOR "NSIS")
 	set(CPACK_SOURCE_GENERATOR "ZIP")
-    set(CMAKE_INSTALL_PREFIX "/usr/local")
     # There is a bug in NSI that does not handle full unix paths properly. Make
     # sure there is at least one set of four (4) backlasshes.
     #set(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
@@ -91,11 +90,6 @@ macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out of source buil
 Please create a separate build directory and run 'cmake /path/to/${PROJECT_NAME} [options]' there.")
 
 # add macros
-include(MacroAddPlugin)
-include(MacroCopyFile)
-include(MacroSetDefault)
-include(language_support_v2)
-include(MacroAddLinkFlags)
 include(ExternalProject)
 include(CTest)
 
