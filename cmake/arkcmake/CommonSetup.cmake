@@ -14,12 +14,6 @@ macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out of source buil
 Please create a separate build directory and run 'cmake /path/to/${PROJECT_NAME} [options]' there.")
 
 # add macros
-include(MacroAddPlugin)
-include(MacroCopyFile)
-include(MacroSetDefault)
-include(language_support_v2)
-include(MacroAddLinkFlags)
-include (CTest)
 include(ExternalProject)
 
 # settings
