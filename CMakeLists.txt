@@ -84,13 +84,13 @@ endif()
 # mavlink generation
 macro(generateMavlink version definitions)
     foreach(definition ${definitions})
-        set(targetName ${definition}-${version})
-        set(definitionAbsPath ${CMAKE_SOURCE_DIR}/message_definitions/${version}/${definition})
+        set(targetName ${definition}-v${version})
+        set(definitionAbsPath ${CMAKE_SOURCE_DIR}/message_definitions/v${version}/${definition})
         message(STATUS "processing: ${definitionAbsPath}")
         add_custom_command( 
             OUTPUT ${targetName}-stamp
-            COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=C --wire-protocol=0.9 
-                --output=include/${version} ${definitionAbsPath}
+            COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=C --wire-protocol=${version}
+                --output=include/v${version} ${definitionAbsPath}
             COMMAND touch ${targetName}-stamp
             DEPENDS ${definitionAbsPath} ${mavgen}
             )
@@ -109,7 +109,7 @@ set(v0.9Definitions
     test.xml
     ualberta.xml
     )
-generateMavlink("v0.9" "${v0.9Definitions}")
+generateMavlink("0.9" "${v0.9Definitions}")
 set(v1.0Definitions
     ardupilotmega.xml
     common.xml
@@ -120,7 +120,7 @@ set(v1.0Definitions
     test.xml
     ualberta.xml
     )
-generateMavlink("v1.0" "${v1.0Definitions}")
+generateMavlink("1.0" "${v1.0Definitions}")
 
 # testing
 if (BUILD_TEST)
