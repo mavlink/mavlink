@@ -25,3 +25,8 @@ if (NOT CMAKE_BUILD_TYPE)
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
   )
 endif (NOT CMAKE_BUILD_TYPE)
+
+# disallow in-source build
+include(MacroEnsureOutOfSourceBuild)
+macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out of source build. 
+Please create a separate build directory and run 'cmake /path/to/${PROJECT_NAME} [options]' there.")
