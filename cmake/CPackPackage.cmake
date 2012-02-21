@@ -33,7 +33,7 @@ if(WIN32)
     set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")
     set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README")
     set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
-    set(CPACK_PACKAGE_ICON "")
+    set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/cmake/mavlink.bmp")
 
 elseif(APPLE)
     option(WITH_OSXBUNDLE "Build an app Bundle vs a pkg" ON)
@@ -56,7 +56,7 @@ elseif(APPLE)
         set(CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_SOURCE_DIR}/cmake/macFind.sh")
         # generate plist
         include(MacroConfigureMacOSXBundlePlist)
-        set(CPACK_BUNDLE_ICON "")
+        set(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/cmake/mavlink.icns")
         set(CPACK_COPYRIGHT "Copyright LGPL")
         ConfigureMacOSXBundlePlist(${PROJECT_NAME} "" ${CPACK_BUNDLE_ICON} ${APPLICATION_VERSION} ${CPACK_COPYRIGHT})
         configure_file("${CMAKE_SOURCE_DIR}/cmake/MacOSXBundleInfo.plist.in"
