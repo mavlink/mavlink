@@ -24,7 +24,7 @@ set(ROOT_THREAD TRUE CACHE INTERNAL "Is this the top level of the recursion?")
 set(INSTALLED_TARGETS "")
 
 # modules
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/cmake/arkcmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 #include(CheckIncludeFiles)
 #include(CheckFunctionExists)
 #include(CheckSymbolExists)
