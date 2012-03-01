@@ -16,7 +16,7 @@ set(LIBRARY_SOVERSION "0.0.0")
 
 # options
 option(WITH_TESTS "Build test programs." OFF)
-option(WITH_BUILD_DEPS "Build dependencies." ON)
+option(WITH_BUILD_DEPS "Build dependencies." OFF) # no deps currently to build
 option(WITH_BUILD_STATIC "Build preferring static linking." ON)
 
 # variables
