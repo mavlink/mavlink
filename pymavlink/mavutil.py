@@ -467,6 +467,11 @@ class periodic_event(object):
     def __init__(self, frequency):
         self.frequency = float(frequency)
         self.last_time = time.time()
+
+    def force(self):
+        '''force immediate triggering'''
+        self.last_time = 0
+        
     def trigger(self):
         '''return True if we should trigger now'''
         tnow = time.time()

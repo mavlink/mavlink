@@ -203,6 +203,9 @@ MAVLINK_MSG_ID_MOUNT_STATUS = 158
 MAVLINK_MSG_ID_FENCE_POINT = 160
 MAVLINK_MSG_ID_FENCE_FETCH_POINT = 161
 MAVLINK_MSG_ID_FENCE_STATUS = 162
+MAVLINK_MSG_ID_DCM = 163
+MAVLINK_MSG_ID_SIMSTATE = 164
+MAVLINK_MSG_ID_HWSTATUS = 165
 MAVLINK_MSG_ID_HEARTBEAT = 0
 MAVLINK_MSG_ID_BOOT = 1
 MAVLINK_MSG_ID_SYSTEM_TIME = 2
@@ -485,6 +488,57 @@ class MAVLink_fence_status_message(MAVLink_message):
 
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, 136, struct.pack('>BHBI', self.breach_status, self.breach_count, self.breach_type, self.breach_time))
+
+class MAVLink_dcm_message(MAVLink_message):
+        '''
+        Status of DCM attitude estimator
+        '''
+        def __init__(self, omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_DCM, 'DCM')
+                self._fieldnames = ['omegaIx', 'omegaIy', 'omegaIz', 'accel_weight', 'renorm_val', 'error_rp', 'error_yaw']
+                self.omegaIx = omegaIx
+                self.omegaIy = omegaIy
+                self.omegaIz = omegaIz
+                self.accel_weight = accel_weight
+                self.renorm_val = renorm_val
+                self.error_rp = error_rp
+                self.error_yaw = error_yaw
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 205, struct.pack('>fffffff', self.omegaIx, self.omegaIy, self.omegaIz, self.accel_weight, self.renorm_val, self.error_rp, self.error_yaw))
+
+class MAVLink_simstate_message(MAVLink_message):
+        '''
+        Status of simulation environment, if used
+        '''
+        def __init__(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_SIMSTATE, 'SIMSTATE')
+                self._fieldnames = ['roll', 'pitch', 'yaw', 'xacc', 'yacc', 'zacc', 'xgyro', 'ygyro', 'zgyro']
+                self.roll = roll
+                self.pitch = pitch
+                self.yaw = yaw
+                self.xacc = xacc
+                self.yacc = yacc
+                self.zacc = zacc
+                self.xgyro = xgyro
+                self.ygyro = ygyro
+                self.zgyro = zgyro
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 42, struct.pack('>fffffffff', self.roll, self.pitch, self.yaw, self.xacc, self.yacc, self.zacc, self.xgyro, self.ygyro, self.zgyro))
+
+class MAVLink_hwstatus_message(MAVLink_message):
+        '''
+        Status of key hardware
+        '''
+        def __init__(self, Vcc, I2Cerr):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_HWSTATUS, 'HWSTATUS')
+                self._fieldnames = ['Vcc', 'I2Cerr']
+                self.Vcc = Vcc
+                self.I2Cerr = I2Cerr
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 21, struct.pack('>HB', self.Vcc, self.I2Cerr))
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -1784,6 +1838,9 @@ mavlink_map = {
         MAVLINK_MSG_ID_FENCE_POINT : ( '>BBBBff', MAVLink_fence_point_message, [0, 1, 2, 3, 4, 5], 18 ),
         MAVLINK_MSG_ID_FENCE_FETCH_POINT : ( '>BBB', MAVLink_fence_fetch_point_message, [0, 1, 2], 68 ),
         MAVLINK_MSG_ID_FENCE_STATUS : ( '>BHBI', MAVLink_fence_status_message, [0, 1, 2, 3], 136 ),
+        MAVLINK_MSG_ID_DCM : ( '>fffffff', MAVLink_dcm_message, [0, 1, 2, 3, 4, 5, 6], 205 ),
+        MAVLINK_MSG_ID_SIMSTATE : ( '>fffffffff', MAVLink_simstate_message, [0, 1, 2, 3, 4, 5, 6, 7, 8], 42 ),
+        MAVLINK_MSG_ID_HWSTATUS : ( '>HB', MAVLink_hwstatus_message, [0, 1], 21 ),
         MAVLINK_MSG_ID_HEARTBEAT : ( '>BBB', MAVLink_heartbeat_message, [0, 1, 2], 72 ),
         MAVLINK_MSG_ID_BOOT : ( '>I', MAVLink_boot_message, [0], 39 ),
         MAVLINK_MSG_ID_SYSTEM_TIME : ( '>Q', MAVLink_system_time_message, [0], 190 ),
@@ -2416,6 +2473,96 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.fence_status_encode(breach_status, breach_count, breach_type, breach_time))
+            
+        def dcm_encode(self, omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw):
+                '''
+                Status of DCM attitude estimator
+
+                omegaIx                   : X gyro drift estimate rad/s (float)
+                omegaIy                   : Y gyro drift estimate rad/s (float)
+                omegaIz                   : Z gyro drift estimate rad/s (float)
+                accel_weight              : average accel_weight (float)
+                renorm_val                : average renormalisation value (float)
+                error_rp                  : average error_roll_pitch value (float)
+                error_yaw                 : average error_yaw value (float)
+
+                '''
+                msg = MAVLink_dcm_message(omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw)
+                msg.pack(self)
+                return msg
+            
+        def dcm_send(self, omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw):
+                '''
+                Status of DCM attitude estimator
+
+                omegaIx                   : X gyro drift estimate rad/s (float)
+                omegaIy                   : Y gyro drift estimate rad/s (float)
+                omegaIz                   : Z gyro drift estimate rad/s (float)
+                accel_weight              : average accel_weight (float)
+                renorm_val                : average renormalisation value (float)
+                error_rp                  : average error_roll_pitch value (float)
+                error_yaw                 : average error_yaw value (float)
+
+                '''
+                return self.send(self.dcm_encode(omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw))
+            
+        def simstate_encode(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+                '''
+                Status of simulation environment, if used
+
+                roll                      : Roll angle (rad) (float)
+                pitch                     : Pitch angle (rad) (float)
+                yaw                       : Yaw angle (rad) (float)
+                xacc                      : X acceleration m/s/s (float)
+                yacc                      : Y acceleration m/s/s (float)
+                zacc                      : Z acceleration m/s/s (float)
+                xgyro                     : Angular speed around X axis rad/s (float)
+                ygyro                     : Angular speed around Y axis rad/s (float)
+                zgyro                     : Angular speed around Z axis rad/s (float)
+
+                '''
+                msg = MAVLink_simstate_message(roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro)
+                msg.pack(self)
+                return msg
+            
+        def simstate_send(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+                '''
+                Status of simulation environment, if used
+
+                roll                      : Roll angle (rad) (float)
+                pitch                     : Pitch angle (rad) (float)
+                yaw                       : Yaw angle (rad) (float)
+                xacc                      : X acceleration m/s/s (float)
+                yacc                      : Y acceleration m/s/s (float)
+                zacc                      : Z acceleration m/s/s (float)
+                xgyro                     : Angular speed around X axis rad/s (float)
+                ygyro                     : Angular speed around Y axis rad/s (float)
+                zgyro                     : Angular speed around Z axis rad/s (float)
+
+                '''
+                return self.send(self.simstate_encode(roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro))
+            
+        def hwstatus_encode(self, Vcc, I2Cerr):
+                '''
+                Status of key hardware
+
+                Vcc                       : board voltage (mV) (uint16_t)
+                I2Cerr                    : I2C error count (uint8_t)
+
+                '''
+                msg = MAVLink_hwstatus_message(Vcc, I2Cerr)
+                msg.pack(self)
+                return msg
+            
+        def hwstatus_send(self, Vcc, I2Cerr):
+                '''
+                Status of key hardware
+
+                Vcc                       : board voltage (mV) (uint16_t)
+                I2Cerr                    : I2C error count (uint8_t)
+
+                '''
+                return self.send(self.hwstatus_encode(Vcc, I2Cerr))
             
         def heartbeat_encode(self, type, autopilot, mavlink_version=2):
                 '''

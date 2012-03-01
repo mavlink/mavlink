@@ -160,6 +160,13 @@ FENCE_ACTION_NONE = 0 # Disable fenced mode
 FENCE_ACTION_GUIDED = 1 # Switched to guided mode to return point (fence point 0)
 FENCE_ACTION_ENUM_END = 2 # 
 
+# FENCE_BREACH
+FENCE_BREACH_NONE = 0 # No last fence breach
+FENCE_BREACH_MINALT = 1 # Breached minimum altitude
+FENCE_BREACH_MAXALT = 2 # Breached minimum altitude
+FENCE_BREACH_BOUNDARY = 3 # Breached fence boundary
+FENCE_BREACH_ENUM_END = 4 # 
+
 # MAV_AUTOPILOT
 MAV_AUTOPILOT_GENERIC = 0 # Generic autopilot, full support for everything
 MAV_AUTOPILOT_PIXHAWK = 1 # PIXHAWK autopilot, http://pixhawk.ethz.ch
@@ -413,6 +420,9 @@ MAVLINK_MSG_ID_MOUNT_CONTROL = 157
 MAVLINK_MSG_ID_MOUNT_STATUS = 158
 MAVLINK_MSG_ID_FENCE_POINT = 160
 MAVLINK_MSG_ID_FENCE_FETCH_POINT = 161
+MAVLINK_MSG_ID_FENCE_STATUS = 162
+MAVLINK_MSG_ID_DCM = 163
+MAVLINK_MSG_ID_SIMSTATE = 164
 MAVLINK_MSG_ID_HEARTBEAT = 0
 MAVLINK_MSG_ID_SYS_STATUS = 1
 MAVLINK_MSG_ID_SYSTEM_TIME = 2
@@ -655,28 +665,86 @@ class MAVLink_fence_point_message(MAVLink_message):
         A fence point. Used to set a point when from               GCS
         -> MAV. Also used to return a point from MAV -> GCS
         '''
-        def __init__(self, idx, count, lat, lng):
+        def __init__(self, target_system, target_component, idx, count, lat, lng):
                 MAVLink_message.__init__(self, MAVLINK_MSG_ID_FENCE_POINT, 'FENCE_POINT')
-                self._fieldnames = ['idx', 'count', 'lat', 'lng']
+                self._fieldnames = ['target_system', 'target_component', 'idx', 'count', 'lat', 'lng']
+                self.target_system = target_system
+                self.target_component = target_component
                 self.idx = idx
                 self.count = count
                 self.lat = lat
                 self.lng = lng
 
         def pack(self, mav):
-                return MAVLink_message.pack(self, mav, 18, struct.pack('<ffBB', self.lat, self.lng, self.idx, self.count))
+                return MAVLink_message.pack(self, mav, 78, struct.pack('<ffBBBB', self.lat, self.lng, self.target_system, self.target_component, self.idx, self.count))
 
 class MAVLink_fence_fetch_point_message(MAVLink_message):
         '''
         Request a current fence point from MAV
         '''
-        def __init__(self, idx):
+        def __init__(self, target_system, target_component, idx):
                 MAVLink_message.__init__(self, MAVLINK_MSG_ID_FENCE_FETCH_POINT, 'FENCE_FETCH_POINT')
-                self._fieldnames = ['idx']
+                self._fieldnames = ['target_system', 'target_component', 'idx']
+                self.target_system = target_system
+                self.target_component = target_component
                 self.idx = idx
 
         def pack(self, mav):
-                return MAVLink_message.pack(self, mav, 165, struct.pack('<B', self.idx))
+                return MAVLink_message.pack(self, mav, 68, struct.pack('<BBB', self.target_system, self.target_component, self.idx))
+
+class MAVLink_fence_status_message(MAVLink_message):
+        '''
+        Status of geo-fencing. Sent in extended             status
+        stream when fencing enabled
+        '''
+        def __init__(self, breach_status, breach_count, breach_type, breach_time):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_FENCE_STATUS, 'FENCE_STATUS')
+                self._fieldnames = ['breach_status', 'breach_count', 'breach_type', 'breach_time']
+                self.breach_status = breach_status
+                self.breach_count = breach_count
+                self.breach_type = breach_type
+                self.breach_time = breach_time
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 189, struct.pack('<IHBB', self.breach_time, self.breach_count, self.breach_status, self.breach_type))
+
+class MAVLink_dcm_message(MAVLink_message):
+        '''
+        Status of DCM attitude estimator
+        '''
+        def __init__(self, omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_DCM, 'DCM')
+                self._fieldnames = ['omegaIx', 'omegaIy', 'omegaIz', 'accel_weight', 'renorm_val', 'error_rp', 'error_yaw']
+                self.omegaIx = omegaIx
+                self.omegaIy = omegaIy
+                self.omegaIz = omegaIz
+                self.accel_weight = accel_weight
+                self.renorm_val = renorm_val
+                self.error_rp = error_rp
+                self.error_yaw = error_yaw
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 205, struct.pack('<fffffff', self.omegaIx, self.omegaIy, self.omegaIz, self.accel_weight, self.renorm_val, self.error_rp, self.error_yaw))
+
+class MAVLink_simstate_message(MAVLink_message):
+        '''
+        Status of simulation environment, if used
+        '''
+        def __init__(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_SIMSTATE, 'SIMSTATE')
+                self._fieldnames = ['roll', 'pitch', 'yaw', 'xacc', 'yacc', 'zacc', 'xgyro', 'ygyro', 'zgyro']
+                self.roll = roll
+                self.pitch = pitch
+                self.yaw = yaw
+                self.xacc = xacc
+                self.yacc = yacc
+                self.zacc = zacc
+                self.xgyro = xgyro
+                self.ygyro = ygyro
+                self.zgyro = zgyro
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 42, struct.pack('<fffffffff', self.roll, self.pitch, self.yaw, self.xacc, self.yacc, self.zacc, self.xgyro, self.ygyro, self.zgyro))
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -2057,8 +2125,11 @@ mavlink_map = {
         MAVLINK_MSG_ID_MOUNT_CONFIGURE : ( '<BBBBBB', MAVLink_mount_configure_message, [0, 1, 2, 3, 4, 5], 19 ),
         MAVLINK_MSG_ID_MOUNT_CONTROL : ( '<iiiBBB', MAVLink_mount_control_message, [3, 4, 0, 1, 2, 5], 21 ),
         MAVLINK_MSG_ID_MOUNT_STATUS : ( '<iiiBB', MAVLink_mount_status_message, [3, 4, 0, 1, 2], 134 ),
-        MAVLINK_MSG_ID_FENCE_POINT : ( '<ffBB', MAVLink_fence_point_message, [2, 3, 0, 1], 18 ),
-        MAVLINK_MSG_ID_FENCE_FETCH_POINT : ( '<B', MAVLink_fence_fetch_point_message, [0], 165 ),
+        MAVLINK_MSG_ID_FENCE_POINT : ( '<ffBBBB', MAVLink_fence_point_message, [2, 3, 4, 5, 0, 1], 78 ),
+        MAVLINK_MSG_ID_FENCE_FETCH_POINT : ( '<BBB', MAVLink_fence_fetch_point_message, [0, 1, 2], 68 ),
+        MAVLINK_MSG_ID_FENCE_STATUS : ( '<IHBB', MAVLink_fence_status_message, [2, 1, 3, 0], 189 ),
+        MAVLINK_MSG_ID_DCM : ( '<fffffff', MAVLink_dcm_message, [0, 1, 2, 3, 4, 5, 6], 205 ),
+        MAVLINK_MSG_ID_SIMSTATE : ( '<fffffffff', MAVLink_simstate_message, [0, 1, 2, 3, 4, 5, 6, 7, 8], 42 ),
         MAVLINK_MSG_ID_HEARTBEAT : ( '<IBBBBB', MAVLink_heartbeat_message, [1, 2, 3, 0, 4, 5], 50 ),
         MAVLINK_MSG_ID_SYS_STATUS : ( '<IIIHHhHHHHHHb', MAVLink_sys_status_message, [0, 1, 2, 3, 4, 5, 12, 6, 7, 8, 9, 10, 11], 124 ),
         MAVLINK_MSG_ID_SYSTEM_TIME : ( '<QI', MAVLink_system_time_message, [0, 1], 137 ),
@@ -2610,53 +2681,157 @@ class MAVLink(object):
                 '''
                 return self.send(self.mount_status_encode(target_system, target_component, pointing_a, pointing_b, pointing_c))
             
-        def fence_point_encode(self, idx, count, lat, lng):
+        def fence_point_encode(self, target_system, target_component, idx, count, lat, lng):
                 '''
                 A fence point. Used to set a point when from               GCS -> MAV.
                 Also used to return a point from MAV -> GCS
 
+                target_system             : System ID (uint8_t)
+                target_component          : Component ID (uint8_t)
                 idx                       : point index (first point is 1, 0 is for return point) (uint8_t)
                 count                     : total number of points (for sanity checking) (uint8_t)
                 lat                       : Latitude of point (float)
                 lng                       : Longitude of point (float)
 
                 '''
-                msg = MAVLink_fence_point_message(idx, count, lat, lng)
+                msg = MAVLink_fence_point_message(target_system, target_component, idx, count, lat, lng)
                 msg.pack(self)
                 return msg
             
-        def fence_point_send(self, idx, count, lat, lng):
+        def fence_point_send(self, target_system, target_component, idx, count, lat, lng):
                 '''
                 A fence point. Used to set a point when from               GCS -> MAV.
                 Also used to return a point from MAV -> GCS
 
+                target_system             : System ID (uint8_t)
+                target_component          : Component ID (uint8_t)
                 idx                       : point index (first point is 1, 0 is for return point) (uint8_t)
                 count                     : total number of points (for sanity checking) (uint8_t)
                 lat                       : Latitude of point (float)
                 lng                       : Longitude of point (float)
 
                 '''
-                return self.send(self.fence_point_encode(idx, count, lat, lng))
+                return self.send(self.fence_point_encode(target_system, target_component, idx, count, lat, lng))
             
-        def fence_fetch_point_encode(self, idx):
+        def fence_fetch_point_encode(self, target_system, target_component, idx):
                 '''
                 Request a current fence point from MAV
 
+                target_system             : System ID (uint8_t)
+                target_component          : Component ID (uint8_t)
                 idx                       : point index (first point is 1, 0 is for return point) (uint8_t)
 
                 '''
-                msg = MAVLink_fence_fetch_point_message(idx)
+                msg = MAVLink_fence_fetch_point_message(target_system, target_component, idx)
                 msg.pack(self)
                 return msg
             
-        def fence_fetch_point_send(self, idx):
+        def fence_fetch_point_send(self, target_system, target_component, idx):
                 '''
                 Request a current fence point from MAV
 
+                target_system             : System ID (uint8_t)
+                target_component          : Component ID (uint8_t)
                 idx                       : point index (first point is 1, 0 is for return point) (uint8_t)
 
                 '''
-                return self.send(self.fence_fetch_point_encode(idx))
+                return self.send(self.fence_fetch_point_encode(target_system, target_component, idx))
+            
+        def fence_status_encode(self, breach_status, breach_count, breach_type, breach_time):
+                '''
+                Status of geo-fencing. Sent in extended             status stream when
+                fencing enabled
+
+                breach_status             : 0 if currently inside fence, 1 if outside (uint8_t)
+                breach_count              : number of fence breaches (uint16_t)
+                breach_type               : last breach type (see FENCE_BREACH_* enum) (uint8_t)
+                breach_time               : time of last breach in milliseconds since boot (uint32_t)
+
+                '''
+                msg = MAVLink_fence_status_message(breach_status, breach_count, breach_type, breach_time)
+                msg.pack(self)
+                return msg
+            
+        def fence_status_send(self, breach_status, breach_count, breach_type, breach_time):
+                '''
+                Status of geo-fencing. Sent in extended             status stream when
+                fencing enabled
+
+                breach_status             : 0 if currently inside fence, 1 if outside (uint8_t)
+                breach_count              : number of fence breaches (uint16_t)
+                breach_type               : last breach type (see FENCE_BREACH_* enum) (uint8_t)
+                breach_time               : time of last breach in milliseconds since boot (uint32_t)
+
+                '''
+                return self.send(self.fence_status_encode(breach_status, breach_count, breach_type, breach_time))
+            
+        def dcm_encode(self, omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw):
+                '''
+                Status of DCM attitude estimator
+
+                omegaIx                   : X gyro drift estimate rad/s (float)
+                omegaIy                   : Y gyro drift estimate rad/s (float)
+                omegaIz                   : Z gyro drift estimate rad/s (float)
+                accel_weight              : average accel_weight (float)
+                renorm_val                : average renormalisation value (float)
+                error_rp                  : average error_roll_pitch value (float)
+                error_yaw                 : average error_yaw value (float)
+
+                '''
+                msg = MAVLink_dcm_message(omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw)
+                msg.pack(self)
+                return msg
+            
+        def dcm_send(self, omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw):
+                '''
+                Status of DCM attitude estimator
+
+                omegaIx                   : X gyro drift estimate rad/s (float)
+                omegaIy                   : Y gyro drift estimate rad/s (float)
+                omegaIz                   : Z gyro drift estimate rad/s (float)
+                accel_weight              : average accel_weight (float)
+                renorm_val                : average renormalisation value (float)
+                error_rp                  : average error_roll_pitch value (float)
+                error_yaw                 : average error_yaw value (float)
+
+                '''
+                return self.send(self.dcm_encode(omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw))
+            
+        def simstate_encode(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+                '''
+                Status of simulation environment, if used
+
+                roll                      : Roll angle (rad) (float)
+                pitch                     : Pitch angle (rad) (float)
+                yaw                       : Yaw angle (rad) (float)
+                xacc                      : X acceleration m/s/s (float)
+                yacc                      : Y acceleration m/s/s (float)
+                zacc                      : Z acceleration m/s/s (float)
+                xgyro                     : Angular speed around X axis rad/s (float)
+                ygyro                     : Angular speed around Y axis rad/s (float)
+                zgyro                     : Angular speed around Z axis rad/s (float)
+
+                '''
+                msg = MAVLink_simstate_message(roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro)
+                msg.pack(self)
+                return msg
+            
+        def simstate_send(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+                '''
+                Status of simulation environment, if used
+
+                roll                      : Roll angle (rad) (float)
+                pitch                     : Pitch angle (rad) (float)
+                yaw                       : Yaw angle (rad) (float)
+                xacc                      : X acceleration m/s/s (float)
+                yacc                      : Y acceleration m/s/s (float)
+                zacc                      : Z acceleration m/s/s (float)
+                xgyro                     : Angular speed around X axis rad/s (float)
+                ygyro                     : Angular speed around Y axis rad/s (float)
+                zgyro                     : Angular speed around Z axis rad/s (float)
+
+                '''
+                return self.send(self.simstate_encode(roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro))
             
         def heartbeat_encode(self, type, autopilot, base_mode, custom_mode, system_status, mavlink_version=3):
                 '''
