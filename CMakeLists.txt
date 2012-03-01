@@ -4,7 +4,7 @@ project (mavlink NONE)
 cmake_minimum_required (VERSION 2.8.2)
 set(PROJECT_VERSION_MAJOR "1")
 set(PROJECT_VERSION_MINOR "0")
-set(PROJECT_VERSION_PATCH "0")
+set(PROJECT_VERSION_PATCH "1")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_CONTACT_EMAIL http://groups.google.com/group/mavlink)
 set(PROJECT_CONTACT_VENDOR mavlink)
@@ -14,7 +14,7 @@ set(LIBRARY_SOVERSION "0.0.0")
 # third party 
 # none required
 
-# optoins
+# options
 option(WITH_TESTS "Build test programs." OFF)
 option(WITH_BUILD_DEPS "Build dependencies." ON)
 option(WITH_BUILD_STATIC "Build preferring static linking." ON)
@@ -40,9 +40,9 @@ if (WITH_BUILD_DEPS AND ROOT_THREAD)
     execute_process(COMMAND ${CMAKE_COMMAND} "${CMAKE_SOURCE_DIR}"
         "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
         "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-        "-DWITH_BUILD_DEPS=${WITH_BUILD_STATIC}"
+        "-DWITH_BUILD_DEPS=${WITH_BUILD_DEPS}"
         "-DWITH_BUILD_STATIC=${WITH_BUILD_STATIC}"
-        "-DWITH_TESTS=${WITH_ARKOSG}"
+        "-DWITH_TESTS=${WITH_TESTS}"
         "-DROOT_THREAD=FALSE"
         RESULT_VARIABLE ERROR)
     if (ERROR)
@@ -102,7 +102,7 @@ endif()
 #check_include_files(string.h HAVE_STRING_H)
 #check_function_exists(memcopy HAVE_MEMCOPY)
 #check_symbol_exists(LC_MESSAGES "locale.h" HAVE_LC_MESSAGES) 
-#check_library_exists(arkosg  attachNode "" HAVE_ARKOSG)
+#check_library_exists(pthread  attachNode "" HAVE_PTHREAD)
 
 # config files
 configure_file(config.h.in config.h)
