@@ -8,6 +8,9 @@ Released under GNU GPL version 3 or later
 
 import sys, textwrap
 from optparse import OptionParser
+
+# mavparse is up a directory level
+sys.path.append('..')
 import mavparse
 
 def gen_value(f, i, language):
