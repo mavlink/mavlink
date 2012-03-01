@@ -107,8 +107,8 @@ static void mavtest_generate_outputs(mavlink_channel_t chan)
 ######################################################################
 '''main program'''
 
-parser = OptionParser("mavtestgen.py [options] <XML files>")
-parser.add_option("-o", "--output", dest="output", default="mavtest", help="output file base name")
+parser = OptionParser("%prog [options] <XML files>")
+parser.add_option("-o", "--output", dest="output", default="mavtest", help="output folder [default: %default]")
 (opts, args) = parser.parse_args()
 
 if len(args) < 1:
