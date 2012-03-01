@@ -62,11 +62,11 @@ Note: this file has been auto-generated. DO NOT EDIT
 import mavlink
 
 def generate_outputs(mav):
-	'''generate all message types as outputs'''
+    '''generate all message types as outputs'''
 """)
     for m in msgs:
         if m.name == "HEARTBEAT": continue
-	outf.write("\tmav.%s_send(" % m.name.lower())
+        outf.write("\tmav.%s_send(" % m.name.lower())
         for i in range(0, len(m.fields)):
             f = m.fields[i]
             outf.write("%s=%s" % (f.name, gen_value(f, i, 'py')))
@@ -90,7 +90,7 @@ static void mavtest_generate_outputs(mavlink_channel_t chan)
 """)
     for m in msgs:
         if m.name == "HEARTBEAT": continue
-	outf.write("\tmavlink_msg_%s_send(chan," % m.name.lower())
+        outf.write("\tmavlink_msg_%s_send(chan," % m.name.lower())
         for i in range(0, len(m.fields)):
             f = m.fields[i]
             outf.write("%s" % gen_value(f, i, 'C'))
@@ -116,9 +116,9 @@ msgs = []
 enums = []
 
 for fname in args:
-	(m, e) = mavparse.parse_mavlink_xml(fname)
-        msgs.extend(m)
-        enums.extend(e)
+    (m, e) = mavparse.parse_mavlink_xml(fname)
+    msgs.extend(m)
+    enums.extend(e)
 
 
 if mavparse.check_duplicates(msgs):
