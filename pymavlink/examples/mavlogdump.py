@@ -53,11 +53,8 @@ while True:
         output.write(m.get_msgbuf().tostring())
     if opts.quiet:
         continue
-    if opts.notimestamps:
-        print("%s" % m)
-    else:
-        print("%s.%02u: %s" % (
-            time.strftime("%Y-%m-%d %H:%M:%S",
-                          time.localtime(m._timestamp)),
-            int(m._timestamp*100.0)%100, m))
+    print("%s.%02u: %s" % (
+        time.strftime("%Y-%m-%d %H:%M:%S",
+                      time.localtime(m._timestamp)),
+        int(m._timestamp*100.0)%100, m))
         

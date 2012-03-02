@@ -59,6 +59,9 @@ class mavfile(object):
         self.timestamp = 0
         self.message_hooks = []
         self.idle_hooks = []
+        self.usec = 0
+        self.notimestamps = False
+        self._timestamp = time.time()
 
     def recv(self, n=None):
         '''default recv method'''
@@ -81,6 +84,14 @@ class mavfile(object):
         msg._timestamp = time.time()
         type = msg.get_type()
         self.messages[type] = msg
+
+        if self.notimestamps:
+            if 'usec' in msg.__dict__:
+                self.usec = msg.usec / 1.0e6
+            msg._timestamp = self.usec
+        else:
+            msg._timestamp = self._timestamp
+        
         self.timestamp = msg._timestamp
         if type == 'HEARTBEAT':
             self.target_system = msg.get_srcSystem()
@@ -358,6 +369,8 @@ class mavlogfile(mavfile):
         self.robust_parsing = robust_parsing
         self.planner_format = planner_format
         self.notimestamps = notimestamps
+        if self.notimestamps:
+            self._timestamp = 0
         self._two64 = math.pow(2.0, 63)
         mode = 'rb'
         if self.writeable:
@@ -403,10 +416,6 @@ class mavlogfile(mavfile):
         '''add timestamp to message'''
         # read the timestamp
         super(mavlogfile, self).post_message(msg)
-        if self.notimestamps:
-            msg._timestamp = time.time()
-        else:
-            msg._timestamp = self._timestamp
         if self.planner_format:
             self.f.read(1) # trailing newline
         self.timestamp = msg._timestamp
