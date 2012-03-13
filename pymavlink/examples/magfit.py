@@ -111,13 +111,13 @@ def magfit(logfile):
     field_strength = ofs[3]
 
     for count in range(3):
-        print("Fit %u    : ( %6.1f %6.1f %6.1f )  field_strength=%6.1f to %6.1f" % (
-            count, offsets[0], offsets[1], offsets[2],
-            radius(data[0], offsets), radius(data[0], offsets)))
-        
         # sort the data by the radius
         data.sort(lambda a,b : radius_cmp(a,b,offsets))
 
+        print("Fit %u    : ( %6.1f %6.1f %6.1f )  field_strength=%6.1f to %6.1f" % (
+            count, offsets[0], offsets[1], offsets[2],
+            radius(data[0], offsets), radius(data[-1], offsets)))
+        
         # discard outliers, keep the middle 3/4
         data = data[len(data)/8:-len(data)/8]
 
@@ -128,7 +128,7 @@ def magfit(logfile):
 
     print("Final    : ( %6.1f %6.1f %6.1f )  field_strength=%6.1f to %6.1f" % (
         offsets[0], offsets[1], offsets[2],
-        radius(data[0], offsets), radius(data[0], offsets)))
+        radius(data[0], offsets), radius(data[-1], offsets)))
 
 total = 0.0
 for filename in args:
