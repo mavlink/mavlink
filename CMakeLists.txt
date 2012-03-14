@@ -21,7 +21,6 @@ option(WITH_BUILD_STATIC "Build preferring static linking." ON)
 
 # variables
 set(ROOT_THREAD TRUE CACHE INTERNAL "Is this the top level of the recursion?")
-set(INSTALLED_TARGETS "")
 
 # modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
@@ -57,6 +56,8 @@ endif()
 if(NOT EP_BASE_DIR)
     set(EP_BASE_DIR "${CMAKE_BINARY_DIR}/CMakeExternals")
 endif()
+set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE_DIR})
+set(EP_INSTALL_DIR "${EP_BASE_DIR}/Install")
 list(APPEND CMAKE_FIND_ROOT_PATH ${EP_BASE_DIR})
 
 # prefer static packages if building static library
@@ -159,24 +160,6 @@ endif()
 
 # install files
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT dev FILES_MATCHING PATTERN "*.h")
-
-# install
-install(TARGETS  ${INSTALLED_TARGETS}
-    RUNTIME DESTINATION "bin" COMPONENT Runtime
-    LIBRARY DESTINATION "lib" COMPONENT Runtime
-    ARCHIVE DESTINATION "lib" COMPONENT Dev
-    BUNDLE DESTINATION "/Applications" COMPONENT Runtime
-    FRAMEWORK DESTINATION "/Library/Frameworks" COMPONENT Runtime
-    # where to put files on non-mac computers, mac overrides and uses default
-    PRIVATE_HEADER DESTINATION "include/${PROJECT_NAME}" COMPONENT Runtime
-    PUBLIC_HEADER DESTINATION "include/${PROJECT_NAME}" COMPONENT Runtime
-    RESOURCE DESTINATION "share/${PROJECT_NAME}" COMPONENT Runtime
-    )
-
-# install external projects, if built
-if (EXISTS ${EP_BASE_DIR}/${CMAKE_INSTALL_PREFIX}/)
-    install(DIRECTORY ${EP_BASE_DIR}/${CMAKE_INSTALL_PREFIX}/ DESTINATION ${CMAKE_INSTALL_PREFIX} COMPONENT Runtime)
-endif()
 
 ### packaging
 
