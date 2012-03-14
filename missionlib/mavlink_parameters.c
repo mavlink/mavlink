@@ -17,7 +17,7 @@
  
  ****************************************************************************/
 
-#include "testing/mavlink_missionlib_data.h"
+#include "mavlink_missionlib_data.h"
 #include "mavlink_parameters.h"
 #include "math.h" /* isinf / isnan checks */
 
