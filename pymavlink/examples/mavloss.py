@@ -35,27 +35,13 @@ def mavloss(logfile):
                                       robust_parsing=opts.robust)
 
     m = mlog.recv_match()
-    seq = m.get_seq()
-    count = 1
-    loss = 0
 
     while True:
         m = mlog.recv_match()
         if m is None:
             break
-        if m.get_srcSystem() == ord('3') and m.get_srcComponent() == ord('D'):
-            # its the radio
-            continue
-        if m.get_srcSystem() == 255:
-            # its the planner
-            continue
-        count += 1
-        if m.get_seq() != (seq+1) % 256:
-            diff = (m.get_seq() - seq) % 256
-            loss += diff - 1
-        seq = m.get_seq()
-    print("%u packets, %u lost %u%%" % (
-        count, loss, (100.0*loss)/(count+loss)))
+    print("%u packets, %u lost %.1f%%" % (
+            mlog.mav_count, mlog.mav_loss, mlog.packet_loss()))
 
 
 total = 0.0

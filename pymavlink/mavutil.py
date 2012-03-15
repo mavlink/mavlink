@@ -80,6 +80,9 @@ class mavfile(object):
         self.ground_temperature = None
         self.altitude = 0
         self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
+        self.last_seq = -1
+        self.mav_loss = 0
+        self.mav_count = 0
 
     def recv(self, n=None):
         '''default recv method'''
@@ -99,6 +102,9 @@ class mavfile(object):
 
     def post_message(self, msg):
         '''default post message call'''
+        if '_posted' in msg.__dict__:
+            return
+        msg._posted = True
         msg._timestamp = time.time()
         type = msg.get_type()
         self.messages[type] = msg
@@ -111,6 +117,19 @@ class mavfile(object):
                 msg._timestamp = self.uptime
             else:
                 msg._timestamp = self._timestamp
+
+        if not (
+            # its the radio or planner
+            (msg.get_srcSystem() == ord('3') and msg.get_srcComponent() == ord('D')) or
+            msg.get_srcSystem() == 255 or
+            msg.get_type() == 'BAD_DATA'):
+            seq = (self.last_seq+1) % 256
+            seq2 = msg.get_seq()
+            if seq != seq2 and self.last_seq != -1:
+                diff = (seq2 - seq) % 256
+                self.mav_loss += diff
+            self.last_seq = seq2
+            self.mav_count += 1
         
         self.timestamp = msg._timestamp
         if type == 'HEARTBEAT':
@@ -134,6 +153,13 @@ class mavfile(object):
                 self.messages['HOME'] = msg
         for hook in self.message_hooks:
             hook(self, msg)
+
+
+    def packet_loss(self):
+        '''packet loss as a percentage'''
+        if self.mav_count == 0:
+            return 0
+        return (100.0*self.mav_loss)/(self.mav_count+self.mav_loss)
 
 
     def recv_msg(self):
