@@ -45,8 +45,8 @@ def lock_time(logfile):
             return total_time
         t = time.localtime(m._timestamp)
         if m.fix_type == 2 and not locked:
-            print("Locked at %s after %.1f seconds" % (time.asctime(t),
-                                                       time.mktime(t) - unlock_time))
+            print("Locked at %s after %u seconds" % (time.asctime(t),
+                                                     time.mktime(t) - unlock_time))
             locked = True
             start_time = time.mktime(t)
         elif m.fix_type == 1 and locked:
