@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-work out total flight time for a mavlink log
+show GPS lock events in a MAVLink log
 '''
 
 import sys, time, os
