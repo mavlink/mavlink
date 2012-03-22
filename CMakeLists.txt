@@ -4,7 +4,7 @@ project (mavlink NONE)
 cmake_minimum_required (VERSION 2.8.2)
 set(PROJECT_VERSION_MAJOR "1")
 set(PROJECT_VERSION_MINOR "0")
-set(PROJECT_VERSION_PATCH "1")
+set(PROJECT_VERSION_PATCH "4")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_CONTACT_EMAIL http://groups.google.com/group/mavlink)
 set(PROJECT_CONTACT_VENDOR mavlink)
@@ -23,16 +23,17 @@ option(WITH_BUILD_STATIC "Build preferring static linking." ON)
 set(ROOT_THREAD TRUE CACHE INTERNAL "Is this the top level of the recursion?")
 
 # modules
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-#include(CheckIncludeFiles)
-#include(CheckFunctionExists)
-#include(CheckSymbolExists)
-#include(CheckLibraryExists)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/cmake/arkcmake)
+include(DefineCMakeDefaults)
+include(CheckIncludeFiles)
+include(CheckFunctionExists)
+include(CheckSymbolExists)
+include(CheckLibraryExists)
 #include(CheckTypeSize)
 #include(CheckPrototypeExists)
 #include(CheckCXXSourceCompiles)
 #include(CheckCSourceCompiles)
-include(ExternalProject)
+include(ExternalProjectWithFilename)
 
 # spawn new cmake to build deps
 if (WITH_BUILD_DEPS AND ROOT_THREAD)
@@ -107,6 +108,7 @@ endif()
 
 # config files
 configure_file(config.h.in config.h)
+install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} COMPONENT Dev)
 
 # mavlink generation
 macro(generateMavlink version definitions)
