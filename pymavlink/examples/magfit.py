@@ -90,7 +90,7 @@ def magfit(logfile):
 
     # now gather all the data
     while True:
-        m = mlog.recv_match()
+        m = mlog.recv_match(condition=opts.condition)
         if m is None:
             break
         if m.get_type() == "SENSOR_OFFSETS":
