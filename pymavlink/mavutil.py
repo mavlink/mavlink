@@ -615,6 +615,7 @@ def mode_string_v09(msg):
         (MAV_MODE_AUTO,   MAV_NAV_LANDING)   : "LANDING",
         (MAV_MODE_AUTO,   MAV_NAV_HOLD)      : "LOITER",
         (MAV_MODE_GUIDED, MAV_NAV_VECTOR)    : "GUIDED",
+        (MAV_MODE_GUIDED, MAV_NAV_WAYPOINT)  : "GUIDED",
         (100,             MAV_NAV_VECTOR)    : "STABILIZE",
         (101,             MAV_NAV_VECTOR)    : "ACRO",
         (102,             MAV_NAV_VECTOR)    : "ALT_HOLD",
