@@ -105,6 +105,14 @@ def pitch_estimate(RAW_IMU, smooth=0.95):
     rz = lowpass(RAW_IMU.zacc,'rz',smooth)
     return degrees(asin(rx/sqrt(rx**2+ry**2+rz**2)))
 
+def gravity(RAW_IMU, smooth=0.95):
+    '''estimate pitch from accelerometer'''
+    rx = lowpass(RAW_IMU.xacc,'rx',smooth)
+    ry = lowpass(RAW_IMU.yacc,'ry',smooth)
+    rz = lowpass(RAW_IMU.zacc,'rz',smooth)
+    return sqrt(rx**2+ry**2+rz**2)*0.01
+
+
 
 def pitch_sim(SIMSTATE, GPS_RAW):
     '''estimate pitch from SIMSTATE accels'''
