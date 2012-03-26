@@ -379,6 +379,8 @@ class mavlogfile(mavfile):
             else:
                 mode = 'wb'
         self.f = open(filename, mode)
+        self.filesize = os.path.getsize(filename)
+        self.percent = 0
         mavfile.__init__(self, None, filename, source_system=source_system)
 
     def close(self):
@@ -411,6 +413,7 @@ class mavlogfile(mavfile):
             (tusec,) = struct.unpack('>Q', tbuf)
             t = tusec * 1.0e-6
         self._timestamp = t
+        self.percent = (100.0 * self.f.tell()) / self.filesize        
 
     def post_message(self, msg):
         '''add timestamp to message'''
