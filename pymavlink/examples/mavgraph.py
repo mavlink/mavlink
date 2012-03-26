@@ -74,12 +74,9 @@ def plotit(x, y, fields, colors=[]):
         pylab.draw()
         empty = False
     if ax1_labels != []:
-        if ax2_labels == []:
-            ax1.legend(ax1_labels,loc='upper right')
-        else:
-            ax1.legend(ax1_labels,loc='upper left')
+        ax1.legend(ax1_labels,loc=opts.legend)
     if ax2_labels != []:
-        ax2.legend(ax2_labels,loc='upper right')
+        ax2.legend(ax2_labels,loc=opts.legend2)
     if empty:
         print("No data to graph")
         return
@@ -93,6 +90,8 @@ parser.add_option("--planner",dest="planner", action='store_true', help="use pla
 parser.add_option("--condition",dest="condition", default=None, help="select packets by a condition")
 parser.add_option("--labels",dest="labels", default=None, help="comma separated field labels")
 parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
+parser.add_option("--legend",  default='upper right', help="default legend position")
+parser.add_option("--legend2",  default='upper left', help="default legend2 position")
 (opts, args) = parser.parse_args()
 
 if opts.mav10:
