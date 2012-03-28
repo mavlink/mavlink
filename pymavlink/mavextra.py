@@ -91,26 +91,30 @@ def delta_angle(var, key):
         dv += 360
     return dv
 
-def roll_estimate(RAW_IMU,smooth=0.95):
+def roll_estimate(RAW_IMU,smooth=0.7):
     '''estimate roll from accelerometer'''
     rx = lowpass(RAW_IMU.xacc,'rx',smooth)
     ry = lowpass(RAW_IMU.yacc,'ry',smooth)
     rz = lowpass(RAW_IMU.zacc,'rz',smooth)
     return degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2)))
 
-def pitch_estimate(RAW_IMU, smooth=0.95):
+def pitch_estimate(RAW_IMU, smooth=0.7):
     '''estimate pitch from accelerometer'''
     rx = lowpass(RAW_IMU.xacc,'rx',smooth)
     ry = lowpass(RAW_IMU.yacc,'ry',smooth)
     rz = lowpass(RAW_IMU.zacc,'rz',smooth)
     return degrees(asin(rx/sqrt(rx**2+ry**2+rz**2)))
 
-def gravity(RAW_IMU, smooth=0.95):
+def gravity(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, smooth=0.7):
     '''estimate pitch from accelerometer'''
-    rx = lowpass(RAW_IMU.xacc,'rx',smooth)
-    ry = lowpass(RAW_IMU.yacc,'ry',smooth)
-    rz = lowpass(RAW_IMU.zacc,'rz',smooth)
-    return sqrt(rx**2+ry**2+rz**2)*0.01
+    rx = RAW_IMU.xacc
+    ry = RAW_IMU.yacc
+    rz = RAW_IMU.zacc+45
+    if SENSOR_OFFSETS is not None and ofs is not None:
+        rx += ofs[0] - SENSOR_OFFSETS.accel_cal_x
+        ry += ofs[1] - SENSOR_OFFSETS.accel_cal_y
+        rz += ofs[2] - SENSOR_OFFSETS.accel_cal_z
+    return lowpass(sqrt(rx**2+ry**2+rz**2)*0.01,'_gravity',smooth)
 
 
 
