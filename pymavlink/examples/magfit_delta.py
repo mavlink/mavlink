@@ -19,10 +19,10 @@ parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLi
 parser.add_option("--verbose", action='store_true', default=False, help="verbose offset output")
 parser.add_option("--gain", type='float', default=0.01, help="algorithm gain")
 parser.add_option("--noise", type='float', default=0, help="noise to add")
-parser.add_option("--max-change", type='float', default=5, help="max step change")
-parser.add_option("--min-diff", type='float', default=2, help="min mag vector delta")
-parser.add_option("--history", type='int', default=1, help="how many points to step")
-parser.add_option("--repeat", type='int', default=1, help="repeats through data")
+parser.add_option("--max-change", type='float', default=10, help="max step change")
+parser.add_option("--min-diff", type='float', default=50, help="min mag vector delta")
+parser.add_option("--history", type='int', default=20, help="how many points to keep")
+parser.add_option("--repeat", type='int', default=1, help="number of repeats through the data")
 
 (opts, args) = parser.parse_args()
 
@@ -37,11 +37,10 @@ if len(args) < 1:
 
 def noise():
     '''a noise vector'''
-    from random import randint
-    x = randint(-opts.noise, opts.noise)
-    y = randint(-opts.noise, opts.noise)
-    z = randint(-opts.noise, opts.noise)
-    return Vector3(x, y, z)
+    from random import gauss
+    v = Vector3(gauss(0, 1), gauss(0, 1), gauss(0, 1))
+    v.normalize()
+    return v * opts.noise
 
 def find_offsets(data, ofs):
     '''find mag offsets by applying Bills "offsets revisited" algorithm
@@ -63,11 +62,14 @@ def find_offsets(data, ofs):
         d.x = float(int(d.x + 0.5))
         d.y = float(int(d.y + 0.5))
         d.z = float(int(d.z + 0.5))
-        data2.append(d.copy() + noise())
+        data2.append(d)
     data = data2
+
+    history_idx = 0
+    mag_history = data[0:opts.history]
     
     for i in range(opts.history, len(data)):
-        B1 = data[i-opts.history] + ofs
+        B1 = mag_history[history_idx] + ofs
         B2 = data[i] + ofs
         
         diff = B2 - B1
@@ -75,11 +77,14 @@ def find_offsets(data, ofs):
         if diff_length <= opts.min_diff:
             # the mag vector hasn't changed enough - we don't get any
             # information from this
+            history_idx = (history_idx+1) % opts.history
             continue
 
+        mag_history[history_idx] = data[i]
+        history_idx = (history_idx+1) % opts.history
+
         # equation 6 of Bills paper
-        delta = diff * (B2.length() - B1.length()) / diff_length
-        delta *= gain
+        delta = diff * (gain * (B2.length() - B1.length()) / diff_length)
 
         # limit the change from any one reading. This is to prevent
         # single crazy readings from throwing off the offsets for a long
