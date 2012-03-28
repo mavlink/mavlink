@@ -90,8 +90,8 @@ parser.add_option("--planner",dest="planner", action='store_true', help="use pla
 parser.add_option("--condition",dest="condition", default=None, help="select packets by a condition")
 parser.add_option("--labels",dest="labels", default=None, help="comma separated field labels")
 parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
-parser.add_option("--legend",  default='upper right', help="default legend position")
-parser.add_option("--legend2",  default='upper left', help="default legend2 position")
+parser.add_option("--legend",  default='upper left', help="default legend position")
+parser.add_option("--legend2",  default='upper right', help="default legend2 position")
 (opts, args) = parser.parse_args()
 
 if opts.mav10:
