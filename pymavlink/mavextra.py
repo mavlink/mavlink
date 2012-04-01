@@ -128,3 +128,27 @@ def pitch_sim(SIMSTATE, GPS_RAW):
     if xacc/zacc <= -1:
         return -0
     return degrees(-asin(xacc/zacc))
+
+def distance_two(GPS_RAW1, GPS_RAW2):
+    '''distance between two points'''
+    lat1 = radians(GPS_RAW1.lat)
+    lat2 = radians(GPS_RAW2.lat)
+    lon1 = radians(GPS_RAW1.lon)
+    lon2 = radians(GPS_RAW2.lon)
+    dLat = lat2 - lat1
+    dLon = lon2 - lon1
+
+    a = sin(0.5*dLat) * sin(0.5*dLat) + sin(0.5*dLon) * sin(0.5*dLon) * cos(lat1) * cos(lat2)
+    c = 2.0 * atan2(sqrt(a), sqrt(1.0-a))
+    return 6371 * 1000 * c
+
+
+first_fix = None
+
+def distance_home(GPS_RAW):
+    '''distance from first fix point'''
+    global first_fix
+    if first_fix == None:
+        first_fix = GPS_RAW
+        return 0
+    return distance_two(GPS_RAW, first_fix)
