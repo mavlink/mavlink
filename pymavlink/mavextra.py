@@ -148,7 +148,7 @@ first_fix = None
 def distance_home(GPS_RAW):
     '''distance from first fix point'''
     global first_fix
-    if first_fix == None:
+    if first_fix == None or first_fix.fix_type < 2:
         first_fix = GPS_RAW
         return 0
     return distance_two(GPS_RAW, first_fix)
