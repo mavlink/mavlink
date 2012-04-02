@@ -35,7 +35,7 @@ def evaluate_condition(condition, vars):
 
 class mavfile(object):
     '''a generic mavlink port'''
-    def __init__(self, fd, address, source_system=255):
+    def __init__(self, fd, address, source_system=255, notimestamps=False):
         self.fd = fd
         self.address = address
         self.messages = { 'MAV' : self }
@@ -60,7 +60,9 @@ class mavfile(object):
         self.message_hooks = []
         self.idle_hooks = []
         self.usec = 0
-        self.notimestamps = False
+        self.notimestamps = notimestamps
+        if self.notimestamps:
+            self._timestamp = 0
         self._timestamp = time.time()
 
     def recv(self, n=None):
@@ -368,9 +370,6 @@ class mavlogfile(mavfile):
         self.writeable = write
         self.robust_parsing = robust_parsing
         self.planner_format = planner_format
-        self.notimestamps = notimestamps
-        if self.notimestamps:
-            self._timestamp = 0
         self._two64 = math.pow(2.0, 63)
         mode = 'rb'
         if self.writeable:
@@ -381,7 +380,7 @@ class mavlogfile(mavfile):
         self.f = open(filename, mode)
         self.filesize = os.path.getsize(filename)
         self.percent = 0
-        mavfile.__init__(self, None, filename, source_system=source_system)
+        mavfile.__init__(self, None, filename, source_system=source_system, notimestamps=notimestamps)
 
     def close(self):
         self.f.close()
@@ -397,6 +396,7 @@ class mavlogfile(mavfile):
     def pre_message(self):
         '''read timestamp if needed'''
         # read the timestamp
+        self.percent = (100.0 * self.f.tell()) / self.filesize        
         if self.notimestamps:
             return
         if self.planner_format:
@@ -413,7 +413,6 @@ class mavlogfile(mavfile):
             (tusec,) = struct.unpack('>Q', tbuf)
             t = tusec * 1.0e-6
         self._timestamp = t
-        self.percent = (100.0 * self.f.tell()) / self.filesize        
 
     def post_message(self, msg):
         '''add timestamp to message'''
