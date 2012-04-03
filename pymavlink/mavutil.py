@@ -61,9 +61,7 @@ class mavfile(object):
         self.idle_hooks = []
         self.usec = 0
         self.notimestamps = notimestamps
-        if self.notimestamps:
-            self._timestamp = 0
-        self._timestamp = time.time()
+        self._timestamp = None
 
     def recv(self, n=None):
         '''default recv method'''
@@ -87,12 +85,13 @@ class mavfile(object):
         type = msg.get_type()
         self.messages[type] = msg
 
-        if self.notimestamps:
-            if 'usec' in msg.__dict__:
-                self.usec = msg.usec / 1.0e6
-            msg._timestamp = self.usec
-        else:
-            msg._timestamp = self._timestamp
+        if self._timestamp is not None:
+            if self.notimestamps:
+                if 'usec' in msg.__dict__:
+                    self.usec = msg.usec / 1.0e6
+                msg._timestamp = self.usec
+            else:
+                msg._timestamp = self._timestamp
         
         self.timestamp = msg._timestamp
         if type == 'HEARTBEAT':
@@ -381,6 +380,10 @@ class mavlogfile(mavfile):
         self.filesize = os.path.getsize(filename)
         self.percent = 0
         mavfile.__init__(self, None, filename, source_system=source_system, notimestamps=notimestamps)
+        if self.notimestamps:
+            self._timestamp = 0
+        else:
+            self._timestamp = time.time()
 
     def close(self):
         self.f.close()
