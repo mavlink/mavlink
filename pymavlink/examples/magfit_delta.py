@@ -90,7 +90,7 @@ def find_offsets(data, ofs):
         # single crazy readings from throwing off the offsets for a long
         # time
         delta_length = delta.length()
-        if delta_length > max_change:
+        if max_change != 0 and delta_length > max_change:
             delta *= max_change / delta_length
 
         # set the new offsets
