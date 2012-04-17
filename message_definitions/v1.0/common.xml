@@ -785,6 +785,33 @@
                     <description>not accepting any mission commands from this communication partner</description>
                </entry>
           </enum>
+          <enum name="MAV_SEVERITY">
+               <description>Indicates the severity level, generally used for status messages to indicate their relative urgency. Based on RFC-5424 using expanded definitions at: http://www.kiwisyslog.com/kb/info:-syslog-message-levels/.</description>
+               <entry value="0" name="MAV_SEVERITY_EMERGENCY">
+                  <description>System is unusable. This is a "panic" condition.</description>
+               </entry>
+               <entry value="1" name="MAV_SEVERITY_ALERT">
+                  <description>Action should be taken immediately. Indicates error in non-critical systems.</description>
+               </entry>
+               <entry value="2" name="MAV_SEVERITY_CRITICAL">
+                  <description>Action must be taken immediately. Indicates failure in a primary system.</description>
+               </entry>
+               <entry value="3" name="MAV_SEVERITY_ERROR">
+                  <description>Indicates an error in secondary/redundant systems.</description>
+               </entry>
+               <entry value="4" name="MAV_SEVERITY_WARNING">
+                  <description>Indicates about a possible future error if this is not resolved within a given timeframe. Example would be a low battery warning.</description>
+               </entry>
+               <entry value="5" name="MAV_SEVERITY_NOTICE">
+                  <description>An unusual event has occured, though not an error condition. This should be investigated for the root cause.</description>
+               </entry>
+               <entry value="6" name="MAV_SEVERITY_INFO">
+                  <description>Normal operational messages. Useful for logging. No action is required for these messages.</description>
+               </entry>
+               <entry value="7" name="MAV_SEVERITY_DEBUG">
+                  <description>Useful non-operational messages that can assist in debugging. These should not occur during normal operation.</description>
+               </entry>
+          </enum>
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -1439,7 +1466,7 @@
           </message>
           <message id="253" name="STATUSTEXT">
                <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
-               <field type="uint8_t" name="severity">Severity of status, 0 = info message, 255 = critical fault</field>
+               <field type="uint8_t" name="severity">Severity of status. Relies on the definitions within RFC-5424. See enum MAV_SEVERITY.</field>
                <field type="char[50]" name="text">Status text message, without null termination character</field>
           </message>
           <message id="254" name="DEBUG">
