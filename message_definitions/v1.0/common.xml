@@ -1359,8 +1359,10 @@
                <field type="uint8_t" name="sensor_id">Sensor ID</field>
                <field type="int16_t" name="flow_x">Flow in pixels in x-sensor direction</field>
                <field type="int16_t" name="flow_y">Flow in pixels in y-sensor direction</field>
+               <field type="float" name="flow_comp_m_x">Flow in meters in x-sensor direction, angular-speed compensated</field>
+               <field type="float" name="flow_comp_m_y">Flow in meters in y-sensor direction, angular-speed compensated</field>
                <field type="uint8_t" name="quality">Optical flow quality / confidence. 0: bad, 255: maximum quality</field>
-               <field type="float" name="ground_distance">Ground distance in meters</field>
+               <field type="float" name="ground_distance">Ground distance in meters. Positive value: distance known. Negative value: Unknown distance</field>
           </message>
           <message id="101" name="GLOBAL_VISION_POSITION_ESTIMATE">
                <field type="uint64_t" name="usec">Timestamp (milliseconds)</field>
@@ -1432,12 +1434,6 @@
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
                <field type="uint8_t" name="ind">index of debug variable</field>
                <field type="float" name="value">DEBUG value</field>
-          </message>
-          <message id="255" name="EXTENDED_MESSAGE">
-               <description>Extended message spacer.</description>
-               <field type="uint8_t" name="target_system">System which should execute the command</field>
-               <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
-               <field type="uint8_t" name="protocol_flags">Retransmission / ACK flags</field>
           </message>
      </messages>
 </mavlink>
