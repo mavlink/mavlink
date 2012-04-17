@@ -4,7 +4,7 @@ project (mavlink NONE)
 cmake_minimum_required (VERSION 2.8.2)
 set(PROJECT_VERSION_MAJOR "1")
 set(PROJECT_VERSION_MINOR "0")
-set(PROJECT_VERSION_PATCH "1")
+set(PROJECT_VERSION_PATCH "4")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_CONTACT_EMAIL http://groups.google.com/group/mavlink)
 set(PROJECT_CONTACT_VENDOR mavlink)
@@ -21,19 +21,19 @@ option(WITH_BUILD_STATIC "Build preferring static linking." ON)
 
 # variables
 set(ROOT_THREAD TRUE CACHE INTERNAL "Is this the top level of the recursion?")
-set(INSTALLED_TARGETS "")
 
 # modules
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-#include(CheckIncludeFiles)
-#include(CheckFunctionExists)
-#include(CheckSymbolExists)
-#include(CheckLibraryExists)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/cmake/arkcmake)
+include(DefineCMakeDefaults)
+include(CheckIncludeFiles)
+include(CheckFunctionExists)
+include(CheckSymbolExists)
+include(CheckLibraryExists)
 #include(CheckTypeSize)
 #include(CheckPrototypeExists)
 #include(CheckCXXSourceCompiles)
 #include(CheckCSourceCompiles)
-include(ExternalProject)
+include(ExternalProjectWithFilename)
 
 # spawn new cmake to build deps
 if (WITH_BUILD_DEPS AND ROOT_THREAD)
@@ -57,6 +57,8 @@ endif()
 if(NOT EP_BASE_DIR)
     set(EP_BASE_DIR "${CMAKE_BINARY_DIR}/CMakeExternals")
 endif()
+set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE_DIR})
+set(EP_INSTALL_DIR "${EP_BASE_DIR}/Install")
 list(APPEND CMAKE_FIND_ROOT_PATH ${EP_BASE_DIR})
 
 # prefer static packages if building static library
@@ -106,6 +108,7 @@ endif()
 
 # config files
 configure_file(config.h.in config.h)
+install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} COMPONENT Dev)
 
 # mavlink generation
 macro(generateMavlink version definitions)
@@ -159,24 +162,6 @@ endif()
 
 # install files
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT dev FILES_MATCHING PATTERN "*.h")
-
-# install
-install(TARGETS  ${INSTALLED_TARGETS}
-    RUNTIME DESTINATION "bin" COMPONENT Runtime
-    LIBRARY DESTINATION "lib" COMPONENT Runtime
-    ARCHIVE DESTINATION "lib" COMPONENT Dev
-    BUNDLE DESTINATION "/Applications" COMPONENT Runtime
-    FRAMEWORK DESTINATION "/Library/Frameworks" COMPONENT Runtime
-    # where to put files on non-mac computers, mac overrides and uses default
-    PRIVATE_HEADER DESTINATION "include/${PROJECT_NAME}" COMPONENT Runtime
-    PUBLIC_HEADER DESTINATION "include/${PROJECT_NAME}" COMPONENT Runtime
-    RESOURCE DESTINATION "share/${PROJECT_NAME}" COMPONENT Runtime
-    )
-
-# install external projects, if built
-if (EXISTS ${EP_BASE_DIR}/${CMAKE_INSTALL_PREFIX}/)
-    install(DIRECTORY ${EP_BASE_DIR}/${CMAKE_INSTALL_PREFIX}/ DESTINATION ${CMAKE_INSTALL_PREFIX} COMPONENT Runtime)
-endif()
 
 ### packaging
 
