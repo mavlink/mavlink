@@ -4,7 +4,7 @@ project (mavlink NONE)
 cmake_minimum_required (VERSION 2.8.2)
 set(PROJECT_VERSION_MAJOR "1")
 set(PROJECT_VERSION_MINOR "0")
-set(PROJECT_VERSION_PATCH "4")
+set(PROJECT_VERSION_PATCH "5")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_CONTACT_EMAIL http://groups.google.com/group/mavlink)
 set(PROJECT_CONTACT_VENDOR mavlink)
@@ -128,7 +128,7 @@ macro(generateMavlink version definitions)
 endmacro()
 
 # build
-set(mavgen ${CMAKE_CURRENT_SOURCE_DIR}/pymavlink/generator/mavgen.py)
+set(mavgen ${CMAKE_SOURCE_DIR}/pymavlink/generator/mavgen.py)
 set(v0.9Definitions
     ardupilotmega.xml
     common.xml
@@ -155,18 +155,18 @@ generateMavlink("1.0" "${v1.0Definitions}")
 # testing
 if (BUILD_TEST)
     if (UNIX) 
-        include_directories(${CMAKE_CURRENT_BINARY_DIR}/include/v0.9/common)
+        include_directories(${CMAKE_BINARY_DIR}/include/v0.9/common)
         # TODO fix udp example
         #add_executable(mavlink_udp examples/linux/mavlink_udp.c)
     endif()
 endif()
 
 # install files
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.h")
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/pymavlink
-    DESTINATION "share/pyshared" COMPONENT Dev
-    )
+install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.h*")
+install(DIRECTORY ${CMAKE_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/share/${PROJECT_NAME} DESTINATION share COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/pymavlink DESTINATION "share/pyshared" COMPONENT Dev)
+
 configure_file(pc.in ${PROJECT_NAME}.pc)
 install(FILES
     ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc
