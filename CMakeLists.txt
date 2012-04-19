@@ -163,9 +163,15 @@ endif()
 
 # install files
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.h")
-
-# install files
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/pymavlink
+    DESTINATION "share/pyshared" COMPONENT Dev
+    )
+configure_file(pc.in ${PROJECT_NAME}.pc)
+install(FILES
+    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc
+    DESTINATION "lib/pkgconfig" COMPONENT Dev
+    )
 
 ### packaging
 
@@ -199,15 +205,5 @@ set(CPACK_SET_DESTDIR TRUE)
 set(CPACK_COMPONENTS_GROUPING "ALL_COMPONENTS_IN_ONE")
 include(CPack)
 
-# src files
-install(DIRECTORY src
-    DESTINATION "share/mavlink" COMPONENT Dev
-    )
 
-# pkgconfig
-configure_file(pc.in ${PROJECT_NAME}.pc)
-install(FILES
-    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc
-    DESTINATION "lib/pkgconfig" COMPONENT Dev
-    )
 # vim:sw=4:ts=4:expandtab
