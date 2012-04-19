@@ -148,6 +148,7 @@ set(v1.0Definitions
     slugs.xml
     test.xml
     ualberta.xml
+    sensesoar.xml
     )
 generateMavlink("1.0" "${v1.0Definitions}")
 
@@ -162,6 +163,9 @@ endif()
 
 # install files
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.h")
+
+# install files
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
 
 ### packaging
 
@@ -194,6 +198,11 @@ set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_SET_DESTDIR TRUE)
 set(CPACK_COMPONENTS_GROUPING "ALL_COMPONENTS_IN_ONE")
 include(CPack)
+
+# src files
+install(DIRECTORY src
+    DESTINATION "share/mavlink" COMPONENT Dev
+    )
 
 # pkgconfig
 configure_file(pc.in ${PROJECT_NAME}.pc)
