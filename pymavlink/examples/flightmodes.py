@@ -31,6 +31,8 @@ def flight_modes(logfile):
     mode = -1
     nav_mode = -1
 
+    filesize = os.path.getsize(filename)
+
     while True:
         m = mlog.recv_match(type='SYS_STATUS',
                             condition='SYS_STATUS.mode != %u or SYS_STATUS.nav_mode != %u' % (mode, nav_mode))
@@ -38,10 +40,11 @@ def flight_modes(logfile):
             return
         mode = m.mode
         nav_mode = m.nav_mode
-        print('%s MAV.flightmode=%-12s mode=%u nav_mode=%u (MAV.timestamp=%u)' % (
+        pct = (100.0 * mlog.f.tell()) / filesize
+        print('%s MAV.flightmode=%-12s mode=%u nav_mode=%u (MAV.timestamp=%u %u%%)' % (
             time.asctime(time.localtime(m._timestamp)),
             mlog.flightmode,
-            mode, nav_mode, m._timestamp))
+            mode, nav_mode, m._timestamp, pct))
 
 for filename in args:
     flight_modes(filename)
