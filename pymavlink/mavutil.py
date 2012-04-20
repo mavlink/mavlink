@@ -35,7 +35,7 @@ def evaluate_condition(condition, vars):
 
 class mavfile(object):
     '''a generic mavlink port'''
-    def __init__(self, fd, address, source_system=255):
+    def __init__(self, fd, address, source_system=255, notimestamps=False):
         self.fd = fd
         self.address = address
         self.messages = { 'MAV' : self }
@@ -59,6 +59,9 @@ class mavfile(object):
         self.timestamp = 0
         self.message_hooks = []
         self.idle_hooks = []
+        self.usec = 0
+        self.notimestamps = notimestamps
+        self._timestamp = None
 
     def recv(self, n=None):
         '''default recv method'''
@@ -81,6 +84,15 @@ class mavfile(object):
         msg._timestamp = time.time()
         type = msg.get_type()
         self.messages[type] = msg
+
+        if self._timestamp is not None:
+            if self.notimestamps:
+                if 'usec' in msg.__dict__:
+                    self.usec = msg.usec / 1.0e6
+                msg._timestamp = self.usec
+            else:
+                msg._timestamp = self._timestamp
+        
         self.timestamp = msg._timestamp
         if type == 'HEARTBEAT':
             self.target_system = msg.get_srcSystem()
@@ -357,7 +369,6 @@ class mavlogfile(mavfile):
         self.writeable = write
         self.robust_parsing = robust_parsing
         self.planner_format = planner_format
-        self.notimestamps = notimestamps
         self._two64 = math.pow(2.0, 63)
         mode = 'rb'
         if self.writeable:
@@ -366,7 +377,13 @@ class mavlogfile(mavfile):
             else:
                 mode = 'wb'
         self.f = open(filename, mode)
-        mavfile.__init__(self, None, filename, source_system=source_system)
+        self.filesize = os.path.getsize(filename)
+        self.percent = 0
+        mavfile.__init__(self, None, filename, source_system=source_system, notimestamps=notimestamps)
+        if self.notimestamps:
+            self._timestamp = 0
+        else:
+            self._timestamp = time.time()
 
     def close(self):
         self.f.close()
@@ -382,6 +399,7 @@ class mavlogfile(mavfile):
     def pre_message(self):
         '''read timestamp if needed'''
         # read the timestamp
+        self.percent = (100.0 * self.f.tell()) / self.filesize        
         if self.notimestamps:
             return
         if self.planner_format:
@@ -403,10 +421,6 @@ class mavlogfile(mavfile):
         '''add timestamp to message'''
         # read the timestamp
         super(mavlogfile, self).post_message(msg)
-        if self.notimestamps:
-            msg._timestamp = time.time()
-        else:
-            msg._timestamp = self._timestamp
         if self.planner_format:
             self.f.read(1) # trailing newline
         self.timestamp = msg._timestamp
@@ -606,6 +620,7 @@ def mode_string_v09(msg):
         (MAV_MODE_AUTO,   MAV_NAV_LANDING)   : "LANDING",
         (MAV_MODE_AUTO,   MAV_NAV_HOLD)      : "LOITER",
         (MAV_MODE_GUIDED, MAV_NAV_VECTOR)    : "GUIDED",
+        (MAV_MODE_GUIDED, MAV_NAV_WAYPOINT)  : "GUIDED",
         (100,             MAV_NAV_VECTOR)    : "STABILIZE",
         (101,             MAV_NAV_VECTOR)    : "ACRO",
         (102,             MAV_NAV_VECTOR)    : "ALT_HOLD",

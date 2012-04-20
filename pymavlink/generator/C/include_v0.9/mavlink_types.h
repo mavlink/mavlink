@@ -140,6 +140,7 @@ enum MAV_COMPONENT
     MAV_COMP_ID_AIRSLAM,
     MAV_COMP_ID_MAPPER,
     MAV_COMP_ID_CAMERA,
+    MAV_COMP_ID_RADIO = 68,
     MAV_COMP_ID_IMU = 200,
     MAV_COMP_ID_IMU_2 = 201,
     MAV_COMP_ID_IMU_3 = 202,
@@ -242,6 +243,7 @@ typedef struct __mavlink_message_info {
 } mavlink_message_info_t;
 
 #define _MAV_PAYLOAD(msg) ((char *)(&(msg)->payload64[0]))
+#define _MAV_PAYLOAD_NON_CONST(msg) ((char *)(&((msg)->payload64[0])))
 
 // checksum is immediately after the payload bytes
 #define mavlink_ck_a(msg) *(msg->len + (uint8_t *)_MAV_PAYLOAD(msg))

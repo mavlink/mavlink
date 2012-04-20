@@ -4,7 +4,7 @@ project (mavlink NONE)
 cmake_minimum_required (VERSION 2.8.2)
 set(PROJECT_VERSION_MAJOR "1")
 set(PROJECT_VERSION_MINOR "0")
-set(PROJECT_VERSION_PATCH "4")
+set(PROJECT_VERSION_PATCH "6")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_CONTACT_EMAIL http://groups.google.com/group/mavlink)
 set(PROJECT_CONTACT_VENDOR mavlink)
@@ -128,7 +128,7 @@ macro(generateMavlink version definitions)
 endmacro()
 
 # build
-set(mavgen ${CMAKE_CURRENT_SOURCE_DIR}/pymavlink/generator/mavgen.py)
+set(mavgen ${CMAKE_SOURCE_DIR}/pymavlink/generator/mavgen.py)
 set(v0.9Definitions
     ardupilotmega.xml
     common.xml
@@ -148,20 +148,30 @@ set(v1.0Definitions
     slugs.xml
     test.xml
     ualberta.xml
+    sensesoar.xml
     )
 generateMavlink("1.0" "${v1.0Definitions}")
 
 # testing
 if (BUILD_TEST)
     if (UNIX) 
-        include_directories(${CMAKE_CURRENT_BINARY_DIR}/include/v0.9/common)
+        include_directories(${CMAKE_BINARY_DIR}/include/v0.9/common)
         # TODO fix udp example
         #add_executable(mavlink_udp examples/linux/mavlink_udp.c)
     endif()
 endif()
 
 # install files
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT dev FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.h*")
+install(DIRECTORY ${CMAKE_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/share/${PROJECT_NAME} DESTINATION share COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/pymavlink DESTINATION "share/pyshared" COMPONENT Dev)
+
+configure_file(pc.in ${PROJECT_NAME}.pc)
+install(FILES
+    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc
+    DESTINATION "lib/pkgconfig" COMPONENT Dev
+    )
 
 ### packaging
 
@@ -192,13 +202,9 @@ set(CPACK_PACKAGE_VENDOR ${PROJECT_CONTACT_VENDOR})
 set(CPACK_PACKAGE_CONTACT "${PROJECT_CONTACT_EMAIL}")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_SET_DESTDIR TRUE)
+set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
 set(CPACK_COMPONENTS_GROUPING "ALL_COMPONENTS_IN_ONE")
 include(CPack)
 
-# pkgconfig
-configure_file(pc.in ${PROJECT_NAME}.pc)
-install(FILES
-    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc
-    DESTINATION "lib/pkgconfig" COMPONENT Dev
-    )
+
 # vim:sw=4:ts=4:expandtab
