@@ -59,7 +59,7 @@ class mavfile(object):
         self.timestamp = 0
         self.message_hooks = []
         self.idle_hooks = []
-        self.usec = 0
+        self.uptime = 0.0
         self.notimestamps = notimestamps
         self._timestamp = None
 
@@ -85,11 +85,12 @@ class mavfile(object):
         type = msg.get_type()
         self.messages[type] = msg
 
+        if 'usec' in msg.__dict__:
+            self.uptime = msg.usec * 1.0e-6
+
         if self._timestamp is not None:
             if self.notimestamps:
-                if 'usec' in msg.__dict__:
-                    self.usec = msg.usec / 1.0e6
-                msg._timestamp = self.usec
+                msg._timestamp = self.uptime
             else:
                 msg._timestamp = self._timestamp
         
