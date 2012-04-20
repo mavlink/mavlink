@@ -91,30 +91,59 @@ def delta_angle(var, key):
         dv += 360
     return dv
 
-def roll_estimate(RAW_IMU,smooth=0.7):
+def roll_estimate(RAW_IMU,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
     '''estimate roll from accelerometer'''
-    rx = lowpass(RAW_IMU.xacc,'rx',smooth)
-    ry = lowpass(RAW_IMU.yacc,'ry',smooth)
-    rz = lowpass(RAW_IMU.zacc,'rz',smooth)
-    return degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2)))
-
-def pitch_estimate(RAW_IMU, smooth=0.7):
-    '''estimate pitch from accelerometer'''
-    rx = lowpass(RAW_IMU.xacc,'rx',smooth)
-    ry = lowpass(RAW_IMU.yacc,'ry',smooth)
-    rz = lowpass(RAW_IMU.zacc,'rz',smooth)
-    return degrees(asin(rx/sqrt(rx**2+ry**2+rz**2)))
-
-def gravity(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, smooth=0.7):
-    '''estimate pitch from accelerometer'''
-    rx = RAW_IMU.xacc
-    ry = RAW_IMU.yacc
-    rz = RAW_IMU.zacc+45
+    rx = RAW_IMU.xacc * 9.81 / 1000.0
+    ry = RAW_IMU.yacc * 9.81 / 1000.0
+    rz = RAW_IMU.zacc * 9.81 / 1000.0
     if SENSOR_OFFSETS is not None and ofs is not None:
-        rx += ofs[0] - SENSOR_OFFSETS.accel_cal_x
-        ry += ofs[1] - SENSOR_OFFSETS.accel_cal_y
-        rz += ofs[2] - SENSOR_OFFSETS.accel_cal_z
-    return lowpass(sqrt(rx**2+ry**2+rz**2)*0.01,'_gravity',smooth)
+        rx += SENSOR_OFFSETS.accel_cal_x
+        ry += SENSOR_OFFSETS.accel_cal_y
+        rz += SENSOR_OFFSETS.accel_cal_z
+        rx -= ofs[0]
+        ry -= ofs[1]
+        rz -= ofs[2]
+        if mul is not None:
+            rx *= mul[0]
+            ry *= mul[1]
+            rz *= mul[2]
+    return lowpass(degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2))),'_roll',smooth)
+
+def pitch_estimate(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
+    '''estimate pitch from accelerometer'''
+    rx = RAW_IMU.xacc * 9.81 / 1000.0
+    ry = RAW_IMU.yacc * 9.81 / 1000.0
+    rz = RAW_IMU.zacc * 9.81 / 1000.0
+    if SENSOR_OFFSETS is not None and ofs is not None:
+        rx += SENSOR_OFFSETS.accel_cal_x
+        ry += SENSOR_OFFSETS.accel_cal_y
+        rz += SENSOR_OFFSETS.accel_cal_z
+        rx -= ofs[0]
+        ry -= ofs[1]
+        rz -= ofs[2]
+        if mul is not None:
+            rx *= mul[0]
+            ry *= mul[1]
+            rz *= mul[2]
+    return lowpass(degrees(asin(rx/sqrt(rx**2+ry**2+rz**2))),'_pitch',smooth)
+
+def gravity(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
+    '''estimate pitch from accelerometer'''
+    rx = RAW_IMU.xacc * 9.81 / 1000.0
+    ry = RAW_IMU.yacc * 9.81 / 1000.0
+    rz = RAW_IMU.zacc * 9.81 / 1000.0
+    if SENSOR_OFFSETS is not None and ofs is not None:
+        rx += SENSOR_OFFSETS.accel_cal_x
+        ry += SENSOR_OFFSETS.accel_cal_y
+        rz += SENSOR_OFFSETS.accel_cal_z
+        rx -= ofs[0]
+        ry -= ofs[1]
+        rz -= ofs[2]
+        if mul is not None:
+            rx *= mul[0]
+            ry *= mul[1]
+            rz *= mul[2]
+    return lowpass(sqrt(rx**2+ry**2+rz**2),'_gravity',smooth)
 
 
 
@@ -138,7 +167,7 @@ def distance_two(GPS_RAW1, GPS_RAW2):
     dLat = lat2 - lat1
     dLon = lon2 - lon1
 
-    a = sin(0.5*dLat) * sin(0.5*dLat) + sin(0.5*dLon) * sin(0.5*dLon) * cos(lat1) * cos(lat2)
+    a = sin(0.5*dLat)**2 + sin(0.5*dLon)**2 * cos(lat1) * cos(lat2)
     c = 2.0 * atan2(sqrt(a), sqrt(1.0-a))
     return 6371 * 1000 * c
 
@@ -148,7 +177,17 @@ first_fix = None
 def distance_home(GPS_RAW):
     '''distance from first fix point'''
     global first_fix
+    if GPS_RAW.fix_type < 2:
+        return 0
     if first_fix == None or first_fix.fix_type < 2:
         first_fix = GPS_RAW
         return 0
     return distance_two(GPS_RAW, first_fix)
+
+def sawtooth(ATTITUDE, amplitude=2.0, period=5.0):
+    '''sawtooth pattern based on uptime'''
+    mins = (ATTITUDE.usec * 1.0e-6)/60
+    p = fmod(mins, period*2)
+    if p < period:
+        return amplitude * (p/period)
+    return amplitude * (period - (p-period))/period
