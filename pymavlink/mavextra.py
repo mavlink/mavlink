@@ -13,9 +13,15 @@ def kmh(mps):
     '''convert m/s to Km/h'''
     return mps*3.6
 
-def altitude(press_abs, ground_press=955.0, ground_temp=30):
+def altitude(SCALED_PRESSURE):
     '''calculate barometric altitude'''
-    return log(ground_press/press_abs)*(ground_temp+273.15)*29271.267*0.001
+    import mavutil
+    self = mavutil.mavfile_global
+    if self.ground_pressure is None or self.ground_temperature is None:
+        return 0
+    scaling = self.ground_pressure / (SCALED_PRESSURE.press_abs*100.0)
+    temp = self.ground_temperature + 273.15
+    return log(scaling) * temp * 29271.267 * 0.001
 
 
 def mag_heading(RAW_IMU, ATTITUDE, declination=0, SENSOR_OFFSETS=None, ofs=None):
