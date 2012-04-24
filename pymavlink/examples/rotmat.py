@@ -23,7 +23,7 @@
 '''rotation matrix class
 '''
 
-from math import sin, cos, sqrt, asin, atan2, pi, radians, acos
+from math import sin, cos, sqrt, asin, atan2, pi, radians, acos, degrees
 
 class Vector3:
     '''a vector'''
@@ -102,7 +102,7 @@ class Vector3:
 
     def angle(self, v):
         '''return the angle between this vector and another vector'''
-        return acos(self * v) / (self.length() * v.length())
+        return acos((self * v) / (self.length() * v.length()))
 
     def normalized(self):
         return self / self.length()
@@ -246,6 +246,31 @@ class Matrix3:
     def trace(self):
         '''the trace of the matrix'''
         return self.a.x + self.b.y + self.c.z
+
+    def from_axis_angle(self, axis, angle):
+        '''create a rotation matrix from axis and angle'''
+        ux = axis.x
+        uy = axis.y
+        uz = axis.z
+        ct = cos(angle)
+        st = sin(angle)
+        self.a.x = ct + (1-ct) * ux**2
+        self.a.y = ux*uy*(1-ct) - uz*st
+        self.a.z = ux*uz*(1-ct) + uy*st
+        self.b.x = uy*ux*(1-ct) + uz*st
+        self.b.y = ct + (1-ct) * uy**2
+        self.b.z = uy*uz*(1-ct) - ux*st
+        self.c.x = uz*ux*(1-ct) - uy*st
+        self.c.y = uz*uy*(1-ct) + ux*st
+        self.c.z = ct + (1-ct) * uz**2
+
+
+    def from_two_vectors(self, vec1, vec2):
+        '''get a rotation matrix from two vectors'''
+        angle = vec1.angle(vec2)
+        cross = (vec1 % vec2).normalized()
+        return self.from_axis_angle(cross, angle)
+
 
 def test_euler():
     '''check that from_euler() and to_euler() are consistent'''
