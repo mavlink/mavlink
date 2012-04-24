@@ -68,6 +68,7 @@ class mavfile(object):
         self.ground_pressure = None
         self.ground_temperature = None
         self.altitude = 0
+        self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
 
     def recv(self, n=None):
         '''default recv method'''
