@@ -32,10 +32,13 @@ def evaluate_condition(condition, vars):
         return False
     return v
 
+mavfile_global = None
 
 class mavfile(object):
     '''a generic mavlink port'''
     def __init__(self, fd, address, source_system=255, notimestamps=False):
+        global mavfile_global
+        mavfile_global = self
         self.fd = fd
         self.address = address
         self.messages = { 'MAV' : self }
@@ -62,6 +65,9 @@ class mavfile(object):
         self.uptime = 0.0
         self.notimestamps = notimestamps
         self._timestamp = None
+        self.ground_pressure = None
+        self.ground_temperature = None
+        self.altitude = 0
 
     def recv(self, n=None):
         '''default recv method'''
@@ -105,6 +111,10 @@ class mavfile(object):
             if msg.param_index+1 == msg.param_count:
                 self.param_fetch_in_progress = False
                 self.param_fetch_complete = True
+            if str(msg.param_id) == 'GND_ABS_PRESS':
+                self.ground_pressure = msg.param_value
+            if str(msg.param_id) == 'GND_TEMP':
+                self.ground_temperature = msg.param_value
         elif type == 'SYS_STATUS' and mavlink.WIRE_PROTOCOL_VERSION == '0.9':
             self.flightmode = mode_string_v09(msg)
         elif type == 'GPS_RAW':
