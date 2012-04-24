@@ -229,6 +229,52 @@ class mavfile(object):
         else:
             self.mav.waypoint_count_send(self.target_system, self.target_component, seq)
 
+    def set_mode_auto(self):
+        '''enter auto mode'''
+        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_MISSION_START, 0, 0, 0, 0, 0, 0, 0, 0)
+        else:
+            MAV_ACTION_SET_AUTO = 13
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_SET_AUTO)
+
+    def set_mode_rtl(self):
+        '''enter RTL mode'''
+        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH, 0, 0, 0, 0, 0, 0, 0, 0)
+        else:
+            MAV_ACTION_RETURN = 3
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_RETURN)
+
+    def set_mode_loiter(self):
+        '''enter LOITER mode'''
+        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_NAV_LOITER_UNLIM, 0, 0, 0, 0, 0, 0, 0, 0)
+        else:
+            MAV_ACTION_LOITER = 27
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_LOITER)
+
+    def calibrate_imu(self):
+        '''calibrate IMU'''
+        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, 0,
+                                       1, 1, 1, 1, 0, 0, 0)
+        else:
+            MAV_ACTION_CALIBRATE_GYRO = 17
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_GYRO)
+
+    def calibrate_level(self):
+        '''calibrate accels'''
+        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, 0,
+                                       1, 1, 1, 1, 0, 0, 0)
+        else:
+            MAV_ACTION_CALIBRATE_ACC = 19
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_ACC)
 
 class mavserial(mavfile):
     '''a serial mavlink port'''
@@ -646,7 +692,7 @@ def mode_string_v10(msg):
     '''mode string for 1.0 protocol, from heartbeat'''
     if not msg.base_mode & mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED:
         return "Mode(0x%08x)" % msg.base_mode
-    mapping = {
+    mapping_apm = {
         0 : 'MANUAL',
         1 : 'CIRCLE',
         2 : 'STABILIZE',
@@ -661,8 +707,26 @@ def mode_string_v10(msg):
         15 : 'GUIDED',
         16 : 'INITIALISING'
         }
-    if msg.custom_mode in mapping:
-        return mapping[msg.custom_mode]
+    mapping_acm = {
+        0 : 'STABILIZE',
+        1 : 'ACRO',
+        2 : 'ALT_HOLD',
+        3 : 'AUTO',
+        4 : 'GUIDED',
+        5 : 'LOITER',
+        6 : 'RTL',
+        7 : 'CIRCLE',
+        8 : 'POSITION',
+        9 : 'LAND',
+        10 : 'OF_LOITER',
+        11 : 'APPROACH'
+        }
+    if msg.type == mavlink.MAV_TYPE_QUADROTOR:
+        if msg.custom_mode in mapping_acm:
+            return mapping_acm[msg.custom_mode]
+    if msg.type == mavlink.MAV_TYPE_FIXED_WING:
+        if msg.custom_mode in mapping_apm:
+            return mapping_apm[msg.custom_mode]
     return "Mode(%u)" % msg.custom_mode
 
     
