@@ -237,9 +237,9 @@ class mavfile(object):
     def waypoint_current(self):
         '''return current waypoint'''
         if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
-            m = recv_match(type='MISSION_CURRENT', blocking=True)
+            m = self.recv_match(type='MISSION_CURRENT', blocking=True)
         else:
-            m = recv_match(type='WAYPOINT_CURRENT', blocking=True)
+            m = self.recv_match(type='WAYPOINT_CURRENT', blocking=True)
         return m.seq
 
     def waypoint_count_send(self, seq):
