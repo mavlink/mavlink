@@ -53,11 +53,14 @@ while True:
         break
     if types is not None and m.get_type() not in types:
         continue
-    if output:
+    last_timestamp = 0
+    if output and m.get_type() != 'BAD_DATA':
         timestamp = getattr(m, '_timestamp', None)
-        if timestamp:
-            output.write(struct.pack('>Q', timestamp*1.0e6))
-        output.write(m.get_msgbuf().tostring())
+        if not timestamp:
+            timestamp = last_timestamp
+        last_timestamp = timestamp
+        output.write(struct.pack('>Q', timestamp*1.0e6))
+        output.write(m.get_msgbuf())
     if opts.quiet:
         continue
     print("%s.%02u: %s" % (
