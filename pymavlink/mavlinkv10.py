@@ -34,7 +34,9 @@ class MAVLink_message(object):
         self._type       = name
 
     def get_msgbuf(self):
-        return self._msgbuf
+        if isinstance(self._msgbuf, str):
+            return self._msgbuf
+        return self._msgbuf.tostring()
 
     def get_header(self):
         return self._header
@@ -201,7 +203,8 @@ MAV_TYPE_HEXAROTOR = 13 # Hexarotor
 MAV_TYPE_OCTOROTOR = 14 # Octorotor
 MAV_TYPE_TRICOPTER = 15 # Octorotor
 MAV_TYPE_FLAPPING_WING = 16 # Flapping wing
-MAV_TYPE_ENUM_END = 17 #
+MAV_TYPE_KITE = 17 # Flapping wing
+MAV_TYPE_ENUM_END = 18 #
 
 # MAV_MODE_FLAG
 MAV_MODE_FLAG_CUSTOM_MODE_ENABLED = 1 # 0b00000001 Reserved for future use.
