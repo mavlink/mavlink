@@ -420,7 +420,8 @@ def copy_fixed_headers(directory, xml):
         h = 'pixhawk/pixhawk.pb.h'
         src = os.path.realpath(os.path.join(srcpath, h))
         dest = os.path.realpath(os.path.join(directory, h))
-        shutil.copy(src, dest)
+        if src != dest:
+            shutil.copy(src, dest)
         
 def copy_fixed_sources(directory, xml):
     # XXX This is a hack - to be removed
