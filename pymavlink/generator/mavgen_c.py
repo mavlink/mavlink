@@ -97,20 +97,6 @@ extern "C" {
 
 #define MAVLINK_ENABLED_${basename_upper}
 
-${{include_list:#include "../${base}/${base}.h"
-}}
-
-// MAVLINK VERSION
-
-#ifndef MAVLINK_VERSION
-#define MAVLINK_VERSION ${version}
-#endif
-
-#if (MAVLINK_VERSION == 0)
-#undef MAVLINK_VERSION
-#define MAVLINK_VERSION ${version}
-#endif
-
 // ENUM DEFINITIONS
 
 ${{enum:
@@ -124,6 +110,20 @@ ${{entry:	${name}=${value}, /* ${description} |${{param:${description}| }} */
 };
 #endif
 }}
+
+${{include_list:#include "../${base}/${base}.h"
+}}
+
+// MAVLINK VERSION
+
+#ifndef MAVLINK_VERSION
+#define MAVLINK_VERSION ${version}
+#endif
+
+#if (MAVLINK_VERSION == 0)
+#undef MAVLINK_VERSION
+#define MAVLINK_VERSION ${version}
+#endif
 
 // MESSAGE DEFINITIONS
 ${{message:#include "./mavlink_msg_${name_lower}.h"
