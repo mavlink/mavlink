@@ -34,7 +34,9 @@ class MAVLink_message(object):
         self._type       = name
 
     def get_msgbuf(self):
-        return self._msgbuf
+        if isinstance(self._msgbuf, str):
+            return self._msgbuf
+        return self._msgbuf.tostring()
 
     def get_header(self):
         return self._header

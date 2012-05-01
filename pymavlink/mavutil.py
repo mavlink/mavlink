@@ -10,7 +10,7 @@ import socket, math, struct, time, os, fnmatch, array, sys, errno
 from math import *
 from mavextra import *
 
-if os.getenv('MAVLINK10'):
+if os.getenv('MAVLINK10') or 'MAVLINK10' in os.environ:
     import mavlinkv10 as mavlink
 else:
     import mavlink
@@ -32,10 +32,24 @@ def evaluate_condition(condition, vars):
         return False
     return v
 
+mavfile_global = None
+
+class location(object):
+    '''represent a GPS coordinate'''
+    def __init__(self, lat, lng, alt=0, heading=0):
+        self.lat = lat
+        self.lng = lng
+        self.alt = alt
+        self.heading = heading
+
+    def __str__(self):
+        return "lat=%.6f,lon=%.6f,alt=%.1f" % (self.lat, self.lng, self.alt)
 
 class mavfile(object):
     '''a generic mavlink port'''
     def __init__(self, fd, address, source_system=255, notimestamps=False):
+        global mavfile_global
+        mavfile_global = self
         self.fd = fd
         self.address = address
         self.messages = { 'MAV' : self }
@@ -59,9 +73,16 @@ class mavfile(object):
         self.timestamp = 0
         self.message_hooks = []
         self.idle_hooks = []
-        self.usec = 0
+        self.uptime = 0.0
         self.notimestamps = notimestamps
         self._timestamp = None
+        self.ground_pressure = None
+        self.ground_temperature = None
+        self.altitude = 0
+        self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
+        self.last_seq = -1
+        self.mav_loss = 0
+        self.mav_count = 0
 
     def recv(self, n=None):
         '''default recv method'''
@@ -81,17 +102,34 @@ class mavfile(object):
 
     def post_message(self, msg):
         '''default post message call'''
+        if '_posted' in msg.__dict__:
+            return
+        msg._posted = True
         msg._timestamp = time.time()
         type = msg.get_type()
         self.messages[type] = msg
 
+        if 'usec' in msg.__dict__:
+            self.uptime = msg.usec * 1.0e-6
+
         if self._timestamp is not None:
             if self.notimestamps:
-                if 'usec' in msg.__dict__:
-                    self.usec = msg.usec / 1.0e6
-                msg._timestamp = self.usec
+                msg._timestamp = self.uptime
             else:
                 msg._timestamp = self._timestamp
+
+        if not (
+            # its the radio or planner
+            (msg.get_srcSystem() == ord('3') and msg.get_srcComponent() == ord('D')) or
+            msg.get_srcSystem() == 255 or
+            msg.get_type() == 'BAD_DATA'):
+            seq = (self.last_seq+1) % 256
+            seq2 = msg.get_seq()
+            if seq != seq2 and self.last_seq != -1:
+                diff = (seq2 - seq) % 256
+                self.mav_loss += diff
+            self.last_seq = seq2
+            self.mav_count += 1
         
         self.timestamp = msg._timestamp
         if type == 'HEARTBEAT':
@@ -104,6 +142,10 @@ class mavfile(object):
             if msg.param_index+1 == msg.param_count:
                 self.param_fetch_in_progress = False
                 self.param_fetch_complete = True
+            if str(msg.param_id) == 'GND_ABS_PRESS':
+                self.ground_pressure = msg.param_value
+            if str(msg.param_id) == 'GND_TEMP':
+                self.ground_temperature = msg.param_value
         elif type == 'SYS_STATUS' and mavlink.WIRE_PROTOCOL_VERSION == '0.9':
             self.flightmode = mode_string_v09(msg)
         elif type == 'GPS_RAW':
@@ -111,6 +153,13 @@ class mavfile(object):
                 self.messages['HOME'] = msg
         for hook in self.message_hooks:
             hook(self, msg)
+
+
+    def packet_loss(self):
+        '''packet loss as a percentage'''
+        if self.mav_count == 0:
+            return 0
+        return (100.0*self.mav_loss)/(self.mav_count+self.mav_loss)
 
 
     def recv_msg(self):
@@ -145,6 +194,10 @@ class mavfile(object):
                 continue
             return m
 
+    def mavlink10(self):
+        '''return True if using MAVLink 1.0'''
+        return self.WIRE_PROTOCOL_VERSION == "1.0"
+
     def setup_logfile(self, logfile, mode='w'):
         '''start logging to the given logfile, with timestamps'''
         self.logfile = open(logfile, mode=mode)
@@ -174,7 +227,7 @@ class mavfile(object):
 
     def param_set_send(self, parm_name, parm_value, parm_type=None):
         '''wrapper for parameter set'''
-        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+        if self.mavlink10():
             if parm_type == None:
                 parm_type = mavlink.MAV_VAR_FLOAT
             self.mav.param_set_send(self.target_system, self.target_component,
@@ -185,38 +238,116 @@ class mavfile(object):
 
     def waypoint_request_list_send(self):
         '''wrapper for waypoint_request_list_send'''
-        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+        if self.mavlink10():
             self.mav.mission_request_list_send(self.target_system, self.target_component)
         else:
             self.mav.waypoint_request_list_send(self.target_system, self.target_component)
 
     def waypoint_clear_all_send(self):
         '''wrapper for waypoint_clear_all_send'''
-        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+        if self.mavlink10():
             self.mav.mission_clear_all_send(self.target_system, self.target_component)
         else:
             self.mav.waypoint_clear_all_send(self.target_system, self.target_component)
 
     def waypoint_request_send(self, seq):
         '''wrapper for waypoint_request_send'''
-        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+        if self.mavlink10():
             self.mav.mission_request_send(self.target_system, self.target_component, seq)
         else:
             self.mav.waypoint_request_send(self.target_system, self.target_component, seq)
 
     def waypoint_set_current_send(self, seq):
         '''wrapper for waypoint_set_current_send'''
-        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+        if self.mavlink10():
             self.mav.mission_set_current_send(self.target_system, self.target_component, seq)
         else:
             self.mav.waypoint_set_current_send(self.target_system, self.target_component, seq)
 
+    def waypoint_current(self):
+        '''return current waypoint'''
+        if self.mavlink10():
+            m = self.recv_match(type='MISSION_CURRENT', blocking=True)
+        else:
+            m = self.recv_match(type='WAYPOINT_CURRENT', blocking=True)
+        return m.seq
+
     def waypoint_count_send(self, seq):
         '''wrapper for waypoint_count_send'''
-        if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+        if self.mavlink10():
             self.mav.mission_count_send(self.target_system, self.target_component, seq)
         else:
             self.mav.waypoint_count_send(self.target_system, self.target_component, seq)
+
+    def set_mode_auto(self):
+        '''enter auto mode'''
+        if self.mavlink10():
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_MISSION_START, 0, 0, 0, 0, 0, 0, 0, 0)
+        else:
+            MAV_ACTION_SET_AUTO = 13
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_SET_AUTO)
+
+    def set_mode_rtl(self):
+        '''enter RTL mode'''
+        if self.mavlink10():
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH, 0, 0, 0, 0, 0, 0, 0, 0)
+        else:
+            MAV_ACTION_RETURN = 3
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_RETURN)
+
+    def set_mode_loiter(self):
+        '''enter LOITER mode'''
+        if self.mavlink10():
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_NAV_LOITER_UNLIM, 0, 0, 0, 0, 0, 0, 0, 0)
+        else:
+            MAV_ACTION_LOITER = 27
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_LOITER)
+
+    def calibrate_imu(self):
+        '''calibrate IMU'''
+        if self.mavlink10():
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, 0,
+                                       1, 1, 1, 1, 0, 0, 0)
+        else:
+            MAV_ACTION_CALIBRATE_GYRO = 17
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_GYRO)
+
+    def calibrate_level(self):
+        '''calibrate accels'''
+        if self.mavlink10():
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, 0,
+                                       1, 1, 1, 1, 0, 0, 0)
+        else:
+            MAV_ACTION_CALIBRATE_ACC = 19
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_ACC)
+
+    def wait_gps_fix(self):
+        self.recv_match(type='VFR_HUD', blocking=True)
+        if self.mavlink10():
+            self.recv_match(type='GPS_RAW_INT', blocking=True,
+                            condition='GPS_RAW_INT.fix_type==3 and GPS_RAW_INT.lat != 0 and GPS_RAW_INT.alt != 0')
+        else:
+            self.recv_match(type='GPS_RAW', blocking=True,
+                            condition='GPS_RAW.fix_type==2 and GPS_RAW.lat != 0 and GPS_RAW.alt != 0')
+
+    def location(self):
+        '''return current location'''
+        self.wait_gps_fix()
+        if self.mavlink10():
+            return location(self.messages['GPS_RAW_INT'].lat*1.0e-7,
+                            self.messages['GPS_RAW_INT'].lon*1.0e-7,
+                            self.messages['VFR_HUD'].alt,
+                            self.messages['VFR_HUD'].heading)
+        else:
+            return location(self.messages['GPS_RAW'].lat,
+                            self.messages['GPS_RAW'].lon,
+                            self.messages['VFR_HUD'].alt,
+                            self.messages['VFR_HUD'].heading)
 
 
 class mavserial(mavfile):
@@ -635,7 +766,7 @@ def mode_string_v10(msg):
     '''mode string for 1.0 protocol, from heartbeat'''
     if not msg.base_mode & mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED:
         return "Mode(0x%08x)" % msg.base_mode
-    mapping = {
+    mapping_apm = {
         0 : 'MANUAL',
         1 : 'CIRCLE',
         2 : 'STABILIZE',
@@ -650,8 +781,26 @@ def mode_string_v10(msg):
         15 : 'GUIDED',
         16 : 'INITIALISING'
         }
-    if msg.custom_mode in mapping:
-        return mapping[msg.custom_mode]
+    mapping_acm = {
+        0 : 'STABILIZE',
+        1 : 'ACRO',
+        2 : 'ALT_HOLD',
+        3 : 'AUTO',
+        4 : 'GUIDED',
+        5 : 'LOITER',
+        6 : 'RTL',
+        7 : 'CIRCLE',
+        8 : 'POSITION',
+        9 : 'LAND',
+        10 : 'OF_LOITER',
+        11 : 'APPROACH'
+        }
+    if msg.type == mavlink.MAV_TYPE_QUADROTOR:
+        if msg.custom_mode in mapping_acm:
+            return mapping_acm[msg.custom_mode]
+    if msg.type == mavlink.MAV_TYPE_FIXED_WING:
+        if msg.custom_mode in mapping_apm:
+            return mapping_apm[msg.custom_mode]
     return "Mode(%u)" % msg.custom_mode
 
     
