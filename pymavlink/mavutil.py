@@ -83,6 +83,7 @@ class mavfile(object):
         self.last_seq = -1
         self.mav_loss = 0
         self.mav_count = 0
+        self.stop_on_EOF = False
 
     def recv(self, n=None):
         '''default recv method'''
@@ -168,7 +169,7 @@ class mavfile(object):
         while True:
             n = self.mav.bytes_needed()
             s = self.recv(n)
-            if len(s) == 0 and len(self.mav.buf) == 0:
+            if len(s) == 0 and (len(self.mav.buf) == 0 or self.stop_on_EOF):
                 return None
             if self.logfile_raw:
                 self.logfile_raw.write(str(s))
@@ -515,6 +516,7 @@ class mavlogfile(mavfile):
             self._timestamp = 0
         else:
             self._timestamp = time.time()
+        self.stop_on_EOF = True
 
     def close(self):
         self.f.close()
