@@ -47,9 +47,10 @@ class location(object):
 
 class mavfile(object):
     '''a generic mavlink port'''
-    def __init__(self, fd, address, source_system=255, notimestamps=False):
+    def __init__(self, fd, address, source_system=255, notimestamps=False, input=True):
         global mavfile_global
-        mavfile_global = self
+        if input:
+            mavfile_global = self
         self.fd = fd
         self.address = address
         self.messages = { 'MAV' : self }
@@ -139,14 +140,11 @@ class mavfile(object):
             if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
                 self.flightmode = mode_string_v10(msg)
         elif type == 'PARAM_VALUE':
+            s = str(msg.param_id)
             self.params[str(msg.param_id)] = msg.param_value
             if msg.param_index+1 == msg.param_count:
                 self.param_fetch_in_progress = False
                 self.param_fetch_complete = True
-            if str(msg.param_id) == 'GND_ABS_PRESS':
-                self.ground_pressure = msg.param_value
-            if str(msg.param_id) == 'GND_TEMP':
-                self.ground_temperature = msg.param_value
         elif type == 'SYS_STATUS' and mavlink.WIRE_PROTOCOL_VERSION == '0.9':
             self.flightmode = mode_string_v09(msg)
         elif type == 'GPS_RAW':
@@ -350,6 +348,19 @@ class mavfile(object):
                             self.messages['VFR_HUD'].alt,
                             self.messages['VFR_HUD'].heading)
 
+    def field(self, type, field, default=None):
+        '''convenient function for returning an arbitrary MAVLink
+           field with a default'''
+        if not type in self.messages:
+            return default
+        return getattr(self.messages[type], field, default)
+
+    def param(self, name, default=None):
+        '''convenient function for returning an arbitrary MAVLink
+           parameter with a default'''
+        if not name in self.params:
+            return default
+        return self.params[name]
 
 class mavserial(mavfile):
     '''a serial mavlink port'''
@@ -419,7 +430,7 @@ class mavudp(mavfile):
             self.destination_addr = (a[0], int(a[1]))
         self.port.setblocking(0)
         self.last_address = None
-        mavfile.__init__(self, self.port.fileno(), device, source_system=source_system)
+        mavfile.__init__(self, self.port.fileno(), device, source_system=source_system, input=input)
 
     def close(self):
         self.port.close()
@@ -532,7 +543,8 @@ class mavlogfile(mavfile):
     def pre_message(self):
         '''read timestamp if needed'''
         # read the timestamp
-        self.percent = (100.0 * self.f.tell()) / self.filesize        
+        if self.filesize != 0:
+            self.percent = (100.0 * self.f.tell()) / self.filesize
         if self.notimestamps:
             return
         if self.planner_format:
