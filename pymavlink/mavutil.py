@@ -6,7 +6,7 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
 
-import socket, math, struct, time, os, fnmatch, array, sys, errno
+import socket, math, struct, time, os, fnmatch, array, sys, errno, fcntl
 from math import *
 from mavextra import *
 
@@ -429,6 +429,9 @@ class mavudp(mavfile):
             self.port.bind((a[0], int(a[1])))
         else:
             self.destination_addr = (a[0], int(a[1]))
+        flags = fcntl.fcntl(self.port.fileno(), fcntl.F_GETFD)
+        flags |= fcntl.FD_CLOEXEC
+        fcntl.fcntl(self.port.fileno(), fcntl.F_SETFD, flags)
         self.port.setblocking(0)
         self.last_address = None
         mavfile.__init__(self, self.port.fileno(), device, source_system=source_system, input=input)
@@ -480,6 +483,9 @@ class mavtcp(mavfile):
         self.destination_addr = (a[0], int(a[1]))
         self.port.connect(self.destination_addr)
         self.port.setblocking(0)
+        flags = fcntl.fcntl(self.port.fileno(), fcntl.F_GETFD)
+        flags |= fcntl.FD_CLOEXEC
+        fcntl.fcntl(self.port.fileno(), fcntl.F_SETFD, flags)
         self.port.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
         mavfile.__init__(self, self.port.fileno(), device, source_system=source_system)
 
