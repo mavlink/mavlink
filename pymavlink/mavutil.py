@@ -371,9 +371,11 @@ class mavserial(mavfile):
         self.autoreconnect = autoreconnect
         self.port = serial.Serial(self.device, self.baud, timeout=0,
                                   dsrdtr=False, rtscts=False, xonxoff=False)
-
         try:
             fd = self.port.fileno()
+            flags = fcntl.fcntl(fd, fcntl.F_GETFD)
+            flags |= fcntl.FD_CLOEXEC
+            fcntl.fcntl(fd, fcntl.F_SETFD, flags)
         except Exception:
             fd = None
         mavfile.__init__(self, fd, device, source_system=source_system)
