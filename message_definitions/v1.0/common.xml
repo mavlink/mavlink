@@ -935,8 +935,8 @@
                <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -> value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also http://qgroundcontrol.org/parameter_interface for a full documentation of QGroundControl and IMU code.</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
-               <field type="char[16]" name="param_id">Onboard parameter id</field>
-               <field type="int16_t" name="param_index">Parameter index. Send -1 to use the param ID field as identifier</field>
+               <field type="char[16]" name="param_id">Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+               <field type="int16_t" name="param_index">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
           </message>
           <message id="21" name="PARAM_REQUEST_LIST">
                <description>Request all parameters of this component. After his request, all parameters are emitted.</description>
@@ -945,7 +945,7 @@
           </message>
           <message id="22" name="PARAM_VALUE">
                <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout.</description>
-               <field type="char[16]" name="param_id">Onboard parameter id</field>
+               <field type="char[16]" name="param_id">Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
                <field type="float" name="param_value">Onboard parameter value</field>
                <field type="uint8_t" name="param_type">Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h</field>
                <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
@@ -955,7 +955,7 @@
                <description>Set a parameter value TEMPORARILY to RAM. It will be reset to default on system reboot. Send the ACTION MAV_ACTION_STORAGE_WRITE to PERMANENTLY write the RAM contents to EEPROM. IMPORTANT: The receiving component should acknowledge the new parameter value by sending a param_value message to all communication partners. This will also ensure that multiple GCS all have an up-to-date list of all parameters. If the sending GCS did not receive a PARAM_VALUE message within its timeout time, it should re-send the PARAM_SET message.</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
-               <field type="char[16]" name="param_id">Onboard parameter id</field>
+               <field type="char[16]" name="param_id">Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
                <field type="float" name="param_value">Onboard parameter value</field>
                <field type="uint8_t" name="param_type">Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h</field>
           </message>
