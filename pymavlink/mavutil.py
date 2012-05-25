@@ -563,12 +563,14 @@ class mavlogfile(mavfile):
             hnsec = self._two64 + float(tbuf[0:20])
             t = hnsec * 1.0e-7         # convert to seconds
             t -= 719163 * 24 * 60 * 60 # convert to 1970 base
+            self._link = 0
         else:
             tbuf = self.f.read(8)
             if len(tbuf) != 8:
                 return
             (tusec,) = struct.unpack('>Q', tbuf)
             t = tusec * 1.0e-6
+            self._link = tusec & 0x3
         self._timestamp = t
 
     def post_message(self, msg):
