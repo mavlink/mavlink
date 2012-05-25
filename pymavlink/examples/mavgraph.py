@@ -70,7 +70,7 @@ def plotit(x, y, fields, colors=[]):
             ax1_labels.append(fields[i])
             ax = ax1
         ax.plot_date(x[i], y[i], color=color, label=fields[i],
-                     linestyle='-', marker='None', tz=None)
+                     linestyle='-', marker=opts.marker, tz=None)
         pylab.draw()
         empty = False
     if ax1_labels != []:
@@ -92,6 +92,7 @@ parser.add_option("--labels",dest="labels", default=None, help="comma separated 
 parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
 parser.add_option("--legend",  default='upper left', help="default legend position")
 parser.add_option("--legend2",  default='upper right', help="default legend2 position")
+parser.add_option("--marker",  default='None', help="point marker")
 (opts, args) = parser.parse_args()
 
 if opts.mav10:
