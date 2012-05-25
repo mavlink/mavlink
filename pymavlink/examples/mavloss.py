@@ -15,6 +15,7 @@ parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', he
 parser.add_option("--planner",dest="planner", action='store_true', help="use planner file format")
 parser.add_option("--robust",dest="robust", action='store_true', help="Enable robust parsing (skip over bad data)")
 parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
+parser.add_option("--condition", default=None, help="condition for packets")
 
 (opts, args) = parser.parse_args()
 
@@ -34,7 +35,7 @@ def mavloss(logfile):
                                       notimestamps=opts.notimestamps,
                                       robust_parsing=opts.robust)
 
-    m = mlog.recv_match()
+    m = mlog.recv_match(condition=opts.condition)
 
     while True:
         m = mlog.recv_match()

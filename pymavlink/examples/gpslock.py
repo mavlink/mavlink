@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..
 from optparse import OptionParser
 parser = OptionParser("gpslock.py [options]")
 parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
+parser.add_option("--condition", default=None, help="condition for packets")
 
 (opts, args) = parser.parse_args()
 
@@ -32,11 +33,13 @@ def lock_time(logfile):
     start_time = 0.0
     total_time = 0.0
     t = None
-    m = mlog.recv_match(type='GPS_RAW')
+    m = mlog.recv_match(type='GPS_RAW', condition=opts.condition)
+    if m is None:
+        return 0
     unlock_time = time.mktime(time.localtime(m._timestamp))
 
     while True:
-        m = mlog.recv_match(type='GPS_RAW')
+        m = mlog.recv_match(type='GPS_RAW', condition=opts.condition)
         if m is None:
             if locked:
                 total_time += time.mktime(t) - start_time
