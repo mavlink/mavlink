@@ -395,7 +395,7 @@ class mavserial(mavfile):
     def write(self, buf):
         try:
             return self.port.write(buf)
-        except OSError:
+        except Exception:
             if self.autoreconnect:
                 self.reset()
             return -1
@@ -414,7 +414,7 @@ class mavserial(mavfile):
                 return
             except Exception:
                 print("Failed to reopen %s" % self.device)
-                time.sleep(1)
+                time.sleep(0.5)
         
 
 class mavudp(mavfile):
