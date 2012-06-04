@@ -10,10 +10,10 @@ import socket, math, struct, time, os, fnmatch, array, sys, errno, fcntl
 from math import *
 from mavextra import *
 
-if os.getenv('MAVLINK10') or 'MAVLINK10' in os.environ:
-    import mavlinkv10 as mavlink
+if os.getenv('MAVLINK09') or 'MAVLINK09' in os.environ:
+    import mavlinkv09 as mavlink
 else:
-    import mavlink
+    import mavlinkv10 as mavlink
 
 def evaluate_expression(expression, vars):
     '''evaluation an expression'''
@@ -98,9 +98,9 @@ class mavfile(object):
         self.first_byte = False
         if self.WIRE_PROTOCOL_VERSION == "0.9" and ord(buf[0]) == 254:
             import mavlinkv10 as mavlink
-            os.environ['MAVLINK10'] = '1'
         elif self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
-            import mavlink as mavlink
+            import mavlinkv09 as mavlink
+            os.environ['MAVLINK09'] = '1'
         else:
             return
         # switch protocol 
