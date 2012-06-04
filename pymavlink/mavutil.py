@@ -60,11 +60,13 @@ class mavfile(object):
         else:
             self.messages['HOME'] = mavlink.MAVLink_gps_raw_message(0,0,0,0,0,0,0,0,0)
         self.params = {}
-        self.mav = None
         self.target_system = 0
         self.target_component = 0
-        self.mav = mavlink.MAVLink(self, srcSystem=source_system)
-        self.mav.robust_parsing = True
+        self.source_system = source_system
+        self.first_byte = True
+        self.robust_parsing = True
+        self.mav = mavlink.MAVLink(self, srcSystem=self.source_system)
+        self.mav.robust_parsing = self.robust_parsing
         self.logfile = None
         self.logfile_raw = None
         self.param_fetch_in_progress = False
@@ -85,6 +87,23 @@ class mavfile(object):
         self.mav_loss = 0
         self.mav_count = 0
         self.stop_on_EOF = False
+
+    def auto_mavlink_version(self, buf):
+        '''auto-switch mavlink version'''
+        global mavlink
+        if len(buf) == 0:
+            return
+        self.first_byte = False
+        if self.WIRE_PROTOCOL_VERSION == "0.9" and ord(buf[0]) == 254:
+            import mavlinkv10 as mavlink
+            self.mav = mavlink.MAVLink(self, srcSystem=self.source_system)
+            self.mav.robust_parsing = self.robust_parsing
+            self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
+        if self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
+            import mavlink as mavlink
+            self.mav = mavlink.MAVLink(self, srcSystem=self.source_system)
+            self.mav.robust_parsing = self.robust_parsing
+            self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
 
     def recv(self, n=None):
         '''default recv method'''
@@ -174,6 +193,8 @@ class mavfile(object):
                 return None
             if self.logfile_raw:
                 self.logfile_raw.write(str(s))
+            if self.first_byte:
+                self.auto_mavlink_version(s)
             msg = self.mav.parse_char(s)
             if msg:
                 self.post_message(msg)
@@ -471,6 +492,8 @@ class mavudp(mavfile):
         s = self.recv()
         if len(s) == 0:
             return None
+        if self.first_byte:
+            self.auto_mavlink_version(s)
         msg = self.mav.parse_buffer(s)
         if msg is not None:
             for m in msg:
