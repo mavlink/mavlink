@@ -11,13 +11,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..
 
 from optparse import OptionParser
 parser = OptionParser("gpslock.py [options]")
-parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
 parser.add_option("--condition", default=None, help="condition for packets")
 
 (opts, args) = parser.parse_args()
 
-if opts.mav10:
-    os.environ['MAVLINK10'] = '1'
 import mavutil
 
 if len(args) < 1:

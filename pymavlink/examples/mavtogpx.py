@@ -14,11 +14,8 @@ from optparse import OptionParser
 parser = OptionParser("mavtogpx.py [options]")
 parser.add_option("--condition",dest="condition", default=None, help="select packets by a condition")
 parser.add_option("--nofixcheck", default=False, action='store_true', help="don't check for GPS fix")
-parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
 (opts, args) = parser.parse_args()
 
-if opts.mav10:
-    os.environ['MAVLINK10'] = '1'
 import mavutil
 
 if len(args) < 1:
