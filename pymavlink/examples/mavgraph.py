@@ -31,10 +31,7 @@ def plotit(x, y, fields, colors=[]):
             xrange = x[i][-1] - x[i][0]
     xrange *= 24 * 60 * 60
     if formatter is None:
-        if xrange < 1000:
-            formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
-        else:
-            formatter = matplotlib.dates.DateFormatter('%H:%M')
+        formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
         interval = 1
         intervals = [ 1, 2, 5, 10, 15, 30, 60, 120, 240, 300, 600,
                       900, 1800, 3600, 7200, 5*3600, 10*3600, 24*3600 ]
