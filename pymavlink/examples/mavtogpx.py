@@ -67,7 +67,7 @@ def mav_to_gpx(infilename, outfilename):
             m = mlog.recv_match(type='GPS_RAW_INT', condition=opts.condition)
             if m is None: break
             lat = m.lat/1.0e7
-            lon = m.lat/1.0e7
+            lon = m.lon/1.0e7
             alt = m.alt/1.0e3
             v = m.vel/100.0
             hdg = m.cog/100.0
@@ -76,7 +76,7 @@ def mav_to_gpx(infilename, outfilename):
             m = mlog.recv_match(type='GPS_RAW', condition=opts.condition)
             if m is None: break
             lat = m.lat
-            lon = m.lat
+            lon = m.lon
             alt = m.alt
             v = m.v
             hdg = m.hdg
