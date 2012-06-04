@@ -228,7 +228,7 @@ class mavfile(object):
         '''wrapper for parameter set'''
         if self.mavlink10():
             if parm_type == None:
-                parm_type = mavlink.MAV_VAR_FLOAT
+                parm_type = mavlink.MAVLINK_TYPE_FLOAT
             self.mav.param_set_send(self.target_system, self.target_component,
                                     parm_name, parm_value, parm_type)
         else:
@@ -445,7 +445,7 @@ class mavudp(mavfile):
         try:
             data, self.last_address = self.port.recvfrom(300)
         except socket.error as e:
-            if e.errno in [ errno.EAGAIN, errno.EWOULDBLOCK ]:
+            if e.errno in [ errno.EAGAIN, errno.EWOULDBLOCK, errno.ECONNREFUSED ]:
                 return ""
             raise
         return data

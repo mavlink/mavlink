@@ -10,6 +10,21 @@ import struct, array, mavutil, time
 
 WIRE_PROTOCOL_VERSION = "0.9"
 
+
+# some base types from mavlink_types.h
+MAVLINK_TYPE_CHAR     = 0
+MAVLINK_TYPE_UINT8_T  = 1
+MAVLINK_TYPE_INT8_T   = 2
+MAVLINK_TYPE_UINT16_T = 3
+MAVLINK_TYPE_INT16_T  = 4
+MAVLINK_TYPE_UINT32_T = 5
+MAVLINK_TYPE_INT32_T  = 6
+MAVLINK_TYPE_UINT64_T = 7
+MAVLINK_TYPE_INT64_T  = 8
+MAVLINK_TYPE_FLOAT    = 9
+MAVLINK_TYPE_DOUBLE   = 10
+
+
 class MAVLink_header(object):
     '''MAVLink message header'''
     def __init__(self, msgId, mlen=0, seq=0, srcSystem=0, srcComponent=0):
