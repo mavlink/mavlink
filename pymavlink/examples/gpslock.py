@@ -33,13 +33,21 @@ def lock_time(logfile):
     start_time = 0.0
     total_time = 0.0
     t = None
-    m = mlog.recv_match(type='GPS_RAW', condition=opts.condition)
+    if mlog.mavlink10():
+        m = mlog.recv_match(type='GPS_RAW_INT', condition=opts.condition)
+    else:
+        m = mlog.recv_match(type='GPS_RAW', condition=opts.condition)
+
     if m is None:
         return 0
+
     unlock_time = time.mktime(time.localtime(m._timestamp))
 
     while True:
-        m = mlog.recv_match(type='GPS_RAW', condition=opts.condition)
+        if mlog.mavlink10():
+            m = mlog.recv_match(type='GPS_RAW_INT', condition=opts.condition)
+        else:
+            m = mlog.recv_match(type='GPS_RAW', condition=opts.condition)
         if m is None:
             if locked:
                 total_time += time.mktime(t) - start_time
@@ -47,7 +55,7 @@ def lock_time(logfile):
                 print("Lock time : %u:%02u" % (int(total_time)/60, int(total_time)%60))
             return total_time
         t = time.localtime(m._timestamp)
-        if m.fix_type == 2 and not locked:
+        if m.fix_type >= 2 and not locked:
             print("Locked at %s after %u seconds" % (time.asctime(t),
                                                      time.mktime(t) - unlock_time))
             locked = True

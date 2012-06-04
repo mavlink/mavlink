@@ -31,8 +31,8 @@ def mav_to_gpx(infilename, outfilename):
     mlog = mavutil.mavlink_connection(infilename)
     outf = open(outfilename, mode='w')
 
-    def process_packet(m):
-        t = time.localtime(m._timestamp)
+    def process_packet(timestamp, lat, lon, alt, hdg, v):
+        t = time.localtime(timestamp)
         outf.write('''<trkpt lat="%s" lon="%s">
   <ele>%s</ele>
   <time>%s</time>
@@ -40,9 +40,9 @@ def mav_to_gpx(infilename, outfilename):
   <speed>%s</speed>
   <fix>3d</fix>
 </trkpt>
-''' % (m.lat, m.lon, m.alt,
+''' % (lat, lon, alt,
        time.strftime("%Y-%m-%dT%H:%M:%SZ", t),
-       m.hdg, m.v))
+       hdg, v))
 
     def add_header():
         outf.write('''<?xml version="1.0" encoding="UTF-8"?>
@@ -66,13 +66,30 @@ def mav_to_gpx(infilename, outfilename):
 
     count=0
     while True:
-        m = mlog.recv_match(type='GPS_RAW', condition=opts.condition)
-        if m is None: break
-        if m.fix_type != 2 and not opts.nofixcheck:
+        if mlog.mavlink10():
+            m = mlog.recv_match(type='GPS_RAW_INT', condition=opts.condition)
+            if m is None: break
+            lat = m.lat/1.0e7
+            lon = m.lat/1.0e7
+            alt = m.alt/1.0e3
+            v = m.vel/100.0
+            hdg = m.cog/100.0
+            timestamp = m._timestamp
+        else:
+            m = mlog.recv_match(type='GPS_RAW', condition=opts.condition)
+            if m is None: break
+            lat = m.lat
+            lon = m.lat
+            alt = m.alt
+            v = m.v
+            hdg = m.hdg
+            timestamp = m._timestamp
+
+        if m.fix_type < 2 and not opts.nofixcheck:
             continue
         if m.lat == 0.0 or m.lon == 0.0:
             continue
-        process_packet(m)
+        process_packet(timestamp, lat, lon, alt, hdg, v)
         count += 1
     add_footer()
     print("Created %s with %u points" % (outfilename, count))

@@ -134,6 +134,10 @@ def magfit(logfile):
             # flying if groundspeed more than 5 m/s
             flying = (m.v > opts.minspeed and m.fix_type == 2)
             gps_heading = m.hdg
+        if m.get_type() == "GPS_RAW_INT":
+            # flying if groundspeed more than 5 m/s
+            flying = (m.vel/100 > opts.minspeed and m.fix_type == 3)
+            gps_heading = m.cog/100
         if m.get_type() == "ATTITUDE":
             attitude = m
         if m.get_type() == "SENSOR_OFFSETS":
