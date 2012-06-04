@@ -337,6 +337,8 @@ class mavfile(object):
     def location(self):
         '''return current location'''
         self.wait_gps_fix()
+        # wait for another VFR_HUD, to ensure we have correct altitude
+        self.recv_match(type='VFR_HUD', blocking=True)
         if self.mavlink10():
             return location(self.messages['GPS_RAW_INT'].lat*1.0e-7,
                             self.messages['GPS_RAW_INT'].lon*1.0e-7,
