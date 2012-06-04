@@ -150,6 +150,9 @@ class mavfile(object):
         elif type == 'GPS_RAW':
             if self.messages['HOME'].fix_type < 2:
                 self.messages['HOME'] = msg
+        elif type == 'GPS_RAW_INT':
+            if self.messages['HOME'].fix_type < 3:
+                self.messages['HOME'] = msg
         for hook in self.message_hooks:
             hook(self, msg)
 
