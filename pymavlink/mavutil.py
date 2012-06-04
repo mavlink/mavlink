@@ -89,21 +89,30 @@ class mavfile(object):
         self.stop_on_EOF = False
 
     def auto_mavlink_version(self, buf):
-        '''auto-switch mavlink version'''
+        '''auto-switch mavlink protocol version'''
         global mavlink
         if len(buf) == 0:
+            return
+        if not ord(buf[0]) in [ 85, 254 ]:
             return
         self.first_byte = False
         if self.WIRE_PROTOCOL_VERSION == "0.9" and ord(buf[0]) == 254:
             import mavlinkv10 as mavlink
-            self.mav = mavlink.MAVLink(self, srcSystem=self.source_system)
-            self.mav.robust_parsing = self.robust_parsing
-            self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
-        if self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
+            os.environ['MAVLINK10'] = '1'
+        elif self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
             import mavlink as mavlink
-            self.mav = mavlink.MAVLink(self, srcSystem=self.source_system)
-            self.mav.robust_parsing = self.robust_parsing
-            self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
+        else:
+            return
+        # switch protocol 
+        (callback, callback_args, callback_kwargs) = (self.mav.callback,
+                                                      self.mav.callback_args,
+                                                      self.mav.callback_kwargs)
+        self.mav = mavlink.MAVLink(self, srcSystem=self.source_system)
+        self.mav.robust_parsing = self.robust_parsing
+        self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
+        (self.mav.callback, self.mav.callback_args, self.mav.callback_kwargs) = (callback,
+                                                                                 callback_args,
+                                                                                 callback_kwargs)
 
     def recv(self, n=None):
         '''default recv method'''
