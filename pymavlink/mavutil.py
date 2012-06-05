@@ -222,7 +222,10 @@ class mavfile(object):
                 return msg
                 
     def recv_match(self, condition=None, type=None, blocking=False):
-        '''recv the next MAVLink message that matches the given condition'''
+        '''recv the next MAVLink message that matches the given condition
+        type can be a string or a list of strings'''
+        if type is not None and not isinstance(type, list):
+            type = [type]
         while True:
             m = self.recv_msg()
             if m is None:
@@ -232,7 +235,7 @@ class mavfile(object):
                     time.sleep(0.01)
                     continue
                 return None
-            if type is not None and type != m.get_type():
+            if type is not None and not m.get_type() in type:
                 continue
             if not evaluate_condition(condition, self.messages):
                 continue
