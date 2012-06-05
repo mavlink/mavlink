@@ -206,6 +206,12 @@ class App():
             if opts.gpsalt:
                 self.fdm.set('altitude', msg.alt, units='meters')
 
+        if msg.get_type() == "GPS_RAW_INT":
+            self.fdm.set('latitude', msg.lat/1.0e7, units='degrees')
+            self.fdm.set('longitude', msg.lon/1.0e7, units='degrees')
+            if opts.gpsalt:
+                self.fdm.set('altitude', msg.alt/1.0e3, units='meters')
+
         if msg.get_type() == "VFR_HUD":
             if not opts.gpsalt:
                 self.fdm.set('altitude', msg.alt, units='meters')

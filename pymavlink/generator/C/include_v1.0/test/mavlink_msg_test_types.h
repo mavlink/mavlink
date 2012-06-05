@@ -129,7 +129,7 @@ static inline uint16_t mavlink_msg_test_types_pack(uint8_t system_id, uint8_t co
 	_mav_put_char_array(buf, 161, s, 10);
 	_mav_put_uint8_t_array(buf, 173, u8_array, 3);
 	_mav_put_int8_t_array(buf, 176, s8_array, 3);
-        memcpy(_MAV_PAYLOAD(msg), buf, 179);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 179);
 #else
 	mavlink_test_types_t packet;
 	packet.u64 = u64;
@@ -154,7 +154,7 @@ static inline uint16_t mavlink_msg_test_types_pack(uint8_t system_id, uint8_t co
 	mav_array_memcpy(packet.s, s, sizeof(char)*10);
 	mav_array_memcpy(packet.u8_array, u8_array, sizeof(uint8_t)*3);
 	mav_array_memcpy(packet.s8_array, s8_array, sizeof(int8_t)*3);
-        memcpy(_MAV_PAYLOAD(msg), &packet, 179);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 179);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_TEST_TYPES;
@@ -219,7 +219,7 @@ static inline uint16_t mavlink_msg_test_types_pack_chan(uint8_t system_id, uint8
 	_mav_put_char_array(buf, 161, s, 10);
 	_mav_put_uint8_t_array(buf, 173, u8_array, 3);
 	_mav_put_int8_t_array(buf, 176, s8_array, 3);
-        memcpy(_MAV_PAYLOAD(msg), buf, 179);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, 179);
 #else
 	mavlink_test_types_t packet;
 	packet.u64 = u64;
@@ -244,7 +244,7 @@ static inline uint16_t mavlink_msg_test_types_pack_chan(uint8_t system_id, uint8
 	mav_array_memcpy(packet.s, s, sizeof(char)*10);
 	mav_array_memcpy(packet.u8_array, u8_array, sizeof(uint8_t)*3);
 	mav_array_memcpy(packet.s8_array, s8_array, sizeof(int8_t)*3);
-        memcpy(_MAV_PAYLOAD(msg), &packet, 179);
+        memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, 179);
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_TEST_TYPES;

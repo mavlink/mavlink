@@ -3,11 +3,8 @@ module for loading/saving waypoints
 '''
 
 import os
+import mavutil
 
-if os.getenv('MAVLINK10'):
-    import mavlinkv10 as mavlink
-else:
-    import mavlink
 
 class MAVWPError(Exception):
         '''MAVLink WP error class'''
@@ -56,31 +53,35 @@ class MAVWPLoader(object):
     def _read_waypoint_v100(self, line):
         '''read a version 100 waypoint'''
         cmdmap = {
-            2 : mavlink.MAV_CMD_NAV_TAKEOFF,
-            3 : mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH,
-            4 : mavlink.MAV_CMD_NAV_LAND,
-            24: mavlink.MAV_CMD_NAV_TAKEOFF,
-            26: mavlink.MAV_CMD_NAV_LAND,
-            25: mavlink.MAV_CMD_NAV_WAYPOINT ,
-            27: mavlink.MAV_CMD_NAV_LOITER_UNLIM
+            2 : mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+            3 : mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH,
+            4 : mavutil.mavlink.MAV_CMD_NAV_LAND,
+            24: mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+            26: mavutil.mavlink.MAV_CMD_NAV_LAND,
+            25: mavutil.mavlink.MAV_CMD_NAV_WAYPOINT ,
+            27: mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM
             }
         a = line.split()
         if len(a) != 13:
             raise MAVWPError("invalid waypoint line with %u values" % len(a))
-        w = mavlink.MAVLink_waypoint_message(self.target_system, self.target_component,
-                                             int(a[0]),    # seq
-                                             int(a[1]),    # frame
-                                             int(a[2]),    # action
-                                             int(a[7]),    # current
-                                             int(a[12]),   # autocontinue
-                                             float(a[5]),  # param1,
-                                             float(a[6]),  # param2,
-                                             float(a[3]),  # param3
-                                             float(a[4]),  # param4
-                                             float(a[9]),  # x, latitude
-                                             float(a[8]),  # y, longitude
-                                             float(a[10])  # z
-                                             )
+        if mavutil.mavlink10():
+            fn = mavutil.mavlink.MAVLink_mission_item_message
+        else:
+            fn = mavutil.mavlink.MAVLink_waypoint_message
+        w = fn(self.target_system, self.target_component,
+               int(a[0]),    # seq
+               int(a[1]),    # frame
+               int(a[2]),    # action
+               int(a[7]),    # current
+               int(a[12]),   # autocontinue
+               float(a[5]),  # param1,
+               float(a[6]),  # param2,
+               float(a[3]),  # param3
+               float(a[4]),  # param4
+               float(a[9]),  # x, latitude
+               float(a[8]),  # y, longitude
+               float(a[10])  # z
+               )
         if not w.command in cmdmap:
             raise MAVWPError("Unknown v100 waypoint action %u" % w.command)
     
@@ -92,20 +93,24 @@ class MAVWPLoader(object):
         a = line.split()
         if len(a) != 12:
             raise MAVWPError("invalid waypoint line with %u values" % len(a))
-        w = mavlink.MAVLink_waypoint_message(self.target_system, self.target_component,
-                                             int(a[0]),    # seq
-                                             int(a[2]),    # frame
-                                             int(a[3]),    # command
-                                             int(a[1]),    # current
-                                             int(a[11]),   # autocontinue
-                                             float(a[4]),  # param1,
-                                             float(a[5]),  # param2,
-                                             float(a[6]),  # param3
-                                             float(a[7]),  # param4
-                                             float(a[8]),  # x (latitude)
-                                             float(a[9]),  # y (longitude)
-                                             float(a[10])  # z (altitude)
-                                             )
+        if mavutil.mavlink10():
+            fn = mavutil.mavlink.MAVLink_mission_item_message
+        else:
+            fn = mavutil.mavlink.MAVLink_waypoint_message
+        w = fn(self.target_system, self.target_component,
+               int(a[0]),    # seq
+               int(a[2]),    # frame
+               int(a[3]),    # command
+               int(a[1]),    # current
+               int(a[11]),   # autocontinue
+               float(a[4]),  # param1,
+               float(a[5]),  # param2,
+               float(a[6]),  # param3
+               float(a[7]),  # param4
+               float(a[8]),  # x (latitude)
+               float(a[9]),  # y (longitude)
+               float(a[10])  # z (altitude)
+               )
         return w
 
 
@@ -192,8 +197,8 @@ class MAVFenceLoader(object):
             a = line.split()
             if len(a) != 2:
                 raise MAVFenceError("invalid fence point line: %s" % line)
-            p = mavlink.MAVLink_fence_point_message(self.target_system, self.target_component,
-                                                    self.count(), 0, float(a[0]), float(a[1]))
+            p = mavutil.mavlink.MAVLink_fence_point_message(self.target_system, self.target_component,
+                                                            self.count(), 0, float(a[0]), float(a[1]))
             self.add(p)
         f.close()
         for i in range(self.count()):

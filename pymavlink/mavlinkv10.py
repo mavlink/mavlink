@@ -10,6 +10,21 @@ import struct, array, mavutil, time
 
 WIRE_PROTOCOL_VERSION = "1.0"
 
+
+# some base types from mavlink_types.h
+MAVLINK_TYPE_CHAR     = 0
+MAVLINK_TYPE_UINT8_T  = 1
+MAVLINK_TYPE_INT8_T   = 2
+MAVLINK_TYPE_UINT16_T = 3
+MAVLINK_TYPE_INT16_T  = 4
+MAVLINK_TYPE_UINT32_T = 5
+MAVLINK_TYPE_INT32_T  = 6
+MAVLINK_TYPE_UINT64_T = 7
+MAVLINK_TYPE_INT64_T  = 8
+MAVLINK_TYPE_FLOAT    = 9
+MAVLINK_TYPE_DOUBLE   = 10
+
+
 class MAVLink_header(object):
     '''MAVLink message header'''
     def __init__(self, msgId, mlen=0, seq=0, srcSystem=0, srcComponent=0):
@@ -155,7 +170,7 @@ MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN = 246 # Request the reboot or shutdown of syst
 MAV_CMD_OVERRIDE_GOTO = 252 # Hold / continue the current action
 MAV_CMD_MISSION_START = 300 # start running a mission
 MAV_CMD_COMPONENT_ARM_DISARM = 400 # Arms / Disarms a component
-MAV_CMD_ENUM_END = 401 #
+MAV_CMD_ENUM_END = 401 # 
 
 # FENCE_ACTION
 FENCE_ACTION_NONE = 0 # Disable fenced mode
@@ -204,7 +219,7 @@ MAV_TYPE_OCTOROTOR = 14 # Octorotor
 MAV_TYPE_TRICOPTER = 15 # Octorotor
 MAV_TYPE_FLAPPING_WING = 16 # Flapping wing
 MAV_TYPE_KITE = 17 # Flapping wing
-MAV_TYPE_ENUM_END = 18 #
+MAV_TYPE_ENUM_END = 18 # 
 
 # MAV_MODE_FLAG
 MAV_MODE_FLAG_CUSTOM_MODE_ENABLED = 1 # 0b00000001 Reserved for future use.
@@ -374,16 +389,6 @@ MAV_CMD_ACK_ERR_Y_LON_OUT_OF_RANGE = 8 # The Y or longitude value is out of rang
 MAV_CMD_ACK_ERR_Z_ALT_OUT_OF_RANGE = 9 # The Z or altitude value is out of range.
 MAV_CMD_ACK_ENUM_END = 10 # 
 
-# MAV_VAR
-MAV_VAR_FLOAT = 0 # 32 bit float
-MAV_VAR_UINT8 = 1 # 8 bit unsigned integer
-MAV_VAR_INT8 = 2 # 8 bit signed integer
-MAV_VAR_UINT16 = 3 # 16 bit unsigned integer
-MAV_VAR_INT16 = 4 # 16 bit signed integer
-MAV_VAR_UINT32 = 5 # 32 bit unsigned integer
-MAV_VAR_INT32 = 6 # 32 bit signed integer
-MAV_VAR_ENUM_END = 7 # 
-
 # MAV_RESULT
 MAV_RESULT_ACCEPTED = 0 # Command ACCEPTED and EXECUTED
 MAV_RESULT_TEMPORARILY_REJECTED = 1 # Command TEMPORARY REJECTED/DENIED
@@ -426,7 +431,7 @@ MAV_SEVERITY_INFO = 6 # Normal operational messages. Useful for logging. No acti
                         # for these messages.
 MAV_SEVERITY_DEBUG = 7 # Useful non-operational messages that can assist in debugging. These
                         # should not occur during normal operation.
-MAV_SEVERITY_ENUM_END = 8 #
+MAV_SEVERITY_ENUM_END = 8 # 
 
 # message IDs
 MAVLINK_MSG_ID_BAD_DATA = -1
@@ -497,6 +502,7 @@ MAVLINK_MSG_ID_ROLL_PITCH_YAW_SPEED_THRUST_SETPOINT = 59
 MAVLINK_MSG_ID_SET_QUAD_MOTORS_SETPOINT = 60
 MAVLINK_MSG_ID_SET_QUAD_SWARM_ROLL_PITCH_YAW_THRUST = 61
 MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT = 62
+MAVLINK_MSG_ID_SET_QUAD_SWARM_LED_ROLL_PITCH_YAW_THRUST = 63
 MAVLINK_MSG_ID_STATE_CORRECTION = 64
 MAVLINK_MSG_ID_REQUEST_DATA_STREAM = 66
 MAVLINK_MSG_ID_DATA_STREAM = 67
@@ -1735,19 +1741,20 @@ class MAVLink_set_quad_motors_setpoint_message(MAVLink_message):
 
 class MAVLink_set_quad_swarm_roll_pitch_yaw_thrust_message(MAVLink_message):
         '''
-
+        Setpoint for up to four quadrotors in a group / wing
         '''
-        def __init__(self, target_systems, roll, pitch, yaw, thrust):
+        def __init__(self, group, mode, roll, pitch, yaw, thrust):
                 MAVLink_message.__init__(self, MAVLINK_MSG_ID_SET_QUAD_SWARM_ROLL_PITCH_YAW_THRUST, 'SET_QUAD_SWARM_ROLL_PITCH_YAW_THRUST')
-                self._fieldnames = ['target_systems', 'roll', 'pitch', 'yaw', 'thrust']
-                self.target_systems = target_systems
+                self._fieldnames = ['group', 'mode', 'roll', 'pitch', 'yaw', 'thrust']
+                self.group = group
+                self.mode = mode
                 self.roll = roll
                 self.pitch = pitch
                 self.yaw = yaw
                 self.thrust = thrust
 
         def pack(self, mav):
-                return MAVLink_message.pack(self, mav, 200, struct.pack('<6h6h6h6H6s', self.roll, self.pitch, self.yaw, self.thrust, self.target_systems))
+                return MAVLink_message.pack(self, mav, 240, struct.pack('<4h4h4h4HBB', self.roll, self.pitch, self.yaw, self.thrust, self.group, self.mode))
 
 class MAVLink_nav_controller_output_message(MAVLink_message):
         '''
@@ -1770,6 +1777,26 @@ class MAVLink_nav_controller_output_message(MAVLink_message):
 
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, 183, struct.pack('<fffffhhH', self.nav_roll, self.nav_pitch, self.alt_error, self.aspd_error, self.xtrack_error, self.nav_bearing, self.target_bearing, self.wp_dist))
+
+class MAVLink_set_quad_swarm_led_roll_pitch_yaw_thrust_message(MAVLink_message):
+        '''
+        Setpoint for up to four quadrotors in a group / wing
+        '''
+        def __init__(self, group, mode, led_red, led_blue, led_green, roll, pitch, yaw, thrust):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_SET_QUAD_SWARM_LED_ROLL_PITCH_YAW_THRUST, 'SET_QUAD_SWARM_LED_ROLL_PITCH_YAW_THRUST')
+                self._fieldnames = ['group', 'mode', 'led_red', 'led_blue', 'led_green', 'roll', 'pitch', 'yaw', 'thrust']
+                self.group = group
+                self.mode = mode
+                self.led_red = led_red
+                self.led_blue = led_blue
+                self.led_green = led_green
+                self.roll = roll
+                self.pitch = pitch
+                self.yaw = yaw
+                self.thrust = thrust
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 130, struct.pack('<4h4h4h4HBB4s4s4s', self.roll, self.pitch, self.yaw, self.thrust, self.group, self.mode, self.led_red, self.led_blue, self.led_green))
 
 class MAVLink_state_correction_message(MAVLink_message):
         '''
@@ -2278,8 +2305,9 @@ mavlink_map = {
         MAVLINK_MSG_ID_ROLL_PITCH_YAW_THRUST_SETPOINT : ( '<Iffff', MAVLink_roll_pitch_yaw_thrust_setpoint_message, [0, 1, 2, 3, 4], 239 ),
         MAVLINK_MSG_ID_ROLL_PITCH_YAW_SPEED_THRUST_SETPOINT : ( '<Iffff', MAVLink_roll_pitch_yaw_speed_thrust_setpoint_message, [0, 1, 2, 3, 4], 238 ),
         MAVLINK_MSG_ID_SET_QUAD_MOTORS_SETPOINT : ( '<HHHHB', MAVLink_set_quad_motors_setpoint_message, [4, 0, 1, 2, 3], 30 ),
-        MAVLINK_MSG_ID_SET_QUAD_SWARM_ROLL_PITCH_YAW_THRUST : ( '<6h6h6h6H6s', MAVLink_set_quad_swarm_roll_pitch_yaw_thrust_message, [4, 0, 1, 2, 3], 200 ),
+        MAVLINK_MSG_ID_SET_QUAD_SWARM_ROLL_PITCH_YAW_THRUST : ( '<4h4h4h4HBB', MAVLink_set_quad_swarm_roll_pitch_yaw_thrust_message, [4, 5, 0, 1, 2, 3], 240 ),
         MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT : ( '<fffffhhH', MAVLink_nav_controller_output_message, [0, 1, 5, 6, 7, 2, 3, 4], 183 ),
+        MAVLINK_MSG_ID_SET_QUAD_SWARM_LED_ROLL_PITCH_YAW_THRUST : ( '<4h4h4h4HBB4s4s4s', MAVLink_set_quad_swarm_led_roll_pitch_yaw_thrust_message, [4, 5, 6, 7, 8, 0, 1, 2, 3], 130 ),
         MAVLINK_MSG_ID_STATE_CORRECTION : ( '<fffffffff', MAVLink_state_correction_message, [0, 1, 2, 3, 4, 5, 6, 7, 8], 130 ),
         MAVLINK_MSG_ID_REQUEST_DATA_STREAM : ( '<HBBBB', MAVLink_request_data_stream_message, [1, 2, 3, 0, 4], 148 ),
         MAVLINK_MSG_ID_DATA_STREAM : ( '<HBB', MAVLink_data_stream_message, [1, 0, 2], 21 ),
@@ -3278,8 +3306,8 @@ class MAVLink(object):
 
                 target_system             : System ID (uint8_t)
                 target_component          : Component ID (uint8_t)
-                param_id                  : Onboard parameter id (char)
-                param_index               : Parameter index. Send -1 to use the param ID field as identifier (int16_t)
+                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
+                param_index               : Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored) (int16_t)
 
                 '''
                 msg = MAVLink_param_request_read_message(target_system, target_component, param_id, param_index)
@@ -3300,8 +3328,8 @@ class MAVLink(object):
 
                 target_system             : System ID (uint8_t)
                 target_component          : Component ID (uint8_t)
-                param_id                  : Onboard parameter id (char)
-                param_index               : Parameter index. Send -1 to use the param ID field as identifier (int16_t)
+                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
+                param_index               : Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored) (int16_t)
 
                 '''
                 return self.send(self.param_request_read_encode(target_system, target_component, param_id, param_index))
@@ -3337,9 +3365,9 @@ class MAVLink(object):
                 keep track of received parameters and allows him to
                 re-request missing parameters after a loss or timeout.
 
-                param_id                  : Onboard parameter id (char)
+                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_value               : Onboard parameter value (float)
-                param_type                : Onboard parameter type: see MAV_VAR enum (uint8_t)
+                param_type                : Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h (uint8_t)
                 param_count               : Total number of onboard parameters (uint16_t)
                 param_index               : Index of this onboard parameter (uint16_t)
 
@@ -3355,9 +3383,9 @@ class MAVLink(object):
                 keep track of received parameters and allows him to
                 re-request missing parameters after a loss or timeout.
 
-                param_id                  : Onboard parameter id (char)
+                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_value               : Onboard parameter value (float)
-                param_type                : Onboard parameter type: see MAV_VAR enum (uint8_t)
+                param_type                : Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h (uint8_t)
                 param_count               : Total number of onboard parameters (uint16_t)
                 param_index               : Index of this onboard parameter (uint16_t)
 
@@ -3379,9 +3407,9 @@ class MAVLink(object):
 
                 target_system             : System ID (uint8_t)
                 target_component          : Component ID (uint8_t)
-                param_id                  : Onboard parameter id (char)
+                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_value               : Onboard parameter value (float)
-                param_type                : Onboard parameter type: see MAV_VAR enum (uint8_t)
+                param_type                : Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h (uint8_t)
 
                 '''
                 msg = MAVLink_param_set_message(target_system, target_component, param_id, param_value, param_type)
@@ -3403,9 +3431,9 @@ class MAVLink(object):
 
                 target_system             : System ID (uint8_t)
                 target_component          : Component ID (uint8_t)
-                param_id                  : Onboard parameter id (char)
+                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_value               : Onboard parameter value (float)
-                param_type                : Onboard parameter type: see MAV_VAR enum (uint8_t)
+                param_type                : Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h (uint8_t)
 
                 '''
                 return self.send(self.param_set_encode(target_system, target_component, param_id, param_value, param_type))
@@ -4654,7 +4682,7 @@ class MAVLink(object):
                 msg = MAVLink_set_quad_motors_setpoint_message(target_system, motor_front_nw, motor_right_ne, motor_back_se, motor_left_sw)
                 msg.pack(self)
                 return msg
-
+            
         def set_quad_motors_setpoint_send(self, target_system, motor_front_nw, motor_right_ne, motor_back_se, motor_left_sw):
                 '''
                 Setpoint in the four motor speeds
@@ -4667,35 +4695,37 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.set_quad_motors_setpoint_encode(target_system, motor_front_nw, motor_right_ne, motor_back_se, motor_left_sw))
-
-        def set_quad_swarm_roll_pitch_yaw_thrust_encode(self, target_systems, roll, pitch, yaw, thrust):
+            
+        def set_quad_swarm_roll_pitch_yaw_thrust_encode(self, group, mode, roll, pitch, yaw, thrust):
                 '''
+                Setpoint for up to four quadrotors in a group / wing
 
-
-                target_systems            : System IDs for 6 quadrotors: 0..5, the ID's are the MAVLink IDs (uint8_t)
-                roll                      : Desired roll angle in radians, scaled to int16 for 6 quadrotors: 0..5 (int16_t)
-                pitch                     : Desired pitch angle in radians, scaled to int16 for 6 quadrotors: 0..5 (int16_t)
-                yaw                       : Desired yaw angle in radians, scaled to int16 for 6 quadrotors: 0..5 (int16_t)
-                thrust                    : Collective thrust, scaled to uint16 for 6 quadrotors: 0..5 (uint16_t)
+                group                     : ID of the quadrotor group (0 - 255, up to 256 groups supported) (uint8_t)
+                mode                      : ID of the flight mode (0 - 255, up to 256 modes supported) (uint8_t)
+                roll                      : Desired roll angle in radians +-PI (+-32767) (int16_t)
+                pitch                     : Desired pitch angle in radians +-PI (+-32767) (int16_t)
+                yaw                       : Desired yaw angle in radians, scaled to int16 +-PI (+-32767) (int16_t)
+                thrust                    : Collective thrust, scaled to uint16 (0..65535) (uint16_t)
 
                 '''
-                msg = MAVLink_set_quad_swarm_roll_pitch_yaw_thrust_message(target_systems, roll, pitch, yaw, thrust)
+                msg = MAVLink_set_quad_swarm_roll_pitch_yaw_thrust_message(group, mode, roll, pitch, yaw, thrust)
                 msg.pack(self)
                 return msg
-
-        def set_quad_swarm_roll_pitch_yaw_thrust_send(self, target_systems, roll, pitch, yaw, thrust):
+            
+        def set_quad_swarm_roll_pitch_yaw_thrust_send(self, group, mode, roll, pitch, yaw, thrust):
                 '''
+                Setpoint for up to four quadrotors in a group / wing
 
-
-                target_systems            : System IDs for 6 quadrotors: 0..5, the ID's are the MAVLink IDs (uint8_t)
-                roll                      : Desired roll angle in radians, scaled to int16 for 6 quadrotors: 0..5 (int16_t)
-                pitch                     : Desired pitch angle in radians, scaled to int16 for 6 quadrotors: 0..5 (int16_t)
-                yaw                       : Desired yaw angle in radians, scaled to int16 for 6 quadrotors: 0..5 (int16_t)
-                thrust                    : Collective thrust, scaled to uint16 for 6 quadrotors: 0..5 (uint16_t)
+                group                     : ID of the quadrotor group (0 - 255, up to 256 groups supported) (uint8_t)
+                mode                      : ID of the flight mode (0 - 255, up to 256 modes supported) (uint8_t)
+                roll                      : Desired roll angle in radians +-PI (+-32767) (int16_t)
+                pitch                     : Desired pitch angle in radians +-PI (+-32767) (int16_t)
+                yaw                       : Desired yaw angle in radians, scaled to int16 +-PI (+-32767) (int16_t)
+                thrust                    : Collective thrust, scaled to uint16 (0..65535) (uint16_t)
 
                 '''
-                return self.send(self.set_quad_swarm_roll_pitch_yaw_thrust_encode(target_systems, roll, pitch, yaw, thrust))
-
+                return self.send(self.set_quad_swarm_roll_pitch_yaw_thrust_encode(group, mode, roll, pitch, yaw, thrust))
+            
         def nav_controller_output_encode(self, nav_roll, nav_pitch, nav_bearing, target_bearing, wp_dist, alt_error, aspd_error, xtrack_error):
                 '''
                 Outputs of the APM navigation controller. The primary use of this
@@ -4735,6 +4765,42 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.nav_controller_output_encode(nav_roll, nav_pitch, nav_bearing, target_bearing, wp_dist, alt_error, aspd_error, xtrack_error))
+            
+        def set_quad_swarm_led_roll_pitch_yaw_thrust_encode(self, group, mode, led_red, led_blue, led_green, roll, pitch, yaw, thrust):
+                '''
+                Setpoint for up to four quadrotors in a group / wing
+
+                group                     : ID of the quadrotor group (0 - 255, up to 256 groups supported) (uint8_t)
+                mode                      : ID of the flight mode (0 - 255, up to 256 modes supported) (uint8_t)
+                led_red                   : RGB red channel (0-255) (uint8_t)
+                led_blue                  : RGB green channel (0-255) (uint8_t)
+                led_green                 : RGB blue channel (0-255) (uint8_t)
+                roll                      : Desired roll angle in radians +-PI (+-32767) (int16_t)
+                pitch                     : Desired pitch angle in radians +-PI (+-32767) (int16_t)
+                yaw                       : Desired yaw angle in radians, scaled to int16 +-PI (+-32767) (int16_t)
+                thrust                    : Collective thrust, scaled to uint16 (0..65535) (uint16_t)
+
+                '''
+                msg = MAVLink_set_quad_swarm_led_roll_pitch_yaw_thrust_message(group, mode, led_red, led_blue, led_green, roll, pitch, yaw, thrust)
+                msg.pack(self)
+                return msg
+            
+        def set_quad_swarm_led_roll_pitch_yaw_thrust_send(self, group, mode, led_red, led_blue, led_green, roll, pitch, yaw, thrust):
+                '''
+                Setpoint for up to four quadrotors in a group / wing
+
+                group                     : ID of the quadrotor group (0 - 255, up to 256 groups supported) (uint8_t)
+                mode                      : ID of the flight mode (0 - 255, up to 256 modes supported) (uint8_t)
+                led_red                   : RGB red channel (0-255) (uint8_t)
+                led_blue                  : RGB green channel (0-255) (uint8_t)
+                led_green                 : RGB blue channel (0-255) (uint8_t)
+                roll                      : Desired roll angle in radians +-PI (+-32767) (int16_t)
+                pitch                     : Desired pitch angle in radians +-PI (+-32767) (int16_t)
+                yaw                       : Desired yaw angle in radians, scaled to int16 +-PI (+-32767) (int16_t)
+                thrust                    : Collective thrust, scaled to uint16 (0..65535) (uint16_t)
+
+                '''
+                return self.send(self.set_quad_swarm_led_roll_pitch_yaw_thrust_encode(group, mode, led_red, led_blue, led_green, roll, pitch, yaw, thrust))
             
         def state_correction_encode(self, xErr, yErr, zErr, rollErr, pitchErr, yawErr, vxErr, vyErr, vzErr):
                 '''
@@ -5030,7 +5096,7 @@ class MAVLink(object):
                 msg = MAVLink_local_position_ned_system_global_offset_message(time_boot_ms, x, y, z, roll, pitch, yaw)
                 msg.pack(self)
                 return msg
-
+            
         def local_position_ned_system_global_offset_send(self, time_boot_ms, x, y, z, roll, pitch, yaw):
                 '''
                 The offset in X, Y, Z and yaw between the LOCAL_POSITION_NED messages
@@ -5049,7 +5115,7 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.local_position_ned_system_global_offset_encode(time_boot_ms, x, y, z, roll, pitch, yaw))
-
+            
         def hil_state_encode(self, time_usec, roll, pitch, yaw, rollspeed, pitchspeed, yawspeed, lat, lon, alt, vx, vy, vz, xacc, yacc, zacc):
                 '''
                 Sent from simulation to autopilot. This packet is useful for high
