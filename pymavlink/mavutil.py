@@ -11,10 +11,8 @@ from math import *
 from mavextra import *
 
 if os.getenv('MAVLINK09') or 'MAVLINK09' in os.environ:
-    GPS_RAW = 'GPS_RAW'
     import mavlinkv09 as mavlink
 else:
-    GPS_RAW = 'GPS_RAW_INT'
     import mavlinkv10 as mavlink
 
 def mavlink10():
@@ -89,10 +87,6 @@ class mavfile(object):
         self.ground_temperature = None
         self.altitude = 0
         self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
-        if self.WIRE_PROTOCOL_VERSION == '0.9':
-            self.GPS_RAW = 'GPS_RAW'
-        else:
-            self.GPS_RAW = 'GPS_RAW_INT'
         self.last_seq = -1
         self.mav_loss = 0
         self.mav_count = 0
@@ -100,7 +94,7 @@ class mavfile(object):
 
     def auto_mavlink_version(self, buf):
         '''auto-switch mavlink protocol version'''
-        global mavlink, GPS_RAW
+        global mavlink
         if len(buf) == 0:
             return
         if not ord(buf[0]) in [ 85, 254 ]:
@@ -108,11 +102,9 @@ class mavfile(object):
         self.first_byte = False
         if self.WIRE_PROTOCOL_VERSION == "0.9" and ord(buf[0]) == 254:
             import mavlinkv10 as mavlink
-            GPS_RAW = 'GPS_RAW_INT'
         elif self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
             import mavlinkv09 as mavlink
             os.environ['MAVLINK09'] = '1'
-            GPS_RAW = 'GPS_RAW'
         else:
             return
         # switch protocol 
