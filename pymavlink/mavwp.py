@@ -3,7 +3,7 @@ module for loading/saving waypoints
 '''
 
 import os
-import mavutil
+import mavutil, time
 
 
 class MAVWPError(Exception):
@@ -18,7 +18,7 @@ class MAVWPLoader(object):
         self.wpoints = []
         self.target_system = target_system
         self.target_component = target_component
-
+	self.last_change = time.time()
 
     def count(self):
         '''return number of waypoints'''
@@ -32,6 +32,7 @@ class MAVWPLoader(object):
         '''add a waypoint'''
         w.seq = self.count()
         self.wpoints.append(w)
+	self.last_change = time.time()
 
     def set(self, w, idx):
         '''set a waypoint'''
@@ -41,14 +42,17 @@ class MAVWPLoader(object):
         if self.count() <= idx:
             raise MAVWPError('adding waypoint at idx=%u past end of list (count=%u)' % (idx, self.count()))
         self.wpoints[idx] = w
+	self.last_change = time.time()
 
     def remove(self, w):
         '''remove a waypoint'''
         self.wpoints.remove(w)
+	self.last_change = time.time()
 
     def clear(self):
         '''clear waypoint list'''
         self.wpoints = []
+	self.last_change = time.time()
 
     def _read_waypoint_v100(self, line):
         '''read a version 100 waypoint'''
@@ -153,6 +157,14 @@ class MAVWPLoader(object):
                 w.x, w.y, w.z, w.autocontinue))
         f.close()
 
+    def polygon(self):
+	    '''return a polygon for the waypoints'''
+	    points = []
+	    for w in self.wpoints:
+		    if w.command in [mavutil.mavlink.MAV_CMD_NAV_WAYPOINT]:
+			    points.append((w.x, w.y))
+	    return points
+
 
 class MAVFenceError(Exception):
         '''MAVLink fence error class'''
@@ -166,6 +178,7 @@ class MAVFenceLoader(object):
         self.points = []
         self.target_system = target_system
         self.target_component = target_component
+	self.last_change = time.time()
 
     def count(self):
         '''return number of points'''
@@ -178,10 +191,12 @@ class MAVFenceLoader(object):
     def add(self, p):
         '''add a point'''
         self.points.append(p)
+	self.last_change = time.time()
 
     def clear(self):
         '''clear point list'''
         self.points = []
+	self.last_change = time.time()
 
     def load(self, filename):
         '''load points from a file.
@@ -212,3 +227,12 @@ class MAVFenceLoader(object):
         for p in self.points:
             f.write("%f\t%f\n" % (p.lat, p.lng))
         f.close()
+
+    def polygon(self):
+	    '''return a polygon for the fence'''
+	    points = []
+	    for fp in self.points[1:]:
+		    points.append((fp.lat, fp.lng))
+	    return points
+    
+
