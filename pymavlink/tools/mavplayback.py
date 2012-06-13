@@ -198,7 +198,7 @@ class App():
 
         if msg.get_type() != "BAD_DATA":
             for m in self.mout:
-                m.write(msg.get_msgbuf().tostring())
+                m.write(msg.get_msgbuf())
 
         if msg.get_type() == "GPS_RAW":
             self.fdm.set('latitude', msg.lat, units='degrees')
