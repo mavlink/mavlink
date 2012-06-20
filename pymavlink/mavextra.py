@@ -6,7 +6,10 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
 
+import os, sys
 from math import *
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples'))
+from rotmat import Vector3, Matrix3
 
 
 def kmh(mps):
@@ -132,6 +135,77 @@ def pitch_estimate(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7)
             ry *= mul[1]
             rz *= mul[2]
     return lowpass(degrees(asin(rx/sqrt(rx**2+ry**2+rz**2))),'_pitch',smooth)
+
+def mag_rotation(RAW_IMU, inclination, declination):
+    '''return an attitude rotation matrix that is consistent with the current mag
+       vector'''
+    m_body = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
+    m_earth = Vector3(m_body.length(), 0, 0)
+
+    r = Matrix3()
+    r.from_euler(0, -radians(inclination), radians(declination))
+    m_earth = r * m_earth
+
+    r.from_two_vectors(m_earth, m_body)
+    return r
+
+def mag_yaw(RAW_IMU, inclination, declination):
+    '''estimate yaw from mag'''
+    m = mag_rotation(RAW_IMU, inclination, declination)
+    (r, p, y) = m.to_euler()
+    y = degrees(y)
+    if y < 0:
+        y += 360
+    return y
+
+def mag_pitch(RAW_IMU, inclination, declination):
+    '''estimate pithc from mag'''
+    m = mag_rotation(RAW_IMU, inclination, declination)
+    (r, p, y) = m.to_euler()
+    return degrees(p)
+
+def mag_roll(RAW_IMU, inclination, declination):
+    '''estimate roll from mag'''
+    m = mag_rotation(RAW_IMU, inclination, declination)
+    (r, p, y) = m.to_euler()
+    return degrees(r)
+
+def expected_mag(RAW_IMU, ATTITUDE, inclination, declination):
+    '''return expected mag vector'''
+    m_body = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
+    field_strength = m_body.length()
+
+    m = Matrix3()
+    m.from_euler(ATTITUDE.roll, ATTITUDE.pitch, ATTITUDE.yaw)
+
+    r = Matrix3()
+    r.from_euler(0, -radians(inclination), radians(declination))
+    m_earth = r * Vector3(field_strength, 0, 0)
+
+    return m.transposed() * m_earth
+
+def mag_discrepancy(RAW_IMU, ATTITUDE, inclination, declination):
+    '''give the magnitude of the discrepancy between observed and expected magnetic field'''
+    expected = expected_mag(RAW_IMU, ATTITUDE, inclination, declination)
+    mag = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
+    return degrees(expected.angle(mag))
+
+
+
+def expected_magx(RAW_IMU, ATTITUDE, inclination, declination):
+    '''estimate  from mag'''
+    v = expected_mag(RAW_IMU, ATTITUDE, inclination, declination)
+    return v.x
+
+def expected_magy(RAW_IMU, ATTITUDE, inclination, declination):
+    '''estimate  from mag'''
+    v = expected_mag(RAW_IMU, ATTITUDE, inclination, declination)
+    return v.y
+
+def expected_magz(RAW_IMU, ATTITUDE, inclination, declination):
+    '''estimate  from mag'''
+    v = expected_mag(RAW_IMU, ATTITUDE, inclination, declination)
+    return v.z
 
 def gravity(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
     '''estimate pitch from accelerometer'''
