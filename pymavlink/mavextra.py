@@ -81,24 +81,37 @@ last_delta = {}
 def delta(var, key):
     '''calculate slope'''
     global last_delta
+    import mavutil
+    tnow = mavutil.mavfile_global.timestamp
     dv = 0
     if key in last_delta:
-        dv = var - last_delta[key]
-    last_delta[key] = var
-    return dv
+        (last_v, last_t) = last_delta[key]
+        if tnow == last_t:
+            ret = 0
+        else:
+            ret = (var - last_v) / (tnow - last_t)
+    last_delta[key] = (var, tnow)
+    return ret
 
 def delta_angle(var, key):
     '''calculate slope of an angle'''
     global last_delta
+    import mavutil
+    tnow = mavutil.mavfile_global.timestamp
     dv = 0
     if key in last_delta:
-        dv = var - last_delta[key]
-    last_delta[key] = var
-    if dv > 180:
-        dv -= 360
-    if dv < -180:
-        dv += 360
-    return dv
+        (last_v, last_t) = last_delta[key]
+        if tnow == last_t:
+            ret = 0
+        else:
+            dv = var - last_v
+            if dv > 180:
+                dv -= 360
+            if dv < -180:
+                dv += 360
+            ret = dv / (tnow - last_t)
+    last_delta[key] = (var, tnow)
+    return ret
 
 def roll_estimate(RAW_IMU,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
     '''estimate roll from accelerometer'''
@@ -271,3 +284,13 @@ def sawtooth(ATTITUDE, amplitude=2.0, period=5.0):
     if p < period:
         return amplitude * (p/period)
     return amplitude * (period - (p-period))/period
+
+def rate_of_turn(speed, bank):
+    '''return expected rate of turn in degrees/s for given speed in m/s and
+       bank angle in degrees'''
+    if abs(speed) < 2 or abs(bank) > 80:
+        return 0
+    ret = degrees(9.81*tan(radians(bank))/speed)
+    if abs(ret) > 1000:
+        print speed, bank, ret
+    return ret
