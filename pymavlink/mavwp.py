@@ -182,7 +182,7 @@ class MAVWPLoader(object):
             w = mavutil.mavlink.MAVLink_mission_item_message(
                 self.target_system, self.target_component,
                    waypoint.seq or seq,
-                   waypoint.frame,
+                   waypoint.frame or defaults.frame,
                    waypoint.command,
                    waypoint.current or current,
                    waypoint.autocontinue or defaults.autocontinue,
