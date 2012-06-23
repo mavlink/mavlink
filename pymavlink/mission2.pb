@@ -1,8 +1,13 @@
 QGC WPL PB 110
+
+# This should be exactly equivalent to
+# ardupilot-mega/Tools/autotest/mission2.txt
+
 defaults {
   # Default coordinate frame for this mission.
   frame: FRAME_GLOBAL_RELATIVE_ALT
 }
+
 waypoint {
   command: CMD_NAV_WAYPOINT
   x: -35.362881
@@ -45,12 +50,6 @@ waypoint {
   z: 20.0
 }
 waypoint {
-  command: CMD_NAV_LOITER_TURNS
-  param1: 18.0
-  param2: 2.0  # Turns
-  z: 20.0
-}
-waypoint {
   command: CMD_NAV_WAYPOINT
   param2: 3.0  # Hit radius
   x: -35.364865
@@ -86,6 +85,7 @@ waypoint {
 }
 waypoint {
   command: CMD_NAV_RETURN_TO_LAUNCH
+  z: 20.0
 }
 waypoint {
   command: CMD_NAV_LAND
