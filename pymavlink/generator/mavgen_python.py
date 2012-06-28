@@ -22,7 +22,7 @@ Generated from: ${FILELIST}
 Note: this file has been auto-generated. DO NOT EDIT
 '''
 
-import struct, array, mavutil, time
+import struct, array, mavutil, time, json
 
 WIRE_PROTOCOL_VERSION = "${WIRE_PROTOCOL_VERSION}"
 
@@ -104,16 +104,15 @@ class MAVLink_message(object):
         ret = ret[0:-2] + '}'
         return ret            
 
-    def to_json(self):
-        ret = '{ "mavpackettype":\"%s\", ' % self._type
+    def to_dict(self):
+        d = dict({})
+        d['mavpackettype'] = self._type
         for a in self._fieldnames:
-            v = getattr(self, a)
-            if type(v) == int or type(v) == float:
-              ret += '\"%s\" : %s, ' % (a, v)
-            else:
-              ret += '\"%s\" : \"%s\", ' % (a, v)
-        ret = ret[0:-2] + '}'
-        return ret
+          d[a] = getattr(self, a)
+        return d
+
+    def to_json(self):
+        return json.dumps(self.to_dict)
 
     def pack(self, mav, crc_extra, payload):
         self._payload = payload
