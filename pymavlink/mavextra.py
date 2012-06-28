@@ -26,9 +26,11 @@ def altitude(SCALED_PRESSURE):
     temp = self.param('GND_TEMP', 0) + 273.15
     return log(scaling) * temp * 29271.267 * 0.001
 
-
-def mag_heading(RAW_IMU, ATTITUDE, declination=0, SENSOR_OFFSETS=None, ofs=None):
+def mag_heading(RAW_IMU, ATTITUDE, declination=None, SENSOR_OFFSETS=None, ofs=None):
     '''calculate heading from raw magnetometer'''
+    if declination is None:
+        import mavutil
+        declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     mag_x = RAW_IMU.xmag
     mag_y = RAW_IMU.ymag
     mag_z = RAW_IMU.zmag
@@ -64,6 +66,17 @@ def angle_diff(angle1, angle2):
         ret += 360
     return ret
 
+average_data = {}
+
+def average(var, key, N):
+    '''average over N points'''
+    global average_data
+    if not key in average_data:
+        average_data[key] = [var]*N
+        return var
+    average_data[key].pop(0)
+    average_data[key].append(var)
+    return sum(average_data[key])/N
 
 lowpass_data = {}
 
@@ -253,10 +266,16 @@ def pitch_sim(SIMSTATE, GPS_RAW):
 
 def distance_two(GPS_RAW1, GPS_RAW2):
     '''distance between two points'''
-    lat1 = radians(GPS_RAW1.lat)
-    lat2 = radians(GPS_RAW2.lat)
-    lon1 = radians(GPS_RAW1.lon)
-    lon2 = radians(GPS_RAW2.lon)
+    if hasattr(GPS_RAW1, 'cog'):
+        lat1 = radians(GPS_RAW1.lat)*1.0e-7
+    	lat2 = radians(GPS_RAW2.lat)*1.0e-7
+        lon1 = radians(GPS_RAW1.lon)*1.0e-7
+        lon2 = radians(GPS_RAW2.lon)*1.0e-7
+    else:
+        lat1 = radians(GPS_RAW1.lat)
+        lat2 = radians(GPS_RAW2.lat)
+        lon1 = radians(GPS_RAW1.lon)
+        lon2 = radians(GPS_RAW2.lon)
     dLat = lat2 - lat1
     dLon = lon2 - lon1
 
@@ -294,3 +313,52 @@ def rate_of_turn(speed, bank):
     if abs(ret) > 1000:
         print speed, bank, ret
     return ret
+
+def airspeed(VFR_HUD, ratio=None):
+    '''recompute airspeed with a different ARSPD_RATIO'''
+    import mavutil
+    mav = mavutil.mavfile_global
+    if ratio is None:
+        ratio = 1.98 # APM default
+    if 'ARSPD_RATIO' in mav.params:
+        used_ratio = mav.params['ARSPD_RATIO']
+    else:
+        used_ratio = ratio
+    airspeed_pressure = (VFR_HUD.airspeed**2) / used_ratio
+    airspeed = sqrt(airspeed_pressure * ratio)
+    return airspeed
+
+
+def earth_rates(ATTITUDE):
+    '''return angular velocities in earth frame'''
+    from math import sin, cos, tan, fabs
+
+    p     = ATTITUDE.rollspeed
+    q     = ATTITUDE.pitchspeed
+    r     = ATTITUDE.yawspeed
+    phi   = ATTITUDE.roll
+    theta = ATTITUDE.pitch
+    psi   = ATTITUDE.yaw
+
+    phiDot   = p + tan(theta)*(q*sin(phi) + r*cos(phi))
+    thetaDot = q*cos(phi) - r*sin(phi)
+    if fabs(cos(theta)) < 1.0e-20:
+        theta += 1.0e-10
+    psiDot   = (q*sin(phi) + r*cos(phi))/cos(theta)
+    return (phiDot, thetaDot, psiDot)
+
+def roll_rate(ATTITUDE):
+    '''return roll rate in earth frame'''
+    (phiDot, thetaDot, psiDot) = earth_rates(ATTITUDE)
+    return phiDot
+
+def pitch_rate(ATTITUDE):
+    '''return pitch rate in earth frame'''
+    (phiDot, thetaDot, psiDot) = earth_rates(ATTITUDE)
+    return thetaDot
+
+def yaw_rate(ATTITUDE):
+    '''return yaw rate in earth frame'''
+    (phiDot, thetaDot, psiDot) = earth_rates(ATTITUDE)
+    return psiDot
+
