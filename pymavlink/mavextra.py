@@ -16,14 +16,18 @@ def kmh(mps):
     '''convert m/s to Km/h'''
     return mps*3.6
 
-def altitude(SCALED_PRESSURE):
+def altitude(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
     '''calculate barometric altitude'''
     import mavutil
     self = mavutil.mavfile_global
-    if self.param('GND_ABS_PRESS', None) is None:
-        return 0
-    scaling = self.param('GND_ABS_PRESS', 1) / (SCALED_PRESSURE.press_abs*100.0)
-    temp = self.param('GND_TEMP', 0) + 273.15
+    if ground_pressure is None:
+        if self.param('GND_ABS_PRESS', None) is None:
+            return 0
+        ground_pressure = self.param('GND_ABS_PRESS', 1)*100
+    if ground_temp is None:
+        ground_temp = self.param('GND_TEMP', 0)
+    scaling = ground_pressure / SCALED_PRESSURE.press_abs
+    temp = ground_temp + 273.15
     return log(scaling) * temp * 29271.267 * 0.001
 
 def mag_heading(RAW_IMU, ATTITUDE, declination=None, SENSOR_OFFSETS=None, ofs=None):
@@ -77,6 +81,47 @@ def average(var, key, N):
     average_data[key].pop(0)
     average_data[key].append(var)
     return sum(average_data[key])/N
+
+derivative_data = {}
+
+def second_derivative_5(var, key):
+    '''5 point 2nd derivative'''
+    global derivative_data
+    import mavutil
+    tnow = mavutil.mavfile_global.timestamp
+
+    if not key in derivative_data:
+        derivative_data[key] = (tnow, [var]*5)
+        return 0
+    (last_time, data) = derivative_data[key]
+    data.pop(0)
+    data.append(var)
+    derivative_data[key] = (tnow, data)
+    h = (tnow - last_time)
+    # N=5 2nd derivative from
+    # http://www.holoborodko.com/pavel/numerical-methods/numerical-derivative/smooth-low-noise-differentiators/
+    ret = ((data[4] + data[0]) - 2*data[2]) / (4*h**2)
+    return ret
+
+def second_derivative_9(var, key):
+    '''9 point 2nd derivative'''
+    global derivative_data
+    import mavutil
+    tnow = mavutil.mavfile_global.timestamp
+
+    if not key in derivative_data:
+        derivative_data[key] = (tnow, [var]*9)
+        return 0
+    (last_time, data) = derivative_data[key]
+    data.pop(0)
+    data.append(var)
+    derivative_data[key] = (tnow, data)
+    h = (tnow - last_time)
+    # N=5 2nd derivative from
+    # http://www.holoborodko.com/pavel/numerical-methods/numerical-derivative/smooth-low-noise-differentiators/
+    f = data
+    ret = ((f[8] + f[0]) + 4*(f[7] + f[1]) + 4*(f[6]+f[2]) - 4*(f[5]+f[3]) - 10*f[4])/(64*h**2)
+    return ret
 
 lowpass_data = {}
 
@@ -210,13 +255,30 @@ def expected_mag(RAW_IMU, ATTITUDE, inclination, declination):
 
     return m.transposed() * m_earth
 
-def mag_discrepancy(RAW_IMU, ATTITUDE, inclination, declination):
+def mag_discrepancy(RAW_IMU, ATTITUDE, inclination, declination=None):
     '''give the magnitude of the discrepancy between observed and expected magnetic field'''
+    if declination is None:
+        import mavutil
+        declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     expected = expected_mag(RAW_IMU, ATTITUDE, inclination, declination)
     mag = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
     return degrees(expected.angle(mag))
 
 
+def mag_inclination(RAW_IMU, ATTITUDE, declination=None):
+    '''give the magnitude of the discrepancy between observed and expected magnetic field'''
+    if declination is None:
+        import mavutil
+        declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
+    r = Matrix3()
+    r.from_euler(ATTITUDE.roll, ATTITUDE.pitch, ATTITUDE.yaw)
+    mag1 = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
+    mag1 = r * mag1
+    mag2 = Vector3(cos(radians(declination)), sin(radians(declination)), 0)
+    inclination = degrees(mag1.angle(mag2))
+    if RAW_IMU.zmag < 0:
+        inclination = -inclination
+    return inclination
 
 def expected_magx(RAW_IMU, ATTITUDE, inclination, declination):
     '''estimate  from mag'''
