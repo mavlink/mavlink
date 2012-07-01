@@ -6,7 +6,7 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
 
-import socket, math, struct, time, os, fnmatch, array, sys, errno, fcntl
+import socket, math, struct, time, os, fnmatch, array, sys, errno
 from math import *
 from mavextra import *
 
