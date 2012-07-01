@@ -266,10 +266,49 @@ class Matrix3:
 
 
     def from_two_vectors(self, vec1, vec2):
-        '''get a rotation matrix from two vectors'''
+        '''get a rotation matrix from two vectors.
+           This returns a rotation matrix which when applied to vec1
+           will produce a vector pointing in the same direction as vec2'''
         angle = vec1.angle(vec2)
-        cross = (vec1 % vec2).normalized()
+        cross = vec1 % vec2
+        if cross.length() == 0:
+            # the two vectors are colinear
+            return self.from_euler(0,0,angle)
+        cross.normalize()
         return self.from_axis_angle(cross, angle)
+
+
+class Plane:
+    '''a plane in 3 space, defined by a point and a vector normal'''
+    def __init__(self, point=None, normal=None):
+        if point is None:
+            point = Vector3(0,0,0)
+        if normal is None:
+            normal = Vector3(0, 0, 1)
+        self.point = point
+        self.normal = normal
+
+class Line:
+    '''a line in 3 space, defined by a point and a vector'''
+    def __init__(self, point=None, vector=None):
+        if point is None:
+            point = Vector3(0,0,0)
+        if vector is None:
+            vector = Vector3(0, 0, 1)
+        self.point = point
+        self.vector = vector
+
+    def plane_intersection(self, plane, forward_only=False):
+        '''return point where line intersects with a plane'''
+        l_dot_n = self.vector * plane.normal
+        if l_dot_n == 0.0:
+            # line is parallel to the plane
+            return None
+        d = ((plane.point - self.point) * plane.normal) / l_dot_n
+        if forward_only and d < 0:
+            return None
+        return (self.vector * d) + self.point
+        
 
 
 def test_euler():
@@ -286,9 +325,37 @@ def test_euler():
                 diff = v1 - v2
                 if diff.length() > 1.0e-12:
                     print('EULER ERROR:', v1, v2, diff.length())
-                    
+
+
+def test_two_vectors():
+    '''test the from_two_vectors() method'''
+    import random
+    for i in range(1000):
+        v1 = Vector3(1, 0.2, -3)
+        v2 = Vector3(random.uniform(-5,5), random.uniform(-5,5), random.uniform(-5,5))
+        m = Matrix3()
+        m.from_two_vectors(v1, v2)
+        v3 = m * v1
+        diff = v3.normalized() - v2.normalized()
+        (r, p, y) = m.to_euler()
+        if diff.length() > 0.001:
+            print('err=%f' % diff.length())
+            print("r/p/y = %.1f %.1f %.1f" % (
+                degrees(r), degrees(p), degrees(y)))
+            print v1.normalized(), v2.normalized(), v3.normalized()
+
+def test_plane():
+    '''testing line/plane intersection'''
+    print("testing plane/line maths")
+    plane = Plane(Vector3(0,0,0), Vector3(0,0,1))
+    line = Line(Vector3(0,0,100), Vector3(10, 10, -90))
+    p = line.plane_intersection(plane)
+    print p
+    
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
-    test_euler()
+    #doctest.testmod()
+    #test_euler()
+    test_two_vectors()
+    
     

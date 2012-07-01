@@ -88,6 +88,17 @@ class MAVLink_message(object):
         ret = ret[0:-2] + '}'
         return ret            
 
+    def to_json(self):
+        ret = '{ "mavpackettype":"%s", ' % self._type
+        for a in self._fieldnames:
+            v = getattr(self, a)
+            if type(v) == int or type(v) == float:
+              ret += '"%s" : %s, ' % (a, v)
+            else:
+              ret += '"%s" : "%s", ' % (a, v)
+        ret = ret[0:-2] + '}'
+        return ret
+
     def pack(self, mav, crc_extra, payload):
         self._payload = payload
         self._header  = MAVLink_header(self._header.msgId, len(payload), mav.seq,
@@ -3646,7 +3657,7 @@ class MAVLink(object):
                 differential pressure sensor. The units are as
                 specified in each field.
 
-                time_boot_ms              : Timestamp (microseconds since UNIX epoch or microseconds since system boot) (uint32_t)
+                time_boot_ms              : Timestamp (milliseconds since system boot) (uint32_t)
                 press_abs                 : Absolute pressure (hectopascal) (float)
                 press_diff                : Differential pressure 1 (hectopascal) (float)
                 temperature               : Temperature measurement (0.01 degrees celsius) (int16_t)
@@ -3662,7 +3673,7 @@ class MAVLink(object):
                 differential pressure sensor. The units are as
                 specified in each field.
 
-                time_boot_ms              : Timestamp (microseconds since UNIX epoch or microseconds since system boot) (uint32_t)
+                time_boot_ms              : Timestamp (milliseconds since system boot) (uint32_t)
                 press_abs                 : Absolute pressure (hectopascal) (float)
                 press_diff                : Differential pressure 1 (hectopascal) (float)
                 temperature               : Temperature measurement (0.01 degrees celsius) (int16_t)
