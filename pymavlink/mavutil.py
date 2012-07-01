@@ -169,7 +169,7 @@ class mavfile(object):
         if type == 'HEARTBEAT':
             self.target_system = msg.get_srcSystem()
             self.target_component = msg.get_srcComponent()
-            if mavlink.WIRE_PROTOCOL_VERSION == '1.0':
+            if mavlink.WIRE_PROTOCOL_VERSION == '1.0' and msg.type != mavlink.MAV_TYPE_GCS:
                 self.flightmode = mode_string_v10(msg)
         elif type == 'PARAM_VALUE':
             s = str(msg.param_id)
@@ -213,12 +213,16 @@ class mavfile(object):
                 self.post_message(msg)
                 return msg
                 
-    def recv_match(self, condition=None, type=None, blocking=False):
+    def recv_match(self, condition=None, type=None, blocking=False, timeout=None):
         '''recv the next MAVLink message that matches the given condition
         type can be a string or a list of strings'''
         if type is not None and not isinstance(type, list):
             type = [type]
+        start_time = time.time()
         while True:
+            if timeout is not None:
+                if start_time + timeout < time.time():
+                    return None
             m = self.recv_msg()
             if m is None:
                 if blocking:

@@ -104,6 +104,17 @@ class MAVLink_message(object):
         ret = ret[0:-2] + '}'
         return ret            
 
+    def to_json(self):
+        ret = '{ "mavpackettype":\"%s\", ' % self._type
+        for a in self._fieldnames:
+            v = getattr(self, a)
+            if type(v) == int or type(v) == float:
+              ret += '\"%s\" : %s, ' % (a, v)
+            else:
+              ret += '\"%s\" : \"%s\", ' % (a, v)
+        ret = ret[0:-2] + '}'
+        return ret
+
     def pack(self, mav, crc_extra, payload):
         self._payload = payload
         self._header  = MAVLink_header(self._header.msgId, len(payload), mav.seq,
