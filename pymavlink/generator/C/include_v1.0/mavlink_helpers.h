@@ -505,9 +505,6 @@ void comm_send_ch(mavlink_channel_t chan, uint8_t ch)
     }
 }
  */
-void comm_send_ch(mavlink_channel_t chan, uint8_t ch)
-{
-}
 
 MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, uint16_t len)
 {
