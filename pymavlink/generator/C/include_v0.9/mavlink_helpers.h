@@ -229,6 +229,13 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 #endif
 #endif
 
+#if MAVLINK_CHECK_MESSAGE_LENGTH
+#ifndef MAVLINK_MESSAGE_LENGTH
+	static const uint8_t mavlink_message_lengths[256] = MAVLINK_MESSAGE_LENGTHS;
+#define MAVLINK_MESSAGE_LENGTH(msgid) mavlink_message_lengths[msgid]
+#endif
+#endif
+
 	mavlink_message_t* rxmsg = mavlink_get_channel_buffer(chan); ///< The currently decoded message
 	mavlink_status_t* status = mavlink_get_channel_status(chan); ///< The current decode status
 	int bufferIndex = 0;
@@ -291,6 +298,19 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_COMPID:
+#if MAVLINK_CHECK_MESSAGE_LENGTH
+	        if (rxmsg->len != MAVLINK_MESSAGE_LENGTH(c))
+		{
+			status->parse_error++;
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			break;
+			if (c == MAVLINK_STX)
+			{
+				status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
+				mavlink_start_checksum(rxmsg);
+			}
+	        }
+#endif
 		rxmsg->msgid = c;
 		mavlink_update_checksum(rxmsg, c);
 		if (rxmsg->len == 0)
