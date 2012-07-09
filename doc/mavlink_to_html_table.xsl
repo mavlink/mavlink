@@ -18,8 +18,11 @@
 </xsl:template>
 
 <xsl:template match="//message">
-   <a href="#<xsl:value-of select="@name" />"><h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3></a>
-   <a name="<xsl:value-of select="@name" />">
+   <h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3>
+   <a>
+    <xsl:attribute name="name">
+      <xsl:value-of select="@name"/>
+    </xsl:attribute>
    <p class="description"><xsl:value-of select="description" /></p>
    </a>
    <table class="sortable">
@@ -50,10 +53,9 @@
 </xsl:template>
 
 <xsl:template match="//enum">
-   <a href="#enum_<xsl:value-of select="@name" />"><h3 class="mavlink_message_name"><xsl:value-of select="@name" /></h3></a>
-   <a name="enum_<xsl:value-of select="@name" />">
+   <h3 class="mavlink_message_name"><xsl:value-of select="@name" /></h3>
+
    <p class="description"><xsl:value-of select="description" /></p>
-   </a>
    <table class="sortable">
    <thead>
    <tr>
