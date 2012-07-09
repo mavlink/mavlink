@@ -18,13 +18,18 @@
 </xsl:template>
 
 <xsl:template match="//message">
+   <a>
+    <xsl:attribute name="href">
+      #<xsl:value-of select="@name"/>
+    </xsl:attribute>
    <h3 class="mavlink_message_name"><xsl:value-of select="@name" /> (#<xsl:value-of select="@id" />)</h3>
+   </a>
    <a>
     <xsl:attribute name="name">
       <xsl:value-of select="@name"/>
     </xsl:attribute>
-   <p class="description"><xsl:value-of select="description" /></p>
    </a>
+   <p class="description"><xsl:value-of select="description" /></p>
    <table class="sortable">
    <thead>
    <tr>
