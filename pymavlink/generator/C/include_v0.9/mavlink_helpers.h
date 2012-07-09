@@ -23,7 +23,7 @@ MAVLINK_HELPER mavlink_status_t* mavlink_get_channel_status(uint8_t chan)
  */
 MAVLINK_HELPER mavlink_message_t* mavlink_get_channel_buffer(uint8_t chan)
 {
-
+	
 #if MAVLINK_EXTERNAL_RX_BUFFER
 	// No m_mavlink_message array defined in function,
 	// has to be defined externally
@@ -130,6 +130,24 @@ MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint
 	_mavlink_send_uart(chan, packet, length);
 	_mavlink_send_uart(chan, (const char *)ck, 2);
 	MAVLINK_END_UART_SEND(chan, MAVLINK_NUM_NON_PAYLOAD_BYTES + (uint16_t)length);
+}
+
+/**
+ * @brief re-send a message over a uart channel
+ * this is more stack efficient than re-marshalling the message
+ */
+MAVLINK_HELPER void _mavlink_resend_uart(mavlink_channel_t chan, const mavlink_message_t *msg)
+{
+	uint8_t ck[2];
+
+	ck[0] = (uint8_t)(msg->checksum & 0xFF);
+	ck[1] = (uint8_t)(msg->checksum >> 8);
+
+	MAVLINK_START_UART_SEND(chan, MAVLINK_NUM_NON_PAYLOAD_BYTES + msg->len);
+	_mavlink_send_uart(chan, (const char *)&msg->magic, MAVLINK_NUM_HEADER_BYTES);
+	_mavlink_send_uart(chan, _MAV_PAYLOAD(msg), msg->len);
+	_mavlink_send_uart(chan, (const char *)ck, 2);
+	MAVLINK_END_UART_SEND(chan, MAVLINK_NUM_NON_PAYLOAD_BYTES + msg->len);
 }
 #endif // MAVLINK_USE_CONVENIENCE_FUNCTIONS
 

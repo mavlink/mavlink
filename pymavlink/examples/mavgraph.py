@@ -31,10 +31,7 @@ def plotit(x, y, fields, colors=[]):
             xrange = x[i][-1] - x[i][0]
     xrange *= 24 * 60 * 60
     if formatter is None:
-        if xrange < 1000:
-            formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
-        else:
-            formatter = matplotlib.dates.DateFormatter('%H:%M')
+        formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
         interval = 1
         intervals = [ 1, 2, 5, 10, 15, 30, 60, 120, 240, 300, 600,
                       900, 1800, 3600, 7200, 5*3600, 10*3600, 24*3600 ]
@@ -70,7 +67,7 @@ def plotit(x, y, fields, colors=[]):
             ax1_labels.append(fields[i])
             ax = ax1
         ax.plot_date(x[i], y[i], color=color, label=fields[i],
-                     linestyle='-', marker='None', tz=None)
+                     linestyle='-', marker=opts.marker, tz=None)
         pylab.draw()
         empty = False
     if ax1_labels != []:
@@ -89,13 +86,11 @@ parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', he
 parser.add_option("--planner",dest="planner", action='store_true', help="use planner file format")
 parser.add_option("--condition",dest="condition", default=None, help="select packets by a condition")
 parser.add_option("--labels",dest="labels", default=None, help="comma separated field labels")
-parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
 parser.add_option("--legend",  default='upper left', help="default legend position")
 parser.add_option("--legend2",  default='upper right', help="default legend2 position")
+parser.add_option("--marker",  default='None', help="point marker")
 (opts, args) = parser.parse_args()
 
-if opts.mav10:
-    os.environ['MAVLINK10'] = '1'
 import mavutil
 
 if len(args) < 2:
