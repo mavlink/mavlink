@@ -751,36 +751,36 @@
                     <description>The Z or altitude value is out of range.</description>
                </entry>
           </enum>
-          <enum name="MAV_VAR">
-               <description>type of a mavlink parameter</description>
-               <entry value="1" name="MAV_VAR_UINT8">
+          <enum name="MAV_PARAM_TYPE">
+               <description>The datatype of a MAVLink parameter.</description>
+               <entry value="1" name="MAV_PARAM_TYPE_UINT8">
                     <description>8-bit unsigned integer</description>
                </entry>
-               <entry value="2" name="MAV_VAR_INT8">
+               <entry value="2" name="MAV_PARAM_TYPE_INT8">
                     <description>8-bit signed integer</description>
                </entry>
-               <entry value="3" name="MAV_VAR_UINT16">
+               <entry value="3" name="MAV_PARAM_TYPE_UINT16">
                     <description>16-bit unsigned integer</description>
                </entry>
-               <entry value="4" name="MAV_VAR_INT16">
+               <entry value="4" name="MAV_PARAM_TYPE_INT16">
                     <description>16-bit signed integer</description>
                </entry>
-               <entry value="5" name="MAV_VAR_UINT32">
+               <entry value="5" name="MAV_PARAM_TYPE_UINT32">
                     <description>32-bit unsigned integer</description>
                </entry>
-               <entry value="6" name="MAV_VAR_INT32">
+               <entry value="6" name="MAV_PARAM_TYPE_INT32">
                     <description>32- bit signed integer</description>
                </entry>
-               <entry value="7" name="MAV_VAR_UINT64">
+               <entry value="7" name="MAV_PARAM_TYPE_UINT64">
                     <description>64-bit unsigned integer</description>
                </entry>
-               <entry value="8" name="MAV_VAR_INT64">
+               <entry value="8" name="MAV_PARAM_TYPE_INT64">
                     <description>64- bit signed integer</description>
                </entry>
-               <entry value="9" name="MAV_VAR_REAL32">
+               <entry value="9" name="MAV_PARAM_TYPE_REAL32">
                     <description>32-bit floating-point</description>
                </entry>
-               <entry value="10" name="MAV_VAR_REAL64">
+               <entry value="10" name="MAV_PARAM_TYPE_REAL64">
                     <description>64-bit float-point</description>
                </entry>
           </enum>
@@ -956,7 +956,7 @@
                <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout.</description>
                <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
                <field type="float" name="param_value">Onboard parameter value</field>
-               <field type="uint8_t" name="param_type">Onboard parameter type: see the MAV_VAR enum for supported data types.</field>
+               <field type="uint8_t" name="param_type">Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
                <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
                <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
           </message>
@@ -966,7 +966,7 @@
                <field type="uint8_t" name="target_component">Component ID</field>
                <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
                <field type="float" name="param_value">Onboard parameter value</field>
-               <field type="uint8_t" name="param_type">Onboard parameter type: see the MAV_VAR enum for supported data types.</field>
+               <field type="uint8_t" name="param_type">Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
           </message>
           <message id="24" name="GPS_RAW_INT">
                <description>The global position, as returned by the Global Positioning System (GPS). This is
