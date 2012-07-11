@@ -23,10 +23,10 @@ def altitude(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
     if ground_pressure is None:
         if self.param('GND_ABS_PRESS', None) is None:
             return 0
-        ground_pressure = self.param('GND_ABS_PRESS', 1)*100
+        ground_pressure = self.param('GND_ABS_PRESS', 1)
     if ground_temp is None:
         ground_temp = self.param('GND_TEMP', 0)
-    scaling = ground_pressure / SCALED_PRESSURE.press_abs
+    scaling = ground_pressure / (SCALED_PRESSURE.press_abs*100.0)
     temp = ground_temp + 273.15
     return log(scaling) * temp * 29271.267 * 0.001
 
@@ -136,29 +136,41 @@ def lowpass(var, key, factor):
 
 last_delta = {}
 
-def delta(var, key):
+def delta(var, key, tusec=None):
     '''calculate slope'''
     global last_delta
-    import mavutil
-    tnow = mavutil.mavfile_global.timestamp
+    if tusec is not None:
+        tnow = tusec * 1.0e-6
+    else:
+        import mavutil
+        tnow = mavutil.mavfile_global.timestamp
     dv = 0
+    ret = 0
     if key in last_delta:
-        (last_v, last_t) = last_delta[key]
+        (last_v, last_t, last_ret) = last_delta[key]
+        if last_t == tnow:
+            return last_ret
         if tnow == last_t:
             ret = 0
         else:
             ret = (var - last_v) / (tnow - last_t)
-    last_delta[key] = (var, tnow)
+    last_delta[key] = (var, tnow, ret)
     return ret
 
-def delta_angle(var, key):
+def delta_angle(var, key, tusec=None):
     '''calculate slope of an angle'''
     global last_delta
-    import mavutil
-    tnow = mavutil.mavfile_global.timestamp
+    if tusec is not None:
+        tnow = tusec * 1.0e-6
+    else:
+        import mavutil
+        tnow = mavutil.mavfile_global.timestamp
     dv = 0
+    ret = 0
     if key in last_delta:
-        (last_v, last_t) = last_delta[key]
+        (last_v, last_t, last_ret) = last_delta[key]
+        if last_t == tnow:
+            return last_ret
         if tnow == last_t:
             ret = 0
         else:
@@ -168,7 +180,7 @@ def delta_angle(var, key):
             if dv < -180:
                 dv += 360
             ret = dv / (tnow - last_t)
-    last_delta[key] = (var, tnow)
+    last_delta[key] = (var, tnow, ret)
     return ret
 
 def roll_estimate(RAW_IMU,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
@@ -206,6 +218,12 @@ def pitch_estimate(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7)
             ry *= mul[1]
             rz *= mul[2]
     return lowpass(degrees(asin(rx/sqrt(rx**2+ry**2+rz**2))),'_pitch',smooth)
+
+def rotation(ATTITUDE):
+    '''return the current DCM rotation matrix'''
+    r = Matrix3()
+    r.from_euler(ATTITUDE.roll, ATTITUDE.pitch, ATTITUDE.yaw)
+    return r
 
 def mag_rotation(RAW_IMU, inclination, declination):
     '''return an attitude rotation matrix that is consistent with the current mag
@@ -246,8 +264,7 @@ def expected_mag(RAW_IMU, ATTITUDE, inclination, declination):
     m_body = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
     field_strength = m_body.length()
 
-    m = Matrix3()
-    m.from_euler(ATTITUDE.roll, ATTITUDE.pitch, ATTITUDE.yaw)
+    m = rotation(ATTITUDE)
 
     r = Matrix3()
     r.from_euler(0, -radians(inclination), radians(declination))
@@ -270,8 +287,7 @@ def mag_inclination(RAW_IMU, ATTITUDE, declination=None):
     if declination is None:
         import mavutil
         declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
-    r = Matrix3()
-    r.from_euler(ATTITUDE.roll, ATTITUDE.pitch, ATTITUDE.yaw)
+    r = rotation(ATTITUDE)
     mag1 = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
     mag1 = r * mag1
     mag2 = Vector3(cos(radians(declination)), sin(radians(declination)), 0)
@@ -372,9 +388,11 @@ def rate_of_turn(speed, bank):
     if abs(speed) < 2 or abs(bank) > 80:
         return 0
     ret = degrees(9.81*tan(radians(bank))/speed)
-    if abs(ret) > 1000:
-        print speed, bank, ret
     return ret
+
+def wingloading(bank):
+    '''return expected wing loading factor for a bank angle in radians'''
+    return 1.0/cos(bank)
 
 def airspeed(VFR_HUD, ratio=None):
     '''recompute airspeed with a different ARSPD_RATIO'''
@@ -424,3 +442,21 @@ def yaw_rate(ATTITUDE):
     (phiDot, thetaDot, psiDot) = earth_rates(ATTITUDE)
     return psiDot
 
+
+def gps_velocity(GPS_RAW_INT):
+    '''return GPS velocity vector'''
+    return Vector3(GPS_RAW_INT.vel*0.01*cos(radians(GPS_RAW_INT.cog*0.01)),
+                   GPS_RAW_INT.vel*0.01*sin(radians(GPS_RAW_INT.cog*0.01)), 0)
+
+def gps_velocity_body(GPS_RAW_INT, ATTITUDE):
+    '''return GPS velocity vector in body frame'''
+    r = rotation(ATTITUDE)
+    return r.transposed() * Vector3(GPS_RAW_INT.vel*0.01*cos(radians(GPS_RAW_INT.cog*0.01)),
+                                    GPS_RAW_INT.vel*0.01*sin(radians(GPS_RAW_INT.cog*0.01)),
+                                    -tan(ATTITUDE.pitch)*GPS_RAW_INT.vel*0.01)
+
+def earth_accel(RAW_IMU,ATTITUDE):
+    '''return earth frame acceleration vector'''
+    r = rotation(ATTITUDE)
+    accel = Vector3(RAW_IMU.xacc, RAW_IMU.yacc, RAW_IMU.zacc) * 9.81 * 0.001
+    return r * accel
