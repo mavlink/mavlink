@@ -229,6 +229,13 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
 #endif
 #endif
 
+
+/* Enable this option to check the length of each message.
+This allows invalid messages to be caught much sooner. Use if the transmission
+medium is prone to missing (or extra) characters (e.g. a radio that fades in
+and out). Only use if the channel will only contain messages types listed in
+the headers.
+*/
 #if MAVLINK_CHECK_MESSAGE_LENGTH
 #ifndef MAVLINK_MESSAGE_LENGTH
 	static const uint8_t mavlink_message_lengths[256] = MAVLINK_MESSAGE_LENGTHS;
