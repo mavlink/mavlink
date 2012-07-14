@@ -411,7 +411,7 @@ class mavfile(object):
 class mavserial(mavfile):
     '''a serial mavlink port'''
     def __init__(self, device, baud=115200, autoreconnect=False, source_system=255):
-        import serial
+        import serial, fcntl
         self.baud = baud
         self.device = device
         self.autoreconnect = autoreconnect
@@ -466,6 +466,7 @@ class mavserial(mavfile):
 class mavudp(mavfile):
     '''a UDP mavlink socket'''
     def __init__(self, device, input=True, source_system=255):
+        import fcntl
         a = device.split(':')
         if len(a) != 2:
             print("UDP ports must be specified as host:port")
@@ -525,6 +526,7 @@ class mavudp(mavfile):
 class mavtcp(mavfile):
     '''a TCP mavlink socket'''
     def __init__(self, device, source_system=255):
+        import fcntl
         a = device.split(':')
         if len(a) != 2:
             print("TCP ports must be specified as host:port")
