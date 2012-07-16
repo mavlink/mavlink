@@ -408,10 +408,20 @@ class mavfile(object):
             return default
         return self.params[name]
 
+def set_close_on_exec(fd):
+    '''set the clone on exec flag on a file descriptor. Ignore exceptions'''
+    try:
+        import fcntl
+        flags = fcntl.fcntl(fd, fcntl.F_GETFD)
+        flags |= fcntl.FD_CLOEXEC
+        fcntl.fcntl(fd, fcntl.F_SETFD, flags)
+    except Exception:
+        pass
+
 class mavserial(mavfile):
     '''a serial mavlink port'''
     def __init__(self, device, baud=115200, autoreconnect=False, source_system=255):
-        import serial, fcntl
+        import serial
         self.baud = baud
         self.device = device
         self.autoreconnect = autoreconnect
@@ -419,9 +429,7 @@ class mavserial(mavfile):
                                   dsrdtr=False, rtscts=False, xonxoff=False)
         try:
             fd = self.port.fileno()
-            flags = fcntl.fcntl(fd, fcntl.F_GETFD)
-            flags |= fcntl.FD_CLOEXEC
-            fcntl.fcntl(fd, fcntl.F_SETFD, flags)
+            set_close_on_exec(fd)
         except Exception:
             fd = None
         mavfile.__init__(self, fd, device, source_system=source_system)
@@ -466,7 +474,6 @@ class mavserial(mavfile):
 class mavudp(mavfile):
     '''a UDP mavlink socket'''
     def __init__(self, device, input=True, source_system=255):
-        import fcntl
         a = device.split(':')
         if len(a) != 2:
             print("UDP ports must be specified as host:port")
@@ -478,9 +485,7 @@ class mavudp(mavfile):
             self.port.bind((a[0], int(a[1])))
         else:
             self.destination_addr = (a[0], int(a[1]))
-        flags = fcntl.fcntl(self.port.fileno(), fcntl.F_GETFD)
-        flags |= fcntl.FD_CLOEXEC
-        fcntl.fcntl(self.port.fileno(), fcntl.F_SETFD, flags)
+        set_close_on_exec(self.port.fileno())
         self.port.setblocking(0)
         self.last_address = None
         mavfile.__init__(self, self.port.fileno(), device, source_system=source_system, input=input)
@@ -526,7 +531,6 @@ class mavudp(mavfile):
 class mavtcp(mavfile):
     '''a TCP mavlink socket'''
     def __init__(self, device, source_system=255):
-        import fcntl
         a = device.split(':')
         if len(a) != 2:
             print("TCP ports must be specified as host:port")
@@ -535,9 +539,7 @@ class mavtcp(mavfile):
         self.destination_addr = (a[0], int(a[1]))
         self.port.connect(self.destination_addr)
         self.port.setblocking(0)
-        flags = fcntl.fcntl(self.port.fileno(), fcntl.F_GETFD)
-        flags |= fcntl.FD_CLOEXEC
-        fcntl.fcntl(self.port.fileno(), fcntl.F_SETFD, flags)
+        set_close_on_exec(self.port.fileno())
         self.port.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
         mavfile.__init__(self, self.port.fileno(), device, source_system=source_system)
 
