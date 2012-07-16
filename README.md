@@ -25,11 +25,11 @@ If you would rather use mavgen from the command line see *pymavlink\generator\ma
 
 ##### With QGroundControl #####
 
-To generate/update packets, select mavlink_standard_message.xml in the QGroundControl station settings view, select *mavlink/include* as the output directory and click on "Save and Generate". You will find the newly *generated/updated message_xx.h* files in the *mavlink/include/generated* folder.
+To generate/update packets, select *mavlink_standard_message.xml* in the QGroundControl station settings view, select *mavlink/include* as the output directory and click on "Save and Generate". You will find the newly *generated/updated message_xx.h* files in the *mavlink/include/generated* folder.
 
 ### Usage ###
 
-To use MAVLink, include the mavlink.h header file in your project:
+To use MAVLink, include the *mavlink.h* header file in your project:
 
     #include <mavlink.h>
     
@@ -41,8 +41,8 @@ Do not include the individual message files. In some cases you will have to add 
 
 MAVLink is licensed under the terms of the Lesser General Public License of the Free Software Foundation (LGPL). As MAVLink is a header-only library, compiling an application with it is considered "using the libary", not a derived work. MAVLink can therefore be used without limits in any closed-source application without publishing the source code of the closed-source application.
 
-See the COPYING file for more info.
+See the *COPYING* file for more info.
 
 ### Credits ###
 
-(c) 2009-2012 [Lorenz Meier](mailto:mail@qgroundcontrol.org)
+&copy; 2009-2012 [Lorenz Meier](mailto:mail@qgroundcontrol.org)
