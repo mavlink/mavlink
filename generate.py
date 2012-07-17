@@ -1,11 +1,42 @@
 #!/usr/local/bin/python     
+"""\
+generator.py is a GUI front-end for mavgen, a python based MAVLink
+header generation tool.
+
+Notes:
+-----
+* 2012-7-16 -- dagoodman
+    Working on Mac 10.6.8 darwin, with Python 2.7.1
+
+* 2012-7-17 -- dagoodman
+    Only GUI code working on Mac 10.6.8 darwin, with Python 3.2.3
+    Working on Windows 7 SP1, with Python 2.7.3 and 3.2.3 
+    Mavgen doesn't work with Python 3.x yet
+
+Copyright 2012 David Goodman (dagoodman@soe.ucsc.edu)
+Released under GNU GPL version 3 or later
+
+"""
 import os
 import re
 import pprint
 
-from Tkinter import *
-import tkFileDialog
-import tkMessageBox
+# Python 2.x and 3.x compatability 
+try:
+    from tkinter import *
+    import tkinter.filedialog
+    import tkinter.messagebox
+except ImportError as ex:
+    # Must be using Python 2.x, import and rename
+    from Tkinter import *
+    import tkFileDialog
+    import tkMessageBox
+
+    tkinter.filedialog = tkFileDialog
+    del tkFileDialog
+    tkinter.messagebox = tkMessageBox
+    del tkMessageBox
+
 sys.path.append(os.path.join('pymavlink','generator'))
 from mavgen import *
 
@@ -13,14 +44,6 @@ DEBUG = False
 title = "MAVLink Generator"
 
 
-"""\
-generator.py is a GUI front-end for mavgen, a python based MAVLink
-header generation tool.
-
-Copyright 2012 David Goodman (dagoodman@soe.ucsc.edu)
-Released under GNU GPL version 3 or later
-
-"""
 class Application(Frame):              
     def __init__(self, master=None):
         Frame.__init__(self, master)
@@ -92,7 +115,7 @@ class Application(Frame):
     """
     def browseXMLFile(self):
         # TODO Allow specification of multipe XML definitions
-        xml_file = tkFileDialog.askopenfilename(parent=self, title='Choose a definition file')
+        xml_file = tkinter.filedialog.askopenfilename(parent=self, title='Choose a definition file')
         if DEBUG:
             print("XML: " + xml_file)
         if xml_file != None:
@@ -104,7 +127,7 @@ class Application(Frame):
     """
     def browseOutDirectory(self):
         mavlinkFolder = os.path.dirname(os.path.realpath(__file__))
-        out_dir = tkFileDialog.askdirectory(parent=self,initialdir=mavlinkFolder,title='Please select an output directory')
+        out_dir = tkinter.filedialog.askdirectory(parent=self,initialdir=mavlinkFolder,title='Please select an output directory')
         if DEBUG:
             print("Output: " + out_dir)
         if out_dir != None:
@@ -117,16 +140,16 @@ class Application(Frame):
         # Verify settings
         rex = re.compile(".*\\.xml$", re.IGNORECASE)
         if not self.xml_value.get():
-            tkMessageBox.showerror('Error Generating Headers','An XML message defintion file must be specified.')
+            tkinter.messagebox.showerror('Error Generating Headers','An XML message defintion file must be specified.')
             return
 
         if not self.out_value.get():
-            tkMessageBox.showerror('Error Generating Headers', 'An output directory must be specified.')
+            tkinter.messagebox.showerror('Error Generating Headers', 'An output directory must be specified.')
             return
 
 
         if os.path.isdir(self.out_value.get()):
-            if not tkMessageBox.askokcancel('Overwrite Headers?','The output directory \'' + self.out_value.get() + '\' already exists. Headers may be overwritten if they already exist.'):
+            if not tkinter.messagebox.askokcancel('Overwrite Headers?','The output directory \'{0}\' already exists. Headers may be overwritten if they already exist.'.format(self.out_value.get())):
                 return
 
         # Verify XML file with schema (or do this in mavgen)
@@ -141,13 +164,14 @@ class Application(Frame):
             self.pp.pprint(args)
         try:
             mavgen(opts,args)
+            tkinter.messagebox.showinfo('Successfully Generated Headers', 'Headers generated succesfully.')
 
-        except Exception, (ex):
+        except Exception as ex:
             if DEBUG:
-                print('An occurred while generating headers:\n\t' + str(ex))
-            tkMessageBox.showerror('Error Generating Headers','An occurred in mavgen: ' + str(ex)) 
+                print('An occurred while generating headers:\n\t{0!s}'.format(ex))
+            tkinter.messagebox.showerror('Error Generating Headers','An error occurred in mavgen: {0!s}'.format(ex))
             return
-        tkMessageBox.showinfo('Successfully Generated Headers', 'Headers generated succesfully.')
+
 
 # End of Application class 
 # ---------------------------------
