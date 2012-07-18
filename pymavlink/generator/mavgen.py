@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 
-# moved to the top of the file from below (dagoodma)
+'''
+parse a MAVLink protocol XML file and generate a python implementation
+
+Copyright Andrew Tridgell 2011
+Released under GNU GPL version 3 or later
+
+'''
+
+
+'''
+Modified by dagoodma on 2012-7-18_15:15
+    This has to be here so that these imports occur when importing this
+    file, when before they only occured when running this file directly
+
+'''
 import sys, textwrap, os
 
 # allow import from the parent directory to find mavgen 
@@ -9,13 +23,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 import mavparse
 import mavgen_python
 import mavgen_c
-
-'''
-parse a MAVLink protocol XML file and generate a python implementation
-
-Copyright Andrew Tridgell 2011
-Released under GNU GPL version 3 or later
-'''
 
 def mavgen(opts, args) :
     """Generate mavlink message formatters and parsers (C and Python ) using options
