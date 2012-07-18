@@ -1,21 +1,34 @@
 #!/usr/bin/env python
+
 '''
 parse a MAVLink protocol XML file and generate a python implementation
 
 Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
+
 '''
+
+
+'''
+Modified by dagoodma on 2012-7-18_15:15
+    This has to be here so that these imports occur when importing this
+    file, when before they only occured when running this file directly
+
+'''
+import sys, textwrap, os
+
+# allow import from the parent directory to find mavgen 
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+
+import mavparse
+import mavgen_python
+import mavgen_c
 
 def mavgen(opts, args) :
     """Generate mavlink message formatters and parsers (C and Python ) using options
     and args where args are a list of xml files. This function allows python
     scripts under Windows to control mavgen using the same interface as
     shell scripts under Unix"""
-    import sys, textwrap, os
-
-    import mavparse
-    import mavgen_python
-    import mavgen_c
 
     xml = []
 
@@ -60,16 +73,7 @@ def mavgen(opts, args) :
     
 
 if __name__=="__main__":
-    import sys, textwrap, os
-
     from optparse import OptionParser
-
-    # allow import from the parent directory, where mavutil.py is
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
-    import mavparse
-    import mavgen_python
-    import mavgen_c
 
     parser = OptionParser("%prog [options] <XML files>")
     parser.add_option("-o", "--output", dest="output", default="mavlink", help="output directory.")
