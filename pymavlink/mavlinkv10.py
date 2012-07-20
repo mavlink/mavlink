@@ -194,6 +194,21 @@ FENCE_BREACH_MAXALT = 2 # Breached minimum altitude
 FENCE_BREACH_BOUNDARY = 3 # Breached fence boundary
 FENCE_BREACH_ENUM_END = 4 # 
 
+# LIMITS_STATE
+LIMITS_INIT = 0 #  pre-initialization
+LIMITS_DISABLED = 1 #  disabled
+LIMITS_ENABLED = 2 #  checking limits
+LIMITS_TRIGGERED = 3 #  a limit has been breached
+LIMITS_RECOVERING = 4 #  taking action eg. RTL
+LIMITS_RECOVERED = 5 #  we're no longer in breach of a limit
+LIMITS_STATE_ENUM_END = 6 # 
+
+# LIMIT_MODULE
+LIMIT_GPSLOCK = 1 #  pre-initialization
+LIMIT_GEOFENCE = 2 #  disabled
+LIMIT_ALTITUDE = 4 #  checking limits
+LIMIT_MODULE_ENUM_END = 5 # 
+
 # MAV_AUTOPILOT
 MAV_AUTOPILOT_GENERIC = 0 # Generic autopilot, full support for everything
 MAV_AUTOPILOT_PIXHAWK = 1 # PIXHAWK autopilot, http://pixhawk.ethz.ch
@@ -461,6 +476,7 @@ MAVLINK_MSG_ID_AHRS = 163
 MAVLINK_MSG_ID_SIMSTATE = 164
 MAVLINK_MSG_ID_HWSTATUS = 165
 MAVLINK_MSG_ID_RADIO = 166
+MAVLINK_MSG_ID_LIMITS_STATUS = 167
 MAVLINK_MSG_ID_HEARTBEAT = 0
 MAVLINK_MSG_ID_SYS_STATUS = 1
 MAVLINK_MSG_ID_SYSTEM_TIME = 2
@@ -817,6 +833,27 @@ class MAVLink_radio_message(MAVLink_message):
 
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, 21, struct.pack('<HHBBBBB', self.rxerrors, self.fixed, self.rssi, self.remrssi, self.txbuf, self.noise, self.remnoise))
+
+class MAVLink_limits_status_message(MAVLink_message):
+        '''
+        Status of AP_Limits. Sent in extended             status
+        stream when AP_Limits is enabled
+        '''
+        def __init__(self, limits_state, last_trigger, last_action, last_recovery, last_clear, breach_count, mods_enabled, mods_required, mods_triggered):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_LIMITS_STATUS, 'LIMITS_STATUS')
+                self._fieldnames = ['limits_state', 'last_trigger', 'last_action', 'last_recovery', 'last_clear', 'breach_count', 'mods_enabled', 'mods_required', 'mods_triggered']
+                self.limits_state = limits_state
+                self.last_trigger = last_trigger
+                self.last_action = last_action
+                self.last_recovery = last_recovery
+                self.last_clear = last_clear
+                self.breach_count = breach_count
+                self.mods_enabled = mods_enabled
+                self.mods_required = mods_required
+                self.mods_triggered = mods_triggered
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 144, struct.pack('<IIIIHBBBB', self.last_trigger, self.last_action, self.last_recovery, self.last_clear, self.breach_count, self.limits_state, self.mods_enabled, self.mods_required, self.mods_triggered))
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -2266,6 +2303,7 @@ mavlink_map = {
         MAVLINK_MSG_ID_SIMSTATE : ( '<fffffffff', MAVLink_simstate_message, [0, 1, 2, 3, 4, 5, 6, 7, 8], 42 ),
         MAVLINK_MSG_ID_HWSTATUS : ( '<HB', MAVLink_hwstatus_message, [0, 1], 21 ),
         MAVLINK_MSG_ID_RADIO : ( '<HHBBBBB', MAVLink_radio_message, [2, 3, 4, 5, 6, 0, 1], 21 ),
+        MAVLINK_MSG_ID_LIMITS_STATUS : ( '<IIIIHBBBB', MAVLink_limits_status_message, [5, 0, 1, 2, 3, 4, 6, 7, 8], 144 ),
         MAVLINK_MSG_ID_HEARTBEAT : ( '<IBBBBB', MAVLink_heartbeat_message, [1, 2, 3, 0, 4, 5], 50 ),
         MAVLINK_MSG_ID_SYS_STATUS : ( '<IIIHHhHHHHHHb', MAVLink_sys_status_message, [0, 1, 2, 3, 4, 5, 12, 6, 7, 8, 9, 10, 11], 124 ),
         MAVLINK_MSG_ID_SYSTEM_TIME : ( '<QI', MAVLink_system_time_message, [0, 1], 137 ),
@@ -3025,6 +3063,44 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.radio_encode(rssi, remrssi, txbuf, noise, remnoise, rxerrors, fixed))
+            
+        def limits_status_encode(self, limits_state, last_trigger, last_action, last_recovery, last_clear, breach_count, mods_enabled, mods_required, mods_triggered):
+                '''
+                Status of AP_Limits. Sent in extended             status stream when
+                AP_Limits is enabled
+
+                limits_state              : state of AP_Limits, (see enum LimitState, LIMITS_STATE) (uint8_t)
+                last_trigger              : time of last breach in milliseconds since boot (uint32_t)
+                last_action               : time of last recovery action in milliseconds since boot (uint32_t)
+                last_recovery             : time of last successful recovery in milliseconds since boot (uint32_t)
+                last_clear                : time of last all-clear in milliseconds since boot (uint32_t)
+                breach_count              : number of fence breaches (uint16_t)
+                mods_enabled              : AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE) (uint8_t)
+                mods_required             : AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE) (uint8_t)
+                mods_triggered            : AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE) (uint8_t)
+
+                '''
+                msg = MAVLink_limits_status_message(limits_state, last_trigger, last_action, last_recovery, last_clear, breach_count, mods_enabled, mods_required, mods_triggered)
+                msg.pack(self)
+                return msg
+            
+        def limits_status_send(self, limits_state, last_trigger, last_action, last_recovery, last_clear, breach_count, mods_enabled, mods_required, mods_triggered):
+                '''
+                Status of AP_Limits. Sent in extended             status stream when
+                AP_Limits is enabled
+
+                limits_state              : state of AP_Limits, (see enum LimitState, LIMITS_STATE) (uint8_t)
+                last_trigger              : time of last breach in milliseconds since boot (uint32_t)
+                last_action               : time of last recovery action in milliseconds since boot (uint32_t)
+                last_recovery             : time of last successful recovery in milliseconds since boot (uint32_t)
+                last_clear                : time of last all-clear in milliseconds since boot (uint32_t)
+                breach_count              : number of fence breaches (uint16_t)
+                mods_enabled              : AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE) (uint8_t)
+                mods_required             : AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE) (uint8_t)
+                mods_triggered            : AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE) (uint8_t)
+
+                '''
+                return self.send(self.limits_status_encode(limits_state, last_trigger, last_action, last_recovery, last_clear, breach_count, mods_enabled, mods_required, mods_triggered))
             
         def heartbeat_encode(self, type, autopilot, base_mode, custom_mode, system_status, mavlink_version=3):
                 '''
@@ -3925,7 +4001,7 @@ class MAVLink(object):
                 is as follows: 1000 microseconds: 0%, 2000
                 microseconds: 100%.
 
-                time_usec                 : Timestamp (since UNIX epoch or microseconds since system boot) (uint32_t)
+                time_usec                 : Timestamp (microseconds since system boot) (uint32_t)
                 port                      : Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos. (uint8_t)
                 servo1_raw                : Servo output 1 value, in microseconds (uint16_t)
                 servo2_raw                : Servo output 2 value, in microseconds (uint16_t)
@@ -3948,7 +4024,7 @@ class MAVLink(object):
                 is as follows: 1000 microseconds: 0%, 2000
                 microseconds: 100%.
 
-                time_usec                 : Timestamp (since UNIX epoch or microseconds since system boot) (uint32_t)
+                time_usec                 : Timestamp (microseconds since system boot) (uint32_t)
                 port                      : Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos. (uint8_t)
                 servo1_raw                : Servo output 1 value, in microseconds (uint16_t)
                 servo2_raw                : Servo output 2 value, in microseconds (uint16_t)
