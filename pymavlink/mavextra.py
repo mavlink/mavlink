@@ -460,3 +460,23 @@ def earth_accel(RAW_IMU,ATTITUDE):
     r = rotation(ATTITUDE)
     accel = Vector3(RAW_IMU.xacc, RAW_IMU.yacc, RAW_IMU.zacc) * 9.81 * 0.001
     return r * accel
+
+def airspeed_energy_error(NAV_CONTROLLER_OUTPUT, VFR_HUD):
+    '''return airspeed energy error matching APM internals
+    This is positive when we are going too slow
+    '''
+    aspeed_cm = VFR_HUD.airspeed*100
+    target_airspeed = NAV_CONTROLLER_OUTPUT.aspd_error + aspeed_cm
+    airspeed_energy_error = ((target_airspeed*target_airspeed) - (aspeed_cm*aspeed_cm))*0.00005
+    return airspeed_energy_error
+
+
+def energy_error(NAV_CONTROLLER_OUTPUT, VFR_HUD):
+    '''return energy error matching APM internals
+    This is positive when we are too low or going too slow
+    '''
+    aspeed_energy_error = airspeed_energy_error(NAV_CONTROLLER_OUTPUT, VFR_HUD)
+    alt_error = NAV_CONTROLLER_OUTPUT.alt_error*100
+    energy_error = aspeed_energy_error + alt_error*0.098
+    return energy_error
+
