@@ -39,8 +39,9 @@ def plotit(x, y, fields, colors=[]):
             if xrange / interval < 15:
                 break
         locator = matplotlib.dates.SecondLocator(interval=interval)
-    ax1.xaxis.set_major_locator(locator)
-    ax1.xaxis.set_major_formatter(formatter)
+    if not opts.xaxis:
+        ax1.xaxis.set_major_locator(locator)
+        ax1.xaxis.set_major_formatter(formatter)
     empty = True
     ax1_labels = []
     ax2_labels = []
@@ -57,8 +58,9 @@ def plotit(x, y, fields, colors=[]):
             if ax2 == None:
                 ax2 = ax1.twinx()
             ax = ax2
-            ax2.xaxis.set_major_locator(locator)
-            ax2.xaxis.set_major_formatter(formatter)
+            if not opts.xaxis:
+                ax2.xaxis.set_major_locator(locator)
+                ax2.xaxis.set_major_formatter(formatter)
             label = fields[i]
             if label.endswith(":2"):
                 label = label[:-2]
@@ -66,8 +68,28 @@ def plotit(x, y, fields, colors=[]):
         else:
             ax1_labels.append(fields[i])
             ax = ax1
-        ax.plot_date(x[i], y[i], color=color, label=fields[i],
-                     linestyle='-', marker=opts.marker, tz=None)
+        if opts.xaxis:
+            if opts.marker is not None:
+                marker = opts.marker
+            else:
+                marker = '+'
+            if opts.linestyle is not None:
+                linestyle = opts.linestyle
+            else:
+                linestyle = 'None'
+            ax.plot(x[i], y[i], color=color, label=fields[i],
+                    linestyle=linestyle, marker=marker)
+        else:
+            if opts.marker is not None:
+                marker = opts.marker
+            else:
+                marker = 'None'
+            if opts.linestyle is not None:
+                linestyle = opts.linestyle
+            else:
+                linestyle = '-'
+            ax.plot_date(x[i], y[i], color=color, label=fields[i],
+                         linestyle=linestyle, marker=marker, tz=None)
         pylab.draw()
         empty = False
     if ax1_labels != []:
@@ -88,7 +110,9 @@ parser.add_option("--condition",dest="condition", default=None, help="select pac
 parser.add_option("--labels",dest="labels", default=None, help="comma separated field labels")
 parser.add_option("--legend",  default='upper left', help="default legend position")
 parser.add_option("--legend2",  default='upper right', help="default legend2 position")
-parser.add_option("--marker",  default='None', help="point marker")
+parser.add_option("--marker",  default=None, help="point marker")
+parser.add_option("--linestyle",  default=None, help="line style")
+parser.add_option("--xaxis",  default=None, help="X axis expression")
 (opts, args) = parser.parse_args()
 
 import mavutil
@@ -143,8 +167,14 @@ def add_data(t, msg, vars):
         v = mavutil.evaluate_expression(f, vars)
         if v is None:
             continue
-        y[i].append(v)
-        x[i].append(t)
+        if opts.xaxis is None:
+            xv = t
+        else:
+            xv = mavutil.evaluate_expression(opts.xaxis, vars)
+            if xv is None:
+                continue
+        y[i].append(v)            
+        x[i].append(xv)
 
 def process_file(filename):
     '''process one file'''
