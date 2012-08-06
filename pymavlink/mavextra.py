@@ -346,7 +346,7 @@ def distance_two(GPS_RAW1, GPS_RAW2):
     '''distance between two points'''
     if hasattr(GPS_RAW1, 'cog'):
         lat1 = radians(GPS_RAW1.lat)*1.0e-7
-    	lat2 = radians(GPS_RAW2.lat)*1.0e-7
+        lat2 = radians(GPS_RAW2.lat)*1.0e-7
         lon1 = radians(GPS_RAW1.lon)*1.0e-7
         lon2 = radians(GPS_RAW2.lon)*1.0e-7
     else:
