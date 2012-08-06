@@ -51,9 +51,16 @@ def mavgen(opts, args) :
     print("Found %u MAVLink message types in %u XML files" % (
         mavparse.total_msgs(xml), len(xml)))
 
+    ''' 
+    Modified on August 6th, 2012 by David Goodman
+        This allows compliance with the language options specified
+        in --help. It will still work the same as before, plus allows
+        compliance with the options specified in --help.
+    '''
+    opts.language = opts.language.lower()
     if opts.language == 'python':
         mavgen_python.generate(opts.output, xml)
-    elif opts.language == 'C':
+    elif opts.language == 'c':
         mavgen_c.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
