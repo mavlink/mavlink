@@ -9,7 +9,13 @@ Released under GNU GPL version 3 or later
 import os, sys
 from math import *
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples'))
-from rotmat import Vector3, Matrix3
+''' 
+Modified on August 6th, 2012 by David Goodman
+    Removed the rotmat import below since it is not running under
+    python3.2, and the functions within this file that use Vector3
+    and Matrix3 are not called by mavgen.py
+'''
+# from rotmat import Vector3, Matrix3
 
 
 def kmh(mps):
@@ -346,7 +352,7 @@ def distance_two(GPS_RAW1, GPS_RAW2):
     '''distance between two points'''
     if hasattr(GPS_RAW1, 'cog'):
         lat1 = radians(GPS_RAW1.lat)*1.0e-7
-    	lat2 = radians(GPS_RAW2.lat)*1.0e-7
+        lat2 = radians(GPS_RAW2.lat)*1.0e-7
         lon1 = radians(GPS_RAW1.lon)*1.0e-7
         lon2 = radians(GPS_RAW2.lon)*1.0e-7
     else:
