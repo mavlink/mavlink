@@ -477,6 +477,7 @@ MAVLINK_MSG_ID_SIMSTATE = 164
 MAVLINK_MSG_ID_HWSTATUS = 165
 MAVLINK_MSG_ID_RADIO = 166
 MAVLINK_MSG_ID_LIMITS_STATUS = 167
+MAVLINK_MSG_ID_WIND = 168
 MAVLINK_MSG_ID_HEARTBEAT = 0
 MAVLINK_MSG_ID_SYS_STATUS = 1
 MAVLINK_MSG_ID_SYSTEM_TIME = 2
@@ -856,6 +857,20 @@ class MAVLink_limits_status_message(MAVLink_message):
 
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, 144, struct.pack('<IIIIHBBBB', self.last_trigger, self.last_action, self.last_recovery, self.last_clear, self.breach_count, self.limits_state, self.mods_enabled, self.mods_required, self.mods_triggered))
+
+class MAVLink_wind_message(MAVLink_message):
+        '''
+        Wind estimation
+        '''
+        def __init__(self, direction, speed, speed_z):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_WIND, 'WIND')
+                self._fieldnames = ['direction', 'speed', 'speed_z']
+                self.direction = direction
+                self.speed = speed
+                self.speed_z = speed_z
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 1, struct.pack('<fff', self.direction, self.speed, self.speed_z))
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -2306,6 +2321,7 @@ mavlink_map = {
         MAVLINK_MSG_ID_HWSTATUS : ( '<HB', MAVLink_hwstatus_message, [0, 1], 21 ),
         MAVLINK_MSG_ID_RADIO : ( '<HHBBBBB', MAVLink_radio_message, [2, 3, 4, 5, 6, 0, 1], 21 ),
         MAVLINK_MSG_ID_LIMITS_STATUS : ( '<IIIIHBBBB', MAVLink_limits_status_message, [5, 0, 1, 2, 3, 4, 6, 7, 8], 144 ),
+        MAVLINK_MSG_ID_WIND : ( '<fff', MAVLink_wind_message, [0, 1, 2], 1 ),
         MAVLINK_MSG_ID_HEARTBEAT : ( '<IBBBBB', MAVLink_heartbeat_message, [1, 2, 3, 0, 4, 5], 50 ),
         MAVLINK_MSG_ID_SYS_STATUS : ( '<IIIHHhHHHHHHb', MAVLink_sys_status_message, [0, 1, 2, 3, 4, 5, 12, 6, 7, 8, 9, 10, 11], 124 ),
         MAVLINK_MSG_ID_SYSTEM_TIME : ( '<QI', MAVLink_system_time_message, [0, 1], 137 ),
@@ -3107,6 +3123,30 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.limits_status_encode(limits_state, last_trigger, last_action, last_recovery, last_clear, breach_count, mods_enabled, mods_required, mods_triggered))
+            
+        def wind_encode(self, direction, speed, speed_z):
+                '''
+                Wind estimation
+
+                direction                 : wind direction (degrees) (float)
+                speed                     : wind speed in ground plane (m/s) (float)
+                speed_z                   : vertical wind speed (m/s) (float)
+
+                '''
+                msg = MAVLink_wind_message(direction, speed, speed_z)
+                msg.pack(self)
+                return msg
+            
+        def wind_send(self, direction, speed, speed_z):
+                '''
+                Wind estimation
+
+                direction                 : wind direction (degrees) (float)
+                speed                     : wind speed in ground plane (m/s) (float)
+                speed_z                   : vertical wind speed (m/s) (float)
+
+                '''
+                return self.send(self.wind_encode(direction, speed, speed_z))
             
         def heartbeat_encode(self, type, autopilot, base_mode, custom_mode, system_status, mavlink_version=3):
                 '''
