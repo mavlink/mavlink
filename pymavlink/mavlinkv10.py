@@ -787,9 +787,9 @@ class MAVLink_simstate_message(MAVLink_message):
         '''
         Status of simulation environment, if used
         '''
-        def __init__(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+        def __init__(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro, lat, lng):
                 MAVLink_message.__init__(self, MAVLINK_MSG_ID_SIMSTATE, 'SIMSTATE')
-                self._fieldnames = ['roll', 'pitch', 'yaw', 'xacc', 'yacc', 'zacc', 'xgyro', 'ygyro', 'zgyro']
+                self._fieldnames = ['roll', 'pitch', 'yaw', 'xacc', 'yacc', 'zacc', 'xgyro', 'ygyro', 'zgyro', 'lat', 'lng']
                 self.roll = roll
                 self.pitch = pitch
                 self.yaw = yaw
@@ -799,9 +799,11 @@ class MAVLink_simstate_message(MAVLink_message):
                 self.xgyro = xgyro
                 self.ygyro = ygyro
                 self.zgyro = zgyro
+                self.lat = lat
+                self.lng = lng
 
         def pack(self, mav):
-                return MAVLink_message.pack(self, mav, 42, struct.pack('<fffffffff', self.roll, self.pitch, self.yaw, self.xacc, self.yacc, self.zacc, self.xgyro, self.ygyro, self.zgyro))
+                return MAVLink_message.pack(self, mav, 111, struct.pack('<fffffffffff', self.roll, self.pitch, self.yaw, self.xacc, self.yacc, self.zacc, self.xgyro, self.ygyro, self.zgyro, self.lat, self.lng))
 
 class MAVLink_hwstatus_message(MAVLink_message):
         '''
@@ -2300,7 +2302,7 @@ mavlink_map = {
         MAVLINK_MSG_ID_FENCE_FETCH_POINT : ( '<BBB', MAVLink_fence_fetch_point_message, [0, 1, 2], 68 ),
         MAVLINK_MSG_ID_FENCE_STATUS : ( '<IHBB', MAVLink_fence_status_message, [2, 1, 3, 0], 189 ),
         MAVLINK_MSG_ID_AHRS : ( '<fffffff', MAVLink_ahrs_message, [0, 1, 2, 3, 4, 5, 6], 127 ),
-        MAVLINK_MSG_ID_SIMSTATE : ( '<fffffffff', MAVLink_simstate_message, [0, 1, 2, 3, 4, 5, 6, 7, 8], 42 ),
+        MAVLINK_MSG_ID_SIMSTATE : ( '<fffffffffff', MAVLink_simstate_message, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 111 ),
         MAVLINK_MSG_ID_HWSTATUS : ( '<HB', MAVLink_hwstatus_message, [0, 1], 21 ),
         MAVLINK_MSG_ID_RADIO : ( '<HHBBBBB', MAVLink_radio_message, [2, 3, 4, 5, 6, 0, 1], 21 ),
         MAVLINK_MSG_ID_LIMITS_STATUS : ( '<IIIIHBBBB', MAVLink_limits_status_message, [5, 0, 1, 2, 3, 4, 6, 7, 8], 144 ),
@@ -2974,7 +2976,7 @@ class MAVLink(object):
                 '''
                 return self.send(self.ahrs_encode(omegaIx, omegaIy, omegaIz, accel_weight, renorm_val, error_rp, error_yaw))
             
-        def simstate_encode(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+        def simstate_encode(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro, lat, lng):
                 '''
                 Status of simulation environment, if used
 
@@ -2987,13 +2989,15 @@ class MAVLink(object):
                 xgyro                     : Angular speed around X axis rad/s (float)
                 ygyro                     : Angular speed around Y axis rad/s (float)
                 zgyro                     : Angular speed around Z axis rad/s (float)
+                lat                       : Latitude in degrees (float)
+                lng                       : Longitude in degrees (float)
 
                 '''
-                msg = MAVLink_simstate_message(roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro)
+                msg = MAVLink_simstate_message(roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro, lat, lng)
                 msg.pack(self)
                 return msg
             
-        def simstate_send(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro):
+        def simstate_send(self, roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro, lat, lng):
                 '''
                 Status of simulation environment, if used
 
@@ -3006,9 +3010,11 @@ class MAVLink(object):
                 xgyro                     : Angular speed around X axis rad/s (float)
                 ygyro                     : Angular speed around Y axis rad/s (float)
                 zgyro                     : Angular speed around Z axis rad/s (float)
+                lat                       : Latitude in degrees (float)
+                lng                       : Longitude in degrees (float)
 
                 '''
-                return self.send(self.simstate_encode(roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro))
+                return self.send(self.simstate_encode(roll, pitch, yaw, xacc, yacc, zacc, xgyro, ygyro, zgyro, lat, lng))
             
         def hwstatus_encode(self, Vcc, I2Cerr):
                 '''
