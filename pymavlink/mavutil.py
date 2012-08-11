@@ -25,6 +25,8 @@ def evaluate_expression(expression, vars):
         v = eval(expression, globals(), vars)
     except NameError:
         return None
+    except ZeroDivisionError:
+        return None
     return v
 
 def evaluate_condition(condition, vars):
