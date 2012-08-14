@@ -3,7 +3,7 @@ module for loading/saving waypoints
 '''
 
 import os
-import mavutil, time
+import mavutil, time, copy
 
 
 class MAVWPError(Exception):
@@ -28,8 +28,11 @@ class MAVWPLoader(object):
         '''return a waypoint'''
         return self.wpoints[i]
 
-    def add(self, w):
+    def add(self, w, comment=''):
         '''add a waypoint'''
+	w = copy.copy(w)
+	if comment:
+		w.comment = comment
         w.seq = self.count()
         self.wpoints.append(w)
 	self.last_change = time.time()
@@ -151,6 +154,8 @@ class MAVWPLoader(object):
         f = open(filename, mode='w')
         f.write("QGC WPL 110\n")
         for w in self.wpoints:
+	    if getattr(w, 'comment', None):
+	        f.write("# %s\n" % w.comment)
             f.write("%u\t%u\t%u\t%u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%u\n" % (
                 w.seq, w.current, w.frame, w.command,
                 w.param1, w.param2, w.param3, w.param4,
@@ -161,7 +166,14 @@ class MAVWPLoader(object):
 	    '''return a polygon for the waypoints'''
 	    points = []
 	    for w in self.wpoints:
-		    if w.command in [mavutil.mavlink.MAV_CMD_NAV_WAYPOINT]:
+		    if w.x == 0 and w.y == 0:
+			    continue
+		    if w.command in [mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
+				     mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM,
+				     mavutil.mavlink.MAV_CMD_NAV_LOITER_TURNS,
+				     mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
+				     mavutil.mavlink.MAV_CMD_NAV_LAND,
+				     mavutil.mavlink.MAV_CMD_NAV_TAKEOFF]:
 			    points.append((w.x, w.y))
 	    return points
 
