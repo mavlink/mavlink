@@ -264,6 +264,10 @@ class mavfile(object):
         self.param_fetch_in_progress = True
         self.mav.param_request_list_send(self.target_system, self.target_component)
 
+    def param_fetch_one(self, name):
+        '''initiate fetch of one parameter'''
+        self.mav.param_request_read_send(self.target_system, self.target_component, name, -1)
+
     def time_since(self, mtype):
         '''return the time since the last message of type mtype was received'''
         if not mtype in self.messages:
@@ -370,6 +374,16 @@ class mavfile(object):
         else:
             MAV_ACTION_CALIBRATE_ACC = 19
             self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_ACC)
+
+    def calibrate_pressure(self):
+        '''calibrate pressure'''
+        if self.mavlink10():
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, 0,
+                                       0, 0, 1, 0, 0, 0, 0)
+        else:
+            MAV_ACTION_CALIBRATE_PRESSURE = 20
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_PRESSURE)
 
     def wait_gps_fix(self):
         self.recv_match(type='VFR_HUD', blocking=True)
