@@ -1,4 +1,4 @@
-#!/usr/local/bin/python     
+#!/usr/bin/env python
 """\
 generator.py is a GUI front-end for mavgen, a python based MAVLink
 header generation tool.
@@ -100,7 +100,7 @@ class Application(Frame):
         self.protocol_label = Label( self, text="Protocol")
         self.protocol_label.grid(row=3, column=0)
         self.protocol_menu = OptionMenu(self,self.protocol_value,*self.protocol_choices)
-        self.protocol_value.set(self.protocol_choices[0])
+        self.protocol_value.set(self.protocol_choices[1])
         self.protocol_menu.config(width=10)
         self.protocol_menu.grid(row=3, column=1,sticky=W)
 
