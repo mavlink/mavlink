@@ -253,16 +253,24 @@ class MAVWPLoader(object):
     def polygon(self):
 	    '''return a polygon for the waypoints'''
 	    points = []
-	    for w in self.wpoints:
-		    if w.x == 0 and w.y == 0:
-			    continue
-		    if w.command in [mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
-				     mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM,
-				     mavutil.mavlink.MAV_CMD_NAV_LOITER_TURNS,
-				     mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
-				     mavutil.mavlink.MAV_CMD_NAV_LAND,
-				     mavutil.mavlink.MAV_CMD_NAV_TAKEOFF]:
-			    points.append((w.x, w.y))
+            done = set()
+            idx = 0
+            while idx < self.count():
+                if idx in done:
+                    break
+                done.add(idx)
+                w = self.wp(idx)
+                if w.command == mavutil.mavlink.MAV_CMD_DO_JUMP:
+                    idx = int(w.param1)
+                    continue
+                idx += 1
+                if (w.x != 0 or w.y != 0) and w.command in [mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
+                                                            mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM,
+                                                            mavutil.mavlink.MAV_CMD_NAV_LOITER_TURNS,
+                                                            mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
+                                                            mavutil.mavlink.MAV_CMD_NAV_LAND,
+                                                            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF]:
+                    points.append((w.x, w.y))
 	    return points
 
 class MAVFenceError(Exception):
