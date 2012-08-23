@@ -9,5 +9,5 @@ for protocol in 0.9 1.0; do
  done
 done
 
-cp -f python/mavlink_ardupilotmega_v0.9.py ../mavlink.py
+cp -f python/mavlink_ardupilotmega_v0.9.py ../mavlinkv09.py
 cp -f python/mavlink_ardupilotmega_v1.0.py ../mavlinkv10.py
