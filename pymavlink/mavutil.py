@@ -346,6 +346,27 @@ class mavfile(object):
             MAV_ACTION_RETURN = 3
             self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_RETURN)
 
+    def set_mode_manual(self):
+        '''enter MANUAL mode'''
+        if self.mavlink10():
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_DO_SET_MODE, 0,
+                                       mavlink.MAV_MODE_MANUAL_ARMED,
+                                       0, 0, 0, 0, 0, 0)
+        else:
+            MAV_ACTION_SET_MANUAL = 12
+            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_SET_MANUAL)
+
+    def set_mode_fbwa(self):
+        '''enter FBWA mode'''
+        if self.mavlink10():
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_DO_SET_MODE, 0,
+                                       mavlink.MAV_MODE_STABILIZE_ARMED,
+                                       0, 0, 0, 0, 0, 0)
+        else:
+            print("Forcing FBWA not supported")
+
     def set_mode_loiter(self):
         '''enter LOITER mode'''
         if self.mavlink10():
