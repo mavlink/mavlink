@@ -7,8 +7,8 @@ file, for loading into google earth
 
 import sys, struct, time, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+sys.path.insert(0, os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), '..', '..', 'pymavlink'));
 
 from optparse import OptionParser
 parser = OptionParser("wptogpx.py [options]")

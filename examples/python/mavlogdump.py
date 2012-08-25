@@ -9,8 +9,8 @@ header. The timestamp is in microseconds since 1970 (unix epoch)
 
 import sys, time, os, struct
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+sys.path.insert(0, os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), '..', '..', 'pymavlink'));
 
 from optparse import OptionParser
 parser = OptionParser("mavlogdump.py [options]")

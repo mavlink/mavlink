@@ -7,8 +7,8 @@ Bill Premerlani
 
 import sys, time, os, math
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+sys.path.insert(0,os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), '..', '..', 'pymavlink'));
 
 # command line option handling
 from optparse import OptionParser
