@@ -8,17 +8,10 @@ Released under GNU GPL version 3 or later
 
 '''
 
-
-'''
-Modified by dagoodma on 2012-7-18_15:15
-    This has to be here so that these imports occur when importing this
-    file, when before they only occured when running this file directly
-
-'''
 import sys, textwrap, os
 
-# allow import from the parent directory to find mavgen 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+sys.path.append(os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), '..', '..', 'pymavlink'));
 
 import mavparse
 import mavgen_python
@@ -64,12 +57,6 @@ def mavgen(opts, args) :
     print("Found %u MAVLink message types in %u XML files" % (
         mavparse.total_msgs(xml), len(xml)))
 
-    ''' 
-    Modified on August 6th, 2012 by David Goodman
-        This allows compliance with the language options specified
-        in --help. It will still work the same as before, plus allows
-        compliance with the options specified in --help.
-    '''
     opts.language = opts.language.lower()
     if opts.language == 'python':
         mavgen_python.generate(opts.output, xml)
