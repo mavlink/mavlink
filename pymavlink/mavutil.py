@@ -89,7 +89,7 @@ class mavfile(object):
         self.ground_temperature = None
         self.altitude = 0
         self.WIRE_PROTOCOL_VERSION = mavlink.WIRE_PROTOCOL_VERSION
-        self.last_seq = -1
+        self.last_seq = {}
         self.mav_loss = 0
         self.mav_count = 0
         self.stop_on_EOF = False
@@ -154,17 +154,22 @@ class mavfile(object):
             else:
                 msg._timestamp = self._timestamp
 
+        src_system = msg.get_srcSystem()
         if not (
             # its the radio or planner
-            (msg.get_srcSystem() == ord('3') and msg.get_srcComponent() == ord('D')) or
-            msg.get_srcSystem() == 255 or
+            (src_system == ord('3') and msg.get_srcComponent() == ord('D')) or
             msg.get_type() == 'BAD_DATA'):
-            seq = (self.last_seq+1) % 256
+            if not src_system in self.last_seq:
+                last_seq = -1
+            else:
+                last_seq = self.last_seq[src_system]
+            seq = (last_seq+1) % 256
             seq2 = msg.get_seq()
-            if seq != seq2 and self.last_seq != -1:
+            if seq != seq2 and last_seq != -1:
                 diff = (seq2 - seq) % 256
                 self.mav_loss += diff
-            self.last_seq = seq2
+                #print("lost %u seq=%u seq2=%u src_system=%u" % (diff, seq, seq2, src_system))
+            self.last_seq[src_system] = seq2
             self.mav_count += 1
         
         self.timestamp = msg._timestamp
