@@ -185,7 +185,8 @@ MAV_CMD_ENUM_END = 401 #
 # FENCE_ACTION
 FENCE_ACTION_NONE = 0 # Disable fenced mode
 FENCE_ACTION_GUIDED = 1 # Switched to guided mode to return point (fence point 0)
-FENCE_ACTION_ENUM_END = 2 # 
+FENCE_ACTION_REPORT = 2 # Report fence breach, but don't take action
+FENCE_ACTION_ENUM_END = 3 # 
 
 # FENCE_BREACH
 FENCE_BREACH_NONE = 0 # No last fence breach
@@ -414,6 +415,19 @@ MAV_CMD_ACK_ERR_Y_LON_OUT_OF_RANGE = 8 # The Y or longitude value is out of rang
 MAV_CMD_ACK_ERR_Z_ALT_OUT_OF_RANGE = 9 # The Z or altitude value is out of range.
 MAV_CMD_ACK_ENUM_END = 10 # 
 
+# MAV_PARAM_TYPE
+MAV_PARAM_TYPE_UINT8 = 1 # 8-bit unsigned integer
+MAV_PARAM_TYPE_INT8 = 2 # 8-bit signed integer
+MAV_PARAM_TYPE_UINT16 = 3 # 16-bit unsigned integer
+MAV_PARAM_TYPE_INT16 = 4 # 16-bit signed integer
+MAV_PARAM_TYPE_UINT32 = 5 # 32-bit unsigned integer
+MAV_PARAM_TYPE_INT32 = 6 # 32-bit signed integer
+MAV_PARAM_TYPE_UINT64 = 7 # 64-bit unsigned integer
+MAV_PARAM_TYPE_INT64 = 8 # 64-bit signed integer
+MAV_PARAM_TYPE_REAL32 = 9 # 32-bit floating-point
+MAV_PARAM_TYPE_REAL64 = 10 # 64-bit floating-point
+MAV_PARAM_TYPE_ENUM_END = 11 # 
+
 # MAV_RESULT
 MAV_RESULT_ACCEPTED = 0 # Command ACCEPTED and EXECUTED
 MAV_RESULT_TEMPORARILY_REJECTED = 1 # Command TEMPORARY REJECTED/DENIED
@@ -478,6 +492,9 @@ MAVLINK_MSG_ID_HWSTATUS = 165
 MAVLINK_MSG_ID_RADIO = 166
 MAVLINK_MSG_ID_LIMITS_STATUS = 167
 MAVLINK_MSG_ID_WIND = 168
+MAVLINK_MSG_ID_DATA16 = 169
+MAVLINK_MSG_ID_DATA32 = 170
+MAVLINK_MSG_ID_DATA64 = 171
 MAVLINK_MSG_ID_HEARTBEAT = 0
 MAVLINK_MSG_ID_SYS_STATUS = 1
 MAVLINK_MSG_ID_SYSTEM_TIME = 2
@@ -871,6 +888,48 @@ class MAVLink_wind_message(MAVLink_message):
 
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, 1, struct.pack('<fff', self.direction, self.speed, self.speed_z))
+
+class MAVLink_data16_message(MAVLink_message):
+        '''
+        Data packet, size 16
+        '''
+        def __init__(self, type, len, data):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_DATA16, 'DATA16')
+                self._fieldnames = ['type', 'len', 'data']
+                self.type = type
+                self.len = len
+                self.data = data
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 234, struct.pack('<BB16s', self.type, self.len, self.data))
+
+class MAVLink_data32_message(MAVLink_message):
+        '''
+        Data packet, size 32
+        '''
+        def __init__(self, type, len, data):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_DATA32, 'DATA32')
+                self._fieldnames = ['type', 'len', 'data']
+                self.type = type
+                self.len = len
+                self.data = data
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 73, struct.pack('<BB32s', self.type, self.len, self.data))
+
+class MAVLink_data64_message(MAVLink_message):
+        '''
+        Data packet, size 100
+        '''
+        def __init__(self, type, len, data):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_DATA64, 'DATA64')
+                self._fieldnames = ['type', 'len', 'data']
+                self.type = type
+                self.len = len
+                self.data = data
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 181, struct.pack('<BB64s', self.type, self.len, self.data))
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -2322,6 +2381,9 @@ mavlink_map = {
         MAVLINK_MSG_ID_RADIO : ( '<HHBBBBB', MAVLink_radio_message, [2, 3, 4, 5, 6, 0, 1], 21 ),
         MAVLINK_MSG_ID_LIMITS_STATUS : ( '<IIIIHBBBB', MAVLink_limits_status_message, [5, 0, 1, 2, 3, 4, 6, 7, 8], 144 ),
         MAVLINK_MSG_ID_WIND : ( '<fff', MAVLink_wind_message, [0, 1, 2], 1 ),
+        MAVLINK_MSG_ID_DATA16 : ( '<BB16s', MAVLink_data16_message, [0, 1, 2], 234 ),
+        MAVLINK_MSG_ID_DATA32 : ( '<BB32s', MAVLink_data32_message, [0, 1, 2], 73 ),
+        MAVLINK_MSG_ID_DATA64 : ( '<BB64s', MAVLink_data64_message, [0, 1, 2], 181 ),
         MAVLINK_MSG_ID_HEARTBEAT : ( '<IBBBBB', MAVLink_heartbeat_message, [1, 2, 3, 0, 4, 5], 50 ),
         MAVLINK_MSG_ID_SYS_STATUS : ( '<IIIHHhHHHHHHb', MAVLink_sys_status_message, [0, 1, 2, 3, 4, 5, 12, 6, 7, 8, 9, 10, 11], 124 ),
         MAVLINK_MSG_ID_SYSTEM_TIME : ( '<QI', MAVLink_system_time_message, [0, 1], 137 ),
@@ -3148,6 +3210,78 @@ class MAVLink(object):
                 '''
                 return self.send(self.wind_encode(direction, speed, speed_z))
             
+        def data16_encode(self, type, len, data):
+                '''
+                Data packet, size 16
+
+                type                      : data type (uint8_t)
+                len                       : data length (uint8_t)
+                data                      : raw data (uint8_t)
+
+                '''
+                msg = MAVLink_data16_message(type, len, data)
+                msg.pack(self)
+                return msg
+            
+        def data16_send(self, type, len, data):
+                '''
+                Data packet, size 16
+
+                type                      : data type (uint8_t)
+                len                       : data length (uint8_t)
+                data                      : raw data (uint8_t)
+
+                '''
+                return self.send(self.data16_encode(type, len, data))
+            
+        def data32_encode(self, type, len, data):
+                '''
+                Data packet, size 32
+
+                type                      : data type (uint8_t)
+                len                       : data length (uint8_t)
+                data                      : raw data (uint8_t)
+
+                '''
+                msg = MAVLink_data32_message(type, len, data)
+                msg.pack(self)
+                return msg
+            
+        def data32_send(self, type, len, data):
+                '''
+                Data packet, size 32
+
+                type                      : data type (uint8_t)
+                len                       : data length (uint8_t)
+                data                      : raw data (uint8_t)
+
+                '''
+                return self.send(self.data32_encode(type, len, data))
+            
+        def data64_encode(self, type, len, data):
+                '''
+                Data packet, size 100
+
+                type                      : data type (uint8_t)
+                len                       : data length (uint8_t)
+                data                      : raw data (uint8_t)
+
+                '''
+                msg = MAVLink_data64_message(type, len, data)
+                msg.pack(self)
+                return msg
+            
+        def data64_send(self, type, len, data):
+                '''
+                Data packet, size 100
+
+                type                      : data type (uint8_t)
+                len                       : data length (uint8_t)
+                data                      : raw data (uint8_t)
+
+                '''
+                return self.send(self.data64_encode(type, len, data))
+            
         def heartbeat_encode(self, type, autopilot, base_mode, custom_mode, system_status, mavlink_version=3):
                 '''
                 The heartbeat message shows that a system is present and responding.
@@ -3438,7 +3572,7 @@ class MAVLink(object):
 
                 target_system             : System ID (uint8_t)
                 target_component          : Component ID (uint8_t)
-                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
+                param_id                  : Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_index               : Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored) (int16_t)
 
                 '''
@@ -3460,7 +3594,7 @@ class MAVLink(object):
 
                 target_system             : System ID (uint8_t)
                 target_component          : Component ID (uint8_t)
-                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
+                param_id                  : Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_index               : Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored) (int16_t)
 
                 '''
@@ -3497,9 +3631,9 @@ class MAVLink(object):
                 keep track of received parameters and allows him to
                 re-request missing parameters after a loss or timeout.
 
-                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
+                param_id                  : Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_value               : Onboard parameter value (float)
-                param_type                : Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h (uint8_t)
+                param_type                : Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types. (uint8_t)
                 param_count               : Total number of onboard parameters (uint16_t)
                 param_index               : Index of this onboard parameter (uint16_t)
 
@@ -3515,9 +3649,9 @@ class MAVLink(object):
                 keep track of received parameters and allows him to
                 re-request missing parameters after a loss or timeout.
 
-                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
+                param_id                  : Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_value               : Onboard parameter value (float)
-                param_type                : Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h (uint8_t)
+                param_type                : Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types. (uint8_t)
                 param_count               : Total number of onboard parameters (uint16_t)
                 param_index               : Index of this onboard parameter (uint16_t)
 
@@ -3539,9 +3673,9 @@ class MAVLink(object):
 
                 target_system             : System ID (uint8_t)
                 target_component          : Component ID (uint8_t)
-                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
+                param_id                  : Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_value               : Onboard parameter value (float)
-                param_type                : Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h (uint8_t)
+                param_type                : Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types. (uint8_t)
 
                 '''
                 msg = MAVLink_param_set_message(target_system, target_component, param_id, param_value, param_type)
@@ -3563,9 +3697,9 @@ class MAVLink(object):
 
                 target_system             : System ID (uint8_t)
                 target_component          : Component ID (uint8_t)
-                param_id                  : Onboard parameter id, terminated by NUL if the length is less than 16 human-readable chars and WITHOUT null termination (NUL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
+                param_id                  : Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string (char)
                 param_value               : Onboard parameter value (float)
-                param_type                : Onboard parameter type: see MAVLINK_TYPE enum in mavlink/mavlink_types.h (uint8_t)
+                param_type                : Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types. (uint8_t)
 
                 '''
                 return self.send(self.param_set_encode(target_system, target_component, param_id, param_value, param_type))
