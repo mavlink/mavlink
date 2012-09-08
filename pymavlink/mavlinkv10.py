@@ -495,6 +495,7 @@ MAVLINK_MSG_ID_WIND = 168
 MAVLINK_MSG_ID_DATA16 = 169
 MAVLINK_MSG_ID_DATA32 = 170
 MAVLINK_MSG_ID_DATA64 = 171
+MAVLINK_MSG_ID_DATA96 = 172
 MAVLINK_MSG_ID_HEARTBEAT = 0
 MAVLINK_MSG_ID_SYS_STATUS = 1
 MAVLINK_MSG_ID_SYSTEM_TIME = 2
@@ -919,7 +920,7 @@ class MAVLink_data32_message(MAVLink_message):
 
 class MAVLink_data64_message(MAVLink_message):
         '''
-        Data packet, size 100
+        Data packet, size 64
         '''
         def __init__(self, type, len, data):
                 MAVLink_message.__init__(self, MAVLINK_MSG_ID_DATA64, 'DATA64')
@@ -930,6 +931,20 @@ class MAVLink_data64_message(MAVLink_message):
 
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, 181, struct.pack('<BB64s', self.type, self.len, self.data))
+
+class MAVLink_data96_message(MAVLink_message):
+        '''
+        Data packet, size 96
+        '''
+        def __init__(self, type, len, data):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_DATA96, 'DATA96')
+                self._fieldnames = ['type', 'len', 'data']
+                self.type = type
+                self.len = len
+                self.data = data
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 22, struct.pack('<BB96s', self.type, self.len, self.data))
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -2384,6 +2399,7 @@ mavlink_map = {
         MAVLINK_MSG_ID_DATA16 : ( '<BB16s', MAVLink_data16_message, [0, 1, 2], 234 ),
         MAVLINK_MSG_ID_DATA32 : ( '<BB32s', MAVLink_data32_message, [0, 1, 2], 73 ),
         MAVLINK_MSG_ID_DATA64 : ( '<BB64s', MAVLink_data64_message, [0, 1, 2], 181 ),
+        MAVLINK_MSG_ID_DATA96 : ( '<BB96s', MAVLink_data96_message, [0, 1, 2], 22 ),
         MAVLINK_MSG_ID_HEARTBEAT : ( '<IBBBBB', MAVLink_heartbeat_message, [1, 2, 3, 0, 4, 5], 50 ),
         MAVLINK_MSG_ID_SYS_STATUS : ( '<IIIHHhHHHHHHb', MAVLink_sys_status_message, [0, 1, 2, 3, 4, 5, 12, 6, 7, 8, 9, 10, 11], 124 ),
         MAVLINK_MSG_ID_SYSTEM_TIME : ( '<QI', MAVLink_system_time_message, [0, 1], 137 ),
@@ -3260,7 +3276,7 @@ class MAVLink(object):
             
         def data64_encode(self, type, len, data):
                 '''
-                Data packet, size 100
+                Data packet, size 64
 
                 type                      : data type (uint8_t)
                 len                       : data length (uint8_t)
@@ -3273,7 +3289,7 @@ class MAVLink(object):
             
         def data64_send(self, type, len, data):
                 '''
-                Data packet, size 100
+                Data packet, size 64
 
                 type                      : data type (uint8_t)
                 len                       : data length (uint8_t)
@@ -3281,6 +3297,30 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.data64_encode(type, len, data))
+            
+        def data96_encode(self, type, len, data):
+                '''
+                Data packet, size 96
+
+                type                      : data type (uint8_t)
+                len                       : data length (uint8_t)
+                data                      : raw data (uint8_t)
+
+                '''
+                msg = MAVLink_data96_message(type, len, data)
+                msg.pack(self)
+                return msg
+            
+        def data96_send(self, type, len, data):
+                '''
+                Data packet, size 96
+
+                type                      : data type (uint8_t)
+                len                       : data length (uint8_t)
+                data                      : raw data (uint8_t)
+
+                '''
+                return self.send(self.data96_encode(type, len, data))
             
         def heartbeat_encode(self, type, autopilot, base_mode, custom_mode, system_status, mavlink_version=3):
                 '''
