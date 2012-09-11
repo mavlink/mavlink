@@ -418,6 +418,13 @@ class mavfile(object):
             MAV_ACTION_CALIBRATE_PRESSURE = 20
             self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_PRESSURE)
 
+    def reboot_autopilot(self):
+        '''reboot the autopilot'''
+        if self.mavlink10():
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0,
+                                       1, 0, 0, 0, 0, 0, 0)
+
     def wait_gps_fix(self):
         self.recv_match(type='VFR_HUD', blocking=True)
         if self.mavlink10():
