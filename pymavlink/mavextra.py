@@ -140,6 +140,19 @@ def lowpass(var, key, factor):
         lowpass_data[key] = factor*lowpass_data[key] + (1.0 - factor)*var
     return lowpass_data[key]
 
+last_diff = {}
+
+def diff(var, key):
+    '''calculate differences between values'''
+    global last_diff
+    ret = 0
+    if not key in last_diff:
+        last_diff[key] = var
+        return 0
+    ret = var - last_diff[key]
+    last_diff[key] = var
+    return ret
+
 last_delta = {}
 
 def delta(var, key, tusec=None):
