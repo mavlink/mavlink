@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<!-- TODO: determine repeated elements like enum in enums 
+           and message in messages -->
+
+<!-- definition of simple elements -->
+<xs:element name="include" type="xs:anyURI"/>
+<xs:element name="version" type="xs:unsignedByte"/>
+<xs:element name="description" type="xs:string"/>
+
+
+<!-- definition of attributes -->
+<xs:attribute name="name" type="xs:string"/> <!-- enum,entry,message,field -->
+<xs:attribute name="index" type="xs:unsignedByte"/> <!-- param -->
+<xs:attribute name="value" type="xs:unsignedShort"/> <!-- entry -->
+<xs:attribute name="id" type="xs:unsignedByte"/> <!-- message -->
+<xs:attribute name="type">
+    <xs:restriction base="xs:string">
+        <xs:enumeration value="float"/>
+        <xs:enumeration value="double"/>
+        <xs:enumeration value="char"/>
+        <xs:pattern value="char\[([0-9])*\]"/>
+        <xs:enumeration value="int8_t"/>
+        <xs:enumeration value="uint8_t"/>
+        <xs:enumeration value="uint8_t_mavlink_version"/>
+        <xs:enumeration value="int16_t"/>
+        <xs:enumeration value="uint16_t"/>
+        <xs:enumeration value="int32_t"/>
+        <xs:enumeration value="uint32_t"/>
+        <xs:enumeration value="int64_t"/>
+        <xs:enumeration value="uint64_t"/>
+    </xs:restriction>
+</xs:attribute>
+
+
+<!-- definition of complex elements -->
+<xs:element name="param" type="xs:string"/>
+    <xs:complexType>
+        <xs:attribute ref="index" use="required"/>
+    </xs:complexType>
+</xs:element>
+
+<xs:element name="field" type="xs:string"/>
+    <xs:complexType>
+        <xs:attribute ref="type" use="required"/>
+        <xs:attribute ref="name" use="required"/>
+    </xs:complexType>
+</xs:element>
+
+<xs:element name="entry">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="description"/>
+            <xs:element ref="param"/>
+        </xs:sequence>
+        <xs:attribute ref="value" use="required"/>
+        <xs:attribute ref="name" use="required"/>
+    </xs:complexType>
+</xs:element>
+
+<xs:element name="enum">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="description"/>
+            <xs:element ref="entry"/>
+        </xs:sequence>
+        <xs:attribute ref="name" use="required"/>
+    </xs:complexType>
+</xs:element>
+
+<xs:element name="message">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="description"/>
+            <xs:element ref="field"/>
+        </xs:sequence>
+        <xs:attribute ref="id" use="required"/>
+        <xs:attribute ref="name" use="required"/>
+    </xs:complexType>
+</xs:element>
+
+<xs:element name="enums">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="enum"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+<xs:element name="messages">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="message"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+<xs:element name="mavlink">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="include"/>
+            <xs:element ref="version"/>
+            <xs:element ref="enums"/>
+            <xs:element ref="messages"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+
