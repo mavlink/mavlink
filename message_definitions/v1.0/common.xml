@@ -1080,36 +1080,36 @@
                <field type="uint16_t" name="hdg">Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: 65535</field>
           </message>
           <message id="34" name="RC_CHANNELS_SCALED">
-               <description>The scaled values of the RC channels received. (-100%) -10000, (0%) 0, (100%) 10000</description>
+               <description>The scaled values of the RC channels received. (-100%) -10000, (0%) 0, (100%) 10000. Channels that are inactive should be set to 65535.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
-               <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos.</field>
-               <field type="int16_t" name="chan1_scaled">RC channel 1 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
-               <field type="int16_t" name="chan2_scaled">RC channel 2 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
-               <field type="int16_t" name="chan3_scaled">RC channel 3 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
-               <field type="int16_t" name="chan4_scaled">RC channel 4 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
-               <field type="int16_t" name="chan5_scaled">RC channel 5 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
-               <field type="int16_t" name="chan6_scaled">RC channel 6 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
-               <field type="int16_t" name="chan7_scaled">RC channel 7 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
-               <field type="int16_t" name="chan8_scaled">RC channel 8 value scaled, (-100%) -10000, (0%) 0, (100%) 10000</field>
-               <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 255: 100%</field>
+               <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows for more than 8 servos.</field>
+               <field type="int16_t" name="chan1_scaled">RC channel 1 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
+               <field type="int16_t" name="chan2_scaled">RC channel 2 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
+               <field type="int16_t" name="chan3_scaled">RC channel 3 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
+               <field type="int16_t" name="chan4_scaled">RC channel 4 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
+               <field type="int16_t" name="chan5_scaled">RC channel 5 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
+               <field type="int16_t" name="chan6_scaled">RC channel 6 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
+               <field type="int16_t" name="chan7_scaled">RC channel 7 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
+               <field type="int16_t" name="chan8_scaled">RC channel 8 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
+               <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 100: 100%, 255: invalid/unknown.</field>
           </message>
           <message id="35" name="RC_CHANNELS_RAW">
                <description>The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
-               <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos.</field>
-               <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds</field>
-               <field type="uint16_t" name="chan2_raw">RC channel 2 value, in microseconds</field>
-               <field type="uint16_t" name="chan3_raw">RC channel 3 value, in microseconds</field>
-               <field type="uint16_t" name="chan4_raw">RC channel 4 value, in microseconds</field>
-               <field type="uint16_t" name="chan5_raw">RC channel 5 value, in microseconds</field>
-               <field type="uint16_t" name="chan6_raw">RC channel 6 value, in microseconds</field>
-               <field type="uint16_t" name="chan7_raw">RC channel 7 value, in microseconds</field>
-               <field type="uint16_t" name="chan8_raw">RC channel 8 value, in microseconds</field>
-               <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 255: 100%</field>
+               <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows for more than 8 servos.</field>
+               <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds. A value of 65535 implies the channel is unused.</field>
+               <field type="uint16_t" name="chan2_raw">RC channel 2 value, in microseconds. A value of 65535 implies the channel is unused.</field>
+               <field type="uint16_t" name="chan3_raw">RC channel 3 value, in microseconds. A value of 65535 implies the channel is unused.</field>
+               <field type="uint16_t" name="chan4_raw">RC channel 4 value, in microseconds. A value of 65535 implies the channel is unused.</field>
+               <field type="uint16_t" name="chan5_raw">RC channel 5 value, in microseconds. A value of 65535 implies the channel is unused.</field>
+               <field type="uint16_t" name="chan6_raw">RC channel 6 value, in microseconds. A value of 65535 implies the channel is unused.</field>
+               <field type="uint16_t" name="chan7_raw">RC channel 7 value, in microseconds. A value of 65535 implies the channel is unused.</field>
+               <field type="uint16_t" name="chan8_raw">RC channel 8 value, in microseconds. A value of 65535 implies the channel is unused.</field>
+               <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 100: 100%, 255: invalid/unknown.</field>
           </message>
           <message id="36" name="SERVO_OUTPUT_RAW">
                <description>The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.</description>
-               <field type="uint32_t" name="time_usec">Timestamp (microseconds since system boot)</field>
+               <field type="uint32_t" name="time_boot_ms">Timestamp (microseconds since system boot)</field>
                <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos.</field>
                <field type="uint16_t" name="servo1_raw">Servo output 1 value, in microseconds</field>
                <field type="uint16_t" name="servo2_raw">Servo output 2 value, in microseconds</field>
@@ -1121,7 +1121,7 @@
                <field type="uint16_t" name="servo8_raw">Servo output 8 value, in microseconds</field>
           </message>
           <message id="37" name="MISSION_REQUEST_PARTIAL_LIST">
-               <description>Request the overall list of MISSIONs from the system/component. http://qgroundcontrol.org/mavlink/waypoint_protocol</description>
+               <description>Request a partial list of mission items from the system/component. http://qgroundcontrol.org/mavlink/waypoint_protocol. If start and end index are the same, just send one waypoint.</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
                <field type="int16_t" name="start_index">Start index, 0 by default</field>
@@ -1195,7 +1195,7 @@
                <field type="uint8_t" name="type">See MAV_MISSION_RESULT enum</field>
           </message>
           <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
-               <description>As local MISSIONs exist, the global MISSION reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
+               <description>As local waypoints exist, the global MISSION reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="int32_t" name="latitude">global position * 1E7</field>
                <field type="int32_t" name="longitude">global position * 1E7</field>
@@ -1362,15 +1362,13 @@
                <field type="uint8_t" name="on_off">1 stream is enabled, 0 stream is stopped.</field>
           </message>
           <message id="69" name="MANUAL_CONTROL">
-               <field type="uint8_t" name="target">The system to be controlled</field>
-               <field type="float" name="roll">roll</field>
-               <field type="float" name="pitch">pitch</field>
-               <field type="float" name="yaw">yaw</field>
-               <field type="float" name="thrust">thrust</field>
-               <field type="uint8_t" name="roll_manual">roll control enabled auto:0, manual:1</field>
-               <field type="uint8_t" name="pitch_manual">pitch auto:0, manual:1</field>
-               <field type="uint8_t" name="yaw_manual">yaw auto:0, manual:1</field>
-               <field type="uint8_t" name="thrust_manual">thrust auto:0, manual:1</field>
+               <description>This message provides an API for manually controlling the vehicle using standard joystick axes nomenclature, along with a joystick-like input device. Unused axes can be disabled an buttons are also transmit as boolean values of their </description>
+               <field type="uint8_t" name="target">The system to be controlled.</field>
+               <field type="int16_t" name="x">X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.</field>
+               <field type="int16_t" name="y">Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.</field>
+               <field type="int16_t" name="z">Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle.</field>
+               <field type="int16_t" name="r">R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with counter-clockwise being 1000 and clockwise being -1000, and the yaw of a vehicle.</field>
+               <field type="uint16_t" name="buttons">A bitfield corresponding to the joystick buttons' current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.</field>
           </message>
           <message id="70" name="RC_CHANNELS_OVERRIDE">
                <description>The RAW values of the RC channels sent to the MAV to override info received from the RC radio. A value of -1 means no change to that channel. A value of 0 means control of that channel should be released back to the RC radio. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>

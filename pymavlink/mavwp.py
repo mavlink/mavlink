@@ -76,8 +76,10 @@ class MAVWPLoader(object):
             25: mavutil.mavlink.MAV_CMD_NAV_WAYPOINT ,
             27: mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM
             }
+        comment = ''
         for line in file:
             if line.startswith('#'):
+                comment = line[1:].lstrip()
                 continue
             line = line.strip()
             if not line:
@@ -107,12 +109,15 @@ class MAVWPLoader(object):
                 raise MAVWPError("Unknown v100 waypoint action %u" % w.command)
 
             w.command = cmdmap[w.command]
-            self.add(w)
+            self.add(w, comment)
+            comment = ''
 
     def _read_waypoints_v110(self, file):
         '''read a version 110 waypoint'''
+        comment = ''
         for line in file:
             if line.startswith('#'):
+                comment = line[1:].lstrip()
                 continue
             line = line.strip()
             if not line:
@@ -138,7 +143,8 @@ class MAVWPLoader(object):
                    float(a[9]),  # y (longitude)
                    float(a[10])  # z (altitude)
                    )
-            self.add(w)
+            self.add(w, comment)
+            comment = ''
 
     def _read_waypoints_pb_110(self, file):
         if not HAVE_PROTOBUF:
@@ -250,28 +256,46 @@ class MAVWPLoader(object):
                 w.x, w.y, w.z, w.autocontinue))
         f.close()
 
-    def polygon(self):
-	    '''return a polygon for the waypoints'''
-	    points = []
+    def polygon(self, done=None):
+        '''return a polygon for the waypoints'''
+        points = []
+        if done is None:
             done = set()
-            idx = 0
-            while idx < self.count():
-                if idx in done:
-                    break
-                done.add(idx)
-                w = self.wp(idx)
-                if w.command == mavutil.mavlink.MAV_CMD_DO_JUMP:
-                    idx = int(w.param1)
-                    continue
-                idx += 1
-                if (w.x != 0 or w.y != 0) and w.command in [mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
-                                                            mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM,
-                                                            mavutil.mavlink.MAV_CMD_NAV_LOITER_TURNS,
-                                                            mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
-                                                            mavutil.mavlink.MAV_CMD_NAV_LAND,
-                                                            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF]:
-                    points.append((w.x, w.y))
-	    return points
+        idx = 0
+
+        # find first point not done yet
+        while idx < self.count():
+            if not idx in done:
+                break
+            idx += 1
+            
+        while idx < self.count():
+            if idx in done:
+                break
+            done.add(idx)
+            w = self.wp(idx)
+            if w.command == mavutil.mavlink.MAV_CMD_DO_JUMP:
+                idx = int(w.param1)
+                continue
+            idx += 1
+            if (w.x != 0 or w.y != 0) and w.command in [mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
+                                                        mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM,
+                                                        mavutil.mavlink.MAV_CMD_NAV_LOITER_TURNS,
+                                                        mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
+                                                        mavutil.mavlink.MAV_CMD_NAV_LAND,
+                                                        mavutil.mavlink.MAV_CMD_NAV_TAKEOFF]:
+                points.append((w.x, w.y))
+        return points
+
+    def polygon_list(self):
+        '''return a list of polygons for the waypoints'''
+        done = set()
+        ret = []
+        while len(done) != self.count():
+            p = self.polygon(done)
+            if len(p) > 0:
+                ret.append(p)
+        return ret
 
 class MAVFenceError(Exception):
         '''MAVLink fence error class'''
