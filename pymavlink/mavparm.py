@@ -11,6 +11,7 @@ class MAVParmDict(dict):
         self.exclude_load = ['SYSID_SW_MREV', 'SYS_NUM_RESETS', 'ARSPD_OFFSET', 'GND_ABS_PRESS',
                              'GND_TEMP', 'CMD_TOTAL', 'CMD_INDEX', 'LOG_LASTFILE', 'FENCE_TOTAL',
                              'FORMAT_VERSION' ]
+        self.mindelta = 0.000001
 
 
     def mavset(self, mav, name, value, retries=3):
@@ -56,7 +57,7 @@ class MAVParmDict(dict):
             f = open(filename, mode='r')
         except:
             print("Failed to open file '%s'" % filename)
-            return
+            return False
         count = 0
         changed = 0
         for line in f:
@@ -77,7 +78,7 @@ class MAVParmDict(dict):
                     print("Unknown parameter %s" % a[0])
                     continue
                 old_value = self.__getitem__(a[0])
-                if math.fabs(old_value - float(a[1])) > 0.000001:
+                if math.fabs(old_value - float(a[1])) > self.mindelta:
                     if self.mavset(mav, a[0], a[1]):
                         print("changed %s from %f to %f" % (a[0], old_value, float(a[1])))
                     changed += 1
@@ -89,6 +90,7 @@ class MAVParmDict(dict):
             print("Loaded %u parameters from %s (changed %u)" % (count, filename, changed))
         else:
             print("Loaded %u parameters from %s" % (count, filename))
+        return True
 
     def show(self, wildcard='*'):
         '''show parameters'''
@@ -97,3 +99,18 @@ class MAVParmDict(dict):
             if fnmatch.fnmatch(str(p).upper(), wildcard.upper()):
                 print("%-15.15s %f" % (str(p), self.get(p)))
 
+    def diff(self, filename):
+        '''show differences with another parameter file'''
+        other = MAVParmDict()
+        if not other.load(filename):
+            return
+        keys = sorted(list(set(self.keys()).union(set(other.keys()))))
+        for k in keys:
+            if not k in other:
+                print("%-15.15s              %12.4f" % (k, self[k]))
+            elif not k in self:
+                print("%-15.15s %12.4f" % (k, other[k]))
+            elif abs(self[k] - other[k]) > self.mindelta:
+                print("%-15.15s %12.4f %12.4f" % (k, other[k], self[k]))
+                
+        
