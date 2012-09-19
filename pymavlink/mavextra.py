@@ -9,13 +9,12 @@ Released under GNU GPL version 3 or later
 import os, sys
 from math import *
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples'))
-''' 
-Modified on August 6th, 2012 by David Goodman
-    Removed the rotmat import below since it is not running under
-    python3.2, and the functions within this file that use Vector3
-    and Matrix3 are not called by mavgen.py
-'''
-# from rotmat import Vector3, Matrix3
+
+try:
+    # rotmat doesn't work on Python3.2 yet
+    from rotmat import Vector3, Matrix3
+except Exception:
+    pass
 
 
 def kmh(mps):
