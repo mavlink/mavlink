@@ -219,6 +219,26 @@ def roll_estimate(RAW_IMU,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
             rz *= mul[2]
     return lowpass(degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2))),'_roll',smooth)
 
+def roll_estimate2(RAW_IMU,GPS_RAW_INT,ATTITUDE,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
+    '''estimate roll from accelerometer'''
+    rx = RAW_IMU.xacc * 9.81 / 1000.0
+    ry = RAW_IMU.yacc * 9.81 / 1000.0
+    rz = RAW_IMU.zacc * 9.81 / 1000.0
+    ry -= ATTITUDE.yawspeed * GPS_RAW_INT.vel*0.01
+    rz += ATTITUDE.pitchspeed * GPS_RAW_INT.vel*0.01
+    if SENSOR_OFFSETS is not None and ofs is not None:
+        rx += SENSOR_OFFSETS.accel_cal_x
+        ry += SENSOR_OFFSETS.accel_cal_y
+        rz += SENSOR_OFFSETS.accel_cal_z
+        rx -= ofs[0]
+        ry -= ofs[1]
+        rz -= ofs[2]
+        if mul is not None:
+            rx *= mul[0]
+            ry *= mul[1]
+            rz *= mul[2]
+    return lowpass(degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2))),'_roll',smooth)
+
 def pitch_estimate(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
     '''estimate pitch from accelerometer'''
     rx = RAW_IMU.xacc * 9.81 / 1000.0
