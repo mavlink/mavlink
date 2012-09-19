@@ -271,7 +271,11 @@ class mavfile(object):
 
     def param_fetch_one(self, name):
         '''initiate fetch of one parameter'''
-        self.mav.param_request_read_send(self.target_system, self.target_component, name, -1)
+        try:
+            idx = int(name)
+            self.mav.param_request_read_send(self.target_system, self.target_component, "", idx)
+        except Exception:
+            self.mav.param_request_read_send(self.target_system, self.target_component, name, -1)
 
     def time_since(self, mtype):
         '''return the time since the last message of type mtype was received'''
