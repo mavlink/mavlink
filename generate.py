@@ -167,10 +167,18 @@ class Application(Frame):
             tkinter.messagebox.showinfo('Successfully Generated Headers', 'Headers generated succesfully.')
 
         except Exception as ex:
+            exStr = formatErrorMessage(str(ex));
             if DEBUG:
                 print('An occurred while generating headers:\n\t{0!s}'.format(ex))
-            tkinter.messagebox.showerror('Error Generating Headers','An error occurred in mavgen: {0!s}'.format(ex))
+            tkinter.messagebox.showerror('Error Generating Headers','An error occurred in mavgen:\n{0!s}'.format(exStr))
             return
+
+"""\
+Format the mavgen exceptions by removing "ERROR: ".
+"""
+def formatErrorMessage(message):
+    reObj = re.compile(r'^ERROR:\s+',re.M);
+    return re.sub(reObj, '', message)
 
 
 # End of Application class 
