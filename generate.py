@@ -13,6 +13,9 @@ Notes:
     Working on Windows 7 SP1, with Python 2.7.3 and 3.2.3 
     Mavgen doesn't work with Python 3.x yet
 
+* 2012-9-25 -- dagoodman
+    Passing error limit into mavgen to make output cleaner.
+
 Copyright 2012 David Goodman (dagoodman@soe.ucsc.edu)
 Released under GNU GPL version 3 or later
 
@@ -42,6 +45,7 @@ from mavgen import *
 
 DEBUG = False
 title = "MAVLink Generator"
+error_limit = 5
 
 
 class Application(Frame):              
@@ -156,7 +160,7 @@ class Application(Frame):
         # TODO write XML schema (XDS)
 
         # Generate headers
-        opts = MavgenOptions(self.language_value.get(), self.protocol_value.get()[1:], self.out_value.get());
+        opts = MavgenOptions(self.language_value.get(), self.protocol_value.get()[1:], self.out_value.get(), error_limit);
         args = [self.xml_value.get()]
         if DEBUG:
             print("Generating headers")
@@ -170,15 +174,19 @@ class Application(Frame):
             exStr = formatErrorMessage(str(ex));
             if DEBUG:
                 print('An occurred while generating headers:\n\t{0!s}'.format(ex))
-            tkinter.messagebox.showerror('Error Generating Headers','An error occurred in mavgen:\n{0!s}'.format(exStr))
+            tkinter.messagebox.showerror('Error Generating Headers','{0!s}'.format(exStr))
             return
 
 """\
 Format the mavgen exceptions by removing "ERROR: ".
 """
 def formatErrorMessage(message):
-    reObj = re.compile(r'^ERROR:\s+',re.M);
-    return re.sub(reObj, '', message)
+    reObj = re.compile(r'^(ERROR):\s+',re.M);
+    matches = re.findall(reObj, message);
+    prefix = ("An error occurred in mavgen:" if len(matches) == 1 else "Errors occured in mavgen:\n")
+    message = re.sub(reObj, '\n', message);
+
+    return prefix + message
 
 
 # End of Application class 
@@ -189,10 +197,11 @@ This class mimicks an ArgumentParser Namespace since mavgen only
 excepts an object for its opts argument.
 """
 class MavgenOptions:
-    def __init__(self,language,protocol,output):
+    def __init__(self,language,protocol,output,error_limit):
         self.language = language
         self.wire_protocol = protocol
         self.output = output
+        self.error_limit = error_limit;
 # End of MavgenOptions class 
 # ---------------------------------
 
