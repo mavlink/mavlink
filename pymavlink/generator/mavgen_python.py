@@ -112,7 +112,7 @@ class MAVLink_message(object):
         return d
 
     def to_json(self):
-        return json.dumps(self.to_dict)
+        return json.dumps(self.to_dict())
 
     def pack(self, mav, crc_extra, payload):
         self._payload = payload
