@@ -28,6 +28,7 @@
         <xs:pattern value="uint32_t(\[([0-9])+\])?"/>
         <xs:pattern value="int64_t(\[([0-9])+\])?"/>
         <xs:pattern value="uint64_t(\[([0-9])+\])?"/>
+        <xs:pattern value="array\[[0-9]+\]"/> <!-- 0.9 compatibility -->
     </xs:restriction>
   </xs:simpleType>
 </xs:attribute>
@@ -85,7 +86,7 @@
 <xs:element name="enums">
     <xs:complexType>
         <xs:sequence>
-            <xs:element ref="enum" maxOccurs="unbounded"/>
+            <xs:element ref="enum" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 </xs:element>
