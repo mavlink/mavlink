@@ -15,6 +15,8 @@ parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', he
 parser.add_option("--planner",dest="planner", action='store_true', help="use planner file format")
 parser.add_option("--robust",dest="robust", action='store_true', help="Enable robust parsing (skip over bad data)")
 parser.add_option("--deltat", type='float', default=1.0, help="loss threshold in seconds")
+parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
+parser.add_option("--types",  default=None, help="types of messages (comma separated)")
 
 (opts, args) = parser.parse_args()
 
@@ -34,10 +36,16 @@ def sigloss(logfile):
 
     last_t = 0
 
+    types = opts.types
+    if types is not None:
+        types = types.split(',')
+
     while True:
-        m = mlog.recv_match()
+        m = mlog.recv_match(condition=opts.condition)
         if m is None:
             return
+        if types is not None and m.get_type() not in types:
+            continue
         if opts.notimestamps:
             if not 'usec' in m._fieldnames:
                 continue
