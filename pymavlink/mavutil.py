@@ -147,6 +147,8 @@ class mavfile(object):
 
         if 'usec' in msg.__dict__:
             self.uptime = msg.usec * 1.0e-6
+        if 'time_boot_ms' in msg.__dict__:
+            self.uptime = msg.time_boot_ms * 1.0e-3
 
         if self._timestamp is not None:
             if self.notimestamps:
