@@ -1533,6 +1533,40 @@
              <field type="float" name="temperature">Temperature in degrees celsius</field>
              <field type="uint16_t" name="fields_updated">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
          </message>
+         <message id="147" name="BATTERY_STATUS">
+               <description>Transmitte battery informations for a accu pack.</description>
+               <field type="uint8_t" name="accu_id">Accupack ID</field>
+               <field type="uint16_t" name="voltage_cell_1">Battery voltage of cell 1, in millivolts (1 = 1 millivolt)</field>
+               <field type="uint16_t" name="voltage_cell_2">Battery voltage of cell 2, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="uint16_t" name="voltage_cell_3">Battery voltage of cell 3, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="uint16_t" name="voltage_cell_4">Battery voltage of cell 4, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="uint16_t" name="voltage_cell_5">Battery voltage of cell 5, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="uint16_t" name="voltage_cell_6">Battery voltage of cell 6, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="int16_t" name="current_battery">Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current</field>
+               <field type="int8_t" name="battery_remaining">Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot does not estimate the remaining battery</field>
+          </message>
+          <message id="148" name="SETPOINT_8DOF">
+               <description>Set the 8 DOF setpoint for a controller.</description>
+               <field type="uint8_t" name="target_system">System ID</field>
+               <field type="float" name="val1">Value 1</field>
+               <field type="float" name="val2">Value 2</field>
+               <field type="float" name="val3">Value 3</field>
+               <field type="float" name="val4">Value 4</field>
+               <field type="float" name="val5">Value 5</field>
+               <field type="float" name="val6">Value 6</field>
+               <field type="float" name="val7">Value 7</field>
+               <field type="float" name="val8">Value 8</field>
+          </message>
+          <message id="149" name="SETPOINT_6DOF">
+               <description>Set the 6 DOF setpoint for a attitude and position controller.</description>
+               <field type="uint8_t" name="target_system">System ID</field>
+               <field type="float" name="trans_x">Translational Component in x</field>
+               <field type="float" name="trans_y">Translational Component in y</field>
+               <field type="float" name="trans_z">Translational Component in z</field>
+               <field type="float" name="rot_x">Rotational Component in x</field>
+               <field type="float" name="rot_y">Rotational Component in y</field>
+               <field type="float" name="rot_z">Rotational Component in z</field>
+          </message>
           <!-- MESSAGE IDs 150 - 240: Space for custom messages in individual projectname_messages.xml files -->
           <message id="249" name="MEMORY_VECT">
                <description>Send raw controller memory. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
