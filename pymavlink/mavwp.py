@@ -270,12 +270,17 @@ class MAVWPLoader(object):
             idx += 1
             
         while idx < self.count():
+            w = self.wp(idx)
             if idx in done:
+                if w.x != 0 or w.y != 0:
+                    points.append((w.x, w.y))
                 break
             done.add(idx)
-            w = self.wp(idx)
             if w.command == mavutil.mavlink.MAV_CMD_DO_JUMP:
                 idx = int(w.param1)
+                w = self.wp(idx)
+                if w.x != 0 or w.y != 0:
+                    points.append((w.x, w.y))
                 continue
             idx += 1
             if (w.x != 0 or w.y != 0) and w.command in [mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,

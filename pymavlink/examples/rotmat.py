@@ -105,7 +105,7 @@ class Vector3:
         return acos((self * v) / (self.length() * v.length()))
 
     def normalized(self):
-        return self / self.length()
+        return self.__div__(self.length())
     
     def normalize(self):
         v = self.normalized()
@@ -342,7 +342,7 @@ def test_two_vectors():
             print('err=%f' % diff.length())
             print("r/p/y = %.1f %.1f %.1f" % (
                 degrees(r), degrees(p), degrees(y)))
-            print v1.normalized(), v2.normalized(), v3.normalized()
+            print(v1.normalized(), v2.normalized(), v3.normalized())
 
 def test_plane():
     '''testing line/plane intersection'''
@@ -350,12 +350,12 @@ def test_plane():
     plane = Plane(Vector3(0,0,0), Vector3(0,0,1))
     line = Line(Vector3(0,0,100), Vector3(10, 10, -90))
     p = line.plane_intersection(plane)
-    print p
+    print(p)
     
 if __name__ == "__main__":
     import doctest
-    #doctest.testmod()
-    #test_euler()
+    doctest.testmod()
+    test_euler()
     test_two_vectors()
     
     

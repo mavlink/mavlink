@@ -147,6 +147,8 @@ class mavfile(object):
 
         if 'usec' in msg.__dict__:
             self.uptime = msg.usec * 1.0e-6
+        if 'time_boot_ms' in msg.__dict__:
+            self.uptime = msg.time_boot_ms * 1.0e-3
 
         if self._timestamp is not None:
             if self.notimestamps:
@@ -271,7 +273,11 @@ class mavfile(object):
 
     def param_fetch_one(self, name):
         '''initiate fetch of one parameter'''
-        self.mav.param_request_read_send(self.target_system, self.target_component, name, -1)
+        try:
+            idx = int(name)
+            self.mav.param_request_read_send(self.target_system, self.target_component, "", idx)
+        except Exception:
+            self.mav.param_request_read_send(self.target_system, self.target_component, name, -1)
 
     def time_since(self, mtype):
         '''return the time since the last message of type mtype was received'''
