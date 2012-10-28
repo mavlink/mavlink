@@ -10,7 +10,7 @@ Notes:
 
 * 2012-7-17 -- dagoodman
     Only GUI code working on Mac 10.6.8 darwin, with Python 3.2.3
-    Working on Windows 7 SP1, with Python 2.7.3 and 3.2.3 
+    Working on Windows 7 SP1, with Python 2.7.3 and 3.2.3
     Mavgen doesn't work with Python 3.x yet
 
 Copyright 2012 David Goodman (dagoodman@soe.ucsc.edu)
@@ -21,7 +21,7 @@ import os
 import re
 import pprint
 
-# Python 2.x and 3.x compatability 
+# Python 2.x and 3.x compatability
 try:
     from tkinter import *
     import tkinter.filedialog
@@ -44,11 +44,11 @@ DEBUG = False
 title = "MAVLink Generator"
 
 
-class Application(Frame):              
+class Application(Frame):
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack_propagate(0)
-        self.grid( sticky=N+S+E+W)                    
+        self.grid( sticky=N+S+E+W)
         self.createWidgets()
         self.pp = pprint.PrettyPrinter(indent=4)
 
@@ -173,25 +173,26 @@ class Application(Frame):
             return
 
 
-# End of Application class 
+# End of Application class
 # ---------------------------------
 
 """\
 This class mimicks an ArgumentParser Namespace since mavgen only
-excepts an object for its opts argument.
+accepts an object for its opts argument.
 """
 class MavgenOptions:
     def __init__(self,language,protocol,output):
         self.language = language
         self.wire_protocol = protocol
         self.output = output
-# End of MavgenOptions class 
+# End of MavgenOptions class
 # ---------------------------------
 
 
 # ---------------------------------
 # Start
 
-app = Application()                    
-app.master.title(title) 
-app.mainloop()  
+if __name__ == '__main__':
+  app = Application()
+  app.master.title(title)
+  app.mainloop()
