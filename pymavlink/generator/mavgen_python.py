@@ -170,7 +170,6 @@ class MAVLink_%s_message(MAVLink_message):
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, %u, struct.pack('%s'""" % (m.crc_extra, m.endianessPrefix + "".join(m.fmtstr)))
 
-        # FIXME
         for field in m.ordered_fields:
             if field.array_length:
                 for i in xrange(field.array_length):
