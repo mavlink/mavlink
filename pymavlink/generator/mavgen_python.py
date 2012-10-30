@@ -168,9 +168,15 @@ class MAVLink_%s_message(MAVLink_message):
                 outf.write("                self.%s = %s\n" % (f.name, f.name))
         outf.write("""
         def pack(self, mav):
-                return MAVLink_message.pack(self, mav, %u, struct.pack('%s'""" % (m.crc_extra, "".join(m.fmtstr)))
-        if len(m.fields) != 0:
-                outf.write(", self." + ", self.".join(m.ordered_fieldnames))
+                return MAVLink_message.pack(self, mav, %u, struct.pack('%s'""" % (m.crc_extra, m.endianessPrefix + "".join(m.fmtstr)))
+
+        # FIXME
+        for field in m.ordered_fields:
+            if field.array_length:
+                for i in xrange(field.array_length):
+                    outf.write(", self.%s[%i]" % (field.name, i))
+            else:
+                outf.write(", self." + field.name)
         outf.write("))\n")
 
 
@@ -202,8 +208,8 @@ def generate_mavlink_class(outf, msgs, xml):
 
     outf.write("\n\nmavlink_map = {\n");
     for m in msgs:
-        outf.write("        MAVLINK_MSG_ID_%s : ( %s, MAVLink_%s_message, %s, %u ),\n" % (
-            m.name.upper(), m.fmtstr, m.name.lower(), m.order_map, m.crc_extra))
+        outf.write("        MAVLINK_MSG_ID_%s : ( %s, MAVLink_%s_message, %s, %u, '%s' ),\n" % (
+            m.name.upper(), m.fmtstr, m.name.lower(), m.order_map, m.crc_extra, m.endianessPrefix))
     outf.write("}\n\n")
 
     t.write(outf, """
@@ -353,7 +359,7 @@ class MAVLink(object):
                     raise MAVError('unknown MAVLink message ID %u' % msgId)
 
                 # decode the payload
-                (fmt, type, order_map, crc_extra) = mavlink_map[msgId]
+                (fmt, type, order_map, crc_extra, endianess) = mavlink_map[msgId]
 
                 # decode the checksum
                 try:
@@ -370,8 +376,9 @@ class MAVLink(object):
                     tlist = []
                     bytesUnpacked = 6
                     for fieldFmt in fmt:
-                        bytesToUnpack = struct.calcsize(fieldFmt)
-                        tlist.append(struct.unpack(fieldFmt, msgbuf[bytesUnpacked : bytesUnpacked+bytesToUnpack]))
+                        prefixedFmt = endianess + fieldFmt
+                        bytesToUnpack = struct.calcsize(prefixedFmt)
+                        tlist.append(struct.unpack(prefixedFmt, msgbuf[bytesUnpacked : bytesUnpacked+bytesToUnpack]))
                         bytesUnpacked += bytesToUnpack
                         if len(tlist[-1]) == 1:
                             tlist[-1], = tlist[-1] # unpack single element tuples
@@ -467,10 +474,10 @@ def generate(basename, xml):
 
     for m in msgs:
         if xml[0].little_endian:
-            endianessPrefix = '<'
+            m.endianessPrefix = '<'
         else:
-            endianessPrefix = '>'
-        m.fmtstr = [endianessPrefix + mavfmt(f) for f in m.ordered_fields]
+            m.endianessPrefix = '>'
+        m.fmtstr = [mavfmt(f) for f in m.ordered_fields]
         m.order_map = [ 0 ] * len(m.fieldnames)
         for i in range(0, len(m.fieldnames)):
             m.order_map[i] = m.ordered_fieldnames.index(m.fieldnames[i])
