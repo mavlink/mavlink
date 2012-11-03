@@ -23,6 +23,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 import mavparse
 import mavgen_python
 import mavgen_c
+import mavgen_cs
 
 def mavgen(opts, args) :
     """Generate mavlink message formatters and parsers (C and Python ) using options
@@ -75,6 +76,8 @@ def mavgen(opts, args) :
         mavgen_python.generate(opts.output, xml)
     elif opts.language == 'c':
         mavgen_c.generate(opts.output, xml)
+    elif opts.language == 'cs':
+        mavgen_cs.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
     
