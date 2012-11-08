@@ -143,6 +143,9 @@ class MAVWPLoader(object):
                    float(a[9]),  # y (longitude)
                    float(a[10])  # z (altitude)
                    )
+            if w.command == 0 and w.seq == 0 and self.count() == 0:
+                # special handling for Mission Planner created home wp
+                w.command = mavutil.mavlink.MAV_CMD_NAV_WAYPOINT
             self.add(w, comment)
             comment = ''
 
