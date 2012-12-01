@@ -1411,6 +1411,24 @@
                <field type="uint16_t" name="command">Command ID, as defined by MAV_CMD enum.</field>
                <field type="uint8_t" name="result">See MAV_RESULT enum</field>
           </message>
+         <message id="80" name="ROLL_PITCH_YAW_RATES_THRUST_SETPOINT">
+             <description>Setpoint in roll, pitch, yaw rates and thrust currently active on the system.</description>
+             <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
+             <field type="float" name="roll_rate">Desired roll rate in radians per second</field>
+             <field type="float" name="pitch_rate">Desired pitch rate in radians per second</field>
+             <field type="float" name="yaw_rate">Desired yaw rate in radians per second</field>
+             <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1</field>
+         </message>
+         <message id="81" name="MANUAL_SETPOINT">
+             <description>Setpoint in roll, pitch, yaw and thrust from the operator</description>
+             <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
+             <field type="float" name="roll">Desired roll rate in radians per second</field>
+             <field type="float" name="pitch">Desired pitch rate in radians per second</field>
+             <field type="float" name="yaw">Desired yaw rate in radians per second</field>
+             <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1</field>
+             <field type="uint8_t" name="mode_switch">Flight mode switch position, 0.. 255</field>
+             <field type="uint8_t" name="manual_override_switch">Override mode switch position, 0.. 255</field>
+         </message>
           <message id="89" name="LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET">
                <description>The offset in X, Y, Z and yaw between the LOCAL_POSITION_NED messages of MAV X and the global coordinate frame in NED coordinates. Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
@@ -1532,6 +1550,25 @@
              <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
              <field type="float" name="temperature">Temperature in degrees celsius</field>
              <field type="uint16_t" name="fields_updated">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
+         </message>
+         <message id="110" name="FILE_TRANSFER_START">
+             <description>Begin file transfer</description>
+             <field type="uint64_t" name="transfer_uid">Unique transfer ID</field>
+             <field type="char[240]" name="dest_path">Destination path</field>
+             <field type="uint8_t" name="direction">Transfer direction: 0: from requester, 1: to requester</field>
+             <field type="uint32_t" name="file_size">File size in bytes</field>
+             <field type="uint8_t" name="flags">RESERVED</field>
+         </message>
+         <message id="111" name="FILE_TRANSFER_DIR_LIST">
+             <description>Get directory listing</description>
+             <field type="uint64_t" name="transfer_uid">Unique transfer ID</field>
+             <field type="char[240]" name="dir_path">Directory path to list</field>
+             <field type="uint8_t" name="flags">RESERVED</field>
+         </message>
+         <message id="112" name="FILE_TRANSFER_RES">
+             <description>File transfer result</description>
+             <field type="uint64_t" name="transfer_uid">Unique transfer ID</field>
+             <field type="uint8_t" name="result">0: OK, 1: not permitted, 2: bad path / file name, 3: no space left on device</field>
          </message>
          <message id="147" name="BATTERY_STATUS">
                <description>Transmitte battery informations for a accu pack.</description>
