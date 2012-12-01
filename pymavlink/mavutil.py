@@ -440,21 +440,20 @@ class mavfile(object):
             self.recv_match(type='GPS_RAW', blocking=True,
                             condition='GPS_RAW.fix_type==2 and GPS_RAW.lat != 0 and GPS_RAW.alt != 0')
 
-    def location(self):
+    def location(self, relative_alt=False):
         '''return current location'''
         self.wait_gps_fix()
         # wait for another VFR_HUD, to ensure we have correct altitude
         self.recv_match(type='VFR_HUD', blocking=True)
-        if self.mavlink10():
-            return location(self.messages['GPS_RAW_INT'].lat*1.0e-7,
-                            self.messages['GPS_RAW_INT'].lon*1.0e-7,
-                            self.messages['VFR_HUD'].alt,
-                            self.messages['VFR_HUD'].heading)
+        self.recv_match(type='GLOBAL_POSITION_INT', blocking=True)
+        if relative_alt:
+            alt = self.messages['GLOBAL_POSITION_INT'].relative_alt*0.001
         else:
-            return location(self.messages['GPS_RAW'].lat,
-                            self.messages['GPS_RAW'].lon,
-                            self.messages['VFR_HUD'].alt,
-                            self.messages['VFR_HUD'].heading)
+            alt = self.messages['VFR_HUD'].alt
+        return location(self.messages['GPS_RAW_INT'].lat*1.0e-7,
+                        self.messages['GPS_RAW_INT'].lon*1.0e-7,
+                        alt,
+                        self.messages['VFR_HUD'].heading)
 
     def field(self, type, field, default=None):
         '''convenient function for returning an arbitrary MAVLink
