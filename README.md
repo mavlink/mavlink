@@ -19,7 +19,7 @@ Header files can be generated either with mavgen, or within QGroundControl.
 
 mavgen is a header generation tool written in python, which is included with MAVLink. It can be used directly or via the *generator.py* GUI. To use the GUI, run:
 
-    python generator.py
+    python generate.py
 
 If you would rather use mavgen from the command line see *pymavlink\generator\mavgen.py*.
 
