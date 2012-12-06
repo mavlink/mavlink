@@ -253,9 +253,7 @@ namespace MavLink
             outBytes[0] = MavlinkSettings.ProtocolMarker;
             outBytes[1] = (byte)(packetData.Length-3);  // 3 bytes for sequence, id, msg type which this 
                                                         // layer does not concern itself with
-            outBytes[2] = txPacketSequence;
-
-            txPacketSequence = unchecked(txPacketSequence++);
+            outBytes[2] = unchecked(txPacketSequence++);
 
             int i;
 
