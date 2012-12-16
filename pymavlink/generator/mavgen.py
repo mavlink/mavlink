@@ -14,6 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 
 import mavparse
 import mavgen_python
+import mavgen_wlua
 import mavgen_c
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
@@ -79,6 +80,8 @@ def mavgen(opts, args) :
         mavgen_python.generate(opts.output, xml)
     elif opts.language == 'c':
         mavgen_c.generate(opts.output, xml)
+    elif opts.language == 'wlua':
+        mavgen_wlua.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
     
