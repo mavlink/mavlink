@@ -122,7 +122,7 @@ for xml_file in xml_file_names:
                 print "passed"
                 remove_include_files(target_directory)
                 copy_include_files(source_directory,target_directory)
-                print "Finished copying over include files"
+                print "Finished copying over xml derived include files"
             else :
                 print "Your answer is No. Exiting Program"
                 sys.exit()
@@ -133,6 +133,26 @@ for xml_file in xml_file_names:
         print "Could not find files to copy at", source_directory
         print "Exiting Program."
         sys.exit()
+
+# Copy newer versions of C header files 
+header_files = ['checksum.h','mavlink_helpers.h', 'mavlink_protobuf_manager.hpp', \
+                'mavlink_types.h', 'protocol.h' ]
+target_directory = "../../../../../MAVLink/include/"
+source_directory = "C/include_v"+protocol+"/"
+print "Copying over upper level header files..."
+for filename in header_files :
+  print "Copying ... ", filename
+  #print "About to copy source_file", source_directory+filename, "to",target_directory+filename
+  if  os.access(source_directory+filename, os.R_OK):
+    #print "Can read source file", source_directory+filename
+    if  os.access(source_directory+filename, os.W_OK):
+      copy(source_directory+filename, target_directory+filename)
+      #print "Finished copying to", target_directory+filename
+    else :
+      print "Could not access", target_directory+filename, " for writing"
+  else :
+    print "Could not access file to copy called ", source_directory+filename
+
 
 # Copy specific Mavlink wire protocol 1.0 python parsers for MatrixPilot
 source_file =  "./python/mavlink_matrixpilot_v1.0.py"
