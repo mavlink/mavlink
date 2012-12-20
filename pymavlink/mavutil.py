@@ -908,6 +908,7 @@ def mode_string_v10(msg):
         0 : 'MANUAL',
         1 : 'CIRCLE',
         2 : 'STABILIZE',
+        3 : 'TRAINING',
         5 : 'FBWA',
         6 : 'FBWB',
         7 : 'FBWC',
