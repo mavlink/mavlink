@@ -734,7 +734,11 @@ def mavlink_connection(device, baud=115200, source_system=255,
         return mavtcp(device[4:], source_system=source_system)
     if device.startswith('udp:'):
         return mavudp(device[4:], input=input, source_system=source_system)
-    if device.find(':') != -1 and not device.endswith('log'):
+
+    # list of suffixes to prevent setting DOS paths as UDP sockets
+    logsuffixes = [ 'log', 'raw', 'tlog' ]
+    suffix = device.split('.')[-1].lower()
+    if device.find(':') != -1 and not suffix in logsuffixes:
         return mavudp(device, source_system=source_system, input=input)
     if os.path.isfile(device):
         if device.endswith(".elf"):
