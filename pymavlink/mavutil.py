@@ -79,6 +79,7 @@ class mavfile(object):
         self.param_fetch_complete = False
         self.start_time = time.time()
         self.flightmode = "UNKNOWN"
+        self.base_mode = 0
         self.timestamp = 0
         self.message_hooks = []
         self.idle_hooks = []
@@ -180,6 +181,7 @@ class mavfile(object):
             self.target_component = msg.get_srcComponent()
             if mavlink.WIRE_PROTOCOL_VERSION == '1.0' and msg.type != mavlink.MAV_TYPE_GCS:
                 self.flightmode = mode_string_v10(msg)
+                self.base_mode = msg.base_mode
         elif type == 'PARAM_VALUE':
             s = str(msg.param_id)
             self.params[str(msg.param_id)] = msg.param_value
@@ -338,6 +340,26 @@ class mavfile(object):
             self.mav.mission_count_send(self.target_system, self.target_component, seq)
         else:
             self.mav.waypoint_count_send(self.target_system, self.target_component, seq)
+
+    def set_mode_flag(self, flag, enable):
+        '''
+        Enables/ disables MAV_MODE_FLAG
+        @param flag The mode flag, 
+          see MAV_MODE_FLAG enum
+        @param enable Enable the flag, (True/False)
+        '''
+        if self.mavlink10():
+            mode = self.base_mode
+            if (enable == True):
+                mode = mode | flag
+            elif (enable == False):
+                mode = mode & ~flag
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                           mavlink.MAV_CMD_DO_SET_MODE, 0,
+                                           mode,
+                                           0, 0, 0, 0, 0, 0)
+        else:
+            print("Set mode flag not supported")
 
     def set_mode_auto(self):
         '''enter auto mode'''
