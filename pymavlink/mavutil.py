@@ -341,15 +341,20 @@ class mavfile(object):
         else:
             self.mav.waypoint_count_send(self.target_system, self.target_component, seq)
 
-    def enable_hil(self):
-        '''enable HIL'''
+    def set_mode_flag(self, flag, val):
+        '''set mode flag'''
         if self.mavlink10():
+            mode = self.base_mode
+            if (val == True):
+                mode = mode | flag
+            elif (val == False):
+                mode = mode & ~flag
             self.mav.command_long_send(self.target_system, self.target_component,
-                                       mavlink.MAV_CMD_DO_SET_MODE, 0,
-                                       self.base_mode | mavlink.MAV_MODE_FLAG_HIL_ENABLED,
-                                       0, 0, 0, 0, 0, 0)
+                                           mavlink.MAV_CMD_DO_SET_MODE, 0,
+                                           mode,
+                                           0, 0, 0, 0, 0, 0)
         else:
-            print("Enable HIL not supported")
+            print("Set mode flag not supported")
 
     def set_mode_auto(self):
         '''enter auto mode'''
