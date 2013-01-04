@@ -6,9 +6,17 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
 
-import socket, math, struct, time, os, fnmatch, array, sys, errno
+import inspect, socket, math, struct, time, os, fnmatch, array, sys, errno
 from math import *
 from mavextra import *
+
+# dev path
+root_dir = os.path.realpath(os.path.join(os.path.abspath(os.path.split(
+    inspect.getfile( inspect.currentframe() ))[0]),
+    '..','..','build','pymavlink','pymavlink'))
+
+if root_dir not in sys.path:
+    sys.path.insert(0,root_dir)
 
 if os.getenv('MAVLINK09') or 'MAVLINK09' in os.environ:
     import mavlinkv09_common as mavlink
