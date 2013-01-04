@@ -122,6 +122,7 @@ GLOB_COPY_TRACKED(TARGET pythonPackage
 # mavlink generation
 macro(generateMavlink version definitions languages)
     foreach(definition ${definitions})
+        string(REPLACE "." "_" versionClean "${version}")
         set(definitionAbsPath "${CMAKE_SOURCE_DIR}/message_definitions/v${version}/${definition}.xml")
         message(STATUS "processing: ${definitionAbsPath}")
         foreach(language ${languages})
@@ -129,10 +130,10 @@ macro(generateMavlink version definitions languages)
             set(dependencies ${definitionAbsPath} ${mavgen})
             #message(STATUS "\ttarget:${targetName}")
             if("${language}" STREQUAL "python")
-                set(outputName "pymavlink/pymavlink/protocol/mavlink_v${version}_${definition}.py")
+                set(outputName "pymavlink/pymavlink/protocol/mavlink_v${versionClean}_${definition}.py")
                 set(dependencies ${dependencies} pythonPackage)
             elseif("${language}" STREQUAL "C")
-                set(outputName "C/include/mavlink/v${version}")
+                set(outputName "C/include/mavlink/v${versionClean}")
             else()
                 message(ERROR "unknown language: ${language}")
             endif()
@@ -150,7 +151,7 @@ endmacro()
 
 # build
 set(mavgen ${CMAKE_SOURCE_DIR}/generator/mavgen.py)
-set(v0.9Definitions
+set(v0_9Definitions
     ardupilotmega
     common
     minimal
@@ -159,7 +160,7 @@ set(v0.9Definitions
     test
     ualberta
     )
-set(v1.0Definitions
+set(v1_0Definitions
     ardupilotmega
     common
     matrixpilot
@@ -174,8 +175,8 @@ set(languages
     C
     python
     )
-generateMavlink("0.9" "${v0.9Definitions}" "${languages}")
-generateMavlink("1.0" "${v1.0Definitions}" "${languages}")
+generateMavlink("0.9" "${v0_9Definitions}" "${languages}")
+generateMavlink("1.0" "${v1_0Definitions}" "${languages}")
 
 # testing
 if (BUILD_TEST)
@@ -189,7 +190,7 @@ endif()
 # install files
 install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.h*")
 install(DIRECTORY ${CMAKE_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/share/${PROJECT_NAME} DESTINATION share COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
+install(DIRECTORY $.CMAKE_SOURCE_DIR}/share/${PROJECT_NAME} DESTINATION share COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
 
 configure_file(pc.in ${PROJECT_NAME}.pc)
 install(FILES
