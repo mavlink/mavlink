@@ -7,9 +7,6 @@ Bill Premerlani
 
 import sys, time, os, math
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 # command line option handling
 from optparse import OptionParser
 parser = OptionParser("magfit_delta.py [options]")
@@ -25,7 +22,8 @@ parser.add_option("--repeat", type='int', default=1, help="number of repeats thr
 
 (opts, args) = parser.parse_args()
 
-import mavutil
+import devpath
+import pymavlink.mavutil as mavutil
 from rotmat import Vector3, Matrix3
 
 if len(args) < 1:
