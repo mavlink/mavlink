@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 import sys
 import os
 
-version = '1.1.0'
+version = '1.0.11'
 
 setup(name='pymavlink',
       version=version,
