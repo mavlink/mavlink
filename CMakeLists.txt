@@ -114,9 +114,9 @@ install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} C
 # python
 GLOB_COPY_TRACKED(TARGET pythonPackage
     RECURSE
-    SRCDIR "${CMAKE_SOURCE_DIR}/pymavlink"
+    GLOB_ARGS "${CMAKE_SOURCE_DIR}/generator/pymavlink/*"
+    SRCDIR "${CMAKE_SOURCE_DIR}/generator/pymavlink"
     DESTDIR "${CMAKE_BINARY_DIR}/pymavlink"
-    GLOB_ARGS "${CMAKE_SOURCE_DIR}/pymavlink/*"
     )
 
 # mavlink generation
