@@ -2,10 +2,8 @@
 
 import sys, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
-import mavlinkv10 as mavlink
+import devpath
+import pymavlink.mavlinkv10_common as mavlink
 
 class fifo(object):
     def __init__(self):

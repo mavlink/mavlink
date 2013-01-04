@@ -6,8 +6,7 @@ show accel calibration for a set of logs
 
 import sys, time, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+import devpath
 
 from optparse import OptionParser
 parser = OptionParser("mav_accel.py [options]")
@@ -17,7 +16,7 @@ parser.add_option("--robust",dest="robust", action='store_true', help="Enable ro
 
 (opts, args) = parser.parse_args()
 
-import mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: mav_accel.py [options] <LOGFILE...>")

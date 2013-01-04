@@ -6,15 +6,14 @@ show changes in flight modes
 
 import sys, time, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+import devpath
 
 from optparse import OptionParser
 parser = OptionParser("flightmodes.py [options]")
 
 (opts, args) = parser.parse_args()
 
-import mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: flightmodes.py [options] <LOGFILE...>")

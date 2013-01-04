@@ -3,16 +3,13 @@
 graph a MAVLink log file
 Andrew Tridgell August 2011
 '''
-
 import sys, struct, time, os, datetime
 import math, re
 import pylab, pytz, matplotlib
 from math import *
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
-from mavextra import *
+import devpath
+from pymavlink.mavextra import *
 
 locator = None
 formatter = None
@@ -115,7 +112,7 @@ parser.add_option("--linestyle",  default=None, help="line style")
 parser.add_option("--xaxis",  default=None, help="X axis expression")
 (opts, args) = parser.parse_args()
 
-import mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 2:
     print("Usage: mavlogdump.py [options] <LOGFILES...> <fields...>")

@@ -22,7 +22,8 @@ Generated from: ${FILELIST}
 Note: this file has been auto-generated. DO NOT EDIT
 '''
 
-import struct, array, mavutil, time, json
+import struct, array, time, json
+import mavutil
 
 WIRE_PROTOCOL_VERSION = "${WIRE_PROTOCOL_VERSION}"
 

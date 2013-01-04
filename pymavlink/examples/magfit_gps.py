@@ -6,8 +6,7 @@ fit best estimate of magnetometer offsets
 
 import sys, time, os, math
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+import devpath
 
 from optparse import OptionParser
 parser = OptionParser("magfit.py [options]")
@@ -16,7 +15,7 @@ parser.add_option("--minspeed", type='float', default=5.0, help="minimum ground 
 
 (opts, args) = parser.parse_args()
 
-import mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: magfit.py [options] <LOGFILE...>")

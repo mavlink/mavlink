@@ -11,9 +11,9 @@ from math import *
 from mavextra import *
 
 if os.getenv('MAVLINK09') or 'MAVLINK09' in os.environ:
-    import mavlinkv09 as mavlink
+    import mavlinkv09_common as mavlink
 else:
-    import mavlinkv10 as mavlink
+    import mavlinkv10_common as mavlink
 
 def mavlink10():
     '''return True if using MAVLink 1.0'''
@@ -104,9 +104,9 @@ class mavfile(object):
             return
         self.first_byte = False
         if self.WIRE_PROTOCOL_VERSION == "0.9" and ord(buf[0]) == 254:
-            import mavlinkv10 as mavlink
+            import mavlinkv10_common as mavlink
         elif self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
-            import mavlinkv09 as mavlink
+            import mavlinkv09_common as mavlink
             os.environ['MAVLINK09'] = '1'
         else:
             return

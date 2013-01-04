@@ -4,7 +4,7 @@ project (mavlink NONE)
 cmake_minimum_required (VERSION 2.8.2)
 set(PROJECT_VERSION_MAJOR "1")
 set(PROJECT_VERSION_MINOR "0")
-set(PROJECT_VERSION_PATCH "9")
+set(PROJECT_VERSION_PATCH "10")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_CONTACT_EMAIL http://groups.google.com/group/mavlink)
 set(PROJECT_CONTACT_VENDOR mavlink)
@@ -24,6 +24,7 @@ set(ROOT_THREAD TRUE CACHE INTERNAL "Is this the top level of the recursion?")
 
 # modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/cmake/arkcmake)
+include(GlobCopyTracked)
 include(DefineCMakeDefaults)
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
@@ -110,47 +111,72 @@ endif()
 configure_file(config.h.in config.h)
 install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} COMPONENT Dev)
 
+# python
+GLOB_COPY_TRACKED(TARGET pythonPackage
+    RECURSE
+    GLOB_ARGS "${CMAKE_SOURCE_DIR}/pymavlink/*"
+    SRCDIR "${CMAKE_SOURCE_DIR}/pymavlink"
+    DESTDIR "${CMAKE_BINARY_DIR}/pymavlink"
+    )
+
 # mavlink generation
-macro(generateMavlink version definitions)
+macro(generateMavlink version definitions languages)
     foreach(definition ${definitions})
-        set(targetName ${definition}-v${version})
-        set(definitionAbsPath ${CMAKE_SOURCE_DIR}/message_definitions/v${version}/${definition})
+        string(REPLACE "." "" versionClean "${version}")
+        set(definitionAbsPath "${CMAKE_SOURCE_DIR}/message_definitions/v${version}/${definition}.xml")
         message(STATUS "processing: ${definitionAbsPath}")
-        add_custom_command( 
-            OUTPUT ${targetName}-stamp
-            COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=C --wire-protocol=${version}
-                --output=include/v${version} ${definitionAbsPath}
-            COMMAND touch ${targetName}-stamp
-            DEPENDS ${definitionAbsPath} ${mavgen}
-            )
-        add_custom_target(${targetName} ALL DEPENDS ${targetName}-stamp)
+        foreach(language ${languages})
+            set(targetName "${definition}-v${version}-${language}")
+            set(dependencies ${definitionAbsPath} ${mavgen})
+            #message(STATUS "\ttarget:${targetName}")
+            if("${language}" STREQUAL "python")
+                set(outputName "pymavlink/pymavlink/mavlinkv${versionClean}_${definition}.py")
+                set(dependencies ${dependencies} pythonPackage)
+            elseif("${language}" STREQUAL "C")
+                set(outputName "C/include/mavlink/v${version}")
+            else()
+                message(ERROR "unknown language: ${language}")
+            endif()
+            add_custom_command( 
+                OUTPUT ${targetName}-stamp
+                COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=${language} --wire-protocol=${version}
+                    --output=${outputName} ${definitionAbsPath}
+                COMMAND touch ${targetName}-stamp
+                DEPENDS ${dependencies}
+                )
+            add_custom_target(${targetName} ALL DEPENDS ${targetName}-stamp)
+        endforeach()
     endforeach()
 endmacro()
 
 # build
-set(mavgen ${CMAKE_SOURCE_DIR}/pymavlink/generator/mavgen.py)
-set(v0.9Definitions
-    ardupilotmega.xml
-    common.xml
-    minimal.xml
-    pixhawk.xml
-    slugs.xml
-    test.xml
-    ualberta.xml
+set(mavgen ${CMAKE_SOURCE_DIR}/generator/mavgen.py)
+set(v0_9Definitions
+    ardupilotmega
+    common
+    minimal
+    pixhawk
+    slugs
+    test
+    ualberta
     )
-generateMavlink("0.9" "${v0.9Definitions}")
-set(v1.0Definitions
-    ardupilotmega.xml
-    common.xml
-    matrixpilot.xml
-    minimal.xml
-    pixhawk.xml
-    slugs.xml
-    test.xml
-    ualberta.xml
-    sensesoar.xml
+set(v1_0Definitions
+    ardupilotmega
+    common
+    matrixpilot
+    minimal
+    pixhawk
+    slugs
+    test
+    ualberta
+    sensesoar
     )
-generateMavlink("1.0" "${v1.0Definitions}")
+set(languages
+    C
+    python
+    )
+generateMavlink("0.9" "${v0_9Definitions}" "${languages}")
+generateMavlink("1.0" "${v1_0Definitions}" "${languages}")
 
 # testing
 if (BUILD_TEST)
@@ -162,10 +188,8 @@ if (BUILD_TEST)
 endif()
 
 # install files
-install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.h*")
-install(DIRECTORY ${CMAKE_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/share/${PROJECT_NAME} DESTINATION share COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/pymavlink DESTINATION "share/pyshared" COMPONENT Dev)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/C/include/mavlink/ DESTINATION include/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.h*")
+install(DIRECTORY ${CMAKE_BINARY_DIR}/C/share/mavlink/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
 
 configure_file(pc.in ${PROJECT_NAME}.pc)
 install(FILES

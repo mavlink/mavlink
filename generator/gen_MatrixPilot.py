@@ -66,7 +66,7 @@ def copy_xml_files(source_directory,target_directory):
 ########### Generate MAVlink files for C and Python from XML definitions
 protocol = "1.0"
  
-xml_directory = '../../message_definitions/v'+protocol
+xml_directory = '../message_definitions/v'+protocol
 print "xml_directory is", xml_directory
 
 xml_file_names = []
