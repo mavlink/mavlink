@@ -111,46 +111,60 @@ configure_file(config.h.in config.h)
 install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} COMPONENT Dev)
 
 # mavlink generation
-macro(generateMavlink version definitions)
+macro(generateMavlink version definitions languages)
     foreach(definition ${definitions})
-        set(targetName ${definition}-v${version})
-        set(definitionAbsPath ${CMAKE_SOURCE_DIR}/message_definitions/v${version}/${definition})
+        set(definitionAbsPath "${CMAKE_SOURCE_DIR}/message_definitions/v${version}/${definition}.xml")
         message(STATUS "processing: ${definitionAbsPath}")
-        add_custom_command( 
-            OUTPUT ${targetName}-stamp
-            COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=C --wire-protocol=${version}
-                --output=include/v${version} ${definitionAbsPath}
-            COMMAND touch ${targetName}-stamp
-            DEPENDS ${definitionAbsPath} ${mavgen}
-            )
-        add_custom_target(${targetName} ALL DEPENDS ${targetName}-stamp)
+        foreach(language ${languages})
+            set(targetName ${definition}-v${version}-${language})
+            message(STATUS "\ttarget:${targetName}")
+            if("${language}" STREQUAL "python")
+                set(outputName "python/mavlink_v${version}_${definition}.py")
+            elseif("${language}" STREQUAL "C")
+                set(outputName "C/include/mavlink/v${version}")
+            else()
+                message(ERROR "unknown language: ${language}")
+            endif()
+            add_custom_command( 
+                OUTPUT ${targetName}-stamp
+                COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=${language} --wire-protocol=${version}
+                    --output=${outputName} ${definitionAbsPath}
+                COMMAND touch ${targetName}-stamp
+                DEPENDS ${definitionAbsPath} ${mavgen}
+                )
+            add_custom_target(${targetName} ALL DEPENDS ${targetName}-stamp)
+        endforeach()
     endforeach()
 endmacro()
 
 # build
 set(mavgen ${CMAKE_SOURCE_DIR}/generator/mavgen.py)
 set(v0.9Definitions
-    ardupilotmega.xml
-    common.xml
-    minimal.xml
-    pixhawk.xml
-    slugs.xml
-    test.xml
-    ualberta.xml
+    ardupilotmega
+    common
+    minimal
+    pixhawk
+    slugs
+    test
+    ualberta
     )
-generateMavlink("0.9" "${v0.9Definitions}")
 set(v1.0Definitions
-    ardupilotmega.xml
-    common.xml
-    matrixpilot.xml
-    minimal.xml
-    pixhawk.xml
-    slugs.xml
-    test.xml
-    ualberta.xml
-    sensesoar.xml
+    ardupilotmega
+    common
+    matrixpilot
+    minimal
+    pixhawk
+    slugs
+    test
+    ualberta
+    sensesoar
     )
-generateMavlink("1.0" "${v1.0Definitions}")
+set(languages
+    C
+    python
+    )
+generateMavlink("0.9" "${v0.9Definitions}" "${languages}")
+generateMavlink("1.0" "${v1.0Definitions}" "${languages}")
 
 # testing
 if (BUILD_TEST)
