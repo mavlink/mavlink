@@ -128,7 +128,7 @@ macro(generateMavlink version definitions)
 endmacro()
 
 # build
-set(mavgen ${CMAKE_SOURCE_DIR}/pymavlink/generator/mavgen.py)
+set(mavgen ${CMAKE_SOURCE_DIR}/generator/mavgen.py)
 set(v0.9Definitions
     ardupilotmega.xml
     common.xml

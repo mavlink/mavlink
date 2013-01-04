@@ -14,7 +14,7 @@ parser = OptionParser("mavparms.py [options]")
 
 (opts, args) = parser.parse_args()
 
-import mavutil
+import pymavlink.mavutil
 
 if len(args) < 1:
     print("Usage: mavparms.py [options] <LOGFILE...>")

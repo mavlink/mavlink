@@ -16,6 +16,7 @@ import mavparse
 import mavgen_python
 import mavgen_wlua
 import mavgen_c
+import mavutil
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
 

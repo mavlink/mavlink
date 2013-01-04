@@ -14,7 +14,7 @@ from optparse import OptionParser
 parser = OptionParser("wptogpx.py [options]")
 (opts, args) = parser.parse_args()
 
-import mavutil, mavwp
+from pymavlink import mavutil, mavwp
 
 if len(args) < 1:
     print("Usage: wptogpx.py <WPFILE>")

@@ -25,7 +25,7 @@ parser.add_option("--repeat", type='int', default=1, help="number of repeats thr
 
 (opts, args) = parser.parse_args()
 
-import mavutil
+import pymavlink.mavutil
 from rotmat import Vector3, Matrix3
 
 if len(args) < 1:
