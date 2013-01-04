@@ -29,7 +29,7 @@ function(GLOB_COPY_TRACKED)
 
     file(GLOB${RECURSE_STRING} SRCS RELATIVE "${GLOB_COPY_TRACKED_SRCDIR}" "${GLOB_COPY_TRACKED_GLOB_ARGS}")
     set(${GLOB_COPY_TRACKED_TARGET}_COPIED_SRCS)
-    message(STATUS "sources: ${SRCS}")
+    #message(STATUS "sources: ${SRCS}")
     foreach(SRC ${SRCS})  
         add_custom_command(OUTPUT "${GLOB_COPY_TRACKED_DESTDIR}/${SRC}"
             COMMAND "${CMAKE_COMMAND}" -E copy "${GLOB_COPY_TRACKED_SRCDIR}/${SRC}" 
