@@ -24,6 +24,7 @@ set(ROOT_THREAD TRUE CACHE INTERNAL "Is this the top level of the recursion?")
 
 # modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/cmake/arkcmake)
+include(GlobCopyTracked)
 include(DefineCMakeDefaults)
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
@@ -110,16 +111,26 @@ endif()
 configure_file(config.h.in config.h)
 install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} COMPONENT Dev)
 
+# python
+GLOB_COPY_TRACKED(TARGET pythonPackage
+    RECURSE
+    SRCDIR "${CMAKE_SOURCE_DIR}/pymavlink"
+    DESTDIR "${CMAKE_BINARY_DIR}/pymavlink"
+    GLOB_ARGS "${CMAKE_SOURCE_DIR}/pymavlink/*"
+    )
+
 # mavlink generation
 macro(generateMavlink version definitions languages)
     foreach(definition ${definitions})
         set(definitionAbsPath "${CMAKE_SOURCE_DIR}/message_definitions/v${version}/${definition}.xml")
         message(STATUS "processing: ${definitionAbsPath}")
         foreach(language ${languages})
-            set(targetName ${definition}-v${version}-${language})
+            set(targetName "${definition}-v${version}-${language}")
+            set(dependencies ${definitionAbsPath} ${mavgen})
             message(STATUS "\ttarget:${targetName}")
             if("${language}" STREQUAL "python")
-                set(outputName "python/mavlink_v${version}_${definition}.py")
+                set(outputName "pymavlink/pymavlink/protocol/mavlink_v${version}_${definition}.py")
+                set(dependencies ${dependencies} pythonPackage)
             elseif("${language}" STREQUAL "C")
                 set(outputName "C/include/mavlink/v${version}")
             else()
@@ -130,7 +141,7 @@ macro(generateMavlink version definitions languages)
                 COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=${language} --wire-protocol=${version}
                     --output=${outputName} ${definitionAbsPath}
                 COMMAND touch ${targetName}-stamp
-                DEPENDS ${definitionAbsPath} ${mavgen}
+                DEPENDS ${dependencies}
                 )
             add_custom_target(${targetName} ALL DEPENDS ${targetName}-stamp)
         endforeach()
