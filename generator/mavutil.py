@@ -1,3 +1,5 @@
+import array
+
 class x25crc(object):
     '''x25 CRC - based on checksum.h from mavlink library'''
     def __init__(self, buf=''):
