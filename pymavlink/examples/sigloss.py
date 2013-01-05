@@ -17,7 +17,7 @@ parser.add_option("--types",  default=None, help="types of messages (comma separ
 
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+from pymavlink import mavutil
 
 if len(args) < 1:
     print("Usage: sigloss.py [options] <LOGFILE...>")

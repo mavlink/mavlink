@@ -21,7 +21,7 @@ parser.add_option("--showmessages", dest="showmessages", action='store_true',
                   help="show incoming messages", default=False)
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 if opts.device is None:
     print("You must specify a serial device")

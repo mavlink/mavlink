@@ -9,7 +9,7 @@ from curses import ascii
 
 import devpath
 import mavtest
-import pymavlink.mavutil
+from pymavlink import mavutil
 
 from optparse import OptionParser
 parser = OptionParser("mavtester.py [options]")

@@ -9,7 +9,7 @@ import sys, os, time
 from math import radians
 
 import devpath
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 from optparse import OptionParser
 parser = OptionParser("rotate.py [options]")

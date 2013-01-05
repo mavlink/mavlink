@@ -13,7 +13,7 @@ parser.add_option("--output", default='mission.txt', help="output file")
 (opts, args) = parser.parse_args()
 
 import devpath
-import pymavlink.mavutil, mavwp
+from pymavlink import mavutil, mavmp
 
 if len(args) < 1:
     print("Usage: mavmission.py [options] <LOGFILE...>")

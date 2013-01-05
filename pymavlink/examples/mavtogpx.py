@@ -14,7 +14,7 @@ parser.add_option("--nofixcheck", default=False, action='store_true', help="don'
 (opts, args) = parser.parse_args()
 
 import devpath
-import pymavlink.mavutil
+from pymavlink import mavutil
 
 if len(args) < 1:
     print("Usage: mavtogpx.py <LOGFILE>")

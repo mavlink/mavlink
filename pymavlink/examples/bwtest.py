@@ -7,7 +7,7 @@ check bandwidth of link
 import sys, struct, time, os
 
 import devpath
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 from optparse import OptionParser
 parser = OptionParser("bwtest.py [options]")
@@ -32,9 +32,9 @@ bytes_sent = 0
 bytes_recv = 0
 
 while True:
-    master.mav.heartbeat_send(1, 1)
-    master.mav.sys_status_send(1, 2, 3, 4, 5, 6, 7)
-    master.mav.gps_raw_send(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    master.mav.heartbeat_send(1, 1, 1, 1, 1, 1)
+    master.mav.sys_status_send(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+    master.mav.gps_raw_int_send(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     master.mav.attitude_send(1, 2, 3, 4, 5, 6, 7)
     master.mav.vfr_hud_send(1, 2, 3, 4, 5, 6)
     while master.port.inWaiting() > 0:

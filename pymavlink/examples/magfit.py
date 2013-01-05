@@ -16,7 +16,7 @@ parser.add_option("--noise", type='float', default=0, help="noise to add")
 
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 from rotmat import Vector3
 
 if len(args) < 1:

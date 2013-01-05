@@ -13,7 +13,7 @@ parser = OptionParser("flightmodes.py [options]")
 
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: flightmodes.py [options] <LOGFILE...>")

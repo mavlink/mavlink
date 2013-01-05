@@ -112,7 +112,7 @@ parser.add_option("--linestyle",  default=None, help="line style")
 parser.add_option("--xaxis",  default=None, help="X axis expression")
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 2:
     print("Usage: mavlogdump.py [options] <LOGFILES...> <fields...>")

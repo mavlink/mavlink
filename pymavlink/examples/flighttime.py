@@ -15,7 +15,7 @@ parser.add_option("--groundspeed", type='float', default=3.0, help="groundspeed 
 
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: flighttime.py [options] <LOGFILE...>")

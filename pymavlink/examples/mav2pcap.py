@@ -18,7 +18,7 @@ import sys
 import os
 
 import devpath
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 from construct import ULInt16, Struct, Byte, Bytes, Const
 from construct.core import FieldError

@@ -14,7 +14,7 @@ parser.add_option("--condition", default=None, help="condition for packets")
 
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: gpslock.py [options] <LOGFILE...>")

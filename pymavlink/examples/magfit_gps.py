@@ -15,7 +15,7 @@ parser.add_option("--minspeed", type='float', default=5.0, help="minimum ground 
 
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: magfit.py [options] <LOGFILE...>")

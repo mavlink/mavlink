@@ -6,8 +6,6 @@ extract one mode type from a log
 
 import sys, time, os, struct
 
-import devpath
-
 from optparse import OptionParser
 parser = OptionParser("mavextract.py [options]")
 
@@ -17,7 +15,8 @@ parser.add_option("--condition",dest="condition", default=None, help="select pac
 parser.add_option("--mode",  default='auto', help="mode to extract")
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+import devpath
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: mavextract.py [options] <LOGFILE>")

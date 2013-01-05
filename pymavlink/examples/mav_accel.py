@@ -16,7 +16,7 @@ parser.add_option("--robust",dest="robust", action='store_true', help="Enable ro
 
 (opts, args) = parser.parse_args()
 
-import pymavlink.mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: mav_accel.py [options] <LOGFILE...>")

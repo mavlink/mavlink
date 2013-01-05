@@ -17,7 +17,7 @@ Released under GNU GPL version 3 or later
 import sys, time, os, struct
 
 import devpath
-import pymavlink.mavutil
+from pymavlink import mavutil
 import pymavlink.mavlinkv10 as mavlink
 
 from optparse import OptionParser
