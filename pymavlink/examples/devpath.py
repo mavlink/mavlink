@@ -10,7 +10,7 @@ devpaths = [
     '..')),
     os.path.realpath(os.path.join(os.path.abspath(os.path.split(
     inspect.getfile( inspect.currentframe() ))[0]),
-    '..','..','build','pymavlink','pymavlink'))
+    '..','..','build','pymavlink'))
 ]
 
 for path in devpaths:
