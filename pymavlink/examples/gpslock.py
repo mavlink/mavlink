@@ -6,6 +6,8 @@ show GPS lock events in a MAVLink log
 
 import sys, time, os
 
+import devpath
+
 from optparse import OptionParser
 parser = OptionParser("gpslock.py [options]")
 parser.add_option("--condition", default=None, help="condition for packets")

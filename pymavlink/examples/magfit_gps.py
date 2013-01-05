@@ -6,6 +6,8 @@ fit best estimate of magnetometer offsets
 
 import sys, time, os, math
 
+import devpath
+
 from optparse import OptionParser
 parser = OptionParser("magfit.py [options]")
 parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")

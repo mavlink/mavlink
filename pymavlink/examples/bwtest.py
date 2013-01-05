@@ -6,6 +6,7 @@ check bandwidth of link
 
 import sys, struct, time, os
 
+import devpath
 import pymavlink.mavutil
 
 from optparse import OptionParser

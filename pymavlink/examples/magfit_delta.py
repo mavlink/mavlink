@@ -7,6 +7,8 @@ Bill Premerlani
 
 import sys, time, os, math
 
+import devpath
+
 # allow import from the parent directory, where mavlink.py is
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 

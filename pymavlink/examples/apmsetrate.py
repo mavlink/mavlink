@@ -6,6 +6,8 @@ set stream rate on an APM
 
 import sys, struct, time, os
 
+import devpath
+
 from optparse import OptionParser
 parser = OptionParser("apmsetrate.py [options]")
 

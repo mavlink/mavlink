@@ -6,6 +6,8 @@ extract one mode type from a log
 
 import sys, time, os, struct
 
+import devpath
+
 from optparse import OptionParser
 parser = OptionParser("mavextract.py [options]")
 

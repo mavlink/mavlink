@@ -6,6 +6,8 @@ show changes in flight modes
 
 import sys, time, os
 
+import devpath
+
 from optparse import OptionParser
 parser = OptionParser("flightmodes.py [options]")
 

@@ -6,6 +6,8 @@ show accel calibration for a set of logs
 
 import sys, time, os
 
+import devpath
+
 from optparse import OptionParser
 parser = OptionParser("mav_accel.py [options]")
 parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")

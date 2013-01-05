@@ -7,6 +7,7 @@ test mavlink messages
 import sys, struct, time, os
 from curses import ascii
 
+import devpath
 import mavtest
 import pymavlink.mavutil
 

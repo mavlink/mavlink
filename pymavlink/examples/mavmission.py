@@ -15,6 +15,7 @@ parser.add_option("--output", default='mission.txt', help="output file")
 
 (opts, args) = parser.parse_args()
 
+import devpath
 import pymavlink.mavutil, mavwp
 
 if len(args) < 1:

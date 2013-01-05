@@ -16,9 +16,7 @@ Released under GNU GPL version 3 or later
 
 import sys, time, os, struct
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
+import devpath
 import pymavlink.mavutil
 import pymavlink.mavlinkv10 as mavlink
 

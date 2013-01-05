@@ -17,6 +17,7 @@
 import sys
 import os
 
+import devpath
 import pymavlink.mavutil
 
 from construct import ULInt16, Struct, Byte, Bytes, Const

@@ -6,6 +6,8 @@ work out total flight time for a mavlink log
 
 import sys, time, os
 
+import devpath
+
 from optparse import OptionParser
 parser = OptionParser("flighttime.py [options]")
 parser.add_option("--condition", default=None, help="condition for packets")

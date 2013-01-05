@@ -13,6 +13,7 @@ parser.add_option("--condition",dest="condition", default=None, help="select pac
 parser.add_option("--nofixcheck", default=False, action='store_true', help="don't check for GPS fix")
 (opts, args) = parser.parse_args()
 
+import devpath
 import pymavlink.mavutil
 
 if len(args) < 1:

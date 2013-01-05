@@ -8,6 +8,7 @@ rotate APMs on bench to test magnetometers
 import sys, os, time
 from math import radians
 
+import devpath
 import pymavlink.mavutil
 
 from optparse import OptionParser
