@@ -17,6 +17,7 @@ parser.add_option("--types",  default=None, help="types of messages (comma separ
 
 (opts, args) = parser.parse_args()
 
+import devpath
 from pymavlink import mavutil
 
 if len(args) < 1:

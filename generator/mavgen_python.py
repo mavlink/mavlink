@@ -23,7 +23,7 @@ Note: this file has been auto-generated. DO NOT EDIT
 '''
 
 import struct, array, time, json
-from mavutil import *
+import mavutil
 
 WIRE_PROTOCOL_VERSION = "${WIRE_PROTOCOL_VERSION}"
 
@@ -120,7 +120,7 @@ class MAVLink_message(object):
         self._header  = MAVLink_header(self._header.msgId, len(payload), mav.seq,
                                        mav.srcSystem, mav.srcComponent)
         self._msgbuf = self._header.pack() + payload
-        crc = x25crc(self._msgbuf[1:])
+        crc = mavutil.x25crc(self._msgbuf[1:])
         if ${crc_extra}: # using CRC extra
             crc.accumulate(chr(crc_extra))
         self._crc = crc.crc
@@ -361,7 +361,7 @@ class MAVLink(object):
                     crc, = struct.unpack('<H', msgbuf[-2:])
                 except struct.error as emsg:
                     raise MAVError('Unable to unpack MAVLink CRC: %s' % emsg)
-                crc2 = x25crc(msgbuf[1:-2])
+                crc2 = mavutil.x25crc(msgbuf[1:-2])
                 if ${crc_extra}: # using CRC extra 
                     crc2.accumulate(chr(crc_extra))
                 if crc != crc2.crc:
