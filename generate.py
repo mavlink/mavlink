@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """\
-generator.py is a GUI front-end for mavgen, a python based MAVLink
+generate.py is a GUI front-end for mavgen, a python based MAVLink
 header generation tool.
 
 Notes:
@@ -10,8 +10,11 @@ Notes:
 
 * 2012-7-17 -- dagoodman
     Only GUI code working on Mac 10.6.8 darwin, with Python 3.2.3
-    Working on Windows 7 SP1, with Python 2.7.3 and 3.2.3 
+    Working on Windows 7 SP1, with Python 2.7.3 and 3.2.3
     Mavgen doesn't work with Python 3.x yet
+
+* 2012-9-25 -- dagoodman
+    Passing error limit into mavgen to make output cleaner.
 
 Copyright 2012 David Goodman (dagoodman@soe.ucsc.edu)
 Released under GNU GPL version 3 or later
@@ -21,7 +24,7 @@ import os
 import re
 import pprint
 
-# Python 2.x and 3.x compatability 
+# Python 2.x and 3.x compatability
 try:
     from tkinter import *
     import tkinter.filedialog
@@ -42,13 +45,14 @@ from mavgen import *
 
 DEBUG = False
 title = "MAVLink Generator"
+error_limit = 5
 
 
-class Application(Frame):              
+class Application(Frame):
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack_propagate(0)
-        self.grid( sticky=N+S+E+W)                    
+        self.grid( sticky=N+S+E+W)
         self.createWidgets()
         self.pp = pprint.PrettyPrinter(indent=4)
 
@@ -156,7 +160,7 @@ class Application(Frame):
         # TODO write XML schema (XDS)
 
         # Generate headers
-        opts = MavgenOptions(self.language_value.get(), self.protocol_value.get()[1:], self.out_value.get());
+        opts = MavgenOptions(self.language_value.get(), self.protocol_value.get()[1:], self.out_value.get(), error_limit);
         args = [self.xml_value.get()]
         if DEBUG:
             print("Generating headers")
@@ -167,24 +171,37 @@ class Application(Frame):
             tkinter.messagebox.showinfo('Successfully Generated Headers', 'Headers generated succesfully.')
 
         except Exception as ex:
+            exStr = formatErrorMessage(str(ex));
             if DEBUG:
                 print('An occurred while generating headers:\n\t{0!s}'.format(ex))
-            tkinter.messagebox.showerror('Error Generating Headers','An error occurred in mavgen: {0!s}'.format(ex))
+            tkinter.messagebox.showerror('Error Generating Headers','{0!s}'.format(exStr))
             return
 
+"""\
+Format the mavgen exceptions by removing "ERROR: ".
+"""
+def formatErrorMessage(message):
+    reObj = re.compile(r'^(ERROR):\s+',re.M);
+    matches = re.findall(reObj, message);
+    prefix = ("An error occurred in mavgen:" if len(matches) == 1 else "Errors occured in mavgen:\n")
+    message = re.sub(reObj, '\n', message);
 
-# End of Application class 
+    return prefix + message
+
+
+# End of Application class
 # ---------------------------------
 
 """\
 This class mimicks an ArgumentParser Namespace since mavgen only
-excepts an object for its opts argument.
+accepts an object for its opts argument.
 """
 class MavgenOptions:
-    def __init__(self,language,protocol,output):
+    def __init__(self,language,protocol,output,error_limit):
         self.language = language
         self.wire_protocol = protocol
         self.output = output
+        self.error_limit = error_limit;
 # End of MavgenOptions class 
 # ---------------------------------
 
@@ -192,6 +209,7 @@ class MavgenOptions:
 # ---------------------------------
 # Start
 
-app = Application()                    
-app.master.title(title) 
-app.mainloop()  
+if __name__ == '__main__':
+  app = Application()
+  app.master.title(title)
+  app.mainloop()

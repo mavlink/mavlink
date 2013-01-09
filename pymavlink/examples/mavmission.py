@@ -31,7 +31,7 @@ def mavmission(logfile):
 
     while True:
         if mlog.mavlink10():
-            m = mlog.recv_match(type='MISSION')
+            m = mlog.recv_match(type='MISSION_ITEM')
         else:
             m = mlog.recv_match(type='WAYPOINT')
         if m is None:

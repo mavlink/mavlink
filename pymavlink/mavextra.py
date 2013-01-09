@@ -201,11 +201,14 @@ def delta_angle(var, key, tusec=None):
     last_delta[key] = (var, tnow, ret)
     return ret
 
-def roll_estimate(RAW_IMU,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
+def roll_estimate(RAW_IMU,GPS_RAW_INT=None,ATTITUDE=None,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
     '''estimate roll from accelerometer'''
     rx = RAW_IMU.xacc * 9.81 / 1000.0
     ry = RAW_IMU.yacc * 9.81 / 1000.0
     rz = RAW_IMU.zacc * 9.81 / 1000.0
+    if ATTITUDE is not None and GPS_RAW_INT is not None:
+        ry -= ATTITUDE.yawspeed * GPS_RAW_INT.vel*0.01
+        rz += ATTITUDE.pitchspeed * GPS_RAW_INT.vel*0.01
     if SENSOR_OFFSETS is not None and ofs is not None:
         rx += SENSOR_OFFSETS.accel_cal_x
         ry += SENSOR_OFFSETS.accel_cal_y
@@ -219,31 +222,14 @@ def roll_estimate(RAW_IMU,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
             rz *= mul[2]
     return lowpass(degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2))),'_roll',smooth)
 
-def roll_estimate2(RAW_IMU,GPS_RAW_INT,ATTITUDE,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
-    '''estimate roll from accelerometer'''
-    rx = RAW_IMU.xacc * 9.81 / 1000.0
-    ry = RAW_IMU.yacc * 9.81 / 1000.0
-    rz = RAW_IMU.zacc * 9.81 / 1000.0
-    ry -= ATTITUDE.yawspeed * GPS_RAW_INT.vel*0.01
-    rz += ATTITUDE.pitchspeed * GPS_RAW_INT.vel*0.01
-    if SENSOR_OFFSETS is not None and ofs is not None:
-        rx += SENSOR_OFFSETS.accel_cal_x
-        ry += SENSOR_OFFSETS.accel_cal_y
-        rz += SENSOR_OFFSETS.accel_cal_z
-        rx -= ofs[0]
-        ry -= ofs[1]
-        rz -= ofs[2]
-        if mul is not None:
-            rx *= mul[0]
-            ry *= mul[1]
-            rz *= mul[2]
-    return lowpass(degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2))),'_roll',smooth)
-
-def pitch_estimate(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
+def pitch_estimate(RAW_IMU, GPS_RAW_INT=None,ATTITUDE=None, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
     '''estimate pitch from accelerometer'''
     rx = RAW_IMU.xacc * 9.81 / 1000.0
     ry = RAW_IMU.yacc * 9.81 / 1000.0
     rz = RAW_IMU.zacc * 9.81 / 1000.0
+    if ATTITUDE is not None and GPS_RAW_INT is not None:
+        ry -= ATTITUDE.yawspeed * GPS_RAW_INT.vel*0.01
+        rz += ATTITUDE.pitchspeed * GPS_RAW_INT.vel*0.01
     if SENSOR_OFFSETS is not None and ofs is not None:
         rx += SENSOR_OFFSETS.accel_cal_x
         ry += SENSOR_OFFSETS.accel_cal_y
@@ -497,6 +483,12 @@ def earth_accel(RAW_IMU,ATTITUDE):
     '''return earth frame acceleration vector'''
     r = rotation(ATTITUDE)
     accel = Vector3(RAW_IMU.xacc, RAW_IMU.yacc, RAW_IMU.zacc) * 9.81 * 0.001
+    return r * accel
+
+def earth_gyro(RAW_IMU,ATTITUDE):
+    '''return earth frame gyro vector'''
+    r = rotation(ATTITUDE)
+    accel = Vector3(degrees(RAW_IMU.xgyro), degrees(RAW_IMU.ygyro), degrees(RAW_IMU.zgyro)) * 0.001
     return r * accel
 
 def airspeed_energy_error(NAV_CONTROLLER_OUTPUT, VFR_HUD):

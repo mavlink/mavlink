@@ -79,6 +79,7 @@ class mavfile(object):
         self.param_fetch_complete = False
         self.start_time = time.time()
         self.flightmode = "UNKNOWN"
+        self.base_mode = 0
         self.timestamp = 0
         self.message_hooks = []
         self.idle_hooks = []
@@ -180,6 +181,7 @@ class mavfile(object):
             self.target_component = msg.get_srcComponent()
             if mavlink.WIRE_PROTOCOL_VERSION == '1.0' and msg.type != mavlink.MAV_TYPE_GCS:
                 self.flightmode = mode_string_v10(msg)
+                self.base_mode = msg.base_mode
         elif type == 'PARAM_VALUE':
             s = str(msg.param_id)
             self.params[str(msg.param_id)] = msg.param_value
@@ -339,6 +341,26 @@ class mavfile(object):
         else:
             self.mav.waypoint_count_send(self.target_system, self.target_component, seq)
 
+    def set_mode_flag(self, flag, enable):
+        '''
+        Enables/ disables MAV_MODE_FLAG
+        @param flag The mode flag, 
+          see MAV_MODE_FLAG enum
+        @param enable Enable the flag, (True/False)
+        '''
+        if self.mavlink10():
+            mode = self.base_mode
+            if (enable == True):
+                mode = mode | flag
+            elif (enable == False):
+                mode = mode & ~flag
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                           mavlink.MAV_CMD_DO_SET_MODE, 0,
+                                           mode,
+                                           0, 0, 0, 0, 0, 0)
+        else:
+            print("Set mode flag not supported")
+
     def set_mode_auto(self):
         '''enter auto mode'''
         if self.mavlink10():
@@ -440,21 +462,20 @@ class mavfile(object):
             self.recv_match(type='GPS_RAW', blocking=True,
                             condition='GPS_RAW.fix_type==2 and GPS_RAW.lat != 0 and GPS_RAW.alt != 0')
 
-    def location(self):
+    def location(self, relative_alt=False):
         '''return current location'''
         self.wait_gps_fix()
         # wait for another VFR_HUD, to ensure we have correct altitude
         self.recv_match(type='VFR_HUD', blocking=True)
-        if self.mavlink10():
-            return location(self.messages['GPS_RAW_INT'].lat*1.0e-7,
-                            self.messages['GPS_RAW_INT'].lon*1.0e-7,
-                            self.messages['VFR_HUD'].alt,
-                            self.messages['VFR_HUD'].heading)
+        self.recv_match(type='GLOBAL_POSITION_INT', blocking=True)
+        if relative_alt:
+            alt = self.messages['GLOBAL_POSITION_INT'].relative_alt*0.001
         else:
-            return location(self.messages['GPS_RAW'].lat,
-                            self.messages['GPS_RAW'].lon,
-                            self.messages['VFR_HUD'].alt,
-                            self.messages['VFR_HUD'].heading)
+            alt = self.messages['VFR_HUD'].alt
+        return location(self.messages['GPS_RAW_INT'].lat*1.0e-7,
+                        self.messages['GPS_RAW_INT'].lon*1.0e-7,
+                        alt,
+                        self.messages['VFR_HUD'].heading)
 
     def field(self, type, field, default=None):
         '''convenient function for returning an arbitrary MAVLink
@@ -735,7 +756,11 @@ def mavlink_connection(device, baud=115200, source_system=255,
         return mavtcp(device[4:], source_system=source_system)
     if device.startswith('udp:'):
         return mavudp(device[4:], input=input, source_system=source_system)
-    if device.find(':') != -1 and not device.endswith('log'):
+
+    # list of suffixes to prevent setting DOS paths as UDP sockets
+    logsuffixes = [ 'log', 'raw', 'tlog' ]
+    suffix = device.split('.')[-1].lower()
+    if device.find(':') != -1 and not suffix in logsuffixes:
         return mavudp(device, source_system=source_system, input=input)
     if os.path.isfile(device):
         if device.endswith(".elf"):
@@ -909,6 +934,7 @@ def mode_string_v10(msg):
         0 : 'MANUAL',
         1 : 'CIRCLE',
         2 : 'STABILIZE',
+        3 : 'TRAINING',
         5 : 'FBWA',
         6 : 'FBWB',
         7 : 'FBWC',
