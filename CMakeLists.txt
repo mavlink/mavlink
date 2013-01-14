@@ -24,7 +24,6 @@ set(ROOT_THREAD TRUE CACHE INTERNAL "Is this the top level of the recursion?")
 
 # modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/cmake/arkcmake)
-include(GlobCopyTracked)
 include(DefineCMakeDefaults)
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
@@ -111,14 +110,6 @@ endif()
 configure_file(config.h.in config.h)
 install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} COMPONENT Dev)
 
-# python
-GLOB_COPY_TRACKED(TARGET pythonPackage
-    RECURSE
-    GLOB_ARGS "${CMAKE_SOURCE_DIR}/pymavlink/*"
-    SRCDIR "${CMAKE_SOURCE_DIR}/pymavlink"
-    DESTDIR "${CMAKE_BINARY_DIR}/pymavlink"
-    )
-
 # mavlink generation
 macro(generateMavlink version definitions languages)
     foreach(definition ${definitions})
@@ -130,15 +121,14 @@ macro(generateMavlink version definitions languages)
             set(dependencies ${definitionAbsPath} ${mavgen})
             #message(STATUS "\ttarget:${targetName}")
             if("${language}" STREQUAL "python")
-                set(outputName "pymavlink/pymavlink/mavlinkv${versionClean}_${definition}.py")
-                set(dependencies ${dependencies} pythonPackage)
+                set(outputName "${CMAKE_SOURCE_DIR}/pymavlink/v${versionClean}/${definition}.py")
             elseif("${language}" STREQUAL "C")
                 set(outputName "C/include/mavlink/v${version}")
             else()
                 message(ERROR "unknown language: ${language}")
             endif()
             add_custom_command( 
-                OUTPUT ${targetName}-stamp
+                OUTPUT ${CMAEK_BINARY_DIR}/${targetName}-stamp
                 COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=${language} --wire-protocol=${version}
                     --output=${outputName} ${definitionAbsPath}
                 COMMAND touch ${targetName}-stamp
