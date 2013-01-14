@@ -128,7 +128,7 @@ macro(generateMavlink version definitions languages)
                 message(ERROR "unknown language: ${language}")
             endif()
             add_custom_command( 
-                OUTPUT ${CMAEK_BINARY_DIR}/${targetName}-stamp
+                OUTPUT ${targetName}-stamp
                 COMMAND ${PYTHON_EXECUTABLE} ${mavgen} --lang=${language} --wire-protocol=${version}
                     --output=${outputName} ${definitionAbsPath}
                 COMMAND touch ${targetName}-stamp
