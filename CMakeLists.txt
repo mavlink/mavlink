@@ -121,8 +121,10 @@ macro(generateMavlink version definitions languages)
             set(dependencies ${definitionAbsPath} ${mavgen})
             #message(STATUS "\ttarget:${targetName}")
             if("${language}" STREQUAL "python")
+                set(dependencies ${dependencies} ${mavgen_python})
                 set(outputName "${CMAKE_SOURCE_DIR}/pymavlink/pymavlink/v${versionClean}/${definition}.py")
             elseif("${language}" STREQUAL "C")
+                set(dependencies ${dependencies} ${mavgen_c})
                 set(outputName "C/include/mavlink/v${version}")
             else()
                 message(ERROR "unknown language: ${language}")
@@ -141,6 +143,8 @@ endmacro()
 
 # build
 set(mavgen ${CMAKE_SOURCE_DIR}/generator/mavgen.py)
+set(mavgen_python ${CMAKE_SOURCE_DIR}/generator/mavgen_python.py)
+set(mavgen_c ${CMAKE_SOURCE_DIR}/generator/mavgen_c.py)
 set(v0_9Definitions
     ardupilotmega
     common
