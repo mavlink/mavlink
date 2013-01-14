@@ -3,7 +3,7 @@
 import sys, os
 
 import devpath
-import pymavlink.mavlinkv10_common as mavlink
+from pymavlink import v10.common as mavlink
 
 class fifo(object):
     def __init__(self):

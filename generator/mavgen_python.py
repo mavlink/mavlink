@@ -23,7 +23,7 @@ Note: this file has been auto-generated. DO NOT EDIT
 '''
 
 import struct, array, time, json
-import mavutil
+import pymavlink.mavutil
 
 WIRE_PROTOCOL_VERSION = "${WIRE_PROTOCOL_VERSION}"
 
