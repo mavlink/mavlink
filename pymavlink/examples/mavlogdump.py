@@ -23,7 +23,7 @@ parser.add_option("--types",  default=None, help="types of messages (comma separ
 (opts, args) = parser.parse_args()
 
 import devpath
-import mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: mavlogdump.py [options] <LOGFILE>")
