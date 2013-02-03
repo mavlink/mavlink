@@ -42,12 +42,12 @@ def flight_time(logfile):
             return total_time
         t = time.localtime(m._timestamp)
         if m.groundspeed > opts.groundspeed and not in_air:
-            print("In air at %s (groundspeed %.1f)" % (time.asctime(t), m.groundspeed))
+            print("In air at %s (percent %.0f%% groundspeed %.1f)" % (time.asctime(t), mlog.percent, m.groundspeed))
             in_air = True
             start_time = time.mktime(t)
         elif m.groundspeed < opts.groundspeed and in_air:
-            print("On ground at %s (groundspeed %.1f  time=%.1f seconds)" % (
-                time.asctime(t), m.groundspeed, time.mktime(t) - start_time))
+            print("On ground at %s (percent %.1f%% groundspeed %.1f  time=%.1f seconds)" % (
+                time.asctime(t), mlog.percent, m.groundspeed, time.mktime(t) - start_time))
             in_air = False
             total_time += time.mktime(t) - start_time
     return total_time
