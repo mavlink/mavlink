@@ -32,7 +32,7 @@ for protocol in protocols :
     for xml_file in xml_file_names:
         print "xml file is ", xml_file
         opts = options(lang = "C", output = "C/include_v"+protocol, \
-                       wire_protocol=protocol, error_limit="200")
+                       wire_protocol=protocol, error_limit=200)
         args = []
         args.append(xml_file)
         mavgen(opts, args)
@@ -41,10 +41,10 @@ for protocol in protocols :
         print "xml_file_base is", xml_file_base
         opts = options(lang = "python", \
                        output="python/mavlink_"+xml_file_base+"_v"+protocol+".py", \
-                       wire_protocol=protocol, error_limit="200")
+                       wire_protocol=protocol, error_limit=200)
         mavgen(opts,args)
         
         opts = options(lang = "CS", \
                        output="CS/v" + protocol + "/mavlink_" + xml_file_base + "/mesages", \
-                       wire_protocol=protocol, error_limit="200")
+                       wire_protocol=protocol, error_limit=200)
         mavgen(opts,args)
