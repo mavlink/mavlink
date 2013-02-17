@@ -44,7 +44,7 @@ class MAVParmDict(dict):
         count = 0
         for p in k:
             if p and fnmatch.fnmatch(str(p).upper(), wildcard.upper()):
-                f.write("%-15.15s %f\n" % (p, self.__getitem__(p)))
+                f.write("%-16.16s %f\n" % (p, self.__getitem__(p)))
                 count += 1
         f.close()
         if verbose:
@@ -64,6 +64,7 @@ class MAVParmDict(dict):
             line = line.strip()
             if not line or line[0] == "#":
                 continue
+            line = line.replace(',',' ')
             a = line.split()
             if len(a) != 2:
                 print("Invalid line: %s" % line)
@@ -97,20 +98,22 @@ class MAVParmDict(dict):
         k = sorted(self.keys())
         for p in k:
             if fnmatch.fnmatch(str(p).upper(), wildcard.upper()):
-                print("%-15.15s %f" % (str(p), self.get(p)))
+                print("%-16.16s %f" % (str(p), self.get(p)))
 
-    def diff(self, filename):
+    def diff(self, filename, wildcard='*'):
         '''show differences with another parameter file'''
         other = MAVParmDict()
         if not other.load(filename):
             return
         keys = sorted(list(set(self.keys()).union(set(other.keys()))))
         for k in keys:
+            if not fnmatch.fnmatch(str(k).upper(), wildcard.upper()):
+                continue
             if not k in other:
-                print("%-15.15s              %12.4f" % (k, self[k]))
+                print("%-16.16s              %12.4f" % (k, self[k]))
             elif not k in self:
-                print("%-15.15s %12.4f" % (k, other[k]))
+                print("%-16.16s %12.4f" % (k, other[k]))
             elif abs(self[k] - other[k]) > self.mindelta:
-                print("%-15.15s %12.4f %12.4f" % (k, other[k], self[k]))
+                print("%-16.16s %12.4f %12.4f" % (k, other[k], self[k]))
                 
         

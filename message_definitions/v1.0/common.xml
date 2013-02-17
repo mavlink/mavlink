@@ -43,6 +43,9 @@
                <entry value="12" name="MAV_AUTOPILOT_PX4">
                    <description>PX4 Autopilot - http://pixhawk.ethz.ch/px4/</description>
                </entry>
+               <entry value="13" name="MAV_AUTOPILOT_SMACCMPILOT">
+                   <description>SMACCMPilot - http://smaccmpilot.org</description>
+               </entry>
           </enum>
           <enum name="MAV_TYPE">
                <entry value="0" name="MAV_TYPE_GENERIC">
@@ -1109,7 +1112,7 @@
           </message>
           <message id="36" name="SERVO_OUTPUT_RAW">
                <description>The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.</description>
-               <field type="uint32_t" name="time_boot_ms">Timestamp (microseconds since system boot)</field>
+               <field type="uint32_t" name="time_usec">Timestamp (microseconds since system boot)</field>
                <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos.</field>
                <field type="uint16_t" name="servo1_raw">Servo output 1 value, in microseconds</field>
                <field type="uint16_t" name="servo2_raw">Servo output 2 value, in microseconds</field>
@@ -1411,6 +1414,24 @@
                <field type="uint16_t" name="command">Command ID, as defined by MAV_CMD enum.</field>
                <field type="uint8_t" name="result">See MAV_RESULT enum</field>
           </message>
+         <message id="80" name="ROLL_PITCH_YAW_RATES_THRUST_SETPOINT">
+             <description>Setpoint in roll, pitch, yaw rates and thrust currently active on the system.</description>
+             <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
+             <field type="float" name="roll_rate">Desired roll rate in radians per second</field>
+             <field type="float" name="pitch_rate">Desired pitch rate in radians per second</field>
+             <field type="float" name="yaw_rate">Desired yaw rate in radians per second</field>
+             <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1</field>
+         </message>
+         <message id="81" name="MANUAL_SETPOINT">
+             <description>Setpoint in roll, pitch, yaw and thrust from the operator</description>
+             <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
+             <field type="float" name="roll">Desired roll rate in radians per second</field>
+             <field type="float" name="pitch">Desired pitch rate in radians per second</field>
+             <field type="float" name="yaw">Desired yaw rate in radians per second</field>
+             <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1</field>
+             <field type="uint8_t" name="mode_switch">Flight mode switch position, 0.. 255</field>
+             <field type="uint8_t" name="manual_override_switch">Override mode switch position, 0.. 255</field>
+         </message>
           <message id="89" name="LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET">
                <description>The offset in X, Y, Z and yaw between the LOCAL_POSITION_NED messages of MAV X and the global coordinate frame in NED coordinates. Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
@@ -1533,6 +1554,68 @@
              <field type="float" name="temperature">Temperature in degrees celsius</field>
              <field type="uint16_t" name="fields_updated">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
          </message>
+         <message id="106" name="OMNIDIRECTIONAL_FLOW">
+             <description>Optical flow from an omnidirectional flow sensor (e.g. PX4FLOW with wide angle lens)</description>
+             <field type="uint64_t" name="time_usec">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
+             <field type="uint8_t" name="sensor_id">Sensor ID</field>
+             <field type="int16_t[10]" name="left">Flow in deci pixels (1 = 0.1 pixel) on left hemisphere</field>
+             <field type="int16_t[10]" name="right">Flow in deci pixels (1 = 0.1 pixel) on right hemisphere</field>
+             <field type="uint8_t" name="quality">Optical flow quality / confidence. 0: bad, 255: maximum quality</field>
+             <field type="float" name="front_distance_m">Front distance in meters. Positive value (including zero): distance known. Negative value: Unknown distance</field>
+         </message>
+         <message id="110" name="FILE_TRANSFER_START">
+             <description>Begin file transfer</description>
+             <field type="uint64_t" name="transfer_uid">Unique transfer ID</field>
+             <field type="char[240]" name="dest_path">Destination path</field>
+             <field type="uint8_t" name="direction">Transfer direction: 0: from requester, 1: to requester</field>
+             <field type="uint32_t" name="file_size">File size in bytes</field>
+             <field type="uint8_t" name="flags">RESERVED</field>
+         </message>
+         <message id="111" name="FILE_TRANSFER_DIR_LIST">
+             <description>Get directory listing</description>
+             <field type="uint64_t" name="transfer_uid">Unique transfer ID</field>
+             <field type="char[240]" name="dir_path">Directory path to list</field>
+             <field type="uint8_t" name="flags">RESERVED</field>
+         </message>
+         <message id="112" name="FILE_TRANSFER_RES">
+             <description>File transfer result</description>
+             <field type="uint64_t" name="transfer_uid">Unique transfer ID</field>
+             <field type="uint8_t" name="result">0: OK, 1: not permitted, 2: bad path / file name, 3: no space left on device</field>
+         </message>
+         <message id="147" name="BATTERY_STATUS">
+               <description>Transmitte battery informations for a accu pack.</description>
+               <field type="uint8_t" name="accu_id">Accupack ID</field>
+               <field type="uint16_t" name="voltage_cell_1">Battery voltage of cell 1, in millivolts (1 = 1 millivolt)</field>
+               <field type="uint16_t" name="voltage_cell_2">Battery voltage of cell 2, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="uint16_t" name="voltage_cell_3">Battery voltage of cell 3, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="uint16_t" name="voltage_cell_4">Battery voltage of cell 4, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="uint16_t" name="voltage_cell_5">Battery voltage of cell 5, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="uint16_t" name="voltage_cell_6">Battery voltage of cell 6, in millivolts (1 = 1 millivolt), -1: no cell</field>
+               <field type="int16_t" name="current_battery">Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current</field>
+               <field type="int8_t" name="battery_remaining">Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot does not estimate the remaining battery</field>
+          </message>
+          <message id="148" name="SETPOINT_8DOF">
+               <description>Set the 8 DOF setpoint for a controller.</description>
+               <field type="uint8_t" name="target_system">System ID</field>
+               <field type="float" name="val1">Value 1</field>
+               <field type="float" name="val2">Value 2</field>
+               <field type="float" name="val3">Value 3</field>
+               <field type="float" name="val4">Value 4</field>
+               <field type="float" name="val5">Value 5</field>
+               <field type="float" name="val6">Value 6</field>
+               <field type="float" name="val7">Value 7</field>
+               <field type="float" name="val8">Value 8</field>
+          </message>
+          <message id="149" name="SETPOINT_6DOF">
+               <description>Set the 6 DOF setpoint for a attitude and position controller.</description>
+               <field type="uint8_t" name="target_system">System ID</field>
+               <field type="float" name="trans_x">Translational Component in x</field>
+               <field type="float" name="trans_y">Translational Component in y</field>
+               <field type="float" name="trans_z">Translational Component in z</field>
+               <field type="float" name="rot_x">Rotational Component in x</field>
+               <field type="float" name="rot_y">Rotational Component in y</field>
+               <field type="float" name="rot_z">Rotational Component in z</field>
+          </message>
           <!-- MESSAGE IDs 150 - 240: Space for custom messages in individual projectname_messages.xml files -->
           <message id="249" name="MEMORY_VECT">
                <description>Send raw controller memory. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>

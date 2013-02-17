@@ -109,7 +109,11 @@ def magfit(logfile):
 
     data = select_data(data)
 
-    # do an initial fit with all data
+    # remove initial outliers
+    data.sort(lambda a,b : radius_cmp(a,b,offsets))
+    data = data[len(data)/16:-len(data)/16]
+
+    # do an initial fit
     (offsets, field_strength) = fit_data(data)
 
     for count in range(3):

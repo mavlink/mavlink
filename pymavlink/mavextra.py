@@ -55,11 +55,70 @@ def mag_heading(RAW_IMU, ATTITUDE, declination=None, SENSOR_OFFSETS=None, ofs=No
         heading += 360
     return heading
 
+def mag_heading_motors(RAW_IMU, ATTITUDE, declination, SENSOR_OFFSETS, ofs, SERVO_OUTPUT_RAW, motor_ofs):
+    '''calculate heading from raw magnetometer'''
+    ofs = get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs)
+
+    if declination is None:
+        import mavutil
+        declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
+    mag_x = RAW_IMU.xmag
+    mag_y = RAW_IMU.ymag
+    mag_z = RAW_IMU.zmag
+    if SENSOR_OFFSETS is not None and ofs is not None:
+        mag_x += ofs[0] - SENSOR_OFFSETS.mag_ofs_x
+        mag_y += ofs[1] - SENSOR_OFFSETS.mag_ofs_y
+        mag_z += ofs[2] - SENSOR_OFFSETS.mag_ofs_z
+
+    headX = mag_x*cos(ATTITUDE.pitch) + mag_y*sin(ATTITUDE.roll)*sin(ATTITUDE.pitch) + mag_z*cos(ATTITUDE.roll)*sin(ATTITUDE.pitch)
+    headY = mag_y*cos(ATTITUDE.roll) - mag_z*sin(ATTITUDE.roll)
+    heading = degrees(atan2(-headY,headX)) + declination
+    if heading < 0:
+        heading += 360
+    return heading
+
 def mag_field(RAW_IMU, SENSOR_OFFSETS=None, ofs=None):
     '''calculate magnetic field strength from raw magnetometer'''
     mag_x = RAW_IMU.xmag
     mag_y = RAW_IMU.ymag
     mag_z = RAW_IMU.zmag
+    if SENSOR_OFFSETS is not None and ofs is not None:
+        mag_x += ofs[0] - SENSOR_OFFSETS.mag_ofs_x
+        mag_y += ofs[1] - SENSOR_OFFSETS.mag_ofs_y
+        mag_z += ofs[2] - SENSOR_OFFSETS.mag_ofs_z
+    return sqrt(mag_x**2 + mag_y**2 + mag_z**2)
+
+def get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs):
+    '''calculate magnetic field strength from raw magnetometer'''
+    import mavutil
+    self = mavutil.mavfile_global
+
+    m = SERVO_OUTPUT_RAW
+    motor_pwm = m.servo1_raw + m.servo2_raw + m.servo3_raw + m.servo4_raw
+    motor_pwm *= 0.25
+    rc3_min = self.param('RC3_MIN', 1100)
+    rc3_max = self.param('RC3_MAX', 1900)
+    motor = (motor_pwm - rc3_min) / (rc3_max - rc3_min)
+    if motor > 1.0:
+        motor = 1.0
+    if motor < 0.0:
+        motor = 0.0
+
+    motor_offsets0 = motor_ofs[0] * motor
+    motor_offsets1 = motor_ofs[1] * motor
+    motor_offsets2 = motor_ofs[2] * motor
+    ofs = (ofs[0] + motor_offsets0, ofs[1] + motor_offsets1, ofs[2] + motor_offsets2)
+
+    return ofs
+
+def mag_field_motors(RAW_IMU, SENSOR_OFFSETS, ofs, SERVO_OUTPUT_RAW, motor_ofs):
+    '''calculate magnetic field strength from raw magnetometer'''
+    mag_x = RAW_IMU.xmag
+    mag_y = RAW_IMU.ymag
+    mag_z = RAW_IMU.zmag
+
+    ofs = get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs)
+
     if SENSOR_OFFSETS is not None and ofs is not None:
         mag_x += ofs[0] - SENSOR_OFFSETS.mag_ofs_x
         mag_y += ofs[1] - SENSOR_OFFSETS.mag_ofs_y
@@ -201,11 +260,14 @@ def delta_angle(var, key, tusec=None):
     last_delta[key] = (var, tnow, ret)
     return ret
 
-def roll_estimate(RAW_IMU,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
+def roll_estimate(RAW_IMU,GPS_RAW_INT=None,ATTITUDE=None,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
     '''estimate roll from accelerometer'''
     rx = RAW_IMU.xacc * 9.81 / 1000.0
     ry = RAW_IMU.yacc * 9.81 / 1000.0
     rz = RAW_IMU.zacc * 9.81 / 1000.0
+    if ATTITUDE is not None and GPS_RAW_INT is not None:
+        ry -= ATTITUDE.yawspeed * GPS_RAW_INT.vel*0.01
+        rz += ATTITUDE.pitchspeed * GPS_RAW_INT.vel*0.01
     if SENSOR_OFFSETS is not None and ofs is not None:
         rx += SENSOR_OFFSETS.accel_cal_x
         ry += SENSOR_OFFSETS.accel_cal_y
@@ -219,31 +281,14 @@ def roll_estimate(RAW_IMU,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
             rz *= mul[2]
     return lowpass(degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2))),'_roll',smooth)
 
-def roll_estimate2(RAW_IMU,GPS_RAW_INT,ATTITUDE,SENSOR_OFFSETS=None, ofs=None, mul=None,smooth=0.7):
-    '''estimate roll from accelerometer'''
-    rx = RAW_IMU.xacc * 9.81 / 1000.0
-    ry = RAW_IMU.yacc * 9.81 / 1000.0
-    rz = RAW_IMU.zacc * 9.81 / 1000.0
-    ry -= ATTITUDE.yawspeed * GPS_RAW_INT.vel*0.01
-    rz += ATTITUDE.pitchspeed * GPS_RAW_INT.vel*0.01
-    if SENSOR_OFFSETS is not None and ofs is not None:
-        rx += SENSOR_OFFSETS.accel_cal_x
-        ry += SENSOR_OFFSETS.accel_cal_y
-        rz += SENSOR_OFFSETS.accel_cal_z
-        rx -= ofs[0]
-        ry -= ofs[1]
-        rz -= ofs[2]
-        if mul is not None:
-            rx *= mul[0]
-            ry *= mul[1]
-            rz *= mul[2]
-    return lowpass(degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2))),'_roll',smooth)
-
-def pitch_estimate(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
+def pitch_estimate(RAW_IMU, GPS_RAW_INT=None,ATTITUDE=None, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
     '''estimate pitch from accelerometer'''
     rx = RAW_IMU.xacc * 9.81 / 1000.0
     ry = RAW_IMU.yacc * 9.81 / 1000.0
     rz = RAW_IMU.zacc * 9.81 / 1000.0
+    if ATTITUDE is not None and GPS_RAW_INT is not None:
+        ry -= ATTITUDE.yawspeed * GPS_RAW_INT.vel*0.01
+        rz += ATTITUDE.pitchspeed * GPS_RAW_INT.vel*0.01
     if SENSOR_OFFSETS is not None and ofs is not None:
         rx += SENSOR_OFFSETS.accel_cal_x
         ry += SENSOR_OFFSETS.accel_cal_y
@@ -497,6 +542,12 @@ def earth_accel(RAW_IMU,ATTITUDE):
     '''return earth frame acceleration vector'''
     r = rotation(ATTITUDE)
     accel = Vector3(RAW_IMU.xacc, RAW_IMU.yacc, RAW_IMU.zacc) * 9.81 * 0.001
+    return r * accel
+
+def earth_gyro(RAW_IMU,ATTITUDE):
+    '''return earth frame gyro vector'''
+    r = rotation(ATTITUDE)
+    accel = Vector3(degrees(RAW_IMU.xgyro), degrees(RAW_IMU.ygyro), degrees(RAW_IMU.zgyro)) * 0.001
     return r * accel
 
 def airspeed_energy_error(NAV_CONTROLLER_OUTPUT, VFR_HUD):
