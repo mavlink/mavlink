@@ -44,7 +44,7 @@ def mavgen(opts, args) :
             print("Validating %s" % fname)
             mavgen_validate(fname, schemaFile, opts.error_limit);
         else:
-            print("Validation skipped.")
+            print("Validation skipped for %s." % fname)
 
         print("Parsing %s" % fname)
         xml.append(mavparse.MAVXML(fname, opts.wire_protocol))
@@ -59,7 +59,7 @@ def mavgen(opts, args) :
                 print("Validating %s" % fname)
                 mavgen_validate(fname, schemaFile, opts.error_limit);
             else:
-                print("Validation skipped.")
+                print("Validation skipped for %s." % fname)
 
             ## Parsing
             print("Parsing %s" % fname)
