@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-parse a MAVLink protocol XML file and generate a python implementation
+Parse a MAVLink protocol XML file and generate a language-specific implementation.
 
 Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
