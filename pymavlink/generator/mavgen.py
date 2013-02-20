@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-parse a MAVLink protocol XML file and generate a python implementation
+Parse a MAVLink protocol XML file and generate a language-specific implementation.
 
 Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
@@ -20,9 +20,14 @@ import mavgen_cs
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
 
-from genxmlif import GenXmlIfError
-from minixsv import pyxsval 
-
+try:
+    from genxmlif import GenXmlIfError
+    from minixsv import pyxsval
+    performValidation = True
+except:
+    print("Unable to load XML validator libraries. XML validation will not be performed")
+    performValidation = False
+    
 # XSD schema file
 schemaFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "mavschema.xsd")
 
@@ -35,8 +40,11 @@ def mavgen(opts, args) :
     xml = []
 
     for fname in args:
-        print("Validating %s" % fname)
-        mavgen_validate(fname, schemaFile, opts.error_limit);
+        if performValidation:
+            print("Validating %s" % fname)
+            mavgen_validate(fname, schemaFile, opts.error_limit);
+        else:
+            print("Validation skipped for %s." % fname)
 
         print("Parsing %s" % fname)
         xml.append(mavparse.MAVXML(fname, opts.wire_protocol))
@@ -47,8 +55,11 @@ def mavgen(opts, args) :
             fname = os.path.join(os.path.dirname(x.filename), i)
 
             ## Validate XML file with XSD file
-            print("Validating %s" % fname)
-            mavgen_validate(fname, schemaFile, opts.error_limit);
+            if performValidation:
+                print("Validating %s" % fname)
+                mavgen_validate(fname, schemaFile, opts.error_limit);
+            else:
+                print("Validation skipped for %s." % fname)
 
             ## Parsing
             print("Parsing %s" % fname)
