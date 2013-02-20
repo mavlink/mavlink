@@ -20,9 +20,14 @@ import mavgen_cs
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
 
-from genxmlif import GenXmlIfError
-from minixsv import pyxsval 
-
+try:
+    from genxmlif import GenXmlIfError
+    from minixsv import pyxsval
+    performValidation = True
+except:
+    print("Unable to load XML validator libraries. XML validation will not be performed")
+    performValidation = False
+    
 # XSD schema file
 schemaFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "mavschema.xsd")
 
