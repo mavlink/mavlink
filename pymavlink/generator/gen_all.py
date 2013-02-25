@@ -40,11 +40,11 @@ for protocol in protocols :
         xml_file_base = re.sub("\.xml","", xml_file_base)
         print "xml_file_base is", xml_file_base
         opts = options(lang = "python", \
-                       output="python/mavlink_"+xml_file_base+"_v"+protocol+".py", \
+                       output="Python/mavlink_"+xml_file_base+"_v"+protocol+".py", \
                        wire_protocol=protocol, error_limit=200)
         mavgen(opts,args)
         
         opts = options(lang = "CS", \
-                       output="CS/v" + protocol + "/mavlink_" + xml_file_base + "/mesages", \
+                       output="CS/v" + protocol + "/mavlink_" + xml_file_base + "/messages", \
                        wire_protocol=protocol, error_limit=200)
         mavgen(opts,args)
