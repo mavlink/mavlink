@@ -335,6 +335,7 @@ def generate(basename, xml):
             m.order_map[i] = m.ordered_fieldnames.index(m.fieldnames[i])
 
     print("Generating %s" % filename)
+    mavparse.mkdir_p(os.path.dirname(filename))
     outf = open(filename, "w")
     generate_preamble(outf)
     generate_msg_table(outf, msgs)

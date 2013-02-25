@@ -290,8 +290,7 @@ def generate(basename, xml):
         
     print("Generating messages file: %s" % structsfilename)
     dir = os.path.dirname(structsfilename)
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+    mavparse.mkdir_p(dir)
     outf = open(structsfilename, "w")
     generate_preamble(outf, msgs, filelist, xml[0])
     
