@@ -4,7 +4,7 @@ This code generates MAVLink modules that can be used with Node.js.  As with the 
 
 ### Generating the JS implementation ###
 
-Files in the ```implementations/``` directory are automatically generated from XML manifests that are in the (mavlink/mavlink)[https://github.com/mavlink/mavlink] project.  If you wish to generate custom MAVLink packets, you would need to follow the directions there.
+Files in the ```implementations/``` directory are automatically generated from XML manifests that are in the [mavlink/mavlink](https://github.com/mavlink/mavlink) project.  If you wish to generate custom MAVLink packets, you would need to follow the directions there.
 
 You need to have Node.js and npm installed to build.  
 
@@ -16,7 +16,9 @@ cd mavlink/pymavlink/generator && make -f javascriptMakefile
 
 ### Usage in Node.js ###
 
-The generated modules emit events when valid MAVLink messages are encountered.  The name of the event is the same as the name of the message: HEARTBEAT, FETCH_PARAM_LIST, REQUEST_DATA_STREAM, etc.  In addition, a generic _message_ event is emitted whenever a message is successfully decoded.
+The generated modules emit events when valid MAVLink messages are encountered.  The name of the event is the same as the name of the message: ```HEARTBEAT```, ```FETCH_PARAM_LIST```, ```REQUEST_DATA_STREAM```, etc.  In addition, a generic ```message``` event is emitted whenever a message is successfully decoded.
+
+The below code is a rough sketch of how to use the generated module in Node.js.  A somewhat more complete (though early, early alpha) example can be found [here](https://github.com/acuasi/ground-control-station).
 
 ```javascript
 var mavlink = require('mavlink_implementation'),
