@@ -1,0 +1,10 @@
+all:
+	cd javascript && npm install
+	cd ..
+	./gen_js.sh
+
+test: all
+	mocha javascript/test
+
+ci: all
+	mocha --reporter xunit javascript/test > javascript/mocha.xml

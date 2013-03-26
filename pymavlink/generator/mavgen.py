@@ -17,6 +17,7 @@ import mavgen_python
 import mavgen_wlua
 import mavgen_c
 import mavgen_cs
+import mavgen_javascript
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
 
@@ -25,6 +26,7 @@ from minixsv import pyxsval
 
 # XSD schema file
 schemaFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "mavschema.xsd")
+
 
 def mavgen(opts, args) :
     """Generate mavlink message formatters and parsers (C and Python ) using options
@@ -85,6 +87,8 @@ def mavgen(opts, args) :
         mavgen_wlua.generate(opts.output, xml)
     elif opts.language == 'cs':
         mavgen_cs.generate(opts.output, xml)
+    elif opts.language == 'javascript':
+        mavgen_javascript.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
     
