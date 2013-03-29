@@ -509,6 +509,12 @@ class mavfile(object):
                 0, # param6
                 0) # param7
 
+    def motors_armed(self):
+        if not 'HEARTBEAT' in self.messages:
+            return False
+        m = self.messages['HEARTBEAT']
+        return (m.base_mode & mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
+
     def field(self, type, field, default=None):
         '''convenient function for returning an arbitrary MAVLink
            field with a default'''
