@@ -225,7 +225,8 @@ MAV_AUTOPILOT_PPZ = 9 # PPZ UAV - http://nongnu.org/paparazzi
 MAV_AUTOPILOT_UDB = 10 # UAV Dev Board
 MAV_AUTOPILOT_FP = 11 # FlexiPilot
 MAV_AUTOPILOT_PX4 = 12 # PX4 Autopilot - http://pixhawk.ethz.ch/px4/
-MAV_AUTOPILOT_ENUM_END = 13 # 
+MAV_AUTOPILOT_SMACCMPILOT = 13 # SMACCMPilot - http://smaccmpilot.org
+MAV_AUTOPILOT_ENUM_END = 14 # 
 
 # MAV_TYPE
 MAV_TYPE_GENERIC = 0 # Generic micro air vehicle.
@@ -497,6 +498,7 @@ MAVLINK_MSG_ID_DATA16 = 169
 MAVLINK_MSG_ID_DATA32 = 170
 MAVLINK_MSG_ID_DATA64 = 171
 MAVLINK_MSG_ID_DATA96 = 172
+MAVLINK_MSG_ID_RANGEFINDER = 173
 MAVLINK_MSG_ID_HEARTBEAT = 0
 MAVLINK_MSG_ID_SYS_STATUS = 1
 MAVLINK_MSG_ID_SYSTEM_TIME = 2
@@ -569,6 +571,7 @@ MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE = 102
 MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE = 103
 MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE = 104
 MAVLINK_MSG_ID_HIGHRES_IMU = 105
+MAVLINK_MSG_ID_OMNIDIRECTIONAL_FLOW = 106
 MAVLINK_MSG_ID_FILE_TRANSFER_START = 110
 MAVLINK_MSG_ID_FILE_TRANSFER_DIR_LIST = 111
 MAVLINK_MSG_ID_FILE_TRANSFER_RES = 112
@@ -955,6 +958,19 @@ class MAVLink_data96_message(MAVLink_message):
 
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, 22, struct.pack('<BB96s', self.type, self.len, self.data))
+
+class MAVLink_rangefinder_message(MAVLink_message):
+        '''
+        Rangefinder reporting
+        '''
+        def __init__(self, distance, voltage):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_RANGEFINDER, 'RANGEFINDER')
+                self._fieldnames = ['distance', 'voltage']
+                self.distance = distance
+                self.voltage = voltage
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 83, struct.pack('<ff', self.distance, self.voltage))
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -2350,6 +2366,24 @@ class MAVLink_highres_imu_message(MAVLink_message):
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, 93, struct.pack('<QfffffffffffffH', self.time_usec, self.xacc, self.yacc, self.zacc, self.xgyro, self.ygyro, self.zgyro, self.xmag, self.ymag, self.zmag, self.abs_pressure, self.diff_pressure, self.pressure_alt, self.temperature, self.fields_updated))
 
+class MAVLink_omnidirectional_flow_message(MAVLink_message):
+        '''
+        Optical flow from an omnidirectional flow sensor (e.g. PX4FLOW
+        with wide angle lens)
+        '''
+        def __init__(self, time_usec, sensor_id, left, right, quality, front_distance_m):
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_OMNIDIRECTIONAL_FLOW, 'OMNIDIRECTIONAL_FLOW')
+                self._fieldnames = ['time_usec', 'sensor_id', 'left', 'right', 'quality', 'front_distance_m']
+                self.time_usec = time_usec
+                self.sensor_id = sensor_id
+                self.left = left
+                self.right = right
+                self.quality = quality
+                self.front_distance_m = front_distance_m
+
+        def pack(self, mav):
+                return MAVLink_message.pack(self, mav, 211, struct.pack('<Qf10h10hBB', self.time_usec, self.front_distance_m, self.left, self.right, self.sensor_id, self.quality))
+
 class MAVLink_file_transfer_start_message(MAVLink_message):
         '''
         Begin file transfer
@@ -2574,6 +2608,7 @@ mavlink_map = {
         MAVLINK_MSG_ID_DATA32 : ( '<BB32s', MAVLink_data32_message, [0, 1, 2], 73 ),
         MAVLINK_MSG_ID_DATA64 : ( '<BB64s', MAVLink_data64_message, [0, 1, 2], 181 ),
         MAVLINK_MSG_ID_DATA96 : ( '<BB96s', MAVLink_data96_message, [0, 1, 2], 22 ),
+        MAVLINK_MSG_ID_RANGEFINDER : ( '<ff', MAVLink_rangefinder_message, [0, 1], 83 ),
         MAVLINK_MSG_ID_HEARTBEAT : ( '<IBBBBB', MAVLink_heartbeat_message, [1, 2, 3, 0, 4, 5], 50 ),
         MAVLINK_MSG_ID_SYS_STATUS : ( '<IIIHHhHHHHHHb', MAVLink_sys_status_message, [0, 1, 2, 3, 4, 5, 12, 6, 7, 8, 9, 10, 11], 124 ),
         MAVLINK_MSG_ID_SYSTEM_TIME : ( '<QI', MAVLink_system_time_message, [0, 1], 137 ),
@@ -2646,6 +2681,7 @@ mavlink_map = {
         MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE : ( '<Qfff', MAVLink_vision_speed_estimate_message, [0, 1, 2, 3], 208 ),
         MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE : ( '<Qffffff', MAVLink_vicon_position_estimate_message, [0, 1, 2, 3, 4, 5, 6], 56 ),
         MAVLINK_MSG_ID_HIGHRES_IMU : ( '<QfffffffffffffH', MAVLink_highres_imu_message, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], 93 ),
+        MAVLINK_MSG_ID_OMNIDIRECTIONAL_FLOW : ( '<Qf10h10hBB', MAVLink_omnidirectional_flow_message, [0, 4, 2, 3, 5, 1], 211 ),
         MAVLINK_MSG_ID_FILE_TRANSFER_START : ( '<QI240sBB', MAVLink_file_transfer_start_message, [0, 2, 3, 1, 4], 235 ),
         MAVLINK_MSG_ID_FILE_TRANSFER_DIR_LIST : ( '<Q240sB', MAVLink_file_transfer_dir_list_message, [0, 1, 2], 93 ),
         MAVLINK_MSG_ID_FILE_TRANSFER_RES : ( '<QB', MAVLink_file_transfer_res_message, [0, 1], 124 ),
@@ -3389,7 +3425,7 @@ class MAVLink(object):
                 '''
                 Wind estimation
 
-                direction                 : wind direction (degrees) (float)
+                direction                 : wind direction that wind is coming from (degrees) (float)
                 speed                     : wind speed in ground plane (m/s) (float)
                 speed_z                   : vertical wind speed (m/s) (float)
 
@@ -3402,7 +3438,7 @@ class MAVLink(object):
                 '''
                 Wind estimation
 
-                direction                 : wind direction (degrees) (float)
+                direction                 : wind direction that wind is coming from (degrees) (float)
                 speed                     : wind speed in ground plane (m/s) (float)
                 speed_z                   : vertical wind speed (m/s) (float)
 
@@ -3504,6 +3540,28 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.data96_encode(type, len, data))
+            
+        def rangefinder_encode(self, distance, voltage):
+                '''
+                Rangefinder reporting
+
+                distance                  : distance in meters (float)
+                voltage                   : raw voltage if available, zero otherwise (float)
+
+                '''
+                msg = MAVLink_rangefinder_message(distance, voltage)
+                msg.pack(self)
+                return msg
+            
+        def rangefinder_send(self, distance, voltage):
+                '''
+                Rangefinder reporting
+
+                distance                  : distance in meters (float)
+                voltage                   : raw voltage if available, zero otherwise (float)
+
+                '''
+                return self.send(self.rangefinder_encode(distance, voltage))
             
         def heartbeat_encode(self, type, autopilot, base_mode, custom_mode, system_status, mavlink_version=3):
                 '''
@@ -6028,6 +6086,38 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.highres_imu_encode(time_usec, xacc, yacc, zacc, xgyro, ygyro, zgyro, xmag, ymag, zmag, abs_pressure, diff_pressure, pressure_alt, temperature, fields_updated))
+            
+        def omnidirectional_flow_encode(self, time_usec, sensor_id, left, right, quality, front_distance_m):
+                '''
+                Optical flow from an omnidirectional flow sensor (e.g. PX4FLOW with
+                wide angle lens)
+
+                time_usec                 : Timestamp (microseconds, synced to UNIX time or since system boot) (uint64_t)
+                sensor_id                 : Sensor ID (uint8_t)
+                left                      : Flow in deci pixels (1 = 0.1 pixel) on left hemisphere (int16_t)
+                right                     : Flow in deci pixels (1 = 0.1 pixel) on right hemisphere (int16_t)
+                quality                   : Optical flow quality / confidence. 0: bad, 255: maximum quality (uint8_t)
+                front_distance_m          : Front distance in meters. Positive value (including zero): distance known. Negative value: Unknown distance (float)
+
+                '''
+                msg = MAVLink_omnidirectional_flow_message(time_usec, sensor_id, left, right, quality, front_distance_m)
+                msg.pack(self)
+                return msg
+            
+        def omnidirectional_flow_send(self, time_usec, sensor_id, left, right, quality, front_distance_m):
+                '''
+                Optical flow from an omnidirectional flow sensor (e.g. PX4FLOW with
+                wide angle lens)
+
+                time_usec                 : Timestamp (microseconds, synced to UNIX time or since system boot) (uint64_t)
+                sensor_id                 : Sensor ID (uint8_t)
+                left                      : Flow in deci pixels (1 = 0.1 pixel) on left hemisphere (int16_t)
+                right                     : Flow in deci pixels (1 = 0.1 pixel) on right hemisphere (int16_t)
+                quality                   : Optical flow quality / confidence. 0: bad, 255: maximum quality (uint8_t)
+                front_distance_m          : Front distance in meters. Positive value (including zero): distance known. Negative value: Unknown distance (float)
+
+                '''
+                return self.send(self.omnidirectional_flow_encode(time_usec, sensor_id, left, right, quality, front_distance_m))
             
         def file_transfer_start_encode(self, transfer_uid, dest_path, direction, file_size, flags):
                 '''
