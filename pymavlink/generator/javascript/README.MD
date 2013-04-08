@@ -21,20 +21,22 @@ The generated modules emit events when valid MAVLink messages are encountered.  
 The below code is a rough sketch of how to use the generated module in Node.js.  A somewhat more complete (though early, early alpha) example can be found [here](https://github.com/acuasi/ground-control-station).
 
 ```javascript
-var mavlink = require('mavlink_implementation'),
+var mavlink = require('mavlink_implementation'), // requires Underscore.js, can use Winston for logging
 	net = require('net');
+
+mavlinkParser = new MAVLink();
 
 connection = net.createConnection(5760, '127.0.0.1');
 connection.on('data', function(data) {
-	mavlink.parseBuffer(data);
+	mavlinkParser.parseBuffer(data);
 });
 
-mavlink.on('message', function(message) {
+mavlinkParser.on('message', function(message) {
 	console.log('Got a message of any type!');
 	console.log(message);
 });
 
-mavlink.on('HEARTBEAT', function(message) {
+mavlinkParser.on('HEARTBEAT', function(message) {
 	console.log('Got a heartbeat message!');
 	console.log(message);
 });
@@ -45,6 +47,8 @@ mavlink.on('HEARTBEAT', function(message) {
 The JS library that is implementing the pack/unpack functions doesn't match Python's struct library.  For example, it doesn't support the ```q``` or ```Q``` flags representing ```int64_t``` and ```uint64_t```, respectively.  Those have been replaced with ```d```,  ```double```, for the moment.
 
 This code isn't great idiomatic Javascript (yet!), instead, it's more of a line-by-line translation from Python as much as possible.
+
+Ideally, this would blorp out an NPM module so a client can just 'npm install mavlink.'  Not ready for that yet.
 
 ### Development ###
 
