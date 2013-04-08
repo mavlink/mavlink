@@ -170,3 +170,27 @@ describe("Generated MAVLink protocol handler object", function() {
   });
 
 });
+
+
+describe("MAVLink  X25CRC Decoder", function() {
+
+  beforeEach(function() {
+    // Message header + payload, lacks initial MAVLink flag (FE) and CRC.
+    this.heartbeatMessage = new Buffer([0x09, 0x03, 0xff , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x06 , 0x08 , 0x00 , 0x00 , 0x03]);
+
+  });
+
+  // This test matches the output directly taken by inspecting what the Python implementation
+  // generated for the above packet.
+  it('implements x25crc function', function() {
+      mavlink.x25Crc(this.heartbeatMessage).should.equal(27276);
+  });
+
+  // Heartbeat crc_extra value is 50.
+  it('can accumulate further bytes as needed (crc_extra)', function() {
+      var crc = mavlink.x25Crc(this.heartbeatMessage);
+      crc = mavlink.x25Crc([50], crc);
+      crc.should.eql(23711)
+  });
+
+});

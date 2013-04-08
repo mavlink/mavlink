@@ -22,8 +22,7 @@ Generated from: ${FILELIST}
 Note: this file has been auto-generated. DO NOT EDIT
 */
 
-jspack = require("../lib/node-jspack-master/jspack.js").jspack,
-    mavutil = require("../lib/mavutil.js"),
+jspack = require("jspack").jspack,
     _ = require("underscore"),
     events = require("events"),
     util = require("util");
@@ -34,6 +33,21 @@ Buffer.prototype.toByteArray = function () {
 }
 
 mavlink = function(){};
+
+// Implement the X25CRC function (present in the Python version through the mavutil.py package)
+mavlink.x25Crc = function(buffer, crc) {
+
+    var bytes = buffer;
+    var crc = crc || 0xffff;
+    _.each(bytes, function(e) {
+        var tmp = e ^ (crc & 0xff);
+        tmp = (tmp ^ (tmp << 4)) & 0xff;
+        crc = (crc >> 8) ^ (tmp << 8) ^ (tmp << 3) ^ (tmp >> 4);
+        crc = crc & 0xffff;
+    });
+    return crc;
+
+}
 
 mavlink.WIRE_PROTOCOL_VERSION = "${WIRE_PROTOCOL_VERSION}";
 
@@ -82,10 +96,10 @@ mavlink.message.prototype.pack = function(crc_extra, payload) {
     this.payload = payload;
     this.header = new mavlink.header(this.id, payload.length, this.seq, this.srcSystem, this.srcComponent);    
     this.msgbuf = this.header.pack().concat(payload);
-    var crc = mavutil.x25Crc(this.msgbuf.slice(1));
+    var crc = mavlink.x25Crc(this.msgbuf.slice(1));
 
     // For now, assume always using crc_extra = True.  TODO: check/fix this.
-    crc = mavutil.x25Crc([crc_extra], crc);
+    crc = mavlink.x25Crc([crc_extra], crc);
     this.msgbuf = this.msgbuf.concat(jspack.Pack('<H', [crc] ) );
     return this.msgbuf;
 
@@ -456,10 +470,10 @@ MAVLink.prototype.decode = function(msgbuf) {
         throw new Error("Unable to unpack MAVLink CRC: " + e.message);
     }
 
-    var messageChecksum = mavutil.x25Crc(msgbuf.slice(1, msgbuf.length - 2));
+    var messageChecksum = mavlink.x25Crc(msgbuf.slice(1, msgbuf.length - 2));
 
     // Assuming using crc_extra = True.  See the message.prototype.pack() function.
-    messageChecksum = mavutil.x25Crc([decoder.crc_extra], messageChecksum);
+    messageChecksum = mavlink.x25Crc([decoder.crc_extra], messageChecksum);
     
     if ( receivedChecksum != messageChecksum ) {
         throw new Error('invalid MAVLink CRC in msgID ' +msgId+ ', got 0x' + receivedChecksum + ' checksum, calculated payload checkum as 0x'+messageChecksum );
@@ -494,6 +508,7 @@ MAVLink.prototype.decode = function(msgbuf) {
     this.log(m);
     return m;
 }
+
 """, xml)
 
 def generate_footer(outf):
