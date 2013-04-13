@@ -1,4 +1,4 @@
-all:
+all: clean
 	cd javascript && npm install
 	cd ..
 	./gen_js.sh
@@ -8,3 +8,6 @@ test: all
 
 ci: all
 	mocha --reporter xunit javascript/test > javascript/mocha.xml
+
+clean:
+	rm -rf javascript/implementations
