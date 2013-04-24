@@ -88,7 +88,7 @@ class Application(Frame):
         # Create the Lang box
 
         self.language_value = StringVar()
-        self.language_choices = [ "C", "Python" ]
+        self.language_choices = [ "C", "Python", "CS", "Javascript", "WLua" ]
         self.language_label = Label( self, text="Lang" )
         self.language_label.grid(row=2, column=0)
         self.language_menu = OptionMenu(self,self.language_value,*self.language_choices)
