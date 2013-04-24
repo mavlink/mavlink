@@ -31,20 +31,31 @@ for protocol in protocols :
 
     for xml_file in xml_file_names:
         print "xml file is ", xml_file
-        opts = options(lang = "C", output = "C/include_v"+protocol, \
-                       wire_protocol=protocol, error_limit=200)
-        args = []
-        args.append(xml_file)
-        mavgen(opts, args)
         xml_file_base = os.path.basename(xml_file)
         xml_file_base = re.sub("\.xml","", xml_file_base)
         print "xml_file_base is", xml_file_base
+        args = []
+        args.append(xml_file)
+
+        # Generate C libraries
+        opts = options(lang = "C", output = "C/include_v"+protocol, \
+                       wire_protocol=protocol, error_limit=200)
+        mavgen(opts, args)
+
+        # Generate Python libraries
         opts = options(lang = "python", \
                        output="python/mavlink_"+xml_file_base+"_v"+protocol+".py", \
                        wire_protocol=protocol, error_limit=200)
         mavgen(opts,args)
-        
+
+        # Generate C-sharp libraries
         opts = options(lang = "CS", \
-                       output="CS/v" + protocol + "/mavlink_" + xml_file_base + "/mesages", \
+                       output="CS/v" + protocol + "/mavlink_" + xml_file_base + "/messages", \
+                       wire_protocol=protocol, error_limit=200)
+        mavgen(opts,args)
+
+        # Generate WLua libraries
+        opts = options(lang = "wlua", \
+                       output="wlua/mavlink_"+xml_file_base+"_v"+protocol+".lua", \
                        wire_protocol=protocol, error_limit=200)
         mavgen(opts,args)

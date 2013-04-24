@@ -102,7 +102,6 @@ def mavgen(opts, args) :
         mavgen_javascript.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
-    
 
 def mavgen_validate(fname, schema, errorLimitNumber) :
     """Uses minixsv to validate an XML file with a given XSD schema file."""
