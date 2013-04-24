@@ -102,7 +102,7 @@ class MAVLink_message(object):
             v = getattr(self, a)
             ret += '%s : %s, ' % (a, v)
         ret = ret[0:-2] + '}'
-        return ret            
+        return ret
 
     def to_dict(self):
         d = dict({})
@@ -168,9 +168,14 @@ class MAVLink_%s_message(MAVLink_message):
                 outf.write("                self.%s = %s\n" % (f.name, f.name))
         outf.write("""
         def pack(self, mav):
-                return MAVLink_message.pack(self, mav, %u, struct.pack('%s'""" % (m.crc_extra, m.fmtstr))
-        if len(m.fields) != 0:
-                outf.write(", self." + ", self.".join(m.ordered_fieldnames))
+                return MAVLink_message.pack(self, mav, %u, struct.pack('%s'""" % (m.crc_extra, m.endianessPrefix + "".join(m.fmtstr)))
+
+        for field in m.ordered_fields:
+            if field.array_length:
+                for i in xrange(field.array_length):
+                    outf.write(", self.%s[%i]" % (field.name, i))
+            else:
+                outf.write(", self." + field.name)
         outf.write("))\n")
 
 
@@ -202,10 +207,10 @@ def generate_mavlink_class(outf, msgs, xml):
 
     outf.write("\n\nmavlink_map = {\n");
     for m in msgs:
-        outf.write("        MAVLINK_MSG_ID_%s : ( '%s', MAVLink_%s_message, %s, %u ),\n" % (
-            m.name.upper(), m.fmtstr, m.name.lower(), m.order_map, m.crc_extra))
+        outf.write("        MAVLINK_MSG_ID_%s : ( %s, MAVLink_%s_message, %s, %u, '%s' ),\n" % (
+            m.name.upper(), m.fmtstr, m.name.lower(), m.order_map, m.crc_extra, m.endianessPrefix))
     outf.write("}\n\n")
-    
+
     t.write(outf, """
 class MAVError(Exception):
         '''MAVLink error class'''
@@ -233,7 +238,7 @@ class MAVLink_bad_data(MAVLink_message):
                 self.data = data
                 self.reason = reason
                 self._msgbuf = data
-            
+
 class MAVLink(object):
         '''MAVLink protocol handling class'''
         def __init__(self, file, srcSystem=0, srcComponent=0):
@@ -263,7 +268,7 @@ class MAVLink(object):
             self.callback = callback
             self.callback_args = args
             self.callback_kwargs = kwargs
-            
+
         def send(self, mavmsg):
                 '''send a MAVLink message'''
                 buf = mavmsg.pack(self)
@@ -300,7 +305,7 @@ class MAVLink(object):
                     return None
                 self.have_prefix_error = True
                 self.total_receive_errors += 1
-                raise MAVError("invalid MAVLink prefix '%s'" % magic) 
+                raise MAVError("invalid MAVLink prefix '%s'" % magic)
             self.have_prefix_error = False
             if len(self.buf) >= 2:
                 (magic, self.expected_length) = struct.unpack('BB', self.buf[0:2])
@@ -353,7 +358,7 @@ class MAVLink(object):
                     raise MAVError('unknown MAVLink message ID %u' % msgId)
 
                 # decode the payload
-                (fmt, type, order_map, crc_extra) = mavlink_map[msgId]
+                (fmt, type, order_map, crc_extra, endianess) = mavlink_map[msgId]
 
                 # decode the checksum
                 try:
@@ -361,18 +366,25 @@ class MAVLink(object):
                 except struct.error as emsg:
                     raise MAVError('Unable to unpack MAVLink CRC: %s' % emsg)
                 crc2 = mavutil.x25crc(msgbuf[1:-2])
-                if ${crc_extra}: # using CRC extra 
+                if ${crc_extra}: # using CRC extra
                     crc2.accumulate(chr(crc_extra))
                 if crc != crc2.crc:
                     raise MAVError('invalid MAVLink CRC in msgID %u 0x%04x should be 0x%04x' % (msgId, crc, crc2.crc))
 
                 try:
-                    t = struct.unpack(fmt, msgbuf[6:-2])
+                    tlist = []
+                    bytesUnpacked = 6
+                    for fieldFmt in fmt:
+                        prefixedFmt = endianess + fieldFmt
+                        bytesToUnpack = struct.calcsize(prefixedFmt)
+                        tlist.append(struct.unpack(prefixedFmt, msgbuf[bytesUnpacked : bytesUnpacked+bytesToUnpack]))
+                        bytesUnpacked += bytesToUnpack
+                        if len(tlist[-1]) == 1:
+                            tlist[-1], = tlist[-1] # unpack single element tuples
                 except struct.error as emsg:
                     raise MAVError('Unable to unpack MAVLink payload type=%s fmt=%s payloadLength=%u: %s' % (
                         type, fmt, len(msgbuf[6:-2]), emsg))
 
-                tlist = list(t)
                 # handle sorted fields
                 if ${sort_fields}:
                     t = tlist[:]
@@ -431,7 +443,7 @@ def generate_methods(outf, msgs):
                 msg = MAVLink_${NAMELOWER}_message(${FIELDNAMES})
                 msg.pack(self)
                 return msg
-            
+
 """, sub)
 
         t.write(outf, """
@@ -440,7 +452,7 @@ def generate_methods(outf, msgs):
                 ${COMMENT}
                 '''
                 return self.send(self.${NAMELOWER}_encode(${FIELDNAMES}))
-            
+
 """, sub)
 
 
@@ -461,11 +473,10 @@ def generate(basename, xml):
 
     for m in msgs:
         if xml[0].little_endian:
-            m.fmtstr = '<'
+            m.endianessPrefix = '<'
         else:
-            m.fmtstr = '>'
-        for f in m.ordered_fields:
-            m.fmtstr += mavfmt(f)
+            m.endianessPrefix = '>'
+        m.fmtstr = [mavfmt(f) for f in m.ordered_fields]
         m.order_map = [ 0 ] * len(m.fieldnames)
         for i in range(0, len(m.fieldnames)):
             m.order_map[i] = m.ordered_fieldnames.index(m.fieldnames[i])
