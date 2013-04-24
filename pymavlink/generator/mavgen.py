@@ -13,11 +13,6 @@ import sys, textwrap, os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 
 import mavparse
-import mavgen_python
-import mavgen_wlua
-import mavgen_c
-import mavgen_cs
-import mavgen_javascript
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
 
@@ -91,14 +86,19 @@ def mavgen(opts, args) :
     # Convert language option to lowercase and validate
     opts.language = opts.language.lower()
     if opts.language == 'python':
+        import mavgen_python
         mavgen_python.generate(opts.output, xml)
     elif opts.language == 'c':
+        import mavgen_c
         mavgen_c.generate(opts.output, xml)
     elif opts.language == 'wlua':
+        import mavgen_wlua
         mavgen_wlua.generate(opts.output, xml)
     elif opts.language == 'cs':
+        import mavgen_cs
         mavgen_cs.generate(opts.output, xml)
     elif opts.language == 'javascript':
+        import mavgen_javascript
         mavgen_javascript.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
