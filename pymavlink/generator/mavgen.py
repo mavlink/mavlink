@@ -17,14 +17,21 @@ import mavgen_python
 import mavgen_wlua
 import mavgen_c
 import mavgen_cs
+import mavgen_javascript
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
 
-from genxmlif import GenXmlIfError
-from minixsv import pyxsval 
-
+try:
+    from genxmlif import GenXmlIfError
+    from minixsv import pyxsval
+    performValidation = True
+except:
+    print("Unable to load XML validator libraries. XML validation will not be performed")
+    performValidation = False
+    
 # XSD schema file
 schemaFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "mavschema.xsd")
+
 
 def mavgen(opts, args) :
     """Generate mavlink message formatters and parsers (C and Python ) using options
@@ -35,8 +42,11 @@ def mavgen(opts, args) :
     xml = []
 
     for fname in args:
-        print("Validating %s" % fname)
-        mavgen_validate(fname, schemaFile, opts.error_limit);
+        if performValidation:
+            print("Validating %s" % fname)
+            mavgen_validate(fname, schemaFile, opts.error_limit);
+        else:
+            print("Validation skipped for %s." % fname)
 
         print("Parsing %s" % fname)
         xml.append(mavparse.MAVXML(fname, opts.wire_protocol))
@@ -46,9 +56,12 @@ def mavgen(opts, args) :
         for i in x.include:
             fname = os.path.join(os.path.dirname(x.filename), i)
 
-            ## Validate XML file with XSD file
-            print("Validating %s" % fname)
-            mavgen_validate(fname, schemaFile, opts.error_limit);
+            ## Validate XML file with XSD file if possible.
+            if performValidation:
+                print("Validating %s" % fname)
+                mavgen_validate(fname, schemaFile, opts.error_limit);
+            else:
+                print("Validation skipped for %s." % fname)
 
             ## Parsing
             print("Parsing %s" % fname)
@@ -85,6 +98,8 @@ def mavgen(opts, args) :
         mavgen_wlua.generate(opts.output, xml)
     elif opts.language == 'cs':
         mavgen_cs.generate(opts.output, xml)
+    elif opts.language == 'javascript':
+        mavgen_javascript.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
 

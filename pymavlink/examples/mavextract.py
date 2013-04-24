@@ -41,7 +41,7 @@ def process(filename):
 
         if mlog.flightmode.upper() == opts.mode.upper():
             if output is None:
-                path = os.path.join(dirname, "%s%u.log" % (opts.mode, count))
+                path = os.path.join(dirname, "%s%u.tlog" % (opts.mode, count))
                 count += 1
                 print("Creating %s" % path)
                 output = mavutil.mavlogfile(path, write=True)

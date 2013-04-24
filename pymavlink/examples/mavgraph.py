@@ -132,7 +132,7 @@ msg_types = set()
 multiplier = []
 field_types = []
 
-colors = [ 'red', 'green', 'blue', 'orange', 'olive', 'black', 'grey' ]
+colors = [ 'red', 'green', 'blue', 'orange', 'olive', 'black', 'grey', 'yellow' ]
 
 # work out msg types we are interested in
 x = []

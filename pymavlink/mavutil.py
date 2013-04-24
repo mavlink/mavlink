@@ -509,6 +509,12 @@ class mavfile(object):
                 0, # param6
                 0) # param7
 
+    def motors_armed(self):
+        if not 'HEARTBEAT' in self.messages:
+            return False
+        m = self.messages['HEARTBEAT']
+        return (m.base_mode & mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
+
     def field(self, type, field, default=None):
         '''convenient function for returning an arbitrary MAVLink
            field with a default'''
@@ -992,12 +998,25 @@ def mode_string_v10(msg):
         10 : 'OF_LOITER',
         11 : 'APPROACH'
         }
+    mapping_rover = {
+        0 : 'MANUAL',
+        2 : 'LEARNING',
+        3 : 'STEERING',
+        4 : 'HOLD',
+        10 : 'AUTO',
+        11 : 'RTL',
+        15 : 'GUIDED',
+        16 : 'INITIALISING'
+        }
     if msg.type == mavlink.MAV_TYPE_QUADROTOR:
         if msg.custom_mode in mapping_acm:
             return mapping_acm[msg.custom_mode]
     if msg.type == mavlink.MAV_TYPE_FIXED_WING:
         if msg.custom_mode in mapping_apm:
             return mapping_apm[msg.custom_mode]
+    if msg.type == mavlink.MAV_TYPE_GROUND_ROVER:
+        if msg.custom_mode in mapping_rover:
+            return mapping_rover[msg.custom_mode]
     return "Mode(%u)" % msg.custom_mode
 
     
