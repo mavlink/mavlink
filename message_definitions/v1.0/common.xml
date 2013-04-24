@@ -1364,6 +1364,16 @@
                <field type="uint16_t" name="message_rate">The requested interval between two messages of this type</field>
                <field type="uint8_t" name="on_off">1 stream is enabled, 0 stream is stopped.</field>
           </message>
+	  <message id="68" name="RADIO">
+	    <description>Communication link status data. Generally generated directly by the radio.</description>
+            <field type="uint8_t" name="rssi">local signal strength</field>
+            <field type="uint8_t" name="remrssi">remote signal strength</field>
+	    <field type="uint8_t" name="txbuf">how full the tx buffer is as a percentage</field>
+            <field type="uint8_t" name="noise">background noise level</field>
+            <field type="uint8_t" name="remnoise">remote background noise level</field>
+	    <field type="uint16_t" name="rxerrors">receive errors</field>
+	    <field type="uint16_t" name="fixed">count of error corrected packets</field>
+	  </message>
           <message id="69" name="MANUAL_CONTROL">
                <description>This message provides an API for manually controlling the vehicle using standard joystick axes nomenclature, along with a joystick-like input device. Unused axes can be disabled an buttons are also transmit as boolean values of their </description>
                <field type="uint8_t" name="target">The system to be controlled.</field>
