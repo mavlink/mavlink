@@ -248,6 +248,10 @@ class mavfile(object):
                 continue
             return m
 
+    def check_condition(self, condition):
+        '''check if a condition is true'''
+        return evaluate_condition(condition, self.messages)
+
     def mavlink10(self):
         '''return True if using MAVLink 1.0'''
         return self.WIRE_PROTOCOL_VERSION == "1.0"
