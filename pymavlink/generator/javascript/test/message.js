@@ -1,4 +1,4 @@
-var mavlink = require('../implementations/mavlink_ardupilotmega_v1.0.js'),
+var mavlink = require('../implementations/mavlink_ardupilotmega_v1.0'),
   should = require('should');
 
 describe('MAVLink message registry', function() {
