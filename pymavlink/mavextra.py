@@ -48,8 +48,11 @@ def mag_heading(RAW_IMU, ATTITUDE, declination=None, SENSOR_OFFSETS=None, ofs=No
         mag_y += ofs[1] - SENSOR_OFFSETS.mag_ofs_y
         mag_z += ofs[2] - SENSOR_OFFSETS.mag_ofs_z
 
-    headX = mag_x*cos(ATTITUDE.pitch) + mag_y*sin(ATTITUDE.roll)*sin(ATTITUDE.pitch) + mag_z*cos(ATTITUDE.roll)*sin(ATTITUDE.pitch)
-    headY = mag_y*cos(ATTITUDE.roll) - mag_z*sin(ATTITUDE.roll)
+    # go via a DCM matrix to match the APM calculation
+    dcm_matrix = rotation(ATTITUDE)
+    headY = mag_y * dcm_matrix.c.z - mag_z * dcm_matrix.c.y
+    headX = mag_x + dcm_matrix.c.x * (headY - mag_x * dcm_matrix.c.x)
+
     heading = degrees(atan2(-headY,headX)) + declination
     if heading < 0:
         heading += 360
