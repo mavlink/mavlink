@@ -10,9 +10,17 @@
 <!-- definition of attributes -->
 <xs:attribute name="name" type="xs:string"/> <!-- enum,entry,message,field -->
 <xs:attribute name="index" type="xs:unsignedByte"/> <!-- param -->
-<xs:attribute name="value" type="xs:unsignedShort"/> <!-- entry -->
 <xs:attribute name="id" type="xs:unsignedByte"/> <!-- message -->
 <xs:attribute name="print_format" type="xs:string"/> <!-- field -->
+<xs:attribute name="value"> <!-- entry -->
+  <xs:simpleType>
+    <xs:restriction base="xs:string">
+        <xs:pattern value="^\d{1,10}$"/> <!-- base 10 int -->
+        <xs:pattern value="^0[xX][0-9a-fA-F]{1,8}$"/> <!-- base 16 -->
+        <xs:pattern value="^0[bB][0-1]{1,32}$"/> <!-- base 1 -->
+    </xs:restriction>
+  </xs:simpleType>
+</xs:attribute>
 <xs:attribute name="type">
   <xs:simpleType>
     <xs:restriction base="xs:string">
