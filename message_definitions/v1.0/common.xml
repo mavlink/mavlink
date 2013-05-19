@@ -982,9 +982,9 @@
                 NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate. Coordinate frame is right-handed, Z-axis up (GPS frame).</description>
                <field type="uint64_t" name="time_usec">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
                <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value of this field unless it is at least two, so always correctly fill in the fix.</field>
-               <field type="int32_t" name="lat">Latitude in 1E7 degrees</field>
-               <field type="int32_t" name="lon">Longitude in 1E7 degrees</field>
-               <field type="int32_t" name="alt">Altitude in 1E3 meters (millimeters) above MSL</field>
+               <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="alt">Altitude (WGS84), in meters * 1000 (positive for up)</field>
                <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position in cm (m*100). If unknown, set to: 65535</field>
                <field type="uint16_t" name="epv">GPS VDOP horizontal dilution of position in cm (m*100). If unknown, set to: 65535</field>
                <field type="uint16_t" name="vel">GPS ground speed (m/s * 100). If unknown, set to: 65535</field>
@@ -1203,15 +1203,15 @@
           <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
                <description>As local waypoints exist, the global MISSION reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
                <field type="uint8_t" name="target_system">System ID</field>
-               <field type="int32_t" name="latitude">global position * 1E7</field>
-               <field type="int32_t" name="longitude">global position * 1E7</field>
-               <field type="int32_t" name="altitude">global position * 1000</field>
+               <field type="int32_t" name="latitude">Latitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="longitude">Longitude (WGS84, in degrees * 1E7</field>
+               <field type="int32_t" name="altitude">Altitude (WGS84), in meters * 1000 (positive for up)</field>
           </message>
           <message id="49" name="GPS_GLOBAL_ORIGIN">
                <description>Once the MAV sets a new GPS-Local correspondence, this message announces the origin (0,0,0) position</description>
-               <field type="int32_t" name="latitude">Latitude (WGS84), expressed as * 1E7</field>
-               <field type="int32_t" name="longitude">Longitude (WGS84), expressed as * 1E7</field>
-               <field type="int32_t" name="altitude">Altitude(WGS84), expressed as * 1000</field>
+               <field type="int32_t" name="latitude">Latitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="longitude">Longitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="altitude">Altitude (WGS84), in meters * 1000 (positive for up)</field>
           </message>
           <message id="50" name="SET_LOCAL_POSITION_SETPOINT">
                <description>Set the setpoint for a local position controller. This is the position in local coordinates the MAV should fly to. This message is sent by the path/MISSION planner to the onboard position controller. As some MAVs have a degree of freedom in yaw (e.g. all helicopters/quadrotors), the desired yaw angle is part of the message.</description>
@@ -1234,17 +1234,17 @@
           <message id="52" name="GLOBAL_POSITION_SETPOINT_INT">
                <description>Transmit the current local setpoint of the controller to other MAVs (collision avoidance) and to the GCS.</description>
                <field type="uint8_t" name="coordinate_frame">Coordinate frame - valid values are only MAV_FRAME_GLOBAL or MAV_FRAME_GLOBAL_RELATIVE_ALT</field>
-               <field type="int32_t" name="latitude">WGS84 Latitude position in degrees * 1E7</field>
-               <field type="int32_t" name="longitude">WGS84 Longitude position in degrees * 1E7</field>
-               <field type="int32_t" name="altitude">WGS84 Altitude in meters * 1000 (positive for up)</field>
+               <field type="int32_t" name="latitude">Latitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="longitude">Longitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="altitude">Altitude (WGS84), in meters * 1000 (positive for up)</field>
                <field type="int16_t" name="yaw">Desired yaw angle in degrees * 100</field>
           </message>
           <message id="53" name="SET_GLOBAL_POSITION_SETPOINT_INT">
                <description>Set the current global position setpoint.</description>
                <field type="uint8_t" name="coordinate_frame">Coordinate frame - valid values are only MAV_FRAME_GLOBAL or MAV_FRAME_GLOBAL_RELATIVE_ALT</field>
-               <field type="int32_t" name="latitude">WGS84 Latitude position in degrees * 1E7</field>
-               <field type="int32_t" name="longitude">WGS84 Longitude position in degrees * 1E7</field>
-               <field type="int32_t" name="altitude">WGS84 Altitude in meters * 1000 (positive for up)</field>
+               <field type="int32_t" name="latitude">Latitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="longitude">Longitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="altitude">Altitude (WGS84), in meters * 1000 (positive for up)</field>
                <field type="int16_t" name="yaw">Desired yaw angle in degrees * 100</field>
           </message>
           <message id="54" name="SAFETY_SET_ALLOWED_AREA">
