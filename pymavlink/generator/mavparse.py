@@ -195,7 +195,7 @@ class MAVXML(object):
             elif in_element == "mavlink.enums.enum.entry":
                 check_attrs(attrs, ['name'], 'enum entry')
                 if 'value' in attrs:
-                    value = int(attrs['value'])
+                    value = eval(attrs['value'])
                 else:
                     value = self.enum[-1].highest_value + 1
                 if (value > self.enum[-1].highest_value):
