@@ -6,8 +6,7 @@ show GPS lock events in a MAVLink log
 
 import sys, time, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+import devpath
 
 from optparse import OptionParser
 parser = OptionParser("gpslock.py [options]")
@@ -15,7 +14,7 @@ parser.add_option("--condition", default=None, help="condition for packets")
 
 (opts, args) = parser.parse_args()
 
-import mavutil
+import pymavlink.mavutil as mavutil
 
 if len(args) < 1:
     print("Usage: gpslock.py [options] <LOGFILE...>")
