@@ -374,6 +374,35 @@ class mavfile(object):
             MAV_ACTION_SET_AUTO = 13
             self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_SET_AUTO)
 
+    def mode_mapping(self):
+        '''return dictionary mapping mode names to numbers, or None if unknown'''
+        mav_type = self.field('HEARTBEAT', 'type', None)
+        if mav_type is None:
+            return None
+        map = None
+        if mav_type == mavlink.MAV_TYPE_QUADROTOR:
+            map = mode_mapping_acm
+        if mav_type == mavlink.MAV_TYPE_FIXED_WING:
+            map = mode_mapping_apm
+        if mav_type == mavlink.MAV_TYPE_GROUND_ROVER:
+            map = mode_mapping_rover
+        if map is None:
+            return None
+        inv_map = {a:b for b, a in map.items()}
+        return inv_map
+
+    def set_mode(self, mode):
+        '''enter arbitrary mode'''
+        if isinstance(mode, str):
+            map = self.mode_mapping()
+            if map is None or mode not in map:
+                print("Unknown mode '%s'" % mode)
+                return
+            mode = map[mode]
+        self.mav.set_mode_send(self.target_system,
+                               mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
+                               mode)
+
     def set_mode_rtl(self):
         '''enter RTL mode'''
         if self.mavlink10():
@@ -970,59 +999,60 @@ def mode_string_v09(msg):
         return mapping[cmode]
     return "Mode(%s,%s)" % cmode
 
+mode_mapping_apm = {
+    0 : 'MANUAL',
+    1 : 'CIRCLE',
+    2 : 'STABILIZE',
+    3 : 'TRAINING',
+    5 : 'FBWA',
+    6 : 'FBWB',
+    7 : 'FBWC',
+    10 : 'AUTO',
+    11 : 'RTL',
+    12 : 'LOITER',
+    13 : 'TAKEOFF',
+    14 : 'LAND',
+    15 : 'GUIDED',
+    16 : 'INITIALISING'
+    }
+mode_mapping_acm = {
+    0 : 'STABILIZE',
+    1 : 'ACRO',
+    2 : 'ALT_HOLD',
+    3 : 'AUTO',
+    4 : 'GUIDED',
+    5 : 'LOITER',
+    6 : 'RTL',
+    7 : 'CIRCLE',
+    8 : 'POSITION',
+    9 : 'LAND',
+    10 : 'OF_LOITER',
+    11 : 'APPROACH'
+    }
+mode_mapping_rover = {
+    0 : 'MANUAL',
+    2 : 'LEARNING',
+    3 : 'STEERING',
+    4 : 'HOLD',
+    10 : 'AUTO',
+    11 : 'RTL',
+    15 : 'GUIDED',
+    16 : 'INITIALISING'
+    }
+
 def mode_string_v10(msg):
     '''mode string for 1.0 protocol, from heartbeat'''
     if not msg.base_mode & mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED:
         return "Mode(0x%08x)" % msg.base_mode
-    mapping_apm = {
-        0 : 'MANUAL',
-        1 : 'CIRCLE',
-        2 : 'STABILIZE',
-        3 : 'TRAINING',
-        5 : 'FBWA',
-        6 : 'FBWB',
-        7 : 'FBWC',
-        10 : 'AUTO',
-        11 : 'RTL',
-        12 : 'LOITER',
-        13 : 'TAKEOFF',
-        14 : 'LAND',
-        15 : 'GUIDED',
-        16 : 'INITIALISING'
-        }
-    mapping_acm = {
-        0 : 'STABILIZE',
-        1 : 'ACRO',
-        2 : 'ALT_HOLD',
-        3 : 'AUTO',
-        4 : 'GUIDED',
-        5 : 'LOITER',
-        6 : 'RTL',
-        7 : 'CIRCLE',
-        8 : 'POSITION',
-        9 : 'LAND',
-        10 : 'OF_LOITER',
-        11 : 'APPROACH'
-        }
-    mapping_rover = {
-        0 : 'MANUAL',
-        2 : 'LEARNING',
-        3 : 'STEERING',
-        4 : 'HOLD',
-        10 : 'AUTO',
-        11 : 'RTL',
-        15 : 'GUIDED',
-        16 : 'INITIALISING'
-        }
     if msg.type == mavlink.MAV_TYPE_QUADROTOR:
-        if msg.custom_mode in mapping_acm:
-            return mapping_acm[msg.custom_mode]
+        if msg.custom_mode in mode_mapping_acm:
+            return mode_mapping_acm[msg.custom_mode]
     if msg.type == mavlink.MAV_TYPE_FIXED_WING:
-        if msg.custom_mode in mapping_apm:
-            return mapping_apm[msg.custom_mode]
+        if msg.custom_mode in mode_mapping_apm:
+            return mode_mapping_apm[msg.custom_mode]
     if msg.type == mavlink.MAV_TYPE_GROUND_ROVER:
-        if msg.custom_mode in mapping_rover:
-            return mapping_rover[msg.custom_mode]
+        if msg.custom_mode in mode_mapping_rover:
+            return mode_mapping_rover[msg.custom_mode]
     return "Mode(%u)" % msg.custom_mode
 
     
