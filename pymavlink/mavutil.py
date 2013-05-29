@@ -543,10 +543,26 @@ class mavfile(object):
                 0) # param7
 
     def motors_armed(self):
+        '''return true if motors armed'''
         if not 'HEARTBEAT' in self.messages:
             return False
         m = self.messages['HEARTBEAT']
         return (m.base_mode & mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
+
+    def motors_armed_wait(self):
+        '''wait for motors to be armed'''
+        while True:
+            m = self.wait_heartbeat()
+            if self.motors_armed():
+                return
+
+    def motors_disarmed_wait(self):
+        '''wait for motors to be disarmed'''
+        while True:
+            m = self.wait_heartbeat()
+            if not self.motors_armed():
+                return
+
 
     def field(self, type, field, default=None):
         '''convenient function for returning an arbitrary MAVLink
