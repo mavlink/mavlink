@@ -485,7 +485,7 @@ def airspeed(VFR_HUD, ratio=None):
     import mavutil
     mav = mavutil.mavfile_global
     if ratio is None:
-        ratio = 1.98 # APM default
+        ratio = 1.9936 # APM default
     if 'ARSPD_RATIO' in mav.params:
         used_ratio = mav.params['ARSPD_RATIO']
     else:
