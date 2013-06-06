@@ -191,7 +191,7 @@ FENCE_ACTION_ENUM_END = 3 #
 # FENCE_BREACH
 FENCE_BREACH_NONE = 0 # No last fence breach
 FENCE_BREACH_MINALT = 1 # Breached minimum altitude
-FENCE_BREACH_MAXALT = 2 # Breached minimum altitude
+FENCE_BREACH_MAXALT = 2 # Breached maximum altitude
 FENCE_BREACH_BOUNDARY = 3 # Breached fence boundary
 FENCE_BREACH_ENUM_END = 4 # 
 
@@ -475,14 +475,6 @@ MAV_SEVERITY_DEBUG = 7 # Useful non-operational messages that can assist in debu
                         # should not occur during normal operation.
 MAV_SEVERITY_ENUM_END = 8 # 
 
-# STRING_OPERATION_ID
-STRINGOP_FIRMWARE_VERSION = 0 # Firmware version of primary board firmware
-STRINGOP_FIRMWARE2_VERSION = 1 # Firmware version of secondary board firmware (eg. IO board)
-BOARD_TYPE = 2 # Type of primary board
-BOARD_SERIAL = 3 # Serial number of primary board
-MODE_NAME = 4 # Display name of the autopilot mode given by subid
-STRING_OPERATION_ID_ENUM_END = 5 # 
-
 # message IDs
 MAVLINK_MSG_ID_BAD_DATA = -1
 MAVLINK_MSG_ID_SENSOR_OFFSETS = 150
@@ -587,7 +579,6 @@ MAVLINK_MSG_ID_RADIO_STATUS = 109
 MAVLINK_MSG_ID_FILE_TRANSFER_START = 110
 MAVLINK_MSG_ID_FILE_TRANSFER_DIR_LIST = 111
 MAVLINK_MSG_ID_FILE_TRANSFER_RES = 112
-MAVLINK_MSG_ID_STRING_OPERATION = 113
 MAVLINK_MSG_ID_BATTERY_STATUS = 147
 MAVLINK_MSG_ID_SETPOINT_8DOF = 148
 MAVLINK_MSG_ID_SETPOINT_6DOF = 149
@@ -2512,25 +2503,6 @@ class MAVLink_file_transfer_res_message(MAVLink_message):
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, 124, struct.pack('<QB', self.transfer_uid, self.result))
 
-class MAVLink_string_operation_message(MAVLink_message):
-        '''
-        Get/set strings on a device
-        '''
-        def __init__(self, target_system, target_component, operation, id, subid, offset, length, string):
-                MAVLink_message.__init__(self, MAVLINK_MSG_ID_STRING_OPERATION, 'STRING_OPERATION')
-                self._fieldnames = ['target_system', 'target_component', 'operation', 'id', 'subid', 'offset', 'length', 'string']
-                self.target_system = target_system
-                self.target_component = target_component
-                self.operation = operation
-                self.id = id
-                self.subid = subid
-                self.offset = offset
-                self.length = length
-                self.string = string
-
-        def pack(self, mav):
-                return MAVLink_message.pack(self, mav, 221, struct.pack('<HHHBBBB40s', self.id, self.subid, self.offset, self.target_system, self.target_component, self.operation, self.length, self.string))
-
 class MAVLink_battery_status_message(MAVLink_message):
         '''
         Transmitte battery informations for a accu pack.
@@ -2792,7 +2764,6 @@ mavlink_map = {
         MAVLINK_MSG_ID_FILE_TRANSFER_START : ( '<QI240sBB', MAVLink_file_transfer_start_message, [0, 2, 3, 1, 4], 235 ),
         MAVLINK_MSG_ID_FILE_TRANSFER_DIR_LIST : ( '<Q240sB', MAVLink_file_transfer_dir_list_message, [0, 1, 2], 93 ),
         MAVLINK_MSG_ID_FILE_TRANSFER_RES : ( '<QB', MAVLink_file_transfer_res_message, [0, 1], 124 ),
-        MAVLINK_MSG_ID_STRING_OPERATION : ( '<HHHBBBB40s', MAVLink_string_operation_message, [3, 4, 5, 0, 1, 2, 6, 7], 221 ),
         MAVLINK_MSG_ID_BATTERY_STATUS : ( '<HHHHHHhBb', MAVLink_battery_status_message, [7, 0, 1, 2, 3, 4, 5, 6, 8], 42 ),
         MAVLINK_MSG_ID_SETPOINT_8DOF : ( '<ffffffffB', MAVLink_setpoint_8dof_message, [8, 0, 1, 2, 3, 4, 5, 6, 7], 241 ),
         MAVLINK_MSG_ID_SETPOINT_6DOF : ( '<ffffffB', MAVLink_setpoint_6dof_message, [6, 0, 1, 2, 3, 4, 5], 15 ),
@@ -6446,40 +6417,6 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.file_transfer_res_encode(transfer_uid, result))
-            
-        def string_operation_encode(self, target_system, target_component, operation, id, subid, offset, length, string):
-                '''
-                Get/set strings on a device
-
-                target_system             : System ID (uint8_t)
-                target_component          : Component ID (uint8_t)
-                operation                 : 0: Get, 1: Set (uint8_t)
-                id                        : string ID (see STRING_OPERATION_ID enum) (uint16_t)
-                subid                     : string sub-ID (uint16_t)
-                offset                    : offset into string (uint16_t)
-                length                    : string length - return zero for unknown strings (uint8_t)
-                string                    : string contents (may contain arbitrary 8-bit values - don't assume nul terminated) (char)
-
-                '''
-                msg = MAVLink_string_operation_message(target_system, target_component, operation, id, subid, offset, length, string)
-                msg.pack(self)
-                return msg
-            
-        def string_operation_send(self, target_system, target_component, operation, id, subid, offset, length, string):
-                '''
-                Get/set strings on a device
-
-                target_system             : System ID (uint8_t)
-                target_component          : Component ID (uint8_t)
-                operation                 : 0: Get, 1: Set (uint8_t)
-                id                        : string ID (see STRING_OPERATION_ID enum) (uint16_t)
-                subid                     : string sub-ID (uint16_t)
-                offset                    : offset into string (uint16_t)
-                length                    : string length - return zero for unknown strings (uint8_t)
-                string                    : string contents (may contain arbitrary 8-bit values - don't assume nul terminated) (char)
-
-                '''
-                return self.send(self.string_operation_encode(target_system, target_component, operation, id, subid, offset, length, string))
             
         def battery_status_encode(self, accu_id, voltage_cell_1, voltage_cell_2, voltage_cell_3, voltage_cell_4, voltage_cell_5, voltage_cell_6, current_battery, battery_remaining):
                 '''
