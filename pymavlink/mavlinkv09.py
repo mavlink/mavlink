@@ -1986,6 +1986,10 @@ class MAVLink_bad_data(MAVLink_message):
                 self.data = data
                 self.reason = reason
                 self._msgbuf = data
+
+        def __str__(self):
+            '''Override the __str__ function from MAVLink_messages because non-printable characters are common in to be the reason for this message to exist.'''
+            return '%s {%s, data:%s}' % (self._type, self.reason, [('%x' % ord(i) if isinstance(i, str) else '%x' % i) for i in self.data])  
             
 class MAVLink(object):
         '''MAVLink protocol handling class'''
