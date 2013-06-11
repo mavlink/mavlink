@@ -141,6 +141,7 @@ set(v0.9Definitions
 generateMavlink("0.9" "${v0.9Definitions}")
 set(v1.0Definitions
     ardupilotmega.xml
+    autoquad.xml
     common.xml
     matrixpilot.xml
     minimal.xml
