@@ -761,6 +761,8 @@ class mavlogfile(mavfile):
         else:
             self._timestamp = time.time()
         self.stop_on_EOF = True
+        self._last_message = None
+        self._last_timestamp = None
 
     def close(self):
         self.f.close()
@@ -772,6 +774,20 @@ class mavlogfile(mavfile):
 
     def write(self, buf):
         self.f.write(buf)
+
+    def scan_timestamp(self, tbuf):
+        '''scan forward looking in a tlog for a timestamp in a reasonable range'''
+        while True:
+            (tusec,) = struct.unpack('>Q', tbuf)
+            t = tusec * 1.0e-6
+            if abs(t - self._last_timestamp) <= 3*24*60*60:
+                break
+            c = self.f.read(1)
+            if len(c) != 1:
+                break
+            tbuf = tbuf[1:] + c
+        return t
+
 
     def pre_message(self):
         '''read timestamp if needed'''
@@ -794,6 +810,10 @@ class mavlogfile(mavfile):
                 return
             (tusec,) = struct.unpack('>Q', tbuf)
             t = tusec * 1.0e-6
+            if (self._last_timestamp is not None and
+                self._last_message.get_type() == "BAD_DATA" and
+                abs(t - self._last_timestamp) > 3*24*60*60):
+                t = self.scan_timestamp(tbuf)
             self._link = tusec & 0x3
         self._timestamp = t
 
@@ -804,6 +824,9 @@ class mavlogfile(mavfile):
         if self.planner_format:
             self.f.read(1) # trailing newline
         self.timestamp = msg._timestamp
+        self._last_message = msg
+        if msg.get_type() != "BAD_DATA":
+            self._last_timestamp = msg._timestamp
 
 class mavchildexec(mavfile):
     '''a MAVLink child processes reader/writer'''
