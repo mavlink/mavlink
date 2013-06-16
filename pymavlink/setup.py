@@ -2,7 +2,7 @@ from distutils.core import setup, Extension
  
 setup (name = 'pymavlink',
        version = '1.0',
-       description = 'Python mavlink code',
+       description = 'Python mavlink code - see http://www.qgroundcontrol.org/mavlink/mavproxy_startpage',
        packages = ['pymavlink', 'pymavlink.generator'],
        scripts = [ 'pymavlink/tools/magfit_delta.py', 'pymavlink/tools/mavextract.py',
                    'pymavlink/tools/mavgraph.py', 'pymavlink/tools/mavparmdiff.py',
