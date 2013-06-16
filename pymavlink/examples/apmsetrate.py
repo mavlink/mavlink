@@ -6,9 +6,6 @@ set stream rate on an APM
 
 import sys, struct, time, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 from optparse import OptionParser
 parser = OptionParser("apmsetrate.py [options]")
 
@@ -22,7 +19,7 @@ parser.add_option("--showmessages", dest="showmessages", action='store_true',
                   help="show incoming messages", default=False)
 (opts, args) = parser.parse_args()
 
-import mavutil
+from pymavlink import mavutil
 
 if opts.device is None:
     print("You must specify a serial device")

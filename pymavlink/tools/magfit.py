@@ -6,9 +6,6 @@ fit best estimate of magnetometer offsets
 
 import sys, time, os, math
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 from optparse import OptionParser
 parser = OptionParser("magfit.py [options]")
 parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
@@ -17,8 +14,8 @@ parser.add_option("--noise", type='float', default=0, help="noise to add")
 
 (opts, args) = parser.parse_args()
 
-import mavutil
-from rotmat import Vector3
+from pymavlink import mavutil
+from pymavlink.rotmat import Vector3
 
 if len(args) < 1:
     print("Usage: magfit.py [options] <LOGFILE...>")

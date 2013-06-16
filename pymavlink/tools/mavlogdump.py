@@ -9,9 +9,6 @@ header. The timestamp is in microseconds since 1970 (unix epoch)
 
 import sys, time, os, struct
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 from optparse import OptionParser
 parser = OptionParser("mavlogdump.py [options]")
 
@@ -25,7 +22,7 @@ parser.add_option("-o", "--output", default=None, help="output matching packets 
 parser.add_option("--types",  default=None, help="types of messages (comma separated)")
 (opts, args) = parser.parse_args()
 
-import mavutil
+from pymavlink import mavutil
 
 if len(args) < 1:
     print("Usage: mavlogdump.py [options] <LOGFILE>")

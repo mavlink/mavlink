@@ -5,10 +5,7 @@ compare two MAVLink parameter files
 
 import sys, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
-import mavutil, mavparm
+from pymavlink import mavutil, mavparm
 
 from optparse import OptionParser
 parser = OptionParser("mavparmdiff.py [options]")

@@ -6,9 +6,6 @@ show times when signal is lost
 
 import sys, time, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 from optparse import OptionParser
 parser = OptionParser("sigloss.py [options]")
 parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
@@ -20,7 +17,7 @@ parser.add_option("--types",  default=None, help="types of messages (comma separ
 
 (opts, args) = parser.parse_args()
 
-import mavutil
+from pymavlink import mavutil
 
 if len(args) < 1:
     print("Usage: sigloss.py [options] <LOGFILE...>")

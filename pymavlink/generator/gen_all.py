@@ -11,9 +11,6 @@ Released under GNU GPL version 3 or later
 import os, sys, glob, re
 from mavgen import mavgen
 
-# allow import from the parent directory, where mavutil.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 class options:
     """ a class to simulate the options of mavgen OptionsParser"""
     def __init__(self, lang, output, wire_protocol, error_limit):
