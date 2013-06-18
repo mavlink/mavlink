@@ -1,6 +1,8 @@
 from distutils.core import setup, Extension
 import glob, os
 
+version = '1.1.0'
+
 from generator import mavgen, mavparse
 
 # path to message_definitions directory
@@ -28,8 +30,8 @@ for xml in v10_dialects:
     mavgen.mavgen( opts, [xml] )
 
 setup (name = 'pymavlink',
-       version = '1.0.1',
-       description = 'Python mavlink code - see ',
+       version = version,
+       description = 'Python MAVLink code',
        url = 'http://github.com/mavlink/mavlink',
        package_dir = { 'pymavlink' : '.' },
        packages = ['pymavlink', 'pymavlink.generator',
