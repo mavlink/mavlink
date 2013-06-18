@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 import glob, os, shutil
 
-version = '1.1.2'
+version = '1.1.3'
 
 from generator import mavgen, mavparse
 
@@ -33,7 +33,17 @@ if not "NOGEN" in os.environ:
 setup (name = 'pymavlink',
        version = version,
        description = 'Python MAVLink code',
+       long_description = '''A Python library for handling MAVLink protocol streams and log files. This allows for the creation of simple scripts to analyse telemetry logs from autopilots such as ArduPilot which use the MAVLink protocol. See the scripts that come with the package for examples of small, useful scripts that use pymavlink.''',
        url = 'http://github.com/mavlink/mavlink',
+       classifiers=['Development Status :: 4 - Beta',
+                    'Environment :: Console',
+                    'Intended Audience :: Science/Research',
+                    'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
+                    'Operating System :: OS Independent',
+                    'Programming Language :: Python :: 2.7',
+                    'Topic :: Scientific/Engineering'
+                    ],
+       license='LGPLv3',
        package_dir = { 'pymavlink' : '.' },
        package_data = { 'pymavlink.dialects.v09' : ['*.xml'],
                         'pymavlink.dialects.v10' : ['*.xml'],
