@@ -19,15 +19,16 @@ class Opts:
         self.language = 'Python'
         self.output = output
 
-for xml in v09_dialects:
-    py = os.path.join('dialects', 'v09', os.path.basename(xml)[:-4] + '.py')
-    opts = Opts(mavparse.PROTOCOL_0_9, py)
-    mavgen.mavgen( opts, [xml] )
+if not "NOGEN" in os.environ:
+    for xml in v09_dialects:
+        py = os.path.join('dialects', 'v09', os.path.basename(xml)[:-4] + '.py')
+        opts = Opts(mavparse.PROTOCOL_0_9, py)
+        mavgen.mavgen( opts, [xml] )
 
-for xml in v10_dialects:
-    py = os.path.join('dialects', 'v10', os.path.basename(xml)[:-4] + '.py')
-    opts = Opts(mavparse.PROTOCOL_1_0, py)
-    mavgen.mavgen( opts, [xml] )
+    for xml in v10_dialects:
+        py = os.path.join('dialects', 'v10', os.path.basename(xml)[:-4] + '.py')
+        opts = Opts(mavparse.PROTOCOL_1_0, py)
+        mavgen.mavgen( opts, [xml] )
 
 setup (name = 'pymavlink',
        version = version,
