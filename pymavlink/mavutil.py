@@ -10,10 +10,11 @@ import socket, math, struct, time, os, fnmatch, array, sys, errno
 from math import *
 from mavextra import *
 
+current_dialect = 'common'
 if os.getenv('MAVLINK09') or 'MAVLINK09' in os.environ:
-    import mavlinkv09 as mavlink
+    import dialects.v09.common as mavlink
 else:
-    import mavlinkv10 as mavlink
+    import dialects.v10.common as mavlink
 
 def mavlink10():
     '''return True if using MAVLink 1.0'''
@@ -50,6 +51,22 @@ class location(object):
 
     def __str__(self):
         return "lat=%.6f,lon=%.6f,alt=%.1f" % (self.lat, self.lng, self.alt)
+
+def set_dialect(dialect):
+    '''set the MAVLink dialect to work with.
+    For example, set_dialect("ardupilotmega")
+    '''
+    global mavlink, current_dialect
+    if mavlink.WIRE_PROTOCOL_VERSION == "1.0":
+        modname = "pymavlink.dialects.v10." + dialect
+    else:
+        modname = "pymavlink.dialects.v09." + dialect
+    mod = __import__(modname)
+    components = modname.split('.')
+    for comp in components[1:]:
+        mod = getattr(mod, comp)
+    current_dialect = dialect
+    mavlink = mod
 
 class mavfile(object):
     '''a generic mavlink port'''
@@ -104,9 +121,11 @@ class mavfile(object):
             return
         self.first_byte = False
         if self.WIRE_PROTOCOL_VERSION == "0.9" and ord(buf[0]) == 254:
-            import mavlinkv10 as mavlink
+            self.WIRE_PROTOCOL_VERSION = "1.0"
+            set_dialect(current_dialect)
         elif self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
-            import mavlinkv09 as mavlink
+            self.WIRE_PROTOCOL_VERSION = "0.9"
+            set_dialect(current_dialect)
             os.environ['MAVLINK09'] = '1'
         else:
             return
@@ -862,8 +881,10 @@ class mavchildexec(mavfile):
 
 def mavlink_connection(device, baud=115200, source_system=255,
                        planner_format=None, write=False, append=False,
-                       robust_parsing=True, notimestamps=False, input=True):
-    '''make a serial or UDP mavlink connection'''
+                       robust_parsing=True, notimestamps=False, input=True,
+                       dialect='ardupilotmega'):
+    '''open a serial, UDP, TCP or file mavlink connection'''
+    set_dialect(dialect)
     if device.startswith('tcp:'):
         return mavtcp(device[4:], source_system=source_system)
     if device.startswith('udp:'):
