@@ -20,6 +20,7 @@ parser.add_option("--condition",dest="condition", default=None, help="select pac
 parser.add_option("-q", "--quiet", dest="quiet", action='store_true', help="don't display packets")
 parser.add_option("-o", "--output", default=None, help="output matching packets to give file")
 parser.add_option("--types",  default=None, help="types of messages (comma separated)")
+parser.add_option("--dialect",  default="ardupilotmega", help="MAVLink dialect")
 (opts, args) = parser.parse_args()
 
 from pymavlink import mavutil
@@ -31,7 +32,8 @@ if len(args) < 1:
 filename = args[0]
 mlog = mavutil.mavlink_connection(filename, planner_format=opts.planner,
                                   notimestamps=opts.notimestamps,
-                                  robust_parsing=opts.robust)
+                                  robust_parsing=opts.robust,
+                                  dialect=opts.dialect)
 
 output = None
 if opts.output:
