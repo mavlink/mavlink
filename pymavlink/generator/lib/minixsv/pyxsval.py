@@ -58,8 +58,8 @@ __all__ = [
 
 
 import string
-import genxmlif
-from minixsv           import *
+from .. import genxmlif
+from ..minixsv           import *
 from xsvalErrorHandler import ErrorHandler
 from xsvalXmlIf        import XsvXmlElementWrapper
 from xsvalBase         import XsValBase

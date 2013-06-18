@@ -41,7 +41,7 @@
 import urllib
 from xml.dom.ext.reader.Sax2   import Reader, XmlDomGenerator
 from xml.sax._exceptions       import SAXParseException
-from genxmlif                  import XMLIF_4DOM, GenXmlIfError
+from ..genxmlif                  import XMLIF_4DOM, GenXmlIfError
 from xmlifUtils                import convertToAbsUrl
 from xmlifDom                  import XmlInterfaceDom, XmlIfBuilderExtensionDom, InternalDomTreeWrapper, InternalDomElementWrapper
 

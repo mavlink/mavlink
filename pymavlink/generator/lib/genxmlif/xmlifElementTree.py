@@ -52,7 +52,7 @@ if sys.version_info[:2] >= (2,5):
 else:
     from elementtree.ElementTree    import ElementTree, _ElementInterface, XMLTreeBuilder, TreeBuilder
     from elementtree import ElementInclude 
-from genxmlif                   import XMLIF_ELEMENTTREE, GenXmlIfError
+from ..genxmlif                   import XMLIF_ELEMENTTREE, GenXmlIfError
 from xmlifUtils                 import convertToAbsUrl, processWhitespaceAction, collapseString, toClarkQName, splitQName
 from xmlifBase                  import XmlIfBuilderExtensionBase
 from xmlifApi                   import XmlInterfaceBase

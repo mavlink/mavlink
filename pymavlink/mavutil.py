@@ -10,11 +10,7 @@ import socket, math, struct, time, os, fnmatch, array, sys, errno
 from math import *
 from mavextra import *
 
-current_dialect = 'common'
-if os.getenv('MAVLINK09') or 'MAVLINK09' in os.environ:
-    import dialects.v09.common as mavlink
-else:
-    import dialects.v10.common as mavlink
+mavlink = None
 
 def mavlink10():
     '''return True if using MAVLink 1.0'''
@@ -57,16 +53,31 @@ def set_dialect(dialect):
     For example, set_dialect("ardupilotmega")
     '''
     global mavlink, current_dialect
-    if mavlink.WIRE_PROTOCOL_VERSION == "1.0":
+    from generator import mavparse
+    if mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
+        wire_protocol = mavparse.PROTOCOL_1_0
         modname = "pymavlink.dialects.v10." + dialect
     else:
+        wire_protocol = mavparse.PROTOCOL_0_9
         modname = "pymavlink.dialects.v09." + dialect
-    mod = __import__(modname)
+
+    try:
+        mod = __import__(modname)
+    except Exception:
+        # auto-generate the dialect module
+        from generator.mavgen import mavgen_python_dialect
+        mavgen_python_dialect(dialect, wire_protocol)
+        mod = __import__(modname)
     components = modname.split('.')
     for comp in components[1:]:
         mod = getattr(mod, comp)
     current_dialect = dialect
     mavlink = mod
+
+# allow for a MAVLINK_DIALECT environment variable
+if not 'MAVLINK_DIALECT' in os.environ:
+    os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
+set_dialect(os.environ['MAVLINK_DIALECT'])
 
 class mavfile(object):
     '''a generic mavlink port'''
@@ -882,9 +893,10 @@ class mavchildexec(mavfile):
 def mavlink_connection(device, baud=115200, source_system=255,
                        planner_format=None, write=False, append=False,
                        robust_parsing=True, notimestamps=False, input=True,
-                       dialect='ardupilotmega'):
+                       dialect=None):
     '''open a serial, UDP, TCP or file mavlink connection'''
-    set_dialect(dialect)
+    if dialect is not None:
+        set_dialect(dialect)
     if device.startswith('tcp:'):
         return mavtcp(device[4:], source_system=source_system)
     if device.startswith('udp:'):

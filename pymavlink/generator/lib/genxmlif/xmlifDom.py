@@ -45,7 +45,7 @@ import copy
 import urllib
 from types                import TupleType
 from xml.dom              import Node, getDOMImplementation, XMLNS_NAMESPACE
-from genxmlif             import XINC_NAMESPACE, GenXmlIfError
+from ..genxmlif             import XINC_NAMESPACE, GenXmlIfError
 from xmlifUtils           import nsNameToQName, processWhitespaceAction, collapseString, NsNameTupleFactory, convertToAbsUrl
 from xmlifBase            import XmlIfBuilderExtensionBase
 from xmlifApi             import XmlInterfaceBase

@@ -41,8 +41,8 @@
 
 import string
 import copy
-from minixsv             import *
-from genxmlif.xmlifUtils import collapseString, convertToAbsUrl, NsNameTupleFactory, NsNameTuple
+from ..minixsv             import *
+from ..genxmlif.xmlifUtils import collapseString, convertToAbsUrl, NsNameTupleFactory, NsNameTuple
 from xsvalSimpleTypes    import XsSimpleTypeVal, SimpleTypeError
 
 

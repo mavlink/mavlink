@@ -44,8 +44,8 @@ import string
 import re
 import datetime
 from decimal             import Decimal
-from genxmlif.xmlifUtils import removeWhitespaces, collapseString, normalizeString, NsNameTupleFactory
-from minixsv             import XSD_NAMESPACE
+from ..genxmlif.xmlifUtils import removeWhitespaces, collapseString, normalizeString, NsNameTupleFactory
+from ..minixsv             import XSD_NAMESPACE
 from xsvalUtils          import substituteSpecialEscChars
 
 ###################################################

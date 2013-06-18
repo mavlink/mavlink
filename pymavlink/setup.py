@@ -1,5 +1,5 @@
 from distutils.core import setup, Extension
-import glob, os
+import glob, os, shutil
 
 version = '1.1.0'
 
@@ -7,36 +7,39 @@ from generator import mavgen, mavparse
 
 # path to message_definitions directory
 mdef_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'message_definitions')
+dialects_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dialects')
 
 v09_dialects = glob.glob(os.path.join(mdef_path, 'v0.9', '*.xml'))
 v10_dialects = glob.glob(os.path.join(mdef_path, 'v1.0', '*.xml'))
 
-# build all the dialects in the dialects subpackage
-class Opts:
-    def __init__(self, wire_protocol, output):
-        self.wire_protocol = wire_protocol
-        self.error_limit = 200
-        self.language = 'Python'
-        self.output = output
-
 if not "NOGEN" in os.environ:
     for xml in v09_dialects:
-        py = os.path.join('dialects', 'v09', os.path.basename(xml)[:-4] + '.py')
-        opts = Opts(mavparse.PROTOCOL_0_9, py)
-        mavgen.mavgen( opts, [xml] )
+        dialect = os.path.basename(xml)[:-4]
+        shutil.copy(xml, os.path.join(dialects_path, 'v09'))
+        mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_0_9)
 
     for xml in v10_dialects:
-        py = os.path.join('dialects', 'v10', os.path.basename(xml)[:-4] + '.py')
-        opts = Opts(mavparse.PROTOCOL_1_0, py)
-        mavgen.mavgen( opts, [xml] )
+        dialect = os.path.basename(xml)[:-4]
+        shutil.copy(xml, os.path.join(dialects_path, 'v10'))
+        mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_1_0)
 
 setup (name = 'pymavlink',
        version = version,
        description = 'Python MAVLink code',
        url = 'http://github.com/mavlink/mavlink',
        package_dir = { 'pymavlink' : '.' },
-       packages = ['pymavlink', 'pymavlink.generator',
-                   'pymavlink.dialects', 'pymavlink.dialects.v09', 'pymavlink.dialects.v10'],
+       package_data = { 'pymavlink.dialects.v09' : ['*.xml'],
+                        'pymavlink.dialects.v10' : ['*.xml'],
+                        'pymavlink.generator'    : [ '*.xsd' ],
+                        'pymavlink.generator.lib.minixsv': [ '*.xsd' ] },
+       packages = ['pymavlink',
+                   'pymavlink.generator',
+                   'pymavlink.generator.lib',
+                   'pymavlink.generator.lib.genxmlif',
+                   'pymavlink.generator.lib.minixsv',
+                   'pymavlink.dialects',
+                   'pymavlink.dialects.v09',
+                   'pymavlink.dialects.v10'],
        scripts = [ 'tools/magfit_delta.py', 'tools/mavextract.py',
                    'tools/mavgraph.py', 'tools/mavparmdiff.py',
                    'tools/mavtogpx.py', 'tools/magfit_gps.py',

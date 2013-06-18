@@ -2,9 +2,9 @@
 
 import sys
 import getopt
-from genxmlif          import GenXmlIfError
+from ..genxmlif          import GenXmlIfError
 from xsvalErrorHandler import ErrorHandler, XsvalError
-from minixsv           import *
+from ..minixsv           import *
 from pyxsval           import parseAndValidate
 
 

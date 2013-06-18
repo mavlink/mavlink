@@ -45,7 +45,7 @@ import urllib
 from xml.dom              import Node, XMLNS_NAMESPACE
 from xml.dom.expatbuilder import ExpatBuilderNS
 from xml.parsers.expat    import ExpatError
-from genxmlif             import XMLIF_MINIDOM, GenXmlIfError
+from ..genxmlif             import XMLIF_MINIDOM, GenXmlIfError
 from xmlifUtils           import convertToAbsUrl, NsNameTupleFactory
 from xmlifDom             import XmlInterfaceDom, InternalDomTreeWrapper, InternalDomElementWrapper, XmlIfBuilderExtensionDom
 
