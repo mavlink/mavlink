@@ -127,6 +127,7 @@ def mavgen_python_dialect(dialect, wire_protocol):
     stdout_saved = sys.stdout
     sys.stdout = StringIO.StringIO()
     try:
+        xml = os.path.relpath(xml)
         mavgen( opts, [xml] )
     except Exception:
         sys.stdout = stdout_saved

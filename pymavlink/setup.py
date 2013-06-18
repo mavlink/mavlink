@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 import glob, os, shutil
 
-version = '1.1.1'
+version = '1.1.2'
 
 from generator import mavgen, mavparse
 
@@ -12,15 +12,22 @@ dialects_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'diale
 v09_dialects = glob.glob(os.path.join(mdef_path, 'v0.9', '*.xml'))
 v10_dialects = glob.glob(os.path.join(mdef_path, 'v1.0', '*.xml'))
 
+v09_dialects
+
 if not "NOGEN" in os.environ:
     for xml in v09_dialects:
-        dialect = os.path.basename(xml)[:-4]
         shutil.copy(xml, os.path.join(dialects_path, 'v09'))
+    for xml in v10_dialects:
+        shutil.copy(xml, os.path.join(dialects_path, 'v10'))
+
+    for xml in v09_dialects:
+        dialect = os.path.basename(xml)[:-4]
+        print("Building %s" % xml)
         mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_0_9)
 
     for xml in v10_dialects:
         dialect = os.path.basename(xml)[:-4]
-        shutil.copy(xml, os.path.join(dialects_path, 'v10'))
+        print("Building %s" % xml)
         mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_1_0)
 
 setup (name = 'pymavlink',
