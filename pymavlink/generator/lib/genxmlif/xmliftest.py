@@ -1,4 +1,4 @@
-import ..genxmlif
+from .. import genxmlif
 from ..genxmlif.xmlifODict import odict
 
 xmlIf = genxmlif.chooseXmlIf(genxmlif.XMLIF_ELEMENTTREE)
