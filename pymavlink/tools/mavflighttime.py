@@ -6,9 +6,6 @@ work out total flight time for a mavlink log
 
 import sys, time, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 from optparse import OptionParser
 parser = OptionParser("flighttime.py [options]")
 parser.add_option("--condition", default=None, help="condition for packets")
@@ -16,7 +13,7 @@ parser.add_option("--groundspeed", type='float', default=3.0, help="groundspeed 
 
 (opts, args) = parser.parse_args()
 
-import mavutil
+from pymavlink import mavutil
 
 if len(args) < 1:
     print("Usage: flighttime.py [options] <LOGFILE...>")

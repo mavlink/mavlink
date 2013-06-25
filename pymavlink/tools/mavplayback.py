@@ -10,10 +10,7 @@ Useful for visualising flights
 import sys, time, os, struct
 import Tkinter
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
-import fgFDM
+from pymavlink import fgFDM
 
 from optparse import OptionParser
 parser = OptionParser("mavplayback.py [options]")
@@ -31,7 +28,7 @@ parser.add_option("--baudrate", type='int', default=57600, help='baud rate')
 
 if opts.mav10:
     os.environ['MAVLINK10'] = '1'
-import mavutil
+from pymavlink import mavutil
 
 if len(args) < 1:
     parser.print_help()

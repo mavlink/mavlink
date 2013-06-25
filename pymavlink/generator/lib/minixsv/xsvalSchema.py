@@ -44,8 +44,8 @@ import string
 import re
 import os
 from decimal             import Decimal
-from genxmlif.xmlifUtils import collapseString
-from minixsv             import *
+from ..genxmlif.xmlifUtils import collapseString
+from ..minixsv             import *
 from xsvalBase           import XsValBase, TagException
 from xsvalUtils          import substituteSpecialEscChars
 

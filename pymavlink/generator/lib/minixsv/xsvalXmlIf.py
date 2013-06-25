@@ -39,7 +39,7 @@
 
 
 from types import TupleType
-from genxmlif.xmlifApi   import XmlElementWrapper
+from ..genxmlif.xmlifApi   import XmlElementWrapper
 
 
 class XsvXmlElementWrapper (XmlElementWrapper):

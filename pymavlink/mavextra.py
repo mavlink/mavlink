@@ -8,7 +8,6 @@ Released under GNU GPL version 3 or later
 
 import os, sys
 from math import *
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples'))
 
 try:
     # rotmat doesn't work on Python3.2 yet
@@ -23,7 +22,7 @@ def kmh(mps):
 
 def altitude(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
     '''calculate barometric altitude'''
-    import mavutil
+    from pymavlink import mavutil
     self = mavutil.mavfile_global
     if ground_pressure is None:
         if self.param('GND_ABS_PRESS', None) is None:

@@ -7,16 +7,13 @@ file, for loading into google earth
 
 import sys, struct, time, os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 from optparse import OptionParser
 parser = OptionParser("mavtogpx.py [options]")
 parser.add_option("--condition",dest="condition", default=None, help="select packets by a condition")
 parser.add_option("--nofixcheck", default=False, action='store_true', help="don't check for GPS fix")
 (opts, args) = parser.parse_args()
 
-import mavutil
+from pymavlink import mavutil
 
 if len(args) < 1:
     print("Usage: mavtogpx.py <LOGFILE>")

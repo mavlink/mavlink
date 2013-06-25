@@ -10,10 +10,7 @@ import socket, math, struct, time, os, fnmatch, array, sys, errno
 from math import *
 from mavextra import *
 
-if os.getenv('MAVLINK09') or 'MAVLINK09' in os.environ:
-    import mavlinkv09 as mavlink
-else:
-    import mavlinkv10 as mavlink
+mavlink = None
 
 def mavlink10():
     '''return True if using MAVLink 1.0'''
@@ -50,6 +47,37 @@ class location(object):
 
     def __str__(self):
         return "lat=%.6f,lon=%.6f,alt=%.1f" % (self.lat, self.lng, self.alt)
+
+def set_dialect(dialect):
+    '''set the MAVLink dialect to work with.
+    For example, set_dialect("ardupilotmega")
+    '''
+    global mavlink, current_dialect
+    from generator import mavparse
+    if mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
+        wire_protocol = mavparse.PROTOCOL_1_0
+        modname = "pymavlink.dialects.v10." + dialect
+    else:
+        wire_protocol = mavparse.PROTOCOL_0_9
+        modname = "pymavlink.dialects.v09." + dialect
+
+    try:
+        mod = __import__(modname)
+    except Exception:
+        # auto-generate the dialect module
+        from generator.mavgen import mavgen_python_dialect
+        mavgen_python_dialect(dialect, wire_protocol)
+        mod = __import__(modname)
+    components = modname.split('.')
+    for comp in components[1:]:
+        mod = getattr(mod, comp)
+    current_dialect = dialect
+    mavlink = mod
+
+# allow for a MAVLINK_DIALECT environment variable
+if not 'MAVLINK_DIALECT' in os.environ:
+    os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
+set_dialect(os.environ['MAVLINK_DIALECT'])
 
 class mavfile(object):
     '''a generic mavlink port'''
@@ -104,9 +132,11 @@ class mavfile(object):
             return
         self.first_byte = False
         if self.WIRE_PROTOCOL_VERSION == "0.9" and ord(buf[0]) == 254:
-            import mavlinkv10 as mavlink
+            self.WIRE_PROTOCOL_VERSION = "1.0"
+            set_dialect(current_dialect)
         elif self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
-            import mavlinkv09 as mavlink
+            self.WIRE_PROTOCOL_VERSION = "0.9"
+            set_dialect(current_dialect)
             os.environ['MAVLINK09'] = '1'
         else:
             return
@@ -761,6 +791,8 @@ class mavlogfile(mavfile):
         else:
             self._timestamp = time.time()
         self.stop_on_EOF = True
+        self._last_message = None
+        self._last_timestamp = None
 
     def close(self):
         self.f.close()
@@ -772,6 +804,20 @@ class mavlogfile(mavfile):
 
     def write(self, buf):
         self.f.write(buf)
+
+    def scan_timestamp(self, tbuf):
+        '''scan forward looking in a tlog for a timestamp in a reasonable range'''
+        while True:
+            (tusec,) = struct.unpack('>Q', tbuf)
+            t = tusec * 1.0e-6
+            if abs(t - self._last_timestamp) <= 3*24*60*60:
+                break
+            c = self.f.read(1)
+            if len(c) != 1:
+                break
+            tbuf = tbuf[1:] + c
+        return t
+
 
     def pre_message(self):
         '''read timestamp if needed'''
@@ -794,6 +840,10 @@ class mavlogfile(mavfile):
                 return
             (tusec,) = struct.unpack('>Q', tbuf)
             t = tusec * 1.0e-6
+            if (self._last_timestamp is not None and
+                self._last_message.get_type() == "BAD_DATA" and
+                abs(t - self._last_timestamp) > 3*24*60*60):
+                t = self.scan_timestamp(tbuf)
             self._link = tusec & 0x3
         self._timestamp = t
 
@@ -804,6 +854,9 @@ class mavlogfile(mavfile):
         if self.planner_format:
             self.f.read(1) # trailing newline
         self.timestamp = msg._timestamp
+        self._last_message = msg
+        if msg.get_type() != "BAD_DATA":
+            self._last_timestamp = msg._timestamp
 
 class mavchildexec(mavfile):
     '''a MAVLink child processes reader/writer'''
@@ -839,8 +892,11 @@ class mavchildexec(mavfile):
 
 def mavlink_connection(device, baud=115200, source_system=255,
                        planner_format=None, write=False, append=False,
-                       robust_parsing=True, notimestamps=False, input=True):
-    '''make a serial or UDP mavlink connection'''
+                       robust_parsing=True, notimestamps=False, input=True,
+                       dialect=None):
+    '''open a serial, UDP, TCP or file mavlink connection'''
+    if dialect is not None:
+        set_dialect(dialect)
     if device.startswith('tcp:'):
         return mavtcp(device[4:], source_system=source_system)
     if device.startswith('udp:'):

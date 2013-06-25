@@ -8,19 +8,13 @@ Released under GNU GPL version 3 or later
 
 '''
 import sys, textwrap, os
-
-# allow import from the parent directory to find mavgen 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 import mavparse
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
-
 try:
-    from genxmlif import GenXmlIfError
-    from minixsv import pyxsval
+    from lib.genxmlif import GenXmlIfError
+    from lib.minixsv import pyxsval
     performValidation = True
-except:
+except Exception:
     print("Unable to load XML validator libraries. XML validation will not be performed")
     performValidation = False
     
@@ -102,6 +96,43 @@ def mavgen(opts, args) :
         mavgen_javascript.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
+
+
+# build all the dialects in the dialects subpackage
+class Opts:
+    def __init__(self, wire_protocol, output):
+        self.wire_protocol = wire_protocol
+        self.error_limit = 200
+        self.language = 'Python'
+        self.output = output
+
+def mavgen_python_dialect(dialect, wire_protocol):
+    '''generate the python code on the fly for a MAVLink dialect'''
+    dialects = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'dialects')
+    mdef = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'message_definitions')
+    if wire_protocol == mavparse.PROTOCOL_0_9:
+        py = os.path.join(dialects, 'v09', dialect + '.py')
+        xml = os.path.join(dialects, 'v09', dialect + '.xml')
+        if not os.path.exists(xml):
+            xml = os.path.join(mdef, 'v0.9', dialect + '.xml')
+    else:
+        py = os.path.join(dialects, 'v10', dialect + '.py')
+        xml = os.path.join(dialects, 'v10', dialect + '.xml')
+        if not os.path.exists(xml):
+            xml = os.path.join(mdef, 'v1.0', dialect + '.xml')
+    opts = Opts(wire_protocol, py)
+    import StringIO
+
+    # throw away stdout while generating
+    stdout_saved = sys.stdout
+    sys.stdout = StringIO.StringIO()
+    try:
+        xml = os.path.relpath(xml)
+        mavgen( opts, [xml] )
+    except Exception:
+        sys.stdout = stdout_saved
+        raise
+    sys.stdout = stdout_saved
     
 
 def mavgen_validate(fname, schema, errorLimitNumber) :

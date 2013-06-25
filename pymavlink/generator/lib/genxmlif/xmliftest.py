@@ -1,5 +1,5 @@
-import genxmlif
-from genxmlif.xmlifODict import odict
+import ..genxmlif
+from ..genxmlif.xmlifODict import odict
 
 xmlIf = genxmlif.chooseXmlIf(genxmlif.XMLIF_ELEMENTTREE)
 xmlTree = xmlIf.createXmlTree(None, "testTree", {"rootAttr1":"RootAttr1"})

@@ -17,9 +17,7 @@
 import sys
 import os
 
-# allow import from the parent directory, where mavlink.py is
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-import mavutil
+from pymavlink import mavutil
 
 from construct import ULInt16, Struct, Byte, Bytes, Const
 from construct.core import FieldError
