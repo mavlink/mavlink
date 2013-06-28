@@ -1377,17 +1377,17 @@
                <field type="uint16_t" name="buttons">A bitfield corresponding to the joystick buttons' current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.</field>
           </message>
           <message id="70" name="RC_CHANNELS_OVERRIDE">
-               <description>The RAW values of the RC channels sent to the MAV to override info received from the RC radio. A value of -1 means no change to that channel. A value of 0 means control of that channel should be released back to the RC radio. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
+               <description>The RAW values of the RC channels sent to the MAV to override info received from the RC radio. A value of UINT16_MAX means no change to that channel. A value of 0 means control of that channel should be released back to the RC radio. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
-               <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds</field>
-               <field type="uint16_t" name="chan2_raw">RC channel 2 value, in microseconds</field>
-               <field type="uint16_t" name="chan3_raw">RC channel 3 value, in microseconds</field>
-               <field type="uint16_t" name="chan4_raw">RC channel 4 value, in microseconds</field>
-               <field type="uint16_t" name="chan5_raw">RC channel 5 value, in microseconds</field>
-               <field type="uint16_t" name="chan6_raw">RC channel 6 value, in microseconds</field>
-               <field type="uint16_t" name="chan7_raw">RC channel 7 value, in microseconds</field>
-               <field type="uint16_t" name="chan8_raw">RC channel 8 value, in microseconds</field>
+               <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan2_raw">RC channel 2 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan3_raw">RC channel 3 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan4_raw">RC channel 4 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan5_raw">RC channel 5 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan6_raw">RC channel 6 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan7_raw">RC channel 7 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan8_raw">RC channel 8 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
           </message>
           <message id="74" name="VFR_HUD">
                <description>Metrics typically displayed on a HUD for fixed wing aircraft</description>
