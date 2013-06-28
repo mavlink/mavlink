@@ -985,10 +985,10 @@
                <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="alt">Altitude (WGS84), in meters * 1000 (positive for up)</field>
-               <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position in cm (m*100). If unknown, set to: 65535</field>
-               <field type="uint16_t" name="epv">GPS VDOP horizontal dilution of position in cm (m*100). If unknown, set to: 65535</field>
-               <field type="uint16_t" name="vel">GPS ground speed (m/s * 100). If unknown, set to: 65535</field>
-               <field type="uint16_t" name="cog">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: 65535</field>
+               <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position in cm (m*100). If unknown, set to: UINT16_MAX</field>
+               <field type="uint16_t" name="epv">GPS VDOP horizontal dilution of position in cm (m*100). If unknown, set to: UINT16_MAX</field>
+               <field type="uint16_t" name="vel">GPS ground speed (m/s * 100). If unknown, set to: UINT16_MAX</field>
+               <field type="uint16_t" name="cog">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
                <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
           </message>
           <message id="25" name="GPS_STATUS">
@@ -1083,34 +1083,34 @@
                <field type="int16_t" name="vx">Ground X Speed (Latitude), expressed as m/s * 100</field>
                <field type="int16_t" name="vy">Ground Y Speed (Longitude), expressed as m/s * 100</field>
                <field type="int16_t" name="vz">Ground Z Speed (Altitude), expressed as m/s * 100</field>
-               <field type="uint16_t" name="hdg">Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: 65535</field>
+               <field type="uint16_t" name="hdg">Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
           </message>
           <message id="34" name="RC_CHANNELS_SCALED">
-               <description>The scaled values of the RC channels received. (-100%) -10000, (0%) 0, (100%) 10000. Channels that are inactive should be set to 65535.</description>
+               <description>The scaled values of the RC channels received. (-100%) -10000, (0%) 0, (100%) 10000. Channels that are inactive should be set to UINT16_MAX.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
                <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows for more than 8 servos.</field>
-               <field type="int16_t" name="chan1_scaled">RC channel 1 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
-               <field type="int16_t" name="chan2_scaled">RC channel 2 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
-               <field type="int16_t" name="chan3_scaled">RC channel 3 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
-               <field type="int16_t" name="chan4_scaled">RC channel 4 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
-               <field type="int16_t" name="chan5_scaled">RC channel 5 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
-               <field type="int16_t" name="chan6_scaled">RC channel 6 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
-               <field type="int16_t" name="chan7_scaled">RC channel 7 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
-               <field type="int16_t" name="chan8_scaled">RC channel 8 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) 32767.</field>
+               <field type="int16_t" name="chan1_scaled">RC channel 1 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.</field>
+               <field type="int16_t" name="chan2_scaled">RC channel 2 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.</field>
+               <field type="int16_t" name="chan3_scaled">RC channel 3 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.</field>
+               <field type="int16_t" name="chan4_scaled">RC channel 4 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.</field>
+               <field type="int16_t" name="chan5_scaled">RC channel 5 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.</field>
+               <field type="int16_t" name="chan6_scaled">RC channel 6 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.</field>
+               <field type="int16_t" name="chan7_scaled">RC channel 7 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.</field>
+               <field type="int16_t" name="chan8_scaled">RC channel 8 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.</field>
                <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 100: 100%, 255: invalid/unknown.</field>
           </message>
           <message id="35" name="RC_CHANNELS_RAW">
                <description>The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
                <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows for more than 8 servos.</field>
-               <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds. A value of 65535 implies the channel is unused.</field>
-               <field type="uint16_t" name="chan2_raw">RC channel 2 value, in microseconds. A value of 65535 implies the channel is unused.</field>
-               <field type="uint16_t" name="chan3_raw">RC channel 3 value, in microseconds. A value of 65535 implies the channel is unused.</field>
-               <field type="uint16_t" name="chan4_raw">RC channel 4 value, in microseconds. A value of 65535 implies the channel is unused.</field>
-               <field type="uint16_t" name="chan5_raw">RC channel 5 value, in microseconds. A value of 65535 implies the channel is unused.</field>
-               <field type="uint16_t" name="chan6_raw">RC channel 6 value, in microseconds. A value of 65535 implies the channel is unused.</field>
-               <field type="uint16_t" name="chan7_raw">RC channel 7 value, in microseconds. A value of 65535 implies the channel is unused.</field>
-               <field type="uint16_t" name="chan8_raw">RC channel 8 value, in microseconds. A value of 65535 implies the channel is unused.</field>
+               <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds. A value of UINT16_MAX implies the channel is unused.</field>
+               <field type="uint16_t" name="chan2_raw">RC channel 2 value, in microseconds. A value of UINT16_MAX implies the channel is unused.</field>
+               <field type="uint16_t" name="chan3_raw">RC channel 3 value, in microseconds. A value of UINT16_MAX implies the channel is unused.</field>
+               <field type="uint16_t" name="chan4_raw">RC channel 4 value, in microseconds. A value of UINT16_MAX implies the channel is unused.</field>
+               <field type="uint16_t" name="chan5_raw">RC channel 5 value, in microseconds. A value of UINT16_MAX implies the channel is unused.</field>
+               <field type="uint16_t" name="chan6_raw">RC channel 6 value, in microseconds. A value of UINT16_MAX implies the channel is unused.</field>
+               <field type="uint16_t" name="chan7_raw">RC channel 7 value, in microseconds. A value of UINT16_MAX implies the channel is unused.</field>
+               <field type="uint16_t" name="chan8_raw">RC channel 8 value, in microseconds. A value of UINT16_MAX implies the channel is unused.</field>
                <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 100: 100%, 255: invalid/unknown.</field>
           </message>
           <message id="36" name="SERVO_OUTPUT_RAW">
@@ -1315,10 +1315,10 @@
                <description>Setpoint for up to four quadrotors in a group / wing</description>
                <field type="uint8_t" name="group">ID of the quadrotor group (0 - 255, up to 256 groups supported)</field>
                <field type="uint8_t" name="mode">ID of the flight mode (0 - 255, up to 256 modes supported)</field>
-               <field type="int16_t[4]" name="roll">Desired roll angle in radians +-PI (+-32767)</field>
-               <field type="int16_t[4]" name="pitch">Desired pitch angle in radians +-PI (+-32767)</field>
-               <field type="int16_t[4]" name="yaw">Desired yaw angle in radians, scaled to int16 +-PI (+-32767)</field>
-               <field type="uint16_t[4]" name="thrust">Collective thrust, scaled to uint16 (0..65535)</field>
+               <field type="int16_t[4]" name="roll">Desired roll angle in radians +-PI (+-INT16_MAX)</field>
+               <field type="int16_t[4]" name="pitch">Desired pitch angle in radians +-PI (+-INT16_MAX)</field>
+               <field type="int16_t[4]" name="yaw">Desired yaw angle in radians, scaled to int16 +-PI (+-INT16_MAX)</field>
+               <field type="uint16_t[4]" name="thrust">Collective thrust, scaled to uint16 (0..UINT16_MAX)</field>
           </message>
           <message id="62" name="NAV_CONTROLLER_OUTPUT">
                <description>Outputs of the APM navigation controller. The primary use of this message is to check the response and signs of the controller before actual flight and to assist with tuning controller parameters.</description>
@@ -1338,10 +1338,10 @@
                <field type="uint8_t[4]" name="led_red">RGB red channel (0-255)</field>
                <field type="uint8_t[4]" name="led_blue">RGB green channel (0-255)</field>
                <field type="uint8_t[4]" name="led_green">RGB blue channel (0-255)</field>
-               <field type="int16_t[4]" name="roll">Desired roll angle in radians +-PI (+-32767)</field>
-               <field type="int16_t[4]" name="pitch">Desired pitch angle in radians +-PI (+-32767)</field>
-               <field type="int16_t[4]" name="yaw">Desired yaw angle in radians, scaled to int16 +-PI (+-32767)</field>
-               <field type="uint16_t[4]" name="thrust">Collective thrust, scaled to uint16 (0..65535)</field>
+               <field type="int16_t[4]" name="roll">Desired roll angle in radians +-PI (+-INT16_MAX)</field>
+               <field type="int16_t[4]" name="pitch">Desired pitch angle in radians +-PI (+-INT16_MAX)</field>
+               <field type="int16_t[4]" name="yaw">Desired yaw angle in radians, scaled to int16 +-PI (+-INT16_MAX)</field>
+               <field type="uint16_t[4]" name="thrust">Collective thrust, scaled to uint16 (0..UINT16_MAX)</field>
           </message>
           <message id="64" name="STATE_CORRECTION">
                <description>Corrects the systems state by adding an error correction term to the position and velocity, and by rotating the attitude by a correction angle.</description>
@@ -1377,17 +1377,17 @@
                <field type="uint16_t" name="buttons">A bitfield corresponding to the joystick buttons' current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.</field>
           </message>
           <message id="70" name="RC_CHANNELS_OVERRIDE">
-               <description>The RAW values of the RC channels sent to the MAV to override info received from the RC radio. A value of -1 means no change to that channel. A value of 0 means control of that channel should be released back to the RC radio. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
+               <description>The RAW values of the RC channels sent to the MAV to override info received from the RC radio. A value of UINT16_MAX means no change to that channel. A value of 0 means control of that channel should be released back to the RC radio. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
-               <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds</field>
-               <field type="uint16_t" name="chan2_raw">RC channel 2 value, in microseconds</field>
-               <field type="uint16_t" name="chan3_raw">RC channel 3 value, in microseconds</field>
-               <field type="uint16_t" name="chan4_raw">RC channel 4 value, in microseconds</field>
-               <field type="uint16_t" name="chan5_raw">RC channel 5 value, in microseconds</field>
-               <field type="uint16_t" name="chan6_raw">RC channel 6 value, in microseconds</field>
-               <field type="uint16_t" name="chan7_raw">RC channel 7 value, in microseconds</field>
-               <field type="uint16_t" name="chan8_raw">RC channel 8 value, in microseconds</field>
+               <field type="uint16_t" name="chan1_raw">RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan2_raw">RC channel 2 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan3_raw">RC channel 3 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan4_raw">RC channel 4 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan5_raw">RC channel 5 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan6_raw">RC channel 6 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan7_raw">RC channel 7 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
+               <field type="uint16_t" name="chan8_raw">RC channel 8 value, in microseconds. A value of UINT16_MAX means to ignore this field.</field>
           </message>
           <message id="74" name="VFR_HUD">
                <description>Metrics typically displayed on a HUD for fixed wing aircraft</description>
