@@ -423,7 +423,7 @@ ${{message:	mavlink_test_${name_lower}(system_id, component_id, last_msg);
 def copy_fixed_headers(directory, xml):
     '''copy the fixed protocol headers to the target directory'''
     import shutil
-    hlist = [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h', 'mavlink_protobuf_manager.hpp' ]
+    hlist = [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h', 'mavlink_conversions.h', 'mavlink_protobuf_manager.hpp' ]
     basepath = os.path.dirname(os.path.realpath(__file__))
     srcpath = os.path.join(basepath, 'C/include_v%s' % xml.wire_protocol_version)
     print("Copying fixed headers")
