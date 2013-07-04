@@ -1446,9 +1446,11 @@
                <field type="float" name="yaw">Yaw</field>
           </message>
           <message id="90" name="HIL_STATE">
-               <description>Sent from simulation to autopilot. This packet is useful for high throughput applications such as hardware in the loop simulations.</description>
+               <description>DEPRECATED PACKET! Suffers from missing airspeed fields and singularities due to Euler angles. Please use HIL_STATE_QUATERNION instead. Sent from simulation to autopilot. This packet is useful for high throughput applications such as hardware in the loop simulations.</description>
                <field type="uint64_t" name="time_usec">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
-               <field type="float[4]" name="attitude_quaternion">Vehicle attitude expressed as normalized quaternion</field>
+               <field type="float" name="roll">Roll angle (rad)</field>
+               <field type="float" name="pitch">Pitch angle (rad)</field>
+               <field type="float" name="yaw">Yaw angle (rad)</field>
                <field type="float" name="rollspeed">Body frame roll / phi angular speed (rad/s)</field>
                <field type="float" name="pitchspeed">Body frame pitch / theta angular speed (rad/s)</field>
                <field type="float" name="yawspeed">Body frame yaw / psi angular speed (rad/s)</field>
@@ -1458,8 +1460,6 @@
                <field type="int16_t" name="vx">Ground X Speed (Latitude), expressed as m/s * 100</field>
                <field type="int16_t" name="vy">Ground Y Speed (Longitude), expressed as m/s * 100</field>
                <field type="int16_t" name="vz">Ground Z Speed (Altitude), expressed as m/s * 100</field>
-               <field type="uint16_t" name="ind_airspeed">Indicated airspeed, expressed as m/s * 100</field>
-               <field type="uint16_t" name="true_airspeed">True airspeed, expressed as m/s * 100</field>
                <field type="int16_t" name="xacc">X acceleration (mg)</field>
                <field type="int16_t" name="yacc">Y acceleration (mg)</field>
                <field type="int16_t" name="zacc">Z acceleration (mg)</field>
@@ -1667,6 +1667,25 @@
              <field type="float" name="flow_comp_m_y">Flow in meters in y-sensor direction, angular-speed compensated</field>
              <field type="uint8_t" name="quality">Optical flow quality / confidence. 0: bad, 255: maximum quality</field>
              <field type="float" name="ground_distance">Ground distance in meters. Positive value: distance known. Negative value: Unknown distance</field>
+         </message>
+         <message id="115" name="HIL_STATE_QUATERNION">
+             <description>Sent from simulation to autopilot, avoids in contrast to HIL_STATE singularities. This packet is useful for high throughput applications such as hardware in the loop simulations.</description>
+             <field type="uint64_t" name="time_usec">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
+             <field type="float[4]" name="attitude_quaternion">Vehicle attitude expressed as normalized quaternion</field>
+             <field type="float" name="rollspeed">Body frame roll / phi angular speed (rad/s)</field>
+             <field type="float" name="pitchspeed">Body frame pitch / theta angular speed (rad/s)</field>
+             <field type="float" name="yawspeed">Body frame yaw / psi angular speed (rad/s)</field>
+             <field type="int32_t" name="lat">Latitude, expressed as * 1E7</field>
+             <field type="int32_t" name="lon">Longitude, expressed as * 1E7</field>
+             <field type="int32_t" name="alt">Altitude in meters, expressed as * 1000 (millimeters)</field>
+             <field type="int16_t" name="vx">Ground X Speed (Latitude), expressed as m/s * 100</field>
+             <field type="int16_t" name="vy">Ground Y Speed (Longitude), expressed as m/s * 100</field>
+             <field type="int16_t" name="vz">Ground Z Speed (Altitude), expressed as m/s * 100</field>
+             <field type="uint16_t" name="ind_airspeed">Indicated airspeed, expressed as m/s * 100</field>
+             <field type="uint16_t" name="true_airspeed">True airspeed, expressed as m/s * 100</field>
+             <field type="int16_t" name="xacc">X acceleration (mg)</field>
+             <field type="int16_t" name="yacc">Y acceleration (mg)</field>
+             <field type="int16_t" name="zacc">Z acceleration (mg)</field>
          </message>
          <message id="147" name="BATTERY_STATUS">
                <description>Transmitte battery informations for a accu pack.</description>
