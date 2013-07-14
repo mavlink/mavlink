@@ -4,7 +4,7 @@
 work out total flight time for a mavlink log
 '''
 
-import sys, time, os
+import sys, time, os, glob
 
 from optparse import OptionParser
 parser = OptionParser("flighttime.py [options]")
@@ -51,6 +51,7 @@ def flight_time(logfile):
 
 total = 0.0
 for filename in args:
-    total += flight_time(filename)
+    for f in glob.glob(filename):
+        total += flight_time(f)
 
 print("Total time in air: %u:%02u" % (int(total)/60, int(total)%60))
