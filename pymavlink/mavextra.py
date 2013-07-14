@@ -34,6 +34,20 @@ def altitude(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
     temp = ground_temp + 273.15
     return log(scaling) * temp * 29271.267 * 0.001
 
+def altitude2(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
+    '''calculate barometric altitude'''
+    from pymavlink import mavutil
+    self = mavutil.mavfile_global
+    if ground_pressure is None:
+        if self.param('GND_ABS_PRESS', None) is None:
+            return 0
+        ground_pressure = self.param('GND_ABS_PRESS', 1)
+    if ground_temp is None:
+        ground_temp = self.param('GND_TEMP', 0)
+    scaling = SCALED_PRESSURE.press_abs*100.0 / ground_pressure
+    temp = ground_temp + 273.15
+    return 153.8462 * temp * (1.0 - exp(0.190259 * log(scaling)))
+
 def mag_heading(RAW_IMU, ATTITUDE, declination=None, SENSOR_OFFSETS=None, ofs=None):
     '''calculate heading from raw magnetometer'''
     if declination is None:
