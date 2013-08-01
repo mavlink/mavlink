@@ -332,6 +332,14 @@ class MAVFenceLoader(object):
         '''add a point'''
         self.points.append(p)
         self.last_change = time.time()
+        for i in range(self.count()):
+            self.points[i].count = self.count()
+
+    def add_latlon(self, lat, lon):
+        '''add a point via latitude/longitude'''
+        p = mavutil.mavlink.MAVLink_fence_point_message(self.target_system, self.target_component,
+                                                        self.count(), 0, lat, lon)
+        self.add(p)
 
     def clear(self):
         '''clear point list'''
@@ -352,12 +360,8 @@ class MAVFenceLoader(object):
             a = line.split()
             if len(a) != 2:
                 raise MAVFenceError("invalid fence point line: %s" % line)
-            p = mavutil.mavlink.MAVLink_fence_point_message(self.target_system, self.target_component,
-                                                            self.count(), 0, float(a[0]), float(a[1]))
-            self.add(p)
+            self.add_latlon(float(a[0]), float(a[1]))
         f.close()
-        for i in range(self.count()):
-            self.points[i].count = self.count()
         return len(self.points)
 
     def save(self, filename):
