@@ -45,6 +45,17 @@ class MAVWPLoader(object):
         self.wpoints.append(w)
         self.last_change = time.time()
 
+    def add_latlonalt(self, lat, lon, altitude):
+        '''add a point via latitude/longitude/altitude'''
+        p = mavutil.mavlink.MAVLink_mission_item_message(self.target_system,
+                                                         self.target_component,
+                                                         0,
+                                                         mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                                                         mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
+                                                         0, 0, 0, 0, 0, 0,
+                                                         lat, lon, altitude)
+        self.add(p)
+
     def set(self, w, idx):
         '''set a waypoint'''
         w.seq = idx
