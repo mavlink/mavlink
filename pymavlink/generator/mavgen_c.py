@@ -210,7 +210,7 @@ ${{array_fields:	mav_array_memcpy(packet.${name}, ${name}, sizeof(${type})*${arr
  * @brief Pack a ${name_lower} message on a channel
  * @param system_id ID of this system
  * @param component_id ID of this component (e.g. 200 for IMU)
- * @param chan The MAVLink channel this message was sent over
+ * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
 ${{arg_fields: * @param ${name} ${description}
 }}
@@ -245,7 +245,7 @@ ${{array_fields:	mav_array_memcpy(packet.${name}, ${name}, sizeof(${type})*${arr
 }
 
 /**
- * @brief Encode a ${name_lower} struct into a message
+ * @brief Encode a ${name_lower} struct
  *
  * @param system_id ID of this system
  * @param component_id ID of this component (e.g. 200 for IMU)
@@ -255,6 +255,20 @@ ${{array_fields:	mav_array_memcpy(packet.${name}, ${name}, sizeof(${type})*${arr
 static inline uint16_t mavlink_msg_${name_lower}_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_${name_lower}_t* ${name_lower})
 {
 	return mavlink_msg_${name_lower}_pack(system_id, component_id, msg,${{arg_fields: ${name_lower}->${name},}});
+}
+
+/**
+ * @brief Encode a ${name_lower} struct on a channel
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param chan The MAVLink channel this message will be sent over
+ * @param msg The MAVLink message to compress the data into
+ * @param ${name_lower} C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_${name_lower}_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_${name_lower}_t* ${name_lower})
+{
+	return mavlink_msg_${name_lower}_pack_chan(system_id, component_id, chan, msg,${{arg_fields: ${name_lower}->${name},}});
 }
 
 /**
