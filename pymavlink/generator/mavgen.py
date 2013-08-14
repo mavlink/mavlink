@@ -8,7 +8,10 @@ Released under GNU GPL version 3 or later
 
 '''
 import sys, textwrap, os
-import mavparse
+try:
+    import mavparse
+except Exception:
+    from pymavlink.generator import mavparse
 
 try:
     from lib.genxmlif import GenXmlIfError
@@ -83,7 +86,10 @@ def mavgen(opts, args) :
         import mavgen_python
         mavgen_python.generate(opts.output, xml)
     elif opts.language == 'c':
-        import mavgen_c
+        try:
+            import mavgen_c
+        except Exception:
+            from pymavlink.generator import mavgen_c
         mavgen_c.generate(opts.output, xml)
     elif opts.language == 'wlua':
         import mavgen_wlua

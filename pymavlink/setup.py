@@ -48,6 +48,9 @@ setup (name = 'pymavlink',
        package_data = { 'pymavlink.dialects.v09' : ['*.xml'],
                         'pymavlink.dialects.v10' : ['*.xml'],
                         'pymavlink.generator'    : [ '*.xsd' ],
+                        'pymavlink.generator'    : [ 'C/include_v0.9/*.h',
+                                                     'C/include_v1.0/*.h',
+                                                     'C/include_v1.0/*.hpp' ],
                         'pymavlink.generator.lib.minixsv': [ '*.xsd' ] },
        packages = ['pymavlink',
                    'pymavlink.generator',
@@ -66,5 +69,6 @@ setup (name = 'pymavlink',
                    'tools/mavplayback.py', 'tools/magfit.py',
                    'tools/mavgpslock.py',
                    'tools/mavmission.py',
-                   'tools/mavsigloss.py' ]
+                   'tools/mavsigloss.py',
+                   'generator/mavgen.py']
        )
