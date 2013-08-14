@@ -507,6 +507,14 @@ def airspeed(VFR_HUD, ratio=None):
     airspeed = sqrt(airspeed_pressure * ratio)
     return airspeed
 
+def airspeed_ratio(VFR_HUD):
+    '''recompute airspeed with a different ARSPD_RATIO'''
+    import mavutil
+    mav = mavutil.mavfile_global
+    airspeed_pressure = (VFR_HUD.airspeed**2) / ratio
+    airspeed = sqrt(airspeed_pressure * ratio)
+    return airspeed
+
 def airspeed_voltage(VFR_HUD, ratio=None):
     '''back-calculate the voltage the airspeed sensor must have seen'''
     import mavutil
@@ -562,7 +570,12 @@ def yaw_rate(ATTITUDE):
     return psiDot
 
 
-def gps_velocity(GPS_RAW_INT):
+def gps_velocity(GLOBAL_POSITION_INT):
+    '''return GPS velocity vector'''
+    return Vector3(GLOBAL_POSITION_INT.vx, GLOBAL_POSITION_INT.vy, GLOBAL_POSITION_INT.vz) * 0.01
+
+
+def gps_velocity_old(GPS_RAW_INT):
     '''return GPS velocity vector'''
     return Vector3(GPS_RAW_INT.vel*0.01*cos(radians(GPS_RAW_INT.cog*0.01)),
                    GPS_RAW_INT.vel*0.01*sin(radians(GPS_RAW_INT.cog*0.01)), 0)
