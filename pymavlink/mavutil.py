@@ -732,14 +732,24 @@ class mavudp(mavfile):
 
 class mavtcp(mavfile):
     '''a TCP mavlink socket'''
-    def __init__(self, device, source_system=255):
+    def __init__(self, device, source_system=255, retries=3):
         a = device.split(':')
         if len(a) != 2:
             print("TCP ports must be specified as host:port")
             sys.exit(1)
         self.port = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.destination_addr = (a[0], int(a[1]))
-        self.port.connect(self.destination_addr)
+        while retries > 0:
+            retries -= 1
+            if retries == 0:
+                self.port.connect(self.destination_addr)
+            else:
+                try:
+                    self.port.connect(self.destination_addr)
+                    break
+                except Exception:
+                    time.sleep(1)
+                    continue
         self.port.setblocking(0)
         set_close_on_exec(self.port.fileno())
         self.port.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
@@ -893,7 +903,7 @@ class mavchildexec(mavfile):
 def mavlink_connection(device, baud=115200, source_system=255,
                        planner_format=None, write=False, append=False,
                        robust_parsing=True, notimestamps=False, input=True,
-                       dialect=None):
+                       dialect=None, autoreconnect=False):
     '''open a serial, UDP, TCP or file mavlink connection'''
     if dialect is not None:
         set_dialect(dialect)
@@ -908,13 +918,14 @@ def mavlink_connection(device, baud=115200, source_system=255,
     if device.find(':') != -1 and not suffix in logsuffixes:
         return mavudp(device, source_system=source_system, input=input)
     if os.path.isfile(device):
-        if device.endswith(".elf"):
+        if device.endswith(".elf") or device.find("/bin/") != -1:
+            print("executing '%s'" % device)
             return mavchildexec(device, source_system=source_system)
         else:
             return mavlogfile(device, planner_format=planner_format, write=write,
                               append=append, robust_parsing=robust_parsing, notimestamps=notimestamps,
                               source_system=source_system)
-    return mavserial(device, baud=baud, source_system=source_system)
+    return mavserial(device, baud=baud, source_system=source_system, autoreconnect=autoreconnect)
 
 class periodic_event(object):
     '''a class for fixed frequency events'''
