@@ -680,3 +680,11 @@ def wrap_180(angle):
     return angle
 
     
+def wrap_360(angle):
+    if angle > 360:
+        angle -= 360.0
+    if angle < 0:
+        angle += 360.0
+    return angle
+
+    
