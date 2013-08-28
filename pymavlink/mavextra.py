@@ -494,16 +494,18 @@ def wingloading(bank):
     '''return expected wing loading factor for a bank angle in radians'''
     return 1.0/cos(bank)
 
-def airspeed(VFR_HUD, ratio=None):
+def airspeed(VFR_HUD, ratio=None, used_ratio=None):
     '''recompute airspeed with a different ARSPD_RATIO'''
     import mavutil
     mav = mavutil.mavfile_global
     if ratio is None:
         ratio = 1.9936 # APM default
-    if 'ARSPD_RATIO' in mav.params:
-        used_ratio = mav.params['ARSPD_RATIO']
-    else:
-        used_ratio = ratio
+    if used_ratio is None:
+        if 'ARSPD_RATIO' in mav.params:
+            used_ratio = mav.params['ARSPD_RATIO']
+        else:
+            print("no ARSPD_RATIO in mav.params")
+            used_ratio = ratio
     airspeed_pressure = (VFR_HUD.airspeed**2) / used_ratio
     airspeed = sqrt(airspeed_pressure * ratio)
     return airspeed
