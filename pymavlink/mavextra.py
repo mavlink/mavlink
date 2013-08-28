@@ -63,8 +63,9 @@ def mag_heading(RAW_IMU, ATTITUDE, declination=None, SENSOR_OFFSETS=None, ofs=No
 
     # go via a DCM matrix to match the APM calculation
     dcm_matrix = rotation(ATTITUDE)
+    cos_pitch_sq = 1.0-(dcm_matrix.c.x*dcm_matrix.c.x)
     headY = mag_y * dcm_matrix.c.z - mag_z * dcm_matrix.c.y
-    headX = mag_x + dcm_matrix.c.x * (headY - mag_x * dcm_matrix.c.x)
+    headX = mag_x * cos_pitch_sq - dcm_matrix.c.x * (mag_y * dcm_matrix.c.y + mag_z * dcm_matrix.c.z)
 
     heading = degrees(atan2(-headY,headX)) + declination
     if heading < 0:
