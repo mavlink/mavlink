@@ -9,6 +9,8 @@ import sys, time, os, math
 from optparse import OptionParser
 parser = OptionParser("magfit_rotation_gyro.py [options]")
 parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
+parser.add_option("--verbose", action='store_true', help="verbose output")
+parser.add_option("--min-rotation", default=5.0, type='float', help="min rotation to add point")
 
 (opts, args) = parser.parse_args()
 
@@ -26,6 +28,22 @@ class Rotation(object):
         self.pitch = pitch
         self.yaw = yaw
         self.r = r
+
+    def __str__(self):
+        ret = ""
+        if self.roll != 0:
+            ret += "ROLL_%u" % self.roll
+        if self.pitch != 0:
+            if ret:
+                ret += "_"
+            ret += "PITCH_%u" % self.pitch
+        if self.yaw != 0:
+            if ret:
+                ret += "_"
+            ret += "YAW_%u" % self.yaw
+        if ret == "":
+            ret = "NONE"
+        return ret
 
 def in_rotations_list(rotations, m):
     for r in rotations:
@@ -85,30 +103,23 @@ def magfit(logfile):
             mag = Vector3(m.xmag, m.ymag, m.zmag)
             gyr = Vector3(m.xgyro, m.ygyro, m.zgyro) * 0.001
             usec = m.time_usec
-            if last_mag is not None and gyr.length() > radians(5):
+            if last_mag is not None and gyr.length() > radians(opts.min_rotation):
                 add_errors(mag, gyr, last_mag, (usec - last_usec)*1.0e-6, total_error, rotations)
+                count += 1
             last_mag = mag
             last_usec = usec
-            count += 1
 
     best_i = 0
     best_err = total_error[0]
     for i in range(len(rotations)):
         r = rotations[i]
-        print("(%u,%u,%u) err=%.2f" % (
-            r.roll,
-            r.pitch,
-            r.yaw,
-            total_error[i]/count))
+        if opts.verbose:
+            print("%s err=%.2f" % (r, total_error[i]/count))
         if total_error[i] < best_err:
             best_i = i
             best_err = total_error[i]
     r = rotations[best_i]
-    print("Best rotation (%u,%u,%u) err=%.2f" % (
-        r.roll,
-        r.pitch,
-        r.yaw,
-        best_err/count))
+    print("Best rotation is %s err=%.2f from %u points" % (r, best_err/count, count))
 
 for filename in args:
     magfit(filename)
