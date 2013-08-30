@@ -160,7 +160,7 @@ def magfit(logfile):
     print("Best rotation is %s err=%.2f from %u points" % (r, best_err/count, count))
     print("Please set AHRS_ORIENTATION=%s COMPASS_ORIENT=%s COMPASS_EXTERNAL=1" % (
         rotations[AHRS_ORIENTATION],
-        rotations[COMPASS_ORIENT]))
+        r))
 
 for filename in args:
     magfit(filename)
