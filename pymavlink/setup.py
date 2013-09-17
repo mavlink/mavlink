@@ -70,5 +70,6 @@ setup (name = 'pymavlink',
                    'tools/mavgpslock.py',
                    'tools/mavmission.py',
                    'tools/mavsigloss.py',
+                   'tools/mavsearch.py',
                    'generator/mavgen.py']
        )
