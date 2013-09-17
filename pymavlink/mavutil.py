@@ -509,9 +509,18 @@ class mavfile(object):
             MAV_ACTION_CALIBRATE_PRESSURE = 20
             self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_PRESSURE)
 
-    def reboot_autopilot(self):
+    def reboot_autopilot(self, hold_in_bootloader=False):
         '''reboot the autopilot'''
         if self.mavlink10():
+            if hold_in_bootloader:
+                param1 = 3
+            else:
+                param1 = 1
+            self.mav.command_long_send(self.target_system, self.target_component,
+                                       mavlink.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0,
+                                       param1, 0, 0, 0, 0, 0, 0)
+            # send an old style reboot immediately afterwards in case it is an older firmware
+            # that doesn't understand the new convention
             self.mav.command_long_send(self.target_system, self.target_component,
                                        mavlink.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0,
                                        1, 0, 0, 0, 0, 0, 0)
