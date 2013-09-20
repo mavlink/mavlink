@@ -170,8 +170,12 @@ class MAVLink_%s_message(MAVLink_message):
         outf.write("""
         def pack(self, mav):
                 return MAVLink_message.pack(self, mav, %u, struct.pack('%s'""" % (m.crc_extra, m.fmtstr))
-        if len(m.fields) != 0:
-                outf.write(", self." + ", self.".join(m.ordered_fieldnames))
+        for field in m.ordered_fields:
+                if (field.type == "float" and field.array_length > 1):
+                        for i in range(field.array_length):
+                                outf.write(", self.{0:s}[{1:d}]".format(field.name,i))
+                else:
+                        outf.write(", self.{0:s}".format(field.name))
         outf.write("))\n")
 
 
