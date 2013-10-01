@@ -362,6 +362,18 @@
                     <description/>
                </entry>
           </enum>
+		  <!-- fenced mode enums -->
+		  <enum name="FENCE_ACTION">
+				<entry name="FENCE_ACTION_NONE" value="0">
+					<description>Disable fenced mode</description>
+				</entry>
+				<entry name="FENCE_ACTION_GUIDED" value="1">
+					<description>Switched to guided mode to return point (fence point 0)</description>
+				</entry>
+				<entry name="FENCE_ACTION_REPORT" value="2">
+					<description>Report fence breach, but don't take action</description>
+				</entry>
+		  </enum>
           <enum name="MAV_CMD">
                <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data.</description>
                <entry value="16" name="MAV_CMD_NAV_WAYPOINT">
@@ -684,10 +696,32 @@
                     <param index="6">Longitude / Y position</param>
                     <param index="7">Altitude / Z position</param>
                </entry>
-               <entry value="300" name="MAV_CMD_MISSION_START">
-                    <description>start running a mission</description>
-                    <param index="1">first_item: the first mission item to run</param>
-                    <param index="2">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
+               <entry value="260" name="MAV_CMD_FENCE_POINT">
+                    <description>Set fence point. Used to set a point when from GCS -> MAV.
+								 Also used to return a point from MAV -> GCS</description>
+                    <param index="1">Point index. First point is 1, 0 is return point</param>
+                    <param index="2">Total number of fence points (for sanity check)</param>
+                    <param index="3">Latitude in 1e-7 degrees</param>
+                    <param index="4">Longitude in 1e-7 degrees</param>
+               </entry>
+               <entry value="261" name="MAV_CMD_GET_FENCE_POINT">
+                    <description>Request fence point from MAV</description>
+                    <param index="1">Point index. First point is 1, 0 is return point</param>
+               </entry>
+               <entry value="262" name="MAV_CMD_FENCE_STATUS">
+                    <description>Sent in extended status stream when fencing enabled</description>
+                    <param index="1">Breach status. 0:inside fence, 1:outside fence</param>
+                    <param index="2">Number of fence breaches</param>
+                    <param index="3">Time of last breach in milliseconds since boot</param>
+               </entry>
+               <entry value="263" name="MAV_CMD_FENCE_MODE">
+                    <description>Set fence mode</description>
+                    <param index="1">Breach action. See FENCE_ACTION enum</param>
+               </entry>
+ -             <entry value="300" name="MAV_CMD_MISSION_START">
+-                    <description>start running a mission</description>
+-                    <param index="1">first_item: the first mission item to run</param>
+-                    <param index="2">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
                </entry>
                <entry value="400" name="MAV_CMD_COMPONENT_ARM_DISARM">
                     <description>Arms / Disarms a component</description>
