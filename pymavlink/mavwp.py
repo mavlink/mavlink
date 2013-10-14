@@ -391,8 +391,8 @@ class MAVRallyLoader(object):
         '''save fence points to a file'''
         f = open(filename, mode='w')
         for p in self.rally_points:
-            f.write("RALLY %f\t%f\t%f\t%f\t%f\t%d\n" % (p.lat * 1e-7, p.lng * 1e-7, p.alt / 100.0,
-                                                        p.break_alt / 100.0, p.land_dir / 100.0, p.flags))
+            f.write("RALLY %f\t%f\t%f\t%f\t%f\t%d\n" % (p.lat * 1e-7, p.lng * 1e-7, p.alt,
+                                                        p.break_alt, p.land_dir, p.flags))
         #Coming soon
         #for p in self.rally_land_points:
         #    f.write("RALLY_LAND %f\t%f\t%f\n" & (p.lat, p.lng, p.atl)
