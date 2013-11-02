@@ -920,6 +920,11 @@ def mavlink_connection(device, baud=115200, source_system=255,
         return mavtcp(device[4:], source_system=source_system)
     if device.startswith('udp:'):
         return mavudp(device[4:], input=input, source_system=source_system)
+    if device.endswith('.bin'):
+        # support dataflash logs
+        from pymavlink import DFReader
+        return DFReader.DFReader(device)
+    
 
     # list of suffixes to prevent setting DOS paths as UDP sockets
     logsuffixes = [ 'log', 'raw', 'tlog' ]
