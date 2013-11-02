@@ -1137,7 +1137,7 @@ def mode_string_v10(msg):
     '''mode string for 1.0 protocol, from heartbeat'''
     if not msg.base_mode & mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED:
         return "Mode(0x%08x)" % msg.base_mode
-    if msg.type == mavlink.MAV_TYPE_QUADROTOR:
+    if msg.type in [ mavlink.MAV_TYPE_QUADROTOR, mavlink.MAV_TYPE_HEXAROTOR, mavlink.MAV_TYPE_OCTOROTOR, mavlink.MAV_TYPE_TRICOPTER, mavlink.MAV_TYPE_COAXIAL ]:
         if msg.custom_mode in mode_mapping_acm:
             return mode_mapping_acm[msg.custom_mode]
     if msg.type == mavlink.MAV_TYPE_FIXED_WING:
