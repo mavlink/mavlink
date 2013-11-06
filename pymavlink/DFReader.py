@@ -95,6 +95,7 @@ class DFReader(object):
         self.counts = {}
         self.counts_since_gps = {}
         self.messages = {}
+        self.flightmode = "UNKNOWN"
 
     def _gpsTimeToTime(self, week, sec):
         '''convert GPS week and TOW to a time in seconds since 1970'''
@@ -161,6 +162,11 @@ class DFReader(object):
 
         if type == 'GPS':
             self._adjust_time_base(m)
+        if type == 'MODE':
+            if isinstance(m.Mode, str):
+                self.flightmode = m.Mode.upper()
+            else:
+                self.flightmode = mavutil.mode_string_apm(m.ModeNum)
         self._set_time(m)
 
     def recv_match(self, condition=None, type=None, blocking=False):
@@ -178,6 +184,9 @@ class DFReader(object):
                 continue
             return m
 
+    def check_condition(self, condition):
+        '''check if a condition is true'''
+        return mavutil.evaluate_condition(condition, self.messages)
 
 class DFReader_binary(DFReader):
     '''parse a binary dataflash file'''
