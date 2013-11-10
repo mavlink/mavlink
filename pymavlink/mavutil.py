@@ -10,6 +10,17 @@ import socket, math, struct, time, os, fnmatch, array, sys, errno
 from math import *
 from mavextra import *
 
+'''
+Support having a $HOME/.pymavlink/mavextra.py for extra graphing functions
+'''
+home = os.getenv('HOME')
+if home is not None:
+    extra = os.path.join(home, '.pymavlink', 'mavextra.py')
+    if os.path.exists(extra):
+        import imp
+        mavuser = imp.load_source('pymavlink.mavuser', extra)
+        from pymavlink.mavuser import *
+
 mavlink = None
 
 def mavlink10():
