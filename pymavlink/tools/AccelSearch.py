@@ -29,18 +29,38 @@ parser.add_option("--directory", action='append', default=search_dirs, help="dir
 def AccelSearch(filename):
     print("Checking %s ..." % filename)
     mlog = mavutil.mavlink_connection(filename)
+    badcount = 0
+    badval = None
     while True:
         m = mlog.recv_match(type=['PARAM_VALUE','RAW_IMU'])
         if m is None:
             return False
         if m.get_type() == 'PARAM_VALUE':
-            if m.param_id == 'INS_PRODUCT_ID':
+            if m.param_id.startswith('INS_PRODUCT_ID'):
                 if m.param_value not in [0.0, 5.0]:
                     return False
         if m.get_type() == 'RAW_IMU':
             if abs(m.xacc) >= 3000 and abs(m.yacc) > 3000 and abs(m.zacc) > 3000:
                 print m
                 return True
+            # also look for a single axes that stays nearly constant at a large value
+            for axes in ['xacc', 'yacc', 'zacc']:
+                value1 = getattr(m, axes)
+                if badval is None:
+                    badcount = 1
+                    badval = m
+                    continue
+                if abs(value1) > 3000:
+                    value2 = getattr(badval, axes)
+                    if abs(value1 - value2) < 10:
+                        badcount += 1
+                        badval = m
+                        if badcount > 5:
+                            print m
+                            return True
+                    else:
+                        badcount = 1
+                        badval = m
         
 found = []
 directories = opts.directory
