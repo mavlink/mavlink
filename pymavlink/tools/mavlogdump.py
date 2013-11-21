@@ -19,6 +19,7 @@ parser.add_option("-f", "--follow",dest="follow", action='store_true', help="kee
 parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
 parser.add_option("-q", "--quiet", dest="quiet", action='store_true', help="don't display packets")
 parser.add_option("-o", "--output", default=None, help="output matching packets to give file")
+parser.add_option("--mfile", dest='mfile', default=False, action='store_true', help="dump in .m file format (readable by Octave or MATLAB)")
 parser.add_option("--types",  default=None, help="types of messages (comma separated)")
 parser.add_option("--dialect",  default="ardupilotmega", help="MAVLink dialect")
 (opts, args) = parser.parse_args()
@@ -38,6 +39,8 @@ mlog = mavutil.mavlink_connection(filename, planner_format=opts.planner,
 output = None
 if opts.output:
     output = mavutil.mavlogfile(opts.output, write=True)
+
+matLabMatrices = []
 
 types = opts.types
 if types is not None:
@@ -60,8 +63,36 @@ while True:
         output.write(m.get_msgbuf())
     if opts.quiet:
         continue
-    print("%s.%02u: %s" % (
-        time.strftime("%Y-%m-%d %H:%M:%S",
+
+    if opts.mfile is False:
+        print("%s.%02u: %s" % (
+            time.strftime("%Y-%m-%d %H:%M:%S",
                       time.localtime(m._timestamp)),
-        int(m._timestamp*100.0)%100, m))
-        
+            int(m._timestamp*100.0)%100, m))
+    else:  #Output as an .m script for MATLab
+        appendingMatrix = ""
+        if m._type not in matLabMatrices: 
+            #this is the first time we've seen this _type
+            matLabMatrices.append(m._type)
+        else:
+            appendingMatrix = m._type
+            appendingMatrix += ".data;"
+
+        logValues = ""
+        headerValues = ""
+        for key,value in vars(m).items():
+            if key == '_type':
+                continue
+
+            if type(value) == list or type(value) == dict or type(value) == tuple or type(value).__name__ == 'array' or type(value).__name__ == 'MAVLink_header' or type(value).__name__ == 'MAVString':
+                continue
+
+            logValues += "%f," % value
+            #first time we've seen this type? If so, store headers
+            if (appendingMatrix == ""):
+                headerValues += "'%s'," % key
+
+        if(headerValues != ""):
+            print("%s.heading = {%s};" % (m._type, headerValues))
+
+        print("%s.data = [%s %s];" % (m._type, appendingMatrix, logValues))
