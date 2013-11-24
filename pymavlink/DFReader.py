@@ -71,6 +71,7 @@ class DFMessage(object):
                 self._d[name] = self._d[name].rstrip('\0')
             if mul is not None and apply_multiplier:
                 self._d[name] = self._d[name] * mul
+        self._fieldnames = fmt.columns
         self.__dict__.update(self._d)
 
     def get_type(self):
