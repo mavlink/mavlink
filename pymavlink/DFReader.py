@@ -90,6 +90,8 @@ class DFReader(object):
     def __init__(self):
         # read the whole file into memory for simplicity
         self.msg_rate = {}
+        self.new_timestamps = False
+        self._timestamp = 0
         
     def _rewind(self):
         '''reset counters on rewind'''
@@ -104,10 +106,19 @@ class DFReader(object):
         epoch = 86400*(10*365 + (1980-1969)/4 + 1 + 6 - 2)
         return epoch + 86400*7*week + sec - 15
 
+    def _find_time_base_new(self, gps):
+        '''work out time basis for the log - new style'''
+        t = self._gpsTimeToTime(gps.Week, gps.TimeMS*0.001)
+        self.timebase = t - gps.T
+        self.new_timestamps = True
+
     def _find_time_base(self):
         '''work out time basis for the log'''
         self.timebase = 0
         gps1 = self.recv_match(type='GPS', condition='GPS.Week!=0')
+        if 'T' in gps1._fieldnames:
+            # it is a new style flash log with full timestamps
+            self._find_time_base_new(gps1)
         counts1 = self.counts.copy()
         gps2 = self.recv_match(type='GPS', condition='GPS.Week!=0')
         counts2 = self.counts.copy()
@@ -129,6 +140,8 @@ class DFReader(object):
         
     def _adjust_time_base(self, m):
         '''adjust time base from GPS message'''
+        if self.new_timestamps:
+            return
         t = self._gpsTimeToTime(m.Week, m.TimeMS*0.001)
         deltat = t - self.timebase
         if deltat <= 0:
@@ -144,9 +157,18 @@ class DFReader(object):
 
     def _set_time(self, m):
         '''set time for a message'''
-        rate = self.msg_rate.get(m.fmt.name, 50.0)
-        count = self.counts_since_gps.get(m.fmt.name, 0)
-        m._timestamp = self.timebase + count/rate
+        if self.new_timestamps:
+            if m.get_type() == 'GPS':
+                m._timestamp = self.timebase + m.T*0.001
+            elif 'TimeMS' in m._fieldnames:
+                m._timestamp = self.timebase + m.TimeMS*0.001
+            else:
+                m._timestamp = self._timestamp
+        else:
+            rate = self.msg_rate.get(m.fmt.name, 50.0)
+            count = self.counts_since_gps.get(m.fmt.name, 0)
+            m._timestamp = self.timebase + count/rate
+        self._timestamp = m._timestamp
 
     def recv_msg(self):
         return self._parse_next()
