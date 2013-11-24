@@ -8,7 +8,7 @@ Released under GNU GPL version 3 or later
 Partly based on SDLog2Parser by Anton Babushkin
 '''
 
-import struct, time
+import struct, time, os
 from pymavlink import mavutil
 
 FORMAT_TO_STRUCT = {
@@ -94,8 +94,9 @@ class DFReader(object):
         '''reset counters on rewind'''
         self.counts = {}
         self.counts_since_gps = {}
-        self.messages = {}
+        self.messages = { 'MAV' : self }
         self.flightmode = "UNKNOWN"
+        self.percent = 0
 
     def _gpsTimeToTime(self, week, sec):
         '''convert GPS week and TOW to a time in seconds since 1970'''
@@ -111,11 +112,13 @@ class DFReader(object):
         counts2 = self.counts.copy()
 
         if gps1 is None or gps2 is None:
+            self._rewind()
             return
         
         t1 = self._gpsTimeToTime(gps1.Week, gps1.TimeMS*0.001)
         t2 = self._gpsTimeToTime(gps2.Week, gps2.TimeMS*0.001)
         if t2 == t1:
+            self._rewind()
             return
         for type in counts2:
             self.msg_rate[type] = (counts2[type] - counts1[type]) / float(t2-t1)
@@ -246,6 +249,8 @@ class DFReader_binary(DFReader):
         self.remaining -= fmt.len-3
         m = DFMessage(fmt, elements, True)
         self._add_msg(m)
+
+        self.percent = 100.0 * (self.offset / float(len(self.data)))
         
         return m
 
@@ -289,6 +294,8 @@ class DFReader_text(DFReader):
             self.line += 1
             if len(elements) >= 2:
                 break
+
+        self.percent = 100.0 * (self.line / float(len(self.lines)))
 
         if self.line >= len(self.lines):
             return None
