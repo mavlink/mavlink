@@ -6,7 +6,7 @@ Andrew Tridgell August 2011
 
 import sys, struct, time, os, datetime
 import math, re
-import pylab, pytz, matplotlib
+import pylab, matplotlib
 from math import *
 
 from pymavlink.mavextra import *
