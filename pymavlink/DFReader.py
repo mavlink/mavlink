@@ -91,7 +91,7 @@ class DFReader(object):
         # read the whole file into memory for simplicity
         self.msg_rate = {}
         self.new_timestamps = False
-        self._timestamp = 0
+        self.timestamp = 0
         
     def _rewind(self):
         '''reset counters on rewind'''
@@ -116,6 +116,10 @@ class DFReader(object):
         '''work out time basis for the log'''
         self.timebase = 0
         gps1 = self.recv_match(type='GPS', condition='GPS.Week!=0')
+        if gps1 is None:
+            self._rewind()
+            return
+            
         if 'T' in gps1._fieldnames:
             # it is a new style flash log with full timestamps
             self._find_time_base_new(gps1)
@@ -163,12 +167,12 @@ class DFReader(object):
             elif 'TimeMS' in m._fieldnames:
                 m._timestamp = self.timebase + m.TimeMS*0.001
             else:
-                m._timestamp = self._timestamp
+                m._timestamp = self.timestamp
         else:
             rate = self.msg_rate.get(m.fmt.name, 50.0)
             count = self.counts_since_gps.get(m.fmt.name, 0)
             m._timestamp = self.timebase + count/rate
-        self._timestamp = m._timestamp
+        self.timestamp = m._timestamp
 
     def recv_msg(self):
         return self._parse_next()
