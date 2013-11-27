@@ -322,6 +322,11 @@ class DFReader_text(DFReader):
             if len(elements) >= 2:
                 break
 
+        # cope with empty structures
+        if len(elements) == 5 and elements[-1] == ',':
+            elements[-1] = ''
+            elements.append('')
+
         self.percent = 100.0 * (self.line / float(len(self.lines)))
 
         if self.line >= len(self.lines):
