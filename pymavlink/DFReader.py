@@ -91,6 +91,8 @@ class DFReader(object):
         # read the whole file into memory for simplicity
         self.msg_rate = {}
         self.new_timestamps = False
+        self.px4_timestamps = False
+        self.px4_timebase = 0
         self.timestamp = 0
         
     def _rewind(self):
@@ -112,17 +114,29 @@ class DFReader(object):
         self.timebase = t - gps.T
         self.new_timestamps = True
 
+    def _find_time_base_px4(self, gps):
+        '''work out time basis for the log - PX4 native'''
+        t = gps.GPSTime
+        self.timebase = (t - self.px4_timebase) * 1.0e-6
+        self.px4_timestamps = True
+
     def _find_time_base(self):
         '''work out time basis for the log'''
         self.timebase = 0
-        gps1 = self.recv_match(type='GPS', condition='GPS.Week!=0')
+        gps1 = self.recv_match(type='GPS', condition='getattr(GPS,"Week",0)!=0 or getattr(GPS,"GPSTime")!=0')
         if gps1 is None:
             self._rewind()
+            return
+
+        if 'GPSTime' in gps1._fieldnames:
+            self._find_time_base_px4(gps1)
             return
             
         if 'T' in gps1._fieldnames:
             # it is a new style flash log with full timestamps
             self._find_time_base_new(gps1)
+            return
+        
         counts1 = self.counts.copy()
         gps2 = self.recv_match(type='GPS', condition='GPS.Week!=0')
         counts2 = self.counts.copy()
@@ -146,6 +160,10 @@ class DFReader(object):
         '''adjust time base from GPS message'''
         if self.new_timestamps:
             return
+        if self.px4_timestamps:
+            return
+        if getattr(m, 'Week', None) is None:
+            return
         t = self._gpsTimeToTime(m.Week, m.TimeMS*0.001)
         deltat = t - self.timebase
         if deltat <= 0:
@@ -161,7 +179,9 @@ class DFReader(object):
 
     def _set_time(self, m):
         '''set time for a message'''
-        if self.new_timestamps:
+        if self.px4_timestamps:
+            m._timestamp = self.timebase + self.px4_timebase
+        elif self.new_timestamps:
             if m.get_type() == 'GPS':
                 m._timestamp = self.timebase + m.T*0.001
             elif 'TimeMS' in m._fieldnames:
@@ -190,6 +210,8 @@ class DFReader(object):
         else:
             self.counts_since_gps[type] += 1
 
+        if type == 'TIME' and 'StartTime' in m._fieldnames:
+            self.px4_timebase = m.StartTime * 1.0e-6
         if type == 'GPS':
             self._adjust_time_base(m)
         if type == 'MODE':
