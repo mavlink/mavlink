@@ -745,3 +745,36 @@ def DCM_update(IMU, ATT, MAG, GPS):
     accel2 = Vector3(IMU.AccX, IMU.AccY, IMU.AccZ)
     dcm_state.update(gyro, accel, mag, GPS)
     return dcm_state
+
+class PX4_State(object):
+    '''PX4 DCM state object'''
+    def __init__(self, roll, pitch, yaw, timestamp):
+        self.dcm = Matrix3()
+        self.dcm.from_euler(radians(roll), radians(pitch), radians(yaw))
+        self.gyro = Vector3()
+        self.accel = Vector3()
+        self.timestamp = timestamp
+        (self.roll, self.pitch, self.yaw) = self.dcm.to_euler()
+        
+    def update(self, gyro, accel, timestamp):
+        if self.gyro != gyro or self.accel != accel:
+            delta_angle = gyro * (timestamp - self.timestamp)
+            self.timestamp = timestamp
+            self.dcm.rotate(delta_angle)
+            self.dcm.normalize()
+            self.gyro = gyro
+            self.accel = accel
+            (self.roll, self.pitch, self.yaw) = self.dcm.to_euler()
+
+px4_state = None
+
+def PX4_update(IMU, ATT):
+    '''implement full DCM using PX4 native SD log data'''
+    global px4_state
+    if px4_state is None:
+        px4_state = PX4_State(degrees(ATT.Roll), degrees(ATT.Pitch), degrees(ATT.Yaw), IMU._timestamp)
+
+    gyro  = Vector3(IMU.GyroX, IMU.GyroY, IMU.GyroZ)
+    accel = Vector3(IMU.AccX, IMU.AccY, IMU.AccZ)
+    px4_state.update(gyro, accel, IMU._timestamp)
+    return px4_state
