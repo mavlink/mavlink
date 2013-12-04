@@ -217,8 +217,10 @@ class DFReader(object):
         if type == 'MODE':
             if isinstance(m.Mode, str):
                 self.flightmode = m.Mode.upper()
-            else:
+            elif 'ModeNum' in m._fieldnames:
                 self.flightmode = mavutil.mode_string_apm(m.ModeNum)
+            else:
+                self.flightmode = mavutil.mode_string_acm(m.Mode)
         self._set_time(m)
 
     def recv_match(self, condition=None, type=None, blocking=False):
