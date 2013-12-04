@@ -1188,6 +1188,12 @@ def mode_string_apm(mode_number):
     if mode_number in mode_mapping_apm:
         return mode_mapping_apm[mode_number]
     return "Mode(%u)" % mode_number
+
+def mode_string_acm(mode_number):
+    '''return mode string for APM:Copter'''
+    if mode_number in mode_mapping_acm:
+        return mode_mapping_acm[mode_number]
+    return "Mode(%u)" % mode_number
     
 
 class x25crc(object):
