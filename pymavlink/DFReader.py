@@ -123,7 +123,7 @@ class DFReader(object):
     def _find_time_base(self):
         '''work out time basis for the log'''
         self.timebase = 0
-        gps1 = self.recv_match(type='GPS', condition='getattr(GPS,"Week",0)!=0 or getattr(GPS,"GPSTime")!=0')
+        gps1 = self.recv_match(type='GPS', condition='getattr(GPS,"Week",0)!=0 or getattr(GPS,"GPSTime",0)!=0')
         if gps1 is None:
             self._rewind()
             return
