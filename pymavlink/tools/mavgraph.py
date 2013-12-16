@@ -6,7 +6,7 @@ Andrew Tridgell August 2011
 
 import sys, struct, time, os, datetime
 import math, re
-import pylab, pytz, matplotlib
+import pylab, matplotlib
 from math import *
 
 from pymavlink.mavextra import *
@@ -136,7 +136,7 @@ x = []
 y = []
 axes = []
 first_only = []
-re_caps = re.compile('[A-Z_]+')
+re_caps = re.compile('[A-Z_][A-Z0-9_]+')
 for f in fields:
     caps = set(re.findall(re_caps, f))
     msg_types = msg_types.union(caps)

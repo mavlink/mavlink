@@ -687,4 +687,94 @@ def wrap_360(angle):
         angle += 360.0
     return angle
 
-    
+class DCM_State(object):
+    '''DCM state object'''
+    def __init__(self, roll, pitch, yaw):
+        self.dcm = Matrix3()
+        self.dcm2 = Matrix3()
+        self.dcm.from_euler(radians(roll), radians(pitch), radians(yaw))
+        self.dcm2.from_euler(radians(roll), radians(pitch), radians(yaw))
+        self.mag = Vector3()
+        self.gyro = Vector3()
+        self.accel = Vector3()
+        self.gps = None
+        self.rate = 50.0
+        self.kp = 0.2
+        self.kp_yaw = 0.3
+        self.omega_P = Vector3()
+        self.omega_P_yaw = Vector3()
+        self.omega_I = Vector3() # (-0.00199045287445, -0.00653007719666, -0.00714212376624)
+        self.omega_I_sum = Vector3()
+        self.omega_I_sum_time = 0
+        self.omega = Vector3()
+        self.ra_sum = Vector3()
+        self.last_delta_angle = Vector3()
+        self.last_velocity = Vector3()
+        (self.roll, self.pitch, self.yaw) = self.dcm.to_euler()
+        (self.roll2, self.pitch2, self.yaw2) = self.dcm2.to_euler()
+        
+    def update(self, gyro, accel, mag, GPS):
+        if self.gyro != gyro or self.accel != accel:
+            delta_angle = (gyro+self.omega_I) / self.rate
+            self.dcm.rotate(delta_angle)
+            correction = self.last_delta_angle % delta_angle
+            #print (delta_angle - self.last_delta_angle) * 58.0
+            corrected_delta = delta_angle + 0.0833333 * correction
+            self.dcm2.rotate(corrected_delta)
+            self.last_delta_angle = delta_angle
+
+            self.dcm.normalize()
+            self.dcm2.normalize()
+
+            self.gyro = gyro
+            self.accel = accel
+            (self.roll, self.pitch, self.yaw) = self.dcm.to_euler()
+            (self.roll2, self.pitch2, self.yaw2) = self.dcm2.to_euler()
+
+dcm_state = None
+
+def DCM_update(IMU, ATT, MAG, GPS):
+    '''implement full DCM system'''
+    global dcm_state
+    if dcm_state is None:
+        dcm_state = DCM_State(ATT.Roll, ATT.Pitch, ATT.Yaw)
+
+    mag   = Vector3(MAG.MagX, MAG.MagY, MAG.MagZ)
+    gyro  = Vector3(IMU.GyrX, IMU.GyrY, IMU.GyrZ)
+    accel = Vector3(IMU.AccX, IMU.AccY, IMU.AccZ)
+    accel2 = Vector3(IMU.AccX, IMU.AccY, IMU.AccZ)
+    dcm_state.update(gyro, accel, mag, GPS)
+    return dcm_state
+
+class PX4_State(object):
+    '''PX4 DCM state object'''
+    def __init__(self, roll, pitch, yaw, timestamp):
+        self.dcm = Matrix3()
+        self.dcm.from_euler(radians(roll), radians(pitch), radians(yaw))
+        self.gyro = Vector3()
+        self.accel = Vector3()
+        self.timestamp = timestamp
+        (self.roll, self.pitch, self.yaw) = self.dcm.to_euler()
+        
+    def update(self, gyro, accel, timestamp):
+        if self.gyro != gyro or self.accel != accel:
+            delta_angle = gyro * (timestamp - self.timestamp)
+            self.timestamp = timestamp
+            self.dcm.rotate(delta_angle)
+            self.dcm.normalize()
+            self.gyro = gyro
+            self.accel = accel
+            (self.roll, self.pitch, self.yaw) = self.dcm.to_euler()
+
+px4_state = None
+
+def PX4_update(IMU, ATT):
+    '''implement full DCM using PX4 native SD log data'''
+    global px4_state
+    if px4_state is None:
+        px4_state = PX4_State(degrees(ATT.Roll), degrees(ATT.Pitch), degrees(ATT.Yaw), IMU._timestamp)
+
+    gyro  = Vector3(IMU.GyroX, IMU.GyroY, IMU.GyroZ)
+    accel = Vector3(IMU.AccX, IMU.AccY, IMU.AccZ)
+    px4_state.update(gyro, accel, IMU._timestamp)
+    return px4_state

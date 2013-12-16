@@ -48,6 +48,12 @@ class Vector3:
                                               self.y,
                                               self.z)
 
+    def __eq__(self, v):
+        return self.x == v.x and self.y == v.y and self.z == v.z
+
+    def __ne__(self, v):
+        return not self == v
+
     def __add__(self, v):
         return Vector3(self.x + v.x,
                        self.y + v.y,
