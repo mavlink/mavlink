@@ -111,7 +111,7 @@ class DFReader(object):
     def _find_time_base_new(self, gps):
         '''work out time basis for the log - new style'''
         t = self._gpsTimeToTime(gps.Week, gps.TimeMS*0.001)
-        self.timebase = t - gps.T
+        self.timebase = t - gps.T*0.001
         self.new_timestamps = True
 
     def _find_time_base_px4(self, gps):
@@ -257,6 +257,7 @@ class DFReader_binary(DFReader):
         }
         self._rewind()
         self._find_time_base()
+        self._rewind()
 
     def _rewind(self):
         '''rewind to start of log'''
@@ -271,7 +272,7 @@ class DFReader_binary(DFReader):
             
         hdr = self.data[self.offset:self.offset+3]
         if (ord(hdr[0]) != self.HEAD1 or ord(hdr[1]) != self.HEAD2):
-            raise Exception("Invalid header: %02X %02X, must be %02X %02X" % (ord(hdr[0]), ord(hdr[1]), self.HEAD1, self.HEAD2))
+            return None
         msg_type = ord(hdr[2])
 
         self.offset += 3
