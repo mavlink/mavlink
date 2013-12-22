@@ -778,3 +778,11 @@ def PX4_update(IMU, ATT):
     accel = Vector3(IMU.AccX, IMU.AccY, IMU.AccZ)
     px4_state.update(gyro, accel, IMU._timestamp)
     return px4_state
+
+_downsample_N = 0
+
+def downsample(N):
+    '''conditional that is true on every Nth sample'''
+    global _downsample_N
+    _downsample_N = (_downsample_N + 1) % N
+    return _downsample_N == 0
