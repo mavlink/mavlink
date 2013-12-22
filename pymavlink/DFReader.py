@@ -220,6 +220,7 @@ class DFReader(object):
 
         if type == 'TIME' and 'StartTime' in m._fieldnames:
             self.px4_timebase = m.StartTime * 1.0e-6
+            self.px4_timestamps = True
         if type == 'GPS':
             self._adjust_time_base(m)
         if type == 'MODE':
