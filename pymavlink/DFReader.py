@@ -57,6 +57,13 @@ class DFFormat(object):
         self.msg_types = msg_types
         self.msg_mults = msg_mults
 
+def null_term(str):
+    '''null terminate a string'''
+    idx = str.find("\0")
+    if idx != -1:
+        str = str[:idx]
+    return str
+
 class DFMessage(object):
     def __init__(self, fmt, elements, apply_multiplier):
         self._d = {}
@@ -68,7 +75,8 @@ class DFMessage(object):
             if fmt.format[i] != 'M' or apply_multiplier:
                 self._d[name] = fmt.msg_types[i](self._d[name])
             if fmt.msg_types[i] == str:
-                self._d[name] = self._d[name].rstrip('\0')
+                self._d[name] = self._d[name]
+                self._d[name] = null_term(self._d[name])
             if mul is not None and apply_multiplier:
                 self._d[name] = self._d[name] * mul
         self._fieldnames = fmt.columns
@@ -290,12 +298,12 @@ class DFReader_binary(DFReader):
         except Exception:
             print("Failed to parse %s/%s with len %u (remaining %u)" % (fmt.name, fmt.msg_struct, len(body), self.remaining))
             raise
-        name = fmt.name.rstrip('\0')
+        name = null_term(fmt.name)
         if name == 'FMT':
             # add to formats
             # name, len, format, headings
-            self.formats[elements[0]] = DFFormat(elements[2].rstrip('\0'), elements[1],
-                                                 elements[3].rstrip('\0'), elements[4].rstrip('\0'))
+            self.formats[elements[0]] = DFFormat(null_term(elements[2]), elements[1],
+                                                 null_term(elements[3]), null_term(elements[4]))
 
         self.offset += fmt.len-3
         self.remaining -= fmt.len-3
