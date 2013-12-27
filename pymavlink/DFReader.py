@@ -335,6 +335,7 @@ class DFReader_text(DFReader):
         }
         self._rewind()
         self._find_time_base()
+        self._rewind()
 
     def _rewind(self):
         '''rewind to start of log'''
