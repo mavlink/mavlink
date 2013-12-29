@@ -190,7 +190,7 @@ class DFReader(object):
         if self.px4_timestamps:
             m._timestamp = self.timebase + self.px4_timebase
         elif self.new_timestamps:
-            if m.get_type() == 'GPS':
+            if m.get_type() in ['GPS','GPS2']:
                 m._timestamp = self.timebase + m.T*0.001
             elif 'TimeMS' in m._fieldnames:
                 m._timestamp = self.timebase + m.TimeMS*0.001
