@@ -300,7 +300,7 @@ class DFReader_binary(DFReader):
             print("Failed to parse %s/%s with len %u (remaining %u)" % (fmt.name, fmt.msg_struct, len(body), self.remaining))
             raise
         name = null_term(fmt.name)
-        if name == 'FMT':
+        if name == 'FMT' and elements[0] not in self.formats:
             # add to formats
             # name, len, format, headings
             self.formats[elements[0]] = DFFormat(null_term(elements[2]), elements[1],
