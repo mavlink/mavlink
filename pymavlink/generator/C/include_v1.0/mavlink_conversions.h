@@ -38,13 +38,13 @@ MAVLINK_HELPER void mavlink_quaternion_to_dcm(const float quaternion[4], float d
     double cSq = c * c;
     double dSq = d * d;
     dcm[0][0] = aSq + bSq - cSq - dSq;
-    dcm[0][1] = 2.0 * (b * c - a * d);
-    dcm[0][2] = 2.0 * (a * c + b * d);
-    dcm[1][0] = 2.0 * (b * c + a * d);
+    dcm[0][1] = 2 * (b * c - a * d);
+    dcm[0][2] = 2 * (a * c + b * d);
+    dcm[1][0] = 2 * (b * c + a * d);
     dcm[1][1] = aSq - bSq + cSq - dSq;
-    dcm[1][2] = 2.0 * (c * d - a * b);
-    dcm[2][0] = 2.0 * (b * d - a * c);
-    dcm[2][1] = 2.0 * (a * b + c * d);
+    dcm[1][2] = 2 * (c * d - a * b);
+    dcm[2][0] = 2 * (b * d - a * c);
+    dcm[2][1] = 2 * (a * b + c * d);
     dcm[2][2] = aSq - bSq - cSq + dSq;
 }
 
@@ -82,12 +82,12 @@ MAVLINK_HELPER void mavlink_quaternion_to_euler(const float quaternion[4], float
 
 MAVLINK_HELPER void mavlink_euler_to_quaternion(float roll, float pitch, float yaw, float quaternion[4])
 {
-    double cosPhi_2 = cos((double)roll / 2.0);
-    double sinPhi_2 = sin((double)roll / 2.0);
-    double cosTheta_2 = cos((double)pitch / 2.0);
-    double sinTheta_2 = sin((double)pitch / 2.0);
-    double cosPsi_2 = cos((double)yaw / 2.0);
-    double sinPsi_2 = sin((double)yaw / 2.0);
+    double cosPhi_2 = cos((double)roll / 2);
+    double sinPhi_2 = sin((double)roll / 2);
+    double cosTheta_2 = cos((double)pitch / 2);
+    double sinTheta_2 = sin((double)pitch / 2);
+    double cosPsi_2 = cos((double)yaw / 2);
+    double sinPsi_2 = sin((double)yaw / 2);
     quaternion[0] = (cosPhi_2 * cosTheta_2 * cosPsi_2 +
             sinPhi_2 * sinTheta_2 * sinPsi_2);
     quaternion[1] = (sinPhi_2 * cosTheta_2 * cosPsi_2 -
@@ -100,13 +100,13 @@ MAVLINK_HELPER void mavlink_euler_to_quaternion(float roll, float pitch, float y
 
 MAVLINK_HELPER void mavlink_dcm_to_quaternion(const float dcm[3][3], float quaternion[4])
 {
-    quaternion[0] = (0.5 * sqrt(1.0 +
+    quaternion[0] = ((double)0.5 * sqrt(1 +
             (double)(dcm[0][0] + dcm[1][1] + dcm[2][2])));
-    quaternion[1] = (0.5 * sqrt(1.0 +
+    quaternion[1] = ((double)0.5 * sqrt(1 +
             (double)(dcm[0][0] - dcm[1][1] - dcm[2][2])));
-    quaternion[2] = (0.5 * sqrt(1.0 +
+    quaternion[2] = ((double)0.5 * sqrt(1 +
             (double)(-dcm[0][0] + dcm[1][1] - dcm[2][2])));
-    quaternion[3] = (0.5 * sqrt(1.0 +
+    quaternion[3] = ((double)0.5 * sqrt(1 +
             (double)(-dcm[0][0] - dcm[1][1] + dcm[2][2])));
 }
 
