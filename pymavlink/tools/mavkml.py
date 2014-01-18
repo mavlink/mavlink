@@ -34,9 +34,6 @@ def save_kml(filename):
     kml.save(filename)
     print "KML written to " + filename
 
-#test
-# exportKML([(47.5, 8.), ((48., 9.))], "test.kml")
-
 def add_data(t, msg, vars, fields, field_types):
     '''add some data'''
         
