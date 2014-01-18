@@ -113,11 +113,11 @@ def process_file(filename, fields, field_types):
 if __name__ == '__main__':
     parser = OptionParser("mavkml.py [options] <filename>")
     parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
-    parser.add_option("--condition",dest="condition", default=None, help="select packets by a condition")
-    parser.add_option("--aoff",dest="aoff", default=0., help="Altitude offset for paths that go through the ground in google earth")
-    parser.add_option("-o", "--output",dest="filename_out", default="mavkml.kml", help="output filename")
-    parser.add_option("-s", "--source", dest="source", default="GPOS", help="write report to FILE", metavar="FILE")
-    parser.add_option("-e", "--extrude", dest="extrude", default=False, action='store_true', help="extrude paths to ground")
+    parser.add_option("--condition",dest="condition", default=None, help="select packets by a condition [default: %default]")
+    parser.add_option("--aoff",dest="aoff", default=0., help="Altitude offset for paths that go through the ground in google earth [default: %default]")
+    parser.add_option("-o", "--output",dest="filename_out", default="mav.kml", help="Output filename [default: %default] ")
+    parser.add_option("-s", "--source", dest="source", default="GPOS", help="Select position data source (GPOS or GPS) [default: %default]")
+    parser.add_option("-e", "--extrude", dest="extrude", default=False, action='store_true', help="Extrude paths to ground [default: %default]")
     
     
     (opts, args) = parser.parse_args()
