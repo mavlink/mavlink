@@ -32,7 +32,7 @@ def save_kml(filename):
     '''saves the kml file'''
     global kml
     kml.save(filename)
-    print "KML written to " + filename
+    print("KML written to %s" % filename)
 
 def add_data(t, msg, vars, fields, field_types):
     '''add some data'''
