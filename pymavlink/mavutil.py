@@ -269,6 +269,9 @@ class mavfile(object):
                 self.auto_mavlink_version(s)
             msg = self.mav.parse_char(s)
             if msg:
+                if self.logfile and  msg.get_type() != 'BAD_DATA' :
+                    usec = int(time.time() * 1.0e6) & ~3
+                    self.logfile.write(str(struct.pack('>Q', usec) + msg.get_msgbuf()))
                 self.post_message(msg)
                 return msg
                 
