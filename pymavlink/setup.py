@@ -72,5 +72,5 @@ setup (name = 'pymavlink',
                    'tools/mavsigloss.py',
                    'tools/mavsearch.py',
                    'tools/mavtomfile.py',
-                   'generator/mavgen.py']
+                   'generator/mavgen.py', 'tools/mavkml.py']
        )
