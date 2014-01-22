@@ -99,6 +99,7 @@ class DFReader(object):
         # read the whole file into memory for simplicity
         self.msg_rate = {}
         self.new_timestamps = False
+        self.interpolated_timestamps = False
         self.px4_timestamps = False
         self.px4_timebase = 0
         self.timestamp = 0
@@ -166,7 +167,7 @@ class DFReader(object):
         
     def _adjust_time_base(self, m):
         '''adjust time base from GPS message'''
-        if self.new_timestamps:
+        if self.new_timestamps and not self.interpolated_timestamps:
             return
         if self.px4_timestamps:
             return
@@ -189,7 +190,10 @@ class DFReader(object):
         '''set time for a message'''
         if self.px4_timestamps:
             m._timestamp = self.timebase + self.px4_timebase
-        elif self.new_timestamps:
+        elif self.new_timestamps and not self.interpolated_timestamps:
+            if m.get_type() in ['ATT'] and not 'TimeMS' in m._fieldnames:
+                # old copter logs without TimeMS on key messages
+                self.interpolated_timestamps = True
             if m.get_type() in ['GPS','GPS2']:
                 m._timestamp = self.timebase + m.T*0.001
             elif 'TimeMS' in m._fieldnames:
