@@ -223,7 +223,6 @@ class DFReader(object):
             if rate > self.msg_rate.get(type, 0):
                 self.msg_rate[type] = rate
         self.msg_rate['IMU'] = 50.0
-        self.msg_rate['ATT'] = 50.0
         self.timebase = t
         self.counts_since_gps = {}        
 
