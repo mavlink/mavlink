@@ -786,3 +786,15 @@ def downsample(N):
     global _downsample_N
     _downsample_N = (_downsample_N + 1) % N
     return _downsample_N == 0
+
+def armed(HEARTBEAT):
+    '''return 1 if armed, 0 if not'''
+    from pymavlink import mavutil
+    if HEARTBEAT.type == mavutil.mavlink.MAV_TYPE_GCS:
+        self = mavutil.mavfile_global
+        if self.motors_armed():
+            return 1
+        return 0
+    if HEARTBEAT.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED:
+        return 1
+    return 0
