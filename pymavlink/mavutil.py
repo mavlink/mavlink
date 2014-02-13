@@ -185,6 +185,10 @@ class mavfile(object):
         '''default pre message call'''
         return
 
+    def set_rtscts(self, enable):
+        '''enable/disable RTS/CTS if applicable'''
+        return
+
     def post_message(self, msg):
         '''default post message call'''
         if '_posted' in msg.__dict__:
@@ -663,7 +667,13 @@ class mavserial(mavfile):
         except Exception:
             fd = None
         mavfile.__init__(self, fd, device, source_system=source_system)
+        self.rtscts = False
 
+    def set_rtscts(self, enable):
+        '''enable/disable RTS/CTS if applicable'''
+        self.port.setRtsCts(enable)
+        self.rtscts = enable
+    
     def close(self):
         self.port.close()
 
@@ -695,6 +705,8 @@ class mavserial(mavfile):
                     self.fd = self.port.fileno()
                 except Exception:
                     self.fd = None
+                if self.rtscts:
+                    set_rtscts(self.rtscts)
                 return
             except Exception:
                 print("Failed to reopen %s" % self.device)
