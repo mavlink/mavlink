@@ -284,8 +284,15 @@ class DFReader_binary(DFReader):
             return None
             
         hdr = self.data[self.offset:self.offset+3]
-        if (ord(hdr[0]) != self.HEAD1 or ord(hdr[1]) != self.HEAD2):
-            return None
+        while (ord(hdr[0]) != self.HEAD1 or ord(hdr[1]) != self.HEAD2):
+            print "(message corrupt)"
+            # message corrupt, find next correct message
+            if (self.remaining >= 3):
+                self.offset += 1
+                self.remaining -= 1
+                hdr = self.data[self.offset:self.offset+3]
+            else:
+                return None
         msg_type = ord(hdr[2])
 
         self.offset += 3
