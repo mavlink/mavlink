@@ -497,6 +497,25 @@ class mavfile(object):
                                    channel, pwm,
                                    0, 0, 0, 0, 0)
 
+
+    def set_relay(self, relay_pin=0, state=True):
+        '''Set relay_pin to value of state'''
+        if self.mavlink10():
+            self.mav.command_long_send(
+                self.target_system,  # target_system
+                self.target_component, # target_component
+                mavlink.MAV_CMD_DO_SET_RELAY, # command
+                0, # Confirmation
+                relay_pin, # Relay Number
+                int(state), # state (1 to indicate arm)
+                0, # param3 (all other params meaningless)
+                0, # param4
+                0, # param5
+                0, # param6
+                0) # param7
+        else:
+            print("Setting relays not supported.")
+
     def calibrate_imu(self):
         '''calibrate IMU'''
         if self.mavlink10():
