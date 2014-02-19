@@ -196,7 +196,8 @@ class mavfile(object):
         msg._posted = True
         msg._timestamp = time.time()
         type = msg.get_type()
-        self.messages[type] = msg
+        if type != 'HEARTBEAT' or msg.type != mavlink.MAV_TYPE_GCS:
+            self.messages[type] = msg
 
         if 'usec' in msg.__dict__:
             self.uptime = msg.usec * 1.0e-6
