@@ -63,5 +63,5 @@ while True:
     print("%s.%02u: %s" % (
         time.strftime("%Y-%m-%d %H:%M:%S",
                       time.localtime(m._timestamp)),
-        int(m._timestamp*100.0)%100, m))
+        int(m._timestamp*1000.0)%1000, m))
         

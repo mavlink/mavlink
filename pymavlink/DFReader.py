@@ -99,6 +99,7 @@ class DFReader(object):
         # read the whole file into memory for simplicity
         self.msg_rate = {}
         self.new_timestamps = False
+        self.interpolated_timestamps = False
         self.px4_timestamps = False
         self.px4_timebase = 0
         self.timestamp = 0
@@ -166,7 +167,7 @@ class DFReader(object):
         
     def _adjust_time_base(self, m):
         '''adjust time base from GPS message'''
-        if self.new_timestamps:
+        if self.new_timestamps and not self.interpolated_timestamps:
             return
         if self.px4_timestamps:
             return
@@ -189,8 +190,11 @@ class DFReader(object):
         '''set time for a message'''
         if self.px4_timestamps:
             m._timestamp = self.timebase + self.px4_timebase
-        elif self.new_timestamps:
-            if m.get_type() == 'GPS':
+        elif self.new_timestamps and not self.interpolated_timestamps:
+            if m.get_type() in ['ATT'] and not 'TimeMS' in m._fieldnames:
+                # old copter logs without TimeMS on key messages
+                self.interpolated_timestamps = True
+            if m.get_type() in ['GPS','GPS2']:
                 m._timestamp = self.timebase + m.T*0.001
             elif 'TimeMS' in m._fieldnames:
                 m._timestamp = self.timebase + m.TimeMS*0.001
@@ -220,6 +224,7 @@ class DFReader(object):
 
         if type == 'TIME' and 'StartTime' in m._fieldnames:
             self.px4_timebase = m.StartTime * 1.0e-6
+            self.px4_timestamps = True
         if type == 'GPS':
             self._adjust_time_base(m)
         if type == 'MODE':
@@ -299,7 +304,7 @@ class DFReader_binary(DFReader):
             print("Failed to parse %s/%s with len %u (remaining %u)" % (fmt.name, fmt.msg_struct, len(body), self.remaining))
             raise
         name = null_term(fmt.name)
-        if name == 'FMT':
+        if name == 'FMT' and elements[0] not in self.formats:
             # add to formats
             # name, len, format, headings
             self.formats[elements[0]] = DFFormat(null_term(elements[2]), elements[1],
@@ -334,6 +339,7 @@ class DFReader_text(DFReader):
         }
         self._rewind()
         self._find_time_base()
+        self._rewind()
 
     def _rewind(self):
         '''rewind to start of log'''

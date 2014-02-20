@@ -5,10 +5,11 @@ convert a MAVLink tlog file to a MATLab mfile
 '''
 
 import sys
+import re
 from pymavlink import mavutil
 
-def create_mfile(filename, msg_types, msg_list):
-    '''create a .m file from msg_types and msg_list'''
+def create_mfile(filename, msg_types, msg_lists):
+    '''create a .m file from msg_types and msg_lists'''
     f = open(filename, mode='w')
 
     # put out all the headings
@@ -21,24 +22,20 @@ def create_mfile(filename, msg_types, msg_list):
             if not isinstance(val, str):
                 f.write(",'%s'" % field)
         f.write("};\n")
-    done_types = {}
-    for m in msg_list:
-        type = m.get_type()
-        fieldnames = m._fieldnames
-        f.write("%s.data = [" % type)
+    for mtype in msg_lists:
+        f.write("%s.data = [" % mtype)
+        for m in msg_lists[mtype]:
+            fieldnames = m._fieldnames
 
-        # append to existing matrix
-        if type in done_types:
-            f.write("%s.data; " % type)
-        done_types[type] = True
+            # always include the timestamp
+            f.write("%f" % m._timestamp)
+            for field in fieldnames:
+                val = getattr(m, field)
+                if not isinstance(val, str):
+                    f.write(",%f" % val)
+            f.write(";\n")
+        f.write("];\n\n")
 
-        # always include the timestamp
-        f.write("%f" % m._timestamp)
-        for field in fieldnames:
-            val = getattr(m, field)
-            if not isinstance(val, str):
-                f.write(",%f" % val)
-        f.write("];\n")
     f.close()
 
 def process_tlog(filename):
@@ -48,10 +45,10 @@ def process_tlog(filename):
     
     mlog = mavutil.mavlink_connection(filename, dialect=opts.dialect)
     
-    # first walk the entire file, grabbing all messages into a list, and the last message of each type
-    # into a hash
+    # first walk the entire file, grabbing all messages into a hash of lists,
+    #and the first message of each type into a hash
     msg_types = {}
-    msg_list = []
+    msg_lists = {}
 
     types = opts.types
     if types is not None:
@@ -66,14 +63,18 @@ def process_tlog(filename):
             continue
         if m.get_type() == 'BAD_DATA':
             continue
-        msg_list.append(m)
-        msg_types[m.get_type()] = m
+        
+        if m.get_type() not in msg_lists.keys():
+            msg_lists[m.get_type()] = []
+            msg_types[m.get_type()] = m
 
-    # note that Octave doesn't like any extra '.' characters in the filename
+        msg_lists[m.get_type()].append(m)
+
+    # note that Octave doesn't like any extra '.', '*', '-', characters in the filename
     basename = '.'.join(filename.split('.')[:-1])
-    mfilename = basename.replace('.','_') + '.m'
+    mfilename = re.sub('[\.\-\+\*]','_', basename) + '.m'
     print("Creating %s" % mfilename)
-    create_mfile(mfilename, msg_types, msg_list)
+    create_mfile(mfilename, msg_types, msg_lists)
 
 from optparse import OptionParser
 parser = OptionParser("mavtomfile.py [options]")

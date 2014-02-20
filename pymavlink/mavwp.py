@@ -379,7 +379,7 @@ class MAVRallyLoader(object):
 
             if (a[0].lower() == "rally"):
                 self.create_and_append_rally_point(float(a[1]) * 1e7, float(a[2]) * 1e7,
-                                                   float(a[3]) * 100.0, float(a[4]) * 100.0, float(a[5]) * 100.0, int(a[6]))
+                                                   float(a[3]), float(a[4]), float(a[5]) * 100.0, int(a[6]))
 # Coming Soon:
 #            elif (a[0].lower().equals("rally_land"):
 #                self.add_rally_land_from_file(float(a[1]), float(a[2]), float(a[3]))

@@ -25,15 +25,20 @@ def mavparms(logfile):
     mlog = mavutil.mavlink_connection(filename)
 
     while True:
-        m = mlog.recv_match(type='PARAM_VALUE')
+        m = mlog.recv_match(type=['PARAM_VALUE', 'PARM'])
         if m is None:
             return
-        pname = str(m.param_id).strip()
+        if m.get_type() == 'PARAM_VALUE':
+            pname = str(m.param_id).strip()
+            value = m.param_value
+        else:
+            pname = m.Name
+            value = m.Value
         if len(pname) > 0:
-            if opts.changesOnly is True and pname in parms and parms[pname] != m.param_value:
-                print("%s %-15s %.6f -> %.6f" % (time.asctime(time.localtime(m._timestamp)), pname, parms[pname], m.param_value))
+            if opts.changesOnly is True and pname in parms and parms[pname] != value:
+                print("%s %-15s %.6f -> %.6f" % (time.asctime(time.localtime(m._timestamp)), pname, parms[pname], value))
             
-            parms[pname] = m.param_value
+            parms[pname] = value
 
 total = 0.0
 for filename in args:
@@ -44,4 +49,3 @@ if (opts.changesOnly is False):
     keys.sort()
     for p in keys:
         print("%-15s %.6f" % (p, parms[p]))
-    

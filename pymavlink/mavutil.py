@@ -185,6 +185,10 @@ class mavfile(object):
         '''default pre message call'''
         return
 
+    def set_rtscts(self, enable):
+        '''enable/disable RTS/CTS if applicable'''
+        return
+
     def post_message(self, msg):
         '''default post message call'''
         if '_posted' in msg.__dict__:
@@ -192,7 +196,8 @@ class mavfile(object):
         msg._posted = True
         msg._timestamp = time.time()
         type = msg.get_type()
-        self.messages[type] = msg
+        if type != 'HEARTBEAT' or msg.type != mavlink.MAV_TYPE_GCS:
+            self.messages[type] = msg
 
         if 'usec' in msg.__dict__:
             self.uptime = msg.usec * 1.0e-6
@@ -269,6 +274,9 @@ class mavfile(object):
                 self.auto_mavlink_version(s)
             msg = self.mav.parse_char(s)
             if msg:
+                if self.logfile and  msg.get_type() != 'BAD_DATA' :
+                    usec = int(time.time() * 1.0e6) & ~3
+                    self.logfile.write(str(struct.pack('>Q', usec) + msg.get_msgbuf()))
                 self.post_message(msg)
                 return msg
                 
@@ -679,7 +687,13 @@ class mavserial(mavfile):
         except Exception:
             fd = None
         mavfile.__init__(self, fd, device, source_system=source_system)
+        self.rtscts = False
 
+    def set_rtscts(self, enable):
+        '''enable/disable RTS/CTS if applicable'''
+        self.port.setRtsCts(enable)
+        self.rtscts = enable
+    
     def close(self):
         self.port.close()
 
@@ -705,12 +719,14 @@ class mavserial(mavfile):
         self.port.close()
         while True:
             try:
-                self.port = serial.Serial(self.device, self.baud, timeout=1,
+                self.port = serial.Serial(self.device, self.baud, timeout=0,
                                           dsrdtr=False, rtscts=False, xonxoff=False)
                 try:
                     self.fd = self.port.fileno()
                 except Exception:
                     self.fd = None
+                if self.rtscts:
+                    set_rtscts(self.rtscts)
                 return
             except Exception:
                 print("Failed to reopen %s" % self.device)
@@ -958,7 +974,7 @@ def mavlink_connection(device, baud=115200, source_system=255,
     if device.startswith('udp:'):
         return mavudp(device[4:], input=input, source_system=source_system)
 
-    if device.endswith('.bin'):
+    if device.lower().endswith('.bin'):
         # support dataflash logs
         from pymavlink import DFReader
         m = DFReader.DFReader_binary(device)
