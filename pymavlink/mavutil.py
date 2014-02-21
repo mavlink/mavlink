@@ -946,7 +946,7 @@ class mavchildexec(mavfile):
 def mavlink_connection(device, baud=115200, source_system=255,
                        planner_format=None, write=False, append=False,
                        robust_parsing=True, notimestamps=False, input=True,
-                       dialect=None, autoreconnect=False):
+                       dialect=None, autoreconnect=False, zero_time_base=False):
     '''open a serial, UDP, TCP or file mavlink connection'''
     if dialect is not None:
         set_dialect(dialect)
@@ -958,7 +958,7 @@ def mavlink_connection(device, baud=115200, source_system=255,
     if device.lower().endswith('.bin'):
         # support dataflash logs
         from pymavlink import DFReader
-        m = DFReader.DFReader_binary(device)
+        m = DFReader.DFReader_binary(device, zero_time_base=zero_time_base)
         global mavfile_global
         mavfile_global = m
         return m
@@ -968,7 +968,7 @@ def mavlink_connection(device, baud=115200, source_system=255,
         from pymavlink import DFReader
         if DFReader.DFReader_is_text_log(device):
             global mavfile_global
-            m = DFReader.DFReader_text(device)
+            m = DFReader.DFReader_text(device, zero_time_base=zero_time_base)
             mavfile_global = m
             return m    
 

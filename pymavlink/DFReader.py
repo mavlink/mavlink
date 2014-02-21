@@ -132,6 +132,8 @@ class DFReader(object):
     def _find_time_base(self):
         '''work out time basis for the log'''
         self.timebase = 0
+        if self._zero_time_base:
+            return
         gps1 = self.recv_match(type='GPS', condition='getattr(GPS,"Week",0)!=0 or getattr(GPS,"GPSTime",0)!=0')
         if gps1 is None:
             self._rewind()
@@ -167,6 +169,8 @@ class DFReader(object):
         
     def _adjust_time_base(self, m):
         '''adjust time base from GPS message'''
+        if self._zero_time_base:
+            return
         if self.new_timestamps and not self.interpolated_timestamps:
             return
         if self.px4_timestamps:
@@ -190,7 +194,7 @@ class DFReader(object):
         '''set time for a message'''
         if self.px4_timestamps:
             m._timestamp = self.timebase + self.px4_timebase
-        elif self.new_timestamps and not self.interpolated_timestamps:
+        elif self._zero_time_base or (self.new_timestamps and not self.interpolated_timestamps):
             if m.get_type() in ['ATT'] and not 'TimeMS' in m._fieldnames:
                 # old copter logs without TimeMS on key messages
                 self.interpolated_timestamps = True
@@ -257,7 +261,7 @@ class DFReader(object):
 
 class DFReader_binary(DFReader):
     '''parse a binary dataflash file'''
-    def __init__(self, filename):
+    def __init__(self, filename, zero_time_base):
         DFReader.__init__(self)
         # read the whole file into memory for simplicity
         f = open(filename, mode='rb')
@@ -269,6 +273,7 @@ class DFReader_binary(DFReader):
             0x80 : DFFormat('FMT', 89, 'BBnNZ', "Type,Length,Name,Format,Columns")
         }
         self._rewind()
+        self._zero_time_base = zero_time_base
         self._find_time_base()
         self._rewind()
 
@@ -328,7 +333,7 @@ def DFReader_is_text_log(filename):
 
 class DFReader_text(DFReader):
     '''parse a text dataflash file'''
-    def __init__(self, filename):
+    def __init__(self, filename, zero_time_base=False):
         DFReader.__init__(self)
         # read the whole file into memory for simplicity
         f = open(filename, mode='r')
@@ -338,6 +343,7 @@ class DFReader_text(DFReader):
             'FMT' : DFFormat('FMT', 89, 'BBnNZ', "Type,Length,Name,Format,Columns")
         }
         self._rewind()
+        self._zero_time_base = zero_time_base
         self._find_time_base()
         self._rewind()
 
