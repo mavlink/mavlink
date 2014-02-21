@@ -110,6 +110,7 @@ parser.add_option("--legend2",  default='upper right', help="default legend2 pos
 parser.add_option("--marker",  default=None, help="point marker")
 parser.add_option("--linestyle",  default=None, help="line style")
 parser.add_option("--xaxis",  default=None, help="X axis expression")
+parser.add_option("--zero-time-base",  action='store_true', help="use Z time base for DF logs")
 (opts, args) = parser.parse_args()
 
 from pymavlink import mavutil
@@ -176,7 +177,7 @@ def add_data(t, msg, vars):
 def process_file(filename):
     '''process one file'''
     print("Processing %s" % filename)
-    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps, zero_time_base=opts.zero_time_base)
     vars = {}
     
     while True:
