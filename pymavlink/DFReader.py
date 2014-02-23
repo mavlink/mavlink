@@ -285,7 +285,6 @@ class DFReader_binary(DFReader):
             
         hdr = self.data[self.offset:self.offset+3]
         while (ord(hdr[0]) != self.HEAD1 or ord(hdr[1]) != self.HEAD2):
-            print "(message corrupt)"
             # message corrupt, find next correct message
             if (self.remaining >= 3):
                 self.offset += 1
