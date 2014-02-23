@@ -141,11 +141,13 @@ class DFReader(object):
 
         if 'GPSTime' in gps1._fieldnames:
             self._find_time_base_px4(gps1)
+            self._rewind()
             return
             
         if 'T' in gps1._fieldnames:
             # it is a new style flash log with full timestamps
             self._find_time_base_new(gps1)
+            self._rewind()
             return
         
         counts1 = self.counts.copy()
