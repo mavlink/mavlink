@@ -125,8 +125,8 @@ class DFReader(object):
 
     def _find_time_base_px4(self, gps):
         '''work out time basis for the log - PX4 native'''
-        t = gps.GPSTime
-        self.timebase = (t - self.px4_timebase) * 1.0e-6
+        t = gps.GPSTime * 1.0e-6
+        self.timebase = t - self.px4_timebase
         self.px4_timestamps = True
 
     def _find_time_base(self):
