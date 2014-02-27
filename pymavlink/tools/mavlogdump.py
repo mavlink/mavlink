@@ -21,6 +21,7 @@ parser.add_option("-q", "--quiet", dest="quiet", action='store_true', help="don'
 parser.add_option("-o", "--output", default=None, help="output matching packets to give file")
 parser.add_option("--types",  default=None, help="types of messages (comma separated)")
 parser.add_option("--dialect",  default="ardupilotmega", help="MAVLink dialect")
+parser.add_option("--zero-time-base",  action='store_true', help="use Z time base for DF logs")
 (opts, args) = parser.parse_args()
 
 from pymavlink import mavutil
@@ -33,7 +34,8 @@ filename = args[0]
 mlog = mavutil.mavlink_connection(filename, planner_format=opts.planner,
                                   notimestamps=opts.notimestamps,
                                   robust_parsing=opts.robust,
-                                  dialect=opts.dialect)
+                                  dialect=opts.dialect,
+                                  zero_time_base=opts.zero_time_base)
 
 output = None
 if opts.output:

@@ -185,6 +185,10 @@ class mavfile(object):
         '''default pre message call'''
         return
 
+    def set_rtscts(self, enable):
+        '''enable/disable RTS/CTS if applicable'''
+        return
+
     def post_message(self, msg):
         '''default post message call'''
         if '_posted' in msg.__dict__:
@@ -192,7 +196,8 @@ class mavfile(object):
         msg._posted = True
         msg._timestamp = time.time()
         type = msg.get_type()
-        self.messages[type] = msg
+        if type != 'HEARTBEAT' or msg.type != mavlink.MAV_TYPE_GCS:
+            self.messages[type] = msg
 
         if 'usec' in msg.__dict__:
             self.uptime = msg.usec * 1.0e-6
@@ -663,7 +668,13 @@ class mavserial(mavfile):
         except Exception:
             fd = None
         mavfile.__init__(self, fd, device, source_system=source_system)
+        self.rtscts = False
 
+    def set_rtscts(self, enable):
+        '''enable/disable RTS/CTS if applicable'''
+        self.port.setRtsCts(enable)
+        self.rtscts = enable
+    
     def close(self):
         self.port.close()
 
@@ -695,6 +706,8 @@ class mavserial(mavfile):
                     self.fd = self.port.fileno()
                 except Exception:
                     self.fd = None
+                if self.rtscts:
+                    set_rtscts(self.rtscts)
                 return
             except Exception:
                 print("Failed to reopen %s" % self.device)
@@ -933,7 +946,7 @@ class mavchildexec(mavfile):
 def mavlink_connection(device, baud=115200, source_system=255,
                        planner_format=None, write=False, append=False,
                        robust_parsing=True, notimestamps=False, input=True,
-                       dialect=None, autoreconnect=False):
+                       dialect=None, autoreconnect=False, zero_time_base=False):
     '''open a serial, UDP, TCP or file mavlink connection'''
     if dialect is not None:
         set_dialect(dialect)
@@ -945,7 +958,7 @@ def mavlink_connection(device, baud=115200, source_system=255,
     if device.lower().endswith('.bin'):
         # support dataflash logs
         from pymavlink import DFReader
-        m = DFReader.DFReader_binary(device)
+        m = DFReader.DFReader_binary(device, zero_time_base=zero_time_base)
         global mavfile_global
         mavfile_global = m
         return m
@@ -955,7 +968,7 @@ def mavlink_connection(device, baud=115200, source_system=255,
         from pymavlink import DFReader
         if DFReader.DFReader_is_text_log(device):
             global mavfile_global
-            m = DFReader.DFReader_text(device)
+            m = DFReader.DFReader_text(device, zero_time_base=zero_time_base)
             mavfile_global = m
             return m    
 
