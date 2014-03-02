@@ -33,7 +33,8 @@ FORMAT_TO_STRUCT = {
     }
 
 class DFFormat(object):
-    def __init__(self, name, len, format, columns):
+    def __init__(self, type, name, len, format, columns):
+        self.type = type
         self.name = name
         self.len = len
         self.format = format
@@ -91,6 +92,20 @@ class DFMessage(object):
             ret += "%s : %s, " % (c, self._d[c])
         ret = ret[:-2] + "}"
         return ret
+
+    def get_msgbuf(self):
+        '''create a binary message buffer for a message'''
+        values = []
+        for i in range(len(self.fmt.columns)):
+            mul = self.fmt.msg_mults[i]
+            name = self.fmt.columns[i]
+            if name == 'Mode' and 'ModeNum' in self.fmt.columns:
+                name = 'ModeNum'
+            v = self._d[name]
+            if mul is not None:
+                v /= mul
+            values.append(v)
+        return struct.pack("BBB", 0xA3, 0x95, self.fmt.type) + struct.pack(self.fmt.msg_struct, *values)
                 
 
 class DFReader(object):
@@ -273,7 +288,7 @@ class DFReader_binary(DFReader):
         self.HEAD1 = 0xA3
         self.HEAD2 = 0x95
         self.formats = {
-            0x80 : DFFormat('FMT', 89, 'BBnNZ', "Type,Length,Name,Format,Columns")
+            0x80 : DFFormat(0x80, 'FMT', 89, 'BBnNZ', "Type,Length,Name,Format,Columns")
         }
         self._rewind()
         self._zero_time_base = zero_time_base
@@ -327,7 +342,8 @@ class DFReader_binary(DFReader):
         if name == 'FMT' and elements[0] not in self.formats:
             # add to formats
             # name, len, format, headings
-            self.formats[elements[0]] = DFFormat(null_term(elements[2]), elements[1],
+            self.formats[elements[0]] = DFFormat(elements[0],
+                                                 null_term(elements[2]), elements[1],
                                                  null_term(elements[3]), null_term(elements[4]))
 
         self.offset += fmt.len-3
@@ -355,7 +371,7 @@ class DFReader_text(DFReader):
         self.lines = f.readlines()
         f.close()
         self.formats = {
-            'FMT' : DFFormat('FMT', 89, 'BBnNZ', "Type,Length,Name,Format,Columns")
+            'FMT' : DFFormat(0x80, 'FMT', 89, 'BBnNZ', "Type,Length,Name,Format,Columns")
         }
         self._rewind()
         self._zero_time_base = zero_time_base
@@ -409,7 +425,7 @@ class DFReader_text(DFReader):
         if name == 'FMT':
             # add to formats
             # name, len, format, headings
-            self.formats[elements[2]] = DFFormat(elements[2], int(elements[1]), elements[3], elements[4])
+            self.formats[elements[2]] = DFFormat(int(elements[0]), elements[2], int(elements[1]), elements[3], elements[4])
 
         m = DFMessage(fmt, elements, False)
         self._add_msg(m)

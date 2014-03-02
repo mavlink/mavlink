@@ -19,6 +19,7 @@ parser.add_option("-f", "--follow",dest="follow", action='store_true', help="kee
 parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
 parser.add_option("-q", "--quiet", dest="quiet", action='store_true', help="don't display packets")
 parser.add_option("-o", "--output", default=None, help="output matching packets to give file")
+parser.add_option("-p", "--parms",  action='store_true', help="preserve parameters in output with -o")
 parser.add_option("--types",  default=None, help="types of messages (comma separated)")
 parser.add_option("--dialect",  default="ardupilotmega", help="MAVLink dialect")
 parser.add_option("--zero-time-base",  action='store_true', help="use Z time base for DF logs")
@@ -39,16 +40,33 @@ mlog = mavutil.mavlink_connection(filename, planner_format=opts.planner,
 
 output = None
 if opts.output:
-    output = mavutil.mavlogfile(opts.output, write=True)
+    output = open(opts.output, mode='wb')
 
 types = opts.types
 if types is not None:
     types = types.split(',')
+
+ext = os.path.splitext(filename)[1]
+isbin = ext in ['.bin', '.BIN']
+islog = ext in ['.log', '.LOG']
     
 while True:
-    m = mlog.recv_match(condition=opts.condition, blocking=opts.follow)
+    m = mlog.recv_match(blocking=opts.follow)
     if m is None:
         break
+    if output is not None:
+        if (isbin or islog) and m.get_type() == "FMT":
+            output.write(m.get_msgbuf())
+            continue
+        if (isbin or islog) and (m.get_type() == "PARM" and opts.parms):
+            output.write(m.get_msgbuf())
+            continue
+        if m.get_type() == 'PARAM_VALUE' and opts.parms:
+            timestamp = getattr(m, '_timestamp', None)
+            output.write(struct.pack('>Q', timestamp*1.0e6) + m.get_msgbuf())
+            continue
+    if not mavutil.evaluate_condition(opts.condition, mlog.messages):
+        continue
 
     if types is not None and m.get_type() not in types:
         continue
@@ -58,7 +76,8 @@ while True:
         if not timestamp:
             timestamp = last_timestamp
         last_timestamp = timestamp
-        output.write(struct.pack('>Q', timestamp*1.0e6))
+        if not (isbin or islog):
+            output.write(struct.pack('>Q', timestamp*1.0e6))
         output.write(m.get_msgbuf())
     if opts.quiet:
         continue

@@ -27,21 +27,41 @@ def process(filename):
     mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps,
                                       robust_parsing=opts.robust)
 
+
+    ext = os.path.splitext(filename)[1]
+    isbin = ext in ['.bin', '.BIN']
+    islog = ext in ['.log', '.LOG']
     output = None
     count = 1
     dirname = os.path.dirname(filename)
 
+    if isbin or islog:
+        extension = "bin"
+    else:
+        extension = "tlog"
+
+    file_header = ''
+
     while True:
-        m = mlog.recv_match(condition=opts.condition)
+        m = mlog.recv_match()
         if m is None:
             break
+        if (isbin or islog) and m.get_type() in ["FMT", "PARM"]:
+            file_header += m.get_msgbuf()
+        if m.get_type() == 'PARAM_VALUE':
+            timestamp = getattr(m, '_timestamp', None)
+            file_header += struct.pack('>Q', timestamp*1.0e6) + m.get_msgbuf()
+            
+        if not mavutil.evaluate_condition(opts.condition, mlog.messages):
+            continue
 
         if mlog.flightmode.upper() == opts.mode.upper():
             if output is None:
-                path = os.path.join(dirname, "%s%u.tlog" % (opts.mode, count))
+                path = os.path.join(dirname, "%s%u.%s" % (opts.mode, count, extension))
                 count += 1
                 print("Creating %s" % path)
-                output = mavutil.mavlogfile(path, write=True)
+                output = open(path, mode='wb')
+                output.write(file_header)
         else:
             if output is not None:
                 output.close()
@@ -49,7 +69,8 @@ def process(filename):
             
         if output and m.get_type() != 'BAD_DATA':
             timestamp = getattr(m, '_timestamp', None)
-            output.write(struct.pack('>Q', timestamp*1.0e6))
+            if not isbin:
+                output.write(struct.pack('>Q', timestamp*1.0e6))
             output.write(m.get_msgbuf())
 
 for filename in args:
