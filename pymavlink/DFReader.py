@@ -103,6 +103,7 @@ class DFReader(object):
         self.px4_timestamps = False
         self.px4_timebase = 0
         self.timestamp = 0
+        self.verbose = False
         
     def _rewind(self):
         '''reset counters on rewind'''
@@ -291,24 +292,30 @@ class DFReader_binary(DFReader):
             return None
             
         hdr = self.data[self.offset:self.offset+3]
-        while (ord(hdr[0]) != self.HEAD1 or ord(hdr[1]) != self.HEAD2):
-            # message corrupt, find next correct message
-            if (self.remaining >= 3):
-                self.offset += 1
-                self.remaining -= 1
-                hdr = self.data[self.offset:self.offset+3]
-            else:
+        skip_bytes = 0
+        # skip over bad messages
+        while (ord(hdr[0]) != self.HEAD1 or ord(hdr[1]) != self.HEAD2 or ord(hdr[2]) not in self.formats):
+            skip_bytes += 1
+            self.offset += 1
+            if len(self.data) - self.offset < 3:
                 return None
+            hdr = self.data[self.offset:self.offset+3]
         msg_type = ord(hdr[2])
+        if skip_bytes != 0:
+            print("Skipped %u bad bytes in log" % skip_bytes)
 
         self.offset += 3
         self.remaining -= 3
 
         if not msg_type in self.formats:
+            if self.verbose:
+                print("unknown message type %02x" % msg_type)
             raise Exception("Unknown message type %02x" % msg_type)
         fmt = self.formats[msg_type]
         if self.remaining < fmt.len-3:
             # out of data - can often happen half way through a message
+            if self.verbose:
+                print("out of data")
             return None
         body = self.data[self.offset:self.offset+(fmt.len-3)]
         try:
