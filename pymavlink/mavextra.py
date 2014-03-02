@@ -798,3 +798,42 @@ def armed(HEARTBEAT):
     if HEARTBEAT.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED:
         return 1
     return 0
+
+def rotation_df(ATT):
+    '''return the current DCM rotation matrix'''
+    r = Matrix3()
+    r.from_euler(radians(ATT.Roll), radians(ATT.Pitch), radians(ATT.Yaw))
+    return r
+
+def rotation2(AHRS2):
+    '''return the current DCM rotation matrix'''
+    r = Matrix3()
+    r.from_euler(AHRS2.roll, AHRS2.pitch, AHRS2.yaw)
+    return r
+
+def earth_accel2(RAW_IMU,ATTITUDE):
+    '''return earth frame acceleration vector from AHRS2'''
+    r = rotation2(ATTITUDE)
+    accel = Vector3(RAW_IMU.xacc, RAW_IMU.yacc, RAW_IMU.zacc) * 9.81 * 0.001
+    return r * accel
+
+def earth_accel_df(IMU,ATT):
+    '''return earth frame acceleration vector from df log'''
+    r = rotation_df(ATT)
+    accel = Vector3(IMU.AccX, IMU.AccY, IMU.AccZ)
+    return r * accel
+
+def earth_accel2_df(IMU,IMU2,ATT):
+    '''return earth frame acceleration vector from df log'''
+    r = rotation_df(ATT)
+    accel1 = Vector3(IMU.AccX, IMU.AccY, IMU.AccZ)
+    accel2 = Vector3(IMU2.AccX, IMU2.AccY, IMU2.AccZ)
+    accel = 0.5 * (accel1 + accel2)
+    return r * accel
+
+def gps_velocity_df(GPS):
+    '''return GPS velocity vector'''
+    vx = GPS.Spd * cos(radians(GPS.GCrs))
+    vy = GPS.Spd * sin(radians(GPS.GCrs))
+    return Vector3(vx, vy, GPS.VZ)
+
