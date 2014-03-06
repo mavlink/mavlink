@@ -48,6 +48,8 @@ def process(filename):
             break
         if (isbin or islog) and m.get_type() in ["FMT", "PARM"]:
             file_header += m.get_msgbuf()
+        if (isbin or islog) and m.get_type() == 'MSG' and m.Message.startswith("Ardu"):
+            file_header += m.get_msgbuf()
         if m.get_type() == 'PARAM_VALUE':
             timestamp = getattr(m, '_timestamp', None)
             file_header += struct.pack('>Q', timestamp*1.0e6) + m.get_msgbuf()
