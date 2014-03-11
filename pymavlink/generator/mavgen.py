@@ -83,22 +83,19 @@ def mavgen(opts, args) :
     # Convert language option to lowercase and validate
     opts.language = opts.language.lower()
     if opts.language == 'python':
-        import mavgen_python
+        from . import mavgen_python
         mavgen_python.generate(opts.output, xml)
     elif opts.language == 'c':
-        try:
-            import mavgen_c
-        except Exception:
-            from pymavlink.generator import mavgen_c
+        from . import mavgen_c
         mavgen_c.generate(opts.output, xml)
     elif opts.language == 'wlua':
-        import mavgen_wlua
+        from . import mavgen_wlua
         mavgen_wlua.generate(opts.output, xml)
     elif opts.language == 'cs':
-        import mavgen_cs
+        from . import mavgen_cs
         mavgen_cs.generate(opts.output, xml)
     elif opts.language == 'javascript':
-        import mavgen_javascript
+        from . import mavgen_javascript
         mavgen_javascript.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
@@ -127,13 +124,18 @@ def mavgen_python_dialect(dialect, wire_protocol):
         if not os.path.exists(xml):
             xml = os.path.join(mdef, 'v1.0', dialect + '.xml')
     opts = Opts(wire_protocol, py)
-    import StringIO
-
-    # throw away stdout while generating
-    stdout_saved = sys.stdout
-    sys.stdout = StringIO.StringIO()
+    
+    # Obtain StringIO module dependent on current Python version
     try:
-        xml = os.path.relpath(xml)
+        from io import StringIO
+    except Exception:
+        from StringIO import StringIO
+
+    # Throw away stdout while generating
+    stdout_saved = sys.stdout
+    sys.stdout = StringIO()
+    try:
+        xml = os.path.abspath(xml)
         mavgen( opts, [xml] )
     except Exception:
         sys.stdout = stdout_saved

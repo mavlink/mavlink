@@ -1,45 +1,95 @@
 ## MAVLink ##
 
-*   Website: http://qgroundcontrol.org/mavlink/
-*   Source: https://github.com/mavlink/mavlink
-*   Mailing list: [Google Groups](http://groups.google.com/group/mavlink)
+  * Website: http://qgroundcontrol.org/mavlink/
+  * Source: https://github.com/mavlink/mavlink
+  * Mailing list: [Google Groups](https://groups.google.com/group/mavlink)
 
 MAVLink -- Micro Air Vehicle Message Marshalling Library.
 
-This is a library for lightweight communication between Micro Air Vehicles (swarm) and/or ground control stations.
-It serializes C-structs for serial channels and can be used with any type of radio modem.
+This is a library for lightweight communication between Micro Air Vehicles (swarm) and/or ground control stations. It allows for defining messages within XML files, which then are converted into appropriate source code for different languages. These XML files are called dialects, most of which build on the *common* dialect provided in `common.xml`.
 
-Messages definitions are created in XML, and then converted into C header files.
+The MAVLink protocol performs byte-level serialization and so is appropriate for use with any type of radio modem.
 
-### Generating Headers ###
+This repository is largely Python scripts that convert XML files into language-specific libraries. There are additional Python scripts providing examples and utilities for working with MAVLink data. These scripts, as well as the generated Python code for MAVLink dialects, require Python 2.7 or greater.
 
-Header files can be generated either with mavgen, or within QGroundControl.
+Note that there are two incompatible versions of the MAVLink protocol: v0.9 and v1.0. Most programs, including [QGroundControl](https://github.com/mavlink/qgroundcontrol), have switched over to v1.0. The v0.9 protocol is **DEPRECATED** and should only be used to maintain backwards compatibility where necessary.
 
-##### With mavgen  #####
+### Requirements ###
+  * Python 2.7+
+    * Tkinter (if GUI functionality is desired)
 
-mavgen is a header generation tool written in python, which is included with MAVLink. It can be used directly or via the *generator.py* GUI. To use the GUI, run:
+### Installation ###
+  1. Clone into a user-writable directory.
+  2. Add the repository directory to your `PYTHONPATH`
 
-    python mavgenerate.py
+### Generating Language-specific Source Files ###
 
-If you would rather use mavgen from the command line see *pymavlink\generator\mavgen.py*.
+Language-specific files can be generated via a Python script (recommended), Python GUI, or within QGroundControl (deprecated). If an XML file requires another one, they must be located in the same directory. Since most MAVLink dialects depend on the **common** messageset, it is recommend that you place your dialect with the others in `/message_definitions/v1.0/`.
 
-##### With QGroundControl #####
+Available languages are:
 
-To generate/update packets, select *mavlink_standard_message.xml* in the QGroundControl station settings view, select *mavlink/include* as the output directory and click on "Save and Generate". You will find the newly *generated/updated message_xx.h* files in the *mavlink/include/generated* folder.
+  * C
+  * C#
+  * JavaScript
+  * Lua
+  * Python, version 2.7+
+
+#### From a GUI (recommended) ####
+
+mavgenerate.py is a header generation tool GUI written in Python. It requires Tkinter, which is only included with Python on Windows, so it will need to be installed separately on non-Windows platforms. It can be run from anywhere using Python's -m argument:
+
+    $ python -m mavgenerate
+
+#### From the command line ####
+
+mavgen.py is a command-line interface for generating a language-specific MAVLink library. This is actually the backend used by `mavgenerate.py`. After the `mavlink` directory has been added to the Python path, it can be run by executing from the command line:
+
+    $ python -m pymavlink.generator.mavgen
+
+#### With QGroundControl (deprecated) ####
+
+To generate/update packets, select `mavlink_standard_message.xml` in the QGroundControl station settings view, select `mavlink/include` as the output directory and click on "Save and Generate". You will find the newly generated `mavlink_msg_*.h` files in the `mavlink/include/generated` folder.
 
 ### Usage ###
 
+Using the generated MAVLink dialect libraries varies depending on the language, with language-specific details below:
+
+#### C ####
 To use MAVLink, include the *mavlink.h* header file in your project:
 
     #include <mavlink.h>
-    
+
 Do not include the individual message files. In some cases you will have to add the main folder to the include search path as well. To be safe, we recommend these flags:
 
-    gcc -I mavlink/include -I mavlink/include/<your message set, e.g. common>
+    $ gcc -I mavlink/include -I mavlink/include/<your message set, e.g. common>
+
+The C MAVLink library utilizies a channels metaphor to allow for simultaneous processing of multiple MAVLink streams in the same program. It is therefore important to use the correct channel for each operation as all receiving and transmitting functions provided by MAVLink require a channel. If only one MAVLink stream exists, channel 0 should be used by using the `MAVLINK_COMM_0` constant.
+
+##### Receiving ######
+MAVLink reception is then done using `mavlink_helpers::mavlink_parse_char(...)`.
+
+##### Transmitting #####
+Transmitting can be done by using the `mavlink_msg_*_pack()` function, where one is defined for every message. The packed message can then be serialized with `mavlink_helpers::mavlink_msg_to_send_buffer()` and then writing the resultant byte array out over the appropriate serial interface.
+
+It is possible to simplify the above by writing wrappers around the transmitting/receiving code. A multi-byte writing macro can be defined, `MAVLINK_SEND_UART_BYTES(...)`, or a single-byte function can be defined, `comm_send_ch(...)`, that wrap the low-level driver for transmitting the data. If this is done, `MAVLINK_USE_CONVENIENCE_FUNCTIONS` must be defined.
+
+### Scripts/Examples ###
+This MAVLink library also comes with supporting libraries and scripts for using, manipulating, and parsing MAVLink streams within the pymavlink, pymavlink/tools, and pymavlink/examples directories.
+
+#### Requirements ####
+
+  * Python 2.7+
+  * mavlink repository folder in `PYTHONPATH`
+  * Write access to the entire `mavlink` folder.
+  * Your dialect's XML file is in `message_definitions/*/`
+
+Running these scripts can be run by listing the folder heirarchy for the script. The following code runs `mavlogdump.py` in `/pymavlink/tools/` on the recorded MAVLink stream `test_run.mavlink`:
+
+    $ python -m pymavlink.tools.mavlogdump test_run.mavlink
 
 ### License ###
 
-MAVLink is licensed under the terms of the Lesser General Public License of the Free Software Foundation (LGPL). As MAVLink is a header-only library, compiling an application with it is considered "using the libary", not a derived work. MAVLink can therefore be used without limits in any closed-source application without publishing the source code of the closed-source application.
+MAVLink is licensed under the terms of the Lesser General Public License (version 3) of the Free Software Foundation (LGPLv3). The C-language version of MAVLink is a header-only library, and as such compiling an application with it is considered "using the library", not a derived work. MAVLink can therefore be used without limits in any closed-source application without publishing the source code of the closed-source application.
 
 See the *COPYING* file for more info.
 

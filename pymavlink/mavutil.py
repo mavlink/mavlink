@@ -11,11 +11,11 @@ import socket, math, struct, time, os, fnmatch, array, sys, errno
 # adding these extra imports allows pymavlink to be used directly with pyinstaller
 # without having complex spec files
 import json
-from pymavlink.dialects.v10 import ardupilotmega
+from .dialects.v10 import ardupilotmega
 
 # these imports allow for mavgraph and mavlogdump to use maths expressions more easily
 from math import *
-from mavextra import *
+from .mavextra import *
 
 '''
 Support having a $HOME/.pymavlink/mavextra.py for extra graphing functions
@@ -26,7 +26,7 @@ if home is not None:
     if os.path.exists(extra):
         import imp
         mavuser = imp.load_source('pymavlink.mavuser', extra)
-        from pymavlink.mavuser import *
+        from .mavuser import *
 
 mavlink = None
 
@@ -71,7 +71,7 @@ def set_dialect(dialect):
     For example, set_dialect("ardupilotmega")
     '''
     global mavlink, current_dialect
-    from generator import mavparse
+    from .generator import mavparse
     if mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
         wire_protocol = mavparse.PROTOCOL_1_0
         modname = "pymavlink.dialects.v10." + dialect
@@ -83,7 +83,7 @@ def set_dialect(dialect):
         mod = __import__(modname)
     except Exception:
         # auto-generate the dialect module
-        from generator.mavgen import mavgen_python_dialect
+        from .generator.mavgen import mavgen_python_dialect
         mavgen_python_dialect(dialect, wire_protocol)
         mod = __import__(modname)
     components = modname.split('.')
@@ -144,15 +144,23 @@ class mavfile(object):
     def auto_mavlink_version(self, buf):
         '''auto-switch mavlink protocol version'''
         global mavlink
-        if len(buf) == 0:
-            return
-        if not ord(buf[0]) in [ 85, 254 ]:
+        
+        # Make sure we have the right datatype for buf[0]
+        intbuf = buf[0]
+        if type(intbuf) is str:
+            intbuf = ord(buf[0])
+        
+        # Make sure that the MAVLink message starts with a valid start byte
+        if not intbuf in [ 85, 254 ]:
             return
         self.first_byte = False
-        if self.WIRE_PROTOCOL_VERSION == "0.9" and ord(buf[0]) == 254:
+        
+        # If it's 254, then it should be MAVLink version 1.0.
+        if self.WIRE_PROTOCOL_VERSION == "0.9" and intbuf == 254:
             self.WIRE_PROTOCOL_VERSION = "1.0"
             set_dialect(current_dialect)
-        elif self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
+        # Otherwise if it's 85, then it should be version 0.9
+        elif self.WIRE_PROTOCOL_VERSION == "1.0" and intbuf == 85:
             self.WIRE_PROTOCOL_VERSION = "0.9"
             set_dialect(current_dialect)
             os.environ['MAVLINK09'] = '1'
@@ -957,7 +965,7 @@ def mavlink_connection(device, baud=115200, source_system=255,
 
     if device.lower().endswith('.bin'):
         # support dataflash logs
-        from pymavlink import DFReader
+        from . import DFReader
         m = DFReader.DFReader_binary(device, zero_time_base=zero_time_base)
         global mavfile_global
         mavfile_global = m
@@ -965,7 +973,7 @@ def mavlink_connection(device, baud=115200, source_system=255,
 
     if device.endswith('.log'):
         # support dataflash text logs
-        from pymavlink import DFReader
+        from . import DFReader
         if DFReader.DFReader_is_text_log(device):
             global mavfile_global
             m = DFReader.DFReader_text(device, zero_time_base=zero_time_base)
