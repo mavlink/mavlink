@@ -38,9 +38,9 @@ class MAVWPLoader(object):
 
     def add(self, w, comment=''):
         '''add a waypoint'''
-	w = copy.copy(w)
-	if comment:
-		w.comment = comment
+        w = copy.copy(w)
+        if comment:
+            w.comment = comment
         w.seq = self.count()
         self.wpoints.append(w)
         self.last_change = time.time()
@@ -262,12 +262,12 @@ class MAVWPLoader(object):
         f = open(filename, mode='w')
         f.write("QGC WPL 110\n")
         for w in self.wpoints:
-	    if getattr(w, 'comment', None):
-	        f.write("# %s\n" % w.comment)
-            f.write("%u\t%u\t%u\t%u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%u\n" % (
-                w.seq, w.current, w.frame, w.command,
-                w.param1, w.param2, w.param3, w.param4,
-                w.x, w.y, w.z, w.autocontinue))
+            if getattr(w, 'comment', None):
+                f.write("# %s\n" % w.comment)
+                f.write("%u\t%u\t%u\t%u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%u\n" % (
+                    w.seq, w.current, w.frame, w.command,
+                    w.param1, w.param2, w.param3, w.param4,
+                    w.x, w.y, w.z, w.autocontinue))
         f.close()
 
     def polygon(self, done=None):
