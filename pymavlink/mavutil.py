@@ -442,6 +442,8 @@ class mavfile(object):
             map = mode_mapping_apm
         if mav_type == mavlink.MAV_TYPE_GROUND_ROVER:
             map = mode_mapping_rover
+        if mav_type == mavlink.MAV_TYPE_ANTENNA_TRACKER:
+            map = mode_mapping_tracker
         if map is None:
             return None
         inv_map = dict((a, b) for (b, a) in map.items())
@@ -1154,7 +1156,6 @@ mode_mapping_apm = {
     10 : 'AUTO',
     11 : 'RTL',
     12 : 'LOITER',
-    13 : 'TAKEOFF',
     14 : 'LAND',
     15 : 'GUIDED',
     16 : 'INITIALISING'
@@ -1184,6 +1185,12 @@ mode_mapping_rover = {
     16 : 'INITIALISING'
     }
 
+mode_mapping_tracker = {
+    0 : 'MANUAL',
+    10 : 'AUTO',
+    16 : 'INITIALISING'
+    }
+
 def mode_string_v10(msg):
     '''mode string for 1.0 protocol, from heartbeat'''
     if not msg.base_mode & mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED:
@@ -1197,6 +1204,9 @@ def mode_string_v10(msg):
     if msg.type == mavlink.MAV_TYPE_GROUND_ROVER:
         if msg.custom_mode in mode_mapping_rover:
             return mode_mapping_rover[msg.custom_mode]
+    if msg.type == mavlink.MAV_TYPE_ANTENNA_TRACKER:
+        if msg.custom_mode in mode_mapping_tracker:
+            return mode_mapping_tracker[msg.custom_mode]
     return "Mode(%u)" % msg.custom_mode
 
 def mode_string_apm(mode_number):
