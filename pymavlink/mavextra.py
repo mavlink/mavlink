@@ -444,7 +444,12 @@ def pitch_sim(SIMSTATE, GPS_RAW):
 
 def distance_two(GPS_RAW1, GPS_RAW2):
     '''distance between two points'''
-    if hasattr(GPS_RAW1, 'cog'):
+    if hasattr(GPS_RAW1, 'Lat'):
+        lat1 = radians(GPS_RAW1.Lat)
+        lat2 = radians(GPS_RAW2.Lat)
+        lon1 = radians(GPS_RAW1.Lng)
+        lon2 = radians(GPS_RAW2.Lng)
+    elif hasattr(GPS_RAW1, 'cog'):
         lat1 = radians(GPS_RAW1.lat)*1.0e-7
         lat2 = radians(GPS_RAW2.lat)*1.0e-7
         lon1 = radians(GPS_RAW1.lon)*1.0e-7
@@ -837,3 +842,9 @@ def gps_velocity_df(GPS):
     vy = GPS.Spd * sin(radians(GPS.GCrs))
     return Vector3(vx, vy, GPS.VZ)
 
+def distance_gps2(GPS, GPS2):
+    '''distance between two points'''
+    if GPS.TimeMS != GPS2.TimeMS:
+        # reject messages not time aligned
+        return None
+    return distance_two(GPS, GPS2)
