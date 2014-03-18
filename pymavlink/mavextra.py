@@ -848,3 +848,52 @@ def distance_gps2(GPS, GPS2):
         # reject messages not time aligned
         return None
     return distance_two(GPS, GPS2)
+
+
+radius_of_earth = 6378100.0 # in meters
+
+def wrap_valid_longitude(lon):
+  ''' wrap a longitude value around to always have a value in the range
+      [-180, +180) i.e 0 => 0, 1 => 1, -1 => -1, 181 => -179, -181 => 179
+  '''
+  return (((lon + 180.0) % 360.0) - 180.0)
+
+def gps_newpos(lat, lon, bearing, distance):
+	'''extrapolate latitude/longitude given a heading and distance
+	thanks to http://www.movable-type.co.uk/scripts/latlong.html
+	'''
+        import math
+	lat1 = math.radians(lat)
+	lon1 = math.radians(lon)
+	brng = math.radians(bearing)
+	dr = distance/radius_of_earth
+
+	lat2 = math.asin(math.sin(lat1)*math.cos(dr) +
+                         math.cos(lat1)*math.sin(dr)*math.cos(brng))
+	lon2 = lon1 + math.atan2(math.sin(brng)*math.sin(dr)*math.cos(lat1), 
+                                 math.cos(dr)-math.sin(lat1)*math.sin(lat2))
+	return (math.degrees(lat2), wrap_valid_longitude(math.degrees(lon2)))
+
+def gps_offset(lat, lon, east, north):
+	'''return new lat/lon after moving east/north
+	by the given number of meters'''
+        import math
+	bearing = math.degrees(math.atan2(east, north))
+	distance = math.sqrt(east**2 + north**2)
+	return gps_newpos(lat, lon, bearing, distance)
+
+ekf_home = None
+
+def ekf1_pos(EKF1):
+    '''calculate EKF position when EKF disabled'''
+    global ekf_home
+    from pymavlink import mavutil
+    self = mavutil.mavfile_global
+    if ekf_home is None:
+        if not 'GPS' in self.messages or self.messages['GPS'].Status != 3:
+            return None
+        ekf_home = self.messages['GPS']
+        (ekf_home.Lat, ekf_home.Lng) = gps_offset(ekf_home.Lat, ekf_home.Lng, -EKF1.PE, -EKF1.PN)
+    (lat,lon) = gps_offset(ekf_home.Lat, ekf_home.Lng, EKF1.PE, EKF1.PN)
+    return (lat, lon)
+
