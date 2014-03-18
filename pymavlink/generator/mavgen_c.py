@@ -307,6 +307,42 @@ ${{array_fields:	mav_array_memcpy(packet.${name}, ${name}, sizeof(${type})*${arr
 #endif
 }
 
+#if MAVLINK_MSG_ID_${name}_LEN <= MAVLINK_MAX_PAYLOAD_LEN
+/*
+  This varient of _send() can be used to save stack space by re-using
+  memory from the receive buffer.  The caller provides a
+  mavlink_message_t which is the size of a full mavlink message. This
+  is usually the receive buffer for the channel, and allows a reply to an
+  incoming message with minimum stack space usage.
+ */
+static inline void mavlink_msg_${name_lower}_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan, ${{arg_fields: ${array_const}${type} ${array_prefix}${name},}})
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+	char *buf = (char *)msgbuf;
+${{scalar_fields:	_mav_put_${type}(buf, ${wire_offset}, ${putname});
+}}
+${{array_fields:	_mav_put_${type}_array(buf, ${wire_offset}, ${name}, ${array_length});
+}}
+#if MAVLINK_CRC_EXTRA
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}, buf, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}, buf, MAVLINK_MSG_ID_${name}_LEN);
+#endif
+#else
+	mavlink_${name_lower}_t *packet = (mavlink_${name_lower}_t *)msgbuf;
+${{scalar_fields:	packet->${name} = ${putname};
+}}
+${{array_fields:	mav_array_memcpy(packet->${name}, ${name}, sizeof(${type})*${array_length});
+}}
+#if MAVLINK_CRC_EXTRA
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}, (const char *)packet, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}, (const char *)packet, MAVLINK_MSG_ID_${name}_LEN);
+#endif
+#endif
+}
+#endif
+
 #endif
 
 // MESSAGE ${name} UNPACKING
