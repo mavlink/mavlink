@@ -119,6 +119,7 @@ class DFReader(object):
         self.px4_timebase = 0
         self.timestamp = 0
         self.verbose = False
+        self.params = {}
         
     def _rewind(self):
         '''reset counters on rewind'''
@@ -256,6 +257,8 @@ class DFReader(object):
                 self.flightmode = mavutil.mode_string_apm(m.ModeNum)
             else:
                 self.flightmode = mavutil.mode_string_acm(m.Mode)
+        if type == 'PARM' and getattr(m, 'Name', None) is not None:
+            self.params[m.Name] = m.Value
         self._set_time(m)
 
     def recv_match(self, condition=None, type=None, blocking=False):
