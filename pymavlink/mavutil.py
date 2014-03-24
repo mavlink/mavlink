@@ -687,7 +687,10 @@ class mavserial(mavfile):
             waiting = self.port.inWaiting()
             if waiting < n:
                 n = waiting
-        return self.port.read(n)
+        ret = self.port.read(n)
+        if len(ret) == 0:
+            time.sleep(0.1)
+        return ret
 
     def write(self, buf):
         try:
