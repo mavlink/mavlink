@@ -183,8 +183,7 @@ def process_file(filename):
     while True:
         msg = mlog.recv_match(opts.condition)
         if msg is None: break
-        tdays = (msg._timestamp - time.timezone) / (24 * 60 * 60)
-        tdays += 719163 # pylab wants it since 0001-01-01
+        tdays = matplotlib.dates.date2num(datetime.datetime.fromtimestamp(msg._timestamp))
         add_data(tdays, msg, mlog.messages)
 
 if len(filenames) == 0:
