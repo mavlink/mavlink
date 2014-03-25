@@ -285,7 +285,7 @@ class MAVLink(object):
                 '''send a MAVLink message'''
                 buf = mavmsg.pack(self)
                 self.file.write(buf)
-                self.seq = (self.seq + 1) % 255
+                self.seq = (self.seq + 1) % 256
                 self.total_packets_sent += 1
                 self.total_bytes_sent += len(buf)
                 if self.send_callback:
