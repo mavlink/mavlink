@@ -224,7 +224,7 @@ class mavfile(object):
             if seq != seq2 and last_seq != -1:
                 diff = (seq2 - seq) % 256
                 self.mav_loss += diff
-                #print("lost %u seq=%u seq2=%u src_system=%u" % (diff, seq, seq2, src_system))
+                #print("lost %u seq=%u seq2=%u last_seq=%u src_system=%u %s" % (diff, seq, seq2, last_seq, src_system, msg.get_type()))
             self.last_seq[src_system] = seq2
             self.mav_count += 1
         
@@ -295,7 +295,10 @@ class mavfile(object):
                 if blocking:
                     for hook in self.idle_hooks:
                         hook(self)
-                    time.sleep(0.01)
+                    if timeout is None:
+                        time.sleep(0.01)
+                    else:
+                        time.sleep(timeout/2)
                     continue
                 return None
             if type is not None and not m.get_type() in type:
@@ -689,7 +692,7 @@ class mavserial(mavfile):
                 n = waiting
         ret = self.port.read(n)
         if len(ret) == 0:
-            time.sleep(0.1)
+            time.sleep(0.01)
         return ret
 
     def write(self, buf):
