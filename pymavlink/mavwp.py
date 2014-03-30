@@ -302,7 +302,8 @@ class MAVWPLoader(object):
                                                         mavutil.mavlink.MAV_CMD_NAV_LOITER_TURNS,
                                                         mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
                                                         mavutil.mavlink.MAV_CMD_NAV_LAND,
-                                                        mavutil.mavlink.MAV_CMD_NAV_TAKEOFF]:
+                                                        mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+                                                        mavutil.mavlink.MAV_CMD_NAV_SPLINE_WAYPOINT]:
                 points.append((w.x, w.y))
         return points
 
