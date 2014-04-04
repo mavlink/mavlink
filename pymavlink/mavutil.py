@@ -1248,3 +1248,105 @@ class x25crc(object):
             accum = (accum>>8) ^ (tmp<<8) ^ (tmp<<3) ^ (tmp>>4)
             accum = accum & 0xFFFF
         self.crc = accum
+
+class MavlinkSerialPort():
+        '''an object that looks like a serial port, but
+        transmits using mavlink SERIAL_CONTROL packets'''
+        def __init__(self, portname, baudrate, devnum=0, timeout=3, debug=0):
+                from pymavlink import mavutil
+
+                self.baudrate = 0
+                self.timeout = timeout
+                self._debug = debug
+                self.buf = ''
+                self.port = devnum
+                self.debug("Connecting with MAVLink to %s ..." % portname)
+                self.mav = mavutil.mavlink_connection(portname, autoreconnect=True, baud=115200)
+                self.mav.wait_heartbeat()
+                self.debug("HEARTBEAT OK\n")
+                self.setBaudrate(baudrate)
+                self.debug("Locked serial device\n")
+
+        def debug(self, s, level=1):
+                '''write some debug text'''
+                if self._debug >= level:
+                        print(s)
+
+        def write(self, b):
+                '''write some bytes'''
+                from pymavlink import mavutil
+                self.debug("sending '%s' (0x%02x) of len %u\n" % (b, ord(b[0]), len(b)), 2)
+                while len(b) > 0:
+                        n = len(b)
+                        if n > 70:
+                                n = 70
+                        self.mav.mav.serial_control_send(self.port,
+                                                         mavutil.mavlink.SERIAL_CONTROL_FLAG_EXCLUSIVE |
+                                                         mavutil.mavlink.SERIAL_CONTROL_FLAG_RESPOND,
+                                                         0,
+                                                         0,
+                                                         n,
+                                                         b[:n])
+                        b = b[n:]
+
+        def _recv(self):
+                '''read some bytes into self.buf'''
+                from pymavlink import mavutil
+                start_time = time.time()
+                while time.time() < start_time + self.timeout:
+                        m = self.mav.recv_match(condition='SERIAL_CONTROL.count!=0',
+                                                type='SERIAL_CONTROL', blocking=False, timeout=0)
+                        if m is not None and m.count != 0:
+                                break
+                        self.mav.mav.serial_control_send(self.port,
+                                                         mavutil.mavlink.SERIAL_CONTROL_FLAG_EXCLUSIVE |
+                                                         mavutil.mavlink.SERIAL_CONTROL_FLAG_RESPOND,
+                                                         0,
+                                                         0,
+                                                         0, '')
+                        m = self.mav.recv_match(condition='SERIAL_CONTROL.count!=0',
+                                                type='SERIAL_CONTROL', blocking=True, timeout=0.01)
+                        if m is not None and m.count != 0:
+                                break
+                        time.sleep(0.01)
+                if m is not None:
+                        if self._debug > 2:
+                                print(m)
+                        self.buf += str(m.data[:m.count])
+
+        def read(self, n):
+                '''read some bytes'''
+                if len(self.buf) == 0:
+                        self._recv()
+                if len(self.buf) > 0:
+                        if n > len(self.buf):
+                                n = len(self.buf)
+                        ret = self.buf[:n]
+                        self.buf = self.buf[n:]
+                        self.debug("read 0x%x" % ord(ret), 2)
+                        return ret
+                return ''
+
+        def flushInput(self):
+                '''flush any pending input'''
+                self.buf = ''
+                saved_timeout = self.timeout
+                self.timeout = 0.5
+                self._recv()
+                self.timeout = saved_timeout
+                self.buf = ''
+                self.debug("flushInput")
+
+        def setBaudrate(self, baudrate):
+                '''set baudrate'''
+                from pymavlink import mavutil
+                if self.baudrate == baudrate:
+                        return
+                self.baudrate = baudrate
+                self.mav.mav.serial_control_send(self.port,
+                                                 mavutil.mavlink.SERIAL_CONTROL_FLAG_EXCLUSIVE,
+                                                 0,
+                                                 self.baudrate,
+                                                 0, '')
+                self.flushInput()
+                self.debug("Changed baudrate %u" % self.baudrate)
