@@ -1252,7 +1252,7 @@ class x25crc(object):
 class MavlinkSerialPort():
         '''an object that looks like a serial port, but
         transmits using mavlink SERIAL_CONTROL packets'''
-        def __init__(self, portname, baudrate, devnum=0, timeout=3, debug=0):
+        def __init__(self, portname, baudrate, devnum=0, devbaud=0, timeout=3, debug=0):
                 from pymavlink import mavutil
 
                 self.baudrate = 0
@@ -1261,10 +1261,11 @@ class MavlinkSerialPort():
                 self.buf = ''
                 self.port = devnum
                 self.debug("Connecting with MAVLink to %s ..." % portname)
-                self.mav = mavutil.mavlink_connection(portname, autoreconnect=True, baud=115200)
+                self.mav = mavutil.mavlink_connection(portname, autoreconnect=True, baud=baudrate)
                 self.mav.wait_heartbeat()
                 self.debug("HEARTBEAT OK\n")
-                self.setBaudrate(baudrate)
+                if devbaud != 0:
+                    self.setBaudrate(devbaud)
                 self.debug("Locked serial device\n")
 
         def debug(self, s, level=1):
@@ -1323,7 +1324,9 @@ class MavlinkSerialPort():
                                 n = len(self.buf)
                         ret = self.buf[:n]
                         self.buf = self.buf[n:]
-                        self.debug("read 0x%x" % ord(ret), 2)
+                        if self._debug >= 2:
+                            for b in ret:
+                                self.debug("read 0x%x" % ord(b), 2)
                         return ret
                 return ''
 
