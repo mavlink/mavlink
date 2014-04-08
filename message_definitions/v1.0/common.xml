@@ -410,11 +410,11 @@
                <entry value="4" name="MAV_FRAME_LOCAL_ENU">
                     <description>Local coordinate frame, Z-down (x: east, y: north, z: up)</description>
                </entry>
-               <entry value="5" name="MAV_FRAME_GLOBAL_SCALED">
-                   <description>Global coordinate frame, WGS84 coordinate system. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL). Lat / Lon are scaled * 1000 to avoid floating point accuracy limitations.</description>
+               <entry value="5" name="MAV_FRAME_GLOBAL_INT">
+                   <description>Global coordinate frame with some fields as scaled integers, WGS84 coordinate system. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL). Lat / Lon are scaled * 1E7 to avoid floating point accuracy limitations.</description>
                </entry>
-               <entry value="6" name="MAV_FRAME_GLOBAL_RELATIVE_ALT_SCALED">
-                   <description>Global coordinate frame, WGS84 coordinate system, relative altitude over ground with respect to the home position. First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at the altitude of the home location. Lat / Lon are scaled * 1000 to avoid floating point accuracy limitations.</description>
+               <entry value="6" name="MAV_FRAME_GLOBAL_RELATIVE_ALT_INT">
+                   <description>Global coordinate frame with some fields as scaled integers, WGS84 coordinate system, relative altitude over ground with respect to the home position. First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at the altitude of the home location. Lat / Lon are scaled * 1E7 to avoid floating point accuracy limitations.</description>
                </entry>
           </enum>
           <enum name="MAVLINK_DATA_STREAM_TYPE">
@@ -436,6 +436,45 @@
                <entry name="MAVLINK_DATA_STREAM_IMG_PNG">
                     <description/>
                </entry>
+          </enum>
+          <!-- fenced mode enums -->
+          <enum name="FENCE_ACTION">
+              <entry name="FENCE_ACTION_NONE" value="0">
+                  <description>Disable fenced mode</description>
+              </entry>
+              <entry name="FENCE_ACTION_GUIDED" value="1">
+                  <description>Switched to guided mode to return point (fence point 0)</description>
+              </entry>
+              <entry name="FENCE_ACTION_REPORT" value="2">
+                  <description>Report fence breach, but don't take action</description>
+              </entry>
+              <entry name="FENCE_ACTION_GUIDED_THR_PASS" value="3">
+                  <description>Switched to guided mode to return point (fence point 0) with manual throttle control</description>
+              </entry>
+          </enum>
+
+          <enum name="FENCE_BREACH">
+              <entry name="FENCE_BREACH_NONE" value="0">
+                  <description>No last fence breach</description>
+              </entry>
+              <entry name="FENCE_BREACH_MINALT" value="1">
+                  <description>Breached minimum altitude</description>
+              </entry>
+              <entry name="FENCE_BREACH_MAXALT" value="2">
+                  <description>Breached maximum altitude</description>
+              </entry>
+              <entry name="FENCE_BREACH_BOUNDARY" value="3">
+                  <description>Breached fence boundary</description>
+              </entry>
+          </enum>
+          <!-- Camera Mount mode Enumeration -->
+          <enum name="MAV_MOUNT_MODE">
+              <description>Enumeration of possible mount operation modes</description>
+              <entry name="MAV_MOUNT_MODE_RETRACT" value="0"><description>Load and keep safe position (Roll,Pitch,Yaw) from permant memory and stop stabilization</description></entry>
+              <entry name="MAV_MOUNT_MODE_NEUTRAL" value="1"><description>Load and keep neutral position (Roll,Pitch,Yaw) from permanent memory.</description></entry>
+              <entry name="MAV_MOUNT_MODE_MAVLINK_TARGETING" value="2"><description>Load neutral position and start MAVLink Roll,Pitch,Yaw control with stabilization</description></entry>
+              <entry name="MAV_MOUNT_MODE_RC_TARGETING" value="3"><description>Load neutral position and start RC Roll,Pitch,Yaw control with stabilization</description></entry>
+              <entry name="MAV_MOUNT_MODE_GPS_POINT" value="4"><description>Load neutral position and start to point to Lat,Lon,Alt</description></entry>
           </enum>
           <enum name="MAV_CMD">
                <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data.</description>
@@ -708,6 +747,85 @@
                     <param index="5">x the location of the fixed ROI (see MAV_FRAME)</param>
                     <param index="6">y</param>
                     <param index="7">z</param>
+               </entry>
+
+               <!-- Camera Controller Mission Commands Enumeration -->
+               <entry name="MAV_CMD_DO_DIGICAM_CONFIGURE" value="202">
+                   <description>Mission command to configure an on-board camera controller system.</description>
+                   <param index="1">Modes: P, TV, AV, M, Etc</param>
+                   <param index="2">Shutter speed: Divisor number for one second</param>
+                   <param index="3">Aperture: F stop number</param>
+                   <param index="4">ISO number e.g. 80, 100, 200, Etc</param>
+                   <param index="5">Exposure type enumerator</param>
+                   <param index="6">Command Identity</param>
+                   <param index="7">Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)</param>
+               </entry>
+
+               <entry name="MAV_CMD_DO_DIGICAM_CONTROL" value="203">
+                   <description>Mission command to control an on-board camera controller system.</description>
+                   <param index="1">Session control e.g. show/hide lens</param>
+                   <param index="2">Zoom's absolute position</param>
+                   <param index="3">Zooming step value to offset zoom from the current position</param>
+                   <param index="4">Focus Locking, Unlocking or Re-locking</param>
+                   <param index="5">Shooting Command</param>
+                   <param index="6">Command Identity</param>
+                   <param index="7">Empty</param>
+               </entry>
+
+               <!-- Camera Mount Mission Commands Enumeration -->
+               <entry name="MAV_CMD_DO_MOUNT_CONFIGURE" value="204">
+                   <description>Mission command to configure a camera or antenna mount</description>
+                   <param index="1">Mount operation mode (see MAV_MOUNT_MODE enum)</param>
+                   <param index="2">stabilize roll? (1 = yes, 0 = no)</param>
+                   <param index="3">stabilize pitch? (1 = yes, 0 = no)</param>
+                   <param index="4">stabilize yaw? (1 = yes, 0 = no)</param>
+                   <param index="5">Empty</param>
+                   <param index="6">Empty</param>
+                   <param index="7">Empty</param>
+               </entry>
+
+               <entry name="MAV_CMD_DO_MOUNT_CONTROL" value="205">
+                   <description>Mission command to control a camera or antenna mount</description>
+                   <param index="1">pitch or lat in degrees, depending on mount mode.</param>
+                   <param index="2">roll or lon in degrees depending on mount mode</param>
+                   <param index="3">yaw or alt (in meters) depending on mount mode</param>
+                   <param index="4">reserved</param>
+                   <param index="5">reserved</param>
+                   <param index="6">reserved</param>
+                   <param index="7">MAV_MOUNT_MODE enum value</param>
+               </entry>
+
+               <entry name="MAV_CMD_DO_SET_CAM_TRIGG_DIST" value="206">
+                   <description>Mission command to set CAM_TRIGG_DIST for this flight</description>
+                   <param index="1">Camera trigger distance (meters)</param>
+                   <param index="2">Empty</param>
+                   <param index="3">Empty</param>
+                   <param index="4">Empty</param>
+                   <param index="5">Empty</param>
+                   <param index="6">Empty</param>
+                   <param index="7">Empty</param>
+               </entry>
+
+               <entry name="MAV_CMD_DO_FENCE_ENABLE" value="207">
+                   <description>Mission command to enable the geofence</description>
+                   <param index="1">enable? (0=disable, 1=enable)</param>
+                   <param index="2">Empty</param>
+                   <param index="3">Empty</param>
+                   <param index="4">Empty</param>
+                   <param index="5">Empty</param>
+                   <param index="6">Empty</param>
+                   <param index="7">Empty</param>
+               </entry>
+
+               <entry name="MAV_CMD_DO_PARACHUTE" value="208">
+                   <description>Mission command to trigger a parachute</description>
+                   <param index="1">action (0=disable, 1=enable, 2=release, for some systems see PARACHUTE_ACTION enum, not in general message set.)</param>
+                   <param index="2">Empty</param>
+                   <param index="3">Empty</param>
+                   <param index="4">Empty</param>
+                   <param index="5">Empty</param>
+                   <param index="6">Empty</param>
+                   <param index="7">Empty</param>
                </entry>
 
               <entry value="220" name="MAV_CMD_DO_MOUNT_CONTROL_QUAT">
