@@ -1193,6 +1193,8 @@ mode_mapping_rover = {
 
 mode_mapping_tracker = {
     0 : 'MANUAL',
+    1 : 'STOP',
+    2 : 'SCAN',
     10 : 'AUTO',
     16 : 'INITIALISING'
     }
