@@ -51,7 +51,7 @@ class MAVParmDict(dict):
             print("Saved %u parameters to %s" % (count, filename))
 
 
-    def load(self, filename, wildcard='*', mav=None):
+    def load(self, filename, wildcard='*', mav=None, check=True):
         '''load parameters from a file'''
         try:
             f = open(filename, mode='r')
@@ -75,14 +75,20 @@ class MAVParmDict(dict):
             if not fnmatch.fnmatch(a[0].upper(), wildcard.upper()):
                 continue
             if mav is not None:
-                if a[0] not in self.keys():
-                    print("Unknown parameter %s" % a[0])
-                    continue
-                old_value = self.__getitem__(a[0])
-                if math.fabs(old_value - float(a[1])) > self.mindelta:
+                if check:
+                    if a[0] not in self.keys():
+                        print("Unknown parameter %s" % a[0])
+                        continue
+                    old_value = self.__getitem__(a[0])
+                    if math.fabs(old_value - float(a[1])) <= self.mindelta:
+                        count += 1
+                        continue
                     if self.mavset(mav, a[0], a[1]):
                         print("changed %s from %f to %f" % (a[0], old_value, float(a[1])))
-                    changed += 1
+                else:
+                    print("set %s to %f" % (a[0], float(a[1])))
+                    self.mavset(mav, a[0], a[1])
+                changed += 1
             else:
                 self.__setitem__(a[0], float(a[1]))
             count += 1
