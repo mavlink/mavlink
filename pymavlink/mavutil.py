@@ -1159,6 +1159,7 @@ mode_mapping_apm = {
     5 : 'FBWA',
     6 : 'FBWB',
     7 : 'CRUISE',
+    8 : 'AUTOTUNE',
     10 : 'AUTO',
     11 : 'RTL',
     12 : 'LOITER',
