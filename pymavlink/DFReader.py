@@ -311,8 +311,11 @@ class DFReader_binary(DFReader):
             
         hdr = self.data[self.offset:self.offset+3]
         skip_bytes = 0
+        skip_type = None
         # skip over bad messages
         while (ord(hdr[0]) != self.HEAD1 or ord(hdr[1]) != self.HEAD2 or ord(hdr[2]) not in self.formats):
+            if skip_type is None:
+                skip_type = (ord(hdr[0]), ord(hdr[1]), ord(hdr[2]))
             skip_bytes += 1
             self.offset += 1
             if len(self.data) - self.offset < 3:
@@ -320,7 +323,7 @@ class DFReader_binary(DFReader):
             hdr = self.data[self.offset:self.offset+3]
         msg_type = ord(hdr[2])
         if skip_bytes != 0:
-            print("Skipped %u bad bytes in log" % skip_bytes)
+            print("Skipped %u bad bytes in log %s" % (skip_bytes, skip_type))
 
         self.offset += 3
         self.remaining -= 3
