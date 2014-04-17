@@ -715,7 +715,7 @@ class mavserial(mavfile):
                 except Exception:
                     self.fd = None
                 if self.rtscts:
-                    set_rtscts(self.rtscts)
+                    self.set_rtscts(self.rtscts)
                 return
             except Exception:
                 print("Failed to reopen %s" % self.device)
