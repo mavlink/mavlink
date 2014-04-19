@@ -45,6 +45,13 @@ class MAVWPLoader(object):
         self.wpoints.append(w)
         self.last_change = time.time()
 
+    def reindex(self):
+        '''reindex waypoints'''
+        for i in range(self.count()):
+            w = self.wpoints[i]
+            w.seq = i
+        self.last_change = time.time()
+
     def add_latlonalt(self, lat, lon, altitude):
         '''add a point via latitude/longitude/altitude'''
         p = mavutil.mavlink.MAVLink_mission_item_message(self.target_system,
@@ -70,6 +77,7 @@ class MAVWPLoader(object):
         '''remove a waypoint'''
         self.wpoints.remove(w)
         self.last_change = time.time()
+        self.reindex()
 
     def clear(self):
         '''clear waypoint list'''
@@ -270,9 +278,9 @@ class MAVWPLoader(object):
                 w.x, w.y, w.z, w.autocontinue))
         f.close()
 
-    def polygon(self, done=None):
-        '''return a polygon for the waypoints'''
-        points = []
+    def view_indexes(self, done=None):
+        '''return a list waypoint indexes in view order'''
+        ret = []
         if done is None:
             done = set()
         idx = 0
@@ -287,16 +295,15 @@ class MAVWPLoader(object):
             w = self.wp(idx)
             if idx in done:
                 if w.x != 0 or w.y != 0:
-                    points.append((w.x, w.y))
+                    ret.append(idx)
                 break
             done.add(idx)
             if w.command == mavutil.mavlink.MAV_CMD_DO_JUMP:
                 idx = int(w.param1)
                 w = self.wp(idx)
                 if w.x != 0 or w.y != 0:
-                    points.append((w.x, w.y))
+                    ret.append(idx)
                 continue
-            idx += 1
             if (w.x != 0 or w.y != 0) and w.command in [mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
                                                         mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM,
                                                         mavutil.mavlink.MAV_CMD_NAV_LOITER_TURNS,
@@ -304,7 +311,17 @@ class MAVWPLoader(object):
                                                         mavutil.mavlink.MAV_CMD_NAV_LAND,
                                                         mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
                                                         mavutil.mavlink.MAV_CMD_NAV_SPLINE_WAYPOINT]:
-                points.append((w.x, w.y))
+                ret.append(idx)
+            idx += 1
+        return ret
+
+    def polygon(self, done=None):
+        '''return a polygon for the waypoints'''
+        indexes = self.view_indexes(done)
+        points = []
+        for idx in indexes:
+            w = self.wp(idx)
+            points.append((w.x, w.y))
         return points
 
     def polygon_list(self):
@@ -313,6 +330,16 @@ class MAVWPLoader(object):
         ret = []
         while len(done) != self.count():
             p = self.polygon(done)
+            if len(p) > 0:
+                ret.append(p)
+        return ret
+
+    def view_list(self):
+        '''return a list of polygon indexes lists for the waypoints'''
+        done = set()
+        ret = []
+        while len(done) != self.count():
+            p = self.view_indexes(done)
             if len(p) > 0:
                 ret.append(p)
         return ret
