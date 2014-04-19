@@ -14,6 +14,28 @@ from pymavlink.mavextra import *
 locator = None
 formatter = None
 
+colourmap = {
+    'apm' : {
+        'MANUAL'    : (1.0,   0,   0),
+        'AUTO'      : (  0, 1.0,   0),
+        'LOITER'    : (  0,   0, 1.0),
+        'FBWA'      : (1.0, 0.5,   0),
+        'RTL'       : (  1,   0, 0.5),
+        'STABILIZE' : (0.5, 1.0,   0),
+        'LAND'      : (  0, 1.0, 0.5),
+        'STEERING'  : (0.5,   0, 1.0),
+        'HOLD'      : (  0, 0.5, 1.0),
+        'ALT_HOLD'  : (1.0, 0.5, 0.5),
+        'CIRCLE'    : (0.5, 1.0, 0.5),
+        'POSITION'  : (1.0, 0.0, 1.0),
+        'GUIDED'    : (0.5, 0.5, 1.0),
+        'ACRO'      : (1.0, 1.0,   0),
+        'CRUISE'    : (  0, 1.0, 1.0)
+        }
+    }
+
+edge_colour = (0.1, 0.1, 0.1)
+
 def plotit(x, y, fields, colors=[]):
     '''plot a set of graphs using date for x axis'''
     global locator, formatter
@@ -89,6 +111,12 @@ def plotit(x, y, fields, colors=[]):
                          linestyle=linestyle, marker=marker, tz=None)
         pylab.draw()
         empty = False
+    if opts.flightmode is not None:
+        for i in range(len(modes)-1):
+            c = colourmap[opts.flightmode].get(modes[i][1], edge_colour) 
+            ax1.axvspan(modes[i][0], modes[i+1][0], fc=c, ec=edge_colour, alpha=0.1)
+        c = colourmap[opts.flightmode].get(modes[-1][1], edge_colour)
+        ax1.axvspan(modes[-1][0], ax1.get_xlim()[1], fc=c, ec=edge_colour, alpha=0.1)
     if ax1_labels != []:
         ax1.legend(ax1_labels,loc=opts.legend)
     if ax2_labels != []:
@@ -111,12 +139,22 @@ parser.add_option("--marker",  default=None, help="point marker")
 parser.add_option("--linestyle",  default=None, help="line style")
 parser.add_option("--xaxis",  default=None, help="X axis expression")
 parser.add_option("--zero-time-base",  action='store_true', help="use Z time base for DF logs")
+parser.add_option("--flightmode", default=None,
+                    help="Choose the plot background according to the active flight mode of the specified type, e.g. --flightmode=apm for ArduPilot logs.  Cannot be specified with --xaxis.")
 (opts, args) = parser.parse_args()
 
 from pymavlink import mavutil
 
 if len(args) < 2:
     print("Usage: mavlogdump.py [options] <LOGFILES...> <fields...>")
+    sys.exit(1)
+
+if opts.flightmode is not None and opts.xaxis:
+    print("Cannot request flightmode backgrounds with an x-axis expression")
+    sys.exit(1)
+
+if opts.flightmode is not None and opts.flightmode not in colourmap:
+    print("Unknown flight controller '%s' in specification of --flightmode" % opts.flightmode)
     sys.exit(1)
 
 filenames = []
@@ -135,6 +173,7 @@ colors = [ 'red', 'green', 'blue', 'orange', 'olive', 'black', 'grey', 'yellow' 
 # work out msg types we are interested in
 x = []
 y = []
+modes = []
 axes = []
 first_only = []
 re_caps = re.compile('[A-Z_][A-Z0-9_]+')
@@ -147,9 +186,11 @@ for f in fields:
     axes.append(1)
     first_only.append(False)
 
-def add_data(t, msg, vars):
+def add_data(t, msg, vars, flightmode):
     '''add some data'''
     mtype = msg.get_type()
+    if opts.flightmode is not None and (len(modes) == 0 or modes[-1][1] != flightmode):
+        modes.append((t, flightmode))
     if mtype not in msg_types:
         return
     for i in range(0, len(fields)):
@@ -184,7 +225,7 @@ def process_file(filename):
         msg = mlog.recv_match(opts.condition)
         if msg is None: break
         tdays = matplotlib.dates.date2num(datetime.datetime.fromtimestamp(msg._timestamp))
-        add_data(tdays, msg, mlog.messages)
+        add_data(tdays, msg, mlog.messages, mlog.flightmode)
 
 if len(filenames) == 0:
     print("No files to process")
