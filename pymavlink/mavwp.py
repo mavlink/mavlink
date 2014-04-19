@@ -327,7 +327,6 @@ class MAVRallyLoader(object):
     '''MAVLink Rally points and Rally Land ponts loader'''
     def __init__(self, target_system=0, target_component=0):
         self.rally_points = []
-        self.rally_land_points = []
         self.target_system = target_system
         self.target_component = target_component
         self.last_change = time.time()
@@ -339,7 +338,14 @@ class MAVRallyLoader(object):
     def rally_point(self, i):
         '''return rally point i'''
         return self.rally_points[i]
-   
+
+    def reindex(self):
+        '''reset counters and indexes'''
+        for i in range(self.rally_count()):
+            self.rally_points[i].count = self.rally_count()
+            self.rally_points[i].idx = i
+        self.last_change = time.time()
+            
     def append_rally_point(self, p):
         '''add rallypoint to end of list'''
         if (self.rally_count() > 9):
@@ -347,21 +353,34 @@ class MAVRallyLoader(object):
            return
 
         self.rally_points.append(p)
-        self.last_change = time.time()
-        self.last_change = time.time()
-        for i in range(self.rally_count()):
-            self.rally_points[i].count = self.rally_count()
+        self.reindex()
 
     def create_and_append_rally_point(self, lat, lon, alt, break_alt, land_dir, flags):
         '''add a point via latitude/longitude'''
-        p = mavutil.mavlink.MAVLink_rally_point_message(self.target_system, self.target_component, self.rally_count(), 0, lat, lon, alt, break_alt, land_dir, flags)
+        p = mavutil.mavlink.MAVLink_rally_point_message(self.target_system, self.target_component,
+                                                        self.rally_count(), 0, lat, lon, alt, break_alt, land_dir, flags)
         self.append_rally_point(p)
 
     def clear(self):
         '''clear all point lists (rally and rally_land)'''
         self.rally_points = []
-        self.rally_land_points = []
         self.last_change = time.time()
+
+    def remove(self, i):
+        '''remove a rally point'''
+        if i < 1 or i > self.rally_count():
+            print("Invalid rally point number %u" % i)
+        self.rally_points.pop(i-1)
+        self.reindex()
+
+    def move(self, i, lat, lng, change_time=True):
+        '''move a rally point'''
+        if i < 1 or i > self.rally_count():
+            print("Invalid rally point number %u" % i)
+        self.rally_points[i-1].lat = int(lat*1e7)
+        self.rally_points[i-1].lng = int(lng*1e7)
+        if change_time:
+            self.last_change = time.time()
 
     def load(self, filename):
         '''load rally and rally_land points from a file.
@@ -381,10 +400,6 @@ class MAVRallyLoader(object):
             if (a[0].lower() == "rally"):
                 self.create_and_append_rally_point(float(a[1]) * 1e7, float(a[2]) * 1e7,
                                                    float(a[3]), float(a[4]), float(a[5]) * 100.0, int(a[6]))
-# Coming Soon:
-#            elif (a[0].lower().equals("rally_land"):
-#                self.add_rally_land_from_file(float(a[1]), float(a[2]), float(a[3]))
-
         f.close()
         return len(self.rally_points)
 
@@ -394,9 +409,6 @@ class MAVRallyLoader(object):
         for p in self.rally_points:
             f.write("RALLY %f\t%f\t%f\t%f\t%f\t%d\n" % (p.lat * 1e-7, p.lng * 1e-7, p.alt,
                                                         p.break_alt, p.land_dir, p.flags))
-        #Coming soon
-        #for p in self.rally_land_points:
-        #    f.write("RALLY_LAND %f\t%f\t%f\n" & (p.lat, p.lng, p.atl)
         f.close()
 
 class MAVFenceError(Exception):
