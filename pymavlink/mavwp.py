@@ -467,6 +467,15 @@ class MAVFenceLoader(object):
         for i in range(self.count()):
             self.points[i].count = self.count()
 
+    def reindex(self):
+        '''reindex waypoints'''
+        for i in range(self.count()):
+            w = self.points[i]
+            w.idx = i
+            w.target_system = self.target_system
+            w.target_component = self.target_component
+        self.last_change = time.time()
+
     def add_latlon(self, lat, lon):
         '''add a point via latitude/longitude'''
         p = mavutil.mavlink.MAVLink_fence_point_message(self.target_system, self.target_component,
@@ -502,6 +511,22 @@ class MAVFenceLoader(object):
         for p in self.points:
             f.write("%f\t%f\n" % (p.lat, p.lng))
         f.close()
+
+    def move(self, i, lat, lng, change_time=True):
+        '''move a fence point'''
+        if i < 0 or i >= self.count():
+            print("Invalid fence point number %u" % i)
+        self.points[i].lat = lat
+        self.points[i].lng = lng
+        # ensure we close the polygon
+        if i == 1:
+                self.points[self.count()-1].lat = lat
+                self.points[self.count()-1].lng = lng
+        if i == self.count() - 1:
+                self.points[1].lat = lat
+                self.points[1].lng = lng
+        if change_time:
+            self.last_change = time.time()
 
     def polygon(self):
             '''return a polygon for the fence'''
