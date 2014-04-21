@@ -463,15 +463,14 @@ class MAVFenceLoader(object):
     def add(self, p):
         '''add a point'''
         self.points.append(p)
-        self.last_change = time.time()
-        for i in range(self.count()):
-            self.points[i].count = self.count()
+        self.reindex()
 
     def reindex(self):
         '''reindex waypoints'''
         for i in range(self.count()):
             w = self.points[i]
             w.idx = i
+            w.count = self.count()
             w.target_system = self.target_system
             w.target_component = self.target_component
         self.last_change = time.time()
@@ -525,6 +524,21 @@ class MAVFenceLoader(object):
         if i == self.count() - 1:
                 self.points[1].lat = lat
                 self.points[1].lng = lng
+        if change_time:
+            self.last_change = time.time()
+
+    def remove(self, i, change_time=True):
+        '''remove a fence point'''
+        if i < 0 or i >= self.count():
+            print("Invalid fence point number %u" % i)
+        self.points.pop(i)
+         # ensure we close the polygon
+        if i == 1:
+                self.points[self.count()-1].lat = self.points[1].lat
+                self.points[self.count()-1].lng = self.points[1].lng
+        if i == self.count():
+                self.points[1].lat = self.points[self.count()-1].lat
+                self.points[1].lng = self.points[self.count()-1].lng
         if change_time:
             self.last_change = time.time()
 
