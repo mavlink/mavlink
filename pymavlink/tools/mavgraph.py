@@ -31,6 +31,13 @@ colourmap = {
         'GUIDED'    : (0.5, 0.5, 1.0),
         'ACRO'      : (1.0, 1.0,   0),
         'CRUISE'    : (  0, 1.0, 1.0)
+        },
+    'px4' : {
+        'MANUAL'    : (1.0,   0,   0),
+        'SEATBELT'  : (  0.5, 0.5,   0),
+        'EASY'      : (  0, 1.0,   0),
+        'AUTO'    : (  0,   0, 1.0),
+        'UNKNOWN'    : (  1.0,   1.0, 1.0)
         }
     }
 
@@ -140,7 +147,7 @@ parser.add_option("--linestyle",  default=None, help="line style")
 parser.add_option("--xaxis",  default=None, help="X axis expression")
 parser.add_option("--zero-time-base",  action='store_true', help="use Z time base for DF logs")
 parser.add_option("--flightmode", default=None,
-                    help="Choose the plot background according to the active flight mode of the specified type, e.g. --flightmode=apm for ArduPilot logs.  Cannot be specified with --xaxis.")
+                    help="Choose the plot background according to the active flight mode of the specified type, e.g. --flightmode=apm for ArduPilot or --flightmode=px4 for PX4 stack logs.  Cannot be specified with --xaxis.")
 (opts, args) = parser.parse_args()
 
 from pymavlink import mavutil
