@@ -280,6 +280,13 @@ class DFReader(object):
         '''check if a condition is true'''
         return mavutil.evaluate_condition(condition, self.messages)
 
+    def param(self, name, default=None):
+        '''convenient function for returning an arbitrary MAVLink
+           parameter with a default'''
+        if not name in self.params:
+            return default
+        return self.params[name]
+
 class DFReader_binary(DFReader):
     '''parse a binary dataflash file'''
     def __init__(self, filename, zero_time_base):
