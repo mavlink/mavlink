@@ -263,4 +263,5 @@ for fi in range(0, len(filenames)):
         x[i] = []
         y[i] = []
 pylab.show()
+pylab.draw()
 raw_input('press enter to exit....')
