@@ -257,6 +257,11 @@ class DFReader(object):
                 self.flightmode = mavutil.mode_string_apm(m.ModeNum)
             else:
                 self.flightmode = mavutil.mode_string_acm(m.Mode)
+        if type == 'STAT':
+            if 'MainState' in m._fieldnames:
+                self.flightmode = mavutil.mode_string_px4(m.MainState)
+            else:
+                self.flightmode = "UNKNOWN"
         if type == 'PARM' and getattr(m, 'Name', None) is not None:
             self.params[m.Name] = m.Value
         self._set_time(m)

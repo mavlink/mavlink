@@ -1200,6 +1200,13 @@ mode_mapping_tracker = {
     16 : 'INITIALISING'
     }
 
+mode_mapping_px4 = {
+    0 : 'MANUAL',
+    1 : 'ATTITUDE',
+    2 : 'EASY',
+    3 : 'AUTO'
+    }
+
 def mode_string_v10(msg):
     '''mode string for 1.0 protocol, from heartbeat'''
     if not msg.base_mode & mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED:
@@ -1229,7 +1236,12 @@ def mode_string_acm(mode_number):
     if mode_number in mode_mapping_acm:
         return mode_mapping_acm[mode_number]
     return "Mode(%u)" % mode_number
-    
+
+def mode_string_px4(mode_number):
+    '''return mode string for PX4 flight stack'''
+    if mode_number in mode_mapping_px4:
+        return mode_mapping_px4[mode_number]
+    return "Mode(%u)" % mode_number
 
 class x25crc(object):
     '''x25 CRC - based on checksum.h from mavlink library'''
