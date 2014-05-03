@@ -20,11 +20,12 @@ class MAVParseError(Exception):
         return self.message
 
 class MAVField(object):
-    def __init__(self, name, type, print_format, xml, description=''):
+    def __init__(self, name, type, print_format, xml, description='', enum=''):
         self.name = name
         self.name_upper = name.upper()
         self.description = description
         self.array_length = 0
+        self.enum = enum
         self.omit_arg = False
         self.const_value = None
         self.print_format = print_format
@@ -187,8 +188,12 @@ class MAVXML(object):
                     print_format = attrs['print_format']
                 else:
                     print_format = None
+                if 'enum' in attrs:
+                    enum = attrs['enum']
+                else:
+                    enum = ''
                 self.message[-1].fields.append(MAVField(attrs['name'], attrs['type'],
-                                                        print_format, self))
+                                                        print_format, self, enum=enum))
             elif in_element == "mavlink.enums.enum":
                 check_attrs(attrs, ['name'], 'enum')
                 self.enum.append(MAVEnum(attrs['name'], p.CurrentLineNumber))

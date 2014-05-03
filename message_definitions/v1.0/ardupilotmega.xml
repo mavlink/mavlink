@@ -130,7 +130,7 @@
 	    <description>Message to configure a camera mount, directional antenna, etc.</description>
 	    <field name="target_system" type="uint8_t">System ID</field>
 	    <field name="target_component" type="uint8_t">Component ID</field>
-	    <field name="mount_mode" type="uint8_t">mount operating mode (see MAV_MOUNT_MODE enum)</field>
+	    <field name="mount_mode" type="uint8_t" enum="MAV_MOUNT_MODE">mount operating mode (see MAV_MOUNT_MODE enum)</field>
 	    <field name="stab_roll" type="uint8_t">(1 = yes, 0 = no)</field>
 	    <field name="stab_pitch" type="uint8_t">(1 = yes, 0 = no)</field>
 	    <field name="stab_yaw" type="uint8_t">(1 = yes, 0 = no)</field>
@@ -179,7 +179,7 @@
 	    status stream when fencing enabled</description>
 	    <field name="breach_status" type="uint8_t">0 if currently inside fence, 1 if outside</field>
 	    <field name="breach_count" type="uint16_t">number of fence breaches</field>
-	    <field name="breach_type" type="uint8_t">last breach type (see FENCE_BREACH_* enum)</field>
+	    <field name="breach_type" type="uint8_t" enum="FENCE_BREACH">last breach type (see FENCE_BREACH_* enum)</field>
 	    <field name="breach_time" type="uint32_t">time of last breach in milliseconds since boot</field>
 	  </message>
 
@@ -231,7 +231,7 @@
 	  <message name="LIMITS_STATUS" id="167">
 	    <description>Status of AP_Limits. Sent in extended
 	    status stream when AP_Limits is enabled</description>
-	    <field name="limits_state" type="uint8_t">state of AP_Limits, (see enum LimitState, LIMITS_STATE)</field>
+	    <field name="limits_state" type="uint8_t" enum="LIMITS_STATE">state of AP_Limits, (see enum LimitState, LIMITS_STATE)</field>
 	    <field name="last_trigger" type="uint32_t">time of last breach in milliseconds since boot</field>
 	    <field name="last_action" type="uint32_t">time of last recovery action in milliseconds since boot</field>
 	    <field name="last_recovery" type="uint32_t">time of last successful recovery in milliseconds since boot</field>

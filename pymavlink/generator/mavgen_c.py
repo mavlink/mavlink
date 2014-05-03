@@ -103,11 +103,11 @@ ${{enum:
 /** @brief ${description} */
 #ifndef HAVE_ENUM_${name}
 #define HAVE_ENUM_${name}
-enum ${name}
+typedef enum ${name}
 {
 ${{entry:	${name}=${value}, /* ${description} |${{param:${description}| }} */
 }}
-};
+} ${name};
 #endif
 }}
 

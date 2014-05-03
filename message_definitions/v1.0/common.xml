@@ -1182,7 +1182,7 @@
                <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
                <field type="uint8_t" name="type">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
                <field type="uint8_t" name="autopilot">Autopilot type / class. defined in MAV_AUTOPILOT ENUM</field>
-               <field type="uint8_t" name="base_mode">System mode bitfield, see MAV_MODE_FLAGS ENUM in mavlink/include/mavlink_types.h</field>
+               <field type="uint8_t" name="base_mode">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
                <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags.</field>
                <field type="uint8_t" name="system_status">System status flag, see MAV_STATE ENUM</field>
                <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
@@ -1236,7 +1236,7 @@
           <message id="11" name="SET_MODE">
                <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
                <field type="uint8_t" name="target_system">The system setting the mode</field>
-               <field type="uint8_t" name="base_mode">The new base mode</field>
+               <field type="uint8_t" name="base_mode" enum="MAV_MODE">The new base mode</field>
                <field type="uint32_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
           </message>
           <message id="20" name="PARAM_REQUEST_READ">
@@ -1255,7 +1255,7 @@
                <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout.</description>
                <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
                <field type="float" name="param_value">Onboard parameter value</field>
-               <field type="uint8_t" name="param_type">Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+               <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
                <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
                <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
           </message>
@@ -1265,7 +1265,7 @@
                <field type="uint8_t" name="target_component">Component ID</field>
                <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
                <field type="float" name="param_value">Onboard parameter value</field>
-               <field type="uint8_t" name="param_type">Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+               <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
           </message>
           <message id="24" name="GPS_RAW_INT">
                <description>The global position, as returned by the Global Positioning System (GPS). This is
@@ -1488,7 +1488,7 @@
                <description>Ack message during MISSION handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
-               <field type="uint8_t" name="type">See MAV_MISSION_RESULT enum</field>
+               <field type="uint8_t" name="type" enum="MAV_MISSION_RESULT">See MAV_MISSION_RESULT enum</field>
           </message>
           <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
                <description>As local waypoints exist, the global MISSION reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
@@ -1541,7 +1541,7 @@
                <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/MISSIONs to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
-               <field type="uint8_t" name="frame">Coordinate frame, as defined by MAV_FRAME enum in mavlink_types.h. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
+               <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame, as defined by MAV_FRAME enum in mavlink_types.h. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
                <field type="float" name="p1x">x position 1 / Latitude 1</field>
                <field type="float" name="p1y">y position 1 / Longitude 1</field>
                <field type="float" name="p1z">z position 1 / Altitude 1</field>
@@ -1551,7 +1551,7 @@
           </message>
           <message id="55" name="SAFETY_ALLOWED_AREA">
                <description>Read out the safety zone the MAV currently assumes.</description>
-               <field type="uint8_t" name="frame">Coordinate frame, as defined by MAV_FRAME enum in mavlink_types.h. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
+               <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame, as defined by MAV_FRAME enum in mavlink_types.h. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
                <field type="float" name="p1x">x position 1 / Latitude 1</field>
                <field type="float" name="p1y">y position 1 / Longitude 1</field>
                <field type="float" name="p1z">z position 1 / Altitude 1</field>
@@ -1716,7 +1716,7 @@
                <description>Send a command with up to seven parameters to the MAV</description>
                <field type="uint8_t" name="target_system">System which should execute the command</field>
                <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
-               <field type="uint16_t" name="command">Command ID, as defined by MAV_CMD enum.</field>
+               <field type="uint16_t" name="command" enum="MAV_CMD">Command ID, as defined by MAV_CMD enum.</field>
                <field type="uint8_t" name="confirmation">0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)</field>
                <field type="float" name="param1">Parameter 1, as defined by MAV_CMD enum.</field>
                <field type="float" name="param2">Parameter 2, as defined by MAV_CMD enum.</field>
@@ -1728,7 +1728,7 @@
           </message>
           <message id="77" name="COMMAND_ACK">
                <description>Report status of a command. Includes feedback wether the command was executed.</description>
-               <field type="uint16_t" name="command">Command ID, as defined by MAV_CMD enum.</field>
+               <field type="uint16_t" name="command" enum="MAV_CMD">Command ID, as defined by MAV_CMD enum.</field>
                <field type="uint8_t" name="result">See MAV_RESULT enum</field>
           </message>
          <message id="80" name="ROLL_PITCH_YAW_RATES_THRUST_SETPOINT">
@@ -2169,7 +2169,7 @@
           </message>
           <message id="253" name="STATUSTEXT">
                <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
-               <field type="uint8_t" name="severity">Severity of status. Relies on the definitions within RFC-5424. See enum MAV_SEVERITY.</field>
+               <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424. See enum MAV_SEVERITY.</field>
                <field type="char[50]" name="text">Status text message, without null termination character</field>
           </message>
           <message id="254" name="DEBUG">
