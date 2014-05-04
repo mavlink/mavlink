@@ -25,8 +25,11 @@ def mavparms(logfile):
     mlog = mavutil.mavlink_connection(filename)
 
     while True:
-        m = mlog.recv_match(type=['PARAM_VALUE', 'PARM'])
-        if m is None:
+        try:
+            m = mlog.recv_match(type=['PARAM_VALUE', 'PARM'])
+            if m is None:
+                return
+        except Exception:
             return
         if m.get_type() == 'PARAM_VALUE':
             pname = str(m.param_id).strip()
