@@ -35,7 +35,7 @@ def mavgen(opts, args) :
 
     for fname in args:
         if performValidation:
-            print("Validating %s" % fname)
+            print("Validating {}".format(fname))
             mavgen_validate(fname, schemaFile, opts.error_limit);
         else:
             print("Validation skipped for %s." % fname)
@@ -126,10 +126,11 @@ def mavgen_python_dialect(dialect, wire_protocol):
     opts = Opts(wire_protocol, py)
     
     # Obtain StringIO module dependent on current Python version
+    # For Python2.7, default to the StringIO version, for Python3, use the io library.
     try:
-        from io import StringIO
-    except Exception:
         from StringIO import StringIO
+    except Exception:
+        from io import StringIO
 
     # Throw away stdout while generating
     stdout_saved = sys.stdout
