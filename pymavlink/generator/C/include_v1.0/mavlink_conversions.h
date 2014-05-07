@@ -82,12 +82,12 @@ MAVLINK_HELPER void mavlink_quaternion_to_euler(const float quaternion[4], float
 
 MAVLINK_HELPER void mavlink_euler_to_quaternion(float roll, float pitch, float yaw, float quaternion[4])
 {
-    double cosPhi_2 = cos((double)roll / 2);
-    double sinPhi_2 = sin((double)roll / 2);
-    double cosTheta_2 = cos((double)pitch / 2);
-    double sinTheta_2 = sin((double)pitch / 2);
-    double cosPsi_2 = cos((double)yaw / 2);
-    double sinPsi_2 = sin((double)yaw / 2);
+    float cosPhi_2 = cosf(roll / 2);
+    float sinPhi_2 = sinf(roll / 2);
+    float cosTheta_2 = cosf(pitch / 2);
+    float sinTheta_2 = sinf(pitch / 2);
+    float cosPsi_2 = cosf(yaw / 2);
+    float sinPsi_2 = sinf(yaw / 2);
     quaternion[0] = (cosPhi_2 * cosTheta_2 * cosPsi_2 +
             sinPhi_2 * sinTheta_2 * sinPsi_2);
     quaternion[1] = (sinPhi_2 * cosTheta_2 * cosPsi_2 -
@@ -100,24 +100,20 @@ MAVLINK_HELPER void mavlink_euler_to_quaternion(float roll, float pitch, float y
 
 MAVLINK_HELPER void mavlink_dcm_to_quaternion(const float dcm[3][3], float quaternion[4])
 {
-    quaternion[0] = ((double)0.5 * sqrt(1 +
-            (double)(dcm[0][0] + dcm[1][1] + dcm[2][2])));
-    quaternion[1] = ((double)0.5 * sqrt(1 +
-            (double)(dcm[0][0] - dcm[1][1] - dcm[2][2])));
-    quaternion[2] = ((double)0.5 * sqrt(1 +
-            (double)(-dcm[0][0] + dcm[1][1] - dcm[2][2])));
-    quaternion[3] = ((double)0.5 * sqrt(1 +
-            (double)(-dcm[0][0] - dcm[1][1] + dcm[2][2])));
+    quaternion[0] = 0.5f * sqrtf(1 + dcm[0][0] + dcm[1][1] + dcm[2][2]);
+    quaternion[1] = 0.5f * sqrtf(1 + dcm[0][0] - dcm[1][1] - dcm[2][2]);
+    quaternion[2] = 0.5f * sqrtf(1 - dcm[0][0] + dcm[1][1] - dcm[2][2]);
+    quaternion[3] = 0.5f * sqrtf(1 - dcm[0][0] - dcm[1][1] + dcm[2][2]);
 }
 
 MAVLINK_HELPER void mavlink_euler_to_dcm(float roll, float pitch, float yaw, float dcm[3][3])
 {
-    double cosPhi = cos(roll);
-    double sinPhi = sin(roll);
-    double cosThe = cos(pitch);
-    double sinThe = sin(pitch);
-    double cosPsi = cos(yaw);
-    double sinPsi = sin(yaw);
+    float cosPhi = cosf(roll);
+    float sinPhi = sinf(roll);
+    float cosThe = cosf(pitch);
+    float sinThe = sinf(pitch);
+    float cosPsi = cosf(yaw);
+    float sinPsi = sinf(yaw);
 
     dcm[0][0] = cosThe * cosPsi;
     dcm[0][1] = -cosPhi * sinPsi + sinPhi * sinThe * cosPsi;
