@@ -118,6 +118,7 @@ class DFReader(object):
         self.px4_timestamps = False
         self.px4_timebase = 0
         self.timestamp = 0
+        self.mav_type = mavutil.mavlink.MAV_TYPE_FIXED_WING
         self.verbose = False
         self.params = {}
         
@@ -250,11 +251,22 @@ class DFReader(object):
             self.px4_timestamps = True
         if type == 'GPS':
             self._adjust_time_base(m)
+        if type == 'MSG':
+            if m.Message.startswith("ArduRover"):
+                self.mav_type = mavutil.mavlink.MAV_TYPE_GROUND_ROVER
+            elif m.Message.startswith("ArduPlane"):
+                self.mav_type = mavutil.mavlink.MAV_TYPE_FIXED_WING
+            elif m.Message.startswith("ArduCopter"):
+                self.mav_type = mavutil.mavlink.MAV_TYPE_QUADROTOR
+            elif m.Message.startswith("Antenna"):
+                self.mav_type = mavutil.mavlink.MAV_TYPE_ANTENNA_TRACKER
         if type == 'MODE':
             if isinstance(m.Mode, str):
                 self.flightmode = m.Mode.upper()
             elif 'ModeNum' in m._fieldnames:
-                self.flightmode = mavutil.mode_string_apm(m.ModeNum)
+                mapping = mavutil.mode_mapping_bynumber(self.mav_type)
+                if mapping is not None and m.ModeNum in mapping:
+                    self.flightmode = mapping[m.ModeNum]
             else:
                 self.flightmode = mavutil.mode_string_acm(m.Mode)
         if type == 'STAT':

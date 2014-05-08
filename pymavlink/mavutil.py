@@ -125,6 +125,8 @@ class mavfile(object):
         self.param_fetch_complete = False
         self.start_time = time.time()
         self.flightmode = "UNKNOWN"
+        self.vehicle_type = "UNKNOWN"
+        self.mav_type = mavlink.MAV_TYPE_FIXED_WING
         self.base_mode = 0
         self.timestamp = 0
         self.message_hooks = []
@@ -234,6 +236,7 @@ class mavfile(object):
             self.target_component = msg.get_srcComponent()
             if mavlink.WIRE_PROTOCOL_VERSION == '1.0' and msg.type != mavlink.MAV_TYPE_GCS:
                 self.flightmode = mode_string_v10(msg)
+                self.mav_type = msg.type
                 self.base_mode = msg.base_mode
         elif type == 'PARAM_VALUE':
             s = str(msg.param_id)
@@ -435,7 +438,7 @@ class mavfile(object):
 
     def mode_mapping(self):
         '''return dictionary mapping mode names to numbers, or None if unknown'''
-        mav_type = self.field('HEARTBEAT', 'type', None)
+        mav_type = self.field('HEARTBEAT', 'type', self.mav_type)
         if mav_type is None:
             return None
         map = None
@@ -1206,6 +1209,39 @@ mode_mapping_px4 = {
     2 : 'EASY',
     3 : 'AUTO'
     }
+
+
+def mode_mapping_byname(mav_type):
+    '''return dictionary mapping mode names to numbers, or None if unknown'''
+    map = None
+    if mav_type == mavlink.MAV_TYPE_QUADROTOR:
+        map = mode_mapping_acm
+    if mav_type == mavlink.MAV_TYPE_FIXED_WING:
+        map = mode_mapping_apm
+    if mav_type == mavlink.MAV_TYPE_GROUND_ROVER:
+        map = mode_mapping_rover
+    if mav_type == mavlink.MAV_TYPE_ANTENNA_TRACKER:
+        map = mode_mapping_tracker
+    if map is None:
+        return None
+    inv_map = dict((a, b) for (b, a) in map.items())
+    return inv_map
+
+def mode_mapping_bynumber(mav_type):
+    '''return dictionary mapping mode numbers to name, or None if unknown'''
+    map = None
+    if mav_type == mavlink.MAV_TYPE_QUADROTOR:
+        map = mode_mapping_acm
+    if mav_type == mavlink.MAV_TYPE_FIXED_WING:
+        map = mode_mapping_apm
+    if mav_type == mavlink.MAV_TYPE_GROUND_ROVER:
+        map = mode_mapping_rover
+    if mav_type == mavlink.MAV_TYPE_ANTENNA_TRACKER:
+        map = mode_mapping_tracker
+    if map is None:
+        return None
+    return map
+
 
 def mode_string_v10(msg):
     '''mode string for 1.0 protocol, from heartbeat'''
