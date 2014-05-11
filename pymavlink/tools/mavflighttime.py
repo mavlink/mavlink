@@ -30,21 +30,25 @@ def flight_time(logfile):
     t = None
 
     while True:
-        m = mlog.recv_match(type='VFR_HUD', condition=opts.condition)
+        m = mlog.recv_match(type=['VFR_HUD','GPS'], condition=opts.condition)
         if m is None:
             if in_air:
                 total_time += time.mktime(t) - start_time
             if total_time > 0:
                 print("Flight time : %u:%02u" % (int(total_time)/60, int(total_time)%60))
             return total_time
+        if m.get_type() == 'VFR_HUD':
+            groundspeed = m.groundspeed
+        else:
+            groundspeed = m.Spd
         t = time.localtime(m._timestamp)
-        if m.groundspeed > opts.groundspeed and not in_air:
-            print("In air at %s (percent %.0f%% groundspeed %.1f)" % (time.asctime(t), mlog.percent, m.groundspeed))
+        if groundspeed > opts.groundspeed and not in_air:
+            print("In air at %s (percent %.0f%% groundspeed %.1f)" % (time.asctime(t), mlog.percent, groundspeed))
             in_air = True
             start_time = time.mktime(t)
-        elif m.groundspeed < opts.groundspeed and in_air:
+        elif groundspeed < opts.groundspeed and in_air:
             print("On ground at %s (percent %.1f%% groundspeed %.1f  time=%.1f seconds)" % (
-                time.asctime(t), mlog.percent, m.groundspeed, time.mktime(t) - start_time))
+                time.asctime(t), mlog.percent, groundspeed, time.mktime(t) - start_time))
             in_air = False
             total_time += time.mktime(t) - start_time
     return total_time
