@@ -14,6 +14,7 @@ parser.add_option("--groundspeed", type='float', default=3.0, help="groundspeed 
 (opts, args) = parser.parse_args()
 
 from pymavlink import mavutil
+from pymavlink.mavextra import distance_two
 
 if len(args) < 1:
     print("Usage: flighttime.py [options] <LOGFILE...>")
@@ -27,20 +28,26 @@ def flight_time(logfile):
     in_air = False
     start_time = 0.0
     total_time = 0.0
+    total_dist = 0.0
     t = None
+    last_msg = None
 
     while True:
-        m = mlog.recv_match(type=['VFR_HUD','GPS'], condition=opts.condition)
+        m = mlog.recv_match(type=['GPS','GPS_RAW_INT'], condition=opts.condition)
         if m is None:
             if in_air:
                 total_time += time.mktime(t) - start_time
             if total_time > 0:
                 print("Flight time : %u:%02u" % (int(total_time)/60, int(total_time)%60))
-            return total_time
-        if m.get_type() == 'VFR_HUD':
-            groundspeed = m.groundspeed
+            return (total_time, total_dist)
+        if m.get_type() == 'GPS_RAW_INT':
+            groundspeed = m.vel*0.01
+            status = m.fix_type
         else:
             groundspeed = m.Spd
+            status = m.Status
+        if status < 3:
+            continue
         t = time.localtime(m._timestamp)
         if groundspeed > opts.groundspeed and not in_air:
             print("In air at %s (percent %.0f%% groundspeed %.1f)" % (time.asctime(t), mlog.percent, groundspeed))
@@ -51,11 +58,19 @@ def flight_time(logfile):
                 time.asctime(t), mlog.percent, groundspeed, time.mktime(t) - start_time))
             in_air = False
             total_time += time.mktime(t) - start_time
-    return total_time
 
-total = 0.0
+        if last_msg is not None:
+            total_dist += distance_two(last_msg, m)
+        last_msg = m
+    return (total_time, total_dist)
+
+total_time = 0.0
+total_dist = 0.0
 for filename in args:
     for f in glob.glob(filename):
-        total += flight_time(f)
+        (ftime, fdist) = flight_time(f)
+        total_time += ftime
+        total_dist += fdist
 
-print("Total time in air: %u:%02u" % (int(total)/60, int(total)%60))
+print("Total time in air: %u:%02u" % (int(total_time)/60, int(total_time)%60))
+print("Total distance trevelled: %.1f meters" % total_dist)
