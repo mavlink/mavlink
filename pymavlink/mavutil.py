@@ -442,7 +442,11 @@ class mavfile(object):
         if mav_type is None:
             return None
         map = None
-        if mav_type == mavlink.MAV_TYPE_QUADROTOR:
+        if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
+                        mavlink.MAV_TYPE_HELICOPTER,
+                        mavlink.MAV_TYPE_HEXAROTOR,
+                        mavlink.MAV_TYPE_OCTOROTOR,
+                        mavlink.MAV_TYPE_TRICOPTER]:
             map = mode_mapping_acm
         if mav_type == mavlink.MAV_TYPE_FIXED_WING:
             map = mode_mapping_apm
@@ -1214,7 +1218,11 @@ mode_mapping_px4 = {
 def mode_mapping_byname(mav_type):
     '''return dictionary mapping mode names to numbers, or None if unknown'''
     map = None
-    if mav_type == mavlink.MAV_TYPE_QUADROTOR:
+    if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
+                    mavlink.MAV_TYPE_HELICOPTER,
+                    mavlink.MAV_TYPE_HEXAROTOR,
+                    mavlink.MAV_TYPE_OCTOROTOR,
+                    mavlink.MAV_TYPE_TRICOPTER]:
         map = mode_mapping_acm
     if mav_type == mavlink.MAV_TYPE_FIXED_WING:
         map = mode_mapping_apm
@@ -1230,7 +1238,11 @@ def mode_mapping_byname(mav_type):
 def mode_mapping_bynumber(mav_type):
     '''return dictionary mapping mode numbers to name, or None if unknown'''
     map = None
-    if mav_type == mavlink.MAV_TYPE_QUADROTOR:
+    if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
+                    mavlink.MAV_TYPE_HELICOPTER,
+                    mavlink.MAV_TYPE_HEXAROTOR,
+                    mavlink.MAV_TYPE_OCTOROTOR,
+                    mavlink.MAV_TYPE_TRICOPTER]:
         map = mode_mapping_acm
     if mav_type == mavlink.MAV_TYPE_FIXED_WING:
         map = mode_mapping_apm
