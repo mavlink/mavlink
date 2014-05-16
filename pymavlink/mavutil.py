@@ -672,13 +672,17 @@ class mavserial(mavfile):
         self.baud = baud
         self.device = device
         self.autoreconnect = autoreconnect
-        self.port = serial.Serial(self.device, self.baud, timeout=0,
+        # we rather strangely set the baudrate initially to 1200, then change to the desired
+        # baudrate. This works around a kernel bug on some Linux kernels where the baudrate
+        # is not set correctly
+        self.port = serial.Serial(self.device, 1200, timeout=0,
                                   dsrdtr=False, rtscts=False, xonxoff=False)
         try:
             fd = self.port.fileno()
             set_close_on_exec(fd)
         except Exception:
             fd = None
+        self.set_baudrate(self.baud)
         mavfile.__init__(self, fd, device, source_system=source_system)
         self.rtscts = False
 
@@ -686,6 +690,10 @@ class mavserial(mavfile):
         '''enable/disable RTS/CTS if applicable'''
         self.port.setRtsCts(enable)
         self.rtscts = enable
+
+    def set_baudrate(self, baudrate):
+        '''set baudrate'''
+        self.port.setBaudrate(baudrate)
     
     def close(self):
         self.port.close()
