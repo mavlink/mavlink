@@ -1344,13 +1344,15 @@ class MavlinkSerialPort():
                         n = len(b)
                         if n > 70:
                                 n = 70
+                        buf = [ord(x) for x in b[:n]]
+                        buf.extend([0]*(70-len(buf)))
                         self.mav.mav.serial_control_send(self.port,
                                                          mavutil.mavlink.SERIAL_CONTROL_FLAG_EXCLUSIVE |
                                                          mavutil.mavlink.SERIAL_CONTROL_FLAG_RESPOND,
                                                          0,
                                                          0,
                                                          n,
-                                                         b[:n])
+                                                         buf)
                         b = b[n:]
 
         def _recv(self):
@@ -1367,7 +1369,7 @@ class MavlinkSerialPort():
                                                          mavutil.mavlink.SERIAL_CONTROL_FLAG_RESPOND,
                                                          0,
                                                          0,
-                                                         0, '')
+                                                         0, [0]*70)
                         m = self.mav.recv_match(condition='SERIAL_CONTROL.count!=0',
                                                 type='SERIAL_CONTROL', blocking=True, timeout=0.01)
                         if m is not None and m.count != 0:
@@ -1376,7 +1378,8 @@ class MavlinkSerialPort():
                 if m is not None:
                         if self._debug > 2:
                                 print(m)
-                        self.buf += str(m.data[:m.count])
+                        data = m.data[:m.count]
+                        self.buf += ''.join(str(chr(x)) for x in data)
 
         def read(self, n):
                 '''read some bytes'''
@@ -1413,6 +1416,6 @@ class MavlinkSerialPort():
                                                  mavutil.mavlink.SERIAL_CONTROL_FLAG_EXCLUSIVE,
                                                  0,
                                                  self.baudrate,
-                                                 0, '')
+                                                 0, [0]*70)
                 self.flushInput()
                 self.debug("Changed baudrate %u" % self.baudrate)
