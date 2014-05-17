@@ -105,6 +105,18 @@ def mag_field(RAW_IMU, SENSOR_OFFSETS=None, ofs=None):
         mag_z += ofs[2] - SENSOR_OFFSETS.mag_ofs_z
     return sqrt(mag_x**2 + mag_y**2 + mag_z**2)
 
+def mag_field_df(MAG, mofs=True):
+    mag_x = MAG.MagX - MAG.OfsX
+    mag_y = MAG.MagY - MAG.OfsY
+    mag_z = MAG.MagZ - MAG.OfsZ
+
+    if mofs:
+        mag_x += MAG.MOfsX
+        mag_y += MAG.MOfsY
+        mag_z += MAG.MOfsZ
+
+    return sqrt(mag_x**2 + mag_y**2 + mag_z**2)
+
 def get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs):
     '''calculate magnetic field strength from raw magnetometer'''
     import mavutil
@@ -472,9 +484,11 @@ first_fix = None
 def distance_home(GPS_RAW):
     '''distance from first fix point'''
     global first_fix
-    if GPS_RAW.fix_type < 2:
+    if (hasattr(GPS_RAW, 'fix_type') and GPS_RAW.fix_type < 2) or \
+       (hasattr(GPS_RAW, 'Status')   and GPS_RAW.Status   < 2):
         return 0
-    if first_fix == None or first_fix.fix_type < 2:
+
+    if first_fix == None:
         first_fix = GPS_RAW
         return 0
     return distance_two(GPS_RAW, first_fix)
