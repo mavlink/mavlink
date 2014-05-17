@@ -473,4 +473,4 @@ if __name__ == "__main__":
         m = log.recv_msg()
         if m is None:
             break
-        print m
+        print(m)

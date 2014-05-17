@@ -15,7 +15,7 @@ from pymavlink.dialects.v10 import ardupilotmega
 
 # these imports allow for mavgraph and mavlogdump to use maths expressions more easily
 from math import *
-from mavextra import *
+from .mavextra import *
 
 '''
 Support having a $HOME/.pymavlink/mavextra.py for extra graphing functions
@@ -71,7 +71,7 @@ def set_dialect(dialect):
     For example, set_dialect("ardupilotmega")
     '''
     global mavlink, current_dialect
-    from generator import mavparse
+    from .generator import mavparse
     if mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
         wire_protocol = mavparse.PROTOCOL_1_0
         modname = "pymavlink.dialects.v10." + dialect

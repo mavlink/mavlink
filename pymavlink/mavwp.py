@@ -2,9 +2,9 @@
 module for loading/saving waypoints
 '''
 
-import mavutil, time, copy
+import time, copy
 import logging
-import mavutil
+from . import mavutil
 try:
     from google.protobuf import text_format
     import mission_pb2
@@ -376,7 +376,7 @@ class MAVRallyLoader(object):
     def append_rally_point(self, p):
         '''add rallypoint to end of list'''
         if (self.rally_count() > 9):
-           print "Can't have more than 10 rally points, not adding."
+           print("Can't have more than 10 rally points, not adding.")
            return
 
         self.rally_points.append(p)

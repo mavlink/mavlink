@@ -216,21 +216,21 @@ def comports(available_only=True):
 
 if __name__ == '__main__':
     import serial
-    print "-"*78
-    print "Serial ports"
-    print "-"*78
+    print("-"*78)
+    print("Serial ports")
+    print("-"*78)
     for order, port, desc, hwid in sorted(comports()):
-        print "%-10s: %s (%s) ->" % (port, desc, hwid),
+        print("%-10s: %s (%s) ->" % (port, desc, hwid))
         try:
             serial.Serial(port) # test open
         except serial.serialutil.SerialException:
-            print "can't be openend"
+            print("can't be openend")
         else:
-            print "Ready"
-    print
+            print("Ready")
+    print("")
     # list of all ports the system knows
-    print "-"*78
+    print("-"*78)
     print "All serial ports (registry)"
-    print "-"*78
+    print("-"*78)
     for order, port, desc, hwid in sorted(comports(False)):
-        print "%-10s: %s (%s)" % (port, desc, hwid)
+        print("%-10s: %s (%s)" % (port, desc, hwid))
