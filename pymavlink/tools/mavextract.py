@@ -46,11 +46,11 @@ def process(filename):
         m = mlog.recv_match()
         if m is None:
             break
-        if (isbin or islog) and m.get_type() in ["FMT", "PARM"]:
+        if (isbin or islog) and m.get_type() in ["FMT", "PARM", "CMD"]:
             file_header += m.get_msgbuf()
         if (isbin or islog) and m.get_type() == 'MSG' and m.Message.startswith("Ardu"):
             file_header += m.get_msgbuf()
-        if m.get_type() == 'PARAM_VALUE':
+        if m.get_type() in ['PARAM_VALUE','MISSION_ITEM']:
             timestamp = getattr(m, '_timestamp', None)
             file_header += struct.pack('>Q', timestamp*1.0e6) + m.get_msgbuf()
             
