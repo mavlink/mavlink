@@ -676,20 +676,20 @@ def rover_lat_accel(VFR_HUD, SERVO_OUTPUT_RAW):
     return accel
 
 
-def demix1(servo1, servo2):
+def demix1(servo1, servo2, gain=0.5):
     '''de-mix a mixed servo output'''
     s1 = servo1 - 1500
     s2 = servo2 - 1500
-    out1 = (s1+s2)/2
-    out2 = (s1-s2)/2
+    out1 = (s1+s2)*gain
+    out2 = (s1-s2)*gain
     return out1+1500
 
-def demix2(servo1, servo2):
+def demix2(servo1, servo2, gain=0.5):
     '''de-mix a mixed servo output'''
     s1 = servo1 - 1500
     s2 = servo2 - 1500
-    out1 = (s1+s2)/2
-    out2 = (s1-s2)/2
+    out1 = (s1+s2)*gain
+    out2 = (s1-s2)*gain
     return out2+1500
 
 def wrap_180(angle):
