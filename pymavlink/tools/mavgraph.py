@@ -11,9 +11,6 @@ from math import *
 
 from pymavlink.mavextra import *
 
-locator = None
-formatter = None
-
 colourmap = {
     'apm' : {
         'MANUAL'    : (1.0,   0,   0),
@@ -43,9 +40,12 @@ colourmap = {
 
 edge_colour = (0.1, 0.1, 0.1)
 
+lowest_x = None
+highest_x = None
+
 def plotit(x, y, fields, colors=[]):
     '''plot a set of graphs using date for x axis'''
-    global locator, formatter
+    global lowest_x, highest_x
     pylab.ion()
     fig = pylab.figure(num=1, figsize=(12,6))
     ax1 = fig.gca()
@@ -53,18 +53,22 @@ def plotit(x, y, fields, colors=[]):
     xrange = 0.0
     for i in range(0, len(fields)):
         if len(x[i]) == 0: continue
-        if x[i][-1] - x[i][0] > xrange:
-            xrange = x[i][-1] - x[i][0]
+        if lowest_x is None or x[i][0] < lowest_x:
+            lowest_x = x[i][0]
+        if highest_x is None or x[i][-1] > highest_x:
+            highest_x = x[i][-1]
+    if highest_x is None or lowest_x is None:
+        return
+    xrange = highest_x - lowest_x
     xrange *= 24 * 60 * 60
-    if formatter is None:
-        formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
-        interval = 1
-        intervals = [ 1, 2, 5, 10, 15, 30, 60, 120, 240, 300, 600,
-                      900, 1800, 3600, 7200, 5*3600, 10*3600, 24*3600 ]
-        for interval in intervals:
-            if xrange / interval < 15:
-                break
-        locator = matplotlib.dates.SecondLocator(interval=interval)
+    formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
+    interval = 1
+    intervals = [ 1, 2, 5, 10, 15, 30, 60, 120, 240, 300, 600,
+                  900, 1800, 3600, 7200, 5*3600, 10*3600, 24*3600 ]
+    for interval in intervals:
+        if xrange / interval < 15:
+            break
+    locator = matplotlib.dates.SecondLocator(interval=interval)
     if not opts.xaxis:
         ax1.xaxis.set_major_locator(locator)
         ax1.xaxis.set_major_formatter(formatter)
@@ -145,6 +149,7 @@ parser.add_option("--legend2",  default='upper right', help="default legend2 pos
 parser.add_option("--marker",  default=None, help="point marker")
 parser.add_option("--linestyle",  default=None, help="line style")
 parser.add_option("--xaxis",  default=None, help="X axis expression")
+parser.add_option("--multi",  action='store_true', help="multiple files with same colours")
 parser.add_option("--zero-time-base",  action='store_true', help="use Z time base for DF logs")
 parser.add_option("--flightmode", default=None,
                     help="Choose the plot background according to the active flight mode of the specified type, e.g. --flightmode=apm for ArduPilot or --flightmode=px4 for PX4 stack logs.  Cannot be specified with --xaxis.")
@@ -258,7 +263,11 @@ for fi in range(0, len(filenames)):
         lab = labels[fi*len(fields):(fi+1)*len(fields)]
     else:
         lab = fields[:]
-    plotit(x, y, lab, colors=colors[fi*len(fields):])
+    if opts.multi:
+        col = colors[:]
+    else:
+        col = colors[fi*len(fields):]
+    plotit(x, y, lab, colors=col)
     for i in range(0, len(x)):
         x[i] = []
         y[i] = []
