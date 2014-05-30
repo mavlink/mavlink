@@ -6,7 +6,7 @@ Andrew Tridgell August 2011
 
 import sys, struct, time, os, datetime
 import math, re
-import pylab, matplotlib
+import matplotlib
 from math import *
 
 from pymavlink.mavextra import *
@@ -120,7 +120,6 @@ def plotit(x, y, fields, colors=[]):
                 linestyle = '-'
             ax.plot_date(x[i], y[i], color=color, label=fields[i],
                          linestyle=linestyle, marker=marker, tz=None)
-        pylab.draw()
         empty = False
     if opts.flightmode is not None:
         for i in range(len(modes)-1):
@@ -153,6 +152,7 @@ parser.add_option("--multi",  action='store_true', help="multiple files with sam
 parser.add_option("--zero-time-base",  action='store_true', help="use Z time base for DF logs")
 parser.add_option("--flightmode", default=None,
                     help="Choose the plot background according to the active flight mode of the specified type, e.g. --flightmode=apm for ArduPilot or --flightmode=px4 for PX4 stack logs.  Cannot be specified with --xaxis.")
+parser.add_option("--output",dest="output", default=None, help="provide an output format")
 (opts, args) = parser.parse_args()
 
 from pymavlink import mavutil
@@ -168,6 +168,12 @@ if opts.flightmode is not None and opts.xaxis:
 if opts.flightmode is not None and opts.flightmode not in colourmap:
     print("Unknown flight controller '%s' in specification of --flightmode" % opts.flightmode)
     sys.exit(1)
+
+
+if opts.output is not None:
+    matplotlib.use('Agg')
+
+import pylab
 
 filenames = []
 fields = []
@@ -271,6 +277,9 @@ for fi in range(0, len(filenames)):
     for i in range(0, len(x)):
         x[i] = []
         y[i] = []
-pylab.show()
-pylab.draw()
-raw_input('press enter to exit....')
+if opts.output is None:
+    pylab.show()
+    pylab.draw()
+    raw_input('press enter to exit....')
+else:
+    pylab.savefig(opts.output, bbox_inches='tight')
