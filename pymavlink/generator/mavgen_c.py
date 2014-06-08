@@ -75,6 +75,10 @@ def generate_main_h(directory, xml):
 #ifndef ${basename_upper}_H
 #define ${basename_upper}_H
 
+#ifndef MAVLINK_H
+    #error Wrong include order: ${basename_upper}.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
