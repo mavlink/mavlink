@@ -22,7 +22,6 @@ Released under GNU GPL version 3 or later
 """
 import os
 import re
-import pprint
 
 # Python 2.x and 3.x compatability
 try:
@@ -43,7 +42,6 @@ except ImportError as ex:
 sys.path.append(os.path.join('pymavlink','generator'))
 from mavgen import *
 
-DEBUG = False
 title = "MAVLink Generator"
 error_limit = 5
 
@@ -54,7 +52,6 @@ class Application(Frame):
         self.pack_propagate(0)
         self.grid( sticky=N+S+E+W)
         self.createWidgets()
-        self.pp = pprint.PrettyPrinter(indent=4)
 
     """\
     Creates the gui and all of its content.
@@ -118,10 +115,8 @@ class Application(Frame):
     Open a file selection window to choose the XML message definition.
     """
     def browseXMLFile(self):
-        # TODO Allow specification of multipe XML definitions
+        # TODO Allow specification of multiple XML definitions
         xml_file = tkinter.filedialog.askopenfilename(parent=self, title='Choose a definition file')
-        if DEBUG:
-            print("XML: " + xml_file)
         if xml_file != None:
             self.xml_value.set(xml_file)
 
@@ -132,8 +127,6 @@ class Application(Frame):
     def browseOutDirectory(self):
         mavlinkFolder = os.path.dirname(os.path.realpath(__file__))
         out_dir = tkinter.filedialog.askdirectory(parent=self,initialdir=mavlinkFolder,title='Please select an output directory')
-        if DEBUG:
-            print("Output: " + out_dir)
         if out_dir != None:
             self.out_value.set(out_dir)
 
@@ -162,23 +155,17 @@ class Application(Frame):
         # Generate headers
         opts = MavgenOptions(self.language_value.get(), self.protocol_value.get()[1:], self.out_value.get(), error_limit);
         args = [self.xml_value.get()]
-        if DEBUG:
-            print("Generating headers")
-            self.pp.pprint(opts)
-            self.pp.pprint(args)
         try:
             mavgen(opts,args)
             tkinter.messagebox.showinfo('Successfully Generated Headers', 'Headers generated succesfully.')
 
         except Exception as ex:
             exStr = formatErrorMessage(str(ex));
-            if DEBUG:
-                print('An occurred while generating headers:\n\t{0!s}'.format(ex))
             tkinter.messagebox.showerror('Error Generating Headers','{0!s}'.format(exStr))
             return
 
 """\
-Format the mavgen exceptions by removing "ERROR: ".
+Format the mavgen exceptions by removing 'ERROR: '.
 """
 def formatErrorMessage(message):
     reObj = re.compile(r'^(ERROR):\s+',re.M);
