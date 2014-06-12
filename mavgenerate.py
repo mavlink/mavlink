@@ -23,7 +23,7 @@ Released under GNU GPL version 3 or later
 import os
 import re
 
-# Python 2.x and 3.x compatability
+# Python 2.x and 3.x compatibility
 try:
     from tkinter import *
     import tkinter.filedialog
@@ -40,7 +40,9 @@ except ImportError as ex:
     del tkMessageBox
 
 sys.path.append(os.path.join('pymavlink','generator'))
-from mavgen import *
+
+import mavgen
+import mavparse
 
 title = "MAVLink Generator"
 error_limit = 5
@@ -85,11 +87,11 @@ class Application(Frame):
         # Create the Lang box
 
         self.language_value = StringVar()
-        self.language_choices = [ "C", "Python", "CS", "Javascript", "WLua" ]
-        self.language_label = Label( self, text="Lang" )
+        self.language_choices = mavgen.supportedLanguages
+        self.language_label = Label( self, text="Language" )
         self.language_label.grid(row=2, column=0)
         self.language_menu = OptionMenu(self,self.language_value,*self.language_choices)
-        self.language_value.set(self.language_choices[0])
+        self.language_value.set(mavgen.DEFAULT_LANGUAGE)
         self.language_menu.config(width=10)
         self.language_menu.grid(row=2, column=1,sticky=W)
 
@@ -97,19 +99,30 @@ class Application(Frame):
         # Create the Protocol box
 
         self.protocol_value = StringVar()
-        self.protocol_choices = [ "v0.9", "v1.0" ]
+        self.protocol_choices = [mavparse.PROTOCOL_0_9, mavparse.PROTOCOL_1_0]
         self.protocol_label = Label( self, text="Protocol")
         self.protocol_label.grid(row=3, column=0)
         self.protocol_menu = OptionMenu(self,self.protocol_value,*self.protocol_choices)
-        self.protocol_value.set(self.protocol_choices[1])
+        self.protocol_value.set(mavgen.DEFAULT_WIRE_PROTOCOL)
         self.protocol_menu.config(width=10)
         self.protocol_menu.grid(row=3, column=1,sticky=W)
+
+        #----------------------------------------
+        # Create the Validate box
+
+        self.validate_value = BooleanVar()
+        self.validate_label = Label( self, text="Validate")
+        self.validate_label.grid(row=4, column=0)
+        self.validate_button = Checkbutton(self, variable=self.validate_value, onvalue=True, offvalue=False)
+        self.validate_value.set(mavgen.DEFAULT_VALIDATE)
+        self.validate_button.config(width=10)
+        self.validate_button.grid(row=4, column=1,sticky=W)
 
         #----------------------------------------
         # Create the generate button
 
         self.generate_button = Button ( self, text="Generate", command=self.generateHeaders)
-        self.generate_button.grid(row=4,column=1)
+        self.generate_button.grid(row=5,column=1)
 
     """\
     Open a file selection window to choose the XML message definition.
@@ -137,7 +150,7 @@ class Application(Frame):
         # Verify settings
         rex = re.compile(".*\\.xml$", re.IGNORECASE)
         if not self.xml_value.get():
-            tkinter.messagebox.showerror('Error Generating Headers','An XML message defintion file must be specified.')
+            tkinter.messagebox.showerror('Error Generating Headers','An XML message definition file must be specified.')
             return
 
         if not self.out_value.get():
@@ -149,15 +162,12 @@ class Application(Frame):
             if not tkinter.messagebox.askokcancel('Overwrite Headers?','The output directory \'{0}\' already exists. Headers may be overwritten if they already exist.'.format(self.out_value.get())):
                 return
 
-        # Verify XML file with schema (or do this in mavgen)
-        # TODO write XML schema (XDS)
-
         # Generate headers
-        opts = MavgenOptions(self.language_value.get(), self.protocol_value.get()[1:], self.out_value.get(), error_limit);
+        opts = mavgen.Opts(self.out_value.get(), wire_protocol=self.protocol_value.get(), language=self.language_value.get(), validate=self.validate_value.get(), error_limit=error_limit);
         args = [self.xml_value.get()]
         try:
-            mavgen(opts,args)
-            tkinter.messagebox.showinfo('Successfully Generated Headers', 'Headers generated succesfully.')
+            mavgen.mavgen(opts,args)
+            tkinter.messagebox.showinfo('Successfully Generated Headers', 'Headers generated successfully.')
 
         except Exception as ex:
             exStr = formatErrorMessage(str(ex));
@@ -170,7 +180,7 @@ Format the mavgen exceptions by removing 'ERROR: '.
 def formatErrorMessage(message):
     reObj = re.compile(r'^(ERROR):\s+',re.M);
     matches = re.findall(reObj, message);
-    prefix = ("An error occurred in mavgen:" if len(matches) == 1 else "Errors occured in mavgen:\n")
+    prefix = ("An error occurred in mavgen:" if len(matches) == 1 else "Errors occurred in mavgen:\n")
     message = re.sub(reObj, '\n', message);
 
     return prefix + message
@@ -178,20 +188,6 @@ def formatErrorMessage(message):
 
 # End of Application class
 # ---------------------------------
-
-"""\
-This class mimicks an ArgumentParser Namespace since mavgen only
-accepts an object for its opts argument.
-"""
-class MavgenOptions:
-    def __init__(self,language,protocol,output,error_limit):
-        self.language = language
-        self.wire_protocol = protocol
-        self.output = output
-        self.error_limit = error_limit;
-# End of MavgenOptions class 
-# ---------------------------------
-
 
 # ---------------------------------
 # Start
