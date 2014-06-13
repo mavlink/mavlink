@@ -7,16 +7,23 @@ of a series of MAVLink packets, each with a 64 bit timestamp
 header. The timestamp is in microseconds since 1970 (unix epoch)
 '''
 
-import sys, time, os, struct, json
-
+import sys, time, os, struct, datetime, json
 from optparse import OptionParser
+from pymavlink import mavutil
+
+
 parser = OptionParser("mavlogdump.py [options] <LOGFILE>")
 
+# Get the current year. We use this to correct invalid byte-ordering in MAVLink timestamps
+current_year = datetime.datetime.now().year
+
+# Set up some command-line options.
+parser = OptionParser("mavlogdump.py [options] <LOGFILE>")
 parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
 parser.add_option("--planner",dest="planner", action='store_true', help="use planner file format")
 parser.add_option("--robust",dest="robust", action='store_true', help="Enable robust parsing (skip over bad data)")
 parser.add_option("-f", "--follow",dest="follow", action='store_true', help="keep waiting for more data at end of file")
-parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
+parser.add_option("--condition",dest="condition", default=None, help="select packets by condition using MESSAGE.FIELD COMPARATOR LITERAL [BOOLEAN MESSAGE.FIELD COMPARATOR LITERAL [...]]. Ex: GPS_RAW_INT.fix_type==3 and GPS_RAW_INT.lat != 0 and GPS_RAW_INT.alt != 0")
 parser.add_option("-q", "--quiet", dest="quiet", action='store_true', help="don't display packets")
 parser.add_option("-o", "--output", default=None, help="output matching packets to give file")
 parser.add_option("-p", "--parms",  action='store_true', help="preserve parameters in output with -o")
@@ -27,15 +34,12 @@ parser.add_option("--dialect",  default="ardupilotmega", help="MAVLink dialect")
 parser.add_option("--zero-time-base",  action='store_true', help="use Z time base for DF logs")
 (opts, args) = parser.parse_args()
 
-import inspect
-
-from pymavlink import mavutil
-
-
+# Print the help if the user didn't specify any arguments
 if len(args) < 1:
     parser.print_help()
     sys.exit(1)
 
+# Open a MAVLink connection on the provided file
 filename = args[0]
 mlog = mavutil.mavlink_connection(filename, planner_format=opts.planner,
                                   notimestamps=opts.notimestamps,
@@ -109,8 +113,14 @@ while True:
     if m.get_type() == 'BAD_DATA' and m.reason == "Bad prefix":
         continue
 
-    # Grab the timestamp.
+    # Grab the timestamp. Older versions of QGC stored timestamps in the wrong byte-order,
+    # so try a different byte ordering if the year for this timestamp is in the future.
     timestamp = getattr(m, '_timestamp', None)
+    try:
+        if time.localtime(timestamp).tm_year > current_year:
+            timestamp = struct.unpack('>Q', struct.pack('<Q', int(timestamp*1e6)))[0] / 1e6
+    except:
+        timestamp = struct.unpack('>Q', struct.pack('<Q', int(timestamp*1e6)))[0] / 1e6
 
     # If we're just logging, pack in the timestamp and data into the output file.
     if output:
