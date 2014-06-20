@@ -16,7 +16,8 @@ mainstate_field = 'STAT.MainState'
 position_field_types = ['Lon', 'Lat', 'Alt']  # kml order is lon, lat
 
 colors = [simplekml.Color.red, simplekml.Color.green, simplekml.Color.blue,
-          simplekml.Color.violet]
+          simplekml.Color.violet, simplekml.Color.yellow,
+          simplekml.Color.orange]
 
 kml = simplekml.Kml()
 kml_linestrings = []
