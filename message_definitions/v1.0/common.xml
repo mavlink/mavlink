@@ -1772,6 +1772,18 @@
              <field type="uint8_t" name="mode_switch">Flight mode switch position, 0.. 255</field>
              <field type="uint8_t" name="manual_override_switch">Override mode switch position, 0.. 255</field>
          </message>
+          <message id="82" name="ATTITUDE_SETPOINT_EXTERNAL">
+               <description>Set the vehicle attitude and body angular rates.</description>
+               <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
+               <field type="uint8_t" name="target_system">System ID</field>
+               <field type="uint8_t" name="target_component">Component ID</field>
+               <field type="uint8_t" name="ignore_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b00000000 indicates it should follow the commanded attitude and rate and none of the setpoint dimensions should be ignored. Mapping: bit 1: roll, bit 2: pitch, bit 3: yaw, bit 4: roll rate, bit 5: pitch rate, bit 6: yaw rate, bit 7: thrust</field>
+               <field type="float" name="q[4]">Quaternion</field>
+               <field type="float" name="body_roll_rate">Body roll rate in radians per second</field>
+               <field type="float" name="body_pitch_rate">Body roll rate in radians per second</field>
+               <field type="float" name="body_yaw_rate">Body roll rate in radians per second</field>
+               <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse trust)</field>
+          </message>
           <message id="89" name="LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET">
                <description>The offset in X, Y, Z and yaw between the LOCAL_POSITION_NED messages of MAV X and the global coordinate frame in NED coordinates. Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
