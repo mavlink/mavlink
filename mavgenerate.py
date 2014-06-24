@@ -41,7 +41,7 @@ except ImportError as ex:
     del tkMessageBox
 
 sys.path.append(os.path.join('pymavlink','generator'))
-from mavgen import *
+from pymavlink.generator import mavgen
 
 DEBUG = False
 title = "MAVLink Generator"

@@ -12,6 +12,7 @@ parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', he
 parser.add_option("--planner",dest="planner", action='store_true', help="use planner file format")
 parser.add_option("--robust",dest="robust", action='store_true', help="Enable robust parsing (skip over bad data)")
 parser.add_option("--condition", default=None, help="condition for packets")
+parser.add_option("--dialect",  default="ardupilotmega", help="MAVLink dialect")
 
 (opts, args) = parser.parse_args()
 
@@ -27,7 +28,8 @@ def mavloss(logfile):
     mlog = mavutil.mavlink_connection(filename,
                                       planner_format=opts.planner,
                                       notimestamps=opts.notimestamps,
-                                      robust_parsing=opts.robust)
+                                      robust_parsing=opts.robust,
+                                      dialect=opts.dialect)
 
     m = mlog.recv_match(condition=opts.condition)
 
