@@ -175,10 +175,13 @@ ${{message_definition_files:#import "MV${name_camel_case}Messages.h"
 @synthesize message=_message;
 
 + (id)messageWithCMessage:(mavlink_message_t)message {
-  NSDictionary *messageIdToClass = @{
-${{message:    @${id} : [MVMessage${name_camel_case} class],
+  static NSDictionary *messageIdToClass = nil;
+  if (!messageIdToClass) {
+    messageIdToClass = @{
+${{message:      @${id} : [MVMessage${name_camel_case} class],
 }}
-  };
+    };
+  }
 
   Class messageClass = messageIdToClass[@(message.msgid)];
   // Store unknown messages to MVMessage
