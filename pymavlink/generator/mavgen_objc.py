@@ -328,7 +328,10 @@ def generate_shared(basename, xml_list):
     template_dict['parse_time'] = xml_list[0].parse_time
     template_dict['message'] = []
     template_dict['message_definition_files'] = []
-    basenames = []
+
+    print("Generating Objective-C implementation in directory %s" % basename)
+    mavparse.mkdir_p(basename)
+
     for xml in xml_list:
         template_dict['message'].extend(xml.message)
         basename_camel_case = camel_case_from_underscores(xml.basename)

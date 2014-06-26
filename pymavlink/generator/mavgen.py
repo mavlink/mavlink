@@ -110,7 +110,10 @@ def mavgen(opts, args) :
             from pymavlink.generator import mavgen_javascript
         mavgen_javascript.generate(opts.output, xml)
     elif opts.language == 'objc':
-        import mavgen_objc
+        try:
+            import mavgen_objc
+        except Exception:
+            from pymavlink.generator import mavgen_objc
         mavgen_objc.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
