@@ -482,7 +482,7 @@ def copy_fixed_headers(directory, xml):
     srcpath = os.path.join(basepath, 'C/include_v%s' % xml.wire_protocol_version)
     print("Copying fixed headers")
     for h in hlist:
-        if (not (h == 'mavlink_protobuf_manager.hpp' and xml.wire_protocol_version == '0.9')):
+        if (not ((h == 'mavlink_protobuf_manager.hpp' or h == 'mavlink_conversions.h') and xml.wire_protocol_version == '0.9')):
            src = os.path.realpath(os.path.join(srcpath, h))
            dest = os.path.realpath(os.path.join(directory, h))
            if src == dest:
