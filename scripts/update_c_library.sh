@@ -34,7 +34,7 @@ cd $MAVLINK_PATH
 git pull $MAVLINK_GIT_REMOTENAME $MAVLINK_GIT_BRANCHNAME || exit 1
 
 # save git hash
-MAVLINK_GITHASH=$(git rev-parse @)
+MAVLINK_GITHASH=$(git rev-parse HEAD)
 
 # delete old c headers
 rm -rf $CLIBRARY_PATH/*
