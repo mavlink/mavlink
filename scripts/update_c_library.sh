@@ -29,8 +29,13 @@ CLIBRARY_GIT_REMOTENAME=origin
 CLIBRARY_GIT_BRANCHNAME=master
 
 # fetch latest message specifications
-echo "Fetching latest protocol specifications"
 cd $MAVLINK_PATH
+git fetch $MAVLINK_GIT_REMOTENAME
+git diff $MAVLINK_GIT_REMOTENAME/$MAVLINK_GIT_BRANCHNAME --exit-code
+RETVAL=$?
+# if the diff value is zero nothing changed - abort
+[ $RETVAL -eq 0 ] && exit 0
+echo "Fetching latest protocol specifications"
 git pull $MAVLINK_GIT_REMOTENAME $MAVLINK_GIT_BRANCHNAME || exit 1
 
 # save git hash
