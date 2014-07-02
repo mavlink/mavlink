@@ -8,6 +8,16 @@
 # the message specifications are updated.
 # The script assumes that the git repositories in MAVLINK_GIT_PATH and
 # CLIBRARY_GIT_PATH are set up prior to invoking the script.
+#
+# Usage, for example:
+# cd ~/src
+# git clone git@github.com:mavlink/mavlink.git
+# cd mavlink
+# mkdir -p include/mavlink/v1.0
+# cd include/mavlink/v1.0
+# git clone git@github.com:mavlink/c_library.git .
+# cd ~/src/mavlink
+# ./scripts/update_c_library.sh
 
 # settings
 MAVLINK_PATH=$PWD
