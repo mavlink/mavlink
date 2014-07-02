@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # c_library repository update script
 # Author: Thomas Gubler <thomasgubler@gmail.com>
