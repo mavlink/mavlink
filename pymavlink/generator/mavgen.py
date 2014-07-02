@@ -92,13 +92,22 @@ def mavgen(opts, args) :
             from pymavlink.generator import mavgen_c
         mavgen_c.generate(opts.output, xml)
     elif opts.language == 'wlua':
-        import mavgen_wlua
+        try:
+            import mavgen_wlua
+        except Exception:
+            from pymavlink.generator import mavgen_wlua
         mavgen_wlua.generate(opts.output, xml)
     elif opts.language == 'cs':
-        import mavgen_cs
+        try:
+            import mavgen_cs
+        except Exception:
+            from pymavlink.generator import mavgen_cs
         mavgen_cs.generate(opts.output, xml)
     elif opts.language == 'javascript':
-        import mavgen_javascript
+        try:
+            import mavgen_javascript
+        except Exception:
+            from pymavlink.generator import mavgen_javascript
         mavgen_javascript.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)
