@@ -20,6 +20,13 @@
 # cd ~/src/mavlink
 # ./scripts/update_c_library.sh
 
+function generate_headers() {
+python2 pymavlink/generator/mavgen.py \
+    --output $CLIBRARY_PATH \
+    --lang C \
+    message_definitions/v1.0/$1.xml
+}
+
 # settings
 MAVLINK_PATH=$PWD
 MAVLINK_GIT_REMOTENAME=upstream
@@ -46,10 +53,16 @@ rm -rf $CLIBRARY_PATH/*
 
 # generate new c headers
 echo "start to generate c headers"
-python2 pymavlink/generator/mavgen.py \
-    --output $CLIBRARY_PATH \
-    --lang C \
-    message_definitions/v1.0/common.xml
+generate_headers ardupilotmega
+generate_headers autoquad
+generate_headers matrixpilot
+generate_headers minimal
+generate_headers pixhawk
+generate_headers sensesoar
+generate_headers slugs
+generate_headers test
+generate_headers ualberta
+generate_headers common
 echo "finished generating c headers"
 
 # git add and git commit in local c_library repository
