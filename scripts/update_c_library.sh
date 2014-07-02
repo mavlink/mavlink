@@ -13,6 +13,7 @@
 # cd ~/src
 # git clone git@github.com:mavlink/mavlink.git
 # cd mavlink
+# git remote rename origin upstream
 # mkdir -p include/mavlink/v1.0
 # cd include/mavlink/v1.0
 # git clone git@github.com:mavlink/c_library.git .
