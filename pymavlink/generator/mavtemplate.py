@@ -6,7 +6,7 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
 
-from .mavparse import MAVParseError
+from mavparse import MAVParseError
 
 class MAVTemplate(object):
     '''simple templating system'''
