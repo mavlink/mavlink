@@ -960,7 +960,7 @@ class mavchildexec(mavfile):
         import fcntl
         
         self.filename = filename
-        self.child = Popen(filename, shell=True, stdout=PIPE, stdin=PIPE)
+        self.child = Popen(filename, shell=False, stdout=PIPE, stdin=PIPE, bufsize=0)
         self.fd = self.child.stdout.fileno()
 
         fl = fcntl.fcntl(self.fd, fcntl.F_GETFL)
