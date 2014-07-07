@@ -117,24 +117,39 @@ def magfit(logfile):
     AHRS_ORIENTATION = 0
     COMPASS_ORIENT = 0
     COMPASS_EXTERNAL = 0
-
+    last_gyr = None
+    
     # now gather all the data
     while True:
         m = mlog.recv_match()
         if m is None:
             break
-        if m.get_type() == "PARAM_VALUE":
-            if str(m.param_id) == 'AHRS_ORIENTATION':
-                AHRS_ORIENTATION = int(m.param_value)
-            if str(m.param_id) == 'COMPASS_ORIENT':
-                COMPASS_ORIENT = int(m.param_value)
-            if str(m.param_id) == 'COMPASS_EXTERNAL':
-                COMPASS_EXTERNAL = int(m.param_value)
-        if m.get_type() == "RAW_IMU":
-            mag = Vector3(m.xmag, m.ymag, m.zmag)
+        if m.get_type() in ["PARAM_VALUE", "PARM"]:
+            if m.get_type() == "PARM":
+                name = str(m.Name)
+                value = int(m.Value)
+            else:
+                name = str(m.param_id)
+                value = int(m.param_value)
+            if name == "AHRS_ORIENTATION":
+                AHRS_ORIENTATION = value
+            if name == 'COMPASS_ORIENT':
+                COMPASS_ORIENT = value
+            if name == 'COMPASS_EXTERNAL':
+                COMPASS_EXTERNAL = value
+        if m.get_type() in ["RAW_IMU", "MAG","IMU"]:
+            if m.get_type() == "RAW_IMU":
+                mag = Vector3(m.xmag, m.ymag, m.zmag)
+                gyr = Vector3(m.xgyro, m.ygyro, m.zgyro) * 0.001
+                usec = m.time_usec
+            elif m.get_type() == "IMU":
+                last_gyr = Vector3(m.GyrX,m.GyrY,m.GyrZ)
+                continue
+            elif last_gyr is not None:
+                mag = Vector3(m.MagX,m.MagY,m.MagZ)
+                gyr = last_gyr
+                usec = m.TimeMS * 1000
             mag = mag_fixup(mag, AHRS_ORIENTATION, COMPASS_ORIENT, COMPASS_EXTERNAL)
-            gyr = Vector3(m.xgyro, m.ygyro, m.zgyro) * 0.001
-            usec = m.time_usec
             if last_mag is not None and gyr.length() > radians(opts.min_rotation):
                 add_errors(mag, gyr, last_mag, (usec - last_usec)*1.0e-6, total_error, rotations)
                 count += 1
