@@ -409,6 +409,17 @@ class MAVRallyLoader(object):
         if change_time:
             self.last_change = time.time()
 
+    def set_alt(self, i, alt, break_alt=None, change_time=True):
+        '''set rally point altitude(s)'''
+        if i < 1 or i > self.rally_count():
+            print("Inavlid rally point number %u" % i)
+            return
+        self.rally_points[i-1].alt = int(alt)
+        if (break_alt != None):
+            self.rally_points[i-1].break_alt = break_alt
+        if change_time:
+            self.last_change = time.time()
+
     def load(self, filename):
         '''load rally and rally_land points from a file.
          returns number of points loaded'''
