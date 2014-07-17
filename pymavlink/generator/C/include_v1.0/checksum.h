@@ -81,9 +81,6 @@ static inline void crc_accumulate_buffer(uint16_t *crcAccum, const char *pBuffer
         }
 }
 
-
-
-
 #endif /* _CHECKSUM_H_ */
 
 #ifdef __cplusplus
