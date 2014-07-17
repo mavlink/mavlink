@@ -9,7 +9,7 @@ Released under GNU GPL version 3 or later
 '''
 import sys, textwrap, os
 try:
-    from . import mavparse
+    import mavparse
 except Exception:
     from pymavlink.generator import mavparse
 
@@ -83,7 +83,7 @@ def mavgen(opts, args) :
     # Convert language option to lowercase and validate
     opts.language = opts.language.lower()
     if opts.language == 'python':
-        from . import mavgen_python
+        import mavgen_python
         mavgen_python.generate(opts.output, xml)
     elif opts.language == 'c':
         try:
