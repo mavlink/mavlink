@@ -7,7 +7,7 @@ of a series of MAVLink packets, each with a 64 bit timestamp
 header. The timestamp is in microseconds since 1970 (unix epoch)
 '''
 
-import sys, time, os, struct, datetime, json
+import sys, time, os, struct, json, inspect, datetime
 from optparse import OptionParser
 from pymavlink import mavutil
 
