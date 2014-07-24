@@ -52,12 +52,16 @@ class MAVWPLoader(object):
             w.seq = i
         self.last_change = time.time()
 
-    def add_latlonalt(self, lat, lon, altitude):
+    def add_latlonalt(self, lat, lon, altitude, terrain_alt=False):
         '''add a point via latitude/longitude/altitude'''
+        if terrain_alt:
+            frame = mavutil.mavlink.MAV_FRAME_GLOBAL_TERRAIN_ALT
+        else:
+            frame = mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT
         p = mavutil.mavlink.MAVLink_mission_item_message(self.target_system,
                                                          self.target_component,
                                                          0,
-                                                         mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                                                         frame,
                                                          mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
                                                          0, 0, 0, 0, 0, 0,
                                                          lat, lon, altitude)
