@@ -198,8 +198,21 @@
                <field type="float" name="best_score">Best score</field>
                <field type="int32_t" name="best_lat">Latitude of best detection</field>
                <field type="int32_t" name="best_lon">Longitude of best detection</field>
-               <field type="uint16_t" name="image_queue">Number of images in queue</field>
+               <field type="int32_t" name="best_detection_id">ID of best detection</field>
+               <field type="uint16_t" name="images_done">Number of images in already processed</field>
+               <field type="uint16_t" name="images_todo">Number of images in queue to process</field>
                <field type="float" name="detection_fps">Average frames per seconds for detection</field>
+          </message>
+          <message id="206" name="ONBOARD_HEALTH">
+               <field type="uint32_t" name="uptime">Uptime of system</field>
+               <field type="uint16_t" name="cpu_freq">CPU frequency</field>
+               <field type="uint8_t[4]" name="cpu_load">CPU load per core in percent</field>
+               <field type="uint8_t" name="ram_usage">RAM usage in percent</field>
+               <field type="int8_t" name="disk_health">Disk health (-1: N/A, 0: ERR, 1: RO, 2: RW)</field>
+               <field type="uint8_t" name="disk_usage">Disk usage in percent</field>
+               <field type="float" name="disk_usage_gb">Disk usage in GiB</field>
+               <field type="float" name="temp">Temperature</field>
+               <field type="float" name="voltage">Supply voltage</field>
           </message>
      </messages>
 </mavlink>
