@@ -488,13 +488,6 @@ def copy_fixed_headers(directory, xml):
            if src == dest:
                continue
            shutil.copy(src, dest)
-    # XXX This is a hack - to be removed
-    if (xml.basename == 'pixhawk' and xml.wire_protocol_version == '1.0'):
-        h = 'pixhawk/pixhawk.pb.h'
-        src = os.path.realpath(os.path.join(srcpath, h))
-        dest = os.path.realpath(os.path.join(directory, h))
-        if src != dest:
-            shutil.copy(src, dest)
         
 def copy_fixed_sources(directory, xml):
     # XXX This is a hack - to be removed
