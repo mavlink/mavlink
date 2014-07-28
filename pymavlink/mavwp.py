@@ -45,6 +45,21 @@ class MAVWPLoader(object):
         self.wpoints.append(w)
         self.last_change = time.time()
 
+    def insert(self, idx, w, comment=''):
+        '''insert a waypoint'''
+        if idx >= self.count():
+            self.add(w, comment)
+            return
+        if idx < 0:
+            return
+        w = copy.copy(w)
+        if comment:
+            w.comment = comment
+        w.seq = idx
+        self.wpoints.insert(idx, w)
+        self.last_change = time.time()
+        self.reindex()
+
     def reindex(self):
         '''reindex waypoints'''
         for i in range(self.count()):
