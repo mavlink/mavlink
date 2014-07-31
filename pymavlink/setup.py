@@ -1,5 +1,5 @@
 from distutils.core import setup, Extension
-import glob, os, shutil
+import glob, os, shutil, fnmatch
 
 version = '1.1.34'
 
@@ -22,11 +22,17 @@ if not "NOGEN" in os.environ:
 
     for xml in v09_dialects:
         dialect = os.path.basename(xml)[:-4]
+        wildcard = os.getenv("MAVLINK_DIALECT",'*')
+        if not fnmatch.fnmatch(dialect, wildcard):
+            continue
         print("Building %s" % xml)
         mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_0_9)
 
     for xml in v10_dialects:
         dialect = os.path.basename(xml)[:-4]
+        wildcard = os.getenv("MAVLINK_DIALECT",'*')
+        if not fnmatch.fnmatch(dialect, wildcard):
+            continue
         print("Building %s" % xml)
         mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_1_0)
 
