@@ -396,6 +396,9 @@
                <entry value="2097152" name="MAV_SYS_STATUS_AHRS">
                     <description>0x200000 AHRS subsystem health</description>
                </entry>
+               <entry value="4194304" name="MAV_SYS_STATUS_TERRAIN">
+                    <description>0x400000 Terrain subsystem health</description>
+               </entry>
           </enum>
           <enum name="MAV_FRAME">
                <entry value="0" name="MAV_FRAME_GLOBAL">
@@ -427,6 +430,9 @@
                </entry>
                <entry value="9" name="MAV_FRAME_BODY_OFFSET_NED">
                    <description>Offset in body NED frame. This makes sense if adding setpoints to the current flight path, to avoid an obstacle - e.g. useful to command 2 m/s^2 acceleration to the east.</description>
+               </entry>
+               <entry value="10" name="MAV_FRAME_GLOBAL_TERRAIN_ALT">
+                   <description>Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at ground level in terrain model.</description>
                </entry>
           </enum>
           <enum name="MAVLINK_DATA_STREAM_TYPE">
@@ -590,26 +596,12 @@
                     <param index="6">Longitude/Y of goal</param>
                     <param index="7">Altitude/Z of goal</param>
                </entry>
-               <entry value="90" name="MAV_CMD_NAV_GUIDED_LIMITS">
-                    <description>set limits for external control</description>
-                    <param index="1">timeout - maximum time (in seconds) that external controller will be allowed to control vehicle. 0 means no timeout</param>
-                    <param index="2">absolute altitude min (in meters, WGS84) - if vehicle moves below this alt, the command will be aborted and the mission will continue.  0 means no lower altitude limit</param>
-                    <param index="3">absolute altitude max (in meters)- if vehicle moves above this alt, the command will be aborted and the mission will continue.  0 means no upper altitude limit</param>
-                    <param index="4">horizontal move limit (in meters, WGS84) - if vehicle moves more than this distance from it's location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal altitude limit</param>
-                    <param index="5">Empty</param>
-                    <param index="6">Empty</param>
-                    <param index="7">Empty</param>
-               </entry>
-               <entry value="91" name="MAV_CMD_NAV_GUIDED_MASTER">
-                    <description>set id of master controller</description>
-                    <param index="1">System ID</param>
-                    <param index="2">Component ID</param>
-                    <param index="3">Empty</param>
-                    <param index="4">Empty</param>
-                    <param index="5">Empty</param>
-                    <param index="6">Empty</param>
-                    <param index="7">Empty</param>
-               </entry>
+
+               <!-- IDs 90 and 91 are reserved until the end of 2014,
+                    as they were used in some conflicting proposals
+                    between PX4 and ardupilot and need to be kept
+                    unused to prevent errors -->
+
                <entry value="92" name="MAV_CMD_NAV_GUIDED_ENABLE">
                     <description>hand control over to an external controller</description>
                     <param index="1">On / Off (> 0.5f on)</param>
@@ -913,14 +905,36 @@
 
               <entry value="220" name="MAV_CMD_DO_MOUNT_CONTROL_QUAT">
                 <description>Mission command to control a camera or antenna mount, using a quaternion as reference.</description>
-                <param index="1">q1 - quaternion param #1</param>
-                <param index="2">q2 - quaternion param #2</param>
-                <param index="3">q3 - quaternion param #3</param>
-                <param index="4">q4 - quaternion param #4</param>
+                <param index="1">q1 - quaternion param #1, w (1 in null-rotation)</param>
+                <param index="2">q2 - quaternion param #2, x (0 in null-rotation)</param>
+                <param index="3">q3 - quaternion param #3, y (0 in null-rotation)</param>
+                <param index="4">q4 - quaternion param #4, z (0 in null-rotation)</param>
                 <param index="5">Empty</param>
                 <param index="6">Empty</param>
                 <param index="7">Empty</param>
               </entry>
+
+               <entry value="221" name="MAV_CMD_DO_GUIDED_MASTER">
+                    <description>set id of master controller</description>
+                    <param index="1">System ID</param>
+                    <param index="2">Component ID</param>
+                    <param index="3">Empty</param>
+                    <param index="4">Empty</param>
+                    <param index="5">Empty</param>
+                    <param index="6">Empty</param>
+                    <param index="7">Empty</param>
+               </entry>
+
+               <entry value="222" name="MAV_CMD_DO_GUIDED_LIMITS">
+                 <description>set limits for external control</description>
+                 <param index="1">timeout - maximum time (in seconds) that external controller will be allowed to control vehicle. 0 means no timeout</param>
+                 <param index="2">absolute altitude min (in meters, WGS84) - if vehicle moves below this alt, the command will be aborted and the mission will continue.  0 means no lower altitude limit</param>
+                 <param index="3">absolute altitude max (in meters)- if vehicle moves above this alt, the command will be aborted and the mission will continue.  0 means no upper altitude limit</param>
+                 <param index="4">horizontal move limit (in meters, WGS84) - if vehicle moves more than this distance from it's location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal altitude limit</param>
+                 <param index="5">Empty</param>
+                 <param index="6">Empty</param>
+                 <param index="7">Empty</param>
+               </entry>
 
                <entry value="240" name="MAV_CMD_DO_LAST">
                     <description>NOP - This command is only used to mark the upper limit of the DO commands in the enumeration</description>
@@ -944,7 +958,7 @@
                </entry>
                <entry value="242" name="MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS">
                     <description>Set sensor offsets. This command will be only accepted if in pre-flight mode.</description>
-                    <param index="1">Sensor to adjust the offsets for: 0: gyros, 1: accelerometer, 2: magnetometer, 3: barometer, 4: optical flow</param>
+                    <param index="1">Sensor to adjust the offsets for: 0: gyros, 1: accelerometer, 2: magnetometer, 3: barometer, 4: optical flow, 5: second magnetometer</param>
                     <param index="2">X axis offset (or generic dimension 1), in the sensor's raw units</param>
                     <param index="3">Y axis offset (or generic dimension 2), in the sensor's raw units</param>
                     <param index="4">Z axis offset (or generic dimension 3), in the sensor's raw units</param>
@@ -1436,10 +1450,10 @@
           <message id="31" name="ATTITUDE_QUATERNION">
                <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right), expressed as quaternion.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
-               <field type="float" name="q1">Quaternion component 1</field>
-               <field type="float" name="q2">Quaternion component 2</field>
-               <field type="float" name="q3">Quaternion component 3</field>
-               <field type="float" name="q4">Quaternion component 4</field>
+               <field type="float" name="q1">Quaternion component 1, w (1 in null-rotation)</field>
+               <field type="float" name="q2">Quaternion component 2, x (0 in null-rotation)</field>
+               <field type="float" name="q3">Quaternion component 3, y (0 in null-rotation)</field>
+               <field type="float" name="q4">Quaternion component 4, z (0 in null-rotation)</field>
                <field type="float" name="rollspeed">Roll angular speed (rad/s)</field>
                <field type="float" name="pitchspeed">Pitch angular speed (rad/s)</field>
                <field type="float" name="yawspeed">Yaw angular speed (rad/s)</field>
@@ -2038,10 +2052,10 @@
 
 	  <message name="SIM_STATE" id="108">
 	    <description>Status of simulation environment, if used</description>
-            <field type="float" name="q1">True attitude quaternion component 1</field>
-            <field type="float" name="q2">True attitude quaternion component 2</field>
-            <field type="float" name="q3">True attitude quaternion component 3</field>
-            <field type="float" name="q4">True attitude quaternion component 4</field>
+            <field type="float" name="q1">True attitude quaternion component 1, w (1 in null-rotation)</field>
+            <field type="float" name="q2">True attitude quaternion component 2, x (0 in null-rotation)</field>
+            <field type="float" name="q3">True attitude quaternion component 3, y (0 in null-rotation)</field>
+            <field type="float" name="q4">True attitude quaternion component 4, z (0 in null-rotation)</field>
             <field type="float" name="roll">Attitude roll expressed as Euler angles, not recommended except for human-readable outputs</field>
             <field type="float" name="pitch">Attitude pitch expressed as Euler angles, not recommended except for human-readable outputs</field>
             <field type="float" name="yaw">Attitude yaw expressed as Euler angles, not recommended except for human-readable outputs</field>
@@ -2122,7 +2136,7 @@
          <message id="115" name="HIL_STATE_QUATERNION">
              <description>Sent from simulation to autopilot, avoids in contrast to HIL_STATE singularities. This packet is useful for high throughput applications such as hardware in the loop simulations.</description>
              <field type="uint64_t" name="time_usec">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
-             <field type="float[4]" name="attitude_quaternion">Vehicle attitude expressed as normalized quaternion</field>
+             <field type="float[4]" name="attitude_quaternion">Vehicle attitude expressed as normalized quaternion in w, x, y, z order (with 1 0 0 0 being the null-rotation)</field>
              <field type="float" name="rollspeed">Body frame roll / phi angular speed (rad/s)</field>
              <field type="float" name="pitchspeed">Body frame pitch / theta angular speed (rad/s)</field>
              <field type="float" name="yawspeed">Body frame yaw / psi angular speed (rad/s)</field>
@@ -2308,7 +2322,8 @@
             <field type="int32_t" name="lat">Latitude (degrees *10^7)</field>
             <field type="int32_t" name="lon">Longitude (degrees *10^7)</field>
             <field type="uint16_t" name="spacing">grid spacing (zero if terrain at this location unavailable)</field>
-            <field type="float" name="height">Terrain height in meters AMSL (-32767 if unavailable)</field>
+            <field type="float" name="terrain_height">Terrain height in meters AMSL</field>
+            <field type="float" name="current_height">Current vehicle height above lat/lon terrain height (meters)</field>
             <field type="uint16_t" name="pending">Number of 4x4 terrain blocks waiting to be received or read from disk</field>
             <field type="uint16_t" name="loaded">Number of 4x4 terrain blocks in memory</field>
          </message>
