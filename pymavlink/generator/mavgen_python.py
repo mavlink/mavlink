@@ -7,7 +7,7 @@ Released under GNU GPL version 3 or later
 '''
 
 import sys, textwrap, os
-from . import mavparse, mavtemplate
+import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
 
@@ -132,15 +132,33 @@ class MAVLink_message(object):
       'crc_extra' : xml.crc_extra,
       'WIRE_PROTOCOL_VERSION' : xml.wire_protocol_version })
 
-
 def generate_enums(outf, enums):
     print("Generating enums")
-    outf.write("\n# enums\n")
+    outf.write('''
+# enums
+
+class EnumEntry(object):
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+        self.param = {}
+        
+enums = {}
+''')    
     wrapper = textwrap.TextWrapper(initial_indent="", subsequent_indent="                        # ")
     for e in enums:
         outf.write("\n# %s\n" % e.name)
+        outf.write("enums['%s'] = {}\n" % e.name)
         for entry in e.entry:
             outf.write("%s = %u # %s\n" % (entry.name, entry.value, wrapper.fill(entry.description)))
+            outf.write("enums['%s'][%d] = EnumEntry('%s', '''%s''')\n" % (e.name,
+                                                                          int(entry.value), entry.name,
+                                                                          entry.description))
+            for param in entry.param:
+                outf.write("enums['%s'][%d].param[%d] = '''%s'''\n" % (e.name,
+                                                                       int(entry.value),
+                                                                       int(param.index),
+                                                                       param.description))
 
 def generate_message_ids(outf, msgs):
     print("Generating message IDs")

@@ -10,6 +10,8 @@ from optparse import OptionParser
 parser = OptionParser("magfit.py [options]")
 parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
 parser.add_option("--minspeed", type='float', default=5.0, help="minimum ground speed to use")
+parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
+parser.add_option("--declination",type='float', default=None, help="force declination")
 
 (opts, args) = parser.parse_args()
 
@@ -31,6 +33,9 @@ def heading_error1(parm, data):
     from math import sin, cos, atan2, degrees
     from numpy import dot
     xofs,yofs,zofs,a1,a2,a3,a4,a5,a6,a7,a8,a9,declination = parm
+
+    if opts.declination is not None:
+        declination = opts.declination
 
     ret = []
     for d in data:
@@ -58,6 +63,9 @@ def heading_error(parm, data):
     from math import sin, cos, atan2, degrees
     from numpy import dot
     xofs,yofs,zofs,a1,a2,a3,a4,a5,a6,a7,a8,a9,declination = parm
+
+    if opts.declination is not None:
+        declination = opts.declination
 
     a = [[1.0,a2,a3],[a4,a5,a6],[a7,a8,a9]]
 
@@ -93,6 +101,8 @@ def fit_data(data):
     from scipy import optimize
 
     p0 = [0.0, 0.0, 0.0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0]
+    if opts.declination is not None:
+        p0[-1] = opts.declination
     p1, ier = optimize.leastsq(heading_error1, p0[:], args=(data))
 
 #    p0 = p1[:]
@@ -114,14 +124,14 @@ def magfit(logfile):
     data = []
 
     # get the current mag offsets
-    m = mlog.recv_match(type='SENSOR_OFFSETS')
+    m = mlog.recv_match(type='SENSOR_OFFSETS',condition=opts.condition)
     offsets = vec3(m.mag_ofs_x, m.mag_ofs_y, m.mag_ofs_z)
 
-    attitude = mlog.recv_match(type='ATTITUDE')
+    attitude = mlog.recv_match(type='ATTITUDE',condition=opts.condition)
 
     # now gather all the data
     while True:
-        m = mlog.recv_match()
+        m = mlog.recv_match(condition=opts.condition)
         if m is None:
             break
         if m.get_type() == "GPS_RAW":

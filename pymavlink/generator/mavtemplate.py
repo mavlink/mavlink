@@ -6,7 +6,7 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
 
-from .mavparse import MAVParseError
+from mavparse import MAVParseError
 
 class MAVTemplate(object):
     '''simple templating system'''
@@ -81,7 +81,11 @@ class MAVTemplate(object):
             a = part2.split(':')
             field_name = a[0]
             rest = ':'.join(a[1:])
-            v = getattr(subvars, field_name, None)
+            v = None
+            if isinstance(subvars, dict):
+                v = subvars.get(field_name, None)
+            else:
+                v = getattr(subvars, field_name, None)
             if v is None:
                 raise MAVParseError('unable to find field %s' % field_name)
             t1 = part1

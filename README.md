@@ -1,7 +1,9 @@
 ## MAVLink ##
 
-*   Website: http://qgroundcontrol.org/mavlink/
-*   Source: https://github.com/mavlink/mavlink
+*   Official Website: http://qgroundcontrol.org/mavlink/
+*   Source: [Mavlink Generator](https://github.com/mavlink/mavlink)
+*   Binaries (always up-to-date from master):
+  * [C/C++ header-only library](https://github.com/mavlink/c_library)
 *   Mailing list: [Google Groups](http://groups.google.com/group/mavlink)
 
 MAVLink -- Micro Air Vehicle Message Marshalling Library.
@@ -23,10 +25,6 @@ mavgen is a header generation tool written in python, which is included with MAV
 
 If you would rather use mavgen from the command line see *pymavlink\generator\mavgen.py*.
 
-##### With QGroundControl #####
-
-To generate/update packets, select *mavlink_standard_message.xml* in the QGroundControl station settings view, select *mavlink/include* as the output directory and click on "Save and Generate". You will find the newly *generated/updated message_xx.h* files in the *mavlink/include/generated* folder.
-
 ### Usage ###
 
 To use MAVLink, include the *mavlink.h* header file in your project:
@@ -45,4 +43,4 @@ See the *COPYING* file for more info.
 
 ### Credits ###
 
-&copy; 2009-2012 [Lorenz Meier](mailto:mail@qgroundcontrol.org)
+Please see the [author list](https://github.com/mavlink/mavlink/graphs/contributors) for a full list of contributors. Created 2009 & maintained 2009 - to date by [Lorenz Meier](mailto:lm@qgroundcontrol.org)

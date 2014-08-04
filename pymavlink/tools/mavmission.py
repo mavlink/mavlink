@@ -27,12 +27,19 @@ def mavmission(logfile):
     wp = mavwp.MAVWPLoader()
 
     while True:
-        if mlog.mavlink10():
-            m = mlog.recv_match(type='MISSION_ITEM')
-        else:
-            m = mlog.recv_match(type='WAYPOINT')
+        m = mlog.recv_match(type=['MISSION_ITEM','CMD','WAYPOINT'])
         if m is None:
             break
+        if m.get_type() == 'CMD':
+            m = mavutil.mavlink.MAVLink_mission_item_message(0,
+                                                             0,
+                                                             m.CNum,
+                                                             mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                                                             m.CId,
+                                                             0, 1,
+                                                             m.Prm1, m.Prm2, m.Prm3, m.Prm4,
+                                                             m.Lat, m.Lng, m.Alt)
+            
         wp.set(m, m.seq)
     wp.save(opts.output)
     print("Saved %u waypoints to %s" % (wp.count(), opts.output))
