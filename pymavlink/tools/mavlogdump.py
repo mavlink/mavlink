@@ -80,7 +80,7 @@ if opts.format == 'csv':
     print(','.join(fields))
 
 # Track the last timestamp value. Used for compressing data for the CSV output format.
-last_timestamp = None 
+last_timestamp = None
 
 # Keep track of data from the current timestep. If the following timestep has the same data, it's stored in here as well. Output should therefore have entirely unique timesteps.
 csv_out = ["" for x in fields]
@@ -110,7 +110,7 @@ while True:
         continue
 
     # Grab the timestamp.
-    timestamp = getattr(m, '_timestamp', None)
+    timestamp = getattr(m, '_timestamp', 0.0)
 
     # If we're just logging, pack in the timestamp and data into the output file.
     if output:
@@ -155,7 +155,7 @@ while True:
 
         # Otherwise if this is a new timestamp, print out the old output data, and store the current message for later output.
         else:
-            csv_out[0] = str(last_timestamp)
+            csv_out[0] = "{:.8f}".format(last_timestamp)
             print(opts.csv_sep.join(csv_out))
             csv_out = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in [type + '.' + x for x in fields]]
     # Otherwise we output in a standard Python dict-style format
