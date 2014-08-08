@@ -11,6 +11,7 @@ parser = OptionParser("magfit.py [options]")
 parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
 parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
 parser.add_option("--noise", type='float', default=0, help="noise to add")
+parser.add_option("--mag2", action='store_true', help="use 2nd mag from DF log")
 
 (opts, args) = parser.parse_args()
 
@@ -99,6 +100,14 @@ def magfit(logfile):
         if m.get_type() == "RAW_IMU":
             mag = Vector3(m.xmag, m.ymag, m.zmag)
             # add data point after subtracting the current offsets
+            data.append(mag - offsets + noise())
+        if m.get_type() == "MAG" and not opts.mag2:
+            offsets = Vector3(m.OfsX,m.OfsY,m.OfsZ)
+            mag = Vector3(m.MagX,m.MagY,m.MagZ)
+            data.append(mag - offsets + noise())
+        if m.get_type() == "MAG2" and opts.mag2:
+            offsets = Vector3(m.OfsX,m.OfsY,m.OfsZ)
+            mag = Vector3(m.MagX,m.MagY,m.MagZ)
             data.append(mag - offsets + noise())
 
     print("Extracted %u data points" % len(data))
