@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/DroidPlanner/mavlink.svg?branch=master)](https://travis-ci.org/DroidPlanner/mavlink)
+
 ## MAVLink ##
 
 *   Official Website: http://qgroundcontrol.org/mavlink/
