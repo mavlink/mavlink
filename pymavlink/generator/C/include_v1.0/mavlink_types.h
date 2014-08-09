@@ -86,6 +86,7 @@ typedef union {
             int32_t int32;
             float f;
             uint8_t align[7];
+        };
     };
     uint8_t data[8];
 } mavlink_param_union_double_t;
