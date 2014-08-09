@@ -273,6 +273,8 @@ class MAVXML(object):
                 m.wire_length += f.wire_length
                 m.ordered_fieldnames.append(f.name)
                 f.set_test_value()
+                if f.name.find('[') != -1:
+                    raise MAVParseError("invalid field name with array descriptor %s" % f.name)
             m.num_fields = len(m.fieldnames)
             if m.num_fields > 64:
                 raise MAVParseError("num_fields=%u : Maximum number of field names allowed is" % (
