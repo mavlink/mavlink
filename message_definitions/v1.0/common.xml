@@ -1045,15 +1045,25 @@
               <!-- VALUES FROM 0-40000 are reserved for the common message set. Values from 40000 to UINT16_MAX are available for dialects -->
 
               <!-- BEGIN of payload range (30000 to 30999) -->
-              <entry value="30001" name="MAV_CMD_PAYLOAD_DO_DEPLOY">
+              <entry value="30001" name="MAV_CMD_PAYLOAD_PREPARE_DEPLOY">
                   <description>Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity.</description>
-                  <param index="1">Reserved</param>
-                  <param index="2">Desired approach vector in degrees compass heading</param>
+                  <param index="1">Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.</param>
+                  <param index="2">Desired approach vector in degrees compass heading (0..360). A negative value indicates the system can define the approach vector at will.</param>
                   <param index="3">Desired ground speed at release time. This can be overriden by the airframe.</param>
                   <param index="4">Minimum altitude clearance to the release position in meters</param>
                   <param index="5">Latitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT</param>
                   <param index="6">Longitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT</param>
                   <param index="7">Altitude, in meters WGS84</param>
+              </entry>
+              <entry value="30002" name="MAV_CMD_PAYLOAD_CONTROL_DEPLOY">
+                  <description>Control the payload deployment.</description>
+                  <param index="1">Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deploment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests.</param>
+                  <param index="2">Reserved</param>
+                  <param index="3">Reserved</param>
+                  <param index="4">Reserved</param>
+                  <param index="5">Reserved</param>
+                  <param index="6">Reserved</param>
+                  <param index="7">Reserved</param>
               </entry>
               <!-- END of payload range (30000 to 30999) -->
           </enum>
