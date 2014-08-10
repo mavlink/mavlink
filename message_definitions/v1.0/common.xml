@@ -2227,24 +2227,13 @@
 	    <field type="uint16_t" name="fixed">count of error corrected packets</field>
 	  </message>
 
-         <message id="110" name="FILE_TRANSFER_START">
-             <description>Begin file transfer</description>
-             <field type="uint64_t" name="transfer_uid">Unique transfer ID</field>
-             <field type="char[240]" name="dest_path">Destination path</field>
-             <field type="uint8_t" name="direction">Transfer direction: 0: from requester, 1: to requester</field>
-             <field type="uint32_t" name="file_size">File size in bytes</field>
-             <field type="uint8_t" name="flags">RESERVED</field>
-         </message>
-         <message id="111" name="FILE_TRANSFER_DIR_LIST">
-             <description>Get directory listing</description>
-             <field type="uint64_t" name="transfer_uid">Unique transfer ID</field>
-             <field type="char[240]" name="dir_path">Directory path to list</field>
-             <field type="uint8_t" name="flags">RESERVED</field>
-         </message>
-         <message id="112" name="FILE_TRANSFER_RES">
-             <description>File transfer result</description>
-             <field type="uint64_t" name="transfer_uid">Unique transfer ID</field>
-             <field type="uint8_t" name="result">0: OK, 1: not permitted, 2: bad path / file name, 3: no space left on device</field>
+        <message id="110" name="FILE_TRANSFER_PROTOCOL">
+            <description>File transfer message</description>
+            <field type="uint8_t" name="target_network">Network ID (0 for broadcast)</field>
+            <field type="uint8_t" name="target_system">System ID (0 for broadcast)</field>
+            <field type="uint8_t" name="target_component">Component ID (0 for broadcast)</field>
+            <field type="uint8_t[251]" size="variable" name="payload">Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields.  The entire content of this block is opaque unless you understand any the encoding message_type.  The particular encoding used can be extension specific and might not always be documented as part of the mavlink specification.</field>
+        </message>
          </message>
          <message id="113" name="HIL_GPS">
              <description>The global position, as returned by the Global Positioning System (GPS). This is
@@ -2493,7 +2482,7 @@
             <field type="uint8_t" name="target_system">System ID (0 for broadcast)</field>
             <field type="uint8_t" name="target_component">Component ID (0 for broadcast)</field>
             <field type="uint16_t" name="message_type">A code that identifies the software component that understands this message (analogous to usb device classes or mime type strings).  If this code is less than 32768, it is considered a 'registered' protocol extension and the corresponding entry should be added to https://github.com/mavlink/mavlink/extension-message-ids.xml.  Software creators can register blocks of message IDs as needed (useful for GCS specific metadata, etc...). Message_types greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.</field>
-            <field type="uint8_t" name="varlen_payload">Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields.  The entire content of this block is opaque unless you understand any the encoding message_type.  The particular encoding used can be extension specific and might not always be documented as part of the mavlink specification.</field>
+            <field type="uint8_t[249]" size="variable" name="payload">Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields.  The entire content of this block is opaque unless you understand any the encoding message_type.  The particular encoding used can be extension specific and might not always be documented as part of the mavlink specification.</field>
         </message>
           <message id="249" name="MEMORY_VECT">
                <description>Send raw controller memory. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
