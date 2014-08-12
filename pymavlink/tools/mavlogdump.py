@@ -25,7 +25,7 @@ parser.add_argument("--csv_sep", dest="csv_sep", default=",", help="Select the d
 parser.add_argument("--types", default=None, help="types of messages (comma separated)")
 parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect")
 parser.add_argument("--zero-time-base", action='store_true', help="use Z time base for DF logs")
-parser.add_argument("log")
+parser.add_argument("log", metavar="LOG")
 args = parser.parse_args()
 
 import inspect
