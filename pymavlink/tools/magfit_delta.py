@@ -8,33 +8,31 @@ Bill Premerlani
 import sys, time, os, math
 
 # command line option handling
-from optparse import OptionParser
-parser = OptionParser("magfit_delta.py [options]")
-parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
-parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
-parser.add_option("--verbose", action='store_true', default=False, help="verbose offset output")
-parser.add_option("--gain", type='float', default=0.01, help="algorithm gain")
-parser.add_option("--noise", type='float', default=0, help="noise to add")
-parser.add_option("--max-change", type='float', default=10, help="max step change")
-parser.add_option("--min-diff", type='float', default=50, help="min mag vector delta")
-parser.add_option("--history", type='int', default=20, help="how many points to keep")
-parser.add_option("--repeat", type='int', default=1, help="number of repeats through the data")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--no-timestamps", dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
+parser.add_argument("--condition", default=None, help="select packets by condition")
+parser.add_argument("--verbose", action='store_true', default=False, help="verbose offset output")
+parser.add_argument("--gain", type=float, default=0.01, help="algorithm gain")
+parser.add_argument("--noise", type=float, default=0, help="noise to add")
+parser.add_argument("--max-change", type=float, default=10, help="max step change")
+parser.add_argument("--min-diff", type=float, default=50, help="min mag vector delta")
+parser.add_argument("--history", type=int, default=20, help="how many points to keep")
+parser.add_argument("--repeat", type=int, default=1, help="number of repeats through the data")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 from pymavlink.rotmat import Vector3, Matrix3
 
-if len(args) < 1:
-    print("Usage: magfit_delta.py [options] <LOGFILE...>")
-    sys.exit(1)
 
 def noise():
     '''a noise vector'''
     from random import gauss
     v = Vector3(gauss(0, 1), gauss(0, 1), gauss(0, 1))
     v.normalize()
-    return v * opts.noise
+    return v * args.noise
 
 def find_offsets(data, ofs):
     '''find mag offsets by applying Bills "offsets revisited" algorithm
@@ -45,10 +43,10 @@ def find_offsets(data, ofs):
        '''
 
     # a limit on the maximum change in each step
-    max_change = opts.max_change
+    max_change = args.max_change
 
     # the gain factor for the algorithm
-    gain = opts.gain
+    gain = args.gain
 
     data2 = []
     for d in data:
@@ -60,22 +58,22 @@ def find_offsets(data, ofs):
     data = data2
 
     history_idx = 0
-    mag_history = data[0:opts.history]
-    
-    for i in range(opts.history, len(data)):
+    mag_history = data[0:args.history]
+
+    for i in range(args.history, len(data)):
         B1 = mag_history[history_idx] + ofs
         B2 = data[i] + ofs
-        
+
         diff = B2 - B1
         diff_length = diff.length()
-        if diff_length <= opts.min_diff:
+        if diff_length <= args.min_diff:
             # the mag vector hasn't changed enough - we don't get any
             # information from this
-            history_idx = (history_idx+1) % opts.history
+            history_idx = (history_idx+1) % args.history
             continue
 
         mag_history[history_idx] = data[i]
-        history_idx = (history_idx+1) % opts.history
+        history_idx = (history_idx+1) % args.history
 
         # equation 6 of Bills paper
         delta = diff * (gain * (B2.length() - B1.length()) / diff_length)
@@ -90,7 +88,7 @@ def find_offsets(data, ofs):
         # set the new offsets
         ofs = ofs - delta
 
-        if opts.verbose:
+        if args.verbose:
             print ofs
     return ofs
 
@@ -101,16 +99,16 @@ def magfit(logfile):
     print("Processing log %s" % filename)
 
     # open the log file
-    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps)
 
     data = []
     mag = None
     offsets = Vector3(0,0,0)
-    
+
     # now gather all the data
     while True:
         # get the next MAVLink message in the log
-        m = mlog.recv_match(condition=opts.condition)
+        m = mlog.recv_match(condition=args.condition)
         if m is None:
             break
         if m.get_type() == "SENSOR_OFFSETS":
@@ -128,12 +126,12 @@ def magfit(logfile):
     # run the fitting algorithm
     ofs = offsets
     ofs = Vector3(0,0,0)
-    for r in range(opts.repeat):
+    for r in range(args.repeat):
         ofs = find_offsets(data, ofs)
         print('Loop %u offsets %s' % (r, ofs))
         sys.stdout.flush()
     print("New offsets: %s" % ofs)
 
 total = 0.0
-for filename in args:
+for filename in args.logs:
     magfit(filename)
