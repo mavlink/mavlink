@@ -7,17 +7,15 @@ file, for loading into google earth
 
 import sys, struct, time, os
 
-from optparse import OptionParser
-parser = OptionParser("mavtogpx.py [options]")
-parser.add_option("--condition",dest="condition", default=None, help="select packets by a condition")
-parser.add_option("--nofixcheck", default=False, action='store_true', help="don't check for GPS fix")
-(opts, args) = parser.parse_args()
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--condition", default=None, help="select packets by a condition")
+parser.add_argument("--nofixcheck", default=False, action='store_true', help="don't check for GPS fix")
+parser.add_argument("logs", metavar="LOG", nargs="+")
+args = parser.parse_args()
 
 from pymavlink import mavutil
 
-if len(args) < 1:
-    print("Usage: mavtogpx.py <LOGFILE>")
-    sys.exit(1)
 
 def mav_to_gpx(infilename, outfilename):
     '''convert a mavlink log file to a GPX file'''
@@ -56,11 +54,11 @@ def mav_to_gpx(infilename, outfilename):
 </gpx>
 ''')
 
-    add_header()       
+    add_header()
 
     count=0
     while True:
-        m = mlog.recv_match(type=['GPS_RAW', 'GPS_RAW_INT'], condition=opts.condition)
+        m = mlog.recv_match(type=['GPS_RAW', 'GPS_RAW_INT'], condition=args.condition)
         if m is None:
             break
         if m.get_type() == 'GPS_RAW_INT':
@@ -78,7 +76,7 @@ def mav_to_gpx(infilename, outfilename):
             hdg = m.hdg
             timestamp = m._timestamp
 
-        if m.fix_type < 2 and not opts.nofixcheck:
+        if m.fix_type < 2 and not args.nofixcheck:
             continue
         if m.lat == 0.0 or m.lon == 0.0:
             continue
@@ -86,8 +84,8 @@ def mav_to_gpx(infilename, outfilename):
         count += 1
     add_footer()
     print("Created %s with %u points" % (outfilename, count))
-    
 
-for infilename in args:
+
+for infilename in args.logs:
     outfilename = infilename + '.gpx'
     mav_to_gpx(infilename, outfilename)
