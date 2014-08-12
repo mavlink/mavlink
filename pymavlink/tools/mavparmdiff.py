@@ -7,16 +7,14 @@ import sys, os
 
 from pymavlink import mavutil, mavparm
 
-from optparse import OptionParser
-parser = OptionParser("mavparmdiff.py [options]")
-(opts, args) = parser.parse_args()
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("file1", metavar="FILE1")
+parser.add_argument("file2", metavar="FILE2")
+args = parser.parse_args()
 
-if len(args) < 2:
-    print("Usage: mavparmdiff.py FILE1 FILE2")
-    sys.exit(1)
-
-file1 = args[0]
-file2 = args[1]
+file1 = args.file1
+file2 = args.file2
 
 p1 = mavparm.MAVParmDict()
 p2 = mavparm.MAVParmDict()
