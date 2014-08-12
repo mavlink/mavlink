@@ -1,29 +1,25 @@
 #!/usr/bin/env python
 
 '''
-set stream rate on an APM 
+set stream rate on an APM
 '''
 
 import sys, struct, time, os
 
-from optparse import OptionParser
-parser = OptionParser("apmsetrate.py [options]")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
 
-parser.add_option("--baudrate", dest="baudrate", type='int',
+parser.add_argument("--baudrate", type=int,
                   help="master port baud rate", default=115200)
-parser.add_option("--device", dest="device", default=None, help="serial device")
-parser.add_option("--rate", dest="rate", default=4, type='int', help="requested stream rate")
-parser.add_option("--source-system", dest='SOURCE_SYSTEM', type='int',
+parser.add_argument("--device", required=True, help="serial device")
+parser.add_argument("--rate", default=4, type=int, help="requested stream rate")
+parser.add_argument("--source-system", dest='SOURCE_SYSTEM', type=int,
                   default=255, help='MAVLink source system for this GCS')
-parser.add_option("--showmessages", dest="showmessages", action='store_true',
+parser.add_argument("--showmessages", action='store_true',
                   help="show incoming messages", default=False)
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
-
-if opts.device is None:
-    print("You must specify a serial device")
-    sys.exit(1)
 
 def wait_heartbeat(m):
     '''wait for a heartbeat so we know the target system IDs'''
@@ -42,17 +38,17 @@ def show_messages(m):
                 sys.stdout.write(msg.data)
                 sys.stdout.flush()
         else:
-            print(msg)                    
-                
+            print(msg)
+
 # create a mavlink serial instance
-master = mavutil.mavlink_connection(opts.device, baud=opts.baudrate)
+master = mavutil.mavlink_connection(args.device, baud=args.baudrate)
 
 # wait for the heartbeat msg to find the system ID
 wait_heartbeat(master)
 
-print("Sending all stream request for rate %u" % opts.rate)
+print("Sending all stream request for rate %u" % args.rate)
 for i in range(0, 3):
     master.mav.request_data_stream_send(master.target_system, master.target_component,
-                                        mavutil.mavlink.MAV_DATA_STREAM_ALL, opts.rate, 1)
-if opts.showmessages:
+                                        mavutil.mavlink.MAV_DATA_STREAM_ALL, args.rate, 1)
+if args.showmessages:
     show_messages(master)

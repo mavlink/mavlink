@@ -10,18 +10,14 @@ from math import radians
 
 from pymavlink import mavutil
 
-from optparse import OptionParser
-parser = OptionParser("rotate.py [options]")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
 
-parser.add_option("--device1", dest="device1", default=None, help="mavlink device1")
-parser.add_option("--device2", dest="device2", default=None, help="mavlink device2")
-parser.add_option("--baudrate", dest="baudrate", type='int',
+parser.add_argument("--device1", required=True, help="mavlink device1")
+parser.add_argument("--device2", required=True, help="mavlink device2")
+parser.add_argument("--baudrate", type=int,
                   help="master port baud rate", default=115200)
-(opts, args) = parser.parse_args()
-
-if opts.device1 is None or opts.device2 is None:
-    print("You must specify a mavlink device")
-    sys.exit(1)
+args = parser.parse_args()
 
 def set_attitude(rc3, rc4):
     global mav1, mav2
@@ -33,10 +29,10 @@ def set_attitude(rc3, rc4):
 
 
 # create a mavlink instance
-mav1 = mavutil.mavlink_connection(opts.device1, baud=opts.baudrate)
+mav1 = mavutil.mavlink_connection(args.device1, baud=args.baudrate)
 
 # create a mavlink instance
-mav2 = mavutil.mavlink_connection(opts.device2, baud=opts.baudrate)
+mav2 = mavutil.mavlink_connection(args.device2, baud=args.baudrate)
 
 print("Waiting for HEARTBEAT")
 mav1.wait_heartbeat()
