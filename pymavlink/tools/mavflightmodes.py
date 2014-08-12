@@ -6,16 +6,14 @@ show changes in flight modes
 
 import sys, time, datetime, os
 
-from optparse import OptionParser
-parser = OptionParser("flightmodes.py [options]")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 
-if len(args) < 1:
-    print("Usage: flightmodes.py [options] <LOGFILE...>")
-    sys.exit(1)
 
 def flight_modes(logfile):
     '''show flight modes for a log file'''
@@ -40,23 +38,23 @@ def flight_modes(logfile):
             time.asctime(time.localtime(m._timestamp)),
             mlog.flightmode,
             m._timestamp, mlog.percent))
-    
+
         mode = mlog.flightmode
         if (mode not in time_in_mode):
             time_in_mode[mode] = 0
 
-        if (mode_start_timestamp == -1): 
+        if (mode_start_timestamp == -1):
             mode_start_timestamp = m._timestamp
         elif (previous_mode != "" and previous_mode != mode):
             time_in_mode[previous_mode] = time_in_mode[previous_mode] + (m._timestamp - mode_start_timestamp)
 
             #figure out how many seconds per percentage point so I can
             #caculate how many seconds for the final mode
-            if (seconds_per_percent == -1 and previous_percent != -1 
+            if (seconds_per_percent == -1 and previous_percent != -1
                     and previous_percent != mlog.percent):
                 seconds_per_percent = (m._timestamp - mode_start_timestamp) / (mlog.percent - previous_percent)
 
-            mode_start_timestamp = m._timestamp 
+            mode_start_timestamp = m._timestamp
 
         previous_mode = mode
         previous_percent = mlog.percent
@@ -64,7 +62,7 @@ def flight_modes(logfile):
     #put a whitespace line before the per-mode report
     print
     print "Time per mode:"
-    
+
     #need to get the time in the final mode
     if (seconds_per_percent != -1):
         seconds_remaining = (100.0 - previous_percent) * seconds_per_percent
@@ -81,7 +79,5 @@ def flight_modes(logfile):
         #can't print time in mode if only one mode during flight
         print previous_mode, " 100% of flight time"
 
-for filename in args:
+for filename in args.logs:
     flight_modes(filename)
-
-

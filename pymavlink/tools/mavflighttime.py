@@ -6,19 +6,17 @@ work out total flight time for a mavlink log
 
 import sys, time, os, glob
 
-from optparse import OptionParser
-parser = OptionParser("flighttime.py [options]")
-parser.add_option("--condition", default=None, help="condition for packets")
-parser.add_option("--groundspeed", type='float', default=3.0, help="groundspeed threshold")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--condition", default=None, help="condition for packets")
+parser.add_argument("--groundspeed", type=float, default=3.0, help="groundspeed threshold")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 from pymavlink.mavextra import distance_two
 
-if len(args) < 1:
-    print("Usage: flighttime.py [options] <LOGFILE...>")
-    sys.exit(1)
 
 def flight_time(logfile):
     '''work out flight time for a log file'''
@@ -33,7 +31,7 @@ def flight_time(logfile):
     last_msg = None
 
     while True:
-        m = mlog.recv_match(type=['GPS','GPS_RAW_INT'], condition=opts.condition)
+        m = mlog.recv_match(type=['GPS','GPS_RAW_INT'], condition=args.condition)
         if m is None:
             if in_air:
                 total_time += time.mktime(t) - start_time
@@ -49,11 +47,11 @@ def flight_time(logfile):
         if status < 3:
             continue
         t = time.localtime(m._timestamp)
-        if groundspeed > opts.groundspeed and not in_air:
+        if groundspeed > args.groundspeed and not in_air:
             print("In air at %s (percent %.0f%% groundspeed %.1f)" % (time.asctime(t), mlog.percent, groundspeed))
             in_air = True
             start_time = time.mktime(t)
-        elif groundspeed < opts.groundspeed and in_air:
+        elif groundspeed < args.groundspeed and in_air:
             print("On ground at %s (percent %.1f%% groundspeed %.1f  time=%.1f seconds)" % (
                 time.asctime(t), mlog.percent, groundspeed, time.mktime(t) - start_time))
             in_air = False
@@ -66,7 +64,7 @@ def flight_time(logfile):
 
 total_time = 0.0
 total_dist = 0.0
-for filename in args:
+for filename in args.logs:
     for f in glob.glob(filename):
         (ftime, fdist) = flight_time(f)
         total_time += ftime
