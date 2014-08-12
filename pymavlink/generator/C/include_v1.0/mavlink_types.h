@@ -23,7 +23,7 @@
 #define MAVLINK_MSG_ID_EXTENDED_MESSAGE 255
 #define MAVLINK_EXTENDED_HEADER_LEN 14
 
-#if (defined _MSC_VER) | ((defined __APPLE__) & (defined __MACH__)) | (defined __linux__)
+#if (defined _MSC_VER) || ((defined __APPLE__) && (defined __MACH__)) || (defined __linux__)
   /* full fledged 32bit++ OS */
   #define MAVLINK_MAX_EXTENDED_PACKET_LEN 65507
 #else
