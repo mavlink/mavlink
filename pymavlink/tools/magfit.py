@@ -6,28 +6,26 @@ fit best estimate of magnetometer offsets
 
 import sys, time, os, math
 
-from optparse import OptionParser
-parser = OptionParser("magfit.py [options]")
-parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
-parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
-parser.add_option("--noise", type='float', default=0, help="noise to add")
-parser.add_option("--mag2", action='store_true', help="use 2nd mag from DF log")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--no-timestamps", dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
+parser.add_argument("--condition", default=None, help="select packets by condition")
+parser.add_argument("--noise", type=float, default=0, help="noise to add")
+parser.add_argument("--mag2", action='store_true', help="use 2nd mag from DF log")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 from pymavlink.rotmat import Vector3
 
-if len(args) < 1:
-    print("Usage: magfit.py [options] <LOGFILE...>")
-    sys.exit(1)
 
 def noise():
     '''a noise vector'''
     from random import gauss
     v = Vector3(gauss(0, 1), gauss(0, 1), gauss(0, 1))
     v.normalize()
-    return v * opts.noise
+    return v * args.noise
 
 def select_data(data):
     ret = []
@@ -82,7 +80,7 @@ def magfit(logfile):
     '''find best magnetometer offset fit to a log file'''
 
     print("Processing log %s" % filename)
-    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps)
 
     data = []
 
@@ -91,7 +89,7 @@ def magfit(logfile):
 
     # now gather all the data
     while True:
-        m = mlog.recv_match(condition=opts.condition)
+        m = mlog.recv_match(condition=args.condition)
         if m is None:
             break
         if m.get_type() == "SENSOR_OFFSETS":
@@ -101,11 +99,11 @@ def magfit(logfile):
             mag = Vector3(m.xmag, m.ymag, m.zmag)
             # add data point after subtracting the current offsets
             data.append(mag - offsets + noise())
-        if m.get_type() == "MAG" and not opts.mag2:
+        if m.get_type() == "MAG" and not args.mag2:
             offsets = Vector3(m.OfsX,m.OfsY,m.OfsZ)
             mag = Vector3(m.MagX,m.MagY,m.MagZ)
             data.append(mag - offsets + noise())
-        if m.get_type() == "MAG2" and opts.mag2:
+        if m.get_type() == "MAG2" and args.mag2:
             offsets = Vector3(m.OfsX,m.OfsY,m.OfsZ)
             mag = Vector3(m.MagX,m.MagY,m.MagZ)
             data.append(mag - offsets + noise())
@@ -129,7 +127,7 @@ def magfit(logfile):
         print("Fit %u    : %s  field_strength=%6.1f to %6.1f" % (
             count, offsets,
             radius(data[0], offsets), radius(data[-1], offsets)))
-        
+
         # discard outliers, keep the middle 3/4
         data = data[len(data)/8:-len(data)/8]
 
@@ -141,5 +139,5 @@ def magfit(logfile):
         radius(data[0], offsets), radius(data[-1], offsets)))
 
 total = 0.0
-for filename in args:
+for filename in args.logs:
     magfit(filename)

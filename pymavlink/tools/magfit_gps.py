@@ -6,20 +6,18 @@ fit best estimate of magnetometer offsets
 
 import sys, time, os, math
 
-from optparse import OptionParser
-parser = OptionParser("magfit.py [options]")
-parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
-parser.add_option("--minspeed", type='float', default=5.0, help="minimum ground speed to use")
-parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
-parser.add_option("--declination",type='float', default=None, help="force declination")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--no-timestamps", dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
+parser.add_argument("--minspeed", type=float, default=5.0, help="minimum ground speed to use")
+parser.add_argument("--condition", default=None, help="select packets by condition")
+parser.add_argument("--declination", type=float, default=None, help="force declination")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 
-if len(args) < 1:
-    print("Usage: magfit.py [options] <LOGFILE...>")
-    sys.exit(1)
 
 class vec3(object):
     def __init__(self, x, y, z):
@@ -34,8 +32,8 @@ def heading_error1(parm, data):
     from numpy import dot
     xofs,yofs,zofs,a1,a2,a3,a4,a5,a6,a7,a8,a9,declination = parm
 
-    if opts.declination is not None:
-        declination = opts.declination
+    if args.declination is not None:
+        declination = args.declination
 
     ret = []
     for d in data:
@@ -64,8 +62,8 @@ def heading_error(parm, data):
     from numpy import dot
     xofs,yofs,zofs,a1,a2,a3,a4,a5,a6,a7,a8,a9,declination = parm
 
-    if opts.declination is not None:
-        declination = opts.declination
+    if args.declination is not None:
+        declination = args.declination
 
     a = [[1.0,a2,a3],[a4,a5,a6],[a7,a8,a9]]
 
@@ -101,8 +99,8 @@ def fit_data(data):
     from scipy import optimize
 
     p0 = [0.0, 0.0, 0.0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0]
-    if opts.declination is not None:
-        p0[-1] = opts.declination
+    if args.declination is not None:
+        p0[-1] = args.declination
     p1, ier = optimize.leastsq(heading_error1, p0[:], args=(data))
 
 #    p0 = p1[:]
@@ -116,7 +114,7 @@ def fit_data(data):
 def magfit(logfile):
     '''find best magnetometer offset fit to a log file'''
     print("Processing log %s" % filename)
-    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps)
 
     flying = False
     gps_heading = 0.0
@@ -124,23 +122,23 @@ def magfit(logfile):
     data = []
 
     # get the current mag offsets
-    m = mlog.recv_match(type='SENSOR_OFFSETS',condition=opts.condition)
+    m = mlog.recv_match(type='SENSOR_OFFSETS',condition=args.condition)
     offsets = vec3(m.mag_ofs_x, m.mag_ofs_y, m.mag_ofs_z)
 
-    attitude = mlog.recv_match(type='ATTITUDE',condition=opts.condition)
+    attitude = mlog.recv_match(type='ATTITUDE',condition=args.condition)
 
     # now gather all the data
     while True:
-        m = mlog.recv_match(condition=opts.condition)
+        m = mlog.recv_match(condition=args.condition)
         if m is None:
             break
         if m.get_type() == "GPS_RAW":
             # flying if groundspeed more than 5 m/s
-            flying = (m.v > opts.minspeed and m.fix_type == 2)
+            flying = (m.v > args.minspeed and m.fix_type == 2)
             gps_heading = m.hdg
         if m.get_type() == "GPS_RAW_INT":
             # flying if groundspeed more than 5 m/s
-            flying = (m.vel/100 > opts.minspeed and m.fix_type == 3)
+            flying = (m.vel/100 > args.minspeed and m.fix_type == 3)
             gps_heading = m.cog/100
         if m.get_type() == "ATTITUDE":
             attitude = m
@@ -163,5 +161,5 @@ def magfit(logfile):
     print("New offsets    : %s" % new_offsets)
 
 total = 0.0
-for filename in args:
+for filename in args.logs:
     magfit(filename)
