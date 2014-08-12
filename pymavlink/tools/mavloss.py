@@ -6,35 +6,33 @@ show MAVLink packet loss
 
 import sys, time, os
 
-from optparse import OptionParser
-parser = OptionParser("mavloss.py [options] <LOGFILE1> [<LOGFILE2> ...]")
-parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
-parser.add_option("--planner",dest="planner", action='store_true', help="use planner file format")
-parser.add_option("--robust",dest="robust", action='store_true', help="Enable robust parsing (skip over bad data)")
-parser.add_option("--condition", default=None, help="condition for packets")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--no-timestamps", dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
+parser.add_argument("--planner", action='store_true', help="use planner file format")
+parser.add_argument("--robust", action='store_true', help="Enable robust parsing (skip over bad data)")
+parser.add_argument("--condition", default=None, help="condition for packets")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 
-if len(args) < 1:
-    parser.print_help()
-    sys.exit(1)
 
 def mavloss(logfile):
     '''work out signal loss times for a log file'''
     print("Processing log %s" % filename)
     mlog = mavutil.mavlink_connection(filename,
-                                      planner_format=opts.planner,
-                                      notimestamps=opts.notimestamps,
-                                      robust_parsing=opts.robust)
+                                      planner_format=args.planner,
+                                      notimestamps=args.notimestamps,
+                                      robust_parsing=args.robust)
 
     # Track the reasons for MAVLink parsing errors and print them all out at the end.
     reason_ids = set()
     reasons = []
 
     while True:
-        m = mlog.recv_match(condition=opts.condition)
+        m = mlog.recv_match(condition=args.condition)
 
         # Stop parsing the file once we've reached the end
         if m is None:
@@ -57,5 +55,5 @@ def mavloss(logfile):
         for r in reasons:
             print("  * " + r)
 
-for filename in args:
+for filename in args.logs:
     mavloss(filename)
