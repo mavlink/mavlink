@@ -5,7 +5,7 @@ simple kml export for logfiles
 Thomas Gubler <thomasgubler@gmail.com>
 '''
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 import simplekml
 from pymavlink.mavextra import *
 from pymavlink import mavutil
@@ -28,7 +28,7 @@ def add_to_linestring(position_data, kml_linestring):
     global kml
 
     # add altitude offset
-    position_data[2] += float(opts.aoff)
+    position_data[2] += float(args.aoff)
     kml_linestring.coords.addcoordinates([position_data])
 
 
@@ -85,12 +85,12 @@ def add_data(t, msg, vars, fields, field_types):
         if add_data.current_kml_linestring is not None:
             kml_linestrings.append(add_data.current_kml_linestring)
 
-        name = "".join([opts.source, ":", str(add_data.mainstate_current)])
+        name = "".join([args.source, ":", str(add_data.mainstate_current)])
         add_data.current_kml_linestring = \
             kml.newlinestring(name=name, altitudemode='absolute')
 
         # set rendering options
-        if opts.extrude:
+        if args.extrude:
             add_data.current_kml_linestring.extrude = 1
         add_data.current_kml_linestring.style.linestyle.color = \
             colors[max([add_data.mainstate_current, 0])]
@@ -107,14 +107,14 @@ def add_data(t, msg, vars, fields, field_types):
 def process_file(filename, fields, field_types):
     '''process one file'''
     print("Processing %s" % filename)
-    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps)
     add_data.new_linestring = True
     add_data.mainstate_current = -1
     add_data.current_kml_linestring = None
     add_data.position_data = [None for n in position_field_types]
 
     while True:
-        msg = mlog.recv_match(opts.condition)
+        msg = mlog.recv_match(args.condition)
         if msg is None:
             break
         tdays = (msg._timestamp - time.timezone) / (24 * 60 * 60)
@@ -122,36 +122,33 @@ def process_file(filename, fields, field_types):
         add_data(tdays, msg, mlog.messages, fields, field_types)
 
 if __name__ == '__main__':
-    parser = OptionParser("mavkml.py [options] <filename>")
-    parser.add_option("--no-timestamps", dest="notimestamps",
+    parser = ArgumentParser(description=__doc__)
+    parser.add_argument("--no-timestamps", dest="notimestamps",
                       action='store_true', help="Log doesn't have timestamps")
-    parser.add_option("--condition", dest="condition", default=None,
-                      help="select packets by a condition [default: %default]")
-    parser.add_option("--aoff", dest="aoff", default=0.,
+    parser.add_argument("--condition", default=None,
+                      help="select packets by a condition [default: %(default)s]")
+    parser.add_argument("--aoff", default=0.,
                       help="Altitude offset for paths that go through the"
-                      "ground in google earth [default: %default]")
-    parser.add_option("-o", "--output", dest="filename_out", default="mav.kml",
-                      help="Output filename [default: %default] ")
-    parser.add_option("-s", "--source", dest="source", default="GPOS",
+                      "ground in google earth [default: %(default)s]")
+    parser.add_argument("-o", "--output", dest="filename_out", default="mav.kml",
+                      help="Output filename [default: %(default)s] ")
+    parser.add_argument("-s", "--source", default="GPOS",
                       help="Select position data source"
-                      "(GPOS or GPS) [default: %default]")
-    parser.add_option("-e", "--extrude", dest="extrude", default=False,
+                      "(GPOS or GPS) [default: %(default)s]")
+    parser.add_argument("-e", "--extrude", default=False,
                       action='store_true',
-                      help="Extrude paths to ground [default: %default]")
+                      help="Extrude paths to ground [default: %(default)s]")
+    parser.add_argument("logs", metavar="LOG", nargs="+")
 
-    (opts, args) = parser.parse_args()
-
-    if len(args) < 1:
-        print("Usage: mavkml.py <LOGFILES...>")
-        sys.exit(1)
+    args = parser.parse_args()
 
     filenames = []
-    for f in args:
+    for f in args.logs:
         if os.path.exists(f):
             filenames.append(f)
 
     # init fields and field_types lists
-    fields = [opts.source + "." + s for s in position_field_types]
+    fields = [args.source + "." + s for s in position_field_types]
     fields.append(mainstate_field)
     field_types = []
 
@@ -171,4 +168,4 @@ if __name__ == '__main__':
         f = filenames[fi]
         process_file(f, fields, field_types)
 
-    save_kml(opts.filename_out)
+    save_kml(args.filename_out)
