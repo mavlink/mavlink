@@ -12,29 +12,26 @@ import Tkinter
 
 from pymavlink import fgFDM
 
-from optparse import OptionParser
-parser = OptionParser("mavplayback.py [options]")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
 
-parser.add_option("--planner",dest="planner", action='store_true', help="use planner file format")
-parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
-parser.add_option("--gpsalt", action='store_true', default=False, help="Use GPS altitude")
-parser.add_option("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
-parser.add_option("--out",   help="MAVLink output port (IP:port)",
+parser.add_argument("--planner", action='store_true', help="use planner file format")
+parser.add_argument("--condition", default=None, help="select packets by condition")
+parser.add_argument("--gpsalt", action='store_true', default=False, help="Use GPS altitude")
+parser.add_argument("--mav10", action='store_true', default=False, help="Use MAVLink protocol 1.0")
+parser.add_argument("--out", help="MAVLink output port (IP:port)",
                   action='append', default=['127.0.0.1:14550'])
-parser.add_option("--fgout", action='append', default=['127.0.0.1:5503'],
+parser.add_argument("--fgout", action='append', default=['127.0.0.1:5503'],
                   help="flightgear FDM NET output (IP:port)")
-parser.add_option("--baudrate", type='int', default=57600, help='baud rate')
-(opts, args) = parser.parse_args()
+parser.add_argument("--baudrate", type=int, default=57600, help='baud rate')
+parser.add_argument("log", metavar="LOG")
+args = parser.parse_args()
 
-if opts.mav10:
+if args.mav10:
     os.environ['MAVLINK10'] = '1'
 from pymavlink import mavutil
 
-if len(args) < 1:
-    parser.print_help()
-    sys.exit(1)
-
-filename = args[0]
+filename = args.log
 
 
 def LoadImage(filename):
@@ -51,19 +48,19 @@ class App():
         self.filesize = os.path.getsize(filename)
         self.filepos = 0.0
 
-        self.mlog = mavutil.mavlink_connection(filename, planner_format=opts.planner,
+        self.mlog = mavutil.mavlink_connection(filename, planner_format=args.planner,
                                                robust_parsing=True)
         self.mout = []
-        for m in opts.out:
-            self.mout.append(mavutil.mavlink_connection(m, input=False, baud=opts.baudrate))
+        for m in args.out:
+            self.mout.append(mavutil.mavlink_connection(m, input=False, baud=args.baudrate))
 
         self.fgout = []
-        for f in opts.fgout:
+        for f in args.fgout:
             self.fgout.append(mavutil.mavudp(f, input=False))
-    
+
         self.fdm = fgFDM.fgFDM()
 
-        self.msg = self.mlog.recv_match(condition=opts.condition)
+        self.msg = self.mlog.recv_match(condition=args.condition)
         if self.msg is None:
             sys.exit(1)
         self.last_timestamp = getattr(self.msg, '_timestamp')
@@ -110,7 +107,7 @@ class App():
             b = Tkinter.Button(self.frame, text=filename, command=command)
         b.pack(side=Tkinter.LEFT)
         self.buttons[name] = b
-        
+
 
     def pause(self):
         '''pause playback'''
@@ -136,13 +133,13 @@ class App():
         '''show status'''
         for m in sorted(self.mlog.messages.keys()):
             print(str(self.mlog.messages[m]))
-        
+
 
 
     def find_message(self):
         '''find the next valid message'''
         while True:
-            self.msg = self.mlog.recv_match(condition=opts.condition)
+            self.msg = self.mlog.recv_match(condition=args.condition)
             if self.msg is not None and self.msg.get_type() != 'BAD_DATA':
                 break
             if self.mlog.f.tell() > self.filesize - 10:
@@ -160,7 +157,7 @@ class App():
 
     def next_message(self):
         '''called as each msg is ready'''
-        
+
         msg = self.msg
         if msg is None:
             self.paused = True
@@ -182,13 +179,13 @@ class App():
         self.last_timestamp = timestamp
 
         while True:
-            self.msg = self.mlog.recv_match(condition=opts.condition)
+            self.msg = self.mlog.recv_match(condition=args.condition)
             if self.msg is None and self.mlog.f.tell() > self.filesize - 10:
                 self.paused = True
                 return
             if self.msg is not None and self.msg.get_type() != "BAD_DATA":
                 break
-        
+
         pos = float(self.mlog.f.tell()) / self.filesize
         self.slider.set(pos)
         self.filepos = self.slider.get()
@@ -200,17 +197,17 @@ class App():
         if msg.get_type() == "GPS_RAW":
             self.fdm.set('latitude', msg.lat, units='degrees')
             self.fdm.set('longitude', msg.lon, units='degrees')
-            if opts.gpsalt:
+            if args.gpsalt:
                 self.fdm.set('altitude', msg.alt, units='meters')
 
         if msg.get_type() == "GPS_RAW_INT":
             self.fdm.set('latitude', msg.lat/1.0e7, units='degrees')
             self.fdm.set('longitude', msg.lon/1.0e7, units='degrees')
-            if opts.gpsalt:
+            if args.gpsalt:
                 self.fdm.set('altitude', msg.alt/1.0e3, units='meters')
 
         if msg.get_type() == "VFR_HUD":
-            if not opts.gpsalt:
+            if not args.gpsalt:
                 self.fdm.set('altitude', msg.alt, units='meters')
             self.fdm.set('num_engines', 1)
             self.fdm.set('vcas', msg.airspeed, units='mps')
