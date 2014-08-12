@@ -9,19 +9,15 @@ from curses import ascii
 
 from pymavlink import mavtest, mavutil
 
-from optparse import OptionParser
-parser = OptionParser("mavtester.py [options]")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
 
-parser.add_option("--baudrate", dest="baudrate", type='int',
+parser.add_argument("--baudrate", type=int,
                   help="master port baud rate", default=115200)
-parser.add_option("--device", dest="device", default=None, help="serial device")
-parser.add_option("--source-system", dest='SOURCE_SYSTEM', type='int',
+parser.add_argument("--device", required=True, help="serial device")
+parser.add_argument("--source-system", dest='SOURCE_SYSTEM', type=int,
                   default=255, help='MAVLink source system for this GCS')
-(opts, args) = parser.parse_args()
-
-if opts.device is None:
-    print("You must specify a serial device")
-    sys.exit(1)
+args = parser.parse_args()
 
 def wait_heartbeat(m):
     '''wait for a heartbeat so we know the target system IDs'''
@@ -30,7 +26,7 @@ def wait_heartbeat(m):
     print("Heartbeat from APM (system %u component %u)" % (m.target_system, m.target_system))
 
 # create a mavlink serial instance
-master = mavutil.mavlink_connection(opts.device, baud=opts.baudrate, source_system=opts.SOURCE_SYSTEM)
+master = mavutil.mavlink_connection(args.device, baud=args.baudrate, source_system=args.SOURCE_SYSTEM)
 
 # wait for the heartbeat msg to find the system ID
 wait_heartbeat(master)
