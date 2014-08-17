@@ -12,15 +12,15 @@ def process_tlog(filename):
     '''convert a tlog to a .m file'''
 
     print("Processing %s" % filename)
-    
-    mlog = mavutil.mavlink_connection(filename, dialect=opts.dialect, zero_time_base=True)
-    
+
+    mlog = mavutil.mavlink_connection(filename, dialect=args.dialect, zero_time_base=True)
+
     # first walk the entire file, grabbing all messages into a hash of lists,
     #and the first message of each type into a hash
     msg_types = {}
     msg_lists = {}
 
-    types = opts.types
+    types = args.types
     if types is not None:
         types = types.split(',')
 
@@ -41,7 +41,7 @@ def process_tlog(filename):
     type_counters = {}
 
     while True:
-        m = mlog.recv_match(condition=opts.condition)
+        m = mlog.recv_match(condition=args.condition)
         if m is None:
             break
 
@@ -49,7 +49,7 @@ def process_tlog(filename):
             continue
         if m.get_type() == 'BAD_DATA':
             continue
-        
+
         fieldnames = m._fieldnames
         mtype = m.get_type()
         if mtype in ['FMT', 'PARM']:
@@ -73,18 +73,16 @@ def process_tlog(filename):
         f.write("];\n")
     f.close()
 
-from optparse import OptionParser
-parser = OptionParser("mavtomfile.py [options]")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
 
-parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
-parser.add_option("-o", "--output", default=None, help="output filename")
-parser.add_option("--types",  default=None, help="types of messages (comma separated)")
-parser.add_option("--dialect",  default="ardupilotmega", help="MAVLink dialect")
-(opts, args) = parser.parse_args()
+parser.add_argument("--condition", default=None, help="select packets by condition")
+parser.add_argument("-o", "--output", default=None, help="output filename")
+parser.add_argument("--types", default=None, help="types of messages (comma separated)")
+parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect")
+parser.add_argument("logs", metavar="LOG", nargs="+")
+args = parser.parse_args()
 
-if len(args) < 1:
-    print("Usage: mavtomfile.py [options] <LOGFILE>")
-    sys.exit(1)
 
-for filename in args:
+for filename in args.logs:
     process_tlog(filename)

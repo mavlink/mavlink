@@ -6,26 +6,24 @@ extract one mode type from a log
 
 import sys, time, os, struct
 
-from optparse import OptionParser
-parser = OptionParser("mavextract.py [options]")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
 
-parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
-parser.add_option("--robust",dest="robust", action='store_true', help="Enable robust parsing (skip over bad data)")
-parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
-parser.add_option("--mode",  default='auto', help="mode to extract")
-(opts, args) = parser.parse_args()
+parser.add_argument("--no-timestamps", dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
+parser.add_argument("--robust", action='store_true', help="Enable robust parsing (skip over bad data)")
+parser.add_argument("--condition", default=None, help="select packets by condition")
+parser.add_argument("--mode", default='auto', help="mode to extract")
+parser.add_argument("logs", metavar="LOG", nargs="+")
+args = parser.parse_args()
 
 from pymavlink import mavutil
 
-if len(args) < 1:
-    print("Usage: mavextract.py [options] <LOGFILE>")
-    sys.exit(1)
 
 def process(filename):
     '''process one logfile'''
     print("Processing %s" % filename)
-    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps,
-                                      robust_parsing=opts.robust)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps,
+                                      robust_parsing=args.robust)
 
 
     ext = os.path.splitext(filename)[1]
@@ -53,13 +51,13 @@ def process(filename):
         if m.get_type() in ['PARAM_VALUE','MISSION_ITEM']:
             timestamp = getattr(m, '_timestamp', None)
             file_header += struct.pack('>Q', timestamp*1.0e6) + m.get_msgbuf()
-            
-        if not mavutil.evaluate_condition(opts.condition, mlog.messages):
+
+        if not mavutil.evaluate_condition(args.condition, mlog.messages):
             continue
 
-        if mlog.flightmode.upper() == opts.mode.upper():
+        if mlog.flightmode.upper() == args.mode.upper():
             if output is None:
-                path = os.path.join(dirname, "%s%u.%s" % (opts.mode, count, extension))
+                path = os.path.join(dirname, "%s%u.%s" % (args.mode, count, extension))
                 count += 1
                 print("Creating %s" % path)
                 output = open(path, mode='wb')
@@ -68,13 +66,13 @@ def process(filename):
             if output is not None:
                 output.close()
                 output = None
-            
+
         if output and m.get_type() != 'BAD_DATA':
             timestamp = getattr(m, '_timestamp', None)
             if not isbin:
                 output.write(struct.pack('>Q', timestamp*1.0e6))
             output.write(m.get_msgbuf())
 
-for filename in args:
+for filename in args.logs:
     process(filename)
 

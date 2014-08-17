@@ -174,16 +174,15 @@ def mavgen_python_dialect(dialect, wire_protocol):
 
 
 if __name__ == "__main__":
-    from optparse import OptionParser
+    from argparse import ArgumentParser
 
-    parser = OptionParser("%prog [options] <XML files>")
-    parser.add_option("-o", "--output", dest="output", default="mavlink", help="output directory.")
-    parser.add_option("--lang", dest="language", choices=supportedLanguages, default=DEFAULT_LANGUAGE, help="language of generated code, one of: {0} [default: %default]".format(supportedLanguages))
-    parser.add_option("--wire-protocol", dest="wire_protocol", choices=[mavparse.PROTOCOL_0_9, mavparse.PROTOCOL_1_0], default=DEFAULT_WIRE_PROTOCOL, help="MAVLink protocol version: '0.9' or '1.0'. [default: %default]")
-    parser.add_option("--no-validate", action="store_false", dest="validate", default=DEFAULT_VALIDATE, help="Do not perform XML validation. Can speed up code generation if XML files are known to be correct.")
-    parser.add_option("--error-limit", dest="error_limit", default=DEFAULT_ERROR_LIMIT, help="maximum number of validation errors to display")
-    (opts, args) = parser.parse_args()
+    parser = ArgumentParser(description="This tool generate implementations from MAVLink message definitions")
+    parser.add_argument("-o", "--output", default="mavlink", help="output directory.")
+    parser.add_argument("--lang", dest="language", choices=supportedLanguages, default=DEFAULT_LANGUAGE, help="language of generated code [default: %(default)s]")
+    parser.add_argument("--wire-protocol", choices=[mavparse.PROTOCOL_0_9, mavparse.PROTOCOL_1_0], default=DEFAULT_WIRE_PROTOCOL, help="MAVLink protocol version. [default: %(default)s]")
+    parser.add_argument("--no-validate", action="store_false", dest="validate", default=DEFAULT_VALIDATE, help="Do not perform XML validation. Can speed up code generation if XML files are known to be correct.")
+    parser.add_argument("--error-limit", default=DEFAULT_ERROR_LIMIT, help="maximum number of validation errors to display")
+    parser.add_argument("definitions", metavar="XML", nargs="+", help="MAVLink definitions")
+    args = parser.parse_args()
 
-    if len(args) < 1:
-        parser.error("You must supply at least one MAVLink XML protocol definition")
-    mavgen(opts, args)
+    mavgen(args, args.definitions)

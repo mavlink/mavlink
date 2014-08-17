@@ -8,36 +8,34 @@ import sys, time, os
 
 from pymavlink import mavutil
 
-from optparse import OptionParser
-parser = OptionParser("mavsearch.py [options]")
-parser.add_option("--condition", default=None, help="conditional check on log")
-parser.add_option("--types", default=None, help="message types to look for (comma separated)")
-parser.add_option("--stop", action='store_true', help="stop when message type found")
-parser.add_option("--stopcondition", action='store_true', help="stop when condition met")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--condition", default=None, help="conditional check on log")
+parser.add_argument("--types", default=None, help="message types to look for (comma separated)")
+parser.add_argument("--stop", action='store_true', help="stop when message type found")
+parser.add_argument("--stopcondition", action='store_true', help="stop when condition met")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 def mavsearch(filename):
     print("Loading %s ..." % filename)
     mlog = mavutil.mavlink_connection(filename)
-    if opts.types is not None:
-        types = opts.types.split(',')
+    if args.types is not None:
+        types = args.types.split(',')
     else:
         types = None
     while True:
         m = mlog.recv_match(type=types)
         if m is None:
             break
-        if mlog.check_condition(opts.condition):
+        if mlog.check_condition(args.condition):
             print m
-            if opts.stopcondition:
+            if args.stopcondition:
                 break
-        if opts.stop:
+        if args.stop:
             break
 
-if len(args) < 1:
-    print("Usage: mavsearch.py [options] <LOGFILE...>")
-    sys.exit(1)
 
-for f in args:
+for f in args.logs:
     mavsearch(f)

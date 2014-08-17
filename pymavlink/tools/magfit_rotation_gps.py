@@ -6,21 +6,19 @@ fit best estimate of magnetometer rotation to GPS data
 
 import sys, time, os, math
 
-from optparse import OptionParser
-parser = OptionParser("magfit_rotation_gps.py [options]")
-parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
-parser.add_option("--declination", default=0.0, type='float', help="magnetic declination")
-parser.add_option("--min-speed", default=4.0, type='float', help="minimum GPS speed")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
+parser.add_argument("--declination", default=0.0, type=float, help="magnetic declination")
+parser.add_argument("--min-speed", default=4.0, type=float, help="minimum GPS speed")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 from pymavlink.rotmat import Vector3, Matrix3
 from math import radians, degrees, sin, cos, atan2
 
-if len(args) < 1:
-    print("Usage: magfit_rotation.py [options] <LOGFILE...>")
-    sys.exit(1)
 
 class Rotation(object):
     def __init__(self, roll, pitch, yaw, r):
@@ -73,14 +71,14 @@ def add_errors(mag, attitude, total_error, rotations):
     for i in range(len(rotations)):
         r = rotations[i].r
         rmag = r * mag
-        total_error[i] += heading_difference(rmag, attitude, opts.declination)
-        
+        total_error[i] += heading_difference(rmag, attitude, args.declination)
+
 
 def magfit(logfile):
     '''find best magnetometer rotation fit to a log file'''
 
     print("Processing log %s" % filename)
-    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps)
 
     # generate 90 degree rotations
     rotations = generate_rotations()
@@ -102,7 +100,7 @@ def magfit(logfile):
             gps = m
         if m.get_type() == "RAW_IMU":
             mag = Vector3(m.xmag, m.ymag, m.zmag)
-            if attitude is not None and gps is not None and gps.vel > opts.min_speed*100 and gps.fix_type>=3:
+            if attitude is not None and gps is not None and gps.vel > args.min_speed*100 and gps.fix_type>=3:
                 add_errors(mag, attitude, total_error, rotations)
             count += 1
 
@@ -125,5 +123,5 @@ def magfit(logfile):
         r.yaw,
         best_err/count))
 
-for filename in args:
+for filename in args.logs:
     magfit(filename)
