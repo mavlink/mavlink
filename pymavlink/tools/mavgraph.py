@@ -69,7 +69,7 @@ def plotit(x, y, fields, colors=[]):
         if xrange / interval < 15:
             break
     locator = matplotlib.dates.SecondLocator(interval=interval)
-    if not opts.xaxis:
+    if not args.xaxis:
         ax1.xaxis.set_major_locator(locator)
         ax1.xaxis.set_major_formatter(formatter)
     empty = True
@@ -88,7 +88,7 @@ def plotit(x, y, fields, colors=[]):
             if ax2 == None:
                 ax2 = ax1.twinx()
             ax = ax2
-            if not opts.xaxis:
+            if not args.xaxis:
                 ax2.xaxis.set_major_locator(locator)
                 ax2.xaxis.set_major_formatter(formatter)
             label = fields[i]
@@ -98,86 +98,83 @@ def plotit(x, y, fields, colors=[]):
         else:
             ax1_labels.append(fields[i])
             ax = ax1
-        if opts.xaxis:
-            if opts.marker is not None:
-                marker = opts.marker
+        if args.xaxis:
+            if args.marker is not None:
+                marker = args.marker
             else:
                 marker = '+'
-            if opts.linestyle is not None:
-                linestyle = opts.linestyle
+            if args.linestyle is not None:
+                linestyle = args.linestyle
             else:
                 linestyle = 'None'
             ax.plot(x[i], y[i], color=color, label=fields[i],
                     linestyle=linestyle, marker=marker)
         else:
-            if opts.marker is not None:
-                marker = opts.marker
+            if args.marker is not None:
+                marker = args.marker
             else:
                 marker = 'None'
-            if opts.linestyle is not None:
-                linestyle = opts.linestyle
+            if args.linestyle is not None:
+                linestyle = args.linestyle
             else:
                 linestyle = '-'
             ax.plot_date(x[i], y[i], color=color, label=fields[i],
                          linestyle=linestyle, marker=marker, tz=None)
         empty = False
-    if opts.flightmode is not None:
+    if args.flightmode is not None:
         for i in range(len(modes)-1):
-            c = colourmap[opts.flightmode].get(modes[i][1], edge_colour) 
+            c = colourmap[args.flightmode].get(modes[i][1], edge_colour)
             ax1.axvspan(modes[i][0], modes[i+1][0], fc=c, ec=edge_colour, alpha=0.1)
-        c = colourmap[opts.flightmode].get(modes[-1][1], edge_colour)
+        c = colourmap[args.flightmode].get(modes[-1][1], edge_colour)
         ax1.axvspan(modes[-1][0], ax1.get_xlim()[1], fc=c, ec=edge_colour, alpha=0.1)
     if ax1_labels != []:
-        ax1.legend(ax1_labels,loc=opts.legend)
+        ax1.legend(ax1_labels,loc=args.legend)
     if ax2_labels != []:
-        ax2.legend(ax2_labels,loc=opts.legend2)
+        ax2.legend(ax2_labels,loc=args.legend2)
     if empty:
         print("No data to graph")
         return
 
 
-from optparse import OptionParser
-parser = OptionParser("mavgraph.py [options] <filename> <fields>")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
 
-parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
-parser.add_option("--planner",dest="planner", action='store_true', help="use planner file format")
-parser.add_option("--condition",dest="condition", default=None, help="select packets by a condition")
-parser.add_option("--labels",dest="labels", default=None, help="comma separated field labels")
-parser.add_option("--legend",  default='upper left', help="default legend position")
-parser.add_option("--legend2",  default='upper right', help="default legend2 position")
-parser.add_option("--marker",  default=None, help="point marker")
-parser.add_option("--linestyle",  default=None, help="line style")
-parser.add_option("--xaxis",  default=None, help="X axis expression")
-parser.add_option("--multi",  action='store_true', help="multiple files with same colours")
-parser.add_option("--zero-time-base",  action='store_true', help="use Z time base for DF logs")
-parser.add_option("--flightmode", default=None,
+parser.add_argument("--no-timestamps", dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
+parser.add_argument("--planner", action='store_true', help="use planner file format")
+parser.add_argument("--condition", default=None, help="select packets by a condition")
+parser.add_argument("--labels", default=None, help="comma separated field labels")
+parser.add_argument("--legend", default='upper left', help="default legend position")
+parser.add_argument("--legend2", default='upper right', help="default legend2 position")
+parser.add_argument("--marker", default=None, help="point marker")
+parser.add_argument("--linestyle", default=None, help="line style")
+parser.add_argument("--xaxis", default=None, help="X axis expression")
+parser.add_argument("--multi", action='store_true', help="multiple files with same colours")
+parser.add_argument("--zero-time-base", action='store_true', help="use Z time base for DF logs")
+parser.add_argument("--flightmode", default=None,
                     help="Choose the plot background according to the active flight mode of the specified type, e.g. --flightmode=apm for ArduPilot or --flightmode=px4 for PX4 stack logs.  Cannot be specified with --xaxis.")
-parser.add_option("--output",dest="output", default=None, help="provide an output format")
-(opts, args) = parser.parse_args()
+parser.add_argument("--output", default=None, help="provide an output format")
+parser.add_argument("logs_fields", metavar="<LOG or FIELD>", nargs="+")
+args = parser.parse_args()
 
 from pymavlink import mavutil
 
-if len(args) < 2:
-    print("Usage: mavlogdump.py [options] <LOGFILES...> <fields...>")
-    sys.exit(1)
-
-if opts.flightmode is not None and opts.xaxis:
+if args.flightmode is not None and args.xaxis:
     print("Cannot request flightmode backgrounds with an x-axis expression")
     sys.exit(1)
 
-if opts.flightmode is not None and opts.flightmode not in colourmap:
-    print("Unknown flight controller '%s' in specification of --flightmode" % opts.flightmode)
+if args.flightmode is not None and args.flightmode not in colourmap:
+    print("Unknown flight controller '%s' in specification of --flightmode" % args.flightmode)
     sys.exit(1)
 
 
-if opts.output is not None:
+if args.output is not None:
     matplotlib.use('Agg')
 
 import pylab
 
 filenames = []
 fields = []
-for f in args:
+for f in args.logs_fields:
     if os.path.exists(f):
         filenames.append(f)
     else:
@@ -207,7 +204,7 @@ for f in fields:
 def add_data(t, msg, vars, flightmode):
     '''add some data'''
     mtype = msg.get_type()
-    if opts.flightmode is not None and (len(modes) == 0 or modes[-1][1] != flightmode):
+    if args.flightmode is not None and (len(modes) == 0 or modes[-1][1] != flightmode):
         modes.append((t, flightmode))
     if mtype not in msg_types:
         return
@@ -224,23 +221,23 @@ def add_data(t, msg, vars, flightmode):
         v = mavutil.evaluate_expression(f, vars)
         if v is None:
             continue
-        if opts.xaxis is None:
+        if args.xaxis is None:
             xv = t
         else:
-            xv = mavutil.evaluate_expression(opts.xaxis, vars)
+            xv = mavutil.evaluate_expression(args.xaxis, vars)
             if xv is None:
                 continue
-        y[i].append(v)            
+        y[i].append(v)
         x[i].append(xv)
 
 def process_file(filename):
     '''process one file'''
     print("Processing %s" % filename)
-    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps, zero_time_base=opts.zero_time_base)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps, zero_time_base=args.zero_time_base)
     vars = {}
-    
+
     while True:
-        msg = mlog.recv_match(opts.condition)
+        msg = mlog.recv_match(args.condition)
         if msg is None: break
         tdays = matplotlib.dates.date2num(datetime.datetime.fromtimestamp(msg._timestamp))
         add_data(tdays, msg, mlog.messages, mlog.flightmode)
@@ -249,8 +246,8 @@ if len(filenames) == 0:
     print("No files to process")
     sys.exit(1)
 
-if opts.labels is not None:
-    labels = opts.labels.split(',')
+if args.labels is not None:
+    labels = args.labels.split(',')
     if len(labels) != len(fields)*len(filenames):
         print("Number of labels (%u) must match number of fields (%u)" % (
             len(labels), len(fields)*len(filenames)))
@@ -269,7 +266,7 @@ for fi in range(0, len(filenames)):
         lab = labels[fi*len(fields):(fi+1)*len(fields)]
     else:
         lab = fields[:]
-    if opts.multi:
+    if args.multi:
         col = colors[:]
     else:
         col = colors[fi*len(fields):]
@@ -277,9 +274,9 @@ for fi in range(0, len(filenames)):
     for i in range(0, len(x)):
         x[i] = []
         y[i] = []
-if opts.output is None:
+if args.output is None:
     pylab.show()
     pylab.draw()
     raw_input('press enter to exit....')
 else:
-    pylab.savefig(opts.output, bbox_inches='tight')
+    pylab.savefig(args.output, bbox_inches='tight')

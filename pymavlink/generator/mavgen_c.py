@@ -72,8 +72,12 @@ def generate_main_h(directory, xml):
  *	@brief MAVLink comm protocol generated from ${basename}.xml
  *	@see http://qgroundcontrol.org/mavlink/
  */
-#ifndef ${basename_upper}_H
-#define ${basename_upper}_H
+#ifndef MAVLINK_${basename_upper}_H
+#define MAVLINK_${basename_upper}_H
+
+#ifndef MAVLINK_H
+    #error Wrong include order: MAVLINK_${basename_upper}.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -132,7 +136,7 @@ ${{message:#include "./mavlink_msg_${name_lower}.h"
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-#endif // ${basename_upper}_H
+#endif // MAVLINK_${basename_upper}_H
 ''', xml)
 
     f.close()
@@ -478,19 +482,12 @@ def copy_fixed_headers(directory, xml):
     srcpath = os.path.join(basepath, 'C/include_v%s' % xml.wire_protocol_version)
     print("Copying fixed headers")
     for h in hlist:
-        if (not (h == 'mavlink_protobuf_manager.hpp' and xml.wire_protocol_version == '0.9')):
+        if (not ((h == 'mavlink_protobuf_manager.hpp' or h == 'mavlink_conversions.h') and xml.wire_protocol_version == '0.9')):
            src = os.path.realpath(os.path.join(srcpath, h))
            dest = os.path.realpath(os.path.join(directory, h))
            if src == dest:
                continue
            shutil.copy(src, dest)
-    # XXX This is a hack - to be removed
-    if (xml.basename == 'pixhawk' and xml.wire_protocol_version == '1.0'):
-        h = 'pixhawk/pixhawk.pb.h'
-        src = os.path.realpath(os.path.join(srcpath, h))
-        dest = os.path.realpath(os.path.join(directory, h))
-        if src != dest:
-            shutil.copy(src, dest)
         
 def copy_fixed_sources(directory, xml):
     # XXX This is a hack - to be removed

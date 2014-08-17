@@ -7,15 +7,13 @@ file, for loading into google earth
 
 import sys, struct, time, os
 
-from optparse import OptionParser
-parser = OptionParser("wptogpx.py [options]")
-(opts, args) = parser.parse_args()
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("wpfiles", metavar="WP_FILE", nargs="+")
+args = parser.parse_args()
 
 from pymavlink import mavutil, mavwp
 
-if len(args) < 1:
-    print("Usage: wptogpx.py <WPFILE>")
-    sys.exit(1)
 
 def wp_to_gpx(infilename, outfilename):
     '''convert a wp file to a GPX file'''
@@ -47,7 +45,7 @@ def wp_to_gpx(infilename, outfilename):
 </gpx>
 ''')
 
-    add_header()       
+    add_header()
 
     count = 0
     for i in range(wp.count()):
@@ -59,8 +57,8 @@ def wp_to_gpx(infilename, outfilename):
         count += 1
     add_footer()
     print("Created %s with %u points" % (outfilename, count))
-    
 
-for infilename in args:
+
+for infilename in args.wpfiles:
     outfilename = infilename + '.gpx'
     wp_to_gpx(infilename, outfilename)

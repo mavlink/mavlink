@@ -8,20 +8,16 @@ import sys, struct, time, os
 
 from pymavlink import mavutil
 
-from optparse import OptionParser
-parser = OptionParser("bwtest.py [options]")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
 
-parser.add_option("--baudrate", dest="baudrate", type='int',
+parser.add_argument("--baudrate", type=int,
                   help="master port baud rate", default=115200)
-parser.add_option("--device", dest="device", default=None, help="serial device")
-(opts, args) = parser.parse_args()
-
-if opts.device is None:
-    print("You must specify a serial device")
-    sys.exit(1)
+parser.add_argument("--device", required=True, help="serial device")
+args = parser.parse_args()
 
 # create a mavlink serial instance
-master = mavutil.mavlink_connection(opts.device, baud=opts.baudrate)
+master = mavutil.mavlink_connection(args.device, baud=args.baudrate)
 
 t1 = time.time()
 

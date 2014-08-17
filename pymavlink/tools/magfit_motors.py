@@ -6,27 +6,25 @@ fit best estimate of magnetometer offsets, trying to take into account motor int
 
 import sys, time, os, math
 
-from optparse import OptionParser
-parser = OptionParser("magfit.py [options]")
-parser.add_option("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
-parser.add_option("--condition",dest="condition", default=None, help="select packets by condition")
-parser.add_option("--noise", type='float', default=0, help="noise to add")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--no-timestamps",dest="notimestamps", action='store_true', help="Log doesn't have timestamps")
+parser.add_argument("--condition",dest="condition", default=None, help="select packets by condition")
+parser.add_argument("--noise", type=float, default=0, help="noise to add")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 from pymavlink.rotmat import Vector3
 
-if len(args) < 1:
-    print("Usage: magfit.py [options] <LOGFILE...>")
-    sys.exit(1)
 
 def noise():
     '''a noise vector'''
     from random import gauss
     v = Vector3(gauss(0, 1), gauss(0, 1), gauss(0, 1))
     v.normalize()
-    return v * opts.noise
+    return v * args.noise
 
 def select_data(data):
     ret = []
@@ -83,7 +81,7 @@ def magfit(logfile):
     '''find best magnetometer offset fit to a log file'''
 
     print("Processing log %s" % filename)
-    mlog = mavutil.mavlink_connection(filename, notimestamps=opts.notimestamps)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps)
 
     data = []
 
@@ -94,7 +92,7 @@ def magfit(logfile):
 
     # now gather all the data
     while True:
-        m = mlog.recv_match(condition=opts.condition)
+        m = mlog.recv_match(condition=args.condition)
         if m is None:
             break
         if m.get_type() == "PARAM_VALUE" and m.param_id == "RC3_MIN":
@@ -111,7 +109,7 @@ def magfit(logfile):
             if motor > 1.0:
                 motor = 1.0
             if motor < 0.0:
-                motor = 0.0                
+                motor = 0.0
         if m.get_type() == "RAW_IMU":
             mag = Vector3(m.xmag, m.ymag, m.zmag)
             # add data point after subtracting the current offsets
@@ -132,7 +130,7 @@ def magfit(logfile):
         print("Fit %u    : %s  %s field_strength=%6.1f to %6.1f" % (
             count, offsets, motor_ofs,
             radius(data[0], offsets, motor_ofs), radius(data[-1], offsets, motor_ofs)))
-        
+
         # discard outliers, keep the middle 3/4
         data = data[len(data)/8:-len(data)/8]
 
@@ -140,7 +138,7 @@ def magfit(logfile):
         (offsets, motor_ofs, field_strength) = fit_data(data)
 
     print("Final    : %s  %s field_strength=%6.1f to %6.1f" % (
-        offsets, motor_ofs, 
+        offsets, motor_ofs,
         radius(data[0], offsets, motor_ofs), radius(data[-1], offsets, motor_ofs)))
     print "mavgraph.py '%s' 'mag_field(RAW_IMU)' 'mag_field_motors(RAW_IMU,SENSOR_OFFSETS,(%f,%f,%f),SERVO_OUTPUT_RAW,(%f,%f,%f))'" % (
         filename,
@@ -148,5 +146,5 @@ def magfit(logfile):
         motor_ofs.x, motor_ofs.y, motor_ofs.z)
 
 total = 0.0
-for filename in args:
+for filename in args.logs:
     magfit(filename)

@@ -6,17 +6,15 @@ show GPS lock events in a MAVLink log
 
 import sys, time, os
 
-from optparse import OptionParser
-parser = OptionParser("gpslock.py [options]")
-parser.add_option("--condition", default=None, help="condition for packets")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--condition", default=None, help="condition for packets")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 
-if len(args) < 1:
-    print("Usage: gpslock.py [options] <LOGFILE...>")
-    sys.exit(1)
 
 def lock_time(logfile):
     '''work out gps lock times for a log file'''
@@ -27,14 +25,14 @@ def lock_time(logfile):
     start_time = 0.0
     total_time = 0.0
     t = None
-    m = mlog.recv_match(type=['GPS_RAW_INT','GPS_RAW'], condition=opts.condition)
+    m = mlog.recv_match(type=['GPS_RAW_INT','GPS_RAW'], condition=args.condition)
     if m is None:
         return 0
 
     unlock_time = time.mktime(time.localtime(m._timestamp))
 
     while True:
-        m = mlog.recv_match(type=['GPS_RAW_INT','GPS_RAW'], condition=opts.condition)
+        m = mlog.recv_match(type=['GPS_RAW_INT','GPS_RAW'], condition=args.condition)
         if m is None:
             if locked:
                 total_time += time.mktime(t) - start_time
@@ -60,7 +58,7 @@ def lock_time(logfile):
     return total_time
 
 total = 0.0
-for filename in args:
+for filename in args.logs:
     total += lock_time(filename)
 
 print("Total time locked: %u:%02u" % (int(total)/60, int(total)%60))

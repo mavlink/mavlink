@@ -7,7 +7,7 @@ Released under GNU GPL version 3 or later
 '''
 
 import sys, textwrap
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 # mavparse is up a directory level
 sys.path.append('..')
@@ -107,18 +107,15 @@ static void mavtest_generate_outputs(mavlink_channel_t chan)
 ######################################################################
 '''main program'''
 
-parser = OptionParser("%prog [options] <XML files>")
-parser.add_option("-o", "--output", dest="output", default="mavtest", help="output folder [default: %default]")
-(opts, args) = parser.parse_args()
-
-if len(args) < 1:
-    parser.error("You must supply at least one MAVLink XML protocol definition")
-    
+parser = ArgumentParser(description="This tool generate MAVLink test suite")
+parser.add_argument("-o", "--output", default="mavtest", help="output folder [default: %(default)s]")
+parser.add_argument("definitions", metavar="XML", nargs="+", help="MAVLink definitions")
+args = parser.parse_args()
 
 msgs = []
 enums = []
 
-for fname in args:
+for fname in args.definitions:
     (m, e) = mavparse.parse_mavlink_xml(fname)
     msgs.extend(m)
     enums.extend(e)
@@ -129,14 +126,14 @@ if mavparse.check_duplicates(msgs):
 
 print("Found %u MAVLink message types" % len(msgs))
 
-print("Generating python %s" % (opts.output+'.py'))
-outf = open(opts.output + '.py', "w")
+print("Generating python %s" % (args.output+'.py'))
+outf = open(args.output + '.py', "w")
 generate_methods_python(outf, msgs)
 outf.close()
 
-print("Generating C %s" % (opts.output+'.h'))
-outf = open(opts.output + '.h', "w")
+print("Generating C %s" % (args.output+'.h'))
+outf = open(args.output + '.h', "w")
 generate_methods_C(outf, msgs)
 outf.close()
 
-print("Generated %s OK" % opts.output)
+print("Generated %s OK" % args.output)

@@ -105,18 +105,13 @@ def mag_field(RAW_IMU, SENSOR_OFFSETS=None, ofs=None):
         mag_z += ofs[2] - SENSOR_OFFSETS.mag_ofs_z
     return sqrt(mag_x**2 + mag_y**2 + mag_z**2)
 
-def mag_field_df(MAG, mofs=True):
+def mag_field_df(MAG, ofs=None):
     '''calculate magnetic field strength from raw magnetometer (dataflash version)'''
-    mag_x = MAG.MagX - MAG.OfsX
-    mag_y = MAG.MagY - MAG.OfsY
-    mag_z = MAG.MagZ - MAG.OfsZ
-
-    if mofs:
-        mag_x += MAG.MOfsX
-        mag_y += MAG.MOfsY
-        mag_z += MAG.MOfsZ
-
-    return sqrt(mag_x**2 + mag_y**2 + mag_z**2)
+    mag = Vector3(MAG.MagX, MAG.MagY, MAG.MagZ)
+    offsets = Vector3(MAG.OfsX, MAG.OfsY, MAG.OfsZ)
+    if ofs is not None:
+        mag = (mag - offsets) + Vector3(ofs[0], ofs[1], ofs[2])
+    return mag.length()
 
 def get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs):
     '''calculate magnetic field strength from raw magnetometer'''

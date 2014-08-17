@@ -273,6 +273,8 @@ class MAVXML(object):
                 m.wire_length += f.wire_length
                 m.ordered_fieldnames.append(f.name)
                 f.set_test_value()
+                if f.name.find('[') != -1:
+                    raise MAVParseError("invalid field name with array descriptor %s" % f.name)
             m.num_fields = len(m.fieldnames)
             if m.num_fields > 64:
                 raise MAVParseError("num_fields=%u : Maximum number of field names allowed is" % (
@@ -295,7 +297,7 @@ class MAVXML(object):
 def message_checksum(msg):
     '''calculate a 8-bit checksum of the key fields of a message, so we
        can detect incompatible XML changes'''
-    from .mavcrc import x25crc
+    from mavcrc import x25crc
     crc = x25crc(msg.name + ' ')
     for f in msg.ordered_fields:
         crc.accumulate(f.type + ' ')

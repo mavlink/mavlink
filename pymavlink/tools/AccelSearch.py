@@ -13,21 +13,21 @@ from pymavlink import mavutil
 import json
 from pymavlink.dialects.v10 import ardupilotmega
 
-search_dirs = ['c:\Program Files\APM Planner', 
-               'c:\Program Files\Mission Planner', 
+search_dirs = ['c:\Program Files\APM Planner',
+               'c:\Program Files\Mission Planner',
                'c:\Program Files (x86)\APM Planner',
                'c:\Program Files (x86)\Mission Planner']
 results = 'SearchResults.zip'
 email = 'Craig Elder <craig@3drobotics.com>'
 
-from optparse import OptionParser
-parser = OptionParser("AccelSearch.py [options]")
-parser.add_option("--directory", action='append', default=search_dirs, help="directories to search")
-parser.add_option("--post-boot", action='store_true', help="post boot only")
-parser.add_option("--init-only", action='store_true', help="init only")
-parser.add_option("--single-axis", action='store_true', help="single axis only")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--directory", action='append', default=search_dirs, help="directories to search")
+parser.add_argument("--post-boot", action='store_true', help="post boot only")
+parser.add_argument("--init-only", action='store_true', help="init only")
+parser.add_argument("--single-axis", action='store_true', help="single axis only")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 logcount = 0
 
@@ -52,10 +52,10 @@ def AccelSearch(filename):
             if m.time_usec < last_t:
                 have_ok = False
             last_t = m.time_usec
-            if abs(m.xacc) >= 3000 and abs(m.yacc) > 3000 and abs(m.zacc) > 3000 and not opts.single_axis:
-                if opts.post_boot and not have_ok:
+            if abs(m.xacc) >= 3000 and abs(m.yacc) > 3000 and abs(m.zacc) > 3000 and not args.single_axis:
+                if args.post_boot and not have_ok:
                     continue
-                if opts.init_only and have_ok:
+                if args.init_only and have_ok:
                     continue
                 print have_ok, last_t, m
                 break
@@ -73,7 +73,7 @@ def AccelSearch(filename):
                         badval = m
                         if badcount > 5:
                             logcount += 1
-                            if opts.init_only and have_ok:
+                            if args.init_only and have_ok:
                                 continue
                             print have_ok, badcount, badval, m
                             return True
@@ -85,9 +85,9 @@ def AccelSearch(filename):
     if last_t != 0:
         logcount += 1
     return True
-        
+
 found = []
-directories = opts.directory
+directories = args.directory
 
 # allow drag and drop
 if len(sys.argv) > 1:
@@ -114,7 +114,7 @@ for i in range(len(filelist)):
     print("Checking %s ... [found=%u logcount=%u i=%u/%u]" % (f, len(found), logcount, i, len(filelist)))
     if AccelSearch(f):
         found.append(f)
-        
+
 
 if len(found) == 0:
     print("No matching files found - all OK!")

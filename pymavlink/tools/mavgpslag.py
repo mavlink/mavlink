@@ -6,12 +6,13 @@ calculate GPS lag from DF log
 
 import sys, time, os
 
-from optparse import OptionParser
-parser = OptionParser("mavgpslag.py [options]")
-parser.add_option("--plot", action='store_true', default=False, help="plot errors")
-parser.add_option("--minspeed", type='float', default=6, help="minimum speed")
+from argparse import ArgumentParser
+parser = ArgumentParser(description=__doc__)
+parser.add_argument("--plot", action='store_true', default=False, help="plot errors")
+parser.add_argument("--minspeed", type=float, default=6, help="minimum speed")
+parser.add_argument("logs", metavar="LOG", nargs="+")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
 from pymavlink import mavutil
 from pymavlink.mavextra import *
@@ -28,9 +29,6 @@ if home is not None:
         mavuser = imp.load_source('pymavlink.mavuser', extra)
         from pymavlink.mavuser import *
 
-if len(args) < 1:
-    print("Usage: mavgpslag.py [options] <LOGFILE...>")
-    sys.exit(1)
 
 def velocity_error(timestamps, vel, gaccel, accel_indexes, imu_dt, shift=0):
     '''return summed velocity error'''
@@ -68,13 +66,13 @@ def gps_lag(logfile):
 
     dtsum = 0
     dtcount = 0
-    
+
     while True:
         m = mlog.recv_match(type=['GPS','IMU','ATT'])
         if m is None:
             break
         t = m.get_type()
-        if t == 'GPS' and m.Status==3 and m.Spd>opts.minspeed:
+        if t == 'GPS' and m.Status==3 and m.Spd>args.minspeed:
             v = Vector3(m.Spd*cos(radians(m.GCrs)), m.Spd*sin(radians(m.GCrs)), m.VZ)
             vel.append(v)
             timestamps.append(m._timestamp)
@@ -108,7 +106,7 @@ def gps_lag(logfile):
             besterr = err
     print("Best %u (%.3fs) %f" % (besti, besti*imu_dt, besterr))
 
-    if opts.plot:
+    if args.plot:
         import matplotlib.pyplot as plt
         plt.plot(delays, errors, 'bo-')
         x1,x2,y1,y2 = plt.axis()
@@ -116,8 +114,7 @@ def gps_lag(logfile):
         plt.ylabel('Error')
         plt.xlabel('Delay(s)')
         plt.show()
-    
 
-for filename in args:
+
+for filename in args.logs:
     gps_lag(filename)
-
