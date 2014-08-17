@@ -97,8 +97,15 @@ def add_data(t, msg, vars, fields, field_types):
 
         add_data.new_linestring = False
 
-    add_to_linestring(add_data.position_data,
+        add_to_linestring(add_data.position_data,
                       add_data.current_kml_linestring)
+        add_data.last_time = msg._timestamp
+
+    else:
+        if (msg._timestamp - add_data.last_time) > 0.1:
+            add_to_linestring(add_data.position_data,
+                      add_data.current_kml_linestring)
+            add_data.last_time = msg._timestamp
 
     # reset position_data
     add_data.position_data = [None for n in position_field_types]
@@ -112,6 +119,7 @@ def process_file(filename, fields, field_types):
     add_data.mainstate_current = -1
     add_data.current_kml_linestring = None
     add_data.position_data = [None for n in position_field_types]
+    add_data.last_time = 0
 
     while True:
         msg = mlog.recv_match(opts.condition)
