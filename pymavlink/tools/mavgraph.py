@@ -280,4 +280,4 @@ if args.output is None:
     raw_input('press enter to exit....')
 else:
     pylab.legend(loc=2,prop={'size':8})
-    pylab.savefig(opts.output, bbox_inches='tight', dpi=200)
+    pylab.savefig(args.output, bbox_inches='tight', dpi=200)
