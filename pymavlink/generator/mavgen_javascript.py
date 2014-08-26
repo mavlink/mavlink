@@ -333,9 +333,9 @@ MAVLink.prototype.parsePrefix = function() {
 // Determine the length.  Leaves buffer untouched.
 MAVLink.prototype.parseLength = function() {
     
-    if( this.buf.length >= 3 ) {
-        var unpacked = jspack.Unpack('BB', this.buf.slice(1, 3));
-        this.expected_length = unpacked[0] + 8; // length of message + header + CRC
+    if( this.buf.length >= 2 ) {
+        var unpacked = jspack.Unpack('BB', this.buf.slice(0, 2));
+        this.expected_length = unpacked[1] + 8; // length of message + header + CRC
     }
 
 }
