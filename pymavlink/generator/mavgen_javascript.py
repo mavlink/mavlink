@@ -247,6 +247,7 @@ mavlink.messages.bad_data = function(data, reason) {
     this.id = mavlink.MAVLINK_MSG_ID_BAD_DATA;
     this.data = data;
     this.reason = reason;
+    this.msgbuf = data;
 }
 
 /* MAVLink protocol handling class */
