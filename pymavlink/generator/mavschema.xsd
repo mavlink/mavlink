@@ -8,7 +8,13 @@
 
 
 <!-- definition of attributes -->
-<xs:attribute name="name" type="xs:string"/> <!-- enum,entry,message,field -->
+<xs:attribute name="name"> <!-- enum,entry,message,field -->
+    <xs:simpleType>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="^(?!break$|case$|class$|catch$|const$|continue$|debugger$|default$|delete$|do$|else$|export$|extends$|finally$|for$|function$|if$|import$|in$|instanceof$|let$|new$|return$|super$|switch$|this$|throw$|try$|typeof$|var$|void$|while$|with$|yield$|enum$|await$|implements$|package$|protected$|static$|interface$|private$|public$|abstract$|boolean$|byte$|char$|double$|final$|float$|goto$|int$|long$|native$|short$|synchronized$|transient$|volatile$).+"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:attribute>
 <xs:attribute name="index" type="xs:unsignedByte"/> <!-- param -->
 <xs:attribute name="id" type="xs:unsignedByte"/> <!-- message -->
 <xs:attribute name="print_format" type="xs:string"/> <!-- field -->
