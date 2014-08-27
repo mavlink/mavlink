@@ -130,10 +130,26 @@ function JSPack()
 		a[p+i-d] |= s*128;
 	};
 
+	// Convert int64 to array of 2 4 byte elements, network endianness (big endian)
+	// '>>>' trick to convert signed 32bit int to unsigned int (because << always results in a signed 32bit int)
+	m._DeInt64 = function (a, p) {
+		var start = bBE ? 0 : 7, nsb = bBE ? 1 : -1, stop = start + nsb * 8, rv = [0,0], i, f, rvi;
+		for (i = start, rvi = 0, f = 0;
+			i != stop;
+			rv[rvi] = (((rv[rvi]<<8)>>>0) + a[p + i]), i += nsb, f++, rvi = (f < 4 ? 0 : 1));
+		return rv;
+	};
+	m._EnInt64 = function (a, p, v) {
+		var start = bBE ? 0 : 7, nsb = bBE ? 1 : -1, stop = start + nsb * 8, i, f, rvi, s;
+		for (i = start, rvi = 0, f = 0, s = 24;
+			i != stop;
+			a[p + i] = v[rvi]>>s & 0xff, i += nsb, f++, rvi = (f < 4 ? 0 : 1), s = 24 - (8 * (f % 4)));
+	};
+	
 
 	// Class data
-	m._sPattern	= '(\\d+)?([AxcbBhHsfdiIlL])';
-	m._lenLut	= {'A':1, 'x':1, 'c':1, 'b':1, 'B':1, 'h':2, 'H':2, 's':1, 'f':4, 'd':8, 'i':4, 'I':4, 'l':4, 'L':4};
+	m._sPattern	= '(\\d+)?([AxcbBhHsfdiIlLqQ])';
+	m._lenLut	= {'A':1, 'x':1, 'c':1, 'b':1, 'B':1, 'h':2, 'H':2, 's':1, 'f':4, 'd':8, 'i':4, 'I':4, 'l':4, 'L':4, 'q':8, 'Q':8};
 	m._elLut	= {	'A': {en:m._EnArray, de:m._DeArray},
 				's': {en:m._EnString, de:m._DeString},
 				'c': {en:m._EnChar, de:m._DeChar},
@@ -146,7 +162,9 @@ function JSPack()
 				'l': {en:m._EnInt, de:m._DeInt, len:4, bSigned:true, min:-Math.pow(2, 31), max:Math.pow(2, 31)-1},
 				'L': {en:m._EnInt, de:m._DeInt, len:4, bSigned:false, min:0, max:Math.pow(2, 32)-1},
 				'f': {en:m._En754, de:m._De754, len:4, mLen:23, rt:Math.pow(2, -24)-Math.pow(2, -77)},
-				'd': {en:m._En754, de:m._De754, len:8, mLen:52, rt:0}};
+				'd': {en:m._En754, de:m._De754, len:8, mLen:52, rt:0},
+				'q': {en:m._EnInt64, de:m._DeInt64},
+				'Q': {en:m._EnInt64, de:m._DeInt64}};
 
 	// Unpack a series of n elements of size s from array a at offset p with fxn
 	m._UnpackSeries = function (n, s, a, p)
@@ -183,7 +201,7 @@ function JSPack()
 					rv.push(this._elLut[m[2]].de(a, p, n));
 					break;
 				case 'c': case 'b': case 'B': case 'h': case 'H':
-				case 'i': case 'I': case 'l': case 'L': case 'f': case 'd':
+				case 'i': case 'I': case 'l': case 'L': case 'f': case 'd': case 'q': case 'Q':
 					el = this._elLut[m[2]];
 					rv.push(this._UnpackSeries(n, s, a, p));
 					break;
@@ -216,7 +234,7 @@ function JSPack()
 					i += 1;
 					break;
 				case 'c': case 'b': case 'B': case 'h': case 'H':
-				case 'i': case 'I': case 'l': case 'L': case 'f': case 'd':
+				case 'i': case 'I': case 'l': case 'L': case 'f': case 'd': case 'q': case 'Q':
 					el = this._elLut[m[2]];
 					if ((i + n) > values.length) { return false; }
 					this._PackSeries(n, s, a, p, values, i);
