@@ -292,6 +292,12 @@ MAVLink.prototype.log = function(message) {
     }
 }
 
+MAVLink.prototype.log = function(level, message) {
+    if(this.logger) {
+        this.logger.log(level, message);
+    }
+}
+
 MAVLink.prototype.send = function(mavmsg) {
         buf = mavmsg.pack(this);
         this.file.write(buf);
@@ -362,6 +368,7 @@ MAVLink.prototype.parseChar = function(c) {
 
     } catch(e) {
 
+        this.log('error', e.message);
         this.total_receive_errors += 1;
         m = new mavlink.messages.bad_data(this.bufInError, e.message);
         this.bufInError = new Buffer(0);
