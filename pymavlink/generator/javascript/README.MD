@@ -105,6 +105,11 @@ connection.write(p);
 ### Gotchas and todo's ###
 
 The JS library that is implementing the pack/unpack functions (```jspack```) doesn't match Python's struct library identically.  For example, it doesn't support the ```q``` or ```Q``` flags representing ```int64_t``` and ```uint64_t```, respectively.  Those have been replaced with ```d``` and  ```double```, for the moment.
+Maybe use Long.js to parse ```int64_t``` and ```uint64_t```.
+
+Current implementation tries to be as robust as possible. It doesn't throw errors but emits bad_data messages. Also it discards the buffer of a possible message as soon as if finds a valid prefix. Future improvements:
+* Implement not so robust parsing: throw errors (similar to the Python version)
+* Implement trying hard: parse buffer char by char and don't just discard the expected length buffer if there is an error
 
 This code isn't great idiomatic Javascript (yet!), instead, it's more of a line-by-line translation from Python as much as possible.
 

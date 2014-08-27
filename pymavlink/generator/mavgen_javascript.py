@@ -332,15 +332,16 @@ MAVLink.prototype.parsePrefix = function() {
         this.buf = this.buf.slice(1);
         this.expected_length = 6;
 
-        if(!this.have_prefix_error) {
-            this.have_prefix_error = true;
+        // TODO: enable subsequent prefix error suppression if robust_parsing is implemented
+        //if(!this.have_prefix_error) {
+        //    this.have_prefix_error = true;
             throw new Error("Bad prefix ("+badPrefix+")");
-        }
+        //}
 
     }
-    else if( this.buf.length >= 1 && this.buf[0] == 254 ) {
-        this.have_prefix_error = false;
-    }
+    //else if( this.buf.length >= 1 && this.buf[0] == 254 ) {
+    //    this.have_prefix_error = false;
+    //}
 
 }
 
@@ -393,6 +394,9 @@ MAVLink.prototype.parsePayload = function() {
 
         // Slice off the expected packet length, reset expectation to be to find a header.
         var mbuf = this.buf.slice(0, this.expected_length);
+        // TODO: slicing off the buffer should depend on the error produced by the decode() function
+        // - if a message we find a well formed message, cut-off the expected_length
+        // - if the message is not well formed (correct prefix by accident), cut-off 1 char only
         this.buf = this.buf.slice(this.expected_length);
         this.expected_length = 6;
 
