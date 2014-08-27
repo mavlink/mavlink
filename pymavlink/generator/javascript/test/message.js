@@ -4,55 +4,92 @@ var mavlink = require('../implementations/mavlink_ardupilotmega_v1.0'),
 describe('MAVLink message registry', function() {
 
     it('defines constructors for every message', function() {
-        mavlink.messages['battery_status'].should.be.a.function;
+        mavlink.messages['gps_raw_int'].should.be.a.function;
     });
 
-    it('assigns message properties to each message', function() {
-        var m = new mavlink.messages['battery_status']();
-        m.format.should.equal("<HHHHHHhBb");
-        m.order_map.should.eql([7, 0, 1, 2, 3, 4, 5, 6, 8]); // should.eql = shallow comparison
-        m.crc_extra.should.equal(42);
-        m.id.should.equal(mavlink.MAVLINK_MSG_ID_BATTERY_STATUS);
+    it('assigns message properties, format with int64 (q), gps_raw_int', function() {
+        var m = new mavlink.messages['gps_raw_int']();
+        m.format.should.equal("<diiiHHHHBB");
+        m.order_map.should.eql([0, 8, 1, 2, 3, 4, 5, 6, 7, 9]); // should.eql = shallow comparison
+        m.crc_extra.should.equal(24);
+        m.id.should.equal(mavlink.MAVLINK_MSG_ID_GPS_RAW_INT);
+    });
+
+    it('assigns message properties, heartbeat', function() {
+        var m = new mavlink.messages['heartbeat']();
+        m.format.should.equal("<IBBBBB");
+        m.order_map.should.eql([1, 2, 3, 0, 4, 5]); // should.eql = shallow comparison
+        m.crc_extra.should.equal(50);
+        m.id.should.equal(mavlink.MAVLINK_MSG_ID_HEARTBEAT);
     });
 
 });
 
 describe('Complete MAVLink packet', function() {
 
-    it('encodes to match a reference packet generated through the Python version', function() {
+    it('encode gps_raw_int', function() {
+
+        var gpsraw = new mavlink.messages.gps_raw_int(
+            time_usec=123456789
+            , fix_type=3
+            , lat=47123456
+            , lon=8123456
+            , alt=50000
+            , eph=6544
+            , epv=4566
+            , vel=1235
+            , cog=1234
+            , satellites_visible=9
+        );
+        
+        // Set header properties
+        _.extend(gpsraw, {
+            seq: 5,
+            srcSystem: 42,
+            srcComponent: 150
+        });
+
+        // Create a buffer that matches what the Python version of MAVLink creates
+        var reference = new Buffer([0xfe, 0x1e, 0x05, 0x2a, 0x96, 0x18, 0x15, 0xcd, 0x5b, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0xcf, 0x02, 0x40, 0xf4, 0x7b, 0x00, 0x50, 0xc3, 0x00, 0x00, 0x90, 0x19, 0xd6, 0x11, 0xd3, 0x04, 0xd2, 0x04, 0x03, 0x09, 0xee, 0x16]);
+        new Buffer(gpsraw.pack()).should.eql(reference);
+
+    });
+
+    it('encode heartbeat', function() {
 
         var heartbeat = new mavlink.messages.heartbeat(
-            mavlink.MAV_TYPE_GCS, // 6
-            mavlink.MAV_AUTOPILOT_INVALID, // 8
-            0, // base mode, mavlink.MAV_MODE_FLAG_***
-            0, // custom mode
-            0, // system status
-            3 // MAVLink version
+            type=5
+            , autopilot=3
+            , base_mode=45
+            , custom_mode=68
+            , system_status=13
+            , mavlink_version=1
         );
         
         // Set header properties
         _.extend(heartbeat, {
-            seq: 2,
-            srcSystem: 255,
-            srcComponent: 0
+            seq: 7,
+            srcSystem: 42,
+            srcComponent: 150
         });
 
         // Create a buffer that matches what the Python version of MAVLink creates
-        var reference = new Buffer([0xfe, 0x09, 0x02, 0xff , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x06 , 0x08 , 0x00 , 0x00 , 0x03 , 0x75 , 0x22]);
+        var reference = new Buffer([0xfe, 0x09, 0x07, 0x2a, 0x96, 0x00, 0x44, 0x00, 0x00, 0x00, 0x05, 0x03, 0x2d, 0x0d, 0x01, 0xac, 0x9d]);
         new Buffer(heartbeat.pack()).should.eql(reference);
 
     });
+
 
 });
 
 describe('MAVLink header', function() {
 
     beforeEach(function() {
-        this.h = new mavlink.header(mavlink.MAVLINK_MSG_ID_BATTERY_STATUS, 1, 2, 3, 4);
+        this.h = new mavlink.header(mavlink.MAVLINK_MSG_ID_PARAM_REQUEST_LIST, 1, 2, 3, 4);
     })
 
     it('Can pack itself', function() {
-        this.h.pack().should.eql([254, 1, 2, 3, 4, 147]);
+        this.h.pack().should.eql([254, 1, 2, 3, 4, 21]);
     });
 
 });
