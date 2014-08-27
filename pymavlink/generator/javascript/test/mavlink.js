@@ -1,11 +1,11 @@
-var mavlink = require('../implementations/mavlink_ardupilotmega_v1.0'),
+var mavlink = require('../implementations/mavlink_common_v1.0/mavlink.js'),
     should = require('should'),
     sinon = require('sinon'),
     fs = require('fs');
 
 // Actual data stream taken from APM.
 global.fixtures = global.fixtures || {};
-global.fixtures.serialStream = fs.readFileSync("javascript/test/capture.mavlink");
+global.fixtures.serialStream = fs.readFileSync("test/capture.mavlink");
 //global.fixtures.heartbeatBinaryStream = fs.readFileSync("javascript/test/heartbeat-data-fixture");
 
 describe("Generated MAVLink protocol handler object", function() {
