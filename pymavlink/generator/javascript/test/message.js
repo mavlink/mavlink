@@ -9,7 +9,7 @@ describe('MAVLink message registry', function() {
 
     it('assigns message properties, format with int64 (q), gps_raw_int', function() {
         var m = new mavlink.messages['gps_raw_int']();
-        m.format.should.equal("<diiiHHHHBB");
+        m.format.should.equal("<QiiiHHHHBB");
         m.order_map.should.eql([0, 8, 1, 2, 3, 4, 5, 6, 7, 9]); // should.eql = shallow comparison
         m.crc_extra.should.equal(24);
         m.id.should.equal(mavlink.MAVLINK_MSG_ID_GPS_RAW_INT);
