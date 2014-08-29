@@ -8,6 +8,7 @@ Released under GNU GPL version 3 or later
 
 import sys, textwrap, os
 import mavparse, mavtemplate
+from shutil import copyfile
 
 t = mavtemplate.MAVTemplate()
 
@@ -22,7 +23,7 @@ Generated from: ${FILELIST}
 Note: this file has been auto-generated. DO NOT EDIT
 */
 
-jspack = require("jspack").jspack,
+jspack = require("./jspack.js").jspack,
     _ = require("underscore"),
     events = require("events"),
     util = require("util");
@@ -220,8 +221,8 @@ def mavfmt(field):
         'uint16_t' : 'H',
         'int32_t'  : 'i',
         'uint32_t' : 'I',
-        'int64_t'  : 'd',
-        'uint64_t' : 'd',
+        'int64_t'  : 'q',
+        'uint64_t' : 'Q',
         }
 
     if field.array_length:
@@ -537,7 +538,11 @@ module.exports = mavlink;
 def generate(basename, xml):
     '''generate complete javascript implementation'''
 
-    print basename;
+    if basename.rfind(os.sep) >= 0:
+        jspackFilename = basename[0:basename.rfind(os.sep)] + '/jspack.js'
+    else:
+        jspackFilename = 'jspack.js'
+    
     if basename.endswith('.js'):
         filename = basename
     else:
@@ -572,3 +577,5 @@ def generate(basename, xml):
     generate_footer(outf)
     outf.close()
     print("Generated %s OK" % filename)
+    copyfile('./javascript/lib/jspack/jspack.js', jspackFilename)
+    print("Copied jspack %s" % jspackFilename)
