@@ -112,7 +112,7 @@ connection.write(p);
 
 ### Gotchas and todo's ###
 
-JavaScript doesn't have 64bit integers (long). The library that replaces Pythons struct converts ```q``` and ```Q``` into 3 part arrays: ```[lowBits, highBits, unsignedFlag]```. These arrays can be used with int64 libraries such as [Long.js](https://github.com/dcodeIO/Long.js). See [lib/jspack/test/int64.js](lib/jspack/test/int64.js) for examples.
+JavaScript doesn't have 64bit integers (long). The library that replaces Pythons struct converts ```q``` and ```Q``` into 3 part arrays: ```[lowBits, highBits, unsignedFlag]```. These arrays can be used with int64 libraries such as [Long.js](https://github.com/dcodeIO/Long.js). See [int64.js](https://github.com/AndreasAntener/node-jspack/blob/master/test/int64.js) for examples.
 
 Current implementation tries to be as robust as possible. It doesn't throw errors but emits bad_data messages. Also it discards the buffer of a possible message as soon as if finds a valid prefix. Future improvements:
 * Implement not so robust parsing: throw errors (similar to the Python version)
