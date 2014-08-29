@@ -13,8 +13,16 @@ You need to have Node.js and npm installed to build.
 To build the Javascript implementations:
 
 ```bash
-cd mavlink/pymavlink/generator && make -f javascriptMakefile
+npm install
 ```
+
+or
+
+```bash
+make
+```
+
+(which calls npm)
 
 ### Usage in Node.js ###
 
@@ -104,8 +112,7 @@ connection.write(p);
 
 ### Gotchas and todo's ###
 
-The JS library that is implementing the pack/unpack functions (```jspack```) doesn't match Python's struct library identically.  For example, it doesn't support the ```q``` or ```Q``` flags representing ```int64_t``` and ```uint64_t```, respectively.  Those have been replaced with ```d``` and  ```double```, for the moment.
-Maybe use Long.js to parse ```int64_t``` and ```uint64_t```.
+JavaScript doesn't have 64bit integers (long). The library that replaces Pythons struct converts ```q``` and ```Q``` into 3 part arrays: ```[lowBits, highBits, unsignedFlag]```. These arrays can be used with int64 libraries such as [Long.js](https://github.com/dcodeIO/Long.js). See [lib/jspack/test/int64.js](lib/jspack/test/int64.js) for examples.
 
 Current implementation tries to be as robust as possible. It doesn't throw errors but emits bad_data messages. Also it discards the buffer of a possible message as soon as if finds a valid prefix. Future improvements:
 * Implement not so robust parsing: throw errors (similar to the Python version)
@@ -117,7 +124,7 @@ The Python MAVLink code manages some information about the connection status (sy
 
 Code to create/send MAVLink messages to a client is very clumsy at this point in time *and will change* to make it more direct.
 
-Integrate unit tests with Travis CI so it executes with the other MAVLink stuff.
+Publish generated scripts as npm module.
 
 ### Development ###
 
@@ -129,11 +136,9 @@ To run tests, use npm:
 npm test
 ```
 
-There is also a makefile that does the same.
-
 Specific instructions for generating Jenkins-friendly output is done through the makefile as well:
 
 ```bash
-make -f javascriptMakefile ci
+make ci
 ```
 
