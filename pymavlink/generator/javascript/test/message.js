@@ -27,12 +27,12 @@ describe('MAVLink message registry', function() {
 
 describe('Complete MAVLink packet', function() {
 
-    // TODO: enable when jspack fro q/Q is fixed
-    /*
     it('encode gps_raw_int', function() {
 
+        // 0x75bcd15 = 123456789
+        // as long as the number is no bigger than max signed int (2147483648) it can be passed like the following
         var gpsraw = new mavlink.messages.gps_raw_int(
-            time_usec=123456789
+            time_usec=[123456789, 0]
             , fix_type=3
             , lat=47123456
             , lon=8123456
@@ -56,7 +56,36 @@ describe('Complete MAVLink packet', function() {
         new Buffer(gpsraw.pack()).should.eql(reference);
 
     });
-    */
+
+    it('encode gps_raw_int with long integer', function() {
+
+        // number ~2^60
+        // 1152221500606846977 = 0xffd8359 9e3d1801
+        var gpsraw = new mavlink.messages.gps_raw_int(
+            time_usec=[0x9e3d1801, 0xffd8359]
+            , fix_type=3
+            , lat=47123456
+            , lon=8123456
+            , alt=50000
+            , eph=6544
+            , epv=4566
+            , vel=1235
+            , cog=1234
+            , satellites_visible=9
+        );
+        
+        // Set header properties
+        _.extend(gpsraw, {
+            seq: 5,
+            srcSystem: 42,
+            srcComponent: 150
+        });
+
+        // Create a buffer that matches what the Python version of MAVLink creates
+        var reference = new Buffer([0xfe, 0x1e, 0x05, 0x2a, 0x96, 0x18, 0x01, 0x18, 0x3d, 0x9e, 0x59, 0x83, 0xfd, 0x0f, 0x00, 0x0c, 0xcf, 0x02, 0x40, 0xf4, 0x7b, 0x00, 0x50, 0xc3, 0x00, 0x00, 0x90, 0x19, 0xd6, 0x11, 0xd3, 0x04, 0xd2, 0x04, 0x03, 0x09, 0x6c, 0xe8]);
+        new Buffer(gpsraw.pack()).should.eql(reference);
+
+    });
 
     it('encode heartbeat', function() {
 
@@ -79,6 +108,37 @@ describe('Complete MAVLink packet', function() {
         // Create a buffer that matches what the Python version of MAVLink creates
         var reference = new Buffer([0xfe, 0x09, 0x07, 0x2a, 0x96, 0x00, 0x44, 0x00, 0x00, 0x00, 0x05, 0x03, 0x2d, 0x0d, 0x01, 0xac, 0x9d]);
         new Buffer(heartbeat.pack()).should.eql(reference);
+
+    });
+
+    it('decode gps_raw_int with long integer', function() {
+
+        // number ~2^60
+        // 1152221500606846977 = 0xffd8359 9e3d1801
+
+        // Create a buffer that matches what the Python version of MAVLink creates
+        var reference = new Buffer([0xfe, 0x1e, 0x05, 0x2a, 0x96, 0x18, 0x01, 0x18, 0x3d, 0x9e, 0x59, 0x83, 0xfd, 0x0f, 0x00, 0x0c, 0xcf, 0x02, 0x40, 0xf4, 0x7b, 0x00, 0x50, 0xc3, 0x00, 0x00, 0x90, 0x19, 0xd6, 0x11, 0xd3, 0x04, 0xd2, 0x04, 0x03, 0x09, 0x6c, 0xe8]);
+
+        var m = new MAVLink();
+
+        var msg = m.parseBuffer(reference);
+
+        // check header
+        msg[0].header.seq.should.eql(5);
+        msg[0].header.srcSystem.should.eql(42);
+        msg[0].header.srcComponent.should.eql(150);
+
+        // check payload
+        msg[0].time_usec.should.eql([0x9e3d1801, 0xffd8359, true]);
+        msg[0].fix_type.should.eql(3);
+        msg[0].lat.should.eql(47123456);
+        msg[0].lon.should.eql(8123456);
+        msg[0].alt.should.eql(50000);
+        msg[0].eph.should.eql(6544);
+        msg[0].epv.should.eql(4566);
+        msg[0].vel.should.eql(1235);
+        msg[0].cog.should.eql(1234);
+        msg[0].satellites_visible.should.eql(9);
 
     });
 
