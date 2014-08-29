@@ -538,8 +538,6 @@ module.exports = mavlink;
 def generate(basename, xml):
     '''generate complete javascript implementation'''
 
-    print basename;
-
     if basename.rfind(os.sep) >= 0:
         jspackFilename = basename[0:basename.rfind(os.sep)] + '/jspack.js'
     else:
