@@ -421,8 +421,8 @@ static void mavlink_test_${name_lower}(uint8_t system_id, uint8_t component_id, 
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
 	mavlink_${name_lower}_t packet_in = {
-		${{ordered_fields:${c_test_value},
-	}}};
+		${{ordered_fields:${c_test_value},}}
+    };
 	mavlink_${name_lower}_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
         ${{scalar_fields:	packet1.${name} = packet_in.${name};

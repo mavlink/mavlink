@@ -8,6 +8,7 @@ Released under GNU GPL version 3 or later
 
 import sys, textwrap, os
 import mavparse, mavtemplate
+from shutil import copyfile
 
 t = mavtemplate.MAVTemplate()
 
@@ -22,7 +23,7 @@ Generated from: ${FILELIST}
 Note: this file has been auto-generated. DO NOT EDIT
 */
 
-jspack = require("jspack").jspack,
+jspack = require("./jspack.js").jspack,
     _ = require("underscore"),
     events = require("events"),
     util = require("util");
@@ -220,8 +221,8 @@ def mavfmt(field):
         'uint16_t' : 'H',
         'int32_t'  : 'i',
         'uint32_t' : 'I',
-        'int64_t'  : 'd',
-        'uint64_t' : 'd',
+        'int64_t'  : 'q',
+        'uint64_t' : 'Q',
         }
 
     if field.array_length:
@@ -247,6 +248,7 @@ mavlink.messages.bad_data = function(data, reason) {
     this.id = mavlink.MAVLINK_MSG_ID_BAD_DATA;
     this.data = data;
     this.reason = reason;
+    this.msgbuf = data;
 }
 
 /* MAVLink protocol handling class */
@@ -256,6 +258,7 @@ MAVLink = function(logger, srcSystem, srcComponent) {
 
     this.seq = 0;
     this.buf = new Buffer(0);
+    this.bufInError = new Buffer(0);
    
     this.srcSystem = (typeof srcSystem === 'undefined') ? 0 : srcSystem;
     this.srcComponent =  (typeof srcComponent === 'undefined') ? 0 : srcComponent;
@@ -290,6 +293,12 @@ MAVLink.prototype.log = function(message) {
     }
 }
 
+MAVLink.prototype.log = function(level, message) {
+    if(this.logger) {
+        this.logger.log(level, message);
+    }
+}
+
 MAVLink.prototype.send = function(mavmsg) {
         buf = mavmsg.pack(this);
         this.file.write(buf);
@@ -320,21 +329,29 @@ MAVLink.prototype.parsePrefix = function() {
 
         // Strip the offending initial byte and throw an error.
         var badPrefix = this.buf[0];
+        this.bufInError = this.buf.slice(0,1);
         this.buf = this.buf.slice(1);
         this.expected_length = 6;
-        this.total_receive_errors +=1;
-        throw new Error("Bad prefix ("+badPrefix+")");
+
+        // TODO: enable subsequent prefix error suppression if robust_parsing is implemented
+        //if(!this.have_prefix_error) {
+        //    this.have_prefix_error = true;
+            throw new Error("Bad prefix ("+badPrefix+")");
+        //}
 
     }
+    //else if( this.buf.length >= 1 && this.buf[0] == 254 ) {
+    //    this.have_prefix_error = false;
+    //}
 
 }
 
 // Determine the length.  Leaves buffer untouched.
 MAVLink.prototype.parseLength = function() {
     
-    if( this.buf.length >= 3 ) {
-        var unpacked = jspack.Unpack('BB', this.buf.slice(1, 3));
-        this.expected_length = unpacked[0] + 8; // length of message + header + CRC
+    if( this.buf.length >= 2 ) {
+        var unpacked = jspack.Unpack('BB', this.buf.slice(0, 2));
+        this.expected_length = unpacked[1] + 8; // length of message + header + CRC
     }
 
 }
@@ -342,7 +359,8 @@ MAVLink.prototype.parseLength = function() {
 // input some data bytes, possibly returning a new message
 MAVLink.prototype.parseChar = function(c) {
 
-    var m;
+    var m = null;
+
     try {
 
         this.pushBuffer(c);
@@ -352,10 +370,16 @@ MAVLink.prototype.parseChar = function(c) {
 
     } catch(e) {
 
-       // w.info("Got a bad data message ("+e.message+")");
+        this.log('error', e.message);
         this.total_receive_errors += 1;
-        m = new mavlink.messages.bad_data(this.buf, e.message);
+        m = new mavlink.messages.bad_data(this.bufInError, e.message);
+        this.bufInError = new Buffer(0);
         
+    }
+
+    if(null != m) {
+        this.emit(m.name, m);
+        this.emit('message', m);
     }
 
     return m;
@@ -364,41 +388,33 @@ MAVLink.prototype.parseChar = function(c) {
 
 MAVLink.prototype.parsePayload = function() {
 
+    var m = null;
+
     // If we have enough bytes to try and read it, read it.
     if( this.expected_length >= 8 && this.buf.length >= this.expected_length ) {
 
         // Slice off the expected packet length, reset expectation to be to find a header.
         var mbuf = this.buf.slice(0, this.expected_length);
+        // TODO: slicing off the buffer should depend on the error produced by the decode() function
+        // - if a message we find a well formed message, cut-off the expected_length
+        // - if the message is not well formed (correct prefix by accident), cut-off 1 char only
+        this.buf = this.buf.slice(this.expected_length);
+        this.expected_length = 6;
 
         // w.info("Attempting to parse packet, message candidate buffer is ["+mbuf.toByteArray()+"]");
 
         try {
-
-            var m = this.decode(mbuf);
+            m = this.decode(mbuf);
             this.total_packets_received += 1;
-            this.buf = this.buf.slice(this.expected_length);
-            this.expected_length = 6;
-            this.emit(m.name, m);
-            this.emit('message', m);
-            return m;
-
-        } catch(e) {
-
-            // In this case, we thought we'd have a valid packet, but
-            // didn't.  It could be that the packet was structurally present
-            // but malformed, or, it could be that random line noise
-            // made this look like a packet.  Consume the first symbol in the buffer and continue parsing.
-            this.buf = this.buf.slice(1);
-            this.expected_length = 6;
-            
-            // Log.
-            //w.info(e);
-
-            // bubble
+        }
+        catch(e) {
+            // Set buffer in question and re-throw to generic error handling
+            this.bufInError = mbuf;
             throw e;
         }
     }
-    return null;
+
+    return m;
 
 }
 
@@ -522,7 +538,11 @@ module.exports = mavlink;
 def generate(basename, xml):
     '''generate complete javascript implementation'''
 
-    print basename;
+    if basename.rfind(os.sep) >= 0:
+        jspackFilename = basename[0:basename.rfind(os.sep)] + '/jspack.js'
+    else:
+        jspackFilename = 'jspack.js'
+    
     if basename.endswith('.js'):
         filename = basename
     else:
@@ -557,3 +577,5 @@ def generate(basename, xml):
     generate_footer(outf)
     outf.close()
     print("Generated %s OK" % filename)
+    copyfile('./javascript/lib/jspack/jspack.js', jspackFilename)
+    print("Copied jspack %s" % jspackFilename)
