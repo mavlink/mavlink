@@ -90,7 +90,7 @@ SetupDiGetDeviceRegistryProperty.argtypes = [HDEVINFO, PSP_DEVINFO_DATA, DWORD, 
 SetupDiGetDeviceRegistryProperty.restype = BOOL
 
 
-GUID_CLASS_COMPORT = GUID(0x86e0d1e0L, 0x8089, 0x11d0,
+GUID_CLASS_COMPORT = GUID(0x86e0d1e0, 0x8089, 0x11d0,
     (ctypes.c_ubyte*8)(0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73))
 
 DIGCF_PRESENT = 2
@@ -206,7 +206,7 @@ def comports(available_only=True):
                 #~ print szFriendlyName.value, m.groups()
                 port_name = m.group(1)
                 order = int(m.group(2))
-            except AttributeError, msg:
+            except AttributeError as msg:
                 port_name = szFriendlyName.value
                 order = None
         yield order, port_name, szFriendlyName.value, szHardwareID.value
@@ -230,7 +230,7 @@ if __name__ == '__main__':
     print("")
     # list of all ports the system knows
     print("-"*78)
-    print "All serial ports (registry)"
+    print("All serial ports (registry)")
     print("-"*78)
     for order, port, desc, hwid in sorted(comports(False)):
         print("%-10s: %s (%s)" % (port, desc, hwid))

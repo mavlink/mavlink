@@ -347,7 +347,7 @@ def generate_shared(basename, xml_list):
     # Sort messages by ID
     template_dict['message'] = sorted(template_dict['message'], key = lambda message : message.id)
 
-    # Add name_camel_case to each message object 
+    # Add name_camel_case to each message object
     for message in template_dict['message']:
         message.name_camel_case = camel_case_from_underscores(message.name_lower)
 
@@ -395,7 +395,7 @@ def generate_message_definitions(basename, xml):
                 elif f.type.startswith('char'):
                     f.print_format = "%c"
                 else:
-                    print "print_format unsupported for type %s" % f.type
+                    print ("print_format unsupported for type %s" % f.type)
             if f.array_length != 0:
                 f.get_message = '@"[array of %s[%d]]"' % (f.type, f.array_length)
                 f.array_prefix = ' *'
@@ -422,7 +422,7 @@ def generate_message_definitions(basename, xml):
         for f in m.fields:
             if not f.omit_arg:
                 m.arg_fields.append(f)
- 
+
     generate_message_definitions_h(directory, xml)
     for m in xml.message:
         generate_message(directory, m)
