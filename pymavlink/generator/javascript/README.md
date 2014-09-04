@@ -52,7 +52,10 @@ var mavlink = require('mavlink_ardupilotmega_v1.0'),
 	net = require('net');
 
 // Instantiate the parser
-mavlinkParser = new MAVLink();
+// logger: pass a Winston logger or null if not used
+// 1: source system id
+// 50: source component id
+mavlinkParser = new MAVLink(logger, 1, 50);
 
 // Create a connection -- can be anything that can receive/send binary
 connection = net.createConnection(5760, '127.0.0.1');
@@ -96,17 +99,10 @@ Creating the message is done like this:
 ```javascript
 request = new mavlink.messages.request_data_stream(1, 1, mavlink.MAV_DATA_STREAM_ALL, 1, 1);
 
-// Hack alert: we tack on a few extra fields that could/should be inserted automagically by the MAVLink
-// connection itself.
-_.extend(request, {
-	  srcSystem: 255,
-	  srcComponent: 0,
-	  seq: 1
-});
-
 // Create a buffer consisting of the packed message, and send it across the wire.
-// Hack alert: again, the MAVLink connection could/should encapsulate this.
-p = new Buffer(request.pack());
+// You need to pass a MAVLink instance to pack. It will then take care of setting sequence number, system and component id.
+// Hack alert: the MAVLink connection could/should encapsulate this.
+p = new Buffer(request.pack(mavlinkParser));
 connection.write(p);
 ```
 
@@ -120,7 +116,7 @@ Current implementation tries to be as robust as possible. It doesn't throw error
 
 This code isn't great idiomatic Javascript (yet!), instead, it's more of a line-by-line translation from Python as much as possible.
 
-The Python MAVLink code manages some information about the connection status (system/component attached, bad packets, durations/times, etc), and that work isn't present in this code yet.
+The Python MAVLink code manages some information about the connection status (system/component attached, bad packets, durations/times, etc), and that work isn't completely present in this code yet.
 
 Code to create/send MAVLink messages to a client is very clumsy at this point in time *and will change* to make it more direct.
 
