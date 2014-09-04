@@ -142,9 +142,9 @@ class EnumEntry(object):
         self.name = name
         self.description = description
         self.param = {}
-        
+
 enums = {}
-''')    
+''')
     wrapper = textwrap.TextWrapper(initial_indent="", subsequent_indent="                        # ")
     for e in enums:
         outf.write("\n# %s\n" % e.name)
