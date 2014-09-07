@@ -11,6 +11,18 @@ import xml.parsers.expat, os, errno, time, sys, operator
 PROTOCOL_0_9 = "0.9"
 PROTOCOL_1_0 = "1.0"
 
+# List of words must not be used as attribute name.
+# Please keep it alphabetically sorted for convenience.
+forbidden_keywords = ['abstract', 'await', 'boolean', 'break',
+    'byte', 'case', 'catch', 'char', 'class', 'const', 'continue',
+    'debugger', 'default', 'delete', 'do', 'double', 'else', 'enum',
+    'export', 'extends', 'final', 'finally', 'float', 'for', 'function',
+    'goto', 'if', 'implements', 'import', 'in', 'instanceof', 'int',
+    'interface', 'let', 'long', 'native', 'new', 'package', 'private',
+    'protected', 'public', 'return', 'short', 'static', 'super',
+    'switch', 'synchronized', 'this', 'throw', 'transient', 'try',
+    'typeof', 'var', 'void', 'volatile', 'while', 'with', 'yield']
+
 class MAVParseError(Exception):
     def __init__(self, message, inner_exception=None):
         self.message = message
@@ -170,6 +182,12 @@ class MAVXML(object):
         in_element_list = []
 
         def check_attrs(attrs, check, where):
+            try:
+                attr_name = attrs["name"]
+            except KeyError:
+                attr_name = ""
+            if attr_name in forbidden_keywords:
+                raise MAVParseError('using "%s" as attribute name forbidden because it is language keyword' %(attr_name))
             for c in check:
                 if not c in attrs:
                     raise MAVParseError('expected missing %s "%s" attribute at %s:%u' % (
