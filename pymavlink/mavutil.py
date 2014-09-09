@@ -840,7 +840,7 @@ class mavtcp(mavfile):
         self.port.setblocking(0)
         set_close_on_exec(self.port.fileno())
         self.port.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
-        mavfile.__init__(self, self.port.fileno(), device, source_system=source_system)
+        mavfile.__init__(self, self.port.fileno(), "tcp:" + device, source_system=source_system)
 
     def close(self):
         self.port.close()
