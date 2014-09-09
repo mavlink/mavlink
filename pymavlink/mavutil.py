@@ -688,6 +688,8 @@ class mavserial(mavfile):
     '''a serial mavlink port'''
     def __init__(self, device, baud=115200, autoreconnect=False, source_system=255):
         import serial
+        if ',' in device and not os.path.exists(device):
+            device, baud = device.split(',')
         self.baud = baud
         self.device = device
         self.autoreconnect = autoreconnect
