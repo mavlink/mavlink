@@ -1,3 +1,13 @@
+# Work around mbcs bug in distutils.
+# http://bugs.python.org/issue10945
+import codecs
+try:
+    codecs.lookup('mbcs')
+except LookupError:
+    ascii = codecs.lookup('ascii')
+    func = lambda name, enc=ascii: {True: enc}.get(name=='mbcs')
+    codecs.register(func)
+
 from distutils.core import setup, Extension
 import glob, os, shutil, fnmatch
 
@@ -60,9 +70,6 @@ setup (name = 'pymavlink',
                         'pymavlink.generator.lib.minixsv': [ '*.xsd' ] },
        packages = ['pymavlink',
                    'pymavlink.generator',
-                   'pymavlink.generator.lib',
-                   'pymavlink.generator.lib.genxmlif',
-                   'pymavlink.generator.lib.minixsv',
                    'pymavlink.dialects',
                    'pymavlink.dialects.v09',
                    'pymavlink.dialects.v10'],

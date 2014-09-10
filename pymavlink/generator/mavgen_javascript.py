@@ -64,7 +64,7 @@ mavlink.MAVLINK_TYPE_INT64_T  = 8
 mavlink.MAVLINK_TYPE_FLOAT    = 9
 mavlink.MAVLINK_TYPE_DOUBLE   = 10
 
-// Mavlink headers incorporate sequence, source system (platform) and source component. 
+// Mavlink headers incorporate sequence, source system (platform) and source component.
 mavlink.header = function(msgId, mlen, seq, srcSystem, srcComponent) {
 
     this.mlen = ( typeof mlen === 'undefined' ) ? 0 : mlen;
@@ -95,7 +95,7 @@ mavlink.message.prototype.set = function(args) {
 mavlink.message.prototype.pack = function(crc_extra, payload) {
 
     this.payload = payload;
-    this.header = new mavlink.header(this.id, payload.length, this.seq, this.srcSystem, this.srcComponent);    
+    this.header = new mavlink.header(this.id, payload.length, this.seq, this.srcSystem, this.srcComponent);
     this.msgbuf = this.header.pack().concat(payload);
     var crc = mavlink.x25Crc(this.msgbuf.slice(1));
 
@@ -163,7 +163,7 @@ def generate_classes(outf, msgs):
                'FIELDNAMES'     : ", ".join(m.fieldnames)}
 
         t.write(outf, """
-/* 
+/*
 ${COMMENT}
 */
 """, sub)
@@ -174,7 +174,7 @@ ${COMMENT}
                 outf.write(", ".join(m.fieldnames))
         outf.write(") {")
 
-        # body: set message type properties    
+        # body: set message type properties
         outf.write("""
 
     this.format = '%s';
@@ -184,7 +184,7 @@ ${COMMENT}
     this.name = '%s';
 
 """ % (m.fmtstr, m.name.upper(), m.order_map, m.crc_extra, m.name.upper()))
-        
+
         # body: set own properties
         if len(m.fieldnames) != 0:
                 outf.write("    this.fieldnames = ['%s'];\n" % "', '".join(m.fieldnames))
@@ -240,7 +240,7 @@ def generate_mavlink_class(outf, msgs, xml):
         outf.write("        %s: { format: '%s', type: mavlink.messages.%s, order_map: %s, crc_extra: %u },\n" % (
             m.id, m.fmtstr, m.name.lower(), m.order_map, m.crc_extra))
     outf.write("}\n\n")
-    
+
     t.write(outf, """
 
 // Special mavlink message to capture malformed data packets for debugging
@@ -259,7 +259,7 @@ MAVLink = function(logger, srcSystem, srcComponent) {
     this.seq = 0;
     this.buf = new Buffer(0);
     this.bufInError = new Buffer(0);
-   
+
     this.srcSystem = (typeof srcSystem === 'undefined') ? 0 : srcSystem;
     this.srcComponent =  (typeof srcComponent === 'undefined') ? 0 : srcComponent;
 
@@ -279,7 +279,7 @@ MAVLink = function(logger, srcSystem, srcComponent) {
     this.total_bytes_received = 0;
     this.total_receive_errors = 0;
     this.startup_time = Date.now();
-    
+
 }
 
 // Implements EventEmitter
@@ -348,7 +348,7 @@ MAVLink.prototype.parsePrefix = function() {
 
 // Determine the length.  Leaves buffer untouched.
 MAVLink.prototype.parseLength = function() {
-    
+
     if( this.buf.length >= 2 ) {
         var unpacked = jspack.Unpack('BB', this.buf.slice(0, 2));
         this.expected_length = unpacked[1] + 8; // length of message + header + CRC
@@ -374,7 +374,7 @@ MAVLink.prototype.parseChar = function(c) {
         this.total_receive_errors += 1;
         m = new mavlink.messages.bad_data(this.bufInError, e.message);
         this.bufInError = new Buffer(0);
-        
+
     }
 
     if(null != m) {
@@ -420,7 +420,7 @@ MAVLink.prototype.parsePayload = function() {
 
 // input some data bytes, possibly returning an array of new messages
 MAVLink.prototype.parseBuffer = function(s) {
-    
+
     // Get a message, if one is available in the stream.
     var m = this.parseChar(s);
 
@@ -428,7 +428,7 @@ MAVLink.prototype.parseBuffer = function(s) {
     if ( null === m ) {
         return null;
     }
-    
+
     // While more valid messages can be read from the existing buffer, add
     // them to the array of new messages and return them.
     var ret = [m];
@@ -490,7 +490,7 @@ MAVLink.prototype.decode = function(msgbuf) {
 
     // Assuming using crc_extra = True.  See the message.prototype.pack() function.
     messageChecksum = mavlink.x25Crc([decoder.crc_extra], messageChecksum);
-    
+
     if ( receivedChecksum != messageChecksum ) {
         throw new Error('invalid MAVLink CRC in msgID ' +msgId+ ', got 0x' + receivedChecksum + ' checksum, calculated payload checkum as 0x'+messageChecksum );
     }
@@ -542,7 +542,7 @@ def generate(basename, xml):
         jspackFilename = basename[0:basename.rfind(os.sep)] + '/jspack.js'
     else:
         jspackFilename = 'jspack.js'
-    
+
     if basename.endswith('.js'):
         filename = basename
     else:

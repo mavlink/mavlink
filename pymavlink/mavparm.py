@@ -39,7 +39,7 @@ class MAVParmDict(dict):
     def save(self, filename, wildcard='*', verbose=False):
         '''save parameters to a file'''
         f = open(filename, mode='w')
-        k = self.keys()
+        k = list(self.keys())
         k.sort()
         count = 0
         for p in k:
@@ -121,5 +121,5 @@ class MAVParmDict(dict):
                 print("%-16.16s %12.4f" % (k, other[k]))
             elif abs(self[k] - other[k]) > self.mindelta:
                 print("%-16.16s %12.4f %12.4f" % (k, other[k], self[k]))
-                
-        
+
+
