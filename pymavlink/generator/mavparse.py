@@ -11,6 +11,18 @@ import xml.parsers.expat, os, errno, time, sys, operator
 PROTOCOL_0_9 = "0.9"
 PROTOCOL_1_0 = "1.0"
 
+# List of words must not be used as attribute name.
+# Please keep it alphabetically sorted for convenience.
+forbidden_keywords = ['abstract', 'await', 'boolean', 'break',
+    'byte', 'case', 'catch', 'char', 'class', 'const', 'continue',
+    'debugger', 'default', 'delete', 'do', 'double', 'else', 'enum',
+    'export', 'extends', 'final', 'finally', 'float', 'for', 'function',
+    'goto', 'if', 'implements', 'import', 'in', 'instanceof', 'int',
+    'interface', 'let', 'long', 'native', 'new', 'package', 'private',
+    'protected', 'public', 'return', 'short', 'static', 'super',
+    'switch', 'synchronized', 'this', 'throw', 'transient', 'try',
+    'typeof', 'var', 'void', 'volatile', 'while', 'with', 'yield']
+
 class MAVParseError(Exception):
     def __init__(self, message, inner_exception=None):
         self.message = message
@@ -170,6 +182,12 @@ class MAVXML(object):
         in_element_list = []
 
         def check_attrs(attrs, check, where):
+            try:
+                attr_name = attrs["name"]
+            except KeyError:
+                attr_name = ""
+            if attr_name in forbidden_keywords:
+                raise MAVParseError('using "%s" as attribute name forbidden because it is language keyword' %(attr_name))
             for c in check:
                 if not c in attrs:
                     raise MAVParseError('expected missing %s "%s" attribute at %s:%u' % (
@@ -298,12 +316,13 @@ def message_checksum(msg):
     '''calculate a 8-bit checksum of the key fields of a message, so we
        can detect incompatible XML changes'''
     from mavcrc import x25crc
+    from struct import pack
     crc = x25crc(msg.name + ' ')
     for f in msg.ordered_fields:
         crc.accumulate(f.type + ' ')
         crc.accumulate(f.name + ' ')
         if f.array_length:
-            crc.accumulate(chr(f.array_length))
+            crc.accumulate(pack('B', f.array_length))
     return (crc.crc&0xFF) ^ (crc.crc>>8)
 
 def merge_enums(xml):

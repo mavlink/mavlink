@@ -10,7 +10,7 @@ Released under GNU GPL version 3 or later
 import sys, textwrap, os
 try:
     import mavparse
-except Exception:
+except ImportError:
     from pymavlink.generator import mavparse
 
 # XSD schema file
@@ -36,23 +36,27 @@ def mavgen(opts, args) :
     # Enable validation by default, disabling it if explicitly requested
     if opts.validate:
         try:
-            from lib.genxmlif import GenXmlIfError
-            from lib.minixsv import pyxsval
-        except Exception:
+            from lxml import etree
+        except ImportError:
             print("WARNING: Unable to load XML validator libraries. XML validation will not be performed")
             opts.validate = False
 
-    def mavgen_validate(fname, schema, errorLimitNumber) :
-        """Uses minixsv to validate an XML file with a given XSD schema file. We define mavgen_validate
-           here because it relies on the XML libs that were loaded in mavgen(), so it can't be called standalone"""
-        # use default values of minixsv, location of the schema file must be specified in the XML file
-        domTreeWrapper = pyxsval.parseAndValidate(fname, xsdFile=schema, errorLimit=errorLimitNumber)
+    if opts.validate:
+        with open(schemaFile, 'r') as f:
+            schemaRoot = etree.XML(f.read())
+        schema = etree.XMLSchema(schemaRoot)
+        log = schema.error_log
+        xmlparser = etree.XMLParser(schema=schema)
+
+    def mavgen_validate(xmlparser, xmlfilename):
+        with open(xmlfilename, 'r') as f:
+            etree.fromstring(f.read(), xmlparser)
 
     # Process all XML files, validating them as necessary.
     for fname in args:
         if opts.validate:
             print("Validating %s" % fname)
-            mavgen_validate(fname, schemaFile, opts.error_limit);
+            mavgen_validate(xmlparser, fname);
         else:
             print("Validation skipped for %s." % fname)
 
@@ -67,7 +71,7 @@ def mavgen(opts, args) :
             ## Validate XML file with XSD file if possible.
             if opts.validate:
                 print("Validating %s" % fname)
-                mavgen_validate(fname, schemaFile, opts.error_limit);
+                mavgen_validate(xmlparser, fname);
             else:
                 print("Validation skipped for %s." % fname)
 
@@ -159,11 +163,16 @@ def mavgen_python_dialect(dialect, wire_protocol):
         if not os.path.exists(xml):
             xml = os.path.join(mdef, 'v1.0', dialect + '.xml')
     opts = Opts(py, wire_protocol)
-    import StringIO
+
+    # Python 2 to 3 compatibility
+    try:
+        import StringIO as io
+    except ImportError:
+        import io
 
     # throw away stdout while generating
     stdout_saved = sys.stdout
-    sys.stdout = StringIO.StringIO()
+    sys.stdout = io.StringIO()
     try:
         xml = os.path.relpath(xml)
         mavgen( opts, [xml] )

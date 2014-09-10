@@ -38,13 +38,13 @@ mapType = {
         'uint32_t' : ('ToUInt32', 4),
         'int64_t'  : ('ToInt64', 8),
         'uint64_t' : ('ToUInt64', 8),
-        }        
+        }
 
 # Map of field names to names that are C# compatible and not illegal class field names
 mapFieldName = {
         'fixed'    : '@fixed'
-        }                
-        
+        }
+
 def generate_preamble(outf, msgs, args, xml):
     print("Generating preamble")
     t.write(outf, """
@@ -65,8 +65,8 @@ def generate_xmlDocSummary(outf, summaryText, tabDepth):
     outf.write("\n%s/// <summary>\n" % indent)
     outf.write("%s/// %s\n" % (indent, escapedText))
     outf.write("%s/// </summary>\n" % indent)
-    
-    
+
+
 def generate_enums(outf, enums):
     print("Generating enums")
     outf.write("namespace MavLink\n{\n")
@@ -82,13 +82,13 @@ def generate_enums(outf, enums):
 
         outf.write("\n\t}\n\n")
     outf.write("\n}\n")
-        
+
 def generate_classes(outf, msgs):
     print("Generating class definitions")
 
     outf.write("""
-    
-   
+
+
 namespace MavLink\n{
 
     public abstract class MavlinkMessage
@@ -103,7 +103,7 @@ namespace MavLink\n{
         outf.write("""\tpublic class Msg_%s : MavlinkMessage
     {
 """ % m.name.lower())
-    
+
         for f in m.fields:
             if (f.description.upper() != f.name.upper()):
                 generate_xmlDocSummary(outf, f.description, 2)
@@ -111,60 +111,60 @@ namespace MavLink\n{
                 outf.write("\t\tpublic %s[] %s; // Array size %s\n" % (map[f.type], mapFieldName.get(f.name, f.name), f.array_length))
             else:
                 outf.write("\t\tpublic %s %s;\n" % (map[f.type], mapFieldName.get(f.name, f.name)))
-        
+
         outf.write("""
         public override int Serialize(byte[] bytes, ref int offset)
             {
                 return MavLinkSerializer.Serialize_%s(this, bytes, ref offset);
-            }        
+            }
 """ % m.name.upper())
 
-        outf.write("\t}\n\n")    
+        outf.write("\t}\n\n")
     outf.write("}\n\n")
 
-    
-   
+
+
 def generate_Deserialization(outf, messages):
-    
-    # Create the deserialization funcs 
+
+    # Create the deserialization funcs
     for m in messages:
         classname="Msg_%s" % m.name.lower()
         outf.write("\n\t\tinternal static MavlinkMessage Deserialize_%s(byte[] bytes, int offset)\n\t\t{\n" % (m.name))
         offset = 0
-    
+
         outf.write("\t\t\treturn new %s\n" % classname)
         outf.write("\t\t\t{\n")
-		
+
         for f in m.ordered_fields:
             if (f.array_length):
                 outf.write("\t\t\t\t%s =  ByteArrayUtil.%s(bytes, offset + %s, %s),\n" % (mapFieldName.get(f.name, f.name), mapType[f.type][0], offset, f.array_length))
                 offset += f.array_length
                 continue
-          
+
             # mapping 'char' to byte here since there is no real equivalent in the CLR
             if (f.type == 'uint8_t' or f.type == 'char' ):
                     outf.write("\t\t\t\t%s = bytes[offset + %s],\n" % (mapFieldName.get(f.name, f.name),offset))
-                    offset+=1          
-            else:             
+                    offset+=1
+            else:
                 outf.write("\t\t\t\t%s = bitconverter.%s(bytes, offset + %s),\n" % (mapFieldName.get(f.name, f.name), mapType[f.type][0] ,  offset))
                 offset += mapType[f.type][1]
-				
-        outf.write("\t\t\t};\n")
-        outf.write("\t\t}\n") 
 
-    
+        outf.write("\t\t\t};\n")
+        outf.write("\t\t}\n")
+
+
 def generate_Serialization(outf, messages):
-    
+
     # Create the table of serialization delegates
     for m in messages:
         classname="Msg_%s" % m.name.lower()
 
         outf.write("\n\t\tinternal static int Serialize_%s(this %s msg, byte[] bytes, ref int offset)\n\t\t{\n" % (m.name, classname))
         offset=0
-        
+
 		# Now (since Mavlink 1.0) we need to deal with ordering of fields
         for f in m.ordered_fields:
-        
+
             if (f.array_length):
                 outf.write("\t\t\tByteArrayUtil.ToByteArray(msg.%s, bytes, offset + %s, %s);\n" % (f.name, offset, f.array_length))
                 offset += f.array_length * mapType[f.type][1]
@@ -182,14 +182,14 @@ def generate_Serialization(outf, messages):
             else:
                 outf.write("\t\t\tbitconverter.GetBytes(msg.%s, bytes, offset + %s);\n" % (mapFieldName.get(f.name, f.name),offset))
                 offset += mapType[f.type][1]
-          
+
         outf.write("\t\t\toffset += %s;\n" % offset)
         outf.write("\t\t\treturn %s;\n" % m.id)
-        outf.write("\t\t}\n") 
+        outf.write("\t\t}\n")
 
 
 def generate_CodecIndex(outf, messages, xml):
-    
+
     outf.write("""
 
 /*
@@ -201,7 +201,7 @@ Note: this file has been auto-generated. DO NOT EDIT
 using System;
 using System.Collections;
 using System.Collections.Generic;
-    
+
 namespace MavLink
 {
     public static class MavlinkSettings
@@ -211,15 +211,15 @@ namespace MavLink
     outf.write('\n\t\tpublic const byte ProtocolMarker = 0x%x;' % xml[0].protocol_marker)
     outf.write('\n\t\tpublic const bool CrcExtra = %s;' % str(xml[0].crc_extra).lower())
     outf.write('\n\t\tpublic const bool IsLittleEndian = %s;' % str(xml[0].little_endian).lower())
-    
+
     outf.write("""
     }
-    
+
     public delegate MavlinkMessage MavlinkPacketDeserializeFunc(byte[] bytes, int offset);
 
     //returns the message ID, offset is advanced by the number of bytes used to serialize
     public delegate int MavlinkPacketSerializeFunc(byte[] bytes, ref int offset, object mavlinkPacket);
- 
+
     public class MavPacketInfo
     {
         public MavlinkPacketDeserializeFunc Deserializer;
@@ -232,16 +232,16 @@ namespace MavLink
              this.CrcExtra = crcExtra;
          }
     }
- 
+
     public static class MavLinkSerializer
     {
         public static void SetDataIsLittleEndian(bool isLittle)
         {
             bitconverter.SetDataIsLittleEndian(isLittle);
         }
-    
-        private static readonly FrameworkBitConverter bitconverter = new FrameworkBitConverter(); 
-    
+
+        private static readonly FrameworkBitConverter bitconverter = new FrameworkBitConverter();
+
         public static Dictionary<int, MavPacketInfo> Lookup = new Dictionary<int, MavPacketInfo>
         {""")
 
@@ -249,7 +249,7 @@ namespace MavLink
         classname="Msg_%s" % m.name.lower()
         outf.write("\n\t\t\t{%s, new MavPacketInfo(Deserialize_%s, %s)}," % (m.id, m.name, m.crc_extra))
     outf.write("\n\t\t};\n")
-   
+
 
 def generate(basename, xml):
     '''generate complete MAVLink CSharp implemenation'''
@@ -259,18 +259,18 @@ def generate(basename, xml):
     if platform.system() == "Windows":
         winpath=os.environ['WinDir']
         cscCommand = winpath + "\\Microsoft.NET\\Framework\\v4.0.30319\\csc.exe"
-        
+
         if (os.path.exists(cscCommand)==False):
             print("\nError: CS compiler not found. .Net Assembly generation skipped")
-            return   
+            return
     else:
         print("Error:.Net Assembly generation not yet supported on non Windows platforms")
         return
         cscCommand = "csc"
-    
-    
-    
-    
+
+
+
+
     msgs = []
     enums = []
     filelist = []
@@ -283,22 +283,22 @@ def generate(basename, xml):
         m.order_map = [ 0 ] * len(m.fieldnames)
         for i in range(0, len(m.fieldnames)):
             m.order_map[i] = m.ordered_fieldnames.index(m.fieldnames[i])
-        
+
         m.fields_in_order = []
         for i in range(0, len(m.fieldnames)):
             m.order_map[i] = m.ordered_fieldnames.index(m.fieldnames[i])
-        
+
     print("Generating messages file: %s" % structsfilename)
     dir = os.path.dirname(structsfilename)
     if not os.path.exists(dir):
         os.makedirs(dir)
     outf = open(structsfilename, "w")
     generate_preamble(outf, msgs, filelist, xml[0])
-    
+
     outf.write("""
-    
-using System.Reflection;    
-    
+
+using System.Reflection;
+
 [assembly: AssemblyTitle("Mavlink Classes")]
 [assembly: AssemblyDescription("Generated Message Classes for Mavlink. See http://qgroundcontrol.org/mavlink/start")]
 [assembly: AssemblyProduct("Mavlink")]
@@ -306,43 +306,43 @@ using System.Reflection;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
     """)
-    
+
     generate_enums(outf, enums)
     generate_classes(outf, msgs)
     outf.close()
-    
+
     print("Generating the (De)Serializer classes")
     serfilename = basename + '_codec.generated.cs'
     outf = open(serfilename, "w")
     generate_CodecIndex(outf, msgs, xml)
     generate_Deserialization(outf, msgs)
     generate_Serialization(outf, msgs)
-    
+
     outf.write("\t}\n\n")
     outf.write("}\n\n")
-    
+
     outf.close()
-    
-   
+
+
 
     print("Compiling Assembly for .Net Framework 4.0")
-    
+
     generatedCsFiles = [ serfilename, structsfilename]
-    
+
     includedCsFiles =  [ 'CS/common/ByteArrayUtil.cs', 'CS/common/FrameworkBitConverter.cs', 'CS/common/Mavlink.cs'  ]
-    
+
     outputLibraryPath = os.path.normpath(dir + "/mavlink.dll")
-    
+
     compileCommand = "%s %s" % (cscCommand, "/target:library /debug /out:" + outputLibraryPath)
-    compileCommand = compileCommand + " /doc:" + os.path.normpath(dir + "/mavlink.xml")  
-    
-    
+    compileCommand = compileCommand + " /doc:" + os.path.normpath(dir + "/mavlink.xml")
+
+
     for csFile in generatedCsFiles + includedCsFiles:
         compileCommand = compileCommand + " " + os.path.normpath(csFile)
-    
+
     #print("Cmd:" + compileCommand)
     res = os.system (compileCommand)
-    
+
     if res == '0':
         print("Generated %s OK" % filename)
     else:
