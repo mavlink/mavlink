@@ -23,7 +23,7 @@ DEFAULT_ERROR_LIMIT = 200
 DEFAULT_VALIDATE = True
 
 # List the supported languages. This is done globally because it's used by the GUI wrapper too
-supportedLanguages = ["C", "CS", "JavaScript", "Python", "WLua"]
+supportedLanguages = ["Arduino (C)", "C", "CS", "JavaScript", "Python", "WLua"]
 
 def mavgen(opts, args) :
     """Generate mavlink message formatters and parsers (C and Python ) using options
@@ -107,6 +107,12 @@ def mavgen(opts, args) :
         except Exception:
             from pymavlink.generator import mavgen_c
         mavgen_c.generate(opts.output, xml)
+    elif opts.language == 'arduino (c)':
+        try:
+            import mavgen_arduino
+        except Exception:
+            from pymavlink.generator import mavgen_arduino
+        mavgen_arduino.generate(opts.output, xml)
     elif opts.language == 'wlua':
         try:
             import mavgen_wlua
