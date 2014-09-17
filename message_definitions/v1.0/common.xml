@@ -1483,6 +1483,22 @@
                <field type="uint8_t" name="target_system">The system setting the mode</field>
                <field type="uint8_t" name="base_mode" enum="MAV_MODE">The new base mode</field>
                <field type="uint32_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
+          </message>          
+          <message id="19" name="GLOBAL_POS_ATT_NED_COV">
+               <description>Filtered global position and pose.  Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
+               <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
+               <field type="int32_t"  name="lat">Latitude, expressed as * 1E7</field>
+               <field type="int32_t"  name="lon">Longitude, expressed as * 1E7</field>
+               <field type="int32_t"  name="alt">MSL Altitude in meters, expressed as m * 100 (cm), </field>
+               <field type="int32_t"  name="relative_alt">Fused relative altitude, expressed as meters * 100.</field>
+               <field type="int16_t"  name="vx">Fused North velocity, expressed as m/s * 100</field>
+               <field type="int16_t"  name="vy">Fused East velocity, expressed as m/s * 100</field>
+               <field type="int16_t"  name="vz">Fused Down velocity, expressed as m/s * 100</field>
+               <field type="float[4]" name="quat">Quaternion components: x, y, z, w (0 0 0 1) is the null-rotation)</field>
+               <field type="float"    name="rollspeed">Roll angular speed (rad/s)</field>
+               <field type="float"    name="pitchspeed">Pitch angular speed (rad/s)</field>
+               <field type="float"    name="yawspeed">Yaw angular speed (rad/s)</field>
+               <field type="float[45]" name="covariance">Upper triangular portion of a 9x9 covariance matrix</field>
           </message>
           <!-- reserved for PARAM_VALUE_UNION -->
           <message id="20" name="PARAM_REQUEST_READ">
