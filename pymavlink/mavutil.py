@@ -148,13 +148,17 @@ class mavfile(object):
         global mavlink
         if len(buf) == 0:
             return
-        if not ord(buf[0]) in [ 85, 254 ]:
+        if sys.version_info >= (3,0,0):
+            magic = buf[0]
+        else:
+            magic = ord(buf[0])
+        if not magic in [ 85, 254 ]:
             return
         self.first_byte = False
-        if self.WIRE_PROTOCOL_VERSION == "0.9" and ord(buf[0]) == 254:
+        if self.WIRE_PROTOCOL_VERSION == "0.9" and magic == 254:
             self.WIRE_PROTOCOL_VERSION = "1.0"
             set_dialect(current_dialect)
-        elif self.WIRE_PROTOCOL_VERSION == "1.0" and ord(buf[0]) == 85:
+        elif self.WIRE_PROTOCOL_VERSION == "1.0" and magic == 85:
             self.WIRE_PROTOCOL_VERSION = "0.9"
             set_dialect(current_dialect)
             os.environ['MAVLINK09'] = '1'

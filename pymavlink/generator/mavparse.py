@@ -6,7 +6,7 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
 
-import xml.parsers.expat, os, errno, time, sys, operator
+import xml.parsers.expat, os, errno, time, sys, operator, struct
 
 PROTOCOL_0_9 = "0.9"
 PROTOCOL_1_0 = "1.0"
@@ -316,13 +316,12 @@ def message_checksum(msg):
     '''calculate a 8-bit checksum of the key fields of a message, so we
        can detect incompatible XML changes'''
     from mavcrc import x25crc
-    from struct import pack
     crc = x25crc(msg.name + ' ')
     for f in msg.ordered_fields:
         crc.accumulate(f.type + ' ')
         crc.accumulate(f.name + ' ')
         if f.array_length:
-            crc.accumulate(pack('B', f.array_length))
+            crc.accumulate(struct.pack('B', f.array_length))
     return (crc.crc&0xFF) ^ (crc.crc>>8)
 
 def merge_enums(xml):
