@@ -17,7 +17,7 @@ def generate_version_h(directory, xml):
     t.write(f,'''
 /** @file
  *	@brief MAVLink comm protocol built from ${basename}.xml
- *	@see http://pixhawk.ethz.ch/software/mavlink
+ *	@see http://mavlink.org
  */
 #ifndef MAVLINK_VERSION_H
 #define MAVLINK_VERSION_H
@@ -36,7 +36,7 @@ def generate_mavlink_h(directory, xml):
     t.write(f,'''
 /** @file
  *	@brief MAVLink comm protocol built from ${basename}.xml
- *	@see http://pixhawk.ethz.ch/software/mavlink
+ *	@see http://mavlink.org
  */
 #ifndef MAVLINK_H
 #define MAVLINK_H
@@ -70,7 +70,7 @@ def generate_main_h(directory, xml):
     t.write(f, '''
 /** @file
  *	@brief MAVLink comm protocol generated from ${basename}.xml
- *	@see http://qgroundcontrol.org/mavlink/
+ *	@see http://mavlink.org
  */
 #ifndef MAVLINK_${basename_upper}_H
 #define MAVLINK_${basename_upper}_H
