@@ -152,6 +152,7 @@ parser.add_argument("--multi", action='store_true', help="multiple files with sa
 parser.add_argument("--zero-time-base", action='store_true', help="use Z time base for DF logs")
 parser.add_argument("--flightmode", default=None,
                     help="Choose the plot background according to the active flight mode of the specified type, e.g. --flightmode=apm for ArduPilot or --flightmode=px4 for PX4 stack logs.  Cannot be specified with --xaxis.")
+parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect")
 parser.add_argument("--output", default=None, help="provide an output format")
 parser.add_argument("logs_fields", metavar="<LOG or FIELD>", nargs="+")
 args = parser.parse_args()
@@ -233,7 +234,7 @@ def add_data(t, msg, vars, flightmode):
 def process_file(filename):
     '''process one file'''
     print("Processing %s" % filename)
-    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps, zero_time_base=args.zero_time_base)
+    mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps, zero_time_base=args.zero_time_base, dialect=args.dialect)
     vars = {}
 
     while True:
