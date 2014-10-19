@@ -58,6 +58,9 @@ class DFFormat(object):
         self.msg_types = msg_types
         self.msg_mults = msg_mults
 
+    def __str__(self):
+        return "DFFormat(%s,%s,%s,%s)" % (self.type, self.name, self.format, self.columns)
+
 def null_term(str):
     '''null terminate a string'''
     idx = str.find("\0")
@@ -70,6 +73,8 @@ class DFMessage(object):
         self._d = {}
         self.fmt = fmt
         for i in range(len(fmt.columns)):
+            if i >= len(fmt.msg_mults):
+                continue
             mul = fmt.msg_mults[i]
             name = fmt.columns[i]
             self._d[name] = elements[i]
@@ -88,15 +93,21 @@ class DFMessage(object):
 
     def __str__(self):
         ret = "%s {" % self.fmt.name
+        col_count = 0
         for c in self.fmt.columns:
-            ret += "%s : %s, " % (c, self._d[c])
-        ret = ret[:-2] + "}"
-        return ret
+            if c in self._d:
+                ret += "%s : %s, " % (c, self._d[c])
+                col_count += 1
+        if col_count != 0:
+            ret = ret[:-2]
+        return ret + '}'
 
     def get_msgbuf(self):
         '''create a binary message buffer for a message'''
         values = []
         for i in range(len(self.fmt.columns)):
+            if i >= len(self.fmt.msg_mults):
+                continue
             mul = self.fmt.msg_mults[i]
             name = self.fmt.columns[i]
             if name == 'Mode' and 'ModeNum' in self.fmt.columns:
