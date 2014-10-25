@@ -74,10 +74,10 @@ def process_tlog(filename):
             val = getattr(m, field)
             if not isinstance(val, str):
                 if type(val) is not list:
-                    f.write(",%f" % val)
+                    f.write(",%.20g" % val)
                 else:
                     for i in range(0, len(val)):
-                        f.write(",%f" % val[i])
+                        f.write(",%.20g" % val[i])
         f.write("];\n")
     f.close()
 
