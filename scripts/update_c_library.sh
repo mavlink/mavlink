@@ -16,7 +16,7 @@
 # git remote rename origin upstream
 # mkdir -p include/mavlink/v1.0
 # cd include/mavlink/v1.0
-# git clone git@github.com:mavlink/c_library.git .
+# git clone git@github.com:mavlink/c_library.git
 # cd ~/src/mavlink
 # ./scripts/update_c_library.sh
 
