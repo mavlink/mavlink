@@ -29,7 +29,7 @@ python2 pymavlink/generator/mavgen.py \
 
 # settings
 MAVLINK_PATH=$PWD
-MAVLINK_GIT_REMOTENAME=origin
+MAVLINK_GIT_REMOTENAME=upstream
 MAVLINK_GIT_BRANCHNAME=master
 CLIBRARY_PATH=$MAVLINK_PATH/include/mavlink/v1.0/
 CLIBRARY_GIT_REMOTENAME=origin
