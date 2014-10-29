@@ -2181,14 +2181,16 @@
              <field type="float" name="temperature">Temperature in degrees celsius</field>
              <field type="uint16_t" name="fields_updated">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
          </message>
-         <message id="106" name="OMNIDIRECTIONAL_FLOW">
-             <description>Optical flow from an omnidirectional flow sensor (e.g. PX4FLOW with wide angle lens)</description>
+         <message id="106" name="OPTICAL_FLOW_RAD">
+             <description>Optical flow from an angular rate flow sensor (e.g. PX4FLOW or mouse sensor)</description>
              <field type="uint64_t" name="time_usec">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
              <field type="uint8_t" name="sensor_id">Sensor ID</field>
-             <field type="int16_t[10]" name="left">Flow in deci pixels (1 = 0.1 pixel) on left hemisphere</field>
-             <field type="int16_t[10]" name="right">Flow in deci pixels (1 = 0.1 pixel) on right hemisphere</field>
-             <field type="uint8_t" name="quality">Optical flow quality / confidence. 0: bad, 255: maximum quality</field>
-             <field type="float" name="front_distance_m">Front distance in meters. Positive value (including zero): distance known. Negative value: Unknown distance</field>
+             <field type="uint32_t" name="integration_time_us">Integration time in microseconds. Divide integrated_x and integrated_y by the integration time to obtain average flow. The integration time also indicates the
+             <field type="float" name="integrated_x">Flow in radians per second around X axis (in Y direction, clockwise rotation inducing positive speed, motion ALONG the positive Y axis inducing positive flow AROUND the X axis)</field>
+             <field type="float" name="integrated_y">Flow in radians per second around Y axis (in X direction, clockwise rotation inducing positive speed, motion ALONG the positive X axis inducing positive flow AROUND the Y axis)</field>
+             <field type="uint8_t" name="quality">Optical flow quality / confidence. 0: no valid flow, 255: maximum quality</field>
+             <field type="uint32_t" name="time_delta_distance_us">Time in microseconds since the distance was sampled.</field>
+             <field type="float" name="distance">Distance to the center of the flow field in meters. Positive value (including zero): distance known. Negative value: Unknown distance.</field>
          </message>
 
          <message id="107" name="HIL_SENSOR"> <description>The IMU readings in SI units in NED body frame</description>
