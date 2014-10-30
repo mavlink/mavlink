@@ -2186,8 +2186,12 @@
              <field type="uint64_t" name="time_usec">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
              <field type="uint8_t" name="sensor_id">Sensor ID</field>
              <field type="uint32_t" name="integration_time_us">Integration time in microseconds. Divide integrated_x and integrated_y by the integration time to obtain average flow. The integration time also indicates the.</field>
-             <field type="float" name="integrated_x">Flow in radians around X axis (in Y direction, clockwise rotation inducing positive speed, motion ALONG the positive Y axis inducing positive flow AROUND the X axis)</field>
-             <field type="float" name="integrated_y">Flow in radians around Y axis (in X direction, clockwise rotation inducing positive speed, motion ALONG the positive X axis inducing positive flow AROUND the Y axis)</field>
+             <field type="float" name="integrated_x">Flow in radians around X axis (Sensor RH rotation about the X axis induces a positive flow. Sensor linear motion along the positive Y axis induces a negative flow.)</field>
+             <field type="float" name="integrated_y">Flow in radians around Y axis (Sensor RH rotation about the Y axis induces a positive flow. Sensor linear motion along the positive X axis induces a positive flow.)</field>
+             <field type="float" name="integrated_xgyro">RH rotation around X axis (rad)</field>
+             <field type="float" name="integrated_ygyro">RH rotation around Y axis (rad)</field>
+             <field type="float" name="integrated_zgyro">RH rotation around Z axis (rad)</field>
+             <field type="int16_t" name="temperature">Temperature * 100 in centi-degrees Celsius</field>
              <field type="uint8_t" name="quality">Optical flow quality / confidence. 0: no valid flow, 255: maximum quality</field>
              <field type="uint32_t" name="time_delta_distance_us">Time in microseconds since the distance was sampled.</field>
              <field type="float" name="distance">Distance to the center of the flow field in meters. Positive value (including zero): distance known. Negative value: Unknown distance.</field>
