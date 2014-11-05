@@ -12,6 +12,7 @@ parser.add_argument("--no-timestamps", dest="notimestamps", action='store_true',
 parser.add_argument("--planner", action='store_true', help="use planner file format")
 parser.add_argument("--robust", action='store_true', help="Enable robust parsing (skip over bad data)")
 parser.add_argument("--condition", default=None, help="condition for packets")
+parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect")
 parser.add_argument("logs", metavar="LOG", nargs="+")
 
 args = parser.parse_args()
@@ -25,6 +26,7 @@ def mavloss(logfile):
     mlog = mavutil.mavlink_connection(filename,
                                       planner_format=args.planner,
                                       notimestamps=args.notimestamps,
+                                      dialect=args.dialect,
                                       robust_parsing=args.robust)
 
     # Track the reasons for MAVLink parsing errors and print them all out at the end.
