@@ -509,7 +509,7 @@ def wingloading(bank):
     '''return expected wing loading factor for a bank angle in radians'''
     return 1.0/cos(bank)
 
-def airspeed(VFR_HUD, ratio=None, used_ratio=None):
+def airspeed(VFR_HUD, ratio=None, used_ratio=None, offset=None):
     '''recompute airspeed with a different ARSPD_RATIO'''
     import mavutil
     mav = mavutil.mavfile_global
@@ -521,9 +521,23 @@ def airspeed(VFR_HUD, ratio=None, used_ratio=None):
         else:
             print("no ARSPD_RATIO in mav.params")
             used_ratio = ratio
-    airspeed_pressure = (VFR_HUD.airspeed**2) / used_ratio
+    if hasattr(VFR_HUD,'airspeed'):
+        airspeed = VFR_HUD.airspeed
+    else:
+        airspeed = VFR_HUD.Airspeed
+    airspeed_pressure = (airspeed**2) / used_ratio
+    if offset is not None:
+        airspeed_pressure += offset
+        if airspeed_pressure < 0:
+            airspeed_pressure = 0
     airspeed = sqrt(airspeed_pressure * ratio)
     return airspeed
+
+def EAS2TAS(ARSP,GPS,BARO,ground_temp=25):
+    '''EAS2TAS from ARSP.Temp'''
+    tempK = ground_temp + 273.15 - 0.0065 * GPS.Alt
+    return sqrt(1.225 / (BARO.Press / (287.26 * tempK)))
+
 
 def airspeed_ratio(VFR_HUD):
     '''recompute airspeed with a different ARSPD_RATIO'''
