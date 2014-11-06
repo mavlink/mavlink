@@ -92,10 +92,10 @@ mavlink.message.prototype.set = function(args) {
 
 // This pack function builds the header and produces a complete MAVLink message,
 // including header and message CRC.
-mavlink.message.prototype.pack = function(crc_extra, payload) {
+mavlink.message.prototype.pack = function(mav, crc_extra, payload) {
 
     this.payload = payload;
-    this.header = new mavlink.header(this.id, payload.length, this.seq, this.srcSystem, this.srcComponent);    
+    this.header = new mavlink.header(this.id, payload.length, mav.seq, mav.srcSystem, mav.srcComponent);    
     this.msgbuf = this.header.pack().concat(payload);
     var crc = mavlink.x25Crc(this.msgbuf.slice(1));
 
@@ -202,8 +202,8 @@ mavlink.messages.%s.prototype = new mavlink.message;
 
         # Implement the pack() function for this message
         outf.write("""
-mavlink.messages.%s.prototype.pack = function() {
-    return mavlink.message.prototype.pack.call(this, this.crc_extra, jspack.Pack(this.format""" % m.name.lower())
+mavlink.messages.%s.prototype.pack = function(mav) {
+    return mavlink.message.prototype.pack.call(this, mav, this.crc_extra, jspack.Pack(this.format""" % m.name.lower())
         if len(m.fields) != 0:
                 outf.write(", [ this." + ", this.".join(m.ordered_fieldnames) + ']')
         outf.write("));\n}\n\n")
@@ -300,11 +300,11 @@ MAVLink.prototype.log = function(level, message) {
 }
 
 MAVLink.prototype.send = function(mavmsg) {
-        buf = mavmsg.pack(this);
-        this.file.write(buf);
-        this.seq = (this.seq + 1) % 255;
-        this.total_packets_sent +=1;
-        this.total_bytes_sent += buf.length;
+    buf = mavmsg.pack(this);
+    this.file.write(buf);
+    this.seq = (this.seq + 1) % 256;
+    this.total_packets_sent +=1;
+    this.total_bytes_sent += buf.length;
 }
 
 // return number of bytes needed for next parsing stage

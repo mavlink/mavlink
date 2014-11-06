@@ -142,6 +142,7 @@ class mavfile(object):
         self.mav_loss = 0
         self.mav_count = 0
         self.stop_on_EOF = False
+        self.portdead = False
 
     def auto_mavlink_version(self, buf):
         '''auto-switch mavlink protocol version'''
@@ -735,27 +736,31 @@ class mavserial(mavfile):
         try:
             return self.port.write(buf)
         except Exception:
+            if not self.portdead:
+                print("Device %s is dead" % self.device)
+            self.portdead = True
             if self.autoreconnect:
                 self.reset()
             return -1
             
     def reset(self):
         import serial
-        self.port.close()
-        while True:
+        try:
+            newport = serial.Serial(self.device, self.baud, timeout=0,
+                                    dsrdtr=False, rtscts=False, xonxoff=False)
+            self.port.close()
+            self.port = newport
+            print("Device %s reopened OK" % self.device)
+            self.portdead = False
             try:
-                self.port = serial.Serial(self.device, self.baud, timeout=0,
-                                          dsrdtr=False, rtscts=False, xonxoff=False)
-                try:
-                    self.fd = self.port.fileno()
-                except Exception:
-                    self.fd = None
-                if self.rtscts:
-                    self.set_rtscts(self.rtscts)
-                return
+                self.fd = self.port.fileno()
             except Exception:
-                print("Failed to reopen %s" % self.device)
-                time.sleep(0.5)
+                self.fd = None
+            if self.rtscts:
+                self.set_rtscts(self.rtscts)
+            return True
+        except Exception:
+            return False
         
 
 class mavudp(mavfile):

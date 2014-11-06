@@ -81,6 +81,7 @@ last_timestamp = None
 
 # Keep track of data from the current timestep. If the following timestep has the same data, it's stored in here as well. Output should therefore have entirely unique timesteps.
 csv_out = ["" for x in fields]
+types_ignored = set() # Track which message types were ignored
 while True:
     m = mlog.recv_match(blocking=args.follow)
     if m is None:
@@ -101,6 +102,11 @@ while True:
         continue
 
     if types is not None and m.get_type() not in types and m.get_type() != 'BAD_DATA':
+        # If this message hasn't been seen before, and it's not being output, issue a warning.
+        # This makes it easy for a developer to confirm that they're extracting all relevant data.
+        if m.get_type() not in types_ignored:
+            sys.stderr.write("WARNING: Ignoring '{}' message types.\n".format(m.get_type()))
+            types_ignored.add(m.get_type())
         continue
 
     if m.get_type() == 'BAD_DATA' and m.reason == "Bad prefix":
@@ -145,7 +151,7 @@ while True:
         # If this message has a duplicate timestamp, copy its data into the existing data list. Also
         # do this if it's the first message encountered.
         if timestamp == last_timestamp or last_timestamp is None:
-            newData = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in [type + '.' + x for x in fields]]
+            newData = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
             for i, val in enumerate(newData):
                 if val:
                     csv_out[i] = val
@@ -154,7 +160,7 @@ while True:
         else:
             csv_out[0] = "{:.8f}".format(last_timestamp)
             print(args.csv_sep.join(csv_out))
-            csv_out = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in [type + '.' + x for x in fields]]
+            csv_out = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
     # Otherwise we output in a standard Python dict-style format
     else:
         print("%s.%02u: %s" % (

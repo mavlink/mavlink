@@ -20,6 +20,65 @@ describe("Generated MAVLink protocol handler object", function() {
         this.completeInvalidMessage = new Buffer([0xfe, 0x00, 0xfe, 0x00, 0x00, 0xe0, 0x00, 0x00]);
     });
 
+    describe("message header handling", function() {
+        
+        it("IDs and sequence numbers are set on send", function(){
+            var mav = new MAVLink(null, 42, 99);
+            var writer = {
+                write: function(){}
+            };
+            mav.file = writer;
+            var spy = sinon.spy(writer, 'write');
+
+            var msg = new mavlink.messages['heartbeat']();
+            mav.send(msg);
+
+            spy.calledOnce.should.be.true;
+            spy.getCall(0).args[0][2].should.be.eql(0); // seq
+            spy.getCall(0).args[0][3].should.be.eql(42); // sys
+            spy.getCall(0).args[0][4].should.be.eql(99); // comp
+        });
+
+        it("sequence number increases on send", function(){
+            var mav = new MAVLink(null, 42, 99);
+            var writer = {
+                write: function(){}
+            };
+            mav.file = writer;
+            var spy = sinon.spy(writer, 'write');
+
+            var msg = new mavlink.messages['heartbeat']();
+            mav.send(msg);
+            mav.send(msg);
+
+            spy.callCount.should.be.eql(2);
+            spy.getCall(0).args[0][2].should.be.eql(0); // seq
+            spy.getCall(0).args[0][3].should.be.eql(42); // sys
+            spy.getCall(0).args[0][4].should.be.eql(99); // comp
+            spy.getCall(1).args[0][2].should.be.eql(1); // seq
+            spy.getCall(1).args[0][3].should.be.eql(42); // sys
+            spy.getCall(1).args[0][4].should.be.eql(99); // comp
+        });
+
+        it("sequence number turns over at 256", function(){
+            var mav = new MAVLink(null, 42, 99);
+            var writer = {
+                write: function(){}
+            };
+            mav.file = writer;
+            var spy = sinon.spy(writer, 'write');
+
+            var msg = new mavlink.messages['heartbeat']();
+
+            for(var i = 0; i < 258; i++){
+                mav.send(msg);
+                var seq = i % 256;
+                spy.getCall(i).args[0][2].should.be.eql(seq); // seq
+            }
+        });
+
+    });
+
     describe("buffer decoder (parseBuffer)", function() {
 
         // This test prepopulates a single message as a binary buffer.
