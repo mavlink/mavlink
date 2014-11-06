@@ -149,7 +149,6 @@ set(v1.0Definitions
     slugs.xml
     test.xml
     ualberta.xml
-    sensesoar.xml
     )
 generateMavlink("1.0" "${v1.0Definitions}")
 
