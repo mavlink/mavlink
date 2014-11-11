@@ -58,11 +58,11 @@ generate_headers autoquad
 generate_headers matrixpilot
 generate_headers minimal
 generate_headers pixhawk
-generate_headers sensesoar
 generate_headers slugs
 generate_headers test
 generate_headers ualberta
 generate_headers common
+generate_headers ASLUAV
 echo "finished generating c headers"
 
 # git add and git commit in local c_library repository
