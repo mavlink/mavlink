@@ -452,13 +452,13 @@ class DFReader_text(DFReader):
         msg_type = elements[0]
 
         if not msg_type in self.formats:
-            return None
+            return self._parse_next()
         
         fmt = self.formats[msg_type]
 
         if len(elements) < len(fmt.format)+1:
             # not enough columns
-            return None
+            return self._parse_next()
 
         elements = elements[1:]
         
@@ -468,7 +468,11 @@ class DFReader_text(DFReader):
             # name, len, format, headings
             self.formats[elements[2]] = DFFormat(int(elements[0]), elements[2], int(elements[1]), elements[3], elements[4])
 
-        m = DFMessage(fmt, elements, False)
+        try:
+            m = DFMessage(fmt, elements, False)
+        except ValueError:
+            return self._parse_next()
+
         self._add_msg(m)
 
         return m
