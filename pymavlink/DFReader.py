@@ -40,6 +40,9 @@ class DFFormat(object):
         self.format = format
         self.columns = columns.split(',')
 
+        if self.columns == ['']:
+            self.columns = []
+
         msg_struct = "<"
         msg_mults = []
         msg_types = []
