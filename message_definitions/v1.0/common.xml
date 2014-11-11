@@ -55,6 +55,9 @@
                <entry value="16" name="MAV_AUTOPILOT_AEROB">
                     <description>Aerob -- http://aerob.ru</description>
                </entry>
+               <entry value="17" name="MAV_AUTOPILOT_ASLUAV">
+                    <description>ASLUAV autopilot -- http://www.asl.ethz.ch</description>
+               </entry>
           </enum>
           <enum name="MAV_TYPE">
                <entry value="0" name="MAV_TYPE_GENERIC">
@@ -2257,6 +2260,11 @@
             <field type="uint8_t" name="target_system">System ID (0 for broadcast)</field>
             <field type="uint8_t" name="target_component">Component ID (0 for broadcast)</field>
             <field type="uint8_t[251]" name="payload">Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields.  The entire content of this block is opaque unless you understand any the encoding message_type.  The particular encoding used can be extension specific and might not always be documented as part of the mavlink specification.</field>
+        </message>
+        <message id="111" name="TIMESYNC">
+            <description>Time synchronization message.</description>
+            <field type="int64_t" name="tc1">Time sync timestamp 1</field>
+            <field type="int64_t" name="ts1">Time sync timestamp 2</field>
         </message>
          <message id="113" name="HIL_GPS">
              <description>The global position, as returned by the Global Positioning System (GPS). This is

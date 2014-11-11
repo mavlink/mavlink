@@ -27,6 +27,10 @@ describe('MAVLink message registry', function() {
 
 describe('Complete MAVLink packet', function() {
 
+    beforeEach(function() {
+        this.mav = new MAVLink(null, 42, 150);
+    });
+
     it('encode gps_raw_int', function() {
 
         // 0x75bcd15 = 123456789
@@ -43,17 +47,12 @@ describe('Complete MAVLink packet', function() {
             , cog=1234
             , satellites_visible=9
         );
-        
-        // Set header properties
-        _.extend(gpsraw, {
-            seq: 5,
-            srcSystem: 42,
-            srcComponent: 150
-        });
+
+        this.mav.seq = 5;
 
         // Create a buffer that matches what the Python version of MAVLink creates
         var reference = new Buffer([0xfe, 0x1e, 0x05, 0x2a, 0x96, 0x18, 0x15, 0xcd, 0x5b, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0xcf, 0x02, 0x40, 0xf4, 0x7b, 0x00, 0x50, 0xc3, 0x00, 0x00, 0x90, 0x19, 0xd6, 0x11, 0xd3, 0x04, 0xd2, 0x04, 0x03, 0x09, 0xee, 0x16]);
-        new Buffer(gpsraw.pack()).should.eql(reference);
+        new Buffer(gpsraw.pack(this.mav)).should.eql(reference);
 
     });
 
@@ -73,17 +72,12 @@ describe('Complete MAVLink packet', function() {
             , cog=1234
             , satellites_visible=9
         );
-        
-        // Set header properties
-        _.extend(gpsraw, {
-            seq: 5,
-            srcSystem: 42,
-            srcComponent: 150
-        });
 
+        this.mav.seq = 5;
+        
         // Create a buffer that matches what the Python version of MAVLink creates
         var reference = new Buffer([0xfe, 0x1e, 0x05, 0x2a, 0x96, 0x18, 0x01, 0x18, 0x3d, 0x9e, 0x59, 0x83, 0xfd, 0x0f, 0x00, 0x0c, 0xcf, 0x02, 0x40, 0xf4, 0x7b, 0x00, 0x50, 0xc3, 0x00, 0x00, 0x90, 0x19, 0xd6, 0x11, 0xd3, 0x04, 0xd2, 0x04, 0x03, 0x09, 0x6c, 0xe8]);
-        new Buffer(gpsraw.pack()).should.eql(reference);
+        new Buffer(gpsraw.pack(this.mav)).should.eql(reference);
 
     });
 
@@ -98,16 +92,11 @@ describe('Complete MAVLink packet', function() {
             , mavlink_version=1
         );
         
-        // Set header properties
-        _.extend(heartbeat, {
-            seq: 7,
-            srcSystem: 42,
-            srcComponent: 150
-        });
+        this.mav.seq = 7;
 
         // Create a buffer that matches what the Python version of MAVLink creates
         var reference = new Buffer([0xfe, 0x09, 0x07, 0x2a, 0x96, 0x00, 0x44, 0x00, 0x00, 0x00, 0x05, 0x03, 0x2d, 0x0d, 0x01, 0xac, 0x9d]);
-        new Buffer(heartbeat.pack()).should.eql(reference);
+        new Buffer(heartbeat.pack(this.mav)).should.eql(reference);
 
     });
 
@@ -171,6 +160,8 @@ describe('MAVLink message', function() {
             3 // MAVLink version
         );
 
+        this.mav = new MAVLink(null, 0, 0);
+
     });
 
     it('has a set function to facilitate vivifying the object', function() {
@@ -184,8 +175,8 @@ describe('MAVLink message', function() {
     // TODO: the length below (9) should perhaps be instead 7.  See mavlink.unpack().
     // might have to do with the length of the encoding (<I is 4 symbols in the array) 
     it('Can pack itself', function() {
-        
-        var packed = this.heartbeat.pack();
+
+        var packed = this.heartbeat.pack(this.mav);
         packed.should.eql([254, 9, 0, 0, 0, mavlink.MAVLINK_MSG_ID_HEARTBEAT, // that bit is the header,
             // this is the payload, arranged in the order map specified in the protocol,
             // which differs from the constructor.
@@ -210,7 +201,7 @@ describe('MAVLink message', function() {
         // need to add tests for the header fields as well, specifying seq etc.
         it('Can decode itself', function() {
 
-            var packed = this.heartbeat.pack();
+            var packed = this.heartbeat.pack(this.m);
             var message = this.m.decode(packed);
 
             // this.fieldnames = ['type', 'autopilot', 'base_mode', 'custom_mode', 'system_status', 'mavlink_version'];
