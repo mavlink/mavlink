@@ -34,6 +34,7 @@ Available languages are:
 
   * C
   * C#
+  * Java
   * JavaScript
   * Lua
   * Python, version 2.7+
