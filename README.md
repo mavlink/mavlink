@@ -2,7 +2,7 @@
 
 ## MAVLink ##
 
-*   Official Website: http://qgroundcontrol.org/mavlink/
+*   Official Website: http://mavlink.org
 *   Source: [Mavlink Generator](https://github.com/mavlink/mavlink)
 *   Binaries (always up-to-date from master):
   * [C/C++ header-only library](https://github.com/mavlink/c_library)
