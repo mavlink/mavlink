@@ -28,6 +28,8 @@ if home is not None:
         mavuser = imp.load_source('pymavlink.mavuser', extra)
         from pymavlink.mavuser import *
 
+# Store the MAVLink library for the currently-selected dialect
+# (set by set_dialect())
 mavlink = None
 
 # Store the mavlink file currently being operated on
