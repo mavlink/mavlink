@@ -328,7 +328,6 @@ def generate_MAVLinkMessage(directory, xml_list):
         */
         public boolean payloadIsFilled() {
 		if (payload.size() >= MAVLinkPayload.MAX_PAYLOAD_SIZE-1) {
-        Log.d("MAV","Buffer overflow");
         return true;
 		}
 		return (payload.size() == len);
@@ -389,7 +388,6 @@ def generate_MAVLinkMessage(directory, xml_list):
             }}
             ''',xml)
     f.write('''		default:
-        Log.d("MAVLink", "UNKNOW MESSAGE - " + msgid);
         return null;
 		}
         }
