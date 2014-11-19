@@ -57,7 +57,7 @@ def process_tlog(filename):
 
         if mtype not in type_counters:
             type_counters[mtype] = 0
-            f.write("%s.heading = {'timestamp'" % mtype)
+            f.write("%s.columns = {'timestamp'" % mtype)
             for field in fieldnames:
                 val = getattr(m, field)
                 if not isinstance(val, str):
