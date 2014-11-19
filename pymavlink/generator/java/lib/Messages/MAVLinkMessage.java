@@ -3,6 +3,8 @@ package com.MAVLink.Messages;
 
 import java.io.Serializable;
 
+import com.MAVLink.MAVLinkPacket;
+
 public abstract class MAVLinkMessage implements Serializable {
 	private static final long serialVersionUID = -7754622750478538539L;
 	// The MAVLink message classes have been changed to implement Serializable, 
