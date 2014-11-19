@@ -11,60 +11,6 @@ import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
 
-def generate_version_h(directory, xml):
-    '''generate version.h'''
-    f = open(os.path.join(directory, "version.h"), mode='w')
-    t.write(f,'''
-        /** @file
-        *	@brief MAVLink comm protocol built from ${basename}.xml
-        *	@see http://mavlink.org
-        */
-        #ifndef MAVLINK_VERSION_H
-        #define MAVLINK_VERSION_H
-        
-        #define MAVLINK_BUILD_DATE "${parse_time}"
-        #define MAVLINK_WIRE_PROTOCOL_VERSION "${wire_protocol_version}"
-        #define MAVLINK_MAX_DIALECT_PAYLOAD_SIZE ${largest_payload}
-        
-        #endif // MAVLINK_VERSION_H
-        ''', xml)
-    f.close()
-
-def generate_mavlink_h(directory, xml):
-    '''generate mavlink.h'''
-    f = open(os.path.join(directory, "mavlink.h"), mode='w')
-    t.write(f,'''
-        /** @file
-        *	@brief MAVLink comm protocol built from ${basename}.xml
-        *	@see http://mavlink.org
-        */
-        #ifndef MAVLINK_H
-        #define MAVLINK_H
-        
-        #ifndef MAVLINK_STX
-        #define MAVLINK_STX ${protocol_marker}
-        #endif
-        
-        #ifndef MAVLINK_ENDIAN
-        #define MAVLINK_ENDIAN ${mavlink_endian}
-        #endif
-        
-        #ifndef MAVLINK_ALIGNED_FIELDS
-        #define MAVLINK_ALIGNED_FIELDS ${aligned_fields_define}
-        #endif
-        
-        #ifndef MAVLINK_CRC_EXTRA
-        #define MAVLINK_CRC_EXTRA ${crc_extra_define}
-        #endif
-        
-        #include "version.h"
-        #include "${basename}.h"
-        
-        #endif // MAVLINK_H
-        ''', xml)
-    f.close()
-
-
 def generate_enums(basename, xml):
     '''generate main header per XML file'''
     directory = os.path.join(basename, '''enums''')
@@ -605,8 +551,6 @@ def generate_one(basename, xml):
         for f in m.ordered_fields:
             f.type = mavfmt(f)
     
-    #generate_mavlink_h(directory, xml)
-    #generate_version_h(directory, xml)
     generate_CRC(directory, xml)
     
     for m in xml.message:
