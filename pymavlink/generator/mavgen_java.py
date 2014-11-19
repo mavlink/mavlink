@@ -74,7 +74,7 @@ def generate_enums(basename, xml):
         t.write(f, '''
             /** ${description}
             */
-            package com.MAVLink.Messages.enums;
+            package com.MAVLink.enums;
             
             public class ${name} {
             ${{entry:	public static final int ${name} = ${value}; /* ${description} |${{param:${description}| }} */
@@ -92,9 +92,9 @@ def generate_CRC(directory, xml):
         xml.message_crcs_array += '%u, ' % crc
     xml.message_crcs_array = xml.message_crcs_array[:-2]
     
-    f = open(os.path.join(directory, xml.basename + "CRC.java"), mode='w')
+    f = open(os.path.join(directory, "CRC.java"), mode='w')
     t.write(f,'''
-        package com.MAVLink.Messages;
+        package com.MAVLink.${basename};
         
         /**
         * X.25 CRC calculation for MAVlink messages. The checksum must be initialized,
@@ -167,13 +167,14 @@ def generate_CRC(directory, xml):
 def generate_message_h(directory, m):
     '''generate per-message header for a XML file'''
     f = open(os.path.join(directory, 'msg_%s.java' % m.name_lower), mode='w')
+
+    path=directory.split('/')
     t.write(f, '''
         // MESSAGE ${name} PACKING
-        package com.MAVLink.Messages.ardupilotmega;
-        
-        import com.MAVLink.Messages.MAVLinkMessage;
-        import com.MAVLink.Messages.MAVLinkPacket;
-        import com.MAVLink.Messages.MAVLinkPayload;
+package com.MAVLink.%s;
+import com.MAVLink.MAVLinkPacket;
+import com.MAVLink.Messages.MAVLinkMessage;
+import com.MAVLink.Messages.MAVLinkPayload;
         //import android.util.Log;
         
         /**
@@ -247,17 +248,20 @@ def generate_message_h(directory, m):
     	return "MAVLINK_MSG_ID_${name} -"+${{ordered_fields:" ${name}:"+${name}+}}"";
         }
         }
-        ''', m)
+        ''' % path[len(path)-1], m)
     f.close()
 
 
 def generate_MAVLinkMessage(directory, xml_list):
     f = open(os.path.join(directory, "MAVLinkPacket.java"), mode='w')
-    f.write('''package com.MAVLink.Messages;
+    f.write('''package com.MAVLink;
         
         import java.io.Serializable;
-        import android.util.Log;
-        import com.MAVLink.Messages.ardupilotmega.*;
+        import com.MAVLink.Messages.MAVLinkPayload;
+       	import com.MAVLink.Messages.MAVLinkMessage;
+     	import com.MAVLink.ardupilotmega.CRC;
+        import com.MAVLink.common.*;
+        import com.MAVLink.ardupilotmega.*;
         
         /**
         * Common interface for all MAVLink Messages
