@@ -36,6 +36,11 @@ mavlink = None
 # (set by mavlink_connection())
 mavfile_global = None
 
+# Use a globally-set MAVLink dialect if one has been specified as an environment variable.
+if not 'MAVLINK_DIALECT' in os.environ:
+    os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
+set_dialect(os.environ['MAVLINK_DIALECT'])
+
 def mavlink10():
     '''return True if using MAVLink 1.0'''
     return not 'MAVLINK09' in os.environ
@@ -95,11 +100,6 @@ def set_dialect(dialect):
         mod = getattr(mod, comp)
     current_dialect = dialect
     mavlink = mod
-
-# allow for a MAVLINK_DIALECT environment variable
-if not 'MAVLINK_DIALECT' in os.environ:
-    os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
-set_dialect(os.environ['MAVLINK_DIALECT'])
 
 class mavfile(object):
     '''a generic mavlink port'''
