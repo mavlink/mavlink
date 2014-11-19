@@ -30,6 +30,10 @@ if home is not None:
 
 mavlink = None
 
+# Store the mavlink file currently being operated on
+# (set by mavlink_connection())
+mavfile_global = None
+
 def mavlink10():
     '''return True if using MAVLink 1.0'''
     return not 'MAVLINK09' in os.environ
@@ -52,8 +56,6 @@ def evaluate_condition(condition, vars):
     if v is None:
         return False
     return v
-
-mavfile_global = None
 
 class location(object):
     '''represent a GPS coordinate'''
