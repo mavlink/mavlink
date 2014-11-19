@@ -515,8 +515,8 @@ def generate_one(basename, xml):
                 f.decode_left = ''
                 f.decode_right = 'm.%s' % (f.name)
                 
-                f.unpackField = ''' for (int i = 0; i < %s.length; i++) {
-                    %s[i] = payload.get%s();
+                f.unpackField = ''' for (int i = 0; i < this.%s.length; i++) {
+                    this.%s[i] = payload.get%s();
                     }''' % (f.name, f.name, mavfmt(f).title() )
                 f.packField = ''' for (int i = 0; i < %s.length; i++) {
                     packet.payload.put%s(%s[i]);
@@ -566,7 +566,7 @@ def generate_one(basename, xml):
                 f.array_const = ''
                 f.decode_left =  '%s' % (f.name)
                 f.decode_right = ''
-                f.unpackField = '%s = payload.get%s();' % (f.name, mavfmt(f).title())
+                f.unpackField = 'this.%s = payload.get%s();' % (f.name, mavfmt(f).title())
                 f.packField = 'packet.payload.put%s(%s);' % (mavfmt(f).title(),f.name)                   
                 
                 
