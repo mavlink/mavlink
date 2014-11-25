@@ -13,7 +13,10 @@ import time
 import re
 
 mainstate_field = 'STAT.MainState'
-position_field_types = ['Lon', 'Lat', 'Alt']  # kml order is lon, lat
+position_field_types = [  # Order must be lon, lat, alt to match KML
+  ['Lon', 'Lat', 'Alt'],  # PX4
+  ['Lng', 'Lat', 'Alt']   # APM > 3
+]
 
 colors = [simplekml.Color.red, simplekml.Color.green, simplekml.Color.blue,
           simplekml.Color.violet, simplekml.Color.yellow,
@@ -39,7 +42,7 @@ def save_kml(filename):
     print("KML written to %s" % filename)
 
 
-def add_data(t, msg, vars, fields, field_types):
+def add_data(t, msg, msg_types, vars, fields, field_types, position_field_type):
     '''add some data'''
 
     mtype = msg.get_type()
@@ -108,17 +111,33 @@ def add_data(t, msg, vars, fields, field_types):
             add_data.last_time = msg._timestamp
 
     # reset position_data
-    add_data.position_data = [None for n in position_field_types]
+    add_data.position_data = [None for n in position_field_type]
 
 
-def process_file(filename, fields, field_types):
+def process_file(filename, source):
     '''process one file'''
     print("Processing %s" % filename)
     mlog = mavutil.mavlink_connection(filename, notimestamps=args.notimestamps)
+    
+    position_field_type = sniff_field_spelling(mlog, source)
+    
+    # init fields and field_types lists
+    fields = [args.source + "." + s for s in position_field_type]
+    fields.append(mainstate_field)
+    field_types = []
+
+    msg_types = set()
+    re_caps = re.compile('[A-Z_][A-Z0-9_]+')
+
+    for f in fields:
+        caps = set(re.findall(re_caps, f))
+        msg_types = msg_types.union(caps)
+        field_types.append(caps)
+    
     add_data.new_linestring = True
     add_data.mainstate_current = -1
     add_data.current_kml_linestring = None
-    add_data.position_data = [None for n in position_field_types]
+    add_data.position_data = [None for n in position_field_type]
     add_data.last_time = 0
 
     while True:
@@ -127,7 +146,20 @@ def process_file(filename, fields, field_types):
             break
         tdays = (msg._timestamp - time.timezone) / (24 * 60 * 60)
         tdays += 719163  # pylab wants it since 0001-01-01
-        add_data(tdays, msg, mlog.messages, fields, field_types)
+        add_data(tdays, msg, msg_types, mlog.messages, fields, field_types, position_field_type)
+        
+
+def sniff_field_spelling(mlog, source):
+    '''attempt to detect whether APM or PX4 attributes names are in use'''
+    position_field_type_default = position_field_types[0] # Default to PX4 spelling
+    
+    msg = mlog.recv_match(source)
+    mlog._rewind() # Unfortunately it's either call this or return a mutated object
+    
+    position_field_selection = [spelling for spelling in position_field_types if hasattr(msg, spelling[0])]
+
+    return position_field_selection[0] if position_field_selection else position_field_type_default
+
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__)
@@ -155,26 +187,13 @@ if __name__ == '__main__':
         if os.path.exists(f):
             filenames.append(f)
 
-    # init fields and field_types lists
-    fields = [args.source + "." + s for s in position_field_types]
-    fields.append(mainstate_field)
-    field_types = []
-
-    msg_types = set()
-    re_caps = re.compile('[A-Z_][A-Z0-9_]+')
-
-    for f in fields:
-        caps = set(re.findall(re_caps, f))
-        msg_types = msg_types.union(caps)
-        field_types.append(caps)
-
     if len(filenames) == 0:
         print("No files to process")
         sys.exit(1)
 
     for fi in range(0, len(filenames)):
         f = filenames[fi]
-        process_file(f, fields, field_types)
+        process_file(f, args.source)
 
     save_kml(args.filename_out)
 
