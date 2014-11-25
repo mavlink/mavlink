@@ -13,7 +13,7 @@ import time
 import re
 
 mainstate_field = 'STAT.MainState'
-position_field_types = ['Lon', 'Lat', 'Alt']  # kml order is lon, lat
+position_field_types = ['Lng', 'Lat', 'Alt']  # kml order is lon, lat
 
 colors = [simplekml.Color.red, simplekml.Color.green, simplekml.Color.blue,
           simplekml.Color.violet, simplekml.Color.yellow,
