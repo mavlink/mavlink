@@ -10,7 +10,6 @@ import sys, textwrap
 from argparse import ArgumentParser
 
 # mavparse is up a directory level
-sys.path.append('..')
 from . import mavparse
 
 def gen_value(f, i, language):
