@@ -6,7 +6,7 @@ Copyright Holger Steinhaus 2012
 Released under GNU GPL version 3 or later
 
 Instructions for use: 
-1. ./mavgen --lang=wlua mymavlink.xml -o ~/.wireshark/plugins/mymavlink.lua 
+1. python -m pymavlink.generator.mavgen --lang=wlua mymavlink.xml -o ~/.wireshark/plugins/mymavlink.lua
 2. convert binary stream int .pcap file format (see examples/mavcap.py)
 3. open the pcap file in Wireshark
 '''

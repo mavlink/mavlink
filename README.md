@@ -25,6 +25,7 @@ Note that there are two incompatible versions of the MAVLink protocol: v0.9 and 
 ### Installation ###
   1. Clone into a user-writable directory.
   2. Add the repository directory to your `PYTHONPATH`
+  3. Generate MAVLink parser files following the instructions in the next section *AND/OR* run included helper scripts described in the Scripts/Examples secion.
 
 ### Generating Language-specific Source Files ###
 
@@ -75,16 +76,16 @@ Transmitting can be done by using the `mavlink_msg_*_pack()` function, where one
 It is possible to simplify the above by writing wrappers around the transmitting/receiving code. A multi-byte writing macro can be defined, `MAVLINK_SEND_UART_BYTES()`, or a single-byte function can be defined, `comm_send_ch()`, that wrap the low-level driver for transmitting the data. If this is done, `MAVLINK_USE_CONVENIENCE_FUNCTIONS` must be defined.
 
 ### Scripts/Examples ###
-This MAVLink library also comes with supporting libraries and scripts for using, manipulating, and parsing MAVLink streams within the pymavlink, pymavlink/tools, and pymavlink/examples directories.
+This MAVLink library also comes with supporting libraries and scripts for using, manipulating, and parsing MAVLink streams within the pymavlink, pymav
+link/tools, and pymavlink/examples directories.
 
-#### Requirements ####
-
+The scripts have the following requirements:
   * Python 2.7+
   * mavlink repository folder in `PYTHONPATH`
   * Write access to the entire `mavlink` folder.
   * Your dialect's XML file is in `message_definitions/*/`
 
-Running these scripts can be run by listing the folder hierarchy for the script. The following code runs `mavlogdump.py` in `/pymavlink/tools/` on the recorded MAVLink stream `test_run.mavlink`:
+Running these scripts can be done by running Python with the '-m' switch, which indicates that the given script exists on the PYTHONPATH. This is the proper way to run Python scripts that are part of a library as per PEP-328 (and the rejected PEP-3122). The following code runs `mavlogdump.py` in `/pymavlink/tools/` on the recorded MAVLink stream `test_run.mavlink` (other scripts in `/tools` and `/scripts` can be run in a similar fashion):
 
     $ python -m pymavlink.tools.mavlogdump test_run.mavlink
 
