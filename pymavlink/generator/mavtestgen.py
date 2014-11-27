@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 
 # mavparse is up a directory level
 sys.path.append('..')
-import mavparse
+from . import mavparse
 
 def gen_value(f, i, language):
     '''generate a test value for the ith field of a message'''

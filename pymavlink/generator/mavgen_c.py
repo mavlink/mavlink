@@ -7,7 +7,7 @@ Released under GNU GPL version 3 or later
 '''
 
 import sys, textwrap, os, time
-import mavparse, mavtemplate
+from . import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
 

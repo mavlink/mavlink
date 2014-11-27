@@ -7,7 +7,7 @@
     '''
 
 import sys, textwrap, os, time
-import mavparse, mavtemplate
+from . import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
 

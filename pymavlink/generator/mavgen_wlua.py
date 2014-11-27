@@ -12,7 +12,7 @@ Instructions for use:
 '''
 
 import sys, textwrap, os, re
-import mavparse, mavtemplate
+from . import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
 
