@@ -397,9 +397,10 @@ class MAVLink(object):
                     crc, = struct.unpack('<H', msgbuf[-2:])
                 except struct.error as emsg:
                     raise MAVError('Unable to unpack MAVLink CRC: %s' % emsg)
-                crc2 = x25crc(msgbuf[1:-2])
+                crcbuf = msgbuf[1:-2]
                 if ${crc_extra}: # using CRC extra
-                    crc2.accumulate(chr(crc_extra))
+                    crcbuf.append(crc_extra)
+                crc2 = x25crc(crcbuf)
                 if crc != crc2.crc:
                     raise MAVError('invalid MAVLink CRC in msgID %u 0x%04x should be 0x%04x' % (msgId, crc, crc2.crc))
 
