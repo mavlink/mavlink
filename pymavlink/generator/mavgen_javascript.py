@@ -7,7 +7,7 @@ Released under GNU GPL version 3 or later
 '''
 
 import sys, textwrap, os
-import mavparse, mavtemplate
+from . import mavparse, mavtemplate
 from shutil import copyfile
 
 t = mavtemplate.MAVTemplate()

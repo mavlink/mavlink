@@ -297,7 +297,7 @@ class MAVXML(object):
 def message_checksum(msg):
     '''calculate a 8-bit checksum of the key fields of a message, so we
        can detect incompatible XML changes'''
-    from mavcrc import x25crc
+    from .mavcrc import x25crc
     crc = x25crc()
     crc.accumulate_str(msg.name + ' ')
     for f in msg.ordered_fields:

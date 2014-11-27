@@ -8,10 +8,7 @@ Released under GNU GPL version 3 or later
 
 '''
 import sys, textwrap, os
-try:
-    import mavparse
-except ImportError:
-    from pymavlink.generator import mavparse
+from . import mavparse
 
 # XSD schema file
 schemaFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "mavschema.xsd")
@@ -99,43 +96,25 @@ def mavgen(opts, args) :
     # Convert language option to lowercase and validate
     opts.language = opts.language.lower()
     if opts.language == 'python':
-        import mavgen_python
+        from . import mavgen_python
         mavgen_python.generate(opts.output, xml)
     elif opts.language == 'c':
-        try:
-            import mavgen_c
-        except Exception:
-            from pymavlink.generator import mavgen_c
+        from . import mavgen_c
         mavgen_c.generate(opts.output, xml)
     elif opts.language == 'wlua':
-        try:
-            import mavgen_wlua
-        except Exception:
-            from pymavlink.generator import mavgen_wlua
+        from . import mavgen_wlua
         mavgen_wlua.generate(opts.output, xml)
     elif opts.language == 'cs':
-        try:
-            import mavgen_cs
-        except Exception:
-            from pymavlink.generator import mavgen_cs
+        from . import mavgen_cs
         mavgen_cs.generate(opts.output, xml)
     elif opts.language == 'javascript':
-        try:
-            import mavgen_javascript
-        except Exception:
-            from pymavlink.generator import mavgen_javascript
+        from . import mavgen_javascript
         mavgen_javascript.generate(opts.output, xml)
     elif opts.language == 'objc':
-        try:
-            import mavgen_objc
-        except Exception:
-            from pymavlink.generator import mavgen_objc
+        from . import mavgen_objc
         mavgen_objc.generate(opts.output, xml)
     elif opts.language == 'java':
-        try:
-            import mavgen_java
-        except Exception:
-            from pymavlink.generator import mavgen_java
+        from . import mavgen_java
         mavgen_java.generate(opts.output, xml)
     else:
         print("Unsupported language %s" % opts.language)

@@ -9,7 +9,7 @@ Partly based on SDLog2Parser by Anton Babushkin
 '''
 
 import struct, time, os
-from pymavlink import mavutil
+from . import mavutil
 
 FORMAT_TO_STRUCT = {
     "b": ("b", None, int),
