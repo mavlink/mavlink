@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 import glob, os, shutil, fnmatch
 
-version = '1.1.37'
+version = '1.1.38'
 
 from generator import mavgen, mavparse
 
