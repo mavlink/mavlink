@@ -1,6 +1,6 @@
 package com.MAVLink;
 
-import com.MAVLink.Messages.MAVLinkPacket;
+import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkStats;
 
 public class Parser {

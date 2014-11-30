@@ -1,5 +1,7 @@
 package com.MAVLink.Messages;
 
+import com.MAVLink.MAVLinkPacket;
+
 /**
  * Storage for MAVLink Packet and Error statistics
  * 

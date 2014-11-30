@@ -11,60 +11,6 @@ import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
 
-def generate_version_h(directory, xml):
-    '''generate version.h'''
-    f = open(os.path.join(directory, "version.h"), mode='w')
-    t.write(f,'''
-        /** @file
-        *	@brief MAVLink comm protocol built from ${basename}.xml
-        *	@see http://mavlink.org
-        */
-        #ifndef MAVLINK_VERSION_H
-        #define MAVLINK_VERSION_H
-        
-        #define MAVLINK_BUILD_DATE "${parse_time}"
-        #define MAVLINK_WIRE_PROTOCOL_VERSION "${wire_protocol_version}"
-        #define MAVLINK_MAX_DIALECT_PAYLOAD_SIZE ${largest_payload}
-        
-        #endif // MAVLINK_VERSION_H
-        ''', xml)
-    f.close()
-
-def generate_mavlink_h(directory, xml):
-    '''generate mavlink.h'''
-    f = open(os.path.join(directory, "mavlink.h"), mode='w')
-    t.write(f,'''
-        /** @file
-        *	@brief MAVLink comm protocol built from ${basename}.xml
-        *	@see http://mavlink.org
-        */
-        #ifndef MAVLINK_H
-        #define MAVLINK_H
-        
-        #ifndef MAVLINK_STX
-        #define MAVLINK_STX ${protocol_marker}
-        #endif
-        
-        #ifndef MAVLINK_ENDIAN
-        #define MAVLINK_ENDIAN ${mavlink_endian}
-        #endif
-        
-        #ifndef MAVLINK_ALIGNED_FIELDS
-        #define MAVLINK_ALIGNED_FIELDS ${aligned_fields_define}
-        #endif
-        
-        #ifndef MAVLINK_CRC_EXTRA
-        #define MAVLINK_CRC_EXTRA ${crc_extra_define}
-        #endif
-        
-        #include "version.h"
-        #include "${basename}.h"
-        
-        #endif // MAVLINK_H
-        ''', xml)
-    f.close()
-
-
 def generate_enums(basename, xml):
     '''generate main header per XML file'''
     directory = os.path.join(basename, '''enums''')
@@ -74,7 +20,7 @@ def generate_enums(basename, xml):
         t.write(f, '''
             /** ${description}
             */
-            package com.MAVLink.Messages.enums;
+            package com.MAVLink.enums;
             
             public class ${name} {
             ${{entry:	public static final int ${name} = ${value}; /* ${description} |${{param:${description}| }} */
@@ -92,9 +38,9 @@ def generate_CRC(directory, xml):
         xml.message_crcs_array += '%u, ' % crc
     xml.message_crcs_array = xml.message_crcs_array[:-2]
     
-    f = open(os.path.join(directory, xml.basename + "CRC.java"), mode='w')
+    f = open(os.path.join(directory, "CRC.java"), mode='w')
     t.write(f,'''
-        package com.MAVLink.Messages;
+        package com.MAVLink.${basename};
         
         /**
         * X.25 CRC calculation for MAVlink messages. The checksum must be initialized,
@@ -167,13 +113,14 @@ def generate_CRC(directory, xml):
 def generate_message_h(directory, m):
     '''generate per-message header for a XML file'''
     f = open(os.path.join(directory, 'msg_%s.java' % m.name_lower), mode='w')
+
+    path=directory.split('/')
     t.write(f, '''
         // MESSAGE ${name} PACKING
-        package com.MAVLink.Messages.ardupilotmega;
-        
-        import com.MAVLink.Messages.MAVLinkMessage;
-        import com.MAVLink.Messages.MAVLinkPacket;
-        import com.MAVLink.Messages.MAVLinkPayload;
+package com.MAVLink.%s;
+import com.MAVLink.MAVLinkPacket;
+import com.MAVLink.Messages.MAVLinkMessage;
+import com.MAVLink.Messages.MAVLinkPayload;
         //import android.util.Log;
         
         /**
@@ -247,17 +194,20 @@ def generate_message_h(directory, m):
     	return "MAVLINK_MSG_ID_${name} -"+${{ordered_fields:" ${name}:"+${name}+}}"";
         }
         }
-        ''', m)
+        ''' % path[len(path)-1], m)
     f.close()
 
 
 def generate_MAVLinkMessage(directory, xml_list):
     f = open(os.path.join(directory, "MAVLinkPacket.java"), mode='w')
-    f.write('''package com.MAVLink.Messages;
+    f.write('''package com.MAVLink;
         
         import java.io.Serializable;
-        import android.util.Log;
-        import com.MAVLink.Messages.ardupilotmega.*;
+        import com.MAVLink.Messages.MAVLinkPayload;
+       	import com.MAVLink.Messages.MAVLinkMessage;
+     	import com.MAVLink.ardupilotmega.CRC;
+        import com.MAVLink.common.*;
+        import com.MAVLink.ardupilotmega.*;
         
         /**
         * Common interface for all MAVLink Messages
@@ -328,7 +278,6 @@ def generate_MAVLinkMessage(directory, xml_list):
         */
         public boolean payloadIsFilled() {
 		if (payload.size() >= MAVLinkPayload.MAX_PAYLOAD_SIZE-1) {
-        Log.d("MAV","Buffer overflow");
         return true;
 		}
 		return (payload.size() == len);
@@ -389,7 +338,6 @@ def generate_MAVLinkMessage(directory, xml_list):
             }}
             ''',xml)
     f.write('''		default:
-        Log.d("MAVLink", "UNKNOW MESSAGE - " + msgid);
         return null;
 		}
         }
@@ -515,8 +463,8 @@ def generate_one(basename, xml):
                 f.decode_left = ''
                 f.decode_right = 'm.%s' % (f.name)
                 
-                f.unpackField = ''' for (int i = 0; i < %s.length; i++) {
-                    %s[i] = payload.get%s();
+                f.unpackField = ''' for (int i = 0; i < this.%s.length; i++) {
+                    this.%s[i] = payload.get%s();
                     }''' % (f.name, f.name, mavfmt(f).title() )
                 f.packField = ''' for (int i = 0; i < %s.length; i++) {
                     packet.payload.put%s(%s[i]);
@@ -566,7 +514,7 @@ def generate_one(basename, xml):
                 f.array_const = ''
                 f.decode_left =  '%s' % (f.name)
                 f.decode_right = ''
-                f.unpackField = '%s = payload.get%s();' % (f.name, mavfmt(f).title())
+                f.unpackField = 'this.%s = payload.get%s();' % (f.name, mavfmt(f).title())
                 f.packField = 'packet.payload.put%s(%s);' % (mavfmt(f).title(),f.name)                   
                 
                 
@@ -603,8 +551,6 @@ def generate_one(basename, xml):
         for f in m.ordered_fields:
             f.type = mavfmt(f)
     
-    #generate_mavlink_h(directory, xml)
-    #generate_version_h(directory, xml)
     generate_CRC(directory, xml)
     
     for m in xml.message:
