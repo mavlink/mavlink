@@ -298,12 +298,13 @@ def message_checksum(msg):
     '''calculate a 8-bit checksum of the key fields of a message, so we
        can detect incompatible XML changes'''
     from mavcrc import x25crc
-    crc = x25crc(msg.name + ' ')
+    crc = x25crc()
+    crc.accumulate_str(msg.name + ' ')
     for f in msg.ordered_fields:
-        crc.accumulate(f.type + ' ')
-        crc.accumulate(f.name + ' ')
+        crc.accumulate_str(f.type + ' ')
+        crc.accumulate_str(f.name + ' ')
         if f.array_length:
-            crc.accumulate(chr(f.array_length))
+            crc.accumulate_str(chr(f.array_length))
     return (crc.crc&0xFF) ^ (crc.crc>>8)
 
 def merge_enums(xml):
