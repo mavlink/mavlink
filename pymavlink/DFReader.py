@@ -33,10 +33,10 @@ FORMAT_TO_STRUCT = {
     }
 
 class DFFormat(object):
-    def __init__(self, type, name, len, format, columns):
+    def __init__(self, type, name, flen, format, columns):
         self.type = type
         self.name = name
-        self.len = len
+        self.len = flen
         self.format = format
         self.columns = columns.split(',')
 
@@ -60,6 +60,9 @@ class DFFormat(object):
         self.msg_struct = msg_struct
         self.msg_types = msg_types
         self.msg_mults = msg_mults
+        self.colhash = {}
+        for i in range(len(self.columns)):
+            self.colhash[self.columns[i]] = i
 
     def __str__(self):
         return "DFFormat(%s,%s,%s,%s)" % (self.type, self.name, self.format, self.columns)
@@ -73,23 +76,26 @@ def null_term(str):
 
 class DFMessage(object):
     def __init__(self, fmt, elements, apply_multiplier):
-        self._d = {}
         self.fmt = fmt
-        for i in range(len(fmt.columns)):
-            if i >= len(fmt.msg_mults):
-                continue
-            mul = fmt.msg_mults[i]
-            name = fmt.columns[i]
-            self._d[name] = elements[i]
-            if fmt.format[i] != 'M' or apply_multiplier:
-                self._d[name] = fmt.msg_types[i](self._d[name])
-            if fmt.msg_types[i] == str:
-                self._d[name] = self._d[name]
-                self._d[name] = null_term(self._d[name])
-            if mul is not None and apply_multiplier:
-                self._d[name] = self._d[name] * mul
+        self._elements = elements
+        self._apply_multiplier = apply_multiplier
         self._fieldnames = fmt.columns
-        self.__dict__.update(self._d)
+
+    def __getattr__(self, field):
+        '''override field getter'''
+        try:
+            i = self.fmt.colhash[field]
+        except Exception:
+            print(field, self.fmt)
+            raise AttributeError
+        v = self._elements[i]
+        if self.fmt.format[i] != 'M' or self._apply_multiplier:
+            v = self.fmt.msg_types[i](v)
+        if self.fmt.msg_types[i] == str:
+            v = null_term(v)
+        if self.fmt.msg_mults[i] is not None and self._apply_multiplier:
+            v *= self.fmt.msg_mults[i]
+        return v
 
     def get_type(self):
         return self.fmt.name
@@ -98,9 +104,8 @@ class DFMessage(object):
         ret = "%s {" % self.fmt.name
         col_count = 0
         for c in self.fmt.columns:
-            if c in self._d:
-                ret += "%s : %s, " % (c, self._d[c])
-                col_count += 1
+            ret += "%s : %s, " % (c, self.__getattr__(c))
+            col_count += 1
         if col_count != 0:
             ret = ret[:-2]
         return ret + '}'
@@ -115,7 +120,7 @@ class DFMessage(object):
             name = self.fmt.columns[i]
             if name == 'Mode' and 'ModeNum' in self.fmt.columns:
                 name = 'ModeNum'
-            v = self._d[name]
+            v = self.__getattr__(name)
             if mul is not None:
                 v /= mul
             values.append(v)
@@ -128,7 +133,6 @@ class DFReader(object):
         # read the whole file into memory for simplicity
         self.msg_rate = {}
         self.new_timestamps = False
-        self.interpolated_timestamps = False
         self.px4_timestamps = False
         self.px4_timebase = 0
         self.timestamp = 0
@@ -205,7 +209,7 @@ class DFReader(object):
         '''adjust time base from GPS message'''
         if self._zero_time_base:
             return
-        if self.new_timestamps and not self.interpolated_timestamps:
+        if self.new_timestamps:
             return
         if self.px4_timestamps:
             return
@@ -228,14 +232,11 @@ class DFReader(object):
         '''set time for a message'''
         if self.px4_timestamps:
             m._timestamp = self.timebase + self.px4_timebase
-        elif self._zero_time_base or (self.new_timestamps and not self.interpolated_timestamps):
-            if m.get_type() in ['ATT'] and not 'TimeMS' in m._fieldnames:
-                # old copter logs without TimeMS on key messages
-                self.interpolated_timestamps = True
-            if m.get_type() in ['GPS','GPS2']:
-                m._timestamp = self.timebase + m.T*0.001
-            elif 'TimeMS' in m._fieldnames:
+        elif self._zero_time_base or self.new_timestamps:
+            if 'TimeMS' == m._fieldnames[0]:
                 m._timestamp = self.timebase + m.TimeMS*0.001
+            elif m.get_type() in ['GPS','GPS2']:
+                m._timestamp = self.timebase + m.T*0.001
             else:
                 m._timestamp = self.timestamp
         else:
@@ -320,11 +321,12 @@ class DFReader(object):
 
 class DFReader_binary(DFReader):
     '''parse a binary dataflash file'''
-    def __init__(self, filename, zero_time_base):
+    def __init__(self, filename, zero_time_base=False):
         DFReader.__init__(self)
         # read the whole file into memory for simplicity
         f = open(filename, mode='rb')
         self.data = f.read()
+        self.data_len = len(self.data)
         f.close()
         self.HEAD1 = 0xA3
         self.HEAD2 = 0x95
@@ -340,11 +342,11 @@ class DFReader_binary(DFReader):
         '''rewind to start of log'''
         DFReader._rewind(self)
         self.offset = 0
-        self.remaining = len(self.data)
+        self.remaining = self.data_len
 
     def _parse_next(self):
         '''read one message, returning it as an object'''
-        if len(self.data) - self.offset < 3:
+        if self.data_len - self.offset < 3:
             return None
             
         hdr = self.data[self.offset:self.offset+3]
@@ -356,7 +358,7 @@ class DFReader_binary(DFReader):
                 skip_type = (ord(hdr[0]), ord(hdr[1]), ord(hdr[2]))
             skip_bytes += 1
             self.offset += 1
-            if len(self.data) - self.offset < 3:
+            if self.data_len - self.offset < 3:
                 return None
             hdr = self.data[self.offset:self.offset+3]
         msg_type = ord(hdr[2])
@@ -395,7 +397,7 @@ class DFReader_binary(DFReader):
         m = DFMessage(fmt, elements, True)
         self._add_msg(m)
 
-        self.percent = 100.0 * (self.offset / float(len(self.data)))
+        self.percent = 100.0 * (self.offset / float(self.data_len))
         
         return m
 
@@ -476,8 +478,18 @@ class DFReader_text(DFReader):
 
         return m
 
+
 if __name__ == "__main__":
     import sys
+    use_profiler = False
+    if use_profiler:
+        from line_profiler import LineProfiler
+        profiler = LineProfiler()
+        profiler.add_function(DFReader_binary._parse_next)
+        profiler.add_function(DFReader_binary._add_msg)
+        profiler.add_function(DFReader._set_time)
+        profiler.enable_by_count()
+                    
     filename = sys.argv[1]
     if filename.endswith('.log'):
         log = DFReader_text(filename)
@@ -487,4 +499,7 @@ if __name__ == "__main__":
         m = log.recv_msg()
         if m is None:
             break
-        print(m)
+        #print(m)
+    if use_profiler:
+        profiler.print_stats()
+
