@@ -1355,7 +1355,7 @@ class MavlinkSerialPort():
         '''an object that looks like a serial port, but
         transmits using mavlink SERIAL_CONTROL packets'''
         def __init__(self, portname, baudrate, devnum=0, devbaud=0, timeout=3, debug=0):
-                from pymavlink import mavutil
+                from . import mavutil
 
                 self.baudrate = 0
                 self.timeout = timeout
@@ -1377,7 +1377,7 @@ class MavlinkSerialPort():
 
         def write(self, b):
                 '''write some bytes'''
-                from pymavlink import mavutil
+                from . import mavutil
                 self.debug("sending '%s' (0x%02x) of len %u\n" % (b, ord(b[0]), len(b)), 2)
                 while len(b) > 0:
                         n = len(b)
@@ -1396,7 +1396,7 @@ class MavlinkSerialPort():
 
         def _recv(self):
                 '''read some bytes into self.buf'''
-                from pymavlink import mavutil
+                from . import mavutil
                 start_time = time.time()
                 while time.time() < start_time + self.timeout:
                         m = self.mav.recv_match(condition='SERIAL_CONTROL.count!=0',
@@ -1447,7 +1447,7 @@ class MavlinkSerialPort():
 
         def setBaudrate(self, baudrate):
                 '''set baudrate'''
-                from pymavlink import mavutil
+                from . import mavutil
                 if self.baudrate == baudrate:
                         return
                 self.baudrate = baudrate

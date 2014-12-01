@@ -22,7 +22,7 @@ def kmh(mps):
 
 def altitude(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
     '''calculate barometric altitude'''
-    from pymavlink import mavutil
+    from . import mavutil
     self = mavutil.mavfile_global
     if ground_pressure is None:
         if self.param('GND_ABS_PRESS', None) is None:
@@ -36,7 +36,7 @@ def altitude(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
 
 def altitude2(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
     '''calculate barometric altitude'''
-    from pymavlink import mavutil
+    from . import mavutil
     self = mavutil.mavfile_global
     if ground_pressure is None:
         if self.param('GND_ABS_PRESS', None) is None:
@@ -818,7 +818,7 @@ def downsample(N):
 
 def armed(HEARTBEAT):
     '''return 1 if armed, 0 if not'''
-    from pymavlink import mavutil
+    from . import mavutil
     if HEARTBEAT.type == mavutil.mavlink.MAV_TYPE_GCS:
         self = mavutil.mavfile_global
         if self.motors_armed():
@@ -911,7 +911,7 @@ ekf_home = None
 def ekf1_pos(EKF1):
   '''calculate EKF position when EKF disabled'''
   global ekf_home
-  from pymavlink import mavutil
+  from . import mavutil
   self = mavutil.mavfile_global
   if ekf_home is None:
       if not 'GPS' in self.messages or self.messages['GPS'].Status != 3:

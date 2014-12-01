@@ -39,10 +39,8 @@ except ImportError as ex:
     tkinter.messagebox = tkMessageBox
     del tkMessageBox
 
-sys.path.append(os.path.join('pymavlink','generator'))
-
-import mavgen
-import mavparse
+from pymavlink.generator import mavgen
+from pymavlink.generator import mavparse
 
 title = "MAVLink Generator"
 error_limit = 5

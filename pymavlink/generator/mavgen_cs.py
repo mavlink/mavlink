@@ -5,7 +5,7 @@ parse a MAVLink protocol XML file and generate a CSharp implementation
 
 '''
 import sys, textwrap, os, time, platform
-import mavparse, mavtemplate
+from . import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
 
