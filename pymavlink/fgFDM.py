@@ -166,7 +166,7 @@ class fgFDM(object):
 
     def variables(self):
         '''return a list of available variables'''
-        return sorted(self.mapping.vars.keys(),
+        return sorted(list(self.mapping.vars.keys()),
                       key = lambda v : self.mapping.vars[v].index)
 
 
