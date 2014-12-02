@@ -38,7 +38,7 @@ def mavgen(opts, args) :
         try:
             from lib.genxmlif import GenXmlIfError
             from lib.minixsv import pyxsval
-        except ImportError:
+        except:
             print("WARNING: Unable to load XML validator libraries. XML validation will not be performed")
             opts.validate = False
 
