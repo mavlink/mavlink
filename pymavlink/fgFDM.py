@@ -200,7 +200,7 @@ class fgFDM(object):
         '''parse a FD FDM buffer'''
         try:
             t = struct.unpack(self.pack_string, buf)
-        except struct.error, msg:
+        except struct.error as msg:
             raise fgFDMError('unable to parse - %s' % msg)
         self.values = list(t)
 
