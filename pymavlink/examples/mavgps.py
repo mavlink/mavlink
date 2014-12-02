@@ -32,7 +32,7 @@ def main():
                       help="buffer size")
     args = parser.parse_args()
 
-    print "Connecting to MAVLINK..."
+    print("Connecting to MAVLINK...")
     mav_serialport = mavutil.MavlinkSerialPort(
         args.mavport, args.mavbaud,
         devnum=args.devnum, devbaud=args.devbaud, debug=args.debug)
@@ -41,11 +41,11 @@ def main():
     listen_sock.bind(('127.0.0.1', args.tcpport))
     listen_sock.listen(1)
 
-    print "Waiting for a TCP connection."
-    print "Use tcp://localhost:%d in u-Center." % args.tcpport
+    print("Waiting for a TCP connection.")
+    print("Use tcp://localhost:%d in u-Center." % args.tcpport)
     conn_sock, addr = listen_sock.accept()
     conn_sock.setblocking(0)  # non-blocking mode
-    print "TCP connection accepted. Use Ctrl+C to exit."
+    print("TCP connection accepted. Use Ctrl+C to exit.")
 
     while True:
         try:

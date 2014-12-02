@@ -299,7 +299,7 @@ end
 
 
 def generate_epilog(outf):
-    print ("Generating epilog")
+    print("Generating epilog")
     t.write(outf, 
 """   
 -- bind protocol dissector to USER0 linktype

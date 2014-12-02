@@ -60,8 +60,8 @@ def flight_modes(logfile):
         previous_percent = mlog.percent
 
     #put a whitespace line before the per-mode report
-    print
-    print "Time per mode:"
+    print()
+    print("Time per mode:")
 
     #need to get the time in the final mode
     if (seconds_per_percent != -1):
@@ -77,7 +77,7 @@ def flight_modes(logfile):
             print('%-12s %s %.2f%%' % (key, str(datetime.timedelta(seconds=int(value))), (value / total_flight_time) * 100.0))
     else:
         #can't print time in mode if only one mode during flight
-        print previous_mode, " 100% of flight time"
+        print(previous_mode, " 100% of flight time")
 
 for filename in args.logs:
     flight_modes(filename)

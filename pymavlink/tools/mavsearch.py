@@ -30,7 +30,7 @@ def mavsearch(filename):
         if m is None:
             break
         if mlog.check_condition(args.condition):
-            print m
+            print(m)
             if args.stopcondition:
                 break
         if args.stop:
