@@ -10,9 +10,9 @@
 
 // Macro to define packed structures
 #ifdef __GNUC__
-  #define PACKED( __Declaration__ ) __Declaration__ __attribute__((packed))
+  #define MAVPACKED( __Declaration__ ) __Declaration__ __attribute__((packed))
 #else
-  #define PACKED( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
+  #define MAVPACKED( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
 #endif
 
 #ifndef MAVLINK_MAX_PAYLOAD_LEN
@@ -50,7 +50,7 @@
  * and re-instanted on the receiving side using the
  * native type as well.
  */
-PACKED(
+MAVPACKED(
 typedef struct param_union {
 	union {
 		float param_float;
@@ -79,7 +79,7 @@ typedef struct param_union {
  * which should be the same as gcc on little-endian arm. When using shifts/masks the value will be treated as a 64 bit unsigned number,
  * and the bits pulled out using the shifts/masks.
 */
-PACKED(
+MAVPACKED(
 typedef union {
     struct {
         uint8_t is_double:1;
@@ -103,13 +103,13 @@ typedef union {
  * This structure is required to make the mavlink_send_xxx convenience functions
  * work, as it tells the library what the current system and component ID are.
  */
-PACKED(
+MAVPACKED(
 typedef struct __mavlink_system {
     uint8_t sysid;   ///< Used by the MAVLink message_xx_send() convenience function
     uint8_t compid;  ///< Used by the MAVLink message_xx_send() convenience function
 }) mavlink_system_t;
 
-PACKED(
+MAVPACKED(
 typedef struct __mavlink_message {
 	uint16_t checksum; ///< sent at end of packet
 	uint8_t magic;   ///< protocol magic marker
@@ -121,7 +121,7 @@ typedef struct __mavlink_message {
 	uint64_t payload64[(MAVLINK_MAX_PAYLOAD_LEN+MAVLINK_NUM_CHECKSUM_BYTES+7)/8];
 }) mavlink_message_t;
 
-PACKED(
+MAVPACKED(
 typedef struct __mavlink_extended_message {
        mavlink_message_t base_msg;
        int32_t extended_payload_len;   ///< Length of extended payload if any
