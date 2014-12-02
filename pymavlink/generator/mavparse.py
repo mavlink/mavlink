@@ -211,11 +211,6 @@ class MAVXML(object):
                 self.enum[-1].entry[-1].param.append(MAVEnumParam(attrs['index']))
 
         def end_element(name):
-            in_element = '.'.join(in_element_list)
-            if in_element == "mavlink.enums.enum":
-                # add a ENUM_END
-                self.enum[-1].entry.append(MAVEnumEntry("%s_ENUM_END" % self.enum[-1].name,
-                                                        self.enum[-1].highest_value+1, end_marker=True))
             in_element_list.pop()
 
         def char_data(data):
@@ -313,19 +308,20 @@ def merge_enums(xml):
         newenums = []
         for enum in x.enum:
             if enum.name in emap:
-                emap[enum.name].entry.pop() # remove end marker
                 emap[enum.name].entry.extend(enum.entry)
                 print("Merged enum %s" % enum.name)
             else:
                 newenums.append(enum)
                 emap[enum.name] = enum
         x.enum = newenums
-    # sort by value
     for e in emap:
+        # sort by value
         emap[e].entry = sorted(emap[e].entry,
                                key=operator.attrgetter('value'),
                                reverse=False)
-
+        # add a ENUM_END
+        emap[e].entry.append(MAVEnumEntry("%s_ENUM_END" % emap[e].name,
+                                            emap[e].entry[-1].value+1, end_marker=True))
 
 def check_duplicates(xml):
     '''check for duplicate message IDs'''
