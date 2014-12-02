@@ -399,7 +399,7 @@ class MAVLink(object):
                     raise MAVError('Unable to unpack MAVLink CRC: %s' % emsg)
                 crcbuf = msgbuf[1:-2]
                 if ${crc_extra}: # using CRC extra
-                    crcbuf.append(crc_extra)
+                    crcbuf.append(struct.pack('B', crc_extra))
                 crc2 = x25crc(crcbuf)
                 if crc != crc2.crc:
                     raise MAVError('invalid MAVLink CRC in msgID %u 0x%04x should be 0x%04x' % (msgId, crc, crc2.crc))

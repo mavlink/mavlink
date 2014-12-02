@@ -6,7 +6,7 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
 
-import xml.parsers.expat, os, errno, time, sys, operator
+import xml.parsers.expat, os, errno, time, sys, operator, struct
 
 PROTOCOL_0_9 = "0.9"
 PROTOCOL_1_0 = "1.0"
