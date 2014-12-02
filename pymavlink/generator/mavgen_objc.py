@@ -395,7 +395,7 @@ def generate_message_definitions(basename, xml):
                 elif f.type.startswith('char'):
                     f.print_format = "%c"
                 else:
-                    print "print_format unsupported for type %s" % f.type
+                    print("print_format unsupported for type %s" % f.type)
             if f.array_length != 0:
                 f.get_message = '@"[array of %s[%d]]"' % (f.type, f.array_length)
                 f.array_prefix = ' *'

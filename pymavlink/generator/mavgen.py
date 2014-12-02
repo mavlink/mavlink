@@ -10,7 +10,7 @@ Released under GNU GPL version 3 or later
 import sys, textwrap, os
 try:
     import mavparse
-except Exception:
+except ImportError:
     from pymavlink.generator import mavparse
 
 # XSD schema file
@@ -38,7 +38,7 @@ def mavgen(opts, args) :
         try:
             from lib.genxmlif import GenXmlIfError
             from lib.minixsv import pyxsval
-        except Exception:
+        except:
             print("WARNING: Unable to load XML validator libraries. XML validation will not be performed")
             opts.validate = False
 
@@ -165,11 +165,16 @@ def mavgen_python_dialect(dialect, wire_protocol):
         if not os.path.exists(xml):
             xml = os.path.join(mdef, 'v1.0', dialect + '.xml')
     opts = Opts(py, wire_protocol)
-    import StringIO
+
+     # Python 2 to 3 compatibility
+    try:
+        import StringIO as io
+    except ImportError:
+        import io
 
     # throw away stdout while generating
     stdout_saved = sys.stdout
-    sys.stdout = StringIO.StringIO()
+    sys.stdout = io.StringIO()
     try:
         xml = os.path.relpath(xml)
         mavgen( opts, [xml] )

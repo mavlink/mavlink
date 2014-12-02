@@ -89,7 +89,7 @@ def find_offsets(data, ofs):
         ofs = ofs - delta
 
         if args.verbose:
-            print ofs
+            print(ofs)
     return ofs
 
 

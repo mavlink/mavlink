@@ -153,7 +153,7 @@ def convert_file(mavlink_file, pcap_file):
         # look for potential start of frame
         next_sof = find_next_frame(data)
         if next_sof > 0:
-            print "skipped " + str(next_sof) + " bytes"
+            print("skipped " + str(next_sof) + " bytes")
             if write_junk:
                 if skipped_char != None:
                     junk = skipped_char + data[:next_sof]
@@ -186,7 +186,7 @@ def convert_file(mavlink_file, pcap_file):
             next_magic = data[pkt_length]
             if chr(MAVLINK_MAGIC) != next_magic:
                 # damn, retry
-                print "packet %d has invalid length, crc error: %d" % (i, crc_flag)
+                print("packet %d has invalid length, crc error: %d" % (i, crc_flag))
 
                 # skip one char to look for a new SOF next round, stow away skipped char
                 skipped_char = data[0]
@@ -196,7 +196,7 @@ def convert_file(mavlink_file, pcap_file):
             # we can consider it a packet now
             pkt = data[:pkt_length]
             write_packet(i, pkt, crc_flag, len(pkt))
-            print "packet %d ok, crc error: %d" % (i, crc_flag)
+            print("packet %d ok, crc error: %d" % (i, crc_flag))
             data = data[pkt_length:]
 
             if crc_flag:
@@ -208,7 +208,7 @@ def convert_file(mavlink_file, pcap_file):
         except IndexError:
             # ups, no more packets
             done = True
-    print "converted %d valid packets, %d crc errors, %d junk fragments (total %f%% of junk)" % (cnt_ok, cnt_crc, cnt_junk, 100.*float(cnt_junk+cnt_crc)/(cnt_junk+cnt_ok+cnt_crc))
+    print("converted %d valid packets, %d crc errors, %d junk fragments (total %f%% of junk)" % (cnt_ok, cnt_crc, cnt_junk, 100.*float(cnt_junk+cnt_crc)/(cnt_junk+cnt_ok+cnt_crc)))
 
 ###############################################################################
 
