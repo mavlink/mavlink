@@ -90,7 +90,7 @@ SetupDiGetDeviceRegistryProperty.argtypes = [HDEVINFO, PSP_DEVINFO_DATA, DWORD, 
 SetupDiGetDeviceRegistryProperty.restype = BOOL
 
 
-GUID_CLASS_COMPORT = GUID(0x86e0d1e0L, 0x8089, 0x11d0,
+GUID_CLASS_COMPORT = GUID(0x86e0d1e0, 0x8089, 0x11d0,
     (ctypes.c_ubyte*8)(0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73))
 
 DIGCF_PRESENT = 2
