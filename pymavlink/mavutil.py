@@ -457,7 +457,7 @@ class mavfile(object):
             map = mode_mapping_tracker
         if map is None:
             return None
-        inv_map = dict((a, b) for (b, a) in map.items())
+        inv_map = dict((a, b) for (b, a) in list(map.items()))
         return inv_map
 
     def set_mode(self, mode):
