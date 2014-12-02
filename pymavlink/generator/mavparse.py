@@ -304,7 +304,7 @@ def message_checksum(msg):
         crc.accumulate_str(f.type + ' ')
         crc.accumulate_str(f.name + ' ')
         if f.array_length:
-            crc.accumulate_str(chr(f.array_length))
+            crc.accumulate([f.array_length])
     return (crc.crc&0xFF) ^ (crc.crc>>8)
 
 def merge_enums(xml):
