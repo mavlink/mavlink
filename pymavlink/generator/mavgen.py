@@ -19,9 +19,6 @@ DEFAULT_LANGUAGE = 'Python'
 DEFAULT_ERROR_LIMIT = 200
 DEFAULT_VALIDATE = True
 
-# List the supported languages. This is done globally because it's used by the GUI wrapper too
-supportedLanguages = ["C", "CS", "JavaScript", "Python", "WLua", "ObjC", "Java"]
-
 def mavgen(opts, args) :
     """Generate mavlink message formatters and parsers (C and Python ) using options
     and args where args are a list of xml files. This function allows python
@@ -161,18 +158,3 @@ def mavgen_python_dialect(dialect, wire_protocol):
         sys.stdout = stdout_saved
         raise
     sys.stdout = stdout_saved
-
-
-if __name__ == "__main__":
-    from argparse import ArgumentParser
-
-    parser = ArgumentParser(description="This tool generate implementations from MAVLink message definitions")
-    parser.add_argument("-o", "--output", default="mavlink", help="output directory.")
-    parser.add_argument("--lang", dest="language", choices=supportedLanguages, default=DEFAULT_LANGUAGE, help="language of generated code [default: %(default)s]")
-    parser.add_argument("--wire-protocol", choices=[mavparse.PROTOCOL_0_9, mavparse.PROTOCOL_1_0], default=DEFAULT_WIRE_PROTOCOL, help="MAVLink protocol version. [default: %(default)s]")
-    parser.add_argument("--no-validate", action="store_false", dest="validate", default=DEFAULT_VALIDATE, help="Do not perform XML validation. Can speed up code generation if XML files are known to be correct.")
-    parser.add_argument("--error-limit", default=DEFAULT_ERROR_LIMIT, help="maximum number of validation errors to display")
-    parser.add_argument("definitions", metavar="XML", nargs="+", help="MAVLink definitions")
-    args = parser.parse_args()
-
-    mavgen(args, args.definitions)
