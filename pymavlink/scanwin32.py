@@ -203,7 +203,6 @@ def comports(available_only=True):
         else:
             try:
                 m = re.search(r"\((.*?(\d+))\)", szFriendlyName.value)
-                #~ print szFriendlyName.value, m.groups()
                 port_name = m.group(1)
                 order = int(m.group(2))
             except AttributeError as msg:
@@ -230,7 +229,7 @@ if __name__ == '__main__':
     print("")
     # list of all ports the system knows
     print("-"*78)
-    print "All serial ports (registry)"
+    print("All serial ports (registry)")
     print("-"*78)
     for order, port, desc, hwid in sorted(comports(False)):
         print("%-10s: %s (%s)" % (port, desc, hwid))

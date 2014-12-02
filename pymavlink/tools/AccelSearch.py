@@ -57,7 +57,7 @@ def AccelSearch(filename):
                     continue
                 if args.init_only and have_ok:
                     continue
-                print have_ok, last_t, m
+                print(have_ok, last_t, m)
                 break
             # also look for a single axis that stays nearly constant at a large value
             for axes in ['xacc', 'yacc', 'zacc']:
@@ -75,7 +75,7 @@ def AccelSearch(filename):
                             logcount += 1
                             if args.init_only and have_ok:
                                 continue
-                            print have_ok, badcount, badval, m
+                            print(have_ok, badcount, badval, m)
                             return True
                     else:
                         badcount = 1
