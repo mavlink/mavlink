@@ -193,7 +193,7 @@ uint64_t microsSinceEpoch()
 	uint64_t micros = 0;
 	
 	clock_gettime(CLOCK_REALTIME, &time);  
-	micros = (uint64_t)time.tv_sec * 100000 + time.tv_nsec/1000;
+	micros = (uint64_t)time.tv_sec * 1000000 + time.tv_nsec/1000;
 	
 	return micros;
 }
