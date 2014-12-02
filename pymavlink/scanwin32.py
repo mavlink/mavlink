@@ -206,7 +206,7 @@ def comports(available_only=True):
                 #~ print szFriendlyName.value, m.groups()
                 port_name = m.group(1)
                 order = int(m.group(2))
-            except AttributeError, msg:
+            except AttributeError as msg:
                 port_name = szFriendlyName.value
                 order = None
         yield order, port_name, szFriendlyName.value, szHardwareID.value
