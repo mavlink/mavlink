@@ -91,5 +91,6 @@ setup (name = 'pymavlink',
                    'tools/mavsearch.py',
                    'tools/mavtomfile.py',
                    'tools/mavgen.py',
-                   'tools/mavkml.py']
+                   'tools/mavkml.py',
+                   'tools/mavsummarize.py']
        )
