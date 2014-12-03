@@ -11,7 +11,6 @@ import socket, math, struct, time, os, fnmatch, array, sys, errno
 # adding these extra imports allows pymavlink to be used directly with pyinstaller
 # without having complex spec files
 import json
-from pymavlink.dialects.v10 import ardupilotmega
 
 # these imports allow for mavgraph and mavlogdump to use maths expressions more easily
 from math import *
@@ -28,7 +27,17 @@ if home is not None:
         mavuser = imp.load_source('pymavlink.mavuser', extra)
         from pymavlink.mavuser import *
 
+# Store the MAVLink library for the currently-selected dialect
+# (set by set_dialect())
 mavlink = None
+
+# Store the mavlink file currently being operated on
+# (set by mavlink_connection())
+mavfile_global = None
+
+# Use a globally-set MAVLink dialect if one has been specified as an environment variable.
+if not 'MAVLINK_DIALECT' in os.environ:
+    os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
 
 def mavlink10():
     '''return True if using MAVLink 1.0'''
@@ -52,8 +61,6 @@ def evaluate_condition(condition, vars):
     if v is None:
         return False
     return v
-
-mavfile_global = None
 
 class location(object):
     '''represent a GPS coordinate'''
@@ -92,9 +99,7 @@ def set_dialect(dialect):
     current_dialect = dialect
     mavlink = mod
 
-# allow for a MAVLINK_DIALECT environment variable
-if not 'MAVLINK_DIALECT' in os.environ:
-    os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
+# Set the default dialect. This is done here as it needs to be after the function declaration
 set_dialect(os.environ['MAVLINK_DIALECT'])
 
 class mavfile(object):
@@ -1001,6 +1006,8 @@ def mavlink_connection(device, baud=115200, source_system=255,
                        robust_parsing=True, notimestamps=False, input=True,
                        dialect=None, autoreconnect=False, zero_time_base=False):
     '''open a serial, UDP, TCP or file mavlink connection'''
+    global mavfile_global
+
     if dialect is not None:
         set_dialect(dialect)
     if device.startswith('tcp:'):
@@ -1017,7 +1024,6 @@ def mavlink_connection(device, baud=115200, source_system=255,
         # support dataflash logs
         from pymavlink import DFReader
         m = DFReader.DFReader_binary(device, zero_time_base=zero_time_base)
-        global mavfile_global
         mavfile_global = m
         return m
 
@@ -1025,7 +1031,6 @@ def mavlink_connection(device, baud=115200, source_system=255,
         # support dataflash text logs
         from pymavlink import DFReader
         if DFReader.DFReader_is_text_log(device):
-            global mavfile_global
             m = DFReader.DFReader_text(device, zero_time_base=zero_time_base)
             mavfile_global = m
             return m    
