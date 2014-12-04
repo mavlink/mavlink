@@ -86,7 +86,6 @@ class DFMessage(object):
         try:
             i = self.fmt.colhash[field]
         except Exception:
-            print(field, self.fmt)
             raise AttributeError
         v = self._elements[i]
         if self.fmt.format[i] != 'M' or self._apply_multiplier:
