@@ -27,7 +27,7 @@
 # cd /tmp/mavlink && ./scripts/update_c_library.sh &> /dev/null
 
 function generate_headers() {
-python2 pymavlink/generator/mavgen.py \
+python2 pymavlink/tools/mavgen.py \
     --output $CLIBRARY_PATH \
     --lang C \
     message_definitions/v1.0/$1.xml
