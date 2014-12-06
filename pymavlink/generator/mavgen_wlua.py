@@ -285,6 +285,7 @@ function mavlink_proto.dissector(buffer,pinfo,tree)
     else
         local payload = subtree:add(f.payload, msgid)
         pinfo.cols.dst:set(messageName[msgid:uint()])
+        pinfo.cols.info = messageName[msgid:uint()]
         offset = fn(buffer, payload, msgid, offset)
     end
 
