@@ -5,6 +5,10 @@ python:
   - "3.2"
   - "3.3"
 script:
+  # Set pythonpath
+  - export PYTHONPATH=$(pwd):$PYTHONPATH
+
+  # Generate messages
   - pymavlink/tools/mavgen.py --lang='Python' 	--output=/tmp/ message_definitions/v1.0/common.xml
   - pymavlink/tools/mavgen.py --lang='C' 		--output=/tmp/ message_definitions/v1.0/common.xml
   - pymavlink/tools/mavgen.py --lang='CS' 		--output=/tmp/ message_definitions/v1.0/common.xml
