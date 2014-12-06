@@ -4,12 +4,16 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
-script: 
-  - pymavlink/generator/mavgen.py --lang='Python' 	--output=/tmp/ message_definitions/v1.0/common.xml
-  - pymavlink/generator/mavgen.py --lang='C' 		--output=/tmp/ message_definitions/v1.0/common.xml
-  - pymavlink/generator/mavgen.py --lang='CS' 		--output=/tmp/ message_definitions/v1.0/common.xml
-  - pymavlink/generator/mavgen.py --lang='WLua' 	--output=/tmp/ message_definitions/v1.0/common.xml
-  - pymavlink/generator/mavgen.py --lang='Java'   --output=/tmp/ message_definitions/v1.0/common.xml
+script:
+  # Set pythonpath
+  - export PYTHONPATH=$(pwd):$PYTHONPATH
+
+  # Generate messages
+  - pymavlink/tools/mavgen.py --lang='Python' 	--output=/tmp/ message_definitions/v1.0/common.xml
+  - pymavlink/tools/mavgen.py --lang='C' 		--output=/tmp/ message_definitions/v1.0/common.xml
+  - pymavlink/tools/mavgen.py --lang='CS' 		--output=/tmp/ message_definitions/v1.0/common.xml
+  - pymavlink/tools/mavgen.py --lang='WLua' 	--output=/tmp/ message_definitions/v1.0/common.xml
+  - pymavlink/tools/mavgen.py --lang='Java'   --output=/tmp/ message_definitions/v1.0/common.xml
   # Avoid `spurious errors` caused by ~/.npm permission issues
   # ref: https://github.com/travis-ci/travis-ci/issues/2244
   # ref: https://github.com/npm/npm/issues/4815
