@@ -174,7 +174,7 @@ def generate_payload_dissector(outf, msg):
 function dissect_payload_${msgid}(buffer, tree, msgid, offset)
 """, {'msgid':msg.id, 'msgname':msg.name})
     
-    for f in msg.fields:
+    for f in msg.ordered_fields:
         generate_field_dissector(outf, msg, f)
 
 
@@ -210,20 +210,6 @@ function mavlink_proto.dissector(buffer,pinfo,tree)
 
     -- some Wireshark decoration
     pinfo.cols.protocol = protocolString
-    local ts = pinfo.abs_ts
-    local flags = math.floor(((ts - math.floor(ts))*1000000) + 0.5)
-    
-    local crc_error = bit.band(flags, 0x01)
-    local length_error = bit.band(flags, 0x02)
-    
-    if length_error > 0 then
-        pinfo.cols.info:append ("Invalid message length   ")
-        subtree:add_expert_info(PI_MALFORMED, PI_ERROR, "Invalid message length")
-    end
-    if crc_error > 0 then
-        pinfo.cols.info:append ("Invalid CRC   ")
-        subtree:add_expert_info(PI_CHECKSUM, PI_WARN, "Invalid message CRC")
-    end
 
     -- HEADER ----------------------------------------
     
@@ -273,10 +259,6 @@ function mavlink_proto.dissector(buffer,pinfo,tree)
     if (fn == nil) then
         pinfo.cols.info:append ("Unkown message type   ")
         subtree:add_expert_info(PI_MALFORMED, PI_ERROR, "Unkown message type")
-    end
-
-    -- do not stumble into exceptions while trying to parse junk
-    if (fn == nil) or (length_error ~= 0) then
         size = buffer:len() - 2 - offset
         subtree:add(f.rawpayload, buffer(offset,size))
         offset = offset + size
