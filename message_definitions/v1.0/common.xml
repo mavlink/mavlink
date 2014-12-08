@@ -2517,8 +2517,16 @@
         <message id="148" name="AUTOPILOT_VERSION">
             <description>Version and capability of autopilot software</description>
             <field type="uint64_t" name="capabilities">bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)</field>
-            <field type="uint32_t" name="version">Firmware version number</field>
-            <field type="uint8_t[8]" name="custom_version">Custom version field, commonly the first 8 bytes (16 characters) of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+            <field type="uint32_t" name="flight_sw_version">Firmware version number</field>
+            <field type="uint32_t" name="middleware_sw_version">Middleware version number</field>
+            <field type="uint32_t" name="os_sw_version">Operating system version number</field>
+            <field type="uint32_t" name="board_version">HW / board version (last 8 bytes should be silicon ID, if any)</field>
+            <field type="uint8_t[8]" name="flight_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+            <field type="uint8_t[8]" name="middleware_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+            <field type="uint8_t[8]" name="os_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+            <field type="uint16_t" name="vendor_id">ID of the board vendor</field>
+            <field type="uint16_t" name="product_id">ID of the product</field>
+            <field type="uint64_t" name="uid">UID if provided by hardware</field>
         </message>
         <!-- MESSAGE IDs 180 - 240: Space for custom messages in individual projectname_messages.xml files -->
         <message id="248" name="V2_EXTENSION">
