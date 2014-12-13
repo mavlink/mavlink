@@ -626,7 +626,7 @@ class mavfile(object):
         if self.mavlink10():
             self.mav.command_long_send(
                 self.target_system,  # target_system
-                mavlink.MAV_COMP_ID_SYSTEM_CONTROL, # target_component
+                self.target_component,
                 mavlink.MAV_CMD_COMPONENT_ARM_DISARM, # command
                 0, # confirmation
                 1, # param1 (1 to indicate arm)
@@ -642,7 +642,7 @@ class mavfile(object):
         if self.mavlink10():
             self.mav.command_long_send(
                 self.target_system,  # target_system
-                mavlink.MAV_COMP_ID_SYSTEM_CONTROL, # target_component
+                self.target_component,
                 mavlink.MAV_CMD_COMPONENT_ARM_DISARM, # command
                 0, # confirmation
                 0, # param1 (0 to indicate disarm)
