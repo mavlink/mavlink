@@ -58,23 +58,23 @@ if args.csv_sep == "tab":
 # Write out a header row as we're outputting in CSV format.
 fields = ['timestamp']
 offsets = {}
-if args.format == 'csv':
-    try:
-        currentOffset = 1 # Store how many fields in we are for each message.
-        for type in types:
-            try:
-                typeClass = "MAVLink_{0}_message".format(type.lower())
-                fields += [type + '.' + x for x in inspect.getargspec(getattr(mavutil.mavlink, typeClass).__init__).args[1:]]
-                offsets[type] = currentOffset
-                currentOffset += len(fields)
-            except IndexError:
-                quit()
-    except TypeError:
-        print("You must specify a list of message types if outputting CSV format via the --types argument.")
-        exit()
-
-    # The first line output are names for all columns
-    print(','.join(fields))
+#if args.format == 'csv':
+#    try:
+#        currentOffset = 1 # Store how many fields in we are for each message.
+#        for type in types:
+#            try:
+#                typeClass = "MAVLink_{0}_message".format(type.lower())
+#                fields += [type + '.' + x for x in inspect.getargspec(getattr(mavutil.mavlink, typeClass).__init__).args[1:]]
+#                offsets[type] = currentOffset
+#                currentOffset += len(fields)
+#            except IndexError:
+#                quit()
+#    except TypeError:
+#        print("You must specify a list of message types if outputting CSV format via the --types argument.")
+#        exit()
+#
+#    # The first line output are names for all columns
+#    print(','.join(fields))
 
 # Track the last timestamp value. Used for compressing data for the CSV output format.
 last_timestamp = None
@@ -145,22 +145,25 @@ while True:
         print(json.dumps(outMsg))
     # CSV format outputs columnar data with a user-specified delimiter
     elif args.format == 'csv':
-        data = m.to_dict()
-        type = m.get_type()
-
-        # If this message has a duplicate timestamp, copy its data into the existing data list. Also
-        # do this if it's the first message encountered.
-        if timestamp == last_timestamp or last_timestamp is None:
-            newData = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
-            for i, val in enumerate(newData):
-                if val:
-                    csv_out[i] = val
-
-        # Otherwise if this is a new timestamp, print out the old output data, and store the current message for later output.
-        else:
-            csv_out[0] = "{:.8f}".format(last_timestamp)
-            print(args.csv_sep.join(csv_out))
-            csv_out = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
+        if last_timestamp is None:
+          print "Time" + "," + ",".join(m._fieldnames)
+        print str(m._timestamp) + "," + ",".join(map(str, m._elements))
+#        data = m.to_dict()
+#        type = m.get_type()
+#
+#        # If this message has a duplicate timestamp, copy its data into the existing data list. Also
+#        # do this if it's the first message encountered.
+#        if timestamp == last_timestamp or last_timestamp is None:
+#            newData = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
+#            for i, val in enumerate(newData):
+#                if val:
+#                    csv_out[i] = val
+#
+#        # Otherwise if this is a new timestamp, print out the old output data, and store the current message for later output.
+#        else:
+#            csv_out[0] = "{:.8f}".format(last_timestamp)
+#            print(args.csv_sep.join(csv_out))
+#            csv_out = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
     # Otherwise we output in a standard Python dict-style format
     else:
         print("%s.%02u: %s" % (
