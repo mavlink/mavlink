@@ -7,7 +7,12 @@ extern "C" {
 
 #define X25_INIT_CRC_C2000 0xffff
 
-//TODO: Adding these for packing 16-bit chars into payload field
+static inline void mav_put_float_c2000(void* buf, int wire_offset, float b)
+{
+    float* dest_ptr = (float*)((uint8_t*)buf + (wire_offset / 2));
+    *dest_ptr = b;
+}
+
 static inline void mav_put_uint32_t_c2000(void* buf, int wire_offset, uint32_t b)
 {
     uint32_t* dest_ptr = (uint32_t*)((uint8_t*)buf + (wire_offset / 2));
