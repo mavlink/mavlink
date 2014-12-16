@@ -18,6 +18,7 @@ DEFAULT_WIRE_PROTOCOL = mavparse.PROTOCOL_1_0
 DEFAULT_LANGUAGE = 'Python'
 DEFAULT_ERROR_LIMIT = 200
 DEFAULT_VALIDATE = True
+DEFAULT_C2000_PROTOCOL = False
 
 # List the supported languages. This is done globally because it's used by the GUI wrapper too
 supportedLanguages = ["C", "CS", "JavaScript", "Python", "WLua", "ObjC", "Java"]
@@ -80,6 +81,11 @@ def mavgen(opts, args) :
                     x.message_crcs[idx] = xml[-1].message_crcs[idx]
                     x.message_names[idx] = xml[-1].message_names[idx]
 
+    # apply C2000 protocol definition to xml fields
+    for x in xml:
+        x.c2000_protocol = opts.c2000_protocol
+        print(str(x))
+
     # work out max payload size across all includes
     largest_payload = 0
     for x in xml:
@@ -123,12 +129,13 @@ def mavgen(opts, args) :
 
 # build all the dialects in the dialects subpackage
 class Opts:
-    def __init__(self, output, wire_protocol=DEFAULT_WIRE_PROTOCOL, language=DEFAULT_LANGUAGE, validate=DEFAULT_VALIDATE, error_limit=DEFAULT_ERROR_LIMIT):
+    def __init__(self, output, wire_protocol=DEFAULT_WIRE_PROTOCOL, language=DEFAULT_LANGUAGE, validate=DEFAULT_VALIDATE, error_limit=DEFAULT_ERROR_LIMIT, c2000_protocol=DEFAULT_C2000_PROTOCOL):
         self.wire_protocol = wire_protocol
         self.error_limit = error_limit
         self.language = language
         self.output = output
         self.validate = validate
+        self.c2000_protocol = c2000_protocol
 
 def mavgen_python_dialect(dialect, wire_protocol):
     '''generate the python code on the fly for a MAVLink dialect'''

@@ -58,7 +58,7 @@ def generate_mavlink_h(directory, xml):
 #endif
 
 #ifndef MAVLINK_C2000
-#define MAVLINK_C2000 1
+#define MAVLINK_C2000 ${c2000_protocol_define}
 #endif
 
 #include "version.h"
@@ -532,6 +532,12 @@ def generate_one(basename, xml):
         xml.aligned_fields_define = "1"
     else:
         xml.aligned_fields_define = "0"
+
+    if xml.c2000_protocol:
+        xml.c2000_protocol_define = "1"
+    else:
+        xml.c2000_protocol_define = "0"
+
 
     # work out the included headers
     xml.include_list = []
