@@ -148,6 +148,10 @@ def generate_message_h(directory, m):
     t.write(f, '''
 // MESSAGE ${name} PACKING
 
+#if MAVLINK_C2000
+#include "protocol_c2000.h"
+#endif
+
 #define MAVLINK_MSG_ID_${name} ${id}
 
 typedef struct __mavlink_${name_lower}_t
@@ -193,6 +197,9 @@ ${{scalar_fields:	_mav_put_${type}(buf, ${wire_offset}, ${putname});
 ${{array_fields:	_mav_put_${type}_array(buf, ${wire_offset}, ${name}, ${array_length});
 }}
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_${name}_LEN);
+#elif MAVLINK_C2000
+	${{scalar_fields:	mav_put_${type}_c2000{&(msg->payload64[0]), ${wire_offset}, ${putname});
+	}}
 #else
 	mavlink_${name_lower}_t packet;
 ${{scalar_fields:	packet.${name} = ${putname};
