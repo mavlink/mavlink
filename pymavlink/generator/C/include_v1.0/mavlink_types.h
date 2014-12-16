@@ -11,6 +11,8 @@
 // Macro to define packed structures
 #ifdef __GNUC__
   #define MAVPACKED( __Declaration__ ) __Declaration__ __attribute__((packed))
+#elif MAVLINK_C2000
+  #define MAVPACKED( __Declaration__ ) __Declaration__
 #else
   #define MAVPACKED( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
 #endif
