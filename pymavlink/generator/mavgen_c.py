@@ -57,6 +57,10 @@ def generate_mavlink_h(directory, xml):
 #define MAVLINK_CRC_EXTRA ${crc_extra_define}
 #endif
 
+#ifndef MAVLINK_C2000
+#define MAVLINK_C2000 1
+#endif
+
 #include "version.h"
 #include "${basename}.h"
 
@@ -198,7 +202,7 @@ ${{array_fields:	_mav_put_${type}_array(buf, ${wire_offset}, ${name}, ${array_le
 }}
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_${name}_LEN);
 #elif MAVLINK_C2000
-	${{scalar_fields:	mav_put_${type}_c2000{&(msg->payload64[0]), ${wire_offset}, ${putname});
+	${{scalar_fields:	mav_put_${type}_c2000(&(msg->payload64[0]), ${wire_offset}, ${putname});
 	}}
 #else
 	mavlink_${name_lower}_t packet;
