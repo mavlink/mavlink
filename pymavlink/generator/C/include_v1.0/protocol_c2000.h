@@ -5,6 +5,8 @@ extern "C" {
 #ifndef PROTOCOL_C2000_H_
 #define PROTOCOL_C2000_H_
 
+#define X25_INIT_CRC_C2000 0xffff
+
 //TODO: Adding these for packing 16-bit chars into payload field
 static inline void mav_put_uint32_t_c2000(void* buf, int wire_offset, uint32_t b)
 {
@@ -54,6 +56,11 @@ static inline uint8_t mav_get_uint8_t_c2000(void* buf, int wire_offset)
         dest_ptr += ((wire_offset - 1) / 2);
         return ((*dest_ptr >> 8) & 0x00FF);
     }
+}
+
+static inline void crc_init_c2000(uint16_t* crcAccum)
+{
+        *crcAccum = X25_INIT_CRC_C2000;
 }
 
 static inline void crc_accumulate_c2000(uint8_t data, uint16_t *crcAccum)
