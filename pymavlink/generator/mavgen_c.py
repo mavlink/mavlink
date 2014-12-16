@@ -204,6 +204,8 @@ ${{array_fields:	_mav_put_${type}_array(buf, ${wire_offset}, ${name}, ${array_le
 #elif MAVLINK_C2000
 	${{scalar_fields:	mav_put_${type}_c2000(&(msg->payload64[0]), ${wire_offset}, ${putname});
 	}}
+	${{array_fields:	mav_put_${type}_array_c2000(&(msg->payload64[0]), ${name}, ${wire_offset}, ${array_length});
+	}}
 #else
 	mavlink_${name_lower}_t packet;
 ${{scalar_fields:	packet.${name} = ${putname};

@@ -5,6 +5,8 @@ extern "C" {
 #ifndef PROTOCOL_C2000_H_
 #define PROTOCOL_C2000_H_
 
+#include <string.h>
+
 #define X25_INIT_CRC_C2000 0xffff
 
 static inline void mav_put_float_c2000(void* buf, int wire_offset, float b)
@@ -36,6 +38,35 @@ static inline void mav_put_uint8_t_c2000(void* buf, int wire_offset, uint8_t b)
         dest_ptr += ((wire_offset - 1) / 2);
         *dest_ptr &= 0x00FF;
         *dest_ptr |= ((b << 8) & 0xFF00);
+    }
+}
+
+static inline void mav_put_float_array_c2000(void* buf_dest, const float* buf_src, int wire_offset, int len)
+{
+    //TODO: Implement this
+}
+
+static inline void mav_put_uint32_t_array_c2000(void* buf_dest, const uint32_t* buf_src, int wire_offset, int len)
+{
+    //TODO: Implement this
+}
+
+static inline void mav_put_uint16_t_array_c2000(void* buf_dest, const uint16_t* buf_src, int wire_offset, int len)
+{
+    //TODO: Implement this
+}
+
+static inline void mav_put_char_array_c2000(void* buf_dest, const char* buf_src, int wire_offset, int len)
+{
+    int i;
+    if (buf_src == NULL) {
+        for (i = 0; i < len; i++) {
+            mav_put_uint8_t_c2000(buf_dest, wire_offset + i, 0x0000);
+        }
+    } else {
+        for (i = 0; i < len; i++) {
+            mav_put_uint8_t_c2000(buf_dest, wire_offset + i, buf_src[i]);
+        }
     }
 }
 
