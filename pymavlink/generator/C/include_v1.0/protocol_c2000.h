@@ -70,19 +70,25 @@ static inline void mav_put_char_array_c2000(void* buf_dest, const char* buf_src,
     }
 }
 
-static inline uint32_t mav_get_uint32_t_c2000(void* buf, int wire_offset)
+static inline float mav_get_float_c2000(const void* buf, int wire_offset)
+{
+    float* dest_ptr = (float*)((uint8_t*)buf + (wire_offset / 2));
+    return *dest_ptr;
+}
+
+static inline uint32_t mav_get_uint32_t_c2000(const void* buf, int wire_offset)
 {
     uint32_t* dest_ptr = (uint32_t*)((uint8_t*)buf + (wire_offset / 2));
     return *dest_ptr;
 }
 
-static inline uint16_t mav_get_uint16_t_c2000(void* buf, int wire_offset)
+static inline uint16_t mav_get_uint16_t_c2000(const void* buf, int wire_offset)
 {
     uint16_t* dest_ptr = (uint16_t*)((uint8_t*)buf + (wire_offset / 2));
     return *dest_ptr;
 }
 
-static inline uint8_t mav_get_uint8_t_c2000(void* buf, int wire_offset)
+static inline uint8_t mav_get_uint8_t_c2000(const void* buf, int wire_offset)
 {
     uint8_t* dest_ptr = (uint8_t*)buf;
     if ((wire_offset % 2) == 0) {
@@ -92,6 +98,46 @@ static inline uint8_t mav_get_uint8_t_c2000(void* buf, int wire_offset)
         dest_ptr += ((wire_offset - 1) / 2);
         return ((*dest_ptr >> 8) & 0x00FF);
     }
+}
+
+static inline uint16_t mav_get_float_array_c2000(const void* buf, float* value, int array_length, int wire_offset)
+{
+    int i;
+    for (i = 0; i < array_length; i++) {
+        value[i] = mav_get_float_c2000(buf, wire_offset + i);
+    }
+
+    return array_length;
+}
+
+static inline uint16_t mav_get_uint32_t_array_c2000(const void* buf, uint32_t* value, int array_length, int wire_offset)
+{
+    int i;
+    for (i = 0; i < array_length; i++) {
+        value[i] = mav_get_uint32_t_c2000(buf, wire_offset + i);
+    }
+
+    return array_length;
+}
+
+static inline uint16_t mav_get_uint16_t_array_c2000(const void* buf, uint16_t* value, int array_length, int wire_offset)
+{
+    int i;
+    for (i = 0; i < array_length; i++) {
+        value[i] = mav_get_uint16_t_c2000(buf, wire_offset + i);
+    }
+
+    return array_length;
+}
+
+static inline uint16_t mav_get_char_array_c2000(const void* buf, char* value, int array_length, int wire_offset)
+{
+    int i;
+    for (i = 0; i < array_length; i++) {
+        value[i] = mav_get_uint8_t_c2000(buf, wire_offset + i);
+    }
+
+    return array_length;
 }
 
 static inline void crc_init_c2000(uint16_t* crcAccum)
