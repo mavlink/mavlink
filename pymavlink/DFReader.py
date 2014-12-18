@@ -231,7 +231,7 @@ class DFReader(object):
         '''set time for a message'''
         if self.px4_timestamps:
             m._timestamp = self.timebase + self.px4_timebase
-        elif self._zero_time_base or self.new_timestamps:
+        elif len(m._fieldnames) > 0 and (self._zero_time_base or self.new_timestamps):
             if 'TimeMS' == m._fieldnames[0]:
                 m._timestamp = self.timebase + m.TimeMS*0.001
             elif m.get_type() in ['GPS','GPS2']:
