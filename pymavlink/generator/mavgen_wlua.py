@@ -306,6 +306,10 @@ def generate_epilog(outf):
 
 wtap_encap = DissectorTable.get("wtap_encap")
 wtap_encap:add(wtap.USER0, mavlink_proto)
+
+-- bind protocol to UDP port 14550
+udp_table = DissectorTable.get("udp.port")
+udp_table:add(14550,mavlink_proto)
 """)
 
 def generate(basename, xml):
