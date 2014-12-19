@@ -43,7 +43,7 @@ def IMUCheckFail(filename):
     
     while True:
         try:
-            m = mlog.recv_match(type=['RAW_IMU','SCALED_IMU2','IMU','IMU2'])
+            m = mlog.recv_match(type=['RAW_IMU','SCALED_IMU2','IMU','IMU2','PARM','PARAM_VALUE'])
         except Exception as e:
             print('Error: %s' % e)
             break
@@ -73,6 +73,16 @@ def IMUCheckFail(filename):
             gotimu2 = True
             t2 = m.TimeMS
             imu2_count += 1
+        elif mtype == 'PARM':
+            if m.Name.startswith('INS_ACCOFFS_') or m.Name.startswith('INS_ACC2OFFS_'):
+                if m.Value == 0.0:
+                    print('UNCALIBRATED: %s' % m)
+                    return False
+        elif mtype == 'PARAM_VALUE':
+            if m.param_id.startswith('INS_ACCOFFS_') or m.param_id.startswith('INS_ACC2OFFS_'):
+                if m.param_value == 0.0:
+                    print('UNCALIBRATED: %s' % m)
+                    return False
 
         # skip out early if we don't have two IMUs
         if imu1_count > imu2_count + 100:
