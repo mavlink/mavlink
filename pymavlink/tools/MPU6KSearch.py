@@ -101,6 +101,8 @@ def IMUCheckFail(filename):
                         ecount_accel[i] = 0
                     else:
                         ecount_accel[i] -= 1
+                else:
+                        ecount_accel[i] = 0                    
                 gdiff = gyro1[i] - gyro2[i]
                 if gdiff > gthreshold:
                     if ecount_gyro[i] < 0:
@@ -112,6 +114,8 @@ def IMUCheckFail(filename):
                         ecount_gyro[i] = 0
                     else:
                         ecount_gyro[i] -= 1
+                else:
+                        ecount_gyro[i] = 0                    
                 if abs(ecount_accel[i]) > count_threshold:
                     print("acceldiff[%u] %.1f" % (i, adiff))
                     print(m)
@@ -179,7 +183,11 @@ except Exception:
     sys.exit(1)
 
 for f in found:
-    zip.write(f, arcname=os.path.basename(f))
+    arcname=os.path.basename(f)
+    if not arcname.startswith('201'):
+        mtime = os.path.getmtime(f)
+        arcname = "%s-%s" % (time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime(mtime)), arcname)
+    zip.write(f, arcname=arcname)
 zip.close()
 
 print('==============================================')
