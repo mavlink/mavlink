@@ -57,6 +57,10 @@ def generate_mavlink_h(directory, xml):
 #define MAVLINK_CRC_EXTRA ${crc_extra_define}
 #endif
 
+#ifndef MAVLINK_C2000
+#define MAVLINK_C2000 ${c2000_protocol_define}
+#endif
+
 #include "version.h"
 #include "${basename}.h"
 
@@ -148,6 +152,10 @@ def generate_message_h(directory, m):
     t.write(f, '''
 // MESSAGE ${name} PACKING
 
+#if MAVLINK_C2000
+#include "protocol_c2000.h"
+#endif
+
 #define MAVLINK_MSG_ID_${name} ${id}
 
 typedef struct __mavlink_${name_lower}_t
@@ -193,6 +201,11 @@ ${{scalar_fields:	_mav_put_${type}(buf, ${wire_offset}, ${putname});
 ${{array_fields:	_mav_put_${type}_array(buf, ${wire_offset}, ${name}, ${array_length});
 }}
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_${name}_LEN);
+#elif MAVLINK_C2000
+	${{scalar_fields:	mav_put_${type}_c2000(&(msg->payload64[0]), ${wire_offset}, ${putname});
+	}}
+	${{array_fields:	mav_put_${type}_array_c2000(&(msg->payload64[0]), ${name}, ${wire_offset}, ${array_length});
+	}}
 #else
 	mavlink_${name_lower}_t packet;
 ${{scalar_fields:	packet.${name} = ${putname};
@@ -359,7 +372,11 @@ ${{fields:
  */
 static inline ${return_type} mavlink_msg_${name_lower}_get_${name}(const mavlink_message_t* msg${get_arg})
 {
+#if !MAVLINK_C2000
 	return _MAV_RETURN_${type}${array_tag}(msg, ${array_return_arg} ${wire_offset});
+#else
+	return mav_get_${type}${array_tag}_c2000(&(msg->payload64[0]), ${array_return_arg} ${wire_offset});
+#endif
 }
 }}
 
@@ -371,7 +388,7 @@ static inline ${return_type} mavlink_msg_${name_lower}_get_${name}(const mavlink
  */
 static inline void mavlink_msg_${name_lower}_decode(const mavlink_message_t* msg, mavlink_${name_lower}_t* ${name_lower})
 {
-#if MAVLINK_NEED_BYTE_SWAP
+#if MAVLINK_NEED_BYTE_SWAP || MAVLINK_C2000
 ${{ordered_fields:	${decode_left}mavlink_msg_${name_lower}_get_${name}(msg${decode_right});
 }}
 #else
@@ -515,6 +532,12 @@ def generate_one(basename, xml):
         xml.aligned_fields_define = "1"
     else:
         xml.aligned_fields_define = "0"
+
+    if xml.c2000_protocol:
+        xml.c2000_protocol_define = "1"
+    else:
+        xml.c2000_protocol_define = "0"
+
 
     # work out the included headers
     xml.include_list = []
