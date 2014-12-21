@@ -1116,20 +1116,26 @@ class SerialPort(object):
 def auto_detect_serial_win32(preferred_list=['*']):
     '''try to auto-detect serial ports on win32'''
     try:
-        import scanwin32
-        list = sorted(scanwin32.comports())
+        from serial.tools.list_ports_windows import comports
+        list = sorted(comports())
     except:
         return []
     ret = []
-    for order, port, desc, hwid in list:
+    others = []
+    for port, description, hwid in list:
+        matches = False
+        p = SerialPort(port, description=description, hwid=hwid)
         for preferred in preferred_list:
-            if fnmatch.fnmatch(desc, preferred) or fnmatch.fnmatch(hwid, preferred):
-                ret.append(SerialPort(port, description=desc, hwid=hwid))
+            if fnmatch.fnmatch(description, preferred) or fnmatch.fnmatch(hwid, preferred):
+                matches = True
+        if matches:
+            ret.append(p)
+        else:
+            others.append(p)
     if len(ret) > 0:
         return ret
     # now the rest
-    for order, port, desc, hwid in list:
-        ret.append(SerialPort(port, description=desc, hwid=hwid))
+    ret.extend(others)
     return ret
         
 
@@ -1472,3 +1478,8 @@ class MavlinkSerialPort():
                                                  0, [0]*70)
                 self.flushInput()
                 self.debug("Changed baudrate %u" % self.baudrate)
+
+if __name__ == '__main__':
+        serial_list = auto_detect_serial(preferred_list=['*FTDI*',"*Arduino_Mega_2560*", "*3D_Robotics*", "*USB_to_UART*", '*PX4*', '*FMU*'])
+        for port in serial_list:
+            print("%s" % port)
