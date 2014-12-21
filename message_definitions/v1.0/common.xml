@@ -795,7 +795,7 @@
                     <param index="5">Latitude</param>
                     <param index="6">Longitude</param>
                     <param index="7">Empty</param>
-                </entry>                
+                </entry>
                 <entry value="190" name="MAV_CMD_DO_RALLY_LAND">
                     <description>Mission command to perform a landing from a rally point.</description>
                     <param index="1">Break altitude (meters)</param>
@@ -1778,6 +1778,18 @@
                <field type="int32_t" name="latitude">Latitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="longitude">Longitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="altitude">Altitude (AMSL), in meters * 1000 (positive for up)</field>
+          </message>
+          <message id="50" name="PARAM_MAP_RC">
+               <description>Bind a RC channel to a parameter. The parameter should change accoding to the RC channel value.</description>
+               <field type="uint8_t" name="target_system">System ID</field>
+               <field type="uint8_t" name="target_component">Component ID</field>
+               <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+               <field type="int16_t" name="param_index">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored), send -2 to disable any existing map for this rc_channel_index.</field>
+               <field type="uint8_t" name="parameter_rc_channel_index">Index of parameter RC channel. Not equal to the RC channel id. Typically correpsonds to a potentiometer-knob on the RC.</field>
+               <field type="float" name="param_value0">Initial parameter value</field>
+               <field type="float" name="scale">Scale, maps the RC range [-1, 1] to a parameter value</field>
+               <field type="float" name="param_value_min">Minimum param value. The protocol does not define if this overwrites an onboard minimum value. (Depends on implementation)</field>
+               <field type="float" name="param_value_max">Maximum param value. The protocol does not define if this overwrites an onboard maximum value. (Depends on implementation)</field>
           </message>
           <message id="54" name="SAFETY_SET_ALLOWED_AREA">
                <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/MISSIONs to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
