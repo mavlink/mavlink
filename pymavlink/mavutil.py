@@ -1146,19 +1146,21 @@ def auto_detect_serial_unix(preferred_list=['*']):
     import glob
     glist = glob.glob('/dev/ttyS*') + glob.glob('/dev/ttyUSB*') + glob.glob('/dev/ttyACM*') + glob.glob('/dev/serial/by-id/*')
     ret = []
+    others = []
     # try preferred ones first
     for d in glist:
+        matches = False
         for preferred in preferred_list:
             if fnmatch.fnmatch(d, preferred):
-                ret.append(SerialPort(d))
+                matches = True
+        if matches:
+            ret.append(SerialPort(d))
+        else:
+            others.append(SerialPort(d))
     if len(ret) > 0:
         return ret
-    # now the rest
-    for d in glist:
-        ret.append(SerialPort(d))
+    ret.extend(others)
     return ret
-
-
 
 def auto_detect_serial(preferred_list=['*']):
     '''try to auto-detect serial port'''
