@@ -54,6 +54,11 @@ class Vector3:
     def __ne__(self, v):
         return not self == v
 
+    def close(self, v, tol=1e-7):
+        return abs(self.x - v.x) < tol and \
+            abs(self.y - v.y) < tol and \
+            abs(self.z - v.z) < tol
+
     def __add__(self, v):
         return Vector3(self.x + v.x,
                        self.y + v.y,
@@ -112,13 +117,13 @@ class Vector3:
 
     def normalized(self):
         return self.__div__(self.length())
-    
+
     def normalize(self):
         v = self.normalized()
         self.x = v.x
         self.y = v.y
         self.z = v.z
-        
+
 class Matrix3:
     '''a 3x3 matrix, intended as a rotation matrix'''
     def __init__(self, a=None, b=None, c=None):
@@ -145,7 +150,7 @@ class Matrix3:
                        Vector3(self.a.y, self.b.y, self.c.y),
                        Vector3(self.a.z, self.b.z, self.c.z))
 
-        
+
     def from_euler(self, roll, pitch, yaw):
         '''fill the matrix from Euler angles in radians'''
         cp = cos(pitch)
@@ -188,7 +193,7 @@ class Matrix3:
 
     def __rsub__(self, m):
         return Matrix3(m.a - self.a, m.b - self.b, m.c - self.c)
-    
+
     def __mul__(self, other):
         if isinstance(other, Vector3):
             v = other
@@ -283,6 +288,8 @@ class Matrix3:
         cross.normalize()
         return self.from_axis_angle(cross, angle)
 
+    def close(self, m, tol=1e-7):
+        return self.a.close(m.a) and self.b.close(m.b) and self.c.close(m.c)
 
 class Plane:
     '''a plane in 3 space, defined by a point and a vector normal'''
@@ -314,7 +321,7 @@ class Line:
         if forward_only and d < 0:
             return None
         return (self.vector * d) + self.point
-        
+
 
 
 def test_euler():
@@ -357,11 +364,9 @@ def test_plane():
     line = Line(Vector3(0,0,100), Vector3(10, 10, -90))
     p = line.plane_intersection(plane)
     print(p)
-    
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
     test_euler()
     test_two_vectors()
-    
-    

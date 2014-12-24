@@ -8,6 +8,7 @@ Released under GNU GPL version 3 or later
 
 import os, sys
 from math import *
+from quaternion import Quaternion
 
 try:
     # rotmat doesn't work on Python3.2 yet
@@ -708,7 +709,7 @@ def wrap_180(angle):
         angle += 360.0
     return angle
 
-    
+
 def wrap_360(angle):
     if angle > 360:
         angle -= 360.0
@@ -741,7 +742,7 @@ class DCM_State(object):
         self.last_velocity = Vector3()
         (self.roll, self.pitch, self.yaw) = self.dcm.to_euler()
         (self.roll2, self.pitch2, self.yaw2) = self.dcm2.to_euler()
-        
+
     def update(self, gyro, accel, mag, GPS):
         if self.gyro != gyro or self.accel != accel:
             delta_angle = (gyro+self.omega_I) / self.rate
@@ -784,7 +785,7 @@ class PX4_State(object):
         self.accel = Vector3()
         self.timestamp = timestamp
         (self.roll, self.pitch, self.yaw) = self.dcm.to_euler()
-        
+
     def update(self, gyro, accel, timestamp):
         if self.gyro != gyro or self.accel != accel:
             delta_angle = gyro * (timestamp - self.timestamp)
@@ -891,10 +892,10 @@ def gps_newpos(lat, lon, bearing, distance):
   lon1 = math.radians(lon)
   brng = math.radians(bearing)
   dr = distance/radius_of_earth
-  
+
   lat2 = math.asin(math.sin(lat1)*math.cos(dr) +
                    math.cos(lat1)*math.sin(dr)*math.cos(brng))
-  lon2 = lon1 + math.atan2(math.sin(brng)*math.sin(dr)*math.cos(lat1), 
+  lon2 = lon1 + math.atan2(math.sin(brng)*math.sin(dr)*math.cos(lat1),
                            math.cos(dr)-math.sin(lat1)*math.sin(lat2))
   return (math.degrees(lat2), wrap_valid_longitude(math.degrees(lon2)))
 
@@ -921,3 +922,35 @@ def ekf1_pos(EKF1):
   (lat,lon) = gps_offset(ekf_home.Lat, ekf_home.Lng, EKF1.PE, EKF1.PN)
   return (lat, lon)
 
+def quat_to_euler(q):
+  '''
+  Get Euler angles from a quaternion
+  :param q: quaternion [w, x, y , z]
+  :returns: euler angles [roll, pitch, yaw]
+  '''
+  quat = Quaternion(q)
+  return quat.euler
+
+def euler_to_quat(e):
+  '''
+  Get quaternion from euler angles
+  :param e: euler angles [roll, pitch, yaw]
+  :returns: quaternion [w, x, y , z]
+  '''
+  quat = Quaternion(e)
+  return quat.q
+
+def rotate_quat(attitude, roll, pitch, yaw):
+  '''
+  Returns rotated quaternion
+  :param attitude: quaternion [w, x, y , z]
+  :param roll: rotation in rad
+  :param pitch: rotation in rad
+  :param yaw: rotation in rad
+  :returns: quaternion [w, x, y , z]
+  '''
+  quat = Quaternion(attitude)
+  rotation = Quaternion([roll, pitch, yaw])
+  res = rotation * quat
+
+  return res.q
