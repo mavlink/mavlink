@@ -7,7 +7,7 @@ Quaternion implementation for use in pymavlink
 
 from __future__ import absolute_import, division, print_function
 import numpy as np
-from rotmat import Vector3, Matrix3
+from .rotmat import Vector3, Matrix3
 
 __author__ = "Thomas Gubler"
 __copyright__ = "Copyright (C) 2014 Thomas Gubler"
