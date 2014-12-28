@@ -551,25 +551,11 @@ class mavfile(object):
         else:
             print("Setting relays not supported.")
 
-    def calibrate_imu(self):
-        '''calibrate IMU'''
-        if self.mavlink10():
-            self.mav.command_long_send(self.target_system, self.target_component,
-                                       mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, 0,
-                                       1, 1, 1, 1, 0, 0, 0)
-        else:
-            MAV_ACTION_CALIBRATE_GYRO = 17
-            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_GYRO)
-
     def calibrate_level(self):
-        '''calibrate accels'''
-        if self.mavlink10():
-            self.mav.command_long_send(self.target_system, self.target_component,
-                                       mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, 0,
-                                       1, 1, 1, 1, 0, 0, 0)
-        else:
-            MAV_ACTION_CALIBRATE_ACC = 19
-            self.mav.action_send(self.target_system, self.target_component, MAV_ACTION_CALIBRATE_ACC)
+        '''calibrate accels (1D version)'''
+        self.mav.command_long_send(self.target_system, self.target_component,
+                                   mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, 0,
+                                   1, 1, 0, 0, 0, 0, 0)
 
     def calibrate_pressure(self):
         '''calibrate pressure'''
