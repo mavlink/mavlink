@@ -23,9 +23,6 @@ then
 	exit 0
 fi
 
-# Fail on error
-set -e
-
 # Config for auto-building
 git remote rename origin upstream
 git config --global user.email "bot@pixhawk.org"
