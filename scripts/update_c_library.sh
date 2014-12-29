@@ -27,7 +27,7 @@
 # cd /tmp/mavlink && ./scripts/update_c_library.sh &> /dev/null
 
 function generate_headers() {
-python2 pymavlink/tools/mavgen.py \
+python pymavlink/tools/mavgen.py \
     --output $CLIBRARY_PATH \
     --lang C \
     message_definitions/v1.0/$1.xml
@@ -48,7 +48,7 @@ git diff $MAVLINK_GIT_REMOTENAME/$MAVLINK_GIT_BRANCHNAME --exit-code
 RETVAL=$?
 # if the diff value is zero nothing changed - abort
 [ $RETVAL -eq 0 ] && exit 0
-echo "Fetching latest protocol specifications"
+echo -e "\0033[34mFetching latest protocol specifications\0033[0m\n"
 git pull $MAVLINK_GIT_REMOTENAME $MAVLINK_GIT_BRANCHNAME || exit 1
 
 # save git hash
@@ -58,7 +58,7 @@ MAVLINK_GITHASH=$(git rev-parse HEAD)
 rm -rf $CLIBRARY_PATH/*
 
 # generate new c headers
-echo "start to generate c headers"
+echo -e "\0033[34mStarting to generate c headers\0033[0m\n"
 generate_headers ardupilotmega
 generate_headers autoquad
 generate_headers matrixpilot
@@ -69,7 +69,7 @@ generate_headers test
 generate_headers ualberta
 generate_headers common
 generate_headers ASLUAV
-echo "finished generating c headers"
+echo -e "\0033[34mFinished generating c headers\0033[0m\n"
 
 # git add and git commit in local c_library repository
 cd $CLIBRARY_PATH
@@ -79,4 +79,4 @@ git commit -m "$COMMIT_MESSAGE" || exit 1
 
 # push to c_library repository
 git push $CLIBRARY_GIT_REMOTENAME $CLIBRARY_GIT_BRANCHNAME || exit 1
-echo "headers updated and pushed successfully"
+echo -e "\0033[34mHeaders updated and pushed successfully\0033[0m"

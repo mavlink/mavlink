@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Do only build for Python 3.3
+# Do only build for Python 2.7
 # as we only want to deploy for one
 # unique generator.
 PYTHONVER=`python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'`
 
-if [[ $PYTHONVER != "3.3"* ]]
+if [[ $PYTHONVER != "2.7"* ]]
 then
 	echo -e "Skipping header generation for Python $PYTHONVER"
 	exit 0
