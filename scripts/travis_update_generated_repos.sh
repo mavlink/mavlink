@@ -27,8 +27,8 @@ fi
 git remote rename origin upstream
 git config --global user.email "bot@pixhawk.org"
 git config --global user.name "PX4BuildBot"
-git config credential.helper "store --file=.git/credentials"
-echo "https://${GH_TOKEN}:@github.com" > .git/credentials
+git config --global credential.helper "store --file=$HOME/.git-credentials"
+echo "https://${GH_TOKEN}:@github.com" > $HOME/.git-credentials
 
 # Build C library
 mkdir -p include/mavlink/v1.0
