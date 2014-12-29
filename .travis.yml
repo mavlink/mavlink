@@ -1,3 +1,7 @@
+env:
+  global:
+  - secure: Od2ZYUhrfms2EKvWZ+fhiy2aUMKO5v8km9gvRpLs3fQx/Wo23oQwVVx1lNE/bIZ9Uea596d/Y5VnSkZ4r7HRhwyyMw7F2M+5wbW+RIfHN05XaDma3H9ulF94mWQiMrbT9yFur3AeKb+Wwavl6U0bH7/DsFcXLq/z+1GaRNH/Bnc=
+
 language: python
 python:
   - "2.6"
@@ -35,3 +39,6 @@ script:
   # Test quaternions
   - cd $TRAVIS_BUILD_DIR
   - pymavlink/tools/quaterniontest.py
+
+after_success:
+- ./scripts/travis_update_generated_repos.sh
