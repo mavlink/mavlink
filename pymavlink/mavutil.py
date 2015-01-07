@@ -978,7 +978,7 @@ def mavlink_connection(device, baud=115200, source_system=255,
     if device.startswith('udp:'):
         return mavudp(device[4:], input=input, source_system=source_system)
 
-    if device.lower().endswith('.bin'):
+    if device.lower().endswith('.bin') or device.lower().endswith('.px4log'):
         # support dataflash logs
         from pymavlink import DFReader
         m = DFReader.DFReader_binary(device, zero_time_base=zero_time_base)
