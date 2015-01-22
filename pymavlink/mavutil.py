@@ -765,7 +765,7 @@ class mavserial(mavfile):
 
 class mavudp(mavfile):
     '''a UDP mavlink socket'''
-    def __init__(self, device, input=True, broadcast=False, source_system=255):
+    def __init__(self, device, input=True, broadcast=False, source_system=255, check_crc=True):
         a = device.split(':')
         if len(a) != 2:
             print("UDP ports must be specified as host:port")
@@ -783,6 +783,7 @@ class mavudp(mavfile):
         self.port.setblocking(0)
         self.last_address = None
         mavfile.__init__(self, self.port.fileno(), device, source_system=source_system, input=input)
+        self.mav.check_crc = check_crc
 
     def close(self):
         self.port.close()

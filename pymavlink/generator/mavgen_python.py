@@ -278,6 +278,7 @@ class MAVLink(object):
                 self.expected_length = 6
                 self.have_prefix_error = False
                 self.robust_parsing = False
+                self.check_crc = True
                 self.protocol_marker = ${protocol_marker}
                 self.little_endian = ${little_endian}
                 self.crc_extra = ${crc_extra}
@@ -400,9 +401,10 @@ class MAVLink(object):
                 crcbuf = msgbuf[1:-2]
                 if ${crc_extra}: # using CRC extra
                     crcbuf.append(crc_extra)
-                crc2 = x25crc(crcbuf)
-                if crc != crc2.crc:
-                    raise MAVError('invalid MAVLink CRC in msgID %u 0x%04x should be 0x%04x' % (msgId, crc, crc2.crc))
+                if self.check_crc:
+                    crc2 = x25crc(crcbuf)
+                    if crc != crc2.crc:
+                        raise MAVError('invalid MAVLink CRC in msgID %u 0x%04x should be 0x%04x' % (msgId, crc, crc2.crc))
 
                 try:
                     t = struct.unpack(fmt, msgbuf[6:-2])
