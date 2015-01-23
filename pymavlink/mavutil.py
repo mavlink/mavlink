@@ -1128,7 +1128,7 @@ def auto_detect_serial_win32(preferred_list=['*']):
         
 
 def auto_detect_serial_unix(preferred_list=['*']):
-    '''try to auto-detect serial ports on win32'''
+    '''try to auto-detect serial ports on unix'''
     import glob
     glist = glob.glob('/dev/ttyS*') + glob.glob('/dev/ttyUSB*') + glob.glob('/dev/ttyACM*') + glob.glob('/dev/serial/by-id/*')
     ret = []
