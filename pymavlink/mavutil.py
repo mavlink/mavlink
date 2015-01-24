@@ -765,7 +765,7 @@ class mavserial(mavfile):
 
 class mavudp(mavfile):
     '''a UDP mavlink socket'''
-    def __init__(self, device, input=True, broadcast=False, source_system=255):
+    def __init__(self, device, input=True, broadcast=False, source_system=255, check_crc=True):
         a = device.split(':')
         if len(a) != 2:
             print("UDP ports must be specified as host:port")
@@ -783,6 +783,7 @@ class mavudp(mavfile):
         self.port.setblocking(0)
         self.last_address = None
         mavfile.__init__(self, self.port.fileno(), device, source_system=source_system, input=input)
+        self.mav.check_crc = check_crc
 
     def close(self):
         self.port.close()
@@ -995,7 +996,7 @@ class mavchildexec(mavfile):
 def mavlink_connection(device, baud=115200, source_system=255,
                        planner_format=None, write=False, append=False,
                        robust_parsing=True, notimestamps=False, input=True,
-                       dialect=None, autoreconnect=False, zero_time_base=False):
+                       dialect=None, autoreconnect=False, zero_time_base=False, check_crc=True):
     '''open a serial, UDP, TCP or file mavlink connection'''
     global mavfile_global
 
@@ -1004,12 +1005,12 @@ def mavlink_connection(device, baud=115200, source_system=255,
     if device.startswith('tcp:'):
         return mavtcp(device[4:], source_system=source_system)
     if device.startswith('udpin:'):
-        return mavudp(device[6:], input=True, source_system=source_system)
+        return mavudp(device[6:], input=True, source_system=source_system, check_crc=check_crc)
     if device.startswith('udpout:'):
-        return mavudp(device[7:], input=False, source_system=source_system)
+        return mavudp(device[7:], input=False, source_system=source_system, check_crc=check_crc)
     # For legacy purposes we accept the following syntax and let the caller to specify direction
     if device.startswith('udp:'):
-        return mavudp(device[4:], input=input, source_system=source_system)
+        return mavudp(device[4:], input=input, source_system=source_system, check_crc=check_crc)
 
     if device.lower().endswith('.bin'):
         # support dataflash logs
