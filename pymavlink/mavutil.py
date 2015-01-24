@@ -996,7 +996,7 @@ class mavchildexec(mavfile):
 def mavlink_connection(device, baud=115200, source_system=255,
                        planner_format=None, write=False, append=False,
                        robust_parsing=True, notimestamps=False, input=True,
-                       dialect=None, autoreconnect=False, zero_time_base=False):
+                       dialect=None, autoreconnect=False, zero_time_base=False, check_crc=True):
     '''open a serial, UDP, TCP or file mavlink connection'''
     global mavfile_global
 
@@ -1005,12 +1005,12 @@ def mavlink_connection(device, baud=115200, source_system=255,
     if device.startswith('tcp:'):
         return mavtcp(device[4:], source_system=source_system)
     if device.startswith('udpin:'):
-        return mavudp(device[6:], input=True, source_system=source_system)
+        return mavudp(device[6:], input=True, source_system=source_system, check_crc=check_crc)
     if device.startswith('udpout:'):
-        return mavudp(device[7:], input=False, source_system=source_system)
+        return mavudp(device[7:], input=False, source_system=source_system, check_crc=check_crc)
     # For legacy purposes we accept the following syntax and let the caller to specify direction
     if device.startswith('udp:'):
-        return mavudp(device[4:], input=input, source_system=source_system)
+        return mavudp(device[4:], input=input, source_system=source_system, check_crc=check_crc)
 
     if device.lower().endswith('.bin'):
         # support dataflash logs
