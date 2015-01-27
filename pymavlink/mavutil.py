@@ -1054,6 +1054,11 @@ class periodic_event(object):
     def trigger(self):
         '''return True if we should trigger now'''
         tnow = time.time()
+
+        if tnow < self.last_time:
+            print "Warning, time moved backwards. Restarting timer."
+            self.last_time = tnow
+
         if self.last_time + (1.0/self.frequency) <= tnow:
             self.last_time = tnow
             return True
