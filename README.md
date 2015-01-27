@@ -50,7 +50,7 @@ mavgenerate.py is a header generation tool GUI written in Python. It requires Tk
 
 mavgen.py is a command-line interface for generating a language-specific MAVLink library. This is actually the backend used by `mavgenerate.py`. After the `mavlink` directory has been added to the Python path, it can be run by executing from the command line:
 
-    $ python -m pymavlink.generator.mavgen
+    $ python -m pymavlink.tools.mavgen
 
 ### Usage ###
 
