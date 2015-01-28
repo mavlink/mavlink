@@ -831,16 +831,18 @@ class mavtcp(mavfile):
             sys.exit(1)
         self.port = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.destination_addr = (a[0], int(a[1]))
-        while retries > 0:
+        while retries >= 0:
             retries -= 1
-            if retries == 0:
+            if retries <= 0:
                 self.port.connect(self.destination_addr)
             else:
                 try:
                     self.port.connect(self.destination_addr)
                     break
-                except Exception:
-                    time.sleep(1)
+                except Exception as e:
+                    if retries > 0:
+                        print(e, "sleeping")
+                        time.sleep(1)
                     continue
         self.port.setblocking(0)
         set_close_on_exec(self.port.fileno())
@@ -995,14 +997,15 @@ class mavchildexec(mavfile):
 def mavlink_connection(device, baud=115200, source_system=255,
                        planner_format=None, write=False, append=False,
                        robust_parsing=True, notimestamps=False, input=True,
-                       dialect=None, autoreconnect=False, zero_time_base=False):
+                       dialect=None, autoreconnect=False, zero_time_base=False,
+                       retries=3):
     '''open a serial, UDP, TCP or file mavlink connection'''
     global mavfile_global
 
     if dialect is not None:
         set_dialect(dialect)
     if device.startswith('tcp:'):
-        return mavtcp(device[4:], source_system=source_system)
+        return mavtcp(device[4:], source_system=source_system, retries=retries)
     if device.startswith('udpin:'):
         return mavudp(device[6:], input=True, source_system=source_system)
     if device.startswith('udpout:'):
