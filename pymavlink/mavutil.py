@@ -213,7 +213,7 @@ class mavfile(object):
         msg._posted = True
         msg._timestamp = time.time()
         type = msg.get_type()
-        if type != 'HEARTBEAT' or msg.type != mavlink.MAV_TYPE_GCS:
+        if type != 'HEARTBEAT' or (msg.type != mavlink.MAV_TYPE_GCS and msg.type != mavlink.MAV_TYPE_GIMBAL):
             self.messages[type] = msg
 
         if 'usec' in msg.__dict__:
@@ -246,7 +246,7 @@ class mavfile(object):
             self.mav_count += 1
         
         self.timestamp = msg._timestamp
-        if type == 'HEARTBEAT':
+        if type == 'HEARTBEAT' and msg.get_srcComponent() != mavlink.MAV_COMP_ID_GIMBAL:
             self.target_system = msg.get_srcSystem()
             self.target_component = msg.get_srcComponent()
             if mavlink.WIRE_PROTOCOL_VERSION == '1.0' and msg.type != mavlink.MAV_TYPE_GCS:
