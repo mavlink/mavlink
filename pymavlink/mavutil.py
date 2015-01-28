@@ -728,8 +728,6 @@ class mavserial(mavfile):
             if waiting < n:
                 n = waiting
         ret = self.port.read(n)
-        if len(ret) == 0:
-            time.sleep(0.01)
         return ret
 
     def write(self, buf):
@@ -1424,7 +1422,6 @@ class MavlinkSerialPort():
                                                 type='SERIAL_CONTROL', blocking=True, timeout=0.01)
                         if m is not None and m.count != 0:
                                 break
-                        time.sleep(0.01)
                 if m is not None:
                         if self._debug > 2:
                                 print(m)
