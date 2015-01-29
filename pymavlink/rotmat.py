@@ -201,11 +201,11 @@ class Matrix3:
     def from_euler312(self, roll, pitch, yaw):
         '''fill the matrix from Euler angles in radians in 312 convention'''
         c3 = cos(pitch)
-	s3 = sin(pitch)
-	s2 = sin(roll)
-	c2 = cos(roll)
-	s1 = sin(yaw)
-	c1 = cos(yaw)
+        s3 = sin(pitch)
+        s2 = sin(roll)
+        c2 = cos(roll)
+        s1 = sin(yaw)
+        c1 = cos(yaw)
 
         self.a.x = c1 * c3 - s1 * s2 * s3
         self.b.y = c1 * c2
