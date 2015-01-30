@@ -402,6 +402,9 @@ the headers.
 		status->packet_rx_success_count++;
 	}
 
+	r_message->len = rxmsg->len; // Provide visibility on how far we are into current msg
+	r_mavlink_status->parse_state = status->parse_state;
+	r_mavlink_status->packet_idx = status->packet_idx;
 	r_mavlink_status->current_rx_seq = status->current_rx_seq+1;
 	r_mavlink_status->packet_rx_success_count = status->packet_rx_success_count;
 	r_mavlink_status->packet_rx_drop_count = status->parse_error;
