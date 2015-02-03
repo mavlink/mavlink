@@ -311,12 +311,7 @@ the headers.
 			status->parse_error++;
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 			break;
-			if (c == MAVLINK_STX)
-			{
-				status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
-				mavlink_start_checksum(rxmsg);
-			}
-	        }
+	    }
 #endif
 		rxmsg->msgid = c;
 		mavlink_update_checksum(rxmsg, c);
