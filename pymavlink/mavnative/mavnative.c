@@ -17,11 +17,6 @@
 
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-// this trick allows us to make mavlink_message_t as small as possible
-// for this dialect, which saves some memory
-#include <version.h>
-#define MAVLINK_MAX_PAYLOAD_LEN MAVLINK_MAX_DIALECT_PAYLOAD_SIZE
-
 #include <mavlink_types.h>
 
 // Mavlink send support
