@@ -49,7 +49,6 @@ if not "NOGEN" in os.environ:
 mavnative_module = Extension('mavnative',
                     sources = ['mavnative/mavnative.c'],
                     include_dirs = [
-                        'generator/C/include_v1.0/ardupilotmega',
                         'generator/C/include_v1.0'
                         ]
                     )

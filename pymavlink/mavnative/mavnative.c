@@ -15,6 +15,8 @@
 #include <stddef.h>
 #include <setjmp.h>
 
+#include "mavlink_defaults.h"
+
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
 #include <mavlink_types.h>
@@ -31,12 +33,51 @@ static void comm_send_ch(mavlink_channel_t chan, uint8_t c) {
 
 // static mavlink_message_t last_msg;
 
-#include <mavlink.h>
+/*
+  default message crc function. You can override this per-system to
+  put this data in a different memory segment
+*/
+#define MAVLINK_MESSAGE_CRC(msgid) py_message_info[msgid].crc_extra
+
+/* Enable this option to check the length of each message.
+ This allows invalid messages to be caught much sooner. Use if the transmission
+ medium is prone to missing (or extra) characters (e.g. a radio that fades in
+ and out). Only use if the channel will only contain messages types listed in
+ the headers.
+*/
+
+#define MAVLINK_MESSAGE_LENGTH(msgid) py_message_info[msgid].len
+
+// #include <mavlink.h>
+
+#define TRUE 1
+#define FALSE 0
+
+typedef struct {
+        PyObject                *name;                 // name of this field
+        // const char *print_format;         // printing format hint, or NULL
+        mavlink_message_type_t  type;      // type of this field
+        unsigned int            array_length;        // if non-zero, field is an array
+        unsigned int            wire_offset;         // offset of each field in the payload
+        // unsigned int structure_offset;    // offset in a C structure
+} py_field_info_t;
+
+// note that in this structure the order of fields is the order
+// in the XML file, not necessary the wire order
+typedef struct {
+    PyObject            *id;                                          // The int id for this msg
+    PyObject            *name;                                        // name of the message
+    unsigned            len;                                          // the raw message length of this message - not including headers & CRC
+    uint8_t             crc_extra;                                    // the CRC extra for this message
+    unsigned            num_fields;                                   // how many fields in this message
+    PyObject            *fieldnames;                                  // fieldnames in the correct order expected by user (not wire order)
+    py_field_info_t     fields[MAVLINK_MAX_FIELDS];            // field information
+} py_message_info_t;
+
+static py_message_info_t py_message_info[256];
+static uint8_t           info_inited = FALSE; // We only do the init once (assuming only one dialect in use)
+
 #include <protocol.h>
-
-static const unsigned message_lengths[] = MAVLINK_MESSAGE_LENGTHS;
-// static unsigned error_count;
-
 
 /**
  * Contains a structure mavlink_message but also the raw bytes that make up that message
@@ -46,6 +87,32 @@ typedef struct {
     int                 numBytes;
     uint8_t             bytes[MAVLINK_MAX_PACKET_LEN];
 } py_message_t;
+
+typedef struct {
+    PyObject_HEAD
+
+    PyObject            *MAVLinkMessage;
+    mavlink_status_t    mav_status;
+    py_message_t        msg;
+} NativeConnection;
+
+// #define MAVNATIVE_DEBUG
+#ifdef MAVNATIVE_DEBUG
+#  define mavdebug    printf
+#else
+#  define mavdebug(x...)
+#endif
+
+
+// My exception type
+static PyObject *MAVNativeError;
+
+static jmp_buf python_entry;
+
+#define PYTHON_ENTRY if(!setjmp(python_entry)) {
+#define PYTHON_EXIT  } else { return NULL; }   // Used for routines thar return ptrs
+#define PYTHON_EXIT_INT  } else { return -1; } // Used for routines that return ints
+
 
 /** (originally from mavlink_helpers.h - but now customized to not be channel based)
  * This is a convenience function which handles the complete MAVLink parsing.
@@ -67,28 +134,6 @@ typedef struct {
 MAVLINK_HELPER uint8_t py_mavlink_parse_char(uint8_t c, py_message_t* pymsg, mavlink_status_t* status)
 {
     mavlink_message_t *rxmsg = &pymsg->msg;
-
-    /*
-      default message crc function. You can override this per-system to
-      put this data in a different memory segment
-    */
-#if MAVLINK_CRC_EXTRA
-#undef MAVLINK_MESSAGE_CRC
-    static const uint8_t mavlink_message_crcs[256] = MAVLINK_MESSAGE_CRCS;
-#define MAVLINK_MESSAGE_CRC(msgid) mavlink_message_crcs[msgid]
-#endif
-
-/* Enable this option to check the length of each message.
- This allows invalid messages to be caught much sooner. Use if the transmission
- medium is prone to missing (or extra) characters (e.g. a radio that fades in
- and out). Only use if the channel will only contain messages types listed in
- the headers.
-*/
-#ifdef MAVLINK_CHECK_MESSAGE_LENGTH
-#undef MAVLINK_MESSAGE_LENGTH
-    static const uint8_t mavlink_message_lengths[256] = MAVLINK_MESSAGE_LENGTHS;
-#define MAVLINK_MESSAGE_LENGTH(msgid) mavlink_message_lengths[msgid]
-#endif
 
     int bufferIndex = 0;
 
@@ -255,56 +300,6 @@ MAVLINK_HELPER uint8_t py_mavlink_parse_char(uint8_t c, py_message_t* pymsg, mav
 }
 
 
-typedef struct {
-    PyObject_HEAD
-
-    PyObject            *MAVLinkMessage;
-    mavlink_status_t    mav_status;
-    py_message_t        msg;
-} NativeConnection;
-
-
-typedef struct {
-        PyObject                *name;                 // name of this field
-        // const char *print_format;         // printing format hint, or NULL
-        mavlink_message_type_t  type;      // type of this field
-        unsigned int            array_length;        // if non-zero, field is an array
-        unsigned int            wire_offset;         // offset of each field in the payload
-        // unsigned int structure_offset;    // offset in a C structure
-} py_field_info_t;
-
-// note that in this structure the order of fields is the order
-// in the XML file, not necessary the wire order
-typedef struct {
-    PyObject            *id;                                          // The int id for this msg
-    PyObject            *name;                                        // name of the message
-    unsigned            num_fields;                                   // how many fields in this message
-    py_field_info_t     fields[MAVLINK_MAX_FIELDS];            // field information
-} py_message_info_t;
-
-static py_message_info_t py_message_info[256];
-
-
-#define TRUE 1
-#define FALSE 0
-
-// #define MAVNATIVE_DEBUG
-#ifdef MAVNATIVE_DEBUG
-#  define mavdebug    printf
-#else
-#  define mavdebug(x...)
-#endif
-
-
-// My exception type
-static PyObject *MAVNativeError;
-
-static jmp_buf python_entry;
-
-#define PYTHON_ENTRY if(!setjmp(python_entry)) {
-#define PYTHON_EXIT  } else { return NULL; }
-
-
 // Raise a python exception
 static void set_pyerror(const char *msg) {
     PyErr_SetString(MAVNativeError,  msg);
@@ -322,33 +317,163 @@ extern void __assert_fail(const char *__assertion, const char *__file, unsigned 
 }
 
 
+static unsigned get_field_size(int field_type) {
+    unsigned fieldSize;
+
+    switch(field_type) 
+    {
+    case MAVLINK_TYPE_CHAR: 
+        fieldSize = 1;
+        break;
+    case MAVLINK_TYPE_UINT8_T:
+        fieldSize = 1;
+        break;
+    case MAVLINK_TYPE_INT8_T:
+        fieldSize = 1;
+        break;
+    case MAVLINK_TYPE_UINT16_T:
+        fieldSize = 2;
+        break;
+    case MAVLINK_TYPE_INT16_T:
+        fieldSize = 2;
+        break;
+    case MAVLINK_TYPE_UINT32_T:
+        fieldSize = 4;
+        break;
+    case MAVLINK_TYPE_INT32_T:
+        fieldSize = 4;
+        break;
+    case MAVLINK_TYPE_UINT64_T:
+        fieldSize = 8;
+        break;
+    case MAVLINK_TYPE_INT64_T:                 
+        fieldSize = 8;
+        break;
+    case MAVLINK_TYPE_FLOAT:              
+        fieldSize = 4;
+        break;
+    case MAVLINK_TYPE_DOUBLE:      
+        fieldSize = 8;
+        break;            
+    default:
+        mavdebug("BAD MAV TYPE %d\n", field_type);
+        set_pyerror("Unexpected mavlink type");
+        fieldSize = 1;
+    }
+
+    return fieldSize;
+}
+
+
+/**
+ * Given a python type character & array_size advance the wire_offset to the correct next value.
+
+ * @return the equivalent C++ type code.
+ */
+static int get_py_typeinfo(char type_char, int array_size, unsigned *wire_offset)
+{
+    int type_code;
+
+    switch(type_char) 
+    {
+    case 'f': type_code = MAVLINK_TYPE_FLOAT; break;
+    case 'd': type_code = MAVLINK_TYPE_DOUBLE; break;
+    case 'c': type_code = MAVLINK_TYPE_CHAR; break;
+    case 'v': type_code = MAVLINK_TYPE_UINT8_T; break;
+    case 'b': type_code = MAVLINK_TYPE_INT8_T; break;
+    case 'B': type_code = MAVLINK_TYPE_UINT8_T; break;
+    case 'h': type_code = MAVLINK_TYPE_INT16_T; break;
+    case 'H': type_code = MAVLINK_TYPE_UINT16_T; break;
+    case 'i': type_code = MAVLINK_TYPE_INT32_T; break;
+    case 'I': type_code = MAVLINK_TYPE_UINT32_T; break;
+    case 'q': type_code = MAVLINK_TYPE_INT64_T; break;
+    case 'Q': type_code = MAVLINK_TYPE_UINT64_T; break;
+    default:
+        assert(0);
+    }
+
+    int total_len = get_field_size(type_code) * (array_size == 0 ? 1 : array_size);
+
+    *wire_offset += total_len;
+
+    return type_code;
+}
 
 /**
     We preconvert message info from the C style representation to python objects (to minimize # of object allocs).
-    FIXME - it would be better to generate this from the python datastructures, so we'd automatically work with any
-    dialect.
 
     FIXME - we really should free these PyObjects if our module gets unloaded.
+
+    @param mavlink_map - the mavlink_map object from python a dict from an int msgid -> tuple(fmt, type_class, order_list, len_list, crc_extra)
 */
-static void init_message_info(void) {
-    static const mavlink_message_info_t src[256] = MAVLINK_MESSAGE_INFO;
+static void init_message_info(PyObject *mavlink_map) {
+    // static const mavlink_message_info_t src[256] = MAVLINK_MESSAGE_INFO;
+    
+    PyObject *items_list = PyDict_Values(mavlink_map);
+    assert(items_list); // A list of the tuples in mavlink_map
+
+    Py_ssize_t numMsgs = PyList_Size(items_list);
+
     int i;
+    for(i = 0; i < numMsgs; i++) {
+        PyObject *type_class = PyList_GetItem(items_list, i); // returns a _borrowed_ reference
+        assert(type_class);
 
-    for(i = 0; i < 256; i++) {
-        const mavlink_message_info_t *s = &src[i];
-        py_message_info_t *d = &py_message_info[i];
+        PyObject *id_obj = PyObject_GetAttrString(type_class, "id"); // A _new_ reference
+        assert(id_obj);
+        PyObject *name_obj = PyObject_GetAttrString(type_class, "name"); // A new reference
+        assert(name_obj);
+        PyObject *crc_extra_obj = PyObject_GetAttrString(type_class, "crc_extra"); // A new reference
+        assert(crc_extra_obj);
+        PyObject *fieldname_list = PyObject_GetAttrString(type_class, "ordered_fieldnames"); // A new reference
+        assert(fieldname_list);
+        //PyObject *order_list = PyObject_GetAttrString(type_class, "orders"); // A new reference
+        //assert(order_list);
+        PyObject *arrlen_list = PyObject_GetAttrString(type_class, "array_lengths"); // A new reference
+        assert(arrlen_list);
+        PyObject *type_format = PyObject_GetAttrString(type_class, "native_format"); // A new reference
+        assert(type_format);
+        char *type_str = PyString_AsString(type_format);
+        assert(type_str);
+               
+        Py_ssize_t num_fields = PyList_Size(fieldname_list);
 
-        d->id = PyInt_FromLong(i);
-        d->name = PyString_FromString(s->name);
-        d->num_fields = s->num_fields;
+        uint8_t id = (uint8_t) PyInt_AsLong(id_obj);
+        py_message_info_t *d = &py_message_info[id];
+
+        d->id = id_obj;
+        d->name = name_obj;
+        d->num_fields = num_fields;
+        d->crc_extra = PyInt_AsLong(crc_extra_obj);
+        d->fieldnames = PyObject_GetAttrString(type_class, "fieldnames"); // A new reference
+        assert(d->fieldnames);
+
         int fnum;
-        for(fnum = 0; fnum < d->num_fields; fnum++) {
-            d->fields[fnum].name = PyString_FromString(s->fields[fnum].name);
-            d->fields[fnum].type = s->fields[fnum].type;
-            d->fields[fnum].array_length = s->fields[fnum].array_length;
-            d->fields[fnum].wire_offset = s->fields[fnum].wire_offset;
+        unsigned wire_offset = 0;
+        for(fnum = 0; fnum < num_fields; fnum++) {
+            PyObject *field_name_obj = PyList_GetItem(fieldname_list, fnum); // returns a _borrowed_ reference
+            assert(field_name_obj);
+
+            PyObject *len_obj = PyList_GetItem(arrlen_list, fnum); // returns a _borrowed_ reference
+            assert(len_obj);                        
+
+            d->fields[fnum].name = field_name_obj;
+            d->fields[fnum].array_length = PyInt_AsLong(len_obj);
+            char type_char = type_str[1 + fnum];
+            d->fields[fnum].wire_offset = wire_offset; // Store the current offset before advancing
+            d->fields[fnum].type = get_py_typeinfo(type_char, d->fields[fnum].array_length, &wire_offset);            
         }
+        d->len = wire_offset;
+
+        Py_DECREF(crc_extra_obj);
+        Py_DECREF(arrlen_list);
+        Py_DECREF(type_format);
+        //Py_DECREF(order_list);
+        Py_DECREF(arrlen_list);
+        Py_DECREF(type_format);
     }
+
+    Py_DECREF(items_list);
 }
 
 static PyObject *createPyNone(void)
@@ -368,6 +493,8 @@ static void set_attribute(PyObject *obj, const char *attrName, PyObject *val) {
     Py_DECREF(val);
 }
 
+
+
 /**
     Extract a field value from a mavlink msg
 
@@ -383,58 +510,47 @@ static PyObject *pyextract_mavlink(const mavlink_message_t *msg, const py_field_
     PyObject *result = NULL;
 
     int numValues = (field->array_length == 0) ? 1 : field->array_length;
+    unsigned fieldSize = get_field_size(field->type);
 
     // Either build a full array of results, or return a single value 
     for(index = 0; index < numValues; index++) {
         PyObject *val = NULL;
-        unsigned fieldSize;
 
         switch(field->type) {
             case MAVLINK_TYPE_CHAR: {
                 char c = _MAV_RETURN_char(msg, offset);
                 val = PyString_FromStringAndSize(&c, 1);
-                fieldSize = 1;
                 break;
                 }
             case MAVLINK_TYPE_UINT8_T:
                 val = PyInt_FromLong(_MAV_RETURN_uint8_t(msg, offset));
-                fieldSize = 1;
                 break;
             case MAVLINK_TYPE_INT8_T:
                 val = PyInt_FromLong(_MAV_RETURN_int8_t(msg, offset));
-                fieldSize = 1;
                 break;
             case MAVLINK_TYPE_UINT16_T:
                 val = PyInt_FromLong(_MAV_RETURN_uint16_t(msg, offset));
-                fieldSize = 2;
                 break;
             case MAVLINK_TYPE_INT16_T:
                 val = PyInt_FromLong(_MAV_RETURN_int16_t(msg, offset));
-                fieldSize = 2;
                 break;
             case MAVLINK_TYPE_UINT32_T:
                 val = PyInt_FromLong(_MAV_RETURN_uint32_t(msg, offset));
-                fieldSize = 4;
                 break;
             case MAVLINK_TYPE_INT32_T:
                 val = PyInt_FromLong(_MAV_RETURN_int32_t(msg, offset));   
-                fieldSize = 4;
                 break;
             case MAVLINK_TYPE_UINT64_T:
                 val = PyInt_FromLong(_MAV_RETURN_uint64_t(msg, offset));
-                fieldSize = 8;
                 break;
             case MAVLINK_TYPE_INT64_T:
-                val = PyInt_FromLong(_MAV_RETURN_int64_t(msg, offset));                     
-                fieldSize = 8;
+                val = PyInt_FromLong(_MAV_RETURN_int64_t(msg, offset));
                 break;
             case MAVLINK_TYPE_FLOAT:
-                val = PyFloat_FromDouble(_MAV_RETURN_float(msg, offset));                     
-                fieldSize = 4;
+                val = PyFloat_FromDouble(_MAV_RETURN_float(msg, offset));
                 break;
             case MAVLINK_TYPE_DOUBLE:
-                val = PyFloat_FromDouble(_MAV_RETURN_double(msg, offset));                     
-                fieldSize = 8;
+                val = PyFloat_FromDouble(_MAV_RETURN_double(msg, offset));
                 break;            
             default:
                 mavdebug("BAD MAV TYPE %d\n", field->type);
@@ -497,8 +613,9 @@ static PyObject *msg_to_py(PyObject* msgclass, const py_message_t *pymsg) {
     set_attribute(obj, "_msgbuf", PyByteArray_FromStringAndSize((const char *) pymsg->bytes, pymsg->numBytes));
 
     // Now add all the fields - FIXME - do this lazily using getattr overrides
-    PyObject *fieldNameList = PyList_New(info->num_fields);
-    set_attribute(obj, "_fieldnames", fieldNameList); // Transfers ownership of the namelist to the object
+    PyObject_SetAttrString(obj, "_fieldnames", info->fieldnames); // Will increment the reference count
+
+    // FIXME - reuse the fieldnames list from python - so it is in the right order
 
     int fnum;
     for(fnum = 0; fnum < info->num_fields && objValid; fnum++) {
@@ -508,10 +625,6 @@ static PyObject *msg_to_py(PyObject* msgclass, const py_message_t *pymsg) {
         if(val != NULL) {
             PyObject_SetAttr(obj, f->name, val);
             Py_DECREF(val); // We no longer need val, the attribute will keep a ref
-
-            // SetItem is a rare special case - it will steal our reference
-            Py_INCREF(f->name);
-            PyList_SetItem(fieldNameList, fnum, f->name);
         }
         else 
             objValid = FALSE;
@@ -570,7 +683,7 @@ static int get_expectedlength(NativeConnection *self)
             break;
     } 
     
-    // mavdebug("in state %d, expected_length=%d\n", (int) self->mav_status.parse_state, desired);
+    mavdebug("in state %d, expected_length=%d\n", (int) self->mav_status.parse_state, desired);
     return desired;
 }
 
@@ -608,7 +721,7 @@ py_parse_chars(NativeConnection *self, PyObject *args)
     while(numBytes) {
         char c = *bytes++;
         numBytes--;
-        // get_expectedlength(self); mavdebug("parse 0x%x\n", (unsigned char) c);
+        get_expectedlength(self); mavdebug("parse 0x%x\n", (unsigned char) c);
 
         if (py_mavlink_parse_char(c, &self->msg, &self->mav_status)) {
             mavdebug("got packet\n");
@@ -688,22 +801,31 @@ NativeConnection_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static int
 NativeConnection_init(NativeConnection *self, PyObject *args, PyObject *kwds)
 {
+    PYTHON_ENTRY
+
     memset(&self->mav_status, 0, sizeof(self->mav_status));
 
-    PyObject* msgclass;
-    if (!PyArg_ParseTuple(args, "O", &msgclass)) {
+    PyObject* msgclass, *mavlink_map;
+    if (!PyArg_ParseTuple(args, "OO", &msgclass, &mavlink_map)) {
         set_pyerror("Invalid arguments");
         return -1;
     }
 
     // keep a ref to our mavlink instance constructor
-    if(msgclass) {
-        self->MAVLinkMessage = msgclass;
-        Py_INCREF(msgclass);
+    assert(msgclass);
+    self->MAVLinkMessage = msgclass;
+    Py_INCREF(msgclass);
+
+    assert(mavlink_map);
+    if(!info_inited) {
+        init_message_info(mavlink_map);
+        info_inited = TRUE;
     }
 
     mavdebug("inited connection\n");
     return 0;
+
+    PYTHON_EXIT_INT
 }
 
 static void NativeConnection_dealloc(NativeConnection* self)
@@ -792,8 +914,6 @@ initmavnative(void)
     PyObject *m = Py_InitModule3("mavnative", ModuleMethods, "Mavnative module");
     if (m == NULL)
         return;
-
-    init_message_info();
 
     MAVNativeError = PyErr_NewException("mavnative.error", NULL, NULL);
     Py_INCREF(MAVNativeError);
