@@ -960,6 +960,36 @@ class mavlogfile(mavfile):
         if msg.get_type() != "BAD_DATA":
             self._last_timestamp = msg._timestamp
 
+
+class mavmemlog(mavfile):
+    '''a MAVLink log in memory. This allows loading a log into
+    memory to make it easier to do multiple sweeps over a log'''
+    def __init__(self, mav):
+        mavfile.__init__(self, None, 'memlog')
+        self._msgs = []
+        self._index = 0
+        self._count = 0
+        while True:
+            m = mav.recv_msg()
+            if m is None:
+                break
+            self._msgs.append(m)
+        self._count = len(self._msgs)
+
+    def recv_msg(self):
+        '''message receive routine'''
+        if self._index >= self._count:
+            return None
+        m = self._msgs[self._index]
+        self._index += 1
+        self.percent = (100.0 * self._index) / self._count
+        return m
+
+    def rewind(self):
+        '''rewind to start'''
+        self._index = 0
+        self.percent = 0
+
 class mavchildexec(mavfile):
     '''a MAVLink child processes reader/writer'''
     def __init__(self, filename, source_system=255):
