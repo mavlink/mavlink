@@ -453,6 +453,7 @@ static void init_message_info(PyObject *mavlink_map) {
         for(fnum = 0; fnum < num_fields; fnum++) {
             PyObject *field_name_obj = PyList_GetItem(fieldname_list, fnum); // returns a _borrowed_ reference
             assert(field_name_obj);
+            Py_INCREF(field_name_obj);
 
             PyObject *len_obj = PyList_GetItem(arrlen_list, fnum); // returns a _borrowed_ reference
             assert(len_obj);                        
@@ -469,8 +470,6 @@ static void init_message_info(PyObject *mavlink_map) {
         Py_DECREF(arrlen_list);
         Py_DECREF(type_format);
         //Py_DECREF(order_list);
-        Py_DECREF(arrlen_list);
-        Py_DECREF(type_format);
     }
 
     Py_DECREF(items_list);
@@ -755,6 +754,8 @@ py_parse_buffer(NativeConnection *self, PyObject *args)
 {
     PYTHON_ENTRY
 
+    mavdebug("Enter py_parse_buffer\n");
+
     const char *bytes;
     Py_ssize_t numBytes = 0;
 
@@ -802,6 +803,8 @@ static int
 NativeConnection_init(NativeConnection *self, PyObject *args, PyObject *kwds)
 {
     PYTHON_ENTRY
+
+    mavdebug("Enter init\n");
 
     memset(&self->mav_status, 0, sizeof(self->mav_status));
 
