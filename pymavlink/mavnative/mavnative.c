@@ -54,12 +54,10 @@ static void comm_send_ch(mavlink_channel_t chan, uint8_t c) {
 #define FALSE 0
 
 typedef struct {
-        PyObject                *name;                 // name of this field
-        // const char *print_format;         // printing format hint, or NULL
-        mavlink_message_type_t  type;      // type of this field
+        PyObject                *name;               // name of this field
+        mavlink_message_type_t  type;                // type of this field
         unsigned int            array_length;        // if non-zero, field is an array
         unsigned int            wire_offset;         // offset of each field in the payload
-        // unsigned int structure_offset;    // offset in a C structure
 } py_field_info_t;
 
 // note that in this structure the order of fields is the order
@@ -71,7 +69,7 @@ typedef struct {
     uint8_t             crc_extra;                                    // the CRC extra for this message
     unsigned            num_fields;                                   // how many fields in this message
     PyObject            *fieldnames;                                  // fieldnames in the correct order expected by user (not wire order)
-    py_field_info_t     fields[MAVLINK_MAX_FIELDS];            // field information
+    py_field_info_t     fields[MAVLINK_MAX_FIELDS];                   // field information
 } py_message_info_t;
 
 static py_message_info_t py_message_info[256];
@@ -511,13 +509,23 @@ static PyObject *pyextract_mavlink(const mavlink_message_t *msg, const py_field_
     int numValues = (field->array_length == 0) ? 1 : field->array_length;
     unsigned fieldSize = get_field_size(field->type);
 
+    uint8_t string_ended = FALSE;
+
+    if(arrayResult != NULL)
+        result = arrayResult;
+
     // Either build a full array of results, or return a single value 
     for(index = 0; index < numValues; index++) {
         PyObject *val = NULL;
 
         switch(field->type) {
             case MAVLINK_TYPE_CHAR: {
+                // If we are building a string, stop writing when we see a null char
                 char c = _MAV_RETURN_char(msg, offset);
+
+                if(stringResult && c == 0) 
+                    string_ended = TRUE;
+
                 val = PyString_FromStringAndSize(&c, 1);
                 break;
                 }
@@ -558,13 +566,15 @@ static PyObject *pyextract_mavlink(const mavlink_message_t *msg, const py_field_
         }
         offset += fieldSize;
 
-        if(arrayResult != NULL)  {
+        if(arrayResult != NULL)  
             PyList_SetItem(arrayResult, index, val);
-            result = arrayResult;
-        }
         else if(stringResult != NULL) {
-            PyString_ConcatAndDel(&stringResult, val);
-            result = stringResult;
+            if(!string_ended) {
+                PyString_ConcatAndDel(&stringResult, val);
+                result = stringResult;
+            }
+            else
+                Py_DECREF(val); // We didn't use this char
         }
         else // Not building an array
             result = val;

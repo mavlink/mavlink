@@ -117,12 +117,19 @@ class MAVLink_message(object):
         ret = ret[0:-2] + '}'
         return ret
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __eq__(self, other):
+        if other == None:
+            return False
+
         if self.get_type() != other.get_type():
             return False
 
-        if self.get_crc() != other.get_crc():
-            return False
+        # We do not compare CRC because native code doesn't provide it
+        #if self.get_crc() != other.get_crc():
+        #    return False
 
         if self.get_seq() != other.get_seq():
             return False
@@ -131,11 +138,13 @@ class MAVLink_message(object):
             return False            
 
         if self.get_srcComponent() != other.get_srcComponent():
-            return False        
+            return False   
             
         for a in self._fieldnames:
             if getattr(self, a) != getattr(other, a):
                 return False
+
+        return True
 
     def to_dict(self):
         d = dict({})
@@ -349,7 +358,7 @@ class MAVLink(object):
                 self.send_callback_args = None
                 self.send_callback_kwargs = None
                 self.buf = bytearray()
-                self.expected_length = 6
+                self.expected_length = 8
                 self.have_prefix_error = False
                 self.robust_parsing = False
                 self.protocol_marker = ${protocol_marker}
@@ -367,6 +376,8 @@ class MAVLink(object):
                     self.native = mavnative.NativeConnection(MAVLink_message, mavlink_map)
                 else:
                     self.native = None
+                if native_testing:
+                    self.test_buf = bytearray()
 
         def set_callback(self, callback, *args, **kwargs):
             self.callback = callback
@@ -401,7 +412,7 @@ class MAVLink(object):
 
         def __parse_char_native(self, c):
             '''this method exists only to see in profiling results'''
-            m = self.native.parse_chars(self.buf)
+            m = self.native.parse_chars(c)
             return m
 
         def __callbacks(self, msg):
@@ -416,16 +427,20 @@ class MAVLink(object):
             else:
                 self.buf.extend(bytearray(c))
 
-            if self.native:
-                m = self.__parse_char_native(c)
+            self.total_bytes_received += len(c)
 
+            if self.native:
                 if native_testing:
-                    m2 = self.__parse_char_legacy(c)
+                    self.test_buf.extend(c)
+                    m = self.__parse_char_native(self.test_buf)
+                    m2 = self.__parse_char_legacy(self.buf)
                     if m2 != m:
                         print "Native: %s\\nLegacy: %s\\n" % (m, m2)
-                        raise Exception('Native vs. Legacy mismatch')                
+                        raise Exception('Native vs. Legacy mismatch')
+                else:
+                    m = self.__parse_char_native(self.buf)
             else:
-                m = self.__parse_char_legacy(c)
+                m = self.__parse_char_legacy(self.buf)
 
             if m != None:
                 self.total_packets_received += 1
@@ -435,7 +450,6 @@ class MAVLink(object):
 
         def __parse_char_legacy(self, c):
             '''input some data bytes, possibly returning a new message (uses no native code)'''
-            self.total_bytes_received += len(c)
             if len(self.buf) >= 1 and self.buf[0] != ${protocol_marker}:
                 magic = self.buf[0]
                 self.buf = self.buf[1:]
@@ -443,7 +457,7 @@ class MAVLink(object):
                     m = MAVLink_bad_data(chr(magic), "Bad prefix")
                     if self.callback:
                         self.callback(m, *self.callback_args, **self.callback_kwargs)
-                    self.expected_length = 6
+                    self.expected_length = 8
                     self.total_receive_errors += 1
                     return m
                 if self.have_prefix_error:
@@ -458,7 +472,7 @@ class MAVLink(object):
             if self.expected_length >= 8 and len(self.buf) >= self.expected_length:
                 mbuf = self.buf[0:self.expected_length]
                 self.buf = self.buf[self.expected_length:]
-                self.expected_length = 6
+                self.expected_length = 8
                 if self.robust_parsing:
                     try:
                         m = self.decode(mbuf)
@@ -547,7 +561,7 @@ class MAVLink(object):
                 # terminate any strings
                 for i in range(0, len(tlist)):
                     if isinstance(tlist[i], str):
-                        tlist[i] = MAVString(tlist[i])
+                        tlist[i] = str(MAVString(tlist[i]))
                 t = tuple(tlist)
                 # construct the message object
                 try:
