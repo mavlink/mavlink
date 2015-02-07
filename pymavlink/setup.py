@@ -46,6 +46,13 @@ if not "NOGEN" in os.environ:
         print("Building %s" % xml)
         mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_1_0)
 
+mavnative_module = Extension('mavnative',
+                    sources = ['mavnative/mavnative.c'],
+                    include_dirs = [
+                        'generator/C/include_v1.0'
+                        ]
+                    )
+
 setup (name = 'pymavlink',
        version = version,
        description = 'Python MAVLink code',
@@ -93,5 +100,6 @@ setup (name = 'pymavlink',
                    'tools/mavgen.py',
                    'tools/mavkml.py',
                    'tools/mavsummarize.py',
-                   'tools/MPU6KSearch.py']
+                   'tools/MPU6KSearch.py'],
+       ext_modules = [mavnative_module]        
        )
