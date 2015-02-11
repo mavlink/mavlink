@@ -1087,7 +1087,7 @@ class periodic_event(object):
         tnow = time.time()
 
         if tnow < self.last_time:
-            print "Warning, time moved backwards. Restarting timer."
+            print("Warning, time moved backwards. Restarting timer.")
             self.last_time = tnow
 
         if self.last_time + (1.0/self.frequency) <= tnow:
