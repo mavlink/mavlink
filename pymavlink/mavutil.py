@@ -1269,7 +1269,11 @@ mode_mapping_acm = {
     8 : 'POSITION',
     9 : 'LAND',
     10 : 'OF_LOITER',
-    11 : 'APPROACH'
+    11 : 'DRIFT',
+    13 : 'SPORT',
+    14 : 'FLIP',
+    15 : 'AUTOTUNE',
+    16 : 'POSHOLD',
     }
 mode_mapping_rover = {
     0 : 'MANUAL',
