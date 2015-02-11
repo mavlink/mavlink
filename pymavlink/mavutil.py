@@ -95,7 +95,7 @@ def set_dialect(dialect):
         mod = __import__(modname)
     except Exception:
         # auto-generate the dialect module
-        from generator.mavgen import mavgen_python_dialect
+        from .generator.mavgen import mavgen_python_dialect
         mavgen_python_dialect(dialect, wire_protocol)
         mod = __import__(modname)
     components = modname.split('.')
