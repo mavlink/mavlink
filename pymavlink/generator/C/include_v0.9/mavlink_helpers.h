@@ -62,7 +62,7 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, ui
 	msg->len = length;
 	msg->sysid = system_id;
 	msg->compid = component_id;
-	// One sequence number per component
+	// One sequence number per channel
 	msg->seq = mavlink_get_channel_status(chan)->current_tx_seq;
 	mavlink_get_channel_status(chan)->current_tx_seq = mavlink_get_channel_status(chan)->current_tx_seq+1;
 	checksum = crc_calculate((uint8_t*)&msg->len, length + MAVLINK_CORE_HEADER_LEN);
