@@ -605,9 +605,7 @@ def generate_methods(outf, msgs):
                 '''
                 ${COMMENT}
                 '''
-                msg = MAVLink_${NAMELOWER}_message(${FIELDNAMES})
-                msg.pack(self)
-                return msg
+                return MAVLink_${NAMELOWER}_message(${FIELDNAMES})
 
 """, sub)
 
