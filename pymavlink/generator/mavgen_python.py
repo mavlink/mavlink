@@ -433,14 +433,14 @@ class MAVLink(object):
                 if native_testing:
                     self.test_buf.extend(c)
                     m = self.__parse_char_native(self.test_buf)
-                    m2 = self.__parse_char_legacy(self.buf)
+                    m2 = self.__parse_char_legacy()
                     if m2 != m:
                         print "Native: %s\\nLegacy: %s\\n" % (m, m2)
                         raise Exception('Native vs. Legacy mismatch')
                 else:
                     m = self.__parse_char_native(self.buf)
             else:
-                m = self.__parse_char_legacy(self.buf)
+                m = self.__parse_char_legacy()
 
             if m != None:
                 self.total_packets_received += 1
@@ -448,15 +448,13 @@ class MAVLink(object):
 
             return m
 
-        def __parse_char_legacy(self, c):
+        def __parse_char_legacy(self):
             '''input some data bytes, possibly returning a new message (uses no native code)'''
             if len(self.buf) >= 1 and self.buf[0] != ${protocol_marker}:
                 magic = self.buf[0]
                 self.buf = self.buf[1:]
                 if self.robust_parsing:
                     m = MAVLink_bad_data(chr(magic), "Bad prefix")
-                    if self.callback:
-                        self.callback(m, *self.callback_args, **self.callback_kwargs)
                     self.expected_length = 8
                     self.total_receive_errors += 1
                     return m
