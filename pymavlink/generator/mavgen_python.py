@@ -465,10 +465,10 @@ class MAVLink(object):
                 raise MAVError("invalid MAVLink prefix '%s'" % magic)
             self.have_prefix_error = False
             if len(self.buf) >= 2:
-                (magic, self.expected_length) = struct.unpack('BB', self.buf[0:2])
+                (magic, self.expected_length) = struct.unpack('BB', str(self.buf[0:2])) # bytearrays are not supported in py 2.7.3
                 self.expected_length += 8
             if self.expected_length >= 8 and len(self.buf) >= self.expected_length:
-                mbuf = self.buf[0:self.expected_length]
+                mbuf = array.array('B', self.buf[0:self.expected_length])
                 self.buf = self.buf[self.expected_length:]
                 self.expected_length = 8
                 if self.robust_parsing:
