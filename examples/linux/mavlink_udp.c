@@ -27,6 +27,27 @@
  
  the rt library is needed for the clock_gettime on linux
  */
+
+
+/*
+ 
+ MacOS xCode 6.1.1 Instructions
+ ===================================
+ 
+ Open mavlink_udp.xcodeproj in xcode. In the project navigator (left) select the
+ project. Choose Build Settings -> (scroll down to) Search Paths -> (double click)
+ Header Search Paths. Add your header directory as required. Mine is:
+ 
+ /Users/aaa/uav/Firmware/mavlink/include/mavlink/v1.0/pixhawk
+ 
+ Run with the play button.
+ 
+ 
+ 
+ */
+
+
+
 /* These headers are for QNX, but should all be standard on unix/linux */
 #include <stdio.h>
 #include <errno.h>
