@@ -362,6 +362,7 @@ class DFReader_binary(DFReader):
             hdr = self.data[self.offset:self.offset+3]
         msg_type = ord(hdr[2])
         if skip_bytes != 0:
+            self.remaining -= skip_bytes
             print("Skipped %u bad bytes in log %s" % (skip_bytes, skip_type))
 
         self.offset += 3
