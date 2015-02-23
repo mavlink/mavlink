@@ -7,6 +7,8 @@ of a series of MAVLink packets, each with a 64 bit timestamp
 header. The timestamp is in microseconds since 1970 (unix epoch)
 '''
 
+from __future__ import print_function
+
 import sys, time, os, struct, json
 
 from argparse import ArgumentParser
@@ -119,6 +121,12 @@ while True:
     if args.quiet:
         continue
 
+    # Output BAD_DATA messages over stderr so they can be easily filtered out
+    if m.get_type() == 'BAD_DATA':
+        out = sys.stderr
+    else:
+        out = sys.stdout
+
     # If JSON was ordered, serve it up. Split it nicely into metadata and data.
     if args.format == 'json':
         # Format our message as a Python dict, which gets us almost to proper JSON format
@@ -136,7 +144,7 @@ while True:
         outMsg = {"meta": {"msgId": m.get_msgId(), "type": m.get_type(), "timestamp": timestamp}, "data": data}
 
         # Now print out this object with stringified properly.
-        print(json.dumps(outMsg))
+        print(json.dumps(outMsg), file=out)
     # CSV format outputs columnar data with a user-specified delimiter
     elif args.format == 'csv':
         data = m.to_dict()
@@ -153,14 +161,14 @@ while True:
         # Otherwise if this is a new timestamp, print out the old output data, and store the current message for later output.
         else:
             csv_out[0] = "{:.8f}".format(last_timestamp)
-            print(args.csv_sep.join(csv_out))
+            print(args.csv_sep.join(csv_out), file=out)
             csv_out = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
     # Otherwise we output in a standard Python dict-style format
     else:
         print("%s.%02u: %s" % (
             time.strftime("%Y-%m-%d %H:%M:%S",
                           time.localtime(timestamp)),
-                          int(timestamp*100.0)%100, m))
+                          int(timestamp*100.0)%100, m), file=out)
 
     # Update our last timestamp value.
     last_timestamp = timestamp

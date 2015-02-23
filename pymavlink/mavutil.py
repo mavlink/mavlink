@@ -6,7 +6,7 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
 
-import socket, math, struct, time, os, fnmatch, array, sys, errno
+import socket, math, struct, time, os, fnmatch, array, sys, errno, calendar
 
 # adding these extra imports allows pymavlink to be used directly with pyinstaller
 # without having complex spec files. To allow for installs that don't have ardupilotmega
@@ -31,6 +31,14 @@ if home is not None:
         import imp
         mavuser = imp.load_source('pymavlink.mavuser', extra)
         from pymavlink.mavuser import *
+
+# Define Jan 1st, 2009 as a timestamp. This is the year MAVLink was released, so it's used as
+# a cutoff point for determining if a timestamp is the uptime of the vehicle or a proper
+# unix timestamp. Timestamps smaller than this are relative times and dates later are absolute.
+TIMESTAMP_CUTOFF = calendar.timegm((2009, 1, 1, 0, 0, 0, 0))
+
+# Store maximum values for use as invalid data indicators
+UINT32_MAX, UINT64_MAX = (2**32 - 1, 2**64 - 1)
 
 # Store the MAVLink library for the currently-selected dialect
 # (set by set_dialect())
@@ -143,7 +151,7 @@ class mavfile(object):
         self.idle_hooks = []
         self.uptime = 0.0
         self.notimestamps = notimestamps
-        self._timestamp = None
+        self._timestamp = None # The last timestamp successfully decoded from the datastream
         self.ground_pressure = None
         self.ground_temperature = None
         self.altitude = 0
@@ -211,21 +219,33 @@ class mavfile(object):
         if '_posted' in msg.__dict__:
             return
         msg._posted = True
-        msg._timestamp = time.time()
         type = msg.get_type()
         if type != 'HEARTBEAT' or (msg.type != mavlink.MAV_TYPE_GCS and msg.type != mavlink.MAV_TYPE_GIMBAL):
             self.messages[type] = msg
 
-        if 'usec' in msg.__dict__:
+        # Try to extract time information from the message if it encodes any.
+        # Note that this could be either a relative time since startup or a proper Unix timestamp
+        # Use the defined TIMESTAMP_CUTOFF date to check.
+        if 'usec' in msg.__dict__ and msg.usec != 0 and msg.usec != UINT64_MAX:
             self.uptime = msg.usec * 1.0e-6
-        if 'time_boot_ms' in msg.__dict__:
+        elif 'time_usec' in msg.__dict__ and msg.time_usec != 0 and msg.time_usec != UINT64_MAX:
+            self.uptime = msg.time_usec * 1.0e-6
+        elif 'time_unix_usec' in msg.__dict__ and msg.time_unix_usec != 0 and msg.time_unix_usec != UINT64_MAX:
+            self.uptime = msg.time_unix_usec * 1.0e-6
+        elif 'time_boot_ms' in msg.__dict__ and msg.time_boot_ms != 0 and msg.time_boot_ms != UINT32_MAX:
             self.uptime = msg.time_boot_ms * 1.0e-3
 
+        # Now select the best timestamp for this message. If no timestamps are in this datastream,
+        # the timestamp is decoded from the message. Otherwise the timestamp from the datastream is
+        # used for this message. And finally if neither of those cases applies, the current time is
+        # used.
         if self._timestamp is not None:
             if self.notimestamps:
                 msg._timestamp = self.uptime
             else:
                 msg._timestamp = self._timestamp
+        else:
+            msg._timestamp = time.time()
 
         src_system = msg.get_srcSystem()
         if not (
@@ -888,13 +908,12 @@ class mavlogfile(mavfile):
         self.filesize = os.path.getsize(filename)
         self.percent = 0
         mavfile.__init__(self, None, filename, source_system=source_system, notimestamps=notimestamps)
+        # If there are no timestamps in the file, make sure to set _timestamps to a sane default value instead of None.
         if self.notimestamps:
             self._timestamp = 0
-        else:
-            self._timestamp = time.time()
         self.stop_on_EOF = True
         self._last_message = None
-        self._last_timestamp = None
+        self._last_timestamp = None # The last datastream timestamp encountered in the logfile
 
     def close(self):
         self.f.close()
