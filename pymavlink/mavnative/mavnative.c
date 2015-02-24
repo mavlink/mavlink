@@ -15,6 +15,21 @@
 #include <stddef.h>
 #include <setjmp.h>
 
+#if PY_MAJOR_VERSION >= 3
+// In python3 it only has longs, not 32 bit ints
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_FromLong PyLong_FromLong
+
+// We returns strings for byte arreays in python2, but bytes objects in python3
+#define PyByteString_FromString PyBytes_FromString
+#define PyByteString_FromStringAndSize PyBytes_FromStringAndSize
+#define PyByteString_ConcatAndDel PyBytes_ConcatAndDel
+#else
+#define PyByteString_FromString PyString_FromString
+#define PyByteString_FromStringAndSize PyString_FromStringAndSize
+#define PyByteString_ConcatAndDel PyString_ConcatAndDel
+#endif
+
 #include "mavlink_defaults.h"
 
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
@@ -431,7 +446,7 @@ static void init_message_info(PyObject *mavlink_map) {
         assert(arrlen_list);
         PyObject *type_format = PyObject_GetAttrString(type_class, "native_format"); // A new reference
         assert(type_format);
-        char *type_str = PyString_AsString(type_format);
+        char *type_str = PyByteArray_AsString(type_format);
         assert(type_str);
                
         Py_ssize_t num_fields = PyList_Size(fieldname_list);
@@ -503,7 +518,7 @@ static PyObject *pyextract_mavlink(const mavlink_message_t *msg, const py_field_
 
     // For arrays of chars we build the result in a string instead of an array
     PyObject *arrayResult =  (field->array_length != 0 && field->type != MAVLINK_TYPE_CHAR) ? PyList_New(field->array_length) : NULL;
-    PyObject *stringResult = (field->array_length != 0 && field->type == MAVLINK_TYPE_CHAR) ? PyString_FromString("") : NULL;
+    PyObject *stringResult = (field->array_length != 0 && field->type == MAVLINK_TYPE_CHAR) ? PyByteString_FromString("") : NULL;
     PyObject *result = NULL;
 
     int numValues = (field->array_length == 0) ? 1 : field->array_length;
@@ -526,7 +541,7 @@ static PyObject *pyextract_mavlink(const mavlink_message_t *msg, const py_field_
                 if(stringResult && c == 0) 
                     string_ended = TRUE;
 
-                val = PyString_FromStringAndSize(&c, 1);
+                val = PyByteString_FromStringAndSize(&c, 1);
                 break;
                 }
             case MAVLINK_TYPE_UINT8_T:
@@ -542,16 +557,16 @@ static PyObject *pyextract_mavlink(const mavlink_message_t *msg, const py_field_
                 val = PyInt_FromLong(_MAV_RETURN_int16_t(msg, offset));
                 break;
             case MAVLINK_TYPE_UINT32_T:
-                val = PyInt_FromLong(_MAV_RETURN_uint32_t(msg, offset));
+                val = PyLong_FromLong(_MAV_RETURN_uint32_t(msg, offset));
                 break;
             case MAVLINK_TYPE_INT32_T:
                 val = PyInt_FromLong(_MAV_RETURN_int32_t(msg, offset));   
                 break;
             case MAVLINK_TYPE_UINT64_T:
-                val = PyInt_FromLong(_MAV_RETURN_uint64_t(msg, offset));
+                val = PyLong_FromLong(_MAV_RETURN_uint64_t(msg, offset));
                 break;
             case MAVLINK_TYPE_INT64_T:
-                val = PyInt_FromLong(_MAV_RETURN_int64_t(msg, offset));
+                val = PyLong_FromLong(_MAV_RETURN_int64_t(msg, offset));
                 break;
             case MAVLINK_TYPE_FLOAT:
                 val = PyFloat_FromDouble(_MAV_RETURN_float(msg, offset));
@@ -566,11 +581,12 @@ static PyObject *pyextract_mavlink(const mavlink_message_t *msg, const py_field_
         }
         offset += fieldSize;
 
+        assert(val);
         if(arrayResult != NULL)  
             PyList_SetItem(arrayResult, index, val);
         else if(stringResult != NULL) {
             if(!string_ended) {
-                PyString_ConcatAndDel(&stringResult, val);
+                PyByteString_ConcatAndDel(&stringResult, val);
                 result = stringResult;
             }
             else
@@ -844,7 +860,7 @@ NativeConnection_init(NativeConnection *self, PyObject *args, PyObject *kwds)
 static void NativeConnection_dealloc(NativeConnection* self)
 {
     Py_XDECREF(self->MAVLinkMessage);
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyMemberDef NativeConnection_members[] = {
@@ -869,8 +885,12 @@ static PyMethodDef NativeConnection_methods[] = {
 
 // FIXME - delete this?
 static PyTypeObject NativeConnectionType = {
+#if PY_MAJOR_VERSION >= 3
+    PyVarObject_HEAD_INIT(NULL, 0)
+#else
     PyObject_HEAD_INIT(NULL)
     0,                       /* ob_size */
+#endif
     "mavnative.NativeConnection",      /* tp_name */
     sizeof(NativeConnection),          /* tp_basicsize */
     0,                       /* tp_itemsize */
@@ -911,22 +931,41 @@ static PyTypeObject NativeConnectionType = {
     NativeConnection_new,    /* tp_new */
 };
 
-
-
-static PyMethodDef ModuleMethods[] = {
-    {NULL, NULL, 0, NULL}        /* Sentinel */
-};
-
+#if PY_MAJOR_VERSION >= 3
+#define MOD_RETURN(m) return m
+#else
+#define MOD_RETURN(m) return
+#endif
 
 PyMODINIT_FUNC
-initmavnative(void)
+#if PY_MAJOR_VERSION >= 3
+    PyInit_mavnative(void)
+#else
+    initmavnative(void)
+#endif
 {
     if (PyType_Ready(&NativeConnectionType) < 0)
-        return;
+        MOD_RETURN(NULL);
+
+#if PY_MAJOR_VERSION < 3
+    static PyMethodDef ModuleMethods[] = {
+        {NULL, NULL, 0, NULL}        /* Sentinel */
+    };
 
     PyObject *m = Py_InitModule3("mavnative", ModuleMethods, "Mavnative module");
     if (m == NULL)
-        return;
+        MOD_RETURN(m);
+#else
+    static PyModuleDef mod_def = {
+        PyModuleDef_HEAD_INIT,
+        "mavnative",
+        "EMavnative module",
+        -1,
+        NULL, NULL, NULL, NULL, NULL
+    };
+
+    PyObject *m = PyModule_Create(&mod_def);
+#endif
 
     MAVNativeError = PyErr_NewException("mavnative.error", NULL, NULL);
     Py_INCREF(MAVNativeError);
@@ -934,4 +973,5 @@ initmavnative(void)
 
     Py_INCREF(&NativeConnectionType);
     PyModule_AddObject(m, "NativeConnection", (PyObject *) &NativeConnectionType);
+    MOD_RETURN(m);
 }
