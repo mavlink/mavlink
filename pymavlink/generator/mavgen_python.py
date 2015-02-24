@@ -22,22 +22,22 @@ Generated from: ${FILELIST}
 Note: this file has been auto-generated. DO NOT EDIT
 '''
 
-import struct, array, time, json, os
+import struct, array, time, json, os, sys, platform
 
 from ...generator.mavcrc import x25crc
 
 WIRE_PROTOCOL_VERSION = "${WIRE_PROTOCOL_VERSION}"
 DIALECT = "${DIALECT}"
 
-native_supported = True # Not yet supported on other dialects
+native_supported = platform.system() != 'Windows' # Not yet supported on other dialects
 native_force = 'MAVNATIVE_FORCE' in os.environ # Will force use of native code regardless of what client app wants
 native_testing = 'MAVNATIVE_TESTING' in os.environ # Will force both native and legacy code to be used and their results compared
 
 if native_supported:
     try:
         import mavnative
-    except:
-        print "ERROR LOADING MAVNATIVE - falling back to python implementation"
+    except ImportError:
+        print("ERROR LOADING MAVNATIVE - falling back to python implementation")
         native_supported = False
 
 # some base types from mavlink_types.h
@@ -227,7 +227,7 @@ class %s(MAVLink_message):
         fieldnames = [%s]
         ordered_fieldnames = [ %s ]
         format = '%s'
-        native_format = '%s'
+        native_format = bytearray('%s', 'ascii')
         orders = %s
         lengths = %s
         array_lengths = %s
@@ -372,7 +372,7 @@ class MAVLink(object):
                 self.total_receive_errors = 0
                 self.startup_time = time.time()
                 if native_supported and (use_native or native_testing or native_force):
-                    print "NOTE: mavnative is currently beta-test code"
+                    print("NOTE: mavnative is currently beta-test code")
                     self.native = mavnative.NativeConnection(MAVLink_message, mavlink_map)
                 else:
                     self.native = None
@@ -422,10 +422,7 @@ class MAVLink(object):
 
         def parse_char(self, c):
             '''input some data bytes, possibly returning a new message'''
-            if isinstance(c, bytearray):
-                self.buf.extend(c)
-            else:
-                self.buf.extend(bytearray(c))
+            self.buf.extend(c)
 
             self.total_bytes_received += len(c)
 
@@ -435,7 +432,7 @@ class MAVLink(object):
                     m = self.__parse_char_native(self.test_buf)
                     m2 = self.__parse_char_legacy()
                     if m2 != m:
-                        print "Native: %s\\nLegacy: %s\\n" % (m, m2)
+                        print("Native: %s\\nLegacy: %s\\n" % (m, m2))
                         raise Exception('Native vs. Legacy mismatch')
                 else:
                     m = self.__parse_char_native(self.buf)
@@ -465,7 +462,10 @@ class MAVLink(object):
                 raise MAVError("invalid MAVLink prefix '%s'" % magic)
             self.have_prefix_error = False
             if len(self.buf) >= 2:
-                (magic, self.expected_length) = struct.unpack('BB', str(self.buf[0:2])) # bytearrays are not supported in py 2.7.3
+                if sys.version_info[0] < 3:
+                    (magic, self.expected_length) = struct.unpack('BB', str(self.buf[0:2])) # bytearrays are not supported in py 2.7.3
+                else:
+                    (magic, self.expected_length) = struct.unpack('BB', self.buf[0:2])
                 self.expected_length += 8
             if self.expected_length >= 8 and len(self.buf) >= self.expected_length:
                 mbuf = array.array('B', self.buf[0:self.expected_length])
