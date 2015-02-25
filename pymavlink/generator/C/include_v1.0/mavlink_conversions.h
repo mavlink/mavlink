@@ -157,7 +157,8 @@ MAVLINK_HELPER void mavlink_dcm_to_quaternion(const float dcm[3][3], float quate
         /* Find maximum diagonal element in dcm
          * store index in dcm_i */
         int dcm_i = 0;
-        for (int i = 1; i < 3; i++) {
+        int i;
+        for (i = 1; i < 3; i++) {
             if (dcm[i][i] > dcm[dcm_i][dcm_i]) {
                 dcm_i = i;
             }
