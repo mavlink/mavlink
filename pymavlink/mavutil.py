@@ -309,6 +309,9 @@ class mavfile(object):
         start_time = time.time()
         while True:
             if timeout is not None:
+                now = time.time()
+                if now < start_time:
+                    start_time = now # If an external process rolls back system time, we should not spin forever.
                 if start_time + timeout < time.time():
                     return None
             m = self.recv_msg()
