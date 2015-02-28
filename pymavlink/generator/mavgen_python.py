@@ -11,7 +11,7 @@ from . import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
 
-def generate_preamble(outf, msgs, args, xml):
+def generate_preamble(outf, msgs, basename, args, xml):
     print("Generating preamble")
     t.write(outf, """
 '''
@@ -22,11 +22,23 @@ Generated from: ${FILELIST}
 Note: this file has been auto-generated. DO NOT EDIT
 '''
 
-import struct, array, time, json
+import struct, array, time, json, os, sys, platform
+
 from ...generator.mavcrc import x25crc
 
 WIRE_PROTOCOL_VERSION = "${WIRE_PROTOCOL_VERSION}"
+DIALECT = "${DIALECT}"
 
+native_supported = platform.system() != 'Windows' # Not yet supported on other dialects
+native_force = 'MAVNATIVE_FORCE' in os.environ # Will force use of native code regardless of what client app wants
+native_testing = 'MAVNATIVE_TESTING' in os.environ # Will force both native and legacy code to be used and their results compared
+
+if native_supported:
+    try:
+        import mavnative
+    except ImportError:
+        print("ERROR LOADING MAVNATIVE - falling back to python implementation")
+        native_supported = False
 
 # some base types from mavlink_types.h
 MAVLINK_TYPE_CHAR     = 0
@@ -66,9 +78,9 @@ class MAVLink_message(object):
         self._type       = name
 
     def get_msgbuf(self):
-        if isinstance(self._msgbuf, str):
+        if isinstance(self._msgbuf, bytearray):
             return self._msgbuf
-        return self._msgbuf.tostring()
+        return bytearray(self._msgbuf)
 
     def get_header(self):
         return self._header
@@ -105,6 +117,35 @@ class MAVLink_message(object):
         ret = ret[0:-2] + '}'
         return ret
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __eq__(self, other):
+        if other == None:
+            return False
+
+        if self.get_type() != other.get_type():
+            return False
+
+        # We do not compare CRC because native code doesn't provide it
+        #if self.get_crc() != other.get_crc():
+        #    return False
+
+        if self.get_seq() != other.get_seq():
+            return False
+
+        if self.get_srcSystem() != other.get_srcSystem():
+            return False            
+
+        if self.get_srcComponent() != other.get_srcComponent():
+            return False   
+            
+        for a in self._fieldnames:
+            if getattr(self, a) != getattr(other, a):
+                return False
+
+        return True
+
     def to_dict(self):
         d = dict({})
         d['mavpackettype'] = self._type
@@ -129,6 +170,7 @@ class MAVLink_message(object):
 
 """, {'FILELIST' : ",".join(args),
       'PROTOCOL_MARKER' : xml.protocol_marker,
+      'DIALECT' : os.path.splitext(os.path.basename(basename))[0],
       'crc_extra' : xml.crc_extra,
       'WIRE_PROTOCOL_VERSION' : xml.wire_protocol_version })
 
@@ -171,18 +213,42 @@ def generate_classes(outf, msgs):
     print("Generating class definitions")
     wrapper = textwrap.TextWrapper(initial_indent="        ", subsequent_indent="        ")
     for m in msgs:
+        classname = "MAVLink_%s_message" % m.name.lower()
+        fieldname_str = ", ".join(map(lambda s: "'%s'" % s, m.fieldnames))
+        ordered_fieldname_str = ", ".join(map(lambda s: "'%s'" % s, m.ordered_fieldnames))
+
         outf.write("""
-class MAVLink_%s_message(MAVLink_message):
+class %s(MAVLink_message):
         '''
 %s
         '''
-        def __init__(self""" % (m.name.lower(), wrapper.fill(m.description.strip())))
+        id = MAVLINK_MSG_ID_%s
+        name = '%s'
+        fieldnames = [%s]
+        ordered_fieldnames = [ %s ]
+        format = '%s'
+        native_format = bytearray('%s', 'ascii')
+        orders = %s
+        lengths = %s
+        array_lengths = %s
+        crc_extra = %s
+
+        def __init__(self""" % (classname, wrapper.fill(m.description.strip()), 
+            m.name.upper(), 
+            m.name.upper(),
+            fieldname_str,
+            ordered_fieldname_str,
+            m.fmtstr,
+            m.native_fmtstr,
+            m.order_map,
+            m.len_map,
+            m.array_len_map,
+            m.crc_extra))
         if len(m.fields) != 0:
                 outf.write(", " + ", ".join(m.fieldnames))
         outf.write("):\n")
-        outf.write("                MAVLink_message.__init__(self, MAVLINK_MSG_ID_%s, '%s')\n" % (m.name.upper(), m.name.upper()))
-        if len(m.fieldnames) != 0:
-                outf.write("                self._fieldnames = ['%s']\n" % "', '".join(m.fieldnames))
+        outf.write("                MAVLink_message.__init__(self, %s.id, %s.name)\n" % (classname, classname))
+        outf.write("                self._fieldnames = %s.fieldnames\n" % (classname))
         for f in m.fields:
                 outf.write("                self.%s = %s\n" % (f.name, f.name))
         outf.write("""
@@ -196,6 +262,24 @@ class MAVLink_%s_message(MAVLink_message):
                         outf.write(", self.{0:s}".format(field.name))
         outf.write("))\n")
 
+
+def native_mavfmt(field):
+    '''work out the struct format for a type (in a form expected by mavnative)'''
+    map = {
+        'float'    : 'f',
+        'double'   : 'd',
+        'char'     : 'c',
+        'int8_t'   : 'b',
+        'uint8_t'  : 'B',
+        'uint8_t_mavlink_version'  : 'v',
+        'int16_t'  : 'h',
+        'uint16_t' : 'H',
+        'int32_t'  : 'i',
+        'uint32_t' : 'I',
+        'int64_t'  : 'q',
+        'uint64_t' : 'Q',
+        }
+    return map[field.type]
 
 def mavfmt(field):
     '''work out the struct format for a type'''
@@ -225,8 +309,7 @@ def generate_mavlink_class(outf, msgs, xml):
 
     outf.write("\n\nmavlink_map = {\n");
     for m in msgs:
-        outf.write("        MAVLINK_MSG_ID_%s : ( '%s', MAVLink_%s_message, %s, %s, %u ),\n" % (
-            m.name.upper(), m.fmtstr, m.name.lower(), m.order_map, m.len_map, m.crc_extra))
+        outf.write("        MAVLINK_MSG_ID_%s : MAVLink_%s_message,\n" % (m.name.upper(), m.name.lower()))
     outf.write("}\n\n")
 
     t.write(outf, """
@@ -263,7 +346,7 @@ class MAVLink_bad_data(MAVLink_message):
 
 class MAVLink(object):
         '''MAVLink protocol handling class'''
-        def __init__(self, file, srcSystem=0, srcComponent=0):
+        def __init__(self, file, srcSystem=0, srcComponent=0, use_native=False):
                 self.seq = 0
                 self.file = file
                 self.srcSystem = srcSystem
@@ -274,8 +357,8 @@ class MAVLink(object):
                 self.send_callback = None
                 self.send_callback_args = None
                 self.send_callback_kwargs = None
-                self.buf = array.array('B')
-                self.expected_length = 6
+                self.buf = bytearray()
+                self.expected_length = 8
                 self.have_prefix_error = False
                 self.robust_parsing = False
                 self.protocol_marker = ${protocol_marker}
@@ -288,6 +371,13 @@ class MAVLink(object):
                 self.total_bytes_received = 0
                 self.total_receive_errors = 0
                 self.startup_time = time.time()
+                if native_supported and (use_native or native_testing or native_force):
+                    print("NOTE: mavnative is currently beta-test code")
+                    self.native = mavnative.NativeConnection(MAVLink_message, mavlink_map)
+                else:
+                    self.native = None
+                if native_testing:
+                    self.test_buf = bytearray()
 
         def set_callback(self, callback, *args, **kwargs):
             self.callback = callback
@@ -311,26 +401,58 @@ class MAVLink(object):
 
         def bytes_needed(self):
             '''return number of bytes needed for next parsing stage'''
-            ret = self.expected_length - len(self.buf)
+            if self.native:
+                ret = self.native.expected_length - len(self.buf)
+            else:
+                ret = self.expected_length - len(self.buf)
+            
             if ret <= 0:
                 return 1
             return ret
 
+        def __parse_char_native(self, c):
+            '''this method exists only to see in profiling results'''
+            m = self.native.parse_chars(c)
+            return m
+
+        def __callbacks(self, msg):
+            '''this method exists only to make profiling results easier to read'''
+            if self.callback:
+                self.callback(msg, *self.callback_args, **self.callback_kwargs)
+
         def parse_char(self, c):
             '''input some data bytes, possibly returning a new message'''
-            if isinstance(c, str):
-                self.buf.fromstring(c)
-            else:
-                self.buf.extend(c)
+            self.buf.extend(c)
+
             self.total_bytes_received += len(c)
+
+            if self.native:
+                if native_testing:
+                    self.test_buf.extend(c)
+                    m = self.__parse_char_native(self.test_buf)
+                    m2 = self.__parse_char_legacy()
+                    if m2 != m:
+                        print("Native: %s\\nLegacy: %s\\n" % (m, m2))
+                        raise Exception('Native vs. Legacy mismatch')
+                else:
+                    m = self.__parse_char_native(self.buf)
+            else:
+                m = self.__parse_char_legacy()
+
+            if m != None:
+                self.total_packets_received += 1
+                self.__callbacks(m)
+
+            return m
+
+        def __parse_char_legacy(self):
+            '''input some data bytes, possibly returning a new message (uses no native code)'''
             if len(self.buf) >= 1 and self.buf[0] != ${protocol_marker}:
                 magic = self.buf[0]
                 self.buf = self.buf[1:]
                 if self.robust_parsing:
                     m = MAVLink_bad_data(chr(magic), "Bad prefix")
-                    if self.callback:
-                        self.callback(m, *self.callback_args, **self.callback_kwargs)
-                    self.expected_length = 6
+                    self.expected_length = 8
                     self.total_receive_errors += 1
                     return m
                 if self.have_prefix_error:
@@ -340,24 +462,23 @@ class MAVLink(object):
                 raise MAVError("invalid MAVLink prefix '%s'" % magic)
             self.have_prefix_error = False
             if len(self.buf) >= 2:
-                (magic, self.expected_length) = struct.unpack('BB', self.buf[0:2])
+                if sys.version_info[0] < 3:
+                    (magic, self.expected_length) = struct.unpack('BB', str(self.buf[0:2])) # bytearrays are not supported in py 2.7.3
+                else:
+                    (magic, self.expected_length) = struct.unpack('BB', self.buf[0:2])
                 self.expected_length += 8
             if self.expected_length >= 8 and len(self.buf) >= self.expected_length:
-                mbuf = self.buf[0:self.expected_length]
+                mbuf = array.array('B', self.buf[0:self.expected_length])
                 self.buf = self.buf[self.expected_length:]
-                self.expected_length = 6
+                self.expected_length = 8
                 if self.robust_parsing:
                     try:
                         m = self.decode(mbuf)
-                        self.total_packets_received += 1
                     except MAVError as reason:
                         m = MAVLink_bad_data(mbuf, reason.message)
                         self.total_receive_errors += 1
                 else:
                     m = self.decode(mbuf)
-                    self.total_packets_received += 1
-                if self.callback:
-                    self.callback(m, *self.callback_args, **self.callback_kwargs)
                 return m
             return None
 
@@ -390,7 +511,11 @@ class MAVLink(object):
                     raise MAVError('unknown MAVLink message ID %u' % msgId)
 
                 # decode the payload
-                (fmt, type, order_map, len_map, crc_extra) = mavlink_map[msgId]
+                type = mavlink_map[msgId]
+                fmt = type.format
+                order_map = type.orders
+                len_map = type.lengths
+                crc_extra = type.crc_extra
 
                 # decode the checksum
                 try:
@@ -434,7 +559,7 @@ class MAVLink(object):
                 # terminate any strings
                 for i in range(0, len(tlist)):
                     if isinstance(tlist[i], str):
-                        tlist[i] = MAVString(tlist[i])
+                        tlist[i] = str(MAVString(tlist[i]))
                 t = tuple(tlist)
                 # construct the message object
                 try:
@@ -480,9 +605,7 @@ def generate_methods(outf, msgs):
                 '''
                 ${COMMENT}
                 '''
-                msg = MAVLink_${NAMELOWER}_message(${FIELDNAMES})
-                msg.pack(self)
-                return msg
+                return MAVLink_${NAMELOWER}_message(${FIELDNAMES})
 
 """, sub)
 
@@ -516,19 +639,23 @@ def generate(basename, xml):
             m.fmtstr = '<'
         else:
             m.fmtstr = '>'
+        m.native_fmtstr = m.fmtstr
         for f in m.ordered_fields:
             m.fmtstr += mavfmt(f)
+            m.native_fmtstr += native_mavfmt(f)
         m.order_map = [ 0 ] * len(m.fieldnames)
         m.len_map = [ 0 ] * len(m.fieldnames)
+        m.array_len_map = [ 0 ] * len(m.fieldnames)
         for i in range(0, len(m.fieldnames)):
             m.order_map[i] = m.ordered_fieldnames.index(m.fieldnames[i])
+            m.array_len_map[i] = m.ordered_fields[i].array_length
         for i in range(0, len(m.fieldnames)):
             n = m.order_map[i]
             m.len_map[n] = m.fieldlengths[i]
 
     print("Generating %s" % filename)
     outf = open(filename, "w")
-    generate_preamble(outf, msgs, filelist, xml[0])
+    generate_preamble(outf, msgs, basename, filelist, xml[0])
     generate_enums(outf, enums)
     generate_message_ids(outf, msgs)
     generate_classes(outf, msgs)

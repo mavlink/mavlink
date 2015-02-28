@@ -9,7 +9,7 @@ except LookupError:
     codecs.register(func)
 
 from distutils.core import setup, Extension
-import glob, os, shutil, fnmatch
+import glob, os, shutil, fnmatch, platform
 
 version = '1.1.44'
 
@@ -45,6 +45,17 @@ if not "NOGEN" in os.environ:
             continue
         print("Building %s" % xml)
         mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_1_0)
+
+extensions = [] # Assume we might be unable to build native code
+if platform.system() != 'Windows':
+    extensions = [ Extension('mavnative',
+                    sources = ['mavnative/mavnative.c'],
+                    include_dirs = [
+                        'generator/C/include_v1.0'
+                        ]
+                    ) ]
+else:
+    print("Skipping mavnative due to Windows possibly missing a compiler...")
 
 setup (name = 'pymavlink',
        version = version,
@@ -93,5 +104,6 @@ setup (name = 'pymavlink',
                    'tools/mavgen.py',
                    'tools/mavkml.py',
                    'tools/mavsummarize.py',
-                   'tools/MPU6KSearch.py']
+                   'tools/MPU6KSearch.py'],
+       ext_modules = extensions
        )
