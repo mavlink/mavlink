@@ -287,12 +287,16 @@ class mavfile(object):
         while True:
             n = self.mav.bytes_needed()
             s = self.recv(n)
-            if len(s) == 0 and (len(self.mav.buf) == 0 or self.stop_on_EOF):
-                return None
-            if self.logfile_raw:
-                self.logfile_raw.write(str(s))
-            if self.first_byte:
-                self.auto_mavlink_version(s)
+            numnew = len(s)
+
+            if numnew != 0:
+                if self.logfile_raw:
+                    self.logfile_raw.write(str(s))
+                if self.first_byte:
+                    self.auto_mavlink_version(s)
+
+            # We always call parse_char even if the new string is empty, because the existing message buf might already have some valid packet
+            # we can extract
             msg = self.mav.parse_char(s)
             if msg:
                 if self.logfile and  msg.get_type() != 'BAD_DATA' :
@@ -300,6 +304,11 @@ class mavfile(object):
                     self.logfile.write(str(struct.pack('>Q', usec) + msg.get_msgbuf()))
                 self.post_message(msg)
                 return msg
+            else:
+                # if we failed to parse any messages _and_ no new bytes arrived, return immediately so the client has the option to
+                # timeout
+                if numnew == 0:
+                    return None
                 
     def recv_match(self, condition=None, type=None, blocking=False, timeout=None):
         '''recv the next MAVLink message that matches the given condition
