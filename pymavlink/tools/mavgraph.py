@@ -11,6 +11,12 @@ from math import *
 
 from pymavlink.mavextra import *
 
+# cope with rename of raw_input in python3
+try:
+    input = raw_input
+except NameError:
+    pass
+
 colourmap = {
     'apm' : {
         'MANUAL'    : (1.0,   0,   0),
@@ -278,7 +284,7 @@ for fi in range(0, len(filenames)):
 if args.output is None:
     pylab.show()
     pylab.draw()
-    raw_input('press enter to exit....')
+    input('press enter to exit....')
 else:
     pylab.legend(loc=2,prop={'size':8})
     pylab.savefig(args.output, bbox_inches='tight', dpi=200)
