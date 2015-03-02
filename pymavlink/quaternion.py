@@ -518,7 +518,7 @@ class Quaternion(QuaternionBase):
 
         """
         assert(isinstance(dcm, Matrix3))
-        self._dcm = dcm
+        self._dcm = dcm.copy()
 
         # mark other representations as outdated, will get generated on next
         # read
