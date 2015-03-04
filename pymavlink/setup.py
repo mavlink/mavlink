@@ -51,7 +51,8 @@ if platform.system() != 'Windows':
     extensions = [ Extension('mavnative',
                     sources = ['mavnative/mavnative.c'],
                     include_dirs = [
-                        'generator/C/include_v1.0'
+                        'generator/C/include_v1.0',
+                        'mavnative'
                         ]
                     ) ]
 else:
