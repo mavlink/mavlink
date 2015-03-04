@@ -11,7 +11,7 @@ except LookupError:
 from distutils.core import setup, Extension
 import glob, os, shutil, fnmatch, platform
 
-version = '1.1.46'
+version = '1.1.47'
 
 from generator import mavgen, mavparse
 
@@ -81,7 +81,8 @@ setup (name = 'pymavlink',
                                                      'C/include_v0.9/*.h',
                                                      'C/include_v1.0/*.h',
                                                      'C/include_v1.0/*.hpp' ],
-                        'pymavlink.generator.lib.minixsv': [ '*.xsd' ] },
+                        'pymavlink.generator.lib.minixsv': [ '*.xsd' ],
+                        'pymavlink' : ['mavnaative/*.h'] },
        packages = ['pymavlink',
                    'pymavlink.generator',
                    'pymavlink.generator.lib',
