@@ -7,6 +7,7 @@ Released under GNU GPL version 3 or later
 '''
 
 import socket, math, struct, time, os, fnmatch, array, sys, errno
+import select
 
 # adding these extra imports allows pymavlink to be used directly with pyinstaller
 # without having complex spec files. To allow for installs that don't have ardupilotmega
@@ -201,6 +202,18 @@ class mavfile(object):
         '''default write method'''
         raise RuntimeError('no write() method supplied')
 
+
+    def select(self, timeout):
+        '''wait for up to timeout seconds for more data'''
+        if self.fd is None:
+            time.sleep(timeout)
+            return True
+        try:
+            (rin, win, xin) = select.select([self.fd], [], [], timeout)
+        except select.error:
+            return False
+        return len(rin) == 1
+
     def pre_message(self):
         '''default pre message call'''
         return
@@ -329,9 +342,9 @@ class mavfile(object):
                     for hook in self.idle_hooks:
                         hook(self)
                     if timeout is None:
-                        time.sleep(0.01)
+                        self.select(0.05)
                     else:
-                        time.sleep(timeout/2)
+                        self.select(timeout/2)
                     continue
                 return None
             if type is not None and not m.get_type() in type:
