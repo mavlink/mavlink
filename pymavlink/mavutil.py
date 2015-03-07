@@ -206,7 +206,7 @@ class mavfile(object):
     def select(self, timeout):
         '''wait for up to timeout seconds for more data'''
         if self.fd is None:
-            time.sleep(timeout)
+            time.sleep(min(timeout,0.5))
             return True
         try:
             (rin, win, xin) = select.select([self.fd], [], [], timeout)
