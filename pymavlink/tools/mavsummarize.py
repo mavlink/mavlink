@@ -110,11 +110,11 @@ def PrintSummary(logfile):
 
     # Print out the rest of the results.
     total_time = timestamp - start_time
-    print("Total time : {}:{:02}".format(int(total_time)/60, int(total_time)%60))
+    print("Total time (mm:ss): {:3.0f}:{:02.0f}".format(total_time / 60, total_time % 60))
     # The autonomous time should be good, as a steady HEARTBEAT is required for MAVLink operation
-    print("Autonomous sections : {}".format(autonomous_sections))
+    print("Autonomous sections: {}".format(autonomous_sections))
     if autonomous_sections > 0:
-        print("Autonomous time : {}:{:02}".format(int(auto_time)/60, int(auto_time)%60))
+        print("Autonomous time (mm:ss): {:3.0f}:{:02.0f}".format(auto_time / 60, auto_time % 60))
 
 for filename in args.logs:
     for f in glob.glob(filename):
