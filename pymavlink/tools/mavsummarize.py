@@ -97,8 +97,6 @@ def PrintSummary(logfile):
         end_time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
         print("Timespan from {} to {}".format(start_time_str, end_time_str))
     else:
-        print(first_gps_msg.time_usec)
-        print(last_gps_msg.time_usec)
         print("ERROR: Invalid timestamps found.")
 
     # Print location data
