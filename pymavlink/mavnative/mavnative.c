@@ -563,10 +563,10 @@ static PyObject *pyextract_mavlink(const mavlink_message_t *msg, const py_field_
                 val = PyInt_FromLong(_MAV_RETURN_int32_t(msg, offset));   
                 break;
             case MAVLINK_TYPE_UINT64_T:
-                val = PyLong_FromLong(_MAV_RETURN_uint64_t(msg, offset));
+                val = PyLong_FromLongLong(_MAV_RETURN_uint64_t(msg, offset));
                 break;
             case MAVLINK_TYPE_INT64_T:
-                val = PyLong_FromLong(_MAV_RETURN_int64_t(msg, offset));
+                val = PyLong_FromLongLong(_MAV_RETURN_int64_t(msg, offset));
                 break;
             case MAVLINK_TYPE_FLOAT:
                 val = PyFloat_FromDouble(_MAV_RETURN_float(msg, offset));
