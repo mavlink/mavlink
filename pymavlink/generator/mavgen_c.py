@@ -474,6 +474,130 @@ ${{message:	mavlink_test_${name_lower}(system_id, component_id, last_msg);
 
     f.close()
 
+def generate_decode_table(directory, subdirectory, msglist):
+    '''generate decode_table.h for all messages'''
+
+    strlist = ['    mavlink_msg_void_decode,\n'] * 256
+    sizelist = ['    0,\n'] * 256
+    for m in msglist:
+        strlist[m.id] = '    (MAVLINK_MSG_DECODE_FUNCTION)mavlink_msg_' + m.name_lower + '_decode,\n'
+        sizelist[m.id] = '    sizeof(mavlink_' + m.name_lower + '_t),\n'
+
+    f = open(os.path.join(directory, subdirectory, "decode_table.h"), mode='w')
+    f.write('''#include "mavlink.h"
+
+/**
+ * @brief Decode function type
+ *
+ * @param msg The MAVLink message to compress the data into
+ * @param C-struct to decode the message contents to
+ */
+typedef void (*MAVLINK_MSG_DECODE_FUNCTION)(const mavlink_message_t* msg, void* result);
+
+/**
+ * @brief Stub for unused message IDs
+ */
+static void mavlink_msg_void_decode(const mavlink_message_t* msg, void* result)
+{
+    (void)msg;
+    (void)result;
+}
+
+/**
+ * @brief Table of decoding functions
+ */
+static const MAVLINK_MSG_DECODE_FUNCTION mavlink_decode_table[256] = {\n''')
+    for s in strlist:
+        f.write(s)
+    f.write("};\n")
+
+    f.write('''
+/**
+ * @brief Table of message sizes
+ */
+static const uint16_t mavlink_message_size_table[256] = {\n''')
+    for s in sizelist:
+        f.write(s)
+    f.write("};\n")
+    f.close()
+
+def generate_encode_table(directory, subdirectory, msglist):
+    '''generate encode_table.h for all messages'''
+
+    strlist = ['    mavlink_msg_void_encode,\n'] * 256
+    for m in msglist:
+        strlist[m.id] = '    (MAVLINK_MSG_ENCODE_FUNCTION)mavlink_msg_' + m.name_lower + '_encode,\n'
+
+    strlist_chan = ['    mavlink_msg_void_encode_chan,\n'] * 256
+    for m in msglist:
+        strlist_chan[m.id] = '    (MAVLINK_MSG_ENCODE_FUNCTION_CHAN)mavlink_msg_' + m.name_lower + '_encode_chan,\n'
+
+    f = open(os.path.join(directory, subdirectory, "encode_table.h"), mode='w')
+    f.write('''#include "mavlink.h"
+
+/**
+ * @brief Encode function type
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param msg The MAVLink message to compress the data into
+ * @param C-struct to read the message contents from
+ */
+typedef uint16_t (*MAVLINK_MSG_ENCODE_FUNCTION)(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const void* mavlink_struct);
+
+/**
+ * @brief Encode function type
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param chan The MAVLink channel this message will be sent over
+ * @param msg The MAVLink message to compress the data into
+ * @param C-struct to read the message contents from
+ */
+typedef uint16_t (*MAVLINK_MSG_ENCODE_FUNCTION_CHAN)(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const void* mavlink_struct);
+
+/**
+ * @brief Stub for unused message IDs
+ */
+static uint16_t mavlink_msg_void_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const void* mavlink_struct)
+{
+    (void)system_id;
+    (void)component_id;
+    (void)msg;
+    (void)mavlink_struct;
+    return 0;
+}
+
+/**
+ * @brief Stub for unused message IDs
+ */
+static uint16_t mavlink_msg_void_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const void* mavlink_struct)
+{
+    (void)system_id;
+    (void)component_id;
+    (void)chan;
+    (void)msg;
+    (void)mavlink_struct;
+    return 0;
+}
+
+/**
+ * @brief Table of encoding functions
+ */
+static const MAVLINK_MSG_ENCODE_FUNCTION mavlink_encode_table[256] = {\n''')
+    for s in strlist:
+        f.write(s)
+    f.write("};\n")
+    f.write('''
+/**
+ * @brief Table of chan encoding functions
+ */
+static const MAVLINK_MSG_ENCODE_FUNCTION_CHAN mavlink_encode_table_chan[256] = {\n''')
+    for s in strlist_chan:
+        f.write(s)
+    f.write("};")
+    f.close()
+
 def copy_fixed_headers(directory, xml):
     '''copy the fixed protocol headers to the target directory'''
     import shutil
@@ -626,4 +750,13 @@ def generate(basename, xml_list):
 
     for xml in xml_list:
         generate_one(basename, xml)
+
+    msglist = []
+    for xml in xml_list:
+        for m in xml.message:
+            msglist.append(m)
+    for xml in xml_list:
+        generate_encode_table(basename, xml.basename, msglist)
+        generate_decode_table(basename, xml.basename, msglist)
+
     copy_fixed_headers(basename, xml_list[0])
