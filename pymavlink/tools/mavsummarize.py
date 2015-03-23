@@ -117,7 +117,7 @@ def PrintSummary(logfile):
         print("Travelled from ({0[0]}, {0[1]}) to ({1[0]}, {1[1]})".format(first_gps_position, last_gps_position))
         print("Total distance : {:0.2f}m".format(total_dist))
     else:
-        print("ERROR: No GPS data found.")
+        print("Warning: No GPS data found, can't give position summary.")
 
     # Print out the rest of the results.
     total_time = timestamp - start_time
