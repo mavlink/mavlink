@@ -585,12 +585,12 @@ static PyObject *pyextract_mavlink(const mavlink_message_t *msg, const py_field_
         if(arrayResult != NULL)  
             PyList_SetItem(arrayResult, index, val);
         else if(stringResult != NULL) {
-            if(!string_ended) {
+            if(!string_ended)
                 PyByteString_ConcatAndDel(&stringResult, val);
-                result = stringResult;
-            }
             else
                 Py_DECREF(val); // We didn't use this char
+
+            result = stringResult;
         }
         else // Not building an array
             result = val;
