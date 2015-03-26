@@ -10,9 +10,9 @@
 
 // Macro to define packed structures
 #ifdef __GNUC__
-  #define MAVPACKED( __Declaration__ ) __Declaration__ __attribute__((packed))
+  #define MAVPACKED( decl ) decl __attribute__((packed))
 #else
-  #define MAVPACKED( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
+  #define MAVPACKED( decl ) __pragma( pack(push, 1) ) decl  __pragma( pack(pop) )
 #endif
 
 #ifndef MAVLINK_MAX_PAYLOAD_LEN
