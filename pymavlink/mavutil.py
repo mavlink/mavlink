@@ -380,7 +380,7 @@ class mavfile(object):
             return
         self.param_fetch_start = time.time()
         self.param_fetch_in_progress = True
-        self.mav.param_request_list_send(self.target_system, self.target_component)
+        self.mav.param_request_list_send(self.target_system, 0)
 
     def param_fetch_one(self, name):
         '''initiate fetch of one parameter'''
@@ -401,7 +401,7 @@ class mavfile(object):
         if self.mavlink10():
             if parm_type == None:
                 parm_type = mavlink.MAVLINK_TYPE_FLOAT
-            self.mav.param_set_send(self.target_system, self.target_component,
+            self.mav.param_set_send(self.target_system, 0,
                                     parm_name, parm_value, parm_type)
         else:
             self.mav.param_set_send(self.target_system, self.target_component,
