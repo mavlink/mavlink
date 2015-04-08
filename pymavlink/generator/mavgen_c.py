@@ -495,6 +495,8 @@ def copy_fixed_headers(directory, xml):
     '''copy the fixed protocol headers to the target directory'''
     import shutil
     hlist = [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h', 'mavlink_conversions.h' ]
+    if xml.c2000_protocol:
+        hlist.append('protocol_c2000.h')
     basepath = os.path.dirname(os.path.realpath(__file__))
     srcpath = os.path.join(basepath, 'C/include_v%s' % xml.wire_protocol_version)
     print("Copying fixed headers")
@@ -635,6 +637,20 @@ def generate_one(basename, xml):
                 f.putname = f.name
             else:
                 f.putname = f.const_value
+
+    # Handle (badly) enums with a value that is >16bit signed integer
+    if xml.c2000_protocol:
+        enums_removed = False
+        for enum in xml.enum:
+            if enum.highest_value > 32768:
+                for entry in enum.entry[:]:
+                    if int(entry.value) > 32768:
+                        print("WARNING: Removing ENUM %s=%i" % (entry.name, entry.value))
+                        entry.name = "//" + entry.name
+                        enums_removed = True
+        if enums_removed:
+            print("WARNING: ENUM values larger than 2^15 (signed int) are not supported by the C2000 architecture")
+
 
     generate_mavlink_h(directory, xml)
     generate_version_h(directory, xml)
