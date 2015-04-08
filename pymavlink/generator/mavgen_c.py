@@ -642,9 +642,9 @@ def generate_one(basename, xml):
     if xml.c2000_protocol:
         enums_removed = False
         for enum in xml.enum:
-            if enum.highest_value > 32768:
+            if enum.highest_value > 32767:
                 for entry in enum.entry[:]:
-                    if int(entry.value) > 32768:
+                    if int(entry.value) > 32767:
                         print("WARNING: Removing ENUM %s=%i" % (entry.name, entry.value))
                         entry.name = "//" + entry.name
                         enums_removed = True
