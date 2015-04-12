@@ -34,7 +34,12 @@ class MAVWPLoader(object):
 
     def wp(self, i):
         '''return a waypoint'''
-        return self.wpoints[i]
+        try:
+            the_wp = self.wpoints[i]
+        except:
+            the_wp = None
+
+        return the_wp
 
     def wp_is_loiter(self, i):
         '''return true if waypoint is a loiter waypoint'''
