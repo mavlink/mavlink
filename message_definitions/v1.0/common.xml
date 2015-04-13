@@ -2325,6 +2325,20 @@
             <field type="int64_t" name="tc1">Time sync timestamp 1</field>
             <field type="int64_t" name="ts1">Time sync timestamp 2</field>
         </message>
+        <message id="112" name="EXT_STATE_ESTIMATE">
+            <description>Full attitude and position estimate from a external estimator</description>
+            <field type="uint64_t" name="usec">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
+            <field type="float" name="x">X position</field>
+            <field type="float" name="y">Y position</field>
+            <field type="float" name="z">Z position</field>
+            <field type="float" name="vx">X linear velocity</field>
+            <field type="float" name="vy">Y linear velocity</field>
+            <field type="float" name="vz">Z linear velocity</field>
+            <field type="float[4]" name="q"> Attitude quaternion components, w, x, y, z (1 0 0 0 is the null-rotation)</field>
+            <field type="float" name="rollspeed">Roll angular speed (rad/s)</field>
+            <field type="float" name="pitchspeed">Pitch angular speed (rad/s)</field>
+            <field type="float" name="yawspeed">Yaw angular speed (rad/s)</field>
+         </message>
          <message id="113" name="HIL_GPS">
              <description>The global position, as returned by the Global Positioning System (GPS). This is
                  NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate. Coordinate frame is right-handed, Z-axis up (GPS frame).</description>
