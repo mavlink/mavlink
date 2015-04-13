@@ -1867,16 +1867,19 @@
           </message>
           <message id="64" name="LOCAL_POSITION_NED_COV">
               <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
-              <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
+              <field type="uint32_t" name="time_usec">Timestamp (milliseconds since system boot). 0 for system without monotonic timestam</field>
               <field type="uint64_t" name="time_utc">Timestamp (microseconds since UNIX epoch) in UTC. 0 for unknown. Commonly filled by the precision time source of a GPS receiver.</field>
               <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Class id of the estimator this estimate originated from.</field>
               <field type="float" name="x">X Position</field>
               <field type="float" name="y">Y Position</field>
               <field type="float" name="z">Z Position</field>
-              <field type="float" name="vx">X Speed</field>
-              <field type="float" name="vy">Y Speed</field>
-              <field type="float" name="vz">Z Speed</field>
-              <field type="float[36]" name="covariance">Covariance matrix (first six entries are the first ROW, next six entries are the second row, etc.)</field>
+              <field type="float" name="vx">X Speed (m/s)</field>
+              <field type="float" name="vy">Y Speed (m/s)</field>
+              <field type="float" name="vz">Z Speed (m/s)</field>
+              <field type="float" name="ax">X Acceleration (m/s^2)</field>
+              <field type="float" name="ay">Y Acceleration (m/s^2)</field>
+              <field type="float" name="az">Z Acceleration (m/s^2)</field>
+              <field type="float[45]" name="covariance">Covariance matrix upper right triangular (first six entries are the first ROW, next six entries are the second row, etc.)</field>
           </message>
           <message id="65" name="RC_CHANNELS">
                <description>The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
