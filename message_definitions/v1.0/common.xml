@@ -1081,6 +1081,13 @@
                   <param index="1">Reserved</param>
                   <param index="2">Reserved</param>
               </entry>
+              
+              <entry name="MAV_CMD_DO_TRIGGER_CONTROL" value="2003">
+                   <description>Enable or disable on-board camera triggering system.</description>
+                   <param index="1">Trigger enable/disable (0 for disable, 1 for start)</param>
+                   <param index="2">Shutter integration time (in ms)</param>
+                   <param index="3">Reserved</param>
+              </entry>
 
               <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
                   <description>Starts video capture</description>
@@ -2324,6 +2331,11 @@
             <description>Time synchronization message.</description>
             <field type="int64_t" name="tc1">Time sync timestamp 1</field>
             <field type="int64_t" name="ts1">Time sync timestamp 2</field>
+        </message>
+        <message id="112" name="CAMERA_TRIGGER">
+            <description>Camera-IMU triggering and synchronisation message.</description>
+            <field type="uint64_t" name="time_usec">Timestamp for the image frame in microseconds</field>
+            <field type="uint32_t" name="seq">Image frame sequence</field>
         </message>
          <message id="113" name="HIL_GPS">
              <description>The global position, as returned by the Global Positioning System (GPS). This is
