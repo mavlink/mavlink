@@ -456,11 +456,11 @@
                <entry value="7" name="MAV_FRAME_LOCAL_OFFSET_NED">
                    <description>Offset to the current local frame. Anything expressed in this frame should be added to the current local frame position.</description>
                </entry>
-               <entry value="8" name="MAV_FRAME_BODY_NED">
-                   <description>Setpoint in body NED frame. This makes sense if all position control is externalized - e.g. useful to command 2 m/s^2 acceleration to the right.</description>
+               <entry value="8" name="MAV_FRAME_BODY">
+                   <description>Setpoint in body frame. Coordinates in right-handed XYZ where X points out the nose of the vehicle, Y points to the right, and Z points down. Coordinates and values are all absolute, so relative to 0. For commanding differences from the current state, see MAV_FRAME_BODY_OFFSET. This frame is useful when all position control is externalized - e.g. useful to command 2 m/s^2 acceleration to the right.</description>
                </entry>
-               <entry value="9" name="MAV_FRAME_BODY_OFFSET_NED">
-                   <description>Offset in body NED frame. This makes sense if adding setpoints to the current flight path, to avoid an obstacle - e.g. useful to command 2 m/s^2 acceleration to the east.</description>
+               <entry value="9" name="MAV_FRAME_BODY_OFFSET">
+                   <description>Offset relative to the current vehicle in body frame. This frame should be used when commanding acceleration or rotation rates relative to the current sensor values. Otherwise for position and attitude settings, this frame works the same as MAV_FRAME_BODY. Coordinates in right-handed XYZ where X points out the nose of the vehicle, Y points to the right, and Z points down. This is useful for altering the current flight path, say to avoid an obstacle by increasing lateral acceleration 2 m/2^2 to the right.</description>
                </entry>
                <entry value="10" name="MAV_FRAME_GLOBAL_TERRAIN_ALT">
                    <description>Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees, second value / y: longitude in degrees, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
@@ -2065,7 +2065,7 @@
                <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
-               <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
+               <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7</field>
                <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
                <field type="float" name="x">X Position in NED frame in meters</field>
                <field type="float" name="y">Y Position in NED frame in meters</field>
@@ -2082,7 +2082,7 @@
           <message id="85" name="POSITION_TARGET_LOCAL_NED">
                <description>Set vehicle position, velocity and acceleration setpoint in local frame.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
-               <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
+               <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7</field>
                <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
                <field type="float" name="x">X Position in NED frame in meters</field>
                <field type="float" name="y">Y Position in NED frame in meters</field>
