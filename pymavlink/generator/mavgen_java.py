@@ -49,7 +49,7 @@ def generate_CRC(directory, xml):
         *
         */
         public class CRC {
-        private final int[] MAVLINK_MESSAGE_CRCS = {${message_crcs_array}};
+        private static final int[] MAVLINK_MESSAGE_CRCS = {${message_crcs_array}};
         private static final int CRC_INIT_VALUE = 0xffff;
         private int CRCvalue;
         
@@ -288,7 +288,7 @@ def generate_MAVLinkMessage(directory, xml_list):
         */
         public void generateCRC(){
 		crc = new CRC();
-		crc.update_checksum(len);
+                crc.update_checksum(len);
 		crc.update_checksum(seq);
 		crc.update_checksum(sysid);
 		crc.update_checksum(compid);
