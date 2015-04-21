@@ -51,7 +51,7 @@ def generate_CRC(directory, xml):
         public class CRC {
         private static final int[] MAVLINK_MESSAGE_CRCS = {${message_crcs_array}};
         private static final int CRC_INIT_VALUE = 0xffff;
-        private int CRCvalue;
+        private int crcValue;
         
         /**
         * Accumulate the X.25 CRC by adding one char at a time.
@@ -61,15 +61,13 @@ def generate_CRC(directory, xml):
         *
         * @param data
         *            new char to hash
-        * @param crcAccum
-        *            the already accumulated checksum
         **/
         public  void update_checksum(int data) {
 		int tmp;
 		data= data & 0xff;	//cast because we want an unsigned type
-		tmp = data ^ (CRCvalue & 0xff);
+		tmp = data ^ (crcValue & 0xff);
 		tmp ^= (tmp << 4) & 0xff;
-		CRCvalue = ((CRCvalue >> 8) & 0xff) ^ (tmp << 8) ^ (tmp << 3)
+		crcValue = ((crcValue >> 8) & 0xff) ^ (tmp << 8) ^ (tmp << 3)
         ^ ((tmp >> 4) & 0xf);
         }
         
@@ -89,15 +87,15 @@ def generate_CRC(directory, xml):
         *
         */
         public void start_checksum() {
-		CRCvalue = CRC_INIT_VALUE;
+		crcValue = CRC_INIT_VALUE;
         }
         
         public int getMSB() {
-		return ((CRCvalue >> 8) & 0xff);
+		return ((crcValue >> 8) & 0xff);
         }
         
         public int getLSB() {
-		return (CRCvalue & 0xff);
+		return (crcValue & 0xff);
         }
         
         public CRC() {
@@ -287,7 +285,13 @@ def generate_MAVLinkMessage(directory, xml_list):
         * Update CRC for this packet.
         */
         public void generateCRC(){
+            if(crc == null){
 		crc = new CRC();
+            }
+            else{
+                crc.start_checksum();
+            }
+            
                 crc.update_checksum(len);
 		crc.update_checksum(seq);
 		crc.update_checksum(sysid);
