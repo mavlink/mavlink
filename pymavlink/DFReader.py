@@ -265,11 +265,11 @@ class DFReader(object):
         if type == 'GPS':
             self._adjust_time_base(m)
         if type == 'MSG':
-            if m.Message.startswith("ArduRover"):
+            if m.Message.find("Rover") != -1:
                 self.mav_type = mavutil.mavlink.MAV_TYPE_GROUND_ROVER
-            elif m.Message.startswith("ArduPlane"):
+            elif m.Message.find("Plane") != -1:
                 self.mav_type = mavutil.mavlink.MAV_TYPE_FIXED_WING
-            elif m.Message.startswith("ArduCopter"):
+            elif m.Message.find("Copter") != -1:
                 self.mav_type = mavutil.mavlink.MAV_TYPE_QUADROTOR
             elif m.Message.startswith("Antenna"):
                 self.mav_type = mavutil.mavlink.MAV_TYPE_ANTENNA_TRACKER
