@@ -8,6 +8,7 @@ import sys, struct, time, os, datetime
 import math, re
 import matplotlib
 from math import *
+import mpld3
 
 from pymavlink.mavextra import *
 
@@ -140,6 +141,7 @@ def plotit(x, y, fields, colors=[]):
     if empty:
         print("No data to graph")
         return
+    return fig
 
 
 from argparse import ArgumentParser
@@ -277,7 +279,7 @@ for fi in range(0, len(filenames)):
         col = colors[:]
     else:
         col = colors[fi*len(fields):]
-    plotit(x, y, lab, colors=col)
+    fig = plotit(x, y, lab, colors=col)
     for i in range(0, len(x)):
         x[i] = []
         y[i] = []
@@ -286,5 +288,12 @@ if args.output is None:
     pylab.draw()
     input('press enter to exit....')
 else:
-    pylab.legend(loc=2,prop={'size':8})
-    pylab.savefig(args.output, bbox_inches='tight', dpi=200)
+    fname, fext = os.path.splitext(args.output)
+    if fext == '.html':
+        html = mpld3.fig_to_html(fig)
+        f_out = open(args.output, 'w')
+        f_out.write(html)
+        f_out.close()
+    else:
+        pylab.legend(loc=2,prop={'size':8})
+        pylab.savefig(args.output, bbox_inches='tight', dpi=200)
