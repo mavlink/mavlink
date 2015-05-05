@@ -29,8 +29,8 @@ FORMAT_TO_STRUCT = {
     "L": ("i", 1.0e-7, float),
     "d": ("d", None, float),
     "M": ("b", None, int),
-    "q": ("q", None, int),
-    "Q": ("Q", None, int),
+    "q": ("q", None, long),
+    "Q": ("Q", None, long),
     }
 
 class DFFormat(object):
@@ -87,7 +87,7 @@ class DFMessage(object):
         try:
             i = self.fmt.colhash[field]
         except Exception:
-            raise AttributeError
+            raise AttributeError(field)
         v = self._elements[i]
         if self.fmt.format[i] != 'M' or self._apply_multiplier:
             v = self.fmt.msg_types[i](v)
@@ -132,6 +132,7 @@ class DFReader(object):
     def __init__(self):
         # read the whole file into memory for simplicity
         self.msg_rate = {}
+        self.usec_timestamps = False
         self.new_timestamps = False
         self.px4_timestamps = False
         self.px4_timebase = 0
@@ -159,6 +160,12 @@ class DFReader(object):
         self.timebase = t - gps.T*0.001
         self.new_timestamps = True
 
+    def _find_time_base_usec_timestamps(self, gps):
+        '''work out time basis for the log - even newer style'''
+        t = self._gpsTimeToTime(gps.GWk, gps.GMS*0.001)
+        self.timebase = t - gps.TimeUS*0.000001
+        self.usec_timestamps = True
+
     def _find_time_base_px4(self, gps):
         '''work out time basis for the log - PX4 native'''
         t = gps.GPSTime * 1.0e-6
@@ -170,6 +177,14 @@ class DFReader(object):
         self.timebase = 0
         if self._zero_time_base:
             return
+
+        gps_usec = self.recv_match(type='GPS', condition='getattr(GPS,"GWk",0)!=0 or getattr(GPS,"GMS",0)!=0')
+        if gps_usec is not None and 'TimeUS' in gps_usec._fieldnames:
+            self._find_time_base_usec_timestamps(gps_usec)
+            self._rewind()
+            return
+        self._rewind()
+
         gps1 = self.recv_match(type='GPS', condition='getattr(GPS,"Week",0)!=0 or getattr(GPS,"GPSTime",0)!=0')
         if gps1 is None:
             self._rewind()
@@ -185,7 +200,7 @@ class DFReader(object):
             self._find_time_base_new(gps1)
             self._rewind()
             return
-        
+
         counts1 = self.counts.copy()
         gps2 = self.recv_match(type='GPS', condition='GPS.Week!=0')
         counts2 = self.counts.copy()
@@ -211,11 +226,22 @@ class DFReader(object):
             return
         if self.new_timestamps:
             return
+        if self.usec_timestamps:
+            return
         if self.px4_timestamps:
             return
-        if getattr(m, 'Week', None) is None:
+        if getattr(m, 'Week', None):
+            gps_week = getattr(m, 'Week', None)
+            gps_ms = getattr(m, 'TimeMS', None)
+        elif getattr(m, 'GWk', None):
+            gps_week = getattr(m, 'GWk', None)
+            gps_ms = getattr(m, 'GMS', None)
+
+        if gps_week is None:
             return
-        t = self._gpsTimeToTime(m.Week, m.TimeMS*0.001)
+
+        t = self._gpsTimeToTime(gps_week, gps_ms*0.001)
+
         deltat = t - self.timebase
         if deltat <= 0:
             return
@@ -231,8 +257,12 @@ class DFReader(object):
         '''set time for a message'''
         if self.px4_timestamps:
             m._timestamp = self.timebase + self.px4_timebase
-        elif len(m._fieldnames) > 0 and (self._zero_time_base or self.new_timestamps):
-            if 'TimeMS' == m._fieldnames[0]:
+        elif len(m._fieldnames) > 0 and (self._zero_time_base or
+                                         self.new_timestamps or
+                                         self.usec_timestamps):
+            if 'TimeUS' == m._fieldnames[0]:
+                m._timestamp = self.timebase + m.TimeUS*0.000001
+            elif 'TimeMS' == m._fieldnames[0]:
                 m._timestamp = self.timebase + m.TimeMS*0.001
             elif m.get_type() in ['GPS','GPS2']:
                 m._timestamp = self.timebase + m.T*0.001
