@@ -27,6 +27,7 @@ FORMAT_TO_STRUCT = {
     "e": ("i", 0.01, float),
     "E": ("I", 0.01, float),
     "L": ("i", 1.0e-7, float),
+    "d": ("d", None, float),
     "M": ("b", None, int),
     "q": ("q", None, int),
     "Q": ("Q", None, int),
