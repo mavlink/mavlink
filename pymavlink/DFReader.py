@@ -82,6 +82,14 @@ class DFMessage(object):
         self._apply_multiplier = apply_multiplier
         self._fieldnames = fmt.columns
 
+    def to_dict(self):
+        d = {'mavpackettype': self.fmt.name}
+
+        for field in self._fieldnames:
+            d[field] = self.__getattr__(field)
+
+        return d
+
     def __getattr__(self, field):
         '''override field getter'''
         try:
