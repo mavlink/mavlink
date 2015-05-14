@@ -230,6 +230,7 @@ class DFReader(object):
             return
         if self.px4_timestamps:
             return
+        gps_week = None
         if getattr(m, 'Week', None):
             gps_week = getattr(m, 'Week', None)
             gps_ms = getattr(m, 'TimeMS', None)
