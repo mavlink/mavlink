@@ -81,23 +81,23 @@ typedef struct param_union {
 */
 MAVPACKED(
 typedef struct param_union_extended {
-    union {
-    struct {
-        uint8_t is_double:1;
-        uint8_t mavlink_type:7;
-        union {
-            char c;
-            uint8_t uint8;
-            int8_t int8;
-            uint16_t uint16;
-            int16_t int16;
-            uint32_t uint32;
-            int32_t int32;
-            float f;
-            uint8_t align[7];
+    union __mavlink_param_union_double{
+        struct __data{
+	    uint8_t is_double:1;
+	    uint8_t mavlink_type:7;
+            union {
+                char c;
+                uint8_t uint8;
+                int8_t int8;
+                uint16_t uint16;
+                int16_t int16;
+                uint32_t uint32;
+                int32_t int32;
+                float f;
+                uint8_t align[7];
+            };
         };
-    };
-    uint8_t data[8];
+        uint8_t data[8];
     };
 }) mavlink_param_union_double_t;
 
