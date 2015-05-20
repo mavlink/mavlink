@@ -162,8 +162,12 @@ class DFReaderClock_gps_usec(DFReaderClock):
 
     def set_message_timestamp(self, m):
         if 'TimeUS' == m._fieldnames[0]:
-            # only format messages don't have a TimeUS in them
+            # only format messages don't have a TimeUS in them...
             m._timestamp = self.timebase + m.TimeUS*0.000001
+        elif 'TimeMS' == m._fieldnames[0] and self.timebase + m.TimeMS*0.001 > self.timestamp:
+            # ... in theory. I expect there to be some logs which are not
+            # "pure":
+            m._timestamp = self.timebase + m.TimeMS*0.001
         else:
             m._timestamp = self.timestamp
         self.timestamp = m._timestamp
