@@ -26,6 +26,8 @@ def main():
                       help="PX4 UART baud rate (defaults to u-Blox GPS baud)")
     parser.add_argument("--tcpport", default=1001, type=int,
                       help="local TCP port (defaults to %(default)s)")
+    parser.add_argument("--tcpaddr", default='127.0.0.1', type=str,
+                      help="local TCP address (defaults to %(default)s)")
     parser.add_argument("--debug", default=0, type=int,
                       help="debug level")
     parser.add_argument("--buffsize", default=128, type=int,
@@ -38,11 +40,11 @@ def main():
         devnum=args.devnum, devbaud=args.devbaud, debug=args.debug)
 
     listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listen_sock.bind(('127.0.0.1', args.tcpport))
+    listen_sock.bind((args.tcpaddr, args.tcpport))
     listen_sock.listen(1)
 
     print("Waiting for a TCP connection.")
-    print("Use tcp://localhost:%d in u-Center." % args.tcpport)
+    print("Use tcp://%s:%d in u-Center." % (args.tcpaddr, args.tcpport))
     conn_sock, addr = listen_sock.accept()
     conn_sock.setblocking(0)  # non-blocking mode
     print("TCP connection accepted. Use Ctrl+C to exit.")
