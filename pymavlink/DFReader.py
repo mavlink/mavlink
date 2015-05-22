@@ -160,11 +160,28 @@ class DFReaderClock_gps_usec(DFReaderClock):
         # this ensures FMT messages get appropriate timestamp:
         self.timestamp = self.timebase + first_us_stamp*0.000001
 
+    def type_has_good_TimeMS(self, type):
+        '''The TimeMS in some messages is not from *our* clock!'''
+        if type.startswith('ACC'):
+            return False;
+        if type.startswith('GYR'):
+            return False;
+        return True
+
+    def should_use_msec_field0(self, m):
+        if not self.type_has_good_TimeMS(m.get_type()):
+            return False
+        if 'TimeMS' != m._fieldnames[0]:
+            return False
+        if self.timebase + m.TimeMS*0.001 < self.timestamp:
+            return False
+        return True;
+
     def set_message_timestamp(self, m):
         if 'TimeUS' == m._fieldnames[0]:
             # only format messages don't have a TimeUS in them...
             m._timestamp = self.timebase + m.TimeUS*0.000001
-        elif 'TimeMS' == m._fieldnames[0] and self.timebase + m.TimeMS*0.001 > self.timestamp:
+        elif self.should_use_msec_field0(m):
             # ... in theory. I expect there to be some logs which are not
             # "pure":
             m._timestamp = self.timebase + m.TimeMS*0.001
