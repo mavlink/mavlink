@@ -71,4 +71,4 @@ for filename in args.logs:
         total_dist += fdist
 
 print("Total time in air: %u:%02u" % (int(total_time)/60, int(total_time)%60))
-print("Total distance trevelled: %.1f meters" % total_dist)
+print("Total distance travelled: %.1f meters" % total_dist)
