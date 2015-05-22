@@ -236,8 +236,8 @@ class DFReaderClock_gps_interpolated(DFReaderClock):
             self.counts_since_gps[type] = 1
         else:
             self.counts_since_gps[type] += 1
-        # this being here emulates old behaviour
-        if type == 'GPS':
+
+        if type == 'GPS' or type == 'GPS2':
             self.gps_message_arrived(m)
 
     def gps_message_arrived(self, m):
@@ -348,12 +348,12 @@ class DFReader(object):
             if first_us_stamp is None:
                 first_us_stamp = getattr(m, "TimeUS", None);
 
-            if first_ms_stamp is None and type != 'GPS':
+            if first_ms_stamp is None and (type != 'GPS' and type != 'GPS2'):
                 # Older GPS messages use TimeMS for msecs past start
                 # of gps week
                 first_ms_stamp = getattr(m, "TimeMS", None);
 
-            if type == 'GPS':
+            if type == 'GPS' or type == 'GPS2':
                 if getattr(m, "TimeUS", 0) != 0 and \
                    getattr(m, "GWk", 0) != 0: # everything-usec-timestamped
                     self.init_clock_gps_usec(m, first_us_stamp)
