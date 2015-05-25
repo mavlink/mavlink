@@ -14,10 +14,8 @@ C_UART_INTERFACE_EXAMPLE_PATH=$PWD/c_uart_interface_example
 SUBMODULE_PATH=mavlink/include/mavlink/v1.0
 
 # clone 
-git clone https://github.com/mavlink/c_uart_interface_example.git
+git clone --recursive https://github.com/mavlink/c_uart_interface_example.git
 cd c_uart_interface_example
-git submodule init
-git submodule update
 git submodule foreach git pull origin master
 
 # save git hash of updated submodule
