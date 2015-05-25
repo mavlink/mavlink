@@ -37,4 +37,7 @@ git clone https://github.com/mavlink/c_library.git
 cd ../../..
 ./scripts/update_c_library.sh
 
+# Update Submodule c_library in mavlink/c_uart_interface_example
+./scripts/update_submodule_c_uart_interface_example.sh
+
 # XXX add build steps for other libraries as well
