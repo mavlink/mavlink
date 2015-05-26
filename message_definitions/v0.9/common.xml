@@ -910,6 +910,14 @@ of the controller before actual flight and to assist with tuning controller para
                <field type="float" name="distance">Ground distance in meters</field>
           </message>
           <!-- MESSAGE IDs 80 - 250: Space for custom messages in individual projectname_messages.xml files -->
+          <message id="230" name="LANDING_TARGET">
+            <description>The location of a landing area captured from a downward facing camera</description>
+            <field type="uint8_t" name="target_num">The ID of the target if multiple targets are present</field>
+            <field type="uint8_t" name="frame">MAV_FRAME enum specifying the whether the following feilds are earth-frame, body-frame, etc.</field>
+            <field type="float" name="angle_x">Angular offset(radians) of the object from the center of the image: x-axis</field>
+            <field type="float" name="angle_y">Angular offset(radians) of the object from the center of the image: x-axis</field>
+            <field type="float" name="distance">Distance to the object from the vehicle in meters</field>
+          </message>
           <message id="251" name="DEBUG_VECT">
                <field type="char[10]" name="name">Name</field>
                <field type="uint64_t" name="usec">Timestamp</field>
