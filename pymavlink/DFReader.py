@@ -414,7 +414,7 @@ class DFReader(object):
     def _set_time(self, m):
         '''set time for a message'''
         # really just left here for profiling
-        m._timestamp = None
+        m._timestamp = self.timestamp
         if len(m._fieldnames) > 0 and self.clock is not None:
             self.clock.set_message_timestamp(m)
 
