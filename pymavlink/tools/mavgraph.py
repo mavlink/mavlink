@@ -8,7 +8,6 @@ import sys, struct, time, os, datetime
 import math, re
 import matplotlib
 from math import *
-import mpld3
 
 from pymavlink.mavextra import *
 
@@ -290,6 +289,7 @@ if args.output is None:
 else:
     fname, fext = os.path.splitext(args.output)
     if fext == '.html':
+        import mpld3
         html = mpld3.fig_to_html(fig)
         f_out = open(args.output, 'w')
         f_out.write(html)
