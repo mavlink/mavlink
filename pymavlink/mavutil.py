@@ -244,21 +244,21 @@ class mavfile(object):
                 msg._timestamp = self._timestamp
 
         src_system = msg.get_srcSystem()
-        if not (
-            # its the radio or planner
-            (src_system == ord('3') and msg.get_srcComponent() == ord('D')) or
-            msg.get_type() == 'BAD_DATA'):
-            if not src_system in self.last_seq:
+        src_component = msg.get_srcComponent()
+        src_tuple = (src_system, src_component)
+        radio_tuple = (ord('3'), ord('D'))
+        if not (src_tuple == radio_tuple or msg.get_type() == 'BAD_DATA'):
+            if not src_tuple in self.last_seq:
                 last_seq = -1
             else:
-                last_seq = self.last_seq[src_system]
+                last_seq = self.last_seq[src_tuple]
             seq = (last_seq+1) % 256
             seq2 = msg.get_seq()
             if seq != seq2 and last_seq != -1:
                 diff = (seq2 - seq) % 256
                 self.mav_loss += diff
                 #print("lost %u seq=%u seq2=%u last_seq=%u src_system=%u %s" % (diff, seq, seq2, last_seq, src_system, msg.get_type()))
-            self.last_seq[src_system] = seq2
+            self.last_seq[src_tuple] = seq2
             self.mav_count += 1
         
         self.timestamp = msg._timestamp
