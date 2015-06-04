@@ -1658,6 +1658,15 @@
               <entry value="8" name="MAV_CONTROL_ACCELERATION_YAW_RATE">
                   <description>Control x, y, z acceleration and yaw angle velocity</description>
               </entry>
+              <entry value="9" name="MAV_CONTROL_FORCE_FREE_YAW">
+                  <description>Control x, y, z force and yaw angle is free</description>
+              </entry>
+	      <entry value="10" name="MAV_CONTROL_FORCE_YAW">
+                  <description>Control x, y, z force and yaw angle position</description>
+              </entry>
+	      <entry value="11" name="MAV_CONTROL_FORCE_YAW_RATE">
+                  <description>Control x, y, z force and yaw angle velocity</description>
+              </entry>
           </enum>
      </enums>
      <messages>
@@ -2357,9 +2366,9 @@
           </message>
           <message id="93" name="SET_CONTROL_TARGET_LOCAL_NED">
                <description>Set controller reference in local frame. Choose the refetence type from MAV_CONTROL_TARGET enum</description>
-               <field type="float" name="x">X reference in NED frame in meters, meters / s or meters / s^2 </field>
-               <field type="float" name="y">Y reference in NED frame in meters, meters / s or meters / s^2</field>
-               <field type="float" name="z">Z reference in NED frame in meters, meters / s or meters / s^2 (note, altitude is negative in NED)</field>
+               <field type="float" name="x">X reference in NED frame in meters, meters / s, meters / s^2 or N</field>
+               <field type="float" name="y">Y reference in NED frame in meters, meters / s, meters / s^2 or N</field>
+               <field type="float" name="z">Z reference in NED frame in meters, meters / s, meters / s^2 or N (note, altitude is negative in NED)</field>
                <field type="float" name="yaw">yaw reference in rad or rad / s</field>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
