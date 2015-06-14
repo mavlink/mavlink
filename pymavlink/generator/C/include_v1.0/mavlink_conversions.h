@@ -13,6 +13,16 @@
     #define M_PI_2 ((float)asin(1))
 #endif
 
+/* Use double precision math functions for C2000 platform
+ * as the single precision equivalents aren't defined */
+#if MAVLINK_C2000
+#define fabsf fabs
+#define atan2f atan2
+#define sinf sin
+#define cosf cos
+#define sqrtf sqrt
+#endif
+
 /**
  * @file mavlink_conversions.h
  *
