@@ -11,7 +11,7 @@ except LookupError:
 from distutils.core import setup, Extension
 import glob, os, shutil, fnmatch, platform
 
-version = '1.1.56'
+version = '1.1.57'
 
 from generator import mavgen, mavparse
 
