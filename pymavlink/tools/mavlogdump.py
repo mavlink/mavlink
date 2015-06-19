@@ -121,7 +121,11 @@ while True:
     if output:
         if not (isbin or islog):
             output.write(struct.pack('>Q', timestamp*1.0e6))
-        output.write(m.get_msgbuf())
+        try:
+            output.write(m.get_msgbuf())
+        except Exception as ex:
+            print("Failed to write msg %s" % m.get_type())
+            pass
 
     # If quiet is specified, don't display output to the terminal.
     if args.quiet:
