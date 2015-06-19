@@ -124,7 +124,7 @@ macro(generateMavlink version definitions)
         message(STATUS "processing: ${definitionAbsPath}")
         add_custom_command( 
             OUTPUT ${targetName}-stamp
-            COMMAND PYTHONPATH=$ENV{PYTHONPATH}:${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON_EXECUTABLE} ${mavgen} --lang=C --wire-protocol=${version}
+            COMMAND PYTHONPATH=$ENV{PYTHONPATH}:${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON_EXECUTABLE} -m pymavlink.tools.mavgen --lang=C --wire-protocol=${version}
                 --output=include/v${version} ${definitionAbsPath}
             COMMAND touch ${targetName}-stamp
             DEPENDS ${definitionAbsPath} ${mavgen}
