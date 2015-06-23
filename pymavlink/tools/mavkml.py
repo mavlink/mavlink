@@ -19,8 +19,9 @@ position_field_types = [  # Order must be lon, lat, alt to match KML
 ]
 
 colors = [simplekml.Color.red, simplekml.Color.green, simplekml.Color.blue,
-          simplekml.Color.violet, simplekml.Color.yellow,
-          simplekml.Color.orange]
+          simplekml.Color.violet, simplekml.Color.yellow, simplekml.Color.orange,
+          simplekml.Color.burlywood, simplekml.Color.azure, simplekml.Color.lightblue,
+          simplekml.Color.lawngreen, simplekml.Color.indianred, simplekml.Color.hotpink]
 
 kml = simplekml.Kml()
 kml_linestrings = []
