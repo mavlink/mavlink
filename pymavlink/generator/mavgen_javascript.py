@@ -23,7 +23,7 @@ Generated from: ${FILELIST}
 Note: this file has been auto-generated. DO NOT EDIT
 */
 
-jspack = require("./jspack.js").jspack,
+jspack = require("jspack").jspack,
     _ = require("underscore"),
     events = require("events"),
     util = require("util");
@@ -538,11 +538,6 @@ module.exports = mavlink;
 def generate(basename, xml):
     '''generate complete javascript implementation'''
 
-    if basename.rfind(os.sep) >= 0:
-        jspackFilename = basename[0:basename.rfind(os.sep)] + '/jspack.js'
-    else:
-        jspackFilename = 'jspack.js'
-    
     if basename.endswith('.js'):
         filename = basename
     else:
@@ -577,5 +572,3 @@ def generate(basename, xml):
     generate_footer(outf)
     outf.close()
     print("Generated %s OK" % filename)
-    copyfile('./javascript/lib/jspack/jspack.js', jspackFilename)
-    print("Copied jspack %s" % jspackFilename)
