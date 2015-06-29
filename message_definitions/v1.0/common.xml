@@ -585,7 +585,7 @@
                     <param index="1">Empty</param>
                     <param index="2">Empty</param>
                     <param index="3">Empty</param>
-                    <param index="4">Desired yaw angle.</param>
+                    <param index="4">Desired yaw angle</param>
                     <param index="5">Latitude</param>
                     <param index="6">Longitude</param>
                     <param index="7">Altitude</param>
@@ -600,6 +600,26 @@
                     <param index="6">Longitude</param>
                     <param index="7">Altitude</param>
                </entry>
+               <entry value="23" name="MAV_CMD_NAV_LAND_LOCAL">
+                    <description>Land at local position (local frame only)</description>
+                    <param index="1">Landing target number (if available)</param>
+                    <param index="2">Maximum accepted offset from desired landing position [m] - computed magnitude from spherical coordinates: d = sqrt(x^2 + y^2 + z^2), which gives the maximum accepted distance between the desired landing position and the position where the vehicle is about to land</param>
+                    <param index="3">Landing descend rate [ms^-1]</param>
+                    <param index="4">Desired yaw angle [rad]</param>
+                    <param index="5">Y-axis position [m]</param>
+                    <param index="6">X-axis position [m]</param>
+                    <param index="7">Z-axis / ground level position [m]</param>
+               </entry>
+               <entry value="24" name="MAV_CMD_NAV_TAKEOFF_LOCAL">
+                    <description>Takeoff from local position (local frame only)</description>
+                    <param index="1">Minimum pitch (if airspeed sensor present), desired pitch without sensor [rad]</param>
+                    <param index="2">Empty</param>
+                    <param index="3">Takeoff ascend rate [ms^-1]</param>
+                    <param index="4">Yaw angle [rad] (if magnetometer or another yaw estimation source present), ignored without one of these</param>
+                    <param index="5">Y-axis position [m]</param>
+                    <param index="6">X-axis position [m]</param>
+                    <param index="7">Z-axis position [m]</param>
+               </entry>
                <entry value="30" name="MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT">
                    <description>Continue on the current course and climb/descend to specified altitude.  When the altitude is reached continue to the next command (i.e., don't proceed to the next command until the desired altitude is reached.</description>
                     <param index="1">Empty</param>
@@ -609,6 +629,16 @@
                     <param index="5">Empty</param>
                     <param index="6">Empty</param>
                     <param index="7">Desired altitude in meters</param>
+               </entry>
+                <entry value="31" name="MAV_CMD_NAV_LOITER_TO_ALT">
+                    <description>Begin loiter at the specified Latitude and Longitude.  If Lat=Lon=0, then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached.  Additionally, if the Heading Required parameter is non-zero the  aircraft will not leave the loiter until heading toward the next waypoint. </description>
+                    <param index="1">Heading Required (0 = False)</param>
+                    <param index="2">Radius in meters. If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.</param>
+                    <param index="3">Empty</param>
+                    <param index="4">Empty</param>
+                    <param index="5">Latitude</param>
+                    <param index="6">Longitude</param>
+                    <param index="7">Altitude</param>
                </entry>
                <entry value="80" name="MAV_CMD_NAV_ROI">
                     <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
@@ -1024,7 +1054,7 @@
                     <description>Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.</description>
                     <param index="1">Parameter storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM</param>
                     <param index="2">Mission storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM</param>
-                    <param index="3">Reserved</param>
+                    <param index="3">Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, > 1: start logging with rate of param 3 in Hz (e.g. set to 1000 for 1000 Hz logging)</param>
                     <param index="4">Reserved</param>
                     <param index="5">Empty</param>
                     <param index="6">Empty</param>
@@ -1378,6 +1408,9 @@
                <entry value="3" name="SERIAL_CONTROL_DEV_GPS2">
                     <description>Second GPS port</description>
                </entry>
+               <entry value="10" name="SERIAL_CONTROL_DEV_SHELL">
+                    <description>system shell</description>
+               </entry>
           </enum>
           <enum name="SERIAL_CONTROL_FLAG">
                <description>SERIAL_CONTROL flags (bitmask)</description>
@@ -1400,10 +1433,133 @@
           <enum name="MAV_DISTANCE_SENSOR">
               <description>Enumeration of distance sensor types</description>
               <entry value="0" name="MAV_DISTANCE_SENSOR_LASER">
-                  <description>Laser altimeter, e.g. LightWare SF02/F or PulsedLight units</description>
+                  <description>Laser rangefinder, e.g. LightWare SF02/F or PulsedLight units</description>
               </entry>
               <entry value="1" name="MAV_DISTANCE_SENSOR_ULTRASOUND">
-                  <description>Ultrasound altimeter, e.g. MaxBotix units</description>
+                  <description>Ultrasound rangefinder, e.g. MaxBotix units</description>
+              </entry>
+              <entry value="2" name="MAV_DISTANCE_SENSOR_INFRARED">
+                  <description>Infrared rangefinder, e.g. Sharp units</description>
+              </entry>
+          </enum>
+          <enum name="MAV_SENSOR_ORIENTATION">
+              <description>Enumeration of sensor orientation, according to its rotations</description>
+              <entry value="0" name="MAV_SENSOR_ROTATION_NONE">
+                  <description>Roll: 0, Pitch: 0, Yaw: 0</description>
+              </entry>
+              <entry value="1" name="MAV_SENSOR_ROTATION_YAW_45">
+                  <description>Roll: 0, Pitch: 0, Yaw: 45</description>
+              </entry>
+              <entry value="2" name="MAV_SENSOR_ROTATION_YAW_90">
+                  <description>Roll: 0, Pitch: 0, Yaw: 90</description>
+              </entry>
+              <entry value="3" name="MAV_SENSOR_ROTATION_YAW_135">
+                  <description>Roll: 0, Pitch: 0, Yaw: 135</description>
+              </entry>
+              <entry value="4" name="MAV_SENSOR_ROTATION_YAW_180">
+                  <description>Roll: 0, Pitch: 0, Yaw: 180</description>
+              </entry>
+              <entry value="5" name="MAV_SENSOR_ROTATION_YAW_225">
+                  <description>Roll: 0, Pitch: 0, Yaw: 225</description>
+              </entry>
+              <entry value="6" name="MAV_SENSOR_ROTATION_YAW_270">
+                  <description>Roll: 0, Pitch: 0, Yaw: 270</description>
+              </entry>
+              <entry value="7" name="MAV_SENSOR_ROTATION_YAW_315">
+                  <description>Roll: 0, Pitch: 0, Yaw: 315</description>
+              </entry>
+              <entry value="8" name="MAV_SENSOR_ROTATION_ROLL_180">
+                  <description>Roll: 180, Pitch: 0, Yaw: 0</description>
+              </entry>
+              <entry value="9" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_45">
+                  <description>Roll: 180, Pitch: 0, Yaw: 45</description>
+              </entry>
+              <entry value="10" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_90">
+                  <description>Roll: 180, Pitch: 0, Yaw: 90</description>
+              </entry>
+              <entry value="11" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_135">
+                  <description>Roll: 180, Pitch: 0, Yaw: 135</description>
+              </entry>
+              <entry value="12" name="MAV_SENSOR_ROTATION_PITCH_180">
+                  <description>Roll: 0, Pitch: 180, Yaw: 0</description>
+              </entry>
+              <entry value="13" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_225">
+                  <description>Roll: 180, Pitch: 0, Yaw: 225</description>
+              </entry>
+              <entry value="14" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_270">
+                  <description>Roll: 180, Pitch: 0, Yaw: 270</description>
+              </entry>
+              <entry value="15" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_315">
+                  <description>Roll: 180, Pitch: 0, Yaw: 315</description>
+              </entry>
+              <entry value="16" name="MAV_SENSOR_ROTATION_ROLL_90">
+                  <description>Roll: 90, Pitch: 0, Yaw: 0</description>
+              </entry>
+              <entry value="17" name="MAV_SENSOR_ROTATION_ROLL_90_YAW_45">
+                  <description>Roll: 90, Pitch: 0, Yaw: 45</description>
+              </entry>
+              <entry value="18" name="MAV_SENSOR_ROTATION_ROLL_90_YAW_90">
+                  <description>Roll: 90, Pitch: 0, Yaw: 90</description>
+              </entry>
+              <entry value="19" name="MAV_SENSOR_ROTATION_ROLL_90_YAW_135">
+                  <description>Roll: 90, Pitch: 0, Yaw: 135</description>
+              </entry>
+              <entry value="20" name="MAV_SENSOR_ROTATION_ROLL_270">
+                  <description>Roll: 270, Pitch: 0, Yaw: 0</description>
+              </entry>
+              <entry value="21" name="MAV_SENSOR_ROTATION_ROLL_270_YAW_45">
+                  <description>Roll: 270, Pitch: 0, Yaw: 45</description>
+              </entry>
+              <entry value="22" name="MAV_SENSOR_ROTATION_ROLL_270_YAW_90">
+                  <description>Roll: 270, Pitch: 0, Yaw: 90</description>
+              </entry>
+              <entry value="23" name="MAV_SENSOR_ROTATION_ROLL_270_YAW_135">
+                  <description>Roll: 270, Pitch: 0, Yaw: 135</description>
+              </entry>
+              <entry value="24" name="MAV_SENSOR_ROTATION_PITCH_90">
+                  <description>Roll: 0, Pitch: 90, Yaw: 0</description>
+              </entry>
+              <entry value="25" name="MAV_SENSOR_ROTATION_PITCH_270">
+                <description>Roll: 0, Pitch: 270, Yaw: 0</description>
+              </entry>   
+              <entry value="26" name="MAV_SENSOR_ROTATION_PITCH_180_YAW_90">
+                <description>Roll: 0, Pitch: 180, Yaw: 90</description>
+              </entry>  
+              <entry value="27" name="MAV_SENSOR_ROTATION_PITCH_180_YAW_270">
+                  <description>Roll: 0, Pitch: 180, Yaw: 270</description>
+              </entry>
+              <entry value="28" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_90">
+                  <description>Roll: 90, Pitch: 90, Yaw: 0</description>
+              </entry>
+              <entry value="29" name="MAV_SENSOR_ROTATION_ROLL_180_PITCH_90">
+                  <description>Roll: 180, Pitch: 90, Yaw: 0</description>
+              </entry>
+              <entry value="30" name="MAV_SENSOR_ROTATION_ROLL_270_PITCH_90">
+                  <description>Roll: 270, Pitch: 90, Yaw: 0</description>
+              </entry>
+              <entry value="31" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_180">
+                  <description>Roll: 90, Pitch: 180, Yaw: 0</description>
+              </entry>
+              <entry value="32" name="MAV_SENSOR_ROTATION_ROLL_270_PITCH_180">
+                  <description>Roll: 270, Pitch: 180, Yaw: 0</description>
+              </entry>
+              <entry value="33" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_270">
+                  <description>Roll: 90, Pitch: 270, Yaw: 0</description>
+              </entry>
+              <entry value="34" name="MAV_SENSOR_ROTATION_ROLL_180_PITCH_270">
+                  <description>Roll: 180, Pitch: 270, Yaw: 0</description>
+              </entry>
+              <entry value="35" name="MAV_SENSOR_ROTATION_ROLL_270_PITCH_270">
+                  <description>Roll: 270, Pitch: 270, Yaw: 0</description>
+              </entry>
+              <entry value="36" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_180_YAW_90">
+                  <description>Roll: 90, Pitch: 180, Yaw: 90</description>
+              </entry>
+              <entry value="37" name="MAV_SENSOR_ROTATION_ROLL_90_YAW_270">
+                  <description>Roll: 90, Pitch: 0, Yaw: 270</description>
+              </entry>
+              <entry value="38" name="MAV_SENSOR_ROTATION_ROLL_315_PITCH_315_YAW_315">
+                  <description>Roll: 315, Pitch: 315, Yaw: 315</description>
               </entry>
           </enum>
           <enum name="MAV_PROTOCOL_CAPABILITY">
@@ -2546,7 +2702,7 @@
             <field type="uint16_t" name="current_distance">Current distance reading</field>
             <field type="uint8_t" name="type">Type from MAV_DISTANCE_SENSOR enum.</field>
             <field type="uint8_t" name="id">Onboard ID of the sensor</field>
-            <field type="uint8_t" name="orientation">Direction the sensor faces from FIXME enum.</field>
+            <field type="uint8_t" name="orientation">Direction the sensor faces from MAV_SENSOR_ORIENTATION enum.</field>
             <field type="uint8_t" name="covariance">Measurement covariance in centimeters, 0 for unknown / invalid readings</field>
          </message>
          <message id="133" name="TERRAIN_REQUEST">
@@ -2634,7 +2790,28 @@
             <field type="uint16_t" name="product_id">ID of the product</field>
             <field type="uint64_t" name="uid">UID if provided by hardware</field>
         </message>
+        <message id="149" name="LANDING_TARGET">
+            <description>The location of a landing area captured from a downward facing camera</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="uint8_t" name="target_num">The ID of the target if multiple targets are present</field>
+            <field type="uint8_t" name="frame">MAV_FRAME enum specifying the whether the following feilds are earth-frame, body-frame, etc.</field>
+            <field type="float" name="angle_x">X-axis angular offset (in radians) of the target from the center of the image</field>
+            <field type="float" name="angle_y">Y-axis angular offset (in radians) of the target from the center of the image</field>
+            <field type="float" name="distance">Distance to the target from the vehicle in meters</field>
+            <field type="float" name="size_x">Size in radians of target along x-axis</field>
+            <field type="float" name="size_y">Size in radians of target along y-axis</field>
+        </message>
         <!-- MESSAGE IDs 180 - 240: Space for custom messages in individual projectname_messages.xml files -->
+        <message id="241" name="VIBRATION">
+            <description>Vibration levels and accelerometer clipping</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="float" name="vibration_x">Vibration levels on X-axis</field>
+            <field type="float" name="vibration_y">Vibration levels on Y-axis</field>
+            <field type="float" name="vibration_z">Vibration levels on Z-axis</field>
+            <field type="uint32_t" name="clipping_0">first accelerometer clipping count</field>
+            <field type="uint32_t" name="clipping_1">second accelerometer clipping count</field>
+            <field type="uint32_t" name="clipping_2">third accelerometer clipping count</field>
+        </message>
         <message id="248" name="V2_EXTENSION">
             <description>Message implementing parts of the V2 payload specs in V1 frames for transitional support.</description>
             <field type="uint8_t" name="target_network">Network ID (0 for broadcast)</field>

@@ -34,6 +34,28 @@
               <param index="7">Empty</param>
             </entry>
 
+            <entry name="MAV_CMD_DO_AUTOTUNE_ENABLE" value="212">
+              <description>Enable/disable autotune</description>
+              <param index="1">enable (1: enable, 0:disable)</param>
+              <param index="2">Empty</param>
+              <param index="3">Empty</param>
+              <param index="4">Empty</param>
+              <param index="5">Empty</param>
+              <param index="6">Empty</param>
+              <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_NAV_ALTITUDE_WAIT" value="83">
+              <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
+              <param index="1">altitude (m)</param>
+              <param index="2">descent speed (m/s)</param>
+              <param index="3">Wiggle Time (s)</param>
+              <param index="4">Empty</param>
+              <param index="5">Empty</param>
+              <param index="6">Empty</param>
+              <param index="7">Empty</param>
+            </entry>
+
             <entry name="MAV_CMD_DO_START_MAG_CAL" value="42424">
                 <description>Initiate a magnetometer calibration</description>
                 <param index="1">uint8_t bitmask of magnetometers (0 means all)</param>
@@ -273,6 +295,12 @@
         <entry name="MAG_CAL_SUCCESS" value="4"></entry>
         <entry name="MAG_CAL_FAILED" value="5"></entry>
     </enum>
+
+        <enum name="PID_TUNING_AXIS">
+          <entry name="PID_TUNING_ROLL"  value="1"></entry>
+          <entry name="PID_TUNING_PITCH" value="2"></entry>
+          <entry name="PID_TUNING_YAW"   value="3"></entry>
+        </enum>
 
       </enums>
 
@@ -694,6 +722,18 @@
         <field name="pos_vert_variance" type="float">Vertical Position variance</field>
         <field name="compass_variance" type="float">Compass variance</field>
         <field name="terrain_alt_variance" type="float">Terrain Altitude variance</field>
+    </message>
+
+    <!-- realtime PID tuning message -->
+    <message name="PID_TUNING" id="194">
+        <description>PID tuning information</description>
+        <field name="axis" type="uint8_t" enum="PID_TUNING_AXIS">axis</field>
+        <field name="desired" type="float">desired rate (degrees/s)</field>
+        <field name="achieved" type="float">achieved rate (degrees/s)</field>
+        <field name="FF" type="float">FF component</field>
+        <field name="P" type="float">P component</field>
+        <field name="I" type="float">I component</field>
+        <field name="D" type="float">D component</field>
     </message>
 
     <message name="GIMBAL_REPORT" id="200">

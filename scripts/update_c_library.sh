@@ -67,8 +67,8 @@ generate_headers pixhawk
 generate_headers slugs
 generate_headers test
 generate_headers ualberta
-generate_headers common
 generate_headers ASLUAV
+generate_headers common
 echo -e "\0033[34mFinished generating c headers\0033[0m\n"
 
 # git add and git commit in local c_library repository

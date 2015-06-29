@@ -458,22 +458,29 @@ def distance_two(GPS_RAW1, GPS_RAW2):
         lat2 = radians(GPS_RAW2.Lat)
         lon1 = radians(GPS_RAW1.Lng)
         lon2 = radians(GPS_RAW2.Lng)
+        alt1 = GPS_RAW1.Alt
+        alt2 = GPS_RAW2.Alt
     elif hasattr(GPS_RAW1, 'cog'):
         lat1 = radians(GPS_RAW1.lat)*1.0e-7
         lat2 = radians(GPS_RAW2.lat)*1.0e-7
         lon1 = radians(GPS_RAW1.lon)*1.0e-7
         lon2 = radians(GPS_RAW2.lon)*1.0e-7
+        alt1 = GPS_RAW1.alt*0.001
+        alt2 = GPS_RAW2.alt*0.001
     else:
         lat1 = radians(GPS_RAW1.lat)
         lat2 = radians(GPS_RAW2.lat)
         lon1 = radians(GPS_RAW1.lon)
         lon2 = radians(GPS_RAW2.lon)
+        alt1 = GPS_RAW1.alt*0.001
+        alt2 = GPS_RAW2.alt*0.001
     dLat = lat2 - lat1
     dLon = lon2 - lon1
 
     a = sin(0.5*dLat)**2 + sin(0.5*dLon)**2 * cos(lat1) * cos(lat2)
     c = 2.0 * atan2(sqrt(a), sqrt(1.0-a))
-    return 6371 * 1000 * c
+    ground_dist = 6371 * 1000 * c
+    return sqrt(ground_dist**2 + (alt2-alt1)**2)
 
 
 first_fix = None

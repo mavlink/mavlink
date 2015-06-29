@@ -310,6 +310,8 @@ def merge_enums(xml):
         for enum in x.enum:
             if enum.name in emap:
                 emap[enum.name].entry.extend(enum.entry)
+                if not emap[enum.name].description:
+                    emap[enum.name].description = enum.description
                 print("Merged enum %s" % enum.name)
             else:
                 newenums.append(enum)

@@ -23,6 +23,7 @@ parser.add_argument("-p", "--parms", action='store_true', help="preserve paramet
 parser.add_argument("--format", default=None, help="Change the output format between 'standard', 'json', and 'csv'. For the CSV output, you must supply types that you want.")
 parser.add_argument("--csv_sep", dest="csv_sep", default=",", help="Select the delimiter between columns for the output CSV file. Use 'tab' to specify tabs. Only applies when --format=csv")
 parser.add_argument("--types", default=None, help="types of messages (comma separated)")
+parser.add_argument("--nottypes", default=None, help="types of messages not to include (comma separated)")
 parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect")
 parser.add_argument("--zero-time-base", action='store_true', help="use Z time base for DF logs")
 parser.add_argument("log", metavar="LOG")
@@ -47,6 +48,10 @@ if args.output:
 types = args.types
 if types is not None:
     types = types.split(',')
+
+nottypes = args.nottypes
+if nottypes is not None:
+    nottypes = nottypes.split(',')
 
 ext = os.path.splitext(filename)[1]
 isbin = ext in ['.bin', '.BIN']
@@ -103,6 +108,9 @@ while True:
     if types is not None and m.get_type() not in types and m.get_type() != 'BAD_DATA':
         continue
 
+    if nottypes is not None and m.get_type() in nottypes:
+        continue
+
     if m.get_type() == 'BAD_DATA' and m.reason == "Bad prefix":
         continue
 
@@ -113,7 +121,11 @@ while True:
     if output:
         if not (isbin or islog):
             output.write(struct.pack('>Q', timestamp*1.0e6))
-        output.write(m.get_msgbuf())
+        try:
+            output.write(m.get_msgbuf())
+        except Exception as ex:
+            print("Failed to write msg %s" % m.get_type())
+            pass
 
     # If quiet is specified, don't display output to the terminal.
     if args.quiet:

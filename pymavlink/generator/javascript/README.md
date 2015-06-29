@@ -46,7 +46,8 @@ Then, you can use the MAVLink module, as sketched below.
 In your ```server.js``` script, you need to include the generated parser and instantiate it; you also need some kind of binary stream library that can read/write binary data and emit an event when new data is ready to be parsed (TCP, UDP, serial port all have appropriate libraries in the npm-o-sphere).  The connection's "data is ready" event is bound to invoke the MAVLink parser to try and extract a valid message.
 
 ```javascript
-// requires Underscore.js, can use Winston for logging ,
+// requires Underscore.js and jspack
+// can use Winston for logging
 // see package.json for dependencies for the implementation
 var mavlink = require('mavlink_ardupilotmega_v1.0'), 
 	net = require('net');

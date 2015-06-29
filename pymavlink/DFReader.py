@@ -27,9 +27,10 @@ FORMAT_TO_STRUCT = {
     "e": ("i", 0.01, float),
     "E": ("I", 0.01, float),
     "L": ("i", 1.0e-7, float),
+    "d": ("d", None, float),
     "M": ("b", None, int),
-    "q": ("q", None, int),
-    "Q": ("Q", None, int),
+    "q": ("q", None, long),
+    "Q": ("Q", None, long),
     }
 
 class DFFormat(object):
@@ -86,7 +87,7 @@ class DFMessage(object):
         try:
             i = self.fmt.colhash[field]
         except Exception:
-            raise AttributeError
+            raise AttributeError(field)
         v = self._elements[i]
         if self.fmt.format[i] != 'M' or self._apply_multiplier:
             v = self.fmt.msg_types[i](v)
@@ -126,122 +127,296 @@ class DFMessage(object):
         return struct.pack("BBB", 0xA3, 0x95, self.fmt.type) + struct.pack(self.fmt.msg_struct, *values)
                 
 
-class DFReader(object):
-    '''parse a generic dataflash file'''
-    def __init__(self):
-        # read the whole file into memory for simplicity
-        self.msg_rate = {}
-        self.new_timestamps = False
-        self.px4_timestamps = False
-        self.px4_timebase = 0
-        self.timestamp = 0
-        self.mav_type = mavutil.mavlink.MAV_TYPE_FIXED_WING
-        self.verbose = False
-        self.params = {}
-        
-    def _rewind(self):
-        '''reset counters on rewind'''
-        self.counts = {}
-        self.counts_since_gps = {}
-        self.messages = { 'MAV' : self }
-        self.flightmode = "UNKNOWN"
-        self.percent = 0
+class DFReaderClock():
+    '''base class for all the different ways we count time in logs'''
 
-    def _gpsTimeToTime(self, week, sec):
+    def __init__(self):
+        self.set_timebase(0)
+        self.timestamp = 0
+
+    def _gpsTimeToTime(self, week, msec):
         '''convert GPS week and TOW to a time in seconds since 1970'''
         epoch = 86400*(10*365 + (1980-1969)/4 + 1 + 6 - 2)
-        return epoch + 86400*7*week + sec - 15
+        return epoch + 86400*7*week + msec*0.001 - 15
 
-    def _find_time_base_new(self, gps):
+    def set_timebase(self, base):
+        self.timebase = base
+
+    def message_arrived(self, m):
+        pass
+
+    def rewind_event(self):
+        pass
+
+class DFReaderClock_gps_usec(DFReaderClock):
+    '''DFReaderClock_gps_usec - GPS usec - use GPS Week and GPS MS to find base'''
+    def __init__(self):
+        DFReaderClock.__init__(self)
+
+    def find_time_base(self, gps, first_us_stamp):
+        '''work out time basis for the log - even newer style'''
+        t = self._gpsTimeToTime(gps.GWk, gps.GMS)
+        self.set_timebase(t - gps.TimeUS*0.000001)
+        # this ensures FMT messages get appropriate timestamp:
+        self.timestamp = self.timebase + first_us_stamp*0.000001
+
+    def type_has_good_TimeMS(self, type):
+        '''The TimeMS in some messages is not from *our* clock!'''
+        if type.startswith('ACC'):
+            return False;
+        if type.startswith('GYR'):
+            return False;
+        return True
+
+    def should_use_msec_field0(self, m):
+        if not self.type_has_good_TimeMS(m.get_type()):
+            return False
+        if 'TimeMS' != m._fieldnames[0]:
+            return False
+        if self.timebase + m.TimeMS*0.001 < self.timestamp:
+            return False
+        return True;
+
+    def set_message_timestamp(self, m):
+        if 'TimeUS' == m._fieldnames[0]:
+            # only format messages don't have a TimeUS in them...
+            m._timestamp = self.timebase + m.TimeUS*0.000001
+        elif self.should_use_msec_field0(m):
+            # ... in theory. I expect there to be some logs which are not
+            # "pure":
+            m._timestamp = self.timebase + m.TimeMS*0.001
+        else:
+            m._timestamp = self.timestamp
+        self.timestamp = m._timestamp
+
+class DFReaderClock_msec(DFReaderClock):
+    '''DFReaderClock_msec - a format where many messages have TimeMS in their formats, and GPS messages have a "T" field giving msecs '''
+    def find_time_base(self, gps, first_ms_stamp):
         '''work out time basis for the log - new style'''
-        t = self._gpsTimeToTime(gps.Week, gps.TimeMS*0.001)
-        self.timebase = t - gps.T*0.001
-        self.new_timestamps = True
+        t = self._gpsTimeToTime(gps.Week, gps.TimeMS)
+        self.set_timebase(t - gps.T*0.001)
+        self.timestamp = self.timebase + first_ms_stamp*0.001
 
-    def _find_time_base_px4(self, gps):
+    def set_message_timestamp(self, m):
+        if 'TimeMS' == m._fieldnames[0]:
+            m._timestamp = self.timebase + m.TimeMS*0.001
+        elif m.get_type() in ['GPS','GPS2']:
+            m._timestamp = self.timebase + m.T*0.001
+        else:
+            m._timestamp = self.timestamp
+        self.timestamp = m._timestamp
+
+class DFReaderClock_px4(DFReaderClock):
+    '''DFReaderClock_px4 - a format where a starting time is explicitly given in a message'''
+    def __init__(self):
+        DFReaderClock.__init__(self)
+        self.px4_timebase = 0
+
+    def find_time_base(self, gps):
         '''work out time basis for the log - PX4 native'''
         t = gps.GPSTime * 1.0e-6
         self.timebase = t - self.px4_timebase
-        self.px4_timestamps = True
 
-    def _find_time_base(self):
-        '''work out time basis for the log'''
-        self.timebase = 0
-        if self._zero_time_base:
-            return
-        gps1 = self.recv_match(type='GPS', condition='getattr(GPS,"Week",0)!=0 or getattr(GPS,"GPSTime",0)!=0')
-        if gps1 is None:
-            self._rewind()
-            return
+    def set_px4_timebase(self, time_msg):
+        self.px4_timebase = time_msg.StartTime * 1.0e-6
 
-        if 'GPSTime' in gps1._fieldnames:
-            self._find_time_base_px4(gps1)
-            self._rewind()
-            return
-            
-        if 'T' in gps1._fieldnames:
-            # it is a new style flash log with full timestamps
-            self._find_time_base_new(gps1)
-            self._rewind()
-            return
-        
-        counts1 = self.counts.copy()
-        gps2 = self.recv_match(type='GPS', condition='GPS.Week!=0')
-        counts2 = self.counts.copy()
+    def set_message_timestamp(self, m):
+        m._timestamp = self.timebase + self.px4_timebase
 
-        if gps1 is None or gps2 is None:
-            self._rewind()
-            return
-        
-        t1 = self._gpsTimeToTime(gps1.Week, gps1.TimeMS*0.001)
-        t2 = self._gpsTimeToTime(gps2.Week, gps2.TimeMS*0.001)
-        if t2 == t1:
-            self._rewind()
-            return
-        for type in counts2:
-            self.msg_rate[type] = (counts2[type] - counts1[type]) / float(t2-t1)
-            if self.msg_rate[type] == 0:
-                self.msg_rate[type] = 1
-        self._rewind()
-        
-    def _adjust_time_base(self, m):
+    def message_arrived(self, m):
+        type = m.get_type()
+        if type == 'TIME' and 'StartTime' in m._fieldnames:
+            self.set_px4_timebase(m)
+
+class DFReaderClock_gps_interpolated(DFReaderClock):
+    '''DFReaderClock_gps_interpolated - for when the only real references in a message are GPS timestamps '''
+    def __init__(self):
+        DFReaderClock.__init__(self)
+        self.msg_rate = {}
+        self.counts = {}
+        self.counts_since_gps = {}
+
+    def rewind_event(self):
+        '''reset counters on rewind'''
+        self.counts = {}
+        self.counts_since_gps = {}
+
+    def message_arrived(self, m):
+        type = m.get_type()
+        if not type in self.counts:
+            self.counts[type] = 1
+        else:
+            self.counts[type] += 1
+        # this preserves existing behaviour - but should we be doing this
+        # if type == 'GPS'?
+        if not type in self.counts_since_gps:
+            self.counts_since_gps[type] = 1
+        else:
+            self.counts_since_gps[type] += 1
+
+        if type == 'GPS' or type == 'GPS2':
+            self.gps_message_arrived(m)
+
+    def gps_message_arrived(self, m):
         '''adjust time base from GPS message'''
-        if self._zero_time_base:
-            return
-        if self.new_timestamps:
-            return
-        if self.px4_timestamps:
-            return
-        if getattr(m, 'Week', None) is None:
-            return
-        t = self._gpsTimeToTime(m.Week, m.TimeMS*0.001)
+        # msec-style GPS message?
+        gps_week = getattr(m, 'Week', None)
+        gps_timems = getattr(m, 'TimeMS', None)
+        if gps_week is None:
+            # usec-style GPS message?
+            gps_week = getattr(m, 'GWk', None)
+            gps_timems = getattr(m, 'GMS', None)
+            if gps_week is None:
+                if getattr(m, 'GPSTime', None) is not None:
+                    # PX4-style timestamp; we've only been called
+                    # because we were speculatively created in case no
+                    # better clock was found.
+                    return;
+
+        t = self._gpsTimeToTime(gps_week, gps_timems) 
+
         deltat = t - self.timebase
         if deltat <= 0:
             return
+
         for type in self.counts_since_gps:
             rate = self.counts_since_gps[type] / deltat
             if rate > self.msg_rate.get(type, 0):
                 self.msg_rate[type] = rate
         self.msg_rate['IMU'] = 50.0
         self.timebase = t
-        self.counts_since_gps = {}        
+        self.counts_since_gps = {}
+
+    def set_message_timestamp(self, m):
+        rate = self.msg_rate.get(m.fmt.name, 50.0)
+        if int(rate) == 0:
+            rate = 50
+        count = self.counts_since_gps.get(m.fmt.name, 0)
+        m._timestamp = self.timebase + count/rate
+
+
+class DFReader(object):
+    '''parse a generic dataflash file'''
+    def __init__(self):
+        # read the whole file into memory for simplicity
+        self.clock = None
+        self.timestamp = 0
+        self.mav_type = mavutil.mavlink.MAV_TYPE_FIXED_WING
+        self.verbose = False
+        self.params = {}
+
+    def _rewind(self):
+        '''reset state on rewind'''
+        self.messages = { 'MAV' : self }
+        self.flightmode = "UNKNOWN"
+        self.percent = 0
+        if self.clock:
+            self.clock.rewind_event()
+
+    def init_clock_px4(self, px4_msg_time, px4_msg_gps):
+        self.clock = DFReaderClock_px4()
+        if not self._zero_time_base:
+            self.clock.set_px4_timebase(px4_msg_time)
+            self.clock.find_time_base(px4_msg_gps)
+        return True
+
+    def init_clock_msec(self, msg_gps, first_ms_stamp):
+        # it is a new style flash log with full timestamps
+        self.clock = DFReaderClock_msec()
+        if not self._zero_time_base:
+            self.clock.find_time_base(msg_gps, first_ms_stamp)
+        return True
+
+    def init_clock_gps_usec(self, msg_gps, first_us_stamp):
+        self.clock = DFReaderClock_gps_usec()
+        if not self._zero_time_base:
+            self.clock.find_time_base(msg_gps, first_us_stamp)
+        return True
+
+    def init_clock_gps_interpolated(self, clock):
+        self.clock = clock
+
+        return True
+
+    def init_clock(self):
+        '''work out time basis for the log'''
+
+        self._rewind()
+
+        # speculatively create a gps clock in case we don't find anything
+        # better
+        gps_clock = DFReaderClock_gps_interpolated()
+        self.clock = gps_clock
+
+        px4_msg_time = None
+        px4_msg_gps = None
+        gps_interp_msg_gps1 = None
+        gps_interp_msg_gps2 = None
+        first_us_stamp = None
+        first_ms_stamp = None
+
+        while True:
+            m = self.recv_msg()
+            if m is None:
+                break;
+
+            type = m.get_type()
+
+            if first_us_stamp is None:
+                first_us_stamp = getattr(m, "TimeUS", None);
+
+            if first_ms_stamp is None and (type != 'GPS' and type != 'GPS2'):
+                # Older GPS messages use TimeMS for msecs past start
+                # of gps week
+                first_ms_stamp = getattr(m, "TimeMS", None);
+
+            if type == 'GPS' or type == 'GPS2':
+                if getattr(m, "TimeUS", 0) != 0 and \
+                   getattr(m, "GWk", 0) != 0: # everything-usec-timestamped
+                    self.init_clock_gps_usec(m, first_us_stamp)
+                    break
+                if getattr(m, "T", 0) != 0 and \
+                   getattr(m, "Week", 0) != 0: # GPS is msec-timestamped
+                    if first_ms_stamp is None:
+                        first_ms_stamp = m.T
+                    self.init_clock_msec(m, first_ms_stamp)
+                    break
+                if getattr(m, "GPSTime", 0) != 0: # px4-style-only
+                    px4_msg_gps = m
+                if getattr(m, "Week", 0) != 0:
+                    if gps_interp_msg_gps1 is not None and \
+                       (gps_interp_msg_gps1.TimeMS != m.TimeMS or \
+                        gps_interp_msg_gps1.Week != m.Week):
+                        # we've received two distinct, non-zero GPS
+                        # packets without finding a decent clock to
+                        # use; fall back to interpolation. Q: should
+                        # we wait a few more messages befoe doing
+                        # this?
+                        self.init_clock_gps_interpolated(gps_clock)
+                        break
+                    gps_interp_msg_gps1 = m
+
+            elif type == 'TIME':
+                '''only px4-style logs use TIME'''
+                if getattr(m, "StartTime", None) != None:
+                    px4_msg_time = m;
+
+            if px4_msg_time is not None and px4_msg_gps is not None:
+                self.init_clock_px4(px4_msg_time, px4_msg_gps)
+                break
+
+#        print("clock is " + str(self.clock))
+
+        self._rewind()
+
+        return
 
     def _set_time(self, m):
         '''set time for a message'''
-        if self.px4_timestamps:
-            m._timestamp = self.timebase + self.px4_timebase
-        elif len(m._fieldnames) > 0 and (self._zero_time_base or self.new_timestamps):
-            if 'TimeMS' == m._fieldnames[0]:
-                m._timestamp = self.timebase + m.TimeMS*0.001
-            elif m.get_type() in ['GPS','GPS2']:
-                m._timestamp = self.timebase + m.T*0.001
-            else:
-                m._timestamp = self.timestamp
-        else:
-            rate = self.msg_rate.get(m.fmt.name, 50.0)
-            count = self.counts_since_gps.get(m.fmt.name, 0)
-            m._timestamp = self.timebase + count/rate
-        self.timestamp = m._timestamp
+        # really just left here for profiling
+        m._timestamp = self.timestamp
+        if len(m._fieldnames) > 0 and self.clock is not None:
+            self.clock.set_message_timestamp(m)
 
     def recv_msg(self):
         return self._parse_next()
@@ -250,26 +425,16 @@ class DFReader(object):
         '''add a new message'''
         type = m.get_type()
         self.messages[type] = m
-        if not type in self.counts:
-            self.counts[type] = 0
-        else:
-            self.counts[type] += 1
-        if not type in self.counts_since_gps:
-            self.counts_since_gps[type] = 0
-        else:
-            self.counts_since_gps[type] += 1
 
-        if type == 'TIME' and 'StartTime' in m._fieldnames:
-            self.px4_timebase = m.StartTime * 1.0e-6
-            self.px4_timestamps = True
-        if type == 'GPS':
-            self._adjust_time_base(m)
+        if self.clock:
+            self.clock.message_arrived(m)
+
         if type == 'MSG':
-            if m.Message.startswith("ArduRover"):
+            if m.Message.find("Rover") != -1:
                 self.mav_type = mavutil.mavlink.MAV_TYPE_GROUND_ROVER
-            elif m.Message.startswith("ArduPlane"):
+            elif m.Message.find("Plane") != -1:
                 self.mav_type = mavutil.mavlink.MAV_TYPE_FIXED_WING
-            elif m.Message.startswith("ArduCopter"):
+            elif m.Message.find("Copter") != -1:
                 self.mav_type = mavutil.mavlink.MAV_TYPE_QUADROTOR
             elif m.Message.startswith("Antenna"):
                 self.mav_type = mavutil.mavlink.MAV_TYPE_ANTENNA_TRACKER
@@ -282,11 +447,8 @@ class DFReader(object):
                     self.flightmode = mapping[m.ModeNum]
             else:
                 self.flightmode = mavutil.mode_string_acm(m.Mode)
-        if type == 'STAT':
-            if 'MainState' in m._fieldnames:
-                self.flightmode = mavutil.mode_string_px4(m.MainState)
-            else:
-                self.flightmode = "UNKNOWN"
+        if type == 'STAT' and 'MainState' in m._fieldnames:
+            self.flightmode = mavutil.mode_string_px4(m.MainState)
         if type == 'PARM' and getattr(m, 'Name', None) is not None:
             self.params[m.Name] = m.Value
         self._set_time(m)
@@ -331,9 +493,8 @@ class DFReader_binary(DFReader):
         self.formats = {
             0x80 : DFFormat(0x80, 'FMT', 89, 'BBnNZ', "Type,Length,Name,Format,Columns")
         }
-        self._rewind()
         self._zero_time_base = zero_time_base
-        self._find_time_base()
+        self.init_clock()
         self._rewind()
 
     def _rewind(self):
@@ -388,7 +549,7 @@ class DFReader_binary(DFReader):
             print("Failed to parse %s/%s with len %u (remaining %u)" % (fmt.name, fmt.msg_struct, len(body), self.remaining))
             raise
         name = null_term(fmt.name)
-        if name == 'FMT' and elements[0] not in self.formats:
+        if name == 'FMT':
             # add to formats
             # name, len, format, headings
             self.formats[elements[0]] = DFFormat(elements[0],
@@ -424,7 +585,7 @@ class DFReader_text(DFReader):
         }
         self._rewind()
         self._zero_time_base = zero_time_base
-        self._find_time_base()
+        self.init_clock()
         self._rewind()
 
     def _rewind(self):
