@@ -30,7 +30,7 @@ package com.MAVLink.enums;
 * ${description}
 */
 public class ${name} {
-${{entry:	public static final int ${name} = ${value}; /* ${description} |${{param:${description}| }} */
+${{entry:   public static final int ${name} = ${value}; /* ${description} |${{param:${description}| }} */
 }}
 }
             ''', en)
@@ -76,7 +76,7 @@ public class CRC {
     *            new char to hash
     **/
     public  void update_checksum(int data) {
-        data = data & 0xff;	//cast because we want an unsigned type
+        data = data & 0xff; //cast because we want an unsigned type
         int tmp = data ^ (crcValue & 0xff);
         tmp ^= (tmp << 4) & 0xff;
         crcValue = ((crcValue >> 8) & 0xff) ^ (tmp << 8) ^ (tmp << 3) ^ ((tmp >> 4) & 0xf);
@@ -147,7 +147,7 @@ public class msg_${name_lower} extends MAVLinkMessage{
     private static final long serialVersionUID = MAVLINK_MSG_ID_${name};
 
 
-    ${{ordered_fields: 	
+    ${{ordered_fields:  
     /**
     * ${description}
     */
@@ -164,8 +164,8 @@ public class msg_${name_lower} extends MAVLinkMessage{
         packet.sysid = 255;
         packet.compid = 190;
         packet.msgid = MAVLINK_MSG_ID_${name};
-        ${{ordered_fields:
-		${packField}
+        ${{ordered_fields:      
+        ${packField}
         }}
         return packet;
     }
@@ -177,7 +177,7 @@ public class msg_${name_lower} extends MAVLinkMessage{
     */
     public void unpack(MAVLinkPayload payload) {
         payload.resetIndex();
-        ${{ordered_fields:	    
+        ${{ordered_fields:      
         ${unpackField}
         }}
     }
@@ -372,13 +372,13 @@ public class MAVLinkPacket implements Serializable {
         ''')
     for xml in xml_list:
         t.write(f, '''
-            ${{message:		
+            ${{message:     
             case msg_${name_lower}.MAVLINK_MSG_ID_${name}:
                 return  new msg_${name_lower}(this);
             }}
             ''',xml)
     f.write('''
-    		default:
+            default:
                 return null;
         }
     }
@@ -531,7 +531,7 @@ def generate_one(basename, xml):
             %s[i] = (byte) str.charAt(i);
         }
 
-        for (int i=len; i<%d; i++) {			// padding for the rest of the buffer
+        for (int i=len; i<%d; i++) {            // padding for the rest of the buffer
             %s[i] = 0;
         }
     }
