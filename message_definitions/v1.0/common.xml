@@ -2788,6 +2788,26 @@
             <field type="uint8_t" name="transfer_type">The way the autopilot wants to receive the URI. 0 = MAVLink FTP. 1 = binary stream.</field>
             <field type="uint8_t[120]" name="storage">The storage path the autopilot wants the URI to be stored in. Will only be valid if the transfer_type has a storage associated (e.g. MAVLink FTP).</field>
         </message>
+        <message id="146" name="CONTROL_SYSTEM_STATE">
+            <description>The smoothed, monotonic system state used to feed the control loops of the system.</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="float" name="x_acc">X acceleration in body frame</field>
+            <field type="float" name="y_acc">Y acceleration in body frame</field>
+            <field type="float" name="z_acc">Z acceleration in body frame</field>
+            <field type="float" name="x_vel">X velocity in body frame</field>
+            <field type="float" name="y_vel">Y velocity in body frame</field>
+            <field type="float" name="z_vel">Z velocity in body frame</field>
+            <field type="float" name="x_pos">X position in local frame</field>
+            <field type="float" name="y_pos">Y position in local frame</field>
+            <field type="float" name="z_pos">Z position in local frame</field>
+            <field type="float" name="airspeed">Airspeed, set to -1 if unknown</field>
+            <field type="float[3]" name="vel_variance">Variance of body velocity estimate</field>
+            <field type="float[3]" name="pos_variance">Variance in local position</field>
+            <field type="float[4]" name="q">The attitude, represented as Quaternion</field>
+            <field type="float" name="roll_rate">Angular rate in roll axis</field>
+            <field type="float" name="pitch_rate">Angular rate in pitch axis</field>
+            <field type="float" name="yaw_rate">Angular rate in yaw axis</field>
+        </message>
         <message id="147" name="BATTERY_STATUS">
             <description>Battery information</description>
             <field type="uint8_t" name="id">Battery ID</field>
