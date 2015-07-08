@@ -540,14 +540,19 @@ class DFReader_binary(DFReader):
                 print("out of data")
             return None
         body = self.data[self.offset:self.offset+(fmt.len-3)]
+        elements = None
         try:
             elements = list(struct.unpack(fmt.msg_struct, body))
         except Exception:
             if self.remaining < 528:
                 # we can have garbage at the end of an APM2 log
                 return None
+            # we should also cope with other corruption; logs
+            # transfered via DataFlash_MAVLink may have blocks of 0s
+            # in them, for example
             print("Failed to parse %s/%s with len %u (remaining %u)" % (fmt.name, fmt.msg_struct, len(body), self.remaining))
-            raise
+        if elements is None:
+            return self._parse_next()
         name = null_term(fmt.name)
         if name == 'FMT':
             # add to formats
