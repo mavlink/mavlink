@@ -451,7 +451,7 @@ def pitch_sim(SIMSTATE, GPS_RAW):
         return -0
     return degrees(-asin(xacc/zacc))
 
-def distance_two(GPS_RAW1, GPS_RAW2):
+def distance_two(GPS_RAW1, GPS_RAW2, horizontal=True):
     '''distance between two points'''
     if hasattr(GPS_RAW1, 'Lat'):
         lat1 = radians(GPS_RAW1.Lat)
@@ -480,6 +480,8 @@ def distance_two(GPS_RAW1, GPS_RAW2):
     a = sin(0.5*dLat)**2 + sin(0.5*dLon)**2 * cos(lat1) * cos(lat2)
     c = 2.0 * atan2(sqrt(a), sqrt(1.0-a))
     ground_dist = 6371 * 1000 * c
+    if horizontal:
+        return ground_dist
     return sqrt(ground_dist**2 + (alt2-alt1)**2)
 
 
