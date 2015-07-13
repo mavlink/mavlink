@@ -148,8 +148,8 @@ class DFReaderClock():
     def rewind_event(self):
         pass
 
-class DFReaderClock_gps_usec(DFReaderClock):
-    '''DFReaderClock_gps_usec - GPS usec - use GPS Week and GPS MS to find base'''
+class DFReaderClock_usec(DFReaderClock):
+    '''DFReaderClock_usec - use microsecond timestamps from messages'''
     def __init__(self):
         DFReaderClock.__init__(self)
 
@@ -320,23 +320,15 @@ class DFReader(object):
             self.clock.find_time_base(px4_msg_gps)
         return True
 
-    def init_clock_msec(self, msg_gps, first_ms_stamp):
+    def init_clock_msec(self):
         # it is a new style flash log with full timestamps
         self.clock = DFReaderClock_msec()
-        if not self._zero_time_base:
-            self.clock.find_time_base(msg_gps, first_ms_stamp)
-        return True
 
-    def init_clock_gps_usec(self, msg_gps, first_us_stamp):
-        self.clock = DFReaderClock_gps_usec()
-        if not self._zero_time_base:
-            self.clock.find_time_base(msg_gps, first_us_stamp)
-        return True
+    def init_clock_usec(self):
+        self.clock = DFReaderClock_usec()
 
     def init_clock_gps_interpolated(self, clock):
         self.clock = clock
-
-        return True
 
     def init_clock(self):
         '''work out time basis for the log'''
@@ -355,6 +347,7 @@ class DFReader(object):
         first_us_stamp = None
         first_ms_stamp = None
 
+        have_good_clock = False
         while True:
             m = self.recv_msg()
             if m is None:
@@ -373,13 +366,19 @@ class DFReader(object):
             if type == 'GPS' or type == 'GPS2':
                 if getattr(m, "TimeUS", 0) != 0 and \
                    getattr(m, "GWk", 0) != 0: # everything-usec-timestamped
-                    self.init_clock_gps_usec(m, first_us_stamp)
+                    self.init_clock_usec()
+                    if not self._zero_time_base:
+                        self.clock.find_time_base(m, first_us_stamp)
+                    have_good_clock = True
                     break
                 if getattr(m, "T", 0) != 0 and \
                    getattr(m, "Week", 0) != 0: # GPS is msec-timestamped
                     if first_ms_stamp is None:
                         first_ms_stamp = m.T
-                    self.init_clock_msec(m, first_ms_stamp)
+                    self.init_clock_msec()
+                    if not self._zero_time_base:
+                        self.clock.find_time_base(m, first_ms_stamp)
+                    have_good_clock = True
                     break
                 if getattr(m, "GPSTime", 0) != 0: # px4-style-only
                     px4_msg_gps = m
@@ -393,6 +392,7 @@ class DFReader(object):
                         # we wait a few more messages befoe doing
                         # this?
                         self.init_clock_gps_interpolated(gps_clock)
+                        have_good_clock = True
                         break
                     gps_interp_msg_gps1 = m
 
@@ -403,9 +403,18 @@ class DFReader(object):
 
             if px4_msg_time is not None and px4_msg_gps is not None:
                 self.init_clock_px4(px4_msg_time, px4_msg_gps)
+                have_good_clock = True
                 break
 
 #        print("clock is " + str(self.clock))
+        if not have_good_clock:
+            # we failed to find any GPS messages to set a time
+            # base for usec and msec clocks.  Also, not a
+            # PX4-style log
+            if first_us_stamp is not None:
+                self.init_clock_usec()
+            elif first_ms_stamp is not None:
+                self.init_clock_msec()
 
         self._rewind()
 
