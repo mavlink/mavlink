@@ -11,6 +11,7 @@ import pylab
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
 parser.add_argument("--condition", default=None, help="select packets by condition")
+parser.add_argument("--sample-length", type=int, default=0, help="number of samples to run FFT over")
 parser.add_argument("logs", metavar="LOG", nargs="+")
 
 args = parser.parse_args()
@@ -48,7 +49,8 @@ def fft(logfile):
 
         for field in [acc+'.AccX', acc+'.AccY', acc+'.AccZ']:
             d = data[field]
-            d = d[0:1000]
+            if args.sample_length != 0:
+                d = d[0:args.sample_length]
             d = numpy.array(d)
             if len(d) == 0:
                 continue
