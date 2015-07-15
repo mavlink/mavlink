@@ -474,53 +474,6 @@ ${{message:	mavlink_test_${name_lower}(system_id, component_id, last_msg);
 
     f.close()
 
-def generate_decode_table(directory, subdirectory, msglist):
-    '''generate decode_table.h for all messages'''
-
-    strlist = ['    mavlink_msg_void_decode,\n'] * 256
-    sizelist = ['    0,\n'] * 256
-    for m in msglist:
-        strlist[m.id] = '    (MAVLINK_MSG_DECODE_FUNCTION)mavlink_msg_' + m.name_lower + '_decode,\n'
-        sizelist[m.id] = '    sizeof(mavlink_' + m.name_lower + '_t),\n'
-
-    f = open(os.path.join(directory, subdirectory, "decode_table.h"), mode='w')
-    f.write('''#include "mavlink.h"
-
-/**
- * @brief Decode function type
- *
- * @param msg The MAVLink message to compress the data into
- * @param C-struct to decode the message contents to
- */
-typedef void (*MAVLINK_MSG_DECODE_FUNCTION)(const mavlink_message_t* msg, void* result);
-
-/**
- * @brief Stub for unused message IDs
- */
-static void mavlink_msg_void_decode(const mavlink_message_t* msg, void* result)
-{
-    (void)msg;
-    (void)result;
-}
-
-/**
- * @brief Table of decoding functions
- */
-static const MAVLINK_MSG_DECODE_FUNCTION mavlink_decode_table[256] = {\n''')
-    for s in strlist:
-        f.write(s)
-    f.write("};\n")
-
-    f.write('''
-/**
- * @brief Table of message sizes
- */
-static const uint16_t mavlink_message_size_table[256] = {\n''')
-    for s in sizelist:
-        f.write(s)
-    f.write("};\n")
-    f.close()
-
 def generate_encode_table(directory, subdirectory, msglist):
     '''generate encode_table.h for all messages'''
 
@@ -757,6 +710,5 @@ def generate(basename, xml_list):
             msglist.append(m)
     for xml in xml_list:
         generate_encode_table(basename, xml.basename, msglist)
-        generate_decode_table(basename, xml.basename, msglist)
 
     copy_fixed_headers(basename, xml_list[0])
