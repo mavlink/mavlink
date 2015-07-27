@@ -422,9 +422,14 @@ def expected_magz(RAW_IMU, ATTITUDE, inclination, declination):
 
 def gravity(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
     '''estimate pitch from accelerometer'''
-    rx = RAW_IMU.xacc * 9.81 / 1000.0
-    ry = RAW_IMU.yacc * 9.81 / 1000.0
-    rz = RAW_IMU.zacc * 9.81 / 1000.0
+    if hasattr(RAW_IMU, 'xacc'):
+        rx = RAW_IMU.xacc * 9.81 / 1000.0
+        ry = RAW_IMU.yacc * 9.81 / 1000.0
+        rz = RAW_IMU.zacc * 9.81 / 1000.0
+    else:
+        rx = RAW_IMU.AccX
+        ry = RAW_IMU.AccY
+        rz = RAW_IMU.AccZ
     if SENSOR_OFFSETS is not None and ofs is not None:
         rx += SENSOR_OFFSETS.accel_cal_x
         ry += SENSOR_OFFSETS.accel_cal_y
@@ -436,7 +441,7 @@ def gravity(RAW_IMU, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
             rx *= mul[0]
             ry *= mul[1]
             rz *= mul[2]
-    return lowpass(sqrt(rx**2+ry**2+rz**2),'_gravity',smooth)
+    return sqrt(rx**2+ry**2+rz**2)
 
 
 
@@ -710,6 +715,39 @@ def demix2(servo1, servo2, gain=0.5):
     out1 = (s1+s2)*gain
     out2 = (s1-s2)*gain
     return out2+1500
+
+def mixer(servo1, servo2, mixtype=1, gain=0.5):
+    '''mix two servos'''
+    s1 = servo1 - 1500
+    s2 = servo2 - 1500
+    v1 = (s1-s2)*gain
+    v2 = (s1+s2)*gain
+    if mixtype == 2:
+        v2 = -v2
+    elif mixtype == 3:
+        v1 = -v1
+    elif mixtype == 4:
+        v1 = -v1
+        v2 = -v2
+    if v1 > 600:
+        v1 = 600
+    elif v1 < -600:
+        v1 = -600
+    if v2 > 600:
+        v2 = 600
+    elif v2 < -600:
+        v2 = -600
+    return (1500+v1,1500+v2)
+
+def mix1(servo1, servo2, mixtype=1, gain=0.5):
+    '''de-mix a mixed servo output'''
+    (v1,v2) = mixer(servo1, servo2, mixtype=mixtype, gain=gain)
+    return v1
+
+def mix2(servo1, servo2, mixtype=1, gain=0.5):
+    '''de-mix a mixed servo output'''
+    (v1,v2) = mixer(servo1, servo2, mixtype=mixtype, gain=gain)
+    return v2
 
 def wrap_180(angle):
     if angle > 180:
