@@ -1652,6 +1652,45 @@
                   <description>Payload battery</description>
               </entry>
           </enum>
+          <enum name="MAV_CONTROL_TARGET">
+              <description>Enumeration of control target for control target message</description>
+              <entry value="0" name="MAV_CONTROL_POSITION_FREE_YAW">
+                  <description>Control x, y, z positition and yaw angle is free</description>
+              </entry>
+              <entry value="1" name="MAV_CONTROL_VELOCITY_FREE_YAW">
+                  <description>Control x, y, z velocity and yaw angle is free</description>
+              </entry>
+              <entry value="2" name="MAV_CONTROL_ACCELERATION_FREE_YAW">
+                  <description>Control x, y, z acceleration and yaw angle is free</description>
+              </entry>
+              <entry value="3" name="MAV_CONTROL_POSITION_YAW">
+                  <description>Control x, y, z posotion and yaw angle position</description>
+              </entry>
+              <entry value="4" name="MAV_CONTROL_VELOCITY_YAW">
+                  <description>Control x, y, z velocity and yaw angle position</description>
+              </entry>
+              <entry value="5" name="MAV_CONTROL_ACCELERATION_YAW">
+                  <description>Control x, y, z acceleration and yaw angle position</description>
+              </entry>
+              <entry value="6" name="MAV_CONTROL_POSITION_YAW_RATE">
+                  <description>Control x, y, z position and yaw angle velocity</description>
+              </entry>
+              <entry value="7" name="MAV_CONTROL_VELOCITY_YAW_RATE">
+                  <description>Control x, y, z velocity and yaw angle velocity</description>
+              </entry>
+              <entry value="8" name="MAV_CONTROL_ACCELERATION_YAW_RATE">
+                  <description>Control x, y, z acceleration and yaw angle velocity</description>
+              </entry>
+              <entry value="9" name="MAV_CONTROL_FORCE_FREE_YAW">
+                  <description>Control x, y, z force and yaw angle is free</description>
+              </entry>
+	      <entry value="10" name="MAV_CONTROL_FORCE_YAW">
+                  <description>Control x, y, z force and yaw angle position</description>
+              </entry>
+	      <entry value="11" name="MAV_CONTROL_FORCE_YAW_RATE">
+                  <description>Control x, y, z force and yaw angle velocity</description>
+              </entry>
+          </enum>
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -2347,6 +2386,17 @@
                <field type="uint16_t" name="chan11_raw">RC channel 11 value, in microseconds</field>
                <field type="uint16_t" name="chan12_raw">RC channel 12 value, in microseconds</field>
                <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 255: 100%</field>
+          </message>
+          <message id="93" name="SET_CONTROL_TARGET_LOCAL_NED">
+               <description>Set controller reference in local frame. Choose the refetence type from MAV_CONTROL_TARGET enum</description>
+               <field type="float" name="x">X reference in NED frame in meters, meters / s, meters / s^2 or N</field>
+               <field type="float" name="y">Y reference in NED frame in meters, meters / s, meters / s^2 or N</field>
+               <field type="float" name="z">Z reference in NED frame in meters, meters / s, meters / s^2 or N (note, altitude is negative in NED)</field>
+               <field type="float" name="yaw">yaw reference in rad or rad / s</field>
+               <field type="uint8_t" name="target_system">System ID</field>
+               <field type="uint8_t" name="target_component">Component ID</field>
+               <field type="uint8_t" name="control_target" enum="MAV_CONTROL_TARGET"> Choose reference type from MAV_CONTROL_TARGET enum</field>
+               <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
           </message>
           <message id="100" name="OPTICAL_FLOW">
                <description>Optical flow from a flow sensor (e.g. optical mouse sensor)</description>
