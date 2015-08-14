@@ -152,7 +152,7 @@ def generate_message_h(directory, m):
 
 typedef struct __mavlink_${name_lower}_t
 {
-${{ordered_fields: ${type} ${name}${array_suffix}; ///< ${description}
+${{ordered_fields: ${type} ${name}${array_suffix}; /*< ${description}*/
 }}
 } mavlink_${name_lower}_t;
 
