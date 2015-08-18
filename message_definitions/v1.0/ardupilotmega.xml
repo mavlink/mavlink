@@ -9,51 +9,53 @@
       is general enough to move into common.xml later
     -->
 
-	<enums>
+    <enums>
 
           <!-- ardupilot specific MAV_CMD_* commands -->
           <enum name="MAV_CMD">
-            <entry name="MAV_CMD_DO_MOTOR_TEST" value="209">
-              <description>Mission command to perform motor test</description>
-              <param index="1">motor sequence number (a number from 1 to max number of motors on the vehicle)</param>
-              <param index="2">throttle type (0=throttle percentage, 1=PWM, 2=pilot throttle channel pass-through. See MOTOR_TEST_THROTTLE_TYPE enum)</param>
-              <param index="3">throttle</param>
-              <param index="4">timeout (in seconds)</param>
-              <param index="5">Empty</param>
-              <param index="6">Empty</param>
-              <param index="7">Empty</param>
+              
+            <entry name="MAV_CMD_NAV_ALTITUDE_WAIT" value="83">
+                <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
+                <param index="1">altitude (m)</param>
+                <param index="2">descent speed (m/s)</param>
+                <param index="3">Wiggle Time (s)</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
             </entry>
+              
+            <entry name="MAV_CMD_DO_MOTOR_TEST" value="209">
+                <description>Mission command to perform motor test</description>
+                <param index="1">motor sequence number (a number from 1 to max number of motors on the vehicle)</param>
+                <param index="2">throttle type (0=throttle percentage, 1=PWM, 2=pilot throttle channel pass-through. See MOTOR_TEST_THROTTLE_TYPE enum)</param>
+                <param index="3">throttle</param>
+                <param index="4">timeout (in seconds)</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+            
             <entry name="MAV_CMD_DO_GRIPPER" value="211">
-              <description>Mission command to operate EPM gripper</description>
-              <param index="1">gripper number (a number from 1 to max number of grippers on the vehicle)</param>
-              <param index="2">gripper action (0=release, 1=grab. See GRIPPER_ACTIONS enum)</param>
-              <param index="3">Empty</param>
-              <param index="4">Empty</param>
-              <param index="5">Empty</param>
-              <param index="6">Empty</param>
-              <param index="7">Empty</param>
+                <description>Mission command to operate EPM gripper</description>
+                <param index="1">gripper number (a number from 1 to max number of grippers on the vehicle)</param>
+                <param index="2">gripper action (0=release, 1=grab. See GRIPPER_ACTIONS enum)</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
             </entry>
 
             <entry name="MAV_CMD_DO_AUTOTUNE_ENABLE" value="212">
-              <description>Enable/disable autotune</description>
-              <param index="1">enable (1: enable, 0:disable)</param>
-              <param index="2">Empty</param>
-              <param index="3">Empty</param>
-              <param index="4">Empty</param>
-              <param index="5">Empty</param>
-              <param index="6">Empty</param>
-              <param index="7">Empty</param>
-            </entry>
-
-            <entry name="MAV_CMD_NAV_ALTITUDE_WAIT" value="83">
-              <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
-              <param index="1">altitude (m)</param>
-              <param index="2">descent speed (m/s)</param>
-              <param index="3">Wiggle Time (s)</param>
-              <param index="4">Empty</param>
-              <param index="5">Empty</param>
-              <param index="6">Empty</param>
-              <param index="7">Empty</param>
+                <description>Enable/disable autotune</description>
+                <param index="1">enable (1: enable, 0:disable)</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
             </entry>
 
             <entry name="MAV_CMD_DO_START_MAG_CAL" value="42424">
@@ -88,6 +90,50 @@
                 <param index="6">Empty</param>
                 <param index="7">Empty</param>
             </entry>
+
+            <entry name="MAV_CMD_GIMBAL_RESET" value="42501">
+                <description>Causes the gimbal to reset and boot as if it was just powered on</description>
+                <param index="1">Empty</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_GIMBAL_AXIS_CALIBRATION_STATUS" value="42502">
+                <description> Reports progress and success or failure of gimbal axis calibration procedure</description>
+                <param index="1">Gimbal axis we're reporting calibration progress for</param>
+                <param index="2">Current calibration progress for this axis, 0x64=100%</param>
+                <param index="3">Status of the calibration</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_GIMBAL_REQUEST_AXIS_CALIBRATION" value="42503">
+                <description>  Starts commutation calibration on the gimbal </description>
+                <param index="1">Empty</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_GIMBAL_FULL_RESET" value="42505">
+                <description>  Erases gimbal application and parameters </description>
+                <param index="1">Magic number</param>
+                <param index="2">Magic number</param>
+                <param index="3">Magic number</param>
+                <param index="4">Magic number</param>
+                <param index="5">Magic number</param>
+                <param index="6">Magic number</param>
+                <param index="7">Magic number</param>
+            </entry>
           </enum>
 	  
 	  	<!--  AP_Limits Enums -->
@@ -108,36 +154,36 @@
 	</enum>
 
 	<!-- RALLY flags - power of 2 (1,2,4,8,16,32,64,128) so we can send as a bitfield -->
-        <enum name="RALLY_FLAGS">
-          <description>Flags in RALLY_POINT message</description>
-          <entry name="FAVORABLE_WIND" value="1"> <description>Flag set when requiring favorable winds for landing. </description></entry>
-          <entry name="LAND_IMMEDIATELY" value="2"> <description>Flag set when plane is to immediately descend to break altitude and land without GCS intervention.  Flag not set when plane is to loiter at Rally point until commanded to land.</description></entry>
+    <enum name="RALLY_FLAGS">
+        <description>Flags in RALLY_POINT message</description>
+        <entry name="FAVORABLE_WIND" value="1"> <description>Flag set when requiring favorable winds for landing. </description></entry>
+        <entry name="LAND_IMMEDIATELY" value="2"> <description>Flag set when plane is to immediately descend to break altitude and land without GCS intervention.  Flag not set when plane is to loiter at Rally point until commanded to land.</description></entry>
 	</enum>
 
     <!-- parachute action enum -->
     <enum name="PARACHUTE_ACTION">
         <entry name="PARACHUTE_DISABLE" value="0">
-        <description>Disable parachute release</description>
+            <description>Disable parachute release</description>
         </entry>
         <entry name="PARACHUTE_ENABLE" value="1">
-        <description>Enable parachute release</description>
+            <description>Enable parachute release</description>
         </entry>
         <entry name="PARACHUTE_RELEASE" value="2">
-        <description>Release parachute</description>
+            <description>Release parachute</description>
         </entry>
     </enum>
 
     <!-- motor test type enum -->
     <enum name="MOTOR_TEST_THROTTLE_TYPE">
-      <entry name="MOTOR_TEST_THROTTLE_PERCENT" value="0">
-        <description>throttle as a percentage from 0 ~ 100</description>
-      </entry>
-      <entry name="MOTOR_TEST_THROTTLE_PWM" value="1">
-        <description>throttle as an absolute PWM value (normally in range of 1000~2000)</description>
-      </entry>
-      <entry name="MOTOR_TEST_THROTTLE_PILOT" value="2">
-        <description>throttle pass-through from pilot's transmitter</description>
-      </entry>
+        <entry name="MOTOR_TEST_THROTTLE_PERCENT" value="0">
+            <description>throttle as a percentage from 0 ~ 100</description>
+        </entry>
+        <entry name="MOTOR_TEST_THROTTLE_PWM" value="1">
+            <description>throttle as an absolute PWM value (normally in range of 1000~2000)</description>
+        </entry>
+        <entry name="MOTOR_TEST_THROTTLE_PILOT" value="2">
+            <description>throttle pass-through from pilot's transmitter</description>
+        </entry>
     </enum>
 
     <!-- gripper action enum -->
@@ -219,51 +265,165 @@
 			<description>Axis calibration failed</description>
 		</entry>
 	</enum>
+    
+    <enum name="GIMBAL_AXIS_CALIBRATION_REQUIRED">
+        <entry name="GIMBAL_AXIS_CALIBRATION_REQUIRED_UNKNOWN" value="0">
+            <description>Whether or not this axis requires calibration is unknown at this time</description>
+        </entry>
+        <entry name="GIMBAL_AXIS_CALIBRATION_REQUIRED_TRUE" value="1">
+            <description>This axis requires calibration</description>
+        </entry>
+        <entry name="GIMBAL_AXIS_CALIBRATION_REQUIRED_FALSE" value="2">
+            <description>This axis does not require calibration</description>
+        </entry>
+    </enum>
 	
 	<enum name="FACTORY_TEST">
 		<entry name="FACTORY_TEST_AXIS_RANGE_LIMITS" value="0">
 			<description>Tests to make sure each axis can move to its mechanical limits</description>
 		</entry>
 	</enum>
-	
-    <!-- GoPro command result enumeration -->
-    <enum name="GOPRO_CMD_RESULT">
-        <entry name="GOPRO_CMD_RESULT_UNKNOWN" value="0">
-            <description>The result of the command is unknown</description>
+    
+    <!-- GoPro System Enumerations -->
+    <enum name="GOPRO_HEARTBEAT_STATUS">
+        <entry name="GOPRO_HEARTBEAT_STATUS_DISCONNECTED" value="0">
+            <description>No GoPro connected</description>
         </entry>
-        <entry name="GOPRO_CMD_RESULT_SUCCESSFUL" value="1">
-            <description>The command was successfully sent, and a response was successfully received</description>
+        <entry name="GOPRO_HEARTBEAT_STATUS_INCOMPATIBLE" value="1">
+            <description>The detected GoPro is not HeroBus compatible</description>
         </entry>
-        <entry name="GOPRO_CMD_RESULT_SEND_CMD_START_TIMEOUT" value="2">
-            <description>Timed out waiting for the GoPro to acknowledge our request to send a command</description>
+        <entry name="GOPRO_HEARTBEAT_STATUS_CONNECTED" value="2">
+            <description>A HeroBus compatible GoPro is connected</description>
         </entry>
-        <entry name="GOPRO_CMD_RESULT_SEND_CMD_COMPLETE_TIMEOUT" value="3">
-            <description>Timed out waiting for the GoPro to read the command</description>
+        <entry name="GOPRO_HEARTBEAT_STATUS_RECORDING" value="3">
+            <description>A HeroBus compatible GoPro is connected and recording</description>
         </entry>
-        <entry name="GOPRO_CMD_RESULT_GET_RESPONSE_START_TIMEOUT" value="4">
-            <description>Timed out waiting for the GoPro to begin transmitting a response to the command</description>
-        </entry>
-        <entry name="GOPRO_CMD_RESULT_GET_RESPONSE_COMPLETE_TIMEOUT" value="5">
-            <description>Timed out waiting for the GoPro to finish transmitting a response to the command</description>
-        </entry>
-        <entry name="GOPRO_CMD_RESULT_GET_CMD_COMPLETE_TIMEOUT" value="6">
-            <description>Timed out waiting for the GoPro to finish transmitting its own command</description>
-        </entry>
-        <entry name="GOPRO_CMD_RESULT_SEND_RESPONSE_START_TIMEOUT" value="7">
-            <description>Timed out waiting for the GoPro to start reading a response to its own command</description>
-        </entry>
-        <entry name="GOPRO_CMD_RESULT_SEND_RESPONSE_COMPLETE_TIMEOUT" value="8">
-            <description>Timed out waiting for the GoPro to finish reading a response to its own command</description>
-        </entry>
-        <entry name="GOPRO_CMD_RESULT_PREEMPTED" value="9">
-            <description>Command to the GoPro was preempted by the GoPro sending its own command</description>
-        </entry>
-        <entry name="GOPRO_CMD_RECEIVED_DATA_OVERFLOW" value="10">
-            <description>More data than expected received in response to the command</description>
-        </entry>
-        <entry name="GOPRO_CMD_RECEIVED_DATA_UNDERFLOW" value="11">
-            <description>Less data than expected received in response to the command</description>
-        </entry>
+    </enum>
+        
+        <enum name="GOPRO_SET_RESPONSE_RESULT">
+          <entry name="GOPRO_SET_RESPONSE_RESULT_FAILURE" value="0">
+            <description>The write message with ID indicated failed</description>
+          </entry>
+          <entry name="GOPRO_SET_RESPONSE_RESULT_SUCCESS" value="1">
+            <description>The write message with ID indicated succeeded</description>
+          </entry>
+        </enum>
+        
+        <enum name="GOPRO_COMMAND">
+          <entry name="GOPRO_COMMAND_POWER" value="0">
+            <description>(Get/Set)</description>
+          </entry>
+          <entry name="GOPRO_COMMAND_CAPTURE_MODE" value="1">
+            <description>(Get/Set)</description>
+          </entry>
+          <entry name="GOPRO_COMMAND_SHUTTER" value="2">
+            <description>(___/Set)</description>
+          </entry>
+          <entry name="GOPRO_COMMAND_BATTERY" value="3">
+            <description>(Get/___)</description>
+          </entry>
+          <entry name="GOPRO_COMMAND_MODEL" value="4">
+            <description>(Get/___)</description>
+          </entry>
+          <entry name="GOPRO_COMMAND_RESOLUTION" value="5">
+            <description>(___/Set)</description>
+          </entry>
+          <entry name="GOPRO_COMMAND_FRAME_RATE" value="6">
+            <description>(___/Set)</description>
+          </entry>
+          <entry name="GOPRO_COMMAND_FIELD_OF_VIEW" value="7">
+            <description>(___/Set)</description>
+          </entry>
+          <entry name="GOPRO_COMMAND_REQUEST_FAILED" value="254">
+            <description>(Get/___)</description>
+          </entry>
+        </enum>
+
+    <enum name="GOPRO_RESOLUTION">
+      <entry name="GOPRO_RESOLUTION_480p" value="0">
+        <description>848 x 480 (480p)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_720p" value="1">
+        <description>1280 x 720 (720p)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_960p" value="2">
+        <description>1280 x 960 (960p)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_1080p" value="3">
+        <description>1920 x 1080 (1080p)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_1440p" value="4">
+        <description>1920 x 1440 (1440p)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_2_7k_16_9" value="5">
+        <description>2704 x 1524 (2.7k-16:9)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_4k_16_9" value="6">
+        <description>3840 x 2160 (4k-16:9)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_2_7k_17_9" value="7">
+        <description>2704 x 1440 (2.7k-17:9)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_4k_17_9" value="8">
+        <description>4096 x 2160 (4k-17:9)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_1080p_SUPERVIEW" value="9">
+        <description>1920 x 1080 (1080p-SuperView)</description>
+      </entry>
+      <entry name="GOPRO_RESOLUTION_720p_SUPERVIEW" value="10">
+        <description>1280 x 720 (720p-SuperView)</description>
+      </entry>
+    </enum>
+
+    <enum name="GOPRO_FRAME_RATE">
+      <entry name="GOPRO_FRAME_RATE_12" value="0">
+        <description>12 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_15" value="1">
+        <description>15 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_24" value="2">
+        <description>24 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_25" value="3">
+        <description>25 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_30" value="4">
+        <description>30 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_48" value="5">
+        <description>48 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_50" value="6">
+        <description>50 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_60" value="7">
+        <description>60 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_100" value="8">
+        <description>100 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_120" value="9">
+        <description>120 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_240" value="10">
+        <description>240 FPS</description>
+      </entry>
+      <entry name="GOPRO_FRAME_RATE_12_5" value="11">
+        <description>12.5 FPS</description>
+      </entry>
+    </enum>
+
+    <enum name="GOPRO_FIELD_OF_VIEW">
+      <entry name="GOPRO_FIELD_OF_VIEW_WIDE" value="0">
+        <description>0x00: Wide</description>
+      </entry>
+      <entry name="GOPRO_FIELD_OF_VIEW_MEDIUM" value="1">
+        <description>0x01: Medium</description>
+      </entry>
+      <entry name="GOPRO_FIELD_OF_VIEW_NARROW" value="2">
+        <description>0x02: Narrow</description>
+      </entry>
     </enum>
 
     <!-- led control pattern enums (enumeration of specific patterns) -->
@@ -305,7 +465,7 @@
           <entry name="PID_TUNING_STEER" value="5"></entry>
         </enum>
 
-      </enums>
+    </enums>
 
      <messages>
           <message id="150" name="SENSOR_OFFSETS">
@@ -382,7 +542,7 @@
 
 	  <!-- Camera Mount Messages -->
 	  <message name="MOUNT_CONFIGURE" id="156">
-	    <description>Message to configure a camera mount, directional antenna, etc.</description>
+	    <description>Deprecated message to configure a camera mount, directional antenna, etc.</description>
 	    <field name="target_system" type="uint8_t">System ID</field>
 	    <field name="target_component" type="uint8_t">Component ID</field>
 	    <field name="mount_mode" type="uint8_t" enum="MAV_MOUNT_MODE">mount operating mode (see MAV_MOUNT_MODE enum)</field>
@@ -392,7 +552,7 @@
 	  </message>
     
 	  <message name="MOUNT_CONTROL" id="157">
-	    <description>Message to control a camera mount, directional antenna, etc.</description>
+	    <description>Deprecated message to control a camera mount, directional antenna, etc.</description>
 	    <field name="target_system" type="uint8_t">System ID</field>
 	    <field name="target_component" type="uint8_t">Component ID</field>
 	    <field name="input_a" type="int32_t">pitch(deg*100) or lat, depending on mount mode</field>
@@ -739,6 +899,7 @@
         <field name="D" type="float">D component</field>
     </message>
 
+    <!-- Gimbal Messages -->
     <message name="GIMBAL_REPORT" id="200">
         <description>3 axis gimbal measurements</description>
         <field type="uint8_t" name="target_system">System ID</field>
@@ -764,133 +925,46 @@
         <field type="float" name="demanded_rate_z">Demanded angular rate Z (rad/s)</field>
     </message>
 
-    <message name="GIMBAL_RESET" id="202">
+    <message name="GIMBAL_TORQUE_CMD_REPORT" id="214">
         <description>
-            Causes the gimbal to reset and boot as if it was just powered on
+            100 Hz gimbal torque command telemetry
         </description>
         <field name="target_system" type="uint8_t">System ID</field>
         <field name="target_component" type="uint8_t">Component ID</field>
+        <field name="rl_torque_cmd" type="int16_t">Roll Torque Command</field>
+        <field name="el_torque_cmd" type="int16_t">Elevation Torque Command</field>
+        <field name="az_torque_cmd" type="int16_t">Azimuth Torque Command</field>
     </message>
 
-    <message name="GIMBAL_AXIS_CALIBRATION_PROGRESS" id="203">
-        <description>
-            Reports progress and success or failure of gimbal axis calibration procedure
-        </description>
-        <field name="calibration_axis" type="uint8_t" enum="GIMBAL_AXIS">Which gimbal axis we're reporting calibration progress for</field>
-        <field name="calibration_progress" type="uint8_t">The current calibration progress for this axis, 0x64=100%</field>
-        <field name="calibration_status" type="uint8_t" enum="GIMBAL_AXIS_CALIBRATION_STATUS">The status of the running calibration</field>
+    <!-- GoPro Messages -->
+    <message name="GOPRO_HEARTBEAT" id="215">
+      <description>Heartbeat from a HeroBus attached GoPro</description>
+      <field name="status" type="uint8_t" enum="GOPRO_HEARTBEAT_STATUS">Status</field>
     </message>
-
-    <message name="GIMBAL_SET_HOME_OFFSETS" id="204">
-        <description>
-            Instructs the gimbal to set its current position as its new home position.  Will primarily be used for factory calibration
-        </description>
-        <field name="target_system" type="uint8_t">System ID</field>
-        <field name="target_component" type="uint8_t">Component ID</field>
+    <message name="GOPRO_GET_REQUEST" id="216">
+      <description>Request a GOPRO_COMMAND response from the GoPro</description>
+      <field name="target_system" type="uint8_t">System ID</field>
+      <field name="target_component" type="uint8_t">Component ID</field>
+      <field name="cmd_id" type="uint8_t" enum="GOPRO_COMMAND">Command ID</field>
     </message>
-
-    <message name="GIMBAL_HOME_OFFSET_CALIBRATION_RESULT" id="205">
-        <description>
-            Sent by the gimbal after it receives a SET_HOME_OFFSETS message to indicate the result of the home offset calibration
-        </description>
-        <field name="calibration_result" type="uint8_t" enum="GIMBAL_AXIS_CALIBRATION_STATUS">The result of the home offset calibration</field>
+    <message name="GOPRO_GET_RESPONSE" id="217">
+      <description>Response from a GOPRO_COMMAND get request</description>
+      <field name="cmd_id" type="uint8_t" enum="GOPRO_COMMAND">Command ID</field>
+      <field name="value" type="uint8_t">Value</field>
     </message>
-
-    <message name="GIMBAL_SET_FACTORY_PARAMETERS" id="206">
-        <description>
-            Set factory configuration parameters (such as assembly date and time, and serial number).  This is only intended to be used
-            during manufacture, not by end users, so it is protected by a simple checksum of sorts (this won't stop anybody determined,
-            it's mostly just to keep the average user from trying to modify these values.  This will need to be revisited if that isn't
-            adequate.
-        </description>
-        <field name="target_system" type="uint8_t">System ID</field>
-        <field name="target_component" type="uint8_t">Component ID</field>
-        <field name="magic_1" type="uint32_t">Magic number 1 for validation</field>
-        <field name="magic_2" type="uint32_t">Magic number 2 for validation</field>
-        <field name="magic_3" type="uint32_t">Magic number 3 for validation</field>
-        <field name="assembly_year" type="uint16_t">Assembly Date Year</field>
-        <field name="assembly_month" type="uint8_t">Assembly Date Month</field>
-        <field name="assembly_day" type="uint8_t">Assembly Date Day</field>
-        <field name="assembly_hour" type="uint8_t">Assembly Time Hour</field>
-        <field name="assembly_minute" type="uint8_t">Assembly Time Minute</field>
-        <field name="assembly_second" type="uint8_t">Assembly Time Second</field>
-        <field name="serial_number_pt_1" type="uint32_t">Unit Serial Number Part 1 (part code, design, language/country)</field>
-        <field name="serial_number_pt_2" type="uint32_t">Unit Serial Number Part 2 (option, year, month)</field>
-        <field name="serial_number_pt_3" type="uint32_t">Unit Serial Number Part 3 (incrementing serial number per month)</field>
+    <message name="GOPRO_SET_REQUEST" id="218">
+      <description>Request to set a GOPRO_COMMAND with a desired</description>
+      <field name="target_system" type="uint8_t">System ID</field>
+      <field name="target_component" type="uint8_t">Component ID</field>
+      <field name="cmd_id" type="uint8_t" enum="GOPRO_COMMAND">Command ID</field>
+      <field name="value" type="uint8_t">Value</field>
     </message>
-
-    <message name="GIMBAL_FACTORY_PARAMETERS_LOADED" id="207">
-        <description>
-            Sent by the gimbal after the factory parameters are successfully loaded, to inform the factory software that the load is complete
-        </description>
-        <field name="dummy" type="uint8_t">Dummy field because mavgen doesn't allow messages with no fields</field>
+    <message name="GOPRO_SET_RESPONSE" id="219">
+      <description>Response from a GOPRO_COMMAND set request</description>
+      <field name="cmd_id" type="uint8_t" enum="GOPRO_COMMAND">Command ID</field>
+      <field name="result" type="uint8_t" enum="GOPRO_SET_RESPONSE_RESULT">Result</field>
     </message>
-
-    <message name="GIMBAL_ERASE_FIRMWARE_AND_CONFIG" id="208">
-        <description>
-            Commands the gimbal to erase its firmware image and flash configuration, leaving only the bootloader.  The gimbal will then reboot into the bootloader,
-            ready for the load of a new application firmware image.  Erasing the flash configuration will cause the gimbal to re-perform axis calibration when a
-            new firmware image is loaded, and will cause all tuning parameters to return to their factory defaults.  WARNING: sending this command will render a
-            gimbal inoperable until a new firmware image is loaded onto it.  For this reason, a particular "knock" value must be sent for the command to take effect.
-            Use this command at your own risk
-        </description>
-        <field name="target_system" type="uint8_t">System ID</field>
-        <field name="target_component" type="uint8_t">Component ID</field>
-        <field name="knock" type="uint32_t">Knock value to confirm this is a valid request</field>
-    </message>
-
-    <message name="GIMBAL_PERFORM_FACTORY_TESTS" id="209">
-        <description>
-            Command the gimbal to perform a series of factory tests.  Should not be needed by end users
-        </description>
-        <field name="target_system" type="uint8_t">System ID</field>
-        <field name="target_component" type="uint8_t">Component ID</field>
-    </message>
-
-    <message name="GIMBAL_REPORT_FACTORY_TESTS_PROGRESS" id="210">
-        <description>
-            Reports the current status of a section of a running factory test
-        </description>
-        <field name="test" type="uint8_t" enum="FACTORY_TEST">Which factory test is currently running</field>
-        <field name="test_section" type="uint8_t">Which section of the test is currently running.  The meaning of this is test-dependent</field>
-        <field name="test_section_progress" type="uint8_t">The progress of the current test section, 0x64=100%</field>
-        <field name="test_status" type="uint8_t">The status of the currently executing test section.  The meaning of this is test and section-dependent</field>
-    </message>
-
-    <!-- 211 to 214 RESERVED for more GIMBAL -->
-
-    <message name="GOPRO_POWER_ON" id="215">
-        <description>Instruct a HeroBus attached GoPro to power on</description>
-        <field name="target_system" type="uint8_t">System ID</field>
-        <field name="target_component" type="uint8_t">Component ID</field>
-    </message>
-
-    <message name="GOPRO_POWER_OFF" id="216">
-        <description>Instruct a HeroBus attached GoPro to power off</description>
-        <field name="target_system" type="uint8_t">System ID</field>
-        <field name="target_component" type="uint8_t">Component ID</field>
-    </message>
-
-    <message name="GOPRO_COMMAND" id="217">
-        <description>Send a command to a HeroBus attached GoPro.  Will generate a GOPRO_RESPONSE message with results of the command</description>
-        <field name="target_system" type="uint8_t">System ID</field>
-        <field name="target_component" type="uint8_t">Component ID</field>
-        <field name="gp_cmd_name_1" type="uint8_t">First character of the 2 character GoPro command</field>
-        <field name="gp_cmd_name_2" type="uint8_t">Second character of the 2 character GoPro command</field>
-        <field name="gp_cmd_parm" type="uint8_t">Parameter for the command</field>
-    </message>
-
-    <message name="GOPRO_RESPONSE" id="218">
-        <description>
-            Response to a command sent to a HeroBus attached GoPro with a GOPRO_COMMAND message.  Contains response from the camera as well as information about any errors encountered while attempting to communicate with the camera
-        </description>
-        <field name="gp_cmd_name_1" type="uint8_t">First character of the 2 character GoPro command that generated this response</field>
-        <field name="gp_cmd_name_2" type="uint8_t">Second character of the 2 character GoPro command that generated this response</field>
-        <field name="gp_cmd_response_status" type="uint8_t">Response byte from the GoPro's response to the command.  0 = Success, 1 = Failure</field>
-        <field name="gp_cmd_response_argument" type="uint8_t">Response argument from the GoPro's response to the command</field>
-        <field name="gp_cmd_result" type="uint16_t" enum="GOPRO_CMD_RESULT">Result of the command attempt to the GoPro, as defined by GOPRO_CMD_RESULT enum.</field>
-    </message>
-
+    
     <!-- 219 to 225 RESERVED for more GOPRO-->
 
     <message name="RPM" id="226">
