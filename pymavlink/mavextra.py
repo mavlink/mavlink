@@ -8,7 +8,12 @@ Released under GNU GPL version 3 or later
 
 import os, sys
 from math import *
-from .quaternion import Quaternion
+
+try:
+    # in case numpy isn't installed
+    from .quaternion import Quaternion
+except:
+    pass
 
 try:
     # rotmat doesn't work on Python3.2 yet
