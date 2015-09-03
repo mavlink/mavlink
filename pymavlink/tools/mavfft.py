@@ -26,10 +26,16 @@ def fft(logfile):
 
     data = {'ACC1.rate' : 1000,
             'ACC2.rate' : 1600,
-            'ACC3.rate' : 1000}
+            'ACC3.rate' : 1000,
+            'GYR1.rate' : 1000,
+            'GYR2.rate' :  800,
+            'GYR3.rate' : 1000}
     for acc in ['ACC1','ACC2','ACC3']:
         for ax in ['AccX', 'AccY', 'AccZ']:
             data[acc+'.'+ax] = []
+    for gyr in ['GYR1','GYR2','GYR3']:
+        for ax in ['GyrX', 'GyrY', 'GyrZ']:
+            data[gyr+'.'+ax] = []
 
     # now gather all the data
     while True:
@@ -41,13 +47,22 @@ def fft(logfile):
             data[type+'.AccX'].append(m.AccX)
             data[type+'.AccY'].append(m.AccY)
             data[type+'.AccZ'].append(m.AccZ)
+        if type.startswith("GYR"):
+            data[type+'.GyrX'].append(m.GyrX)
+            data[type+'.GyrY'].append(m.GyrY)
+            data[type+'.GyrZ'].append(m.GyrZ)
 
     print("Extracted %u data points" % len(data['ACC1.AccX']))
 
-    for acc in ['ACC1', 'ACC2', 'ACC3']:
+    for msg in ['ACC1', 'ACC2', 'ACC3', 'GYR1', 'GYR2', 'GYR3']:
         pylab.figure()
 
-        for field in [acc+'.AccX', acc+'.AccY', acc+'.AccZ']:
+        if msg.startswith('ACC'):
+            prefix = 'Acc'
+        else:
+            prefix = 'Gyr'
+        for axis in ['X', 'Y', 'Z']:
+            field = msg + '.' + prefix + axis
             d = data[field]
             if args.sample_length != 0:
                 d = d[0:args.sample_length]
@@ -57,7 +72,7 @@ def fft(logfile):
             avg = numpy.sum(d) / len(d)
             d -= avg
             d_fft = numpy.fft.rfft(d)
-            freq  = numpy.fft.rfftfreq(len(d), 1.0 / data[acc+'.rate'])
+            freq  = numpy.fft.rfftfreq(len(d), 1.0 / data[msg+'.rate'])
             pylab.plot( freq, numpy.abs(d_fft), label=field )
         pylab.legend(loc='upper right')
 
