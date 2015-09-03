@@ -105,6 +105,7 @@ setup (name = 'pymavlink',
                    'tools/mavtomfile.py',
                    'tools/mavgen.py',
                    'tools/mavkml.py',
+                   'tools/mavfft.py',
                    'tools/mavsummarize.py',
                    'tools/MPU6KSearch.py'],
        ext_modules = extensions
