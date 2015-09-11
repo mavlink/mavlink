@@ -16,6 +16,16 @@
             <param index="6">Empty</param>
             <param index="7">Empty</param>
           </entry>
+          <entry name="MAV_CMD_PAYLOAD_CONTROL" value="40002">
+            <description>Mission command to perform a power cycle on payload</description>
+            <param index="1">Complete power cycle</param>
+            <param index="2">VISensor power cycle</param>
+            <param index="3">Empty</param>
+            <param index="4">Empty</param>
+            <param index="5">Empty</param>
+            <param index="6">Empty</param>
+            <param index="7">Empty</param>
+          </entry>
        </enum>
      </enums>
      <messages>
@@ -134,7 +144,7 @@
               <field type="uint16_t" name="cellvoltage5">Battery pack cell 5 voltage in [mV]</field>
               <field type="uint16_t" name="cellvoltage6">Battery pack cell 6 voltage in [mV]</field>
            </message>
-         <message id="210" name="FW_SOARING_DATA">
+           <message id="210" name="FW_SOARING_DATA">
               <description>Fixed-wing soaring (i.e. thermal seeking) data</description>
               <field type="uint64_t" name="timestamp">Timestamp [ms]</field>
               <field type="uint64_t" name="timestampModeChanged">Timestamp since last mode change[ms]</field>
@@ -150,6 +160,17 @@
               <field type="float" name="LoiterRadius">Suggested loiter radius [m]</field>
               <field type="uint8_t" name="ControlMode">Control Mode [-]</field>
               <field type="uint8_t" name="valid">Data valid [-]</field>
+           </message>
+           <message id="211" name="SENSORPOD_STATUS">
+              <description>Monitoring of sensorpod status</description>
+              <field type="uint64_t" name="timestamp">Timestamp in linuxtime [ms] (since 1.1.1970)</field>
+              <field type="uint8_t" name="visensor_rate_1">Rate of ROS topic 1</field>
+              <field type="uint8_t" name="visensor_rate_2">Rate of ROS topic 2</field>
+              <field type="uint8_t" name="visensor_rate_3">Rate of ROS topic 3</field>
+              <field type="uint8_t" name="visensor_rate_4">Rate of ROS topic 4</field>
+              <field type="uint8_t" name="recording_nodes_count">Number of recording nodes</field>
+              <field type="uint8_t" name="cpu_temp">Temperature of sensorpod CPU in [deg C]</field>
+              <field type="uint16_t" name="free_space">Free space available in recordings directory in [Gb] * 1e2</field>
            </message>
      </messages>
 </mavlink>
