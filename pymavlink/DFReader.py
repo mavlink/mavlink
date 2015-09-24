@@ -133,7 +133,9 @@ class DFMessage(object):
                 v /= mul
             values.append(v)
         return struct.pack("BBB", 0xA3, 0x95, self.fmt.type) + struct.pack(self.fmt.msg_struct, *values)
-                
+
+    def get_fieldnames(self):
+        return self._fieldnames
 
 class DFReaderClock():
     '''base class for all the different ways we count time in logs'''
