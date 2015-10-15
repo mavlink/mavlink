@@ -20,7 +20,7 @@ DEFAULT_ERROR_LIMIT = 200
 DEFAULT_VALIDATE = True
 
 # List the supported languages. This is done globally because it's used by the GUI wrapper too
-supportedLanguages = ["C", "CS", "JavaScript", "Python", "WLua", "ObjC", "Java"]
+supportedLanguages = ["C", "C++", "CS", "JavaScript", "Python", "WLua", "ObjC", "Java"]
 
 
 def mavgen(opts, args) :
@@ -102,6 +102,9 @@ def mavgen(opts, args) :
     elif opts.language == 'c':
         from . import mavgen_c
         mavgen_c.generate(opts.output, xml)
+    elif opts.language == 'c++':
+        from . import mavgen_cpp
+        mavgen_cpp.generate(opts.output, xml)
     elif opts.language == 'wlua':
         from . import mavgen_wlua
         mavgen_wlua.generate(opts.output, xml)
