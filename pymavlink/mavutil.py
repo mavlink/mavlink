@@ -760,7 +760,10 @@ class mavserial(mavfile):
 
     def write(self, buf):
         try:
-            return self.port.write(buf)
+            if type(buf) == 'str':
+                return self.port.write(buf)
+            if type(buf) == 'bytearray':
+                return self.port.write(str(buf)) 
         except Exception:
             if not self.portdead:
                 print("Device %s is dead" % self.device)
