@@ -48,6 +48,8 @@ if not "NOGEN" in os.environ:
 
 extensions = [] # Assume we might be unable to build native code
 if platform.system() != 'Windows':
+    if platform.system() == 'Darwin':
+        os.environ["ARCHFLAGS"] = "-arch i386 -arch x86_64"
     extensions = [ Extension('mavnative',
                     sources = ['mavnative/mavnative.c'],
                     include_dirs = [
