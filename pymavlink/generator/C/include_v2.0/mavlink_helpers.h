@@ -5,6 +5,7 @@
 #include "checksum.h"
 #include "mavlink_types.h"
 #include "mavlink_conversions.h"
+#include <stdio.h>
 
 #ifndef MAVLINK_HELPER
 #define MAVLINK_HELPER
@@ -128,10 +129,14 @@ MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint
 	mavlink_status_t *status = mavlink_get_channel_status(chan);
 	buf[0] = MAVLINK_STX;
 	buf[1] = length;
-	buf[2] = status->current_tx_seq;
-	buf[3] = mavlink_system.sysid;
-	buf[4] = mavlink_system.compid;
-	buf[5] = msgid;
+        buf[2] = 0; // incompat_flags
+        buf[3] = 0; // compat_flags
+	buf[4] = status->current_tx_seq;
+	buf[5] = mavlink_system.sysid;
+	buf[6] = mavlink_system.compid;
+	buf[7] = 0; // dialect
+	buf[8] = msgid & 0xFF;
+	buf[9] = msgid >> 8;
 	status->current_tx_seq++;
 	checksum = crc_calculate((const uint8_t*)&buf[1], MAVLINK_CORE_HEADER_LEN);
 	crc_accumulate_buffer(&checksum, packet, length);
@@ -309,15 +314,27 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_LENGTH:
+		rxmsg->incompat_flags = c;
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_INCOMPAT_FLAGS;
+		break;
+
+	case MAVLINK_PARSE_STATE_GOT_INCOMPAT_FLAGS:
+		rxmsg->compat_flags = c;
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPAT_FLAGS;
+		break;
+
+	case MAVLINK_PARSE_STATE_GOT_COMPAT_FLAGS:
 		rxmsg->seq = c;
 		mavlink_update_checksum(rxmsg, c);
 		status->parse_state = MAVLINK_PARSE_STATE_GOT_SEQ;
 		break;
-
+                
 	case MAVLINK_PARSE_STATE_GOT_SEQ:
 		rxmsg->sysid = c;
 		mavlink_update_checksum(rxmsg, c);
-		status->parse_state = MAVLINK_PARSE_STATE_GOT_SYSID;
+		status->parse_state++;
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_SYSID:
@@ -327,27 +344,32 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_COMPID:
+		rxmsg->dialect = c;
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_DIALECT;
+		break;
+
+	case MAVLINK_PARSE_STATE_GOT_DIALECT:
+		rxmsg->msgid = c;
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID1;
+		break;
+
+	case MAVLINK_PARSE_STATE_GOT_MSGID1:
+		rxmsg->msgid |= c<<8;
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID2;
 #ifdef MAVLINK_CHECK_MESSAGE_LENGTH
-	        if (rxmsg->len != MAVLINK_MESSAGE_LENGTH(c))
+	        if (rxmsg->len != MAVLINK_MESSAGE_LENGTH(rxmsg->msgid))
 		{
 			status->parse_error++;
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 			break;
-	    }
+                }
 #endif
-		rxmsg->msgid = c;
-		mavlink_update_checksum(rxmsg, c);
-		if (rxmsg->len == 0)
-		{
-			status->parse_state = MAVLINK_PARSE_STATE_GOT_PAYLOAD;
-		}
-		else
-		{
-			status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID;
-		}
 		break;
-
-	case MAVLINK_PARSE_STATE_GOT_MSGID:
+                
+	case MAVLINK_PARSE_STATE_GOT_MSGID2:
 		_MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx++] = (char)c;
 		mavlink_update_checksum(rxmsg, c);
 		if (status->packet_idx == rxmsg->len)

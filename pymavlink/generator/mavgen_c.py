@@ -425,9 +425,9 @@ static void mavlink_test_${name_lower}(uint8_t system_id, uint8_t component_id, 
     };
 	mavlink_${name_lower}_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
-        ${{scalar_fields:	packet1.${name} = packet_in.${name};
+        ${{scalar_fields:packet1.${name} = packet_in.${name};
         }}
-        ${{array_fields:	mav_array_memcpy(packet1.${name}, packet_in.${name}, sizeof(${type})*${array_length});
+        ${{array_fields:mav_array_memcpy(packet1.${name}, packet_in.${name}, sizeof(${type})*${array_length});
         }}
 
         memset(&packet2, 0, sizeof(packet2));
