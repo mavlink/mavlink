@@ -20,7 +20,7 @@
 #define MAVLINK_MAX_PAYLOAD_LEN 255 ///< Maximum payload length
 #endif
 
-#define MAVLINK_CORE_HEADER_LEN 5 ///< Length of core header (of the comm. layer): message length (1 byte) + message sequence (1 byte) + message system id (1 byte) + message component id (1 byte) + message type id (1 byte)
+#define MAVLINK_CORE_HEADER_LEN 9 ///< Length of core header (of the comm. layer)
 #define MAVLINK_NUM_HEADER_BYTES (MAVLINK_CORE_HEADER_LEN + 1) ///< Length of all header bytes, including core and checksum
 #define MAVLINK_NUM_CHECKSUM_BYTES 2
 #define MAVLINK_NUM_NON_PAYLOAD_BYTES (MAVLINK_NUM_HEADER_BYTES + MAVLINK_NUM_CHECKSUM_BYTES)
@@ -113,13 +113,16 @@ typedef struct __mavlink_system {
 
 MAVPACKED(
 typedef struct __mavlink_message {
-	uint16_t checksum; ///< sent at end of packet
-	uint8_t magic;   ///< protocol magic marker
-	uint8_t len;     ///< Length of payload
-	uint8_t seq;     ///< Sequence of packet
-	uint8_t sysid;   ///< ID of message sender system/aircraft
-	uint8_t compid;  ///< ID of the message sender component
-	uint8_t msgid;   ///< ID of message in payload
+	uint16_t checksum;      ///< sent at end of packet
+	uint8_t magic;          ///< protocol magic marker
+	uint8_t len;            ///< Length of payload
+	uint8_t incompat_flags; ///< flags that must be understood
+	uint8_t compat_flags;   ///< flags that can be ignored if not understood
+	uint8_t seq;            ///< Sequence of packet
+	uint8_t sysid;          ///< ID of message sender system/aircraft
+	uint8_t compid;         ///< ID of the message sender component
+	uint8_t dialect;        ///< dialect ID from XML
+	uint16_t msgid;         ///< ID of message in payload
 	uint64_t payload64[(MAVLINK_MAX_PAYLOAD_LEN+MAVLINK_NUM_CHECKSUM_BYTES+7)/8];
 }) mavlink_message_t;
 
@@ -194,11 +197,15 @@ typedef enum {
     MAVLINK_PARSE_STATE_UNINIT=0,
     MAVLINK_PARSE_STATE_IDLE,
     MAVLINK_PARSE_STATE_GOT_STX,
-    MAVLINK_PARSE_STATE_GOT_SEQ,
     MAVLINK_PARSE_STATE_GOT_LENGTH,
+    MAVLINK_PARSE_STATE_GOT_INCOMPAT_FLAGS,
+    MAVLINK_PARSE_STATE_GOT_COMPAT_FLAGS,
+    MAVLINK_PARSE_STATE_GOT_SEQ,
     MAVLINK_PARSE_STATE_GOT_SYSID,
     MAVLINK_PARSE_STATE_GOT_COMPID,
-    MAVLINK_PARSE_STATE_GOT_MSGID,
+    MAVLINK_PARSE_STATE_GOT_DIALECT,
+    MAVLINK_PARSE_STATE_GOT_MSGID1,
+    MAVLINK_PARSE_STATE_GOT_MSGID2,
     MAVLINK_PARSE_STATE_GOT_PAYLOAD,
     MAVLINK_PARSE_STATE_GOT_CRC1,
     MAVLINK_PARSE_STATE_GOT_BAD_CRC1
