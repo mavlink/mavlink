@@ -10,6 +10,7 @@ import xml.parsers.expat, os, errno, time, sys, operator, struct
 
 PROTOCOL_0_9 = "0.9"
 PROTOCOL_1_0 = "1.0"
+PROTOCOL_2_0 = "2.0"
 
 class MAVParseError(Exception):
     def __init__(self, message, inner_exception=None):
@@ -107,11 +108,12 @@ class MAVField(object):
 
 
 class MAVType(object):
-    def __init__(self, name, id, linenumber, description=''):
+    def __init__(self, name, id, dialect, linenumber, description=''):
         self.name = name
         self.name_lower = name.lower()
         self.linenumber = linenumber
         self.id = int(id)
+        self.dialect = dialect
         self.description = description
         self.fields = []
         self.fieldnames = []
@@ -157,20 +159,33 @@ class MAVXML(object):
         self.version = 2
         self.include = []
         self.wire_protocol_version = wire_protocol_version
+        self.dialect = 0
 
+        # setup the protocol features for the requested protocol version
         if wire_protocol_version == PROTOCOL_0_9:
             self.protocol_marker = ord('U')
             self.sort_fields = False
             self.little_endian = False
             self.crc_extra = False
+            self.command_16bit = False
+            self.multi_dialect = False
         elif wire_protocol_version == PROTOCOL_1_0:
             self.protocol_marker = 0xFE
             self.sort_fields = True
             self.little_endian = True
             self.crc_extra = True
+            self.command_16bit = False
+            self.multi_dialect = False
+        elif wire_protocol_version == PROTOCOL_2_0:
+            self.protocol_marker = 0xFD
+            self.sort_fields = False
+            self.little_endian = True
+            self.crc_extra = True
+            self.command_16bit = True
+            self.multi_dialect = True
         else:
             print("Unknown wire protocol version")
-            print("Available versions are: %s %s" % (PROTOCOL_0_9, PROTOCOL_1_0))
+            print("Available versions are: %s %s" % (PROTOCOL_0_9, PROTOCOL_1_0, PROTOCOL_2_0))
             raise MAVParseError('Unknown MAVLink wire protocol version %s' % wire_protocol_version)
 
         in_element_list = []
@@ -187,7 +202,7 @@ class MAVXML(object):
             #print in_element
             if in_element == "mavlink.messages.message":
                 check_attrs(attrs, ['name', 'id'], 'message')
-                self.message.append(MAVType(attrs['name'], attrs['id'], p.CurrentLineNumber))
+                self.message.append(MAVType(attrs['name'], attrs['id'], self.dialect, p.CurrentLineNumber))
             elif in_element == "mavlink.messages.message.field":
                 check_attrs(attrs, ['name', 'type'], 'field')
                 if 'print_format' in attrs:
@@ -241,6 +256,8 @@ class MAVXML(object):
                 self.enum[-1].entry[-1].param[-1].description += data
             elif in_element == "mavlink.version":
                 self.version = int(data)
+            elif in_element == "mavlink.dialect":
+                self.dialect = int(data)
             elif in_element == "mavlink.include":
                 self.include.append(data)
 
@@ -358,11 +375,16 @@ def check_duplicates(xml):
     enummap = {}
     for x in xml:
         for m in x.message:
-            if m.id in msgmap:
-                print("ERROR: Duplicate message id %u for %s (%s:%u) also used by %s" % (
-                    m.id, m.name,
+            if x.multi_dialect:
+                key = (m.dialect,m.id)
+            else:
+                key = m.id
+            if key in msgmap:
+                print("ERROR: Duplicate message id %u:%u for %s (%s:%u) also used by %s" % (
+                    m.dialect, m.id,
+                    m.name,
                     x.filename, m.linenumber,
-                    msgmap[m.id]))
+                    msgmap[key]))
                 return True
             fieldset = set()
             for f in m.fields:
@@ -372,7 +394,7 @@ def check_duplicates(xml):
                         x.filename, m.linenumber))
                     return True
                 fieldset.add(f.name)
-            msgmap[m.id] = '%s (%s:%u)' % (m.name, x.filename, m.linenumber)
+            msgmap[key] = '%s (%s:%u)' % (m.name, x.filename, m.linenumber)
         for enum in x.enum:
             for entry in enum.entry:
                 if entry.autovalue == True and "common.xml" not in entry.origin_file:
