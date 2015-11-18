@@ -8,7 +8,7 @@ except LookupError:
     func = lambda name, enc=ascii: {True: enc}.get(name=='mbcs')
     codecs.register(func)
 
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 import glob, os, shutil, fnmatch, platform
 
 version = '1.1.62'
