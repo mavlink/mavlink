@@ -115,6 +115,7 @@ static void print_message(mavlink_message_t *msg)
 static void comm_send_ch(mavlink_channel_t chan, uint8_t c)
 {
 	mavlink_status_t status;
+	memset(&status, 0, sizeof(status));
 	if (mavlink_parse_char(chan, c, &last_msg, &status)) {
 		print_message(&last_msg);
 		chan_counts[chan]++;
