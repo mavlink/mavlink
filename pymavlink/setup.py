@@ -11,7 +11,7 @@ except LookupError:
 from setuptools import setup, Extension
 import glob, os, shutil, fnmatch, platform
 
-version = '1.1.63'
+version = '1.1.64'
 
 from generator import mavgen, mavparse
 
