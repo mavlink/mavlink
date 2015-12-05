@@ -84,7 +84,7 @@ if islog and args.format == 'csv': # we know our fields from the get-go
     print(','.join(fields))
 
 if isbin and args.format == 'csv': # need to accumulate columns from message
-    if len(types) != 1:
+    if types is None or len(types) != 1:
         print("Need exactly one type when dumping CSV from bin file")
         quit()
 
