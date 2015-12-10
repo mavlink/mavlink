@@ -9,6 +9,11 @@ header. The timestamp is in microseconds since 1970 (unix epoch)
 
 import sys, time, os, struct, json
 
+try:
+    from pymavlink.mavextra import *
+except:
+    print("WARNING: Numpy missing, mathematical notation will not be supported..")
+
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
 
