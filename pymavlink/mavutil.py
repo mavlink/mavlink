@@ -18,10 +18,6 @@ try:
 except Exception:
     pass
 
-# these imports allow for mavgraph and mavlogdump to use maths expressions more easily
-from math import *
-from .mavextra import *
-
 # maximum packet length for a single receive call - use the UDP limit
 UDP_MAX_PACKET_LEN = 65535
 
