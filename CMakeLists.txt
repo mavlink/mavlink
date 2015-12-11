@@ -138,19 +138,20 @@ set(v0.9Definitions
     ardupilotmega.xml
     common.xml
     minimal.xml
-    pixhawk.xml
     slugs.xml
     test.xml
     ualberta.xml
     )
 generateMavlink("0.9" "${v0.9Definitions}")
 set(v1.0Definitions
+    ASLUAV.xml
     ardupilotmega.xml
     autoquad.xml
     common.xml
     matrixpilot.xml
     minimal.xml
-    pixhawk.xml
+    paparazzi.xml
+    python_array_test.xml
     slugs.xml
     test.xml
     ualberta.xml
