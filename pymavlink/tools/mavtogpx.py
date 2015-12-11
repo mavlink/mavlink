@@ -57,8 +57,11 @@ def mav_to_gpx(infilename, outfilename):
     add_header()
 
     count=0
+    lat=0
+    lon=0
+    fix=0
     while True:
-        m = mlog.recv_match(type=['GPS_RAW', 'GPS_RAW_INT'], condition=args.condition)
+        m = mlog.recv_match(type=['GPS_RAW', 'GPS_RAW_INT', 'GPS', 'GPS2'], condition=args.condition)
         if m is None:
             break
         if m.get_type() == 'GPS_RAW_INT':
@@ -68,17 +71,29 @@ def mav_to_gpx(infilename, outfilename):
             v = m.vel/100.0
             hdg = m.cog/100.0
             timestamp = m._timestamp
-        else:
+            fix = m.fix_type
+        elif m.get_type() == 'GPS_RAW':
             lat = m.lat
             lon = m.lon
             alt = m.alt
             v = m.v
             hdg = m.hdg
             timestamp = m._timestamp
+            fix = m.fix_type
+        elif m.get_type() == 'GPS' or m.get_type() == 'GPS2':
+            lat = m.Lat
+            lon = m.Lng
+            alt = m.Alt
+            v = m.Spd
+            hdg = m.GCrs
+            timestamp = m._timestamp
+            fix = m.Status
+        else:
+	    pass
 
-        if m.fix_type < 2 and not args.nofixcheck:
+        if fix < 2 and not args.nofixcheck:
             continue
-        if m.lat == 0.0 or m.lon == 0.0:
+        if lat == 0.0 or lon == 0.0:
             continue
         process_packet(timestamp, lat, lon, alt, hdg, v)
         count += 1

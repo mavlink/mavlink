@@ -34,13 +34,19 @@ class MAVWPLoader(object):
 
     def wp(self, i):
         '''return a waypoint'''
-        return self.wpoints[i]
+        try:
+            the_wp = self.wpoints[i]
+        except:
+            the_wp = None
+
+        return the_wp
 
     def wp_is_loiter(self, i):
         '''return true if waypoint is a loiter waypoint'''
         loiter_cmds = [mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM,
                 mavutil.mavlink.MAV_CMD_NAV_LOITER_TURNS,
-                mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME]
+                mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
+                mavutil.mavlink.MAV_CMD_NAV_LOITER_TO_ALT]
 
         if (self.wpoints[i].command in loiter_cmds):
             return True    

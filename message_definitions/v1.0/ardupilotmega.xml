@@ -34,6 +34,28 @@
               <param index="7">Empty</param>
             </entry>
 
+            <entry name="MAV_CMD_DO_AUTOTUNE_ENABLE" value="212">
+              <description>Enable/disable autotune</description>
+              <param index="1">enable (1: enable, 0:disable)</param>
+              <param index="2">Empty</param>
+              <param index="3">Empty</param>
+              <param index="4">Empty</param>
+              <param index="5">Empty</param>
+              <param index="6">Empty</param>
+              <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_NAV_ALTITUDE_WAIT" value="83">
+              <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
+              <param index="1">altitude (m)</param>
+              <param index="2">descent speed (m/s)</param>
+              <param index="3">Wiggle Time (s)</param>
+              <param index="4">Empty</param>
+              <param index="5">Empty</param>
+              <param index="6">Empty</param>
+              <param index="7">Empty</param>
+            </entry>
+
             <entry name="MAV_CMD_DO_START_MAG_CAL" value="42424">
                 <description>Initiate a magnetometer calibration</description>
                 <param index="1">uint8_t bitmask of magnetometers (0 means all)</param>
@@ -142,10 +164,11 @@
 
     <!-- camera feedback flags, a little bit of future-proofing -->
     <enum name="CAMERA_FEEDBACK_FLAGS">
-        <entry name="VIDEO"       value="1"> <description>Shooting video, not stills</description></entry>
-        <entry name="BADEXPOSURE" value="2"> <description>Unable to achieve requested exposure (e.g. shutter speed too low)</description></entry>
-        <entry name="CLOSEDLOOP"  value="3"> <description>Closed loop feedback from camera, we know for sure it has successfully taken a picture</description></entry>
-        <entry name="OPENLOOP"    value="4"> <description>Open loop camera, an image trigger has been requested but we can't know for sure it has successfully taken a picture</description></entry>
+        <entry name="CAMERA_FEEDBACK_PHOTO"         value="0"> <description>Shooting photos, not video</description></entry>
+        <entry name="CAMERA_FEEDBACK_VIDEO"         value="1"> <description>Shooting video, not stills</description></entry>
+        <entry name="CAMERA_FEEDBACK_BADEXPOSURE"   value="2"> <description>Unable to achieve requested exposure (e.g. shutter speed too low)</description></entry>
+        <entry name="CAMERA_FEEDBACK_CLOSEDLOOP"    value="3"> <description>Closed loop feedback from camera, we know for sure it has successfully taken a picture</description></entry>
+        <entry name="CAMERA_FEEDBACK_OPENLOOP"      value="4"> <description>Open loop camera, an image trigger has been requested but we can't know for sure it has successfully taken a picture</description></entry>
     </enum>
     
     <!-- Gimbal payload enumerations -->
@@ -273,6 +296,38 @@
         <entry name="MAG_CAL_SUCCESS" value="4"></entry>
         <entry name="MAG_CAL_FAILED" value="5"></entry>
     </enum>
+
+    <enum name="MAV_REMOTE_LOG_DATA_BLOCK_COMMANDS">
+      <description>Special ACK block numbers control activation of dataflash log streaming</description>
+      <!-- C uses signed integers for enumerations; these constants
+	   start at MAX_INT32_T and go down -->
+      <!-- 2^31-3 == 2147483645 -->
+      <entry value="2147483645" name="MAV_REMOTE_LOG_DATA_BLOCK_STOP">
+        <description>UAV to stop sending DataFlash blocks</description>
+      </entry>
+      <!-- 2^31-2 == 2147483646 -->
+      <entry value="2147483646" name="MAV_REMOTE_LOG_DATA_BLOCK_START">
+        <description>UAV to start sending DataFlash blocks</description>
+      </entry>
+      <!-- MAV_REMOTE_LOG_DATA_BLOCK_COMMANDS_ENUM_END will be 2^31-1 == 2147483647 -->
+    </enum>
+    <enum name="MAV_REMOTE_LOG_DATA_BLOCK_STATUSES">
+      <description>Possible remote log data block statuses</description>
+      <entry value="0" name="MAV_REMOTE_LOG_DATA_BLOCK_NACK">
+        <description>This block has NOT been received</description>
+      </entry>
+      <entry value="1" name="MAV_REMOTE_LOG_DATA_BLOCK_ACK">
+        <description>This block has been received</description>
+      </entry>
+    </enum>
+
+        <enum name="PID_TUNING_AXIS">
+          <entry name="PID_TUNING_ROLL"  value="1"></entry>
+          <entry name="PID_TUNING_PITCH" value="2"></entry>
+          <entry name="PID_TUNING_YAW"   value="3"></entry>
+          <entry name="PID_TUNING_ACCZ"  value="4"></entry>
+          <entry name="PID_TUNING_STEER" value="5"></entry>
+        </enum>
 
       </enums>
 
@@ -644,6 +699,23 @@
         <field type="uint8_t" name="target_component">Component ID</field>
     </message>
 
+    <!-- remote log messages -->
+    <message id="184" name="REMOTE_LOG_DATA_BLOCK">
+      <description>Send a block of log data to remote location</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="seqno" enum="MAV_REMOTE_LOG_DATA_BLOCK_COMMANDS">log data block sequence number</field>
+      <field type="uint8_t[200]" name="data">log data block</field>
+    </message>
+
+    <message id="185" name="REMOTE_LOG_BLOCK_STATUS">
+      <description>Send Status of each log block that autopilot board might have sent</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="seqno">log data block sequence number</field>
+      <field type="uint8_t" name="status" enum="MAV_REMOTE_LOG_DATA_BLOCK_STATUSES">log data block status</field>
+    </message>
+
     <message name="LED_CONTROL" id="186">
         <description>Control vehicle LEDs</description>
         <field type="uint8_t" name="target_system">System ID</field>
@@ -696,8 +768,20 @@
         <field name="terrain_alt_variance" type="float">Terrain Altitude variance</field>
     </message>
 
+    <!-- realtime PID tuning message -->
+    <message name="PID_TUNING" id="194">
+        <description>PID tuning information</description>
+        <field name="axis" type="uint8_t" enum="PID_TUNING_AXIS">axis</field>
+        <field name="desired" type="float">desired rate (degrees/s)</field>
+        <field name="achieved" type="float">achieved rate (degrees/s)</field>
+        <field name="FF" type="float">FF component</field>
+        <field name="P" type="float">P component</field>
+        <field name="I" type="float">I component</field>
+        <field name="D" type="float">D component</field>
+    </message>
+
     <message name="GIMBAL_REPORT" id="200">
-        <description>3 axis gimbal mesuraments</description>
+        <description>3 axis gimbal measurements</description>
         <field type="uint8_t" name="target_system">System ID</field>
         <field type="uint8_t" name="target_component">Component ID</field>
         <field type="float" name="delta_time">Time since last update (seconds)</field>
@@ -849,6 +933,12 @@
     </message>
 
     <!-- 219 to 225 RESERVED for more GOPRO-->
+
+    <message name="RPM" id="226">
+      <description>RPM sensor output</description>
+      <field name="rpm1" type="float">RPM Sensor1</field>
+      <field name="rpm2" type="float">RPM Sensor2</field>
+    </message>
 
      </messages>
 </mavlink>

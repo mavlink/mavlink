@@ -83,7 +83,7 @@
 </xsl:template>
 
 <xsl:template match="//entry">
-   <tr class="mavlink_field">
+   <tr class="mavlink_field" id="{@name}">
    <td class="mavlink_type" valign="top"><xsl:value-of select="@value" /></td>
    <td class="mavlink_name" valign="top"><xsl:value-of select="@name" /></td>
    <td class="mavlink_comment"><xsl:value-of select="description" /></td>

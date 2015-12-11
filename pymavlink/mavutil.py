@@ -18,9 +18,8 @@ try:
 except Exception:
     pass
 
-# these imports allow for mavgraph and mavlogdump to use maths expressions more easily
-from math import *
-from .mavextra import *
+# maximum packet length for a single receive call - use the UDP limit
+UDP_MAX_PACKET_LEN = 65535
 
 '''
 Support having a $HOME/.pymavlink/mavextra.py for extra graphing functions
@@ -244,21 +243,21 @@ class mavfile(object):
                 msg._timestamp = self._timestamp
 
         src_system = msg.get_srcSystem()
-        if not (
-            # its the radio or planner
-            (src_system == ord('3') and msg.get_srcComponent() == ord('D')) or
-            msg.get_type() == 'BAD_DATA'):
-            if not src_system in self.last_seq:
+        src_component = msg.get_srcComponent()
+        src_tuple = (src_system, src_component)
+        radio_tuple = (ord('3'), ord('D'))
+        if not (src_tuple == radio_tuple or msg.get_type() == 'BAD_DATA'):
+            if not src_tuple in self.last_seq:
                 last_seq = -1
             else:
-                last_seq = self.last_seq[src_system]
+                last_seq = self.last_seq[src_tuple]
             seq = (last_seq+1) % 256
             seq2 = msg.get_seq()
             if seq != seq2 and last_seq != -1:
                 diff = (seq2 - seq) % 256
                 self.mav_loss += diff
                 #print("lost %u seq=%u seq2=%u last_seq=%u src_system=%u %s" % (diff, seq, seq2, last_seq, src_system, msg.get_type()))
-            self.last_seq[src_system] = seq2
+            self.last_seq[src_tuple] = seq2
             self.mav_count += 1
         
         self.timestamp = msg._timestamp
@@ -760,6 +759,8 @@ class mavserial(mavfile):
 
     def write(self, buf):
         try:
+            if not isinstance(buf, str):
+                buf = str(buf)
             return self.port.write(buf)
         except Exception:
             if not self.portdead:
@@ -815,7 +816,7 @@ class mavudp(mavfile):
 
     def recv(self,n=None):
         try:
-            data, self.last_address = self.port.recvfrom(300)
+            data, self.last_address = self.port.recvfrom(UDP_MAX_PACKET_LEN)
         except socket.error as e:
             if e.errno in [ errno.EAGAIN, errno.EWOULDBLOCK, errno.ECONNREFUSED ]:
                 return ""
@@ -997,6 +998,7 @@ class mavmemlog(mavfile):
         self._msgs = []
         self._index = 0
         self._count = 0
+        self.messages = {}
         while True:
             m = mav.recv_msg()
             if m is None:
@@ -1011,12 +1013,14 @@ class mavmemlog(mavfile):
         m = self._msgs[self._index]
         self._index += 1
         self.percent = (100.0 * self._index) / self._count
+        self.messages[m.get_type()] = m
         return m
 
     def rewind(self):
         '''rewind to start'''
         self._index = 0
         self.percent = 0
+        self.messages = {}
 
 class mavchildexec(mavfile):
     '''a MAVLink child processes reader/writer'''

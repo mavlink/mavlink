@@ -31,6 +31,7 @@ def PrintSummary(logfile):
     total_dist = 0.0 # The total ground distance travelled (meters)
     last_gps_msg = None # The first GPS message received
     first_gps_msg = None # The last GPS message received
+    true_time = None # Track the first timestamp found that corresponds to a UNIX timestamp
 
     while True:
         m = mlog.recv_match(condition=args.condition)
@@ -49,6 +50,17 @@ def PrintSummary(logfile):
         # Log the first message time
         if start_time is None:
             start_time = timestamp
+
+        # Log the first timestamp found that is a true timestamp. We first try
+        # to get the groundstation timestamp from the log directly. If that fails
+        # we try to find a message that outputs a Unix time-since-epoch.
+        if true_time is None:
+            if not args.notimestamps and timestamp >= 1230768000:
+                true_time = timestamp
+            elif 'time_unix_usec' in m.__dict__ and m.time_unix_usec >= 1230768000:
+                true_time = m.time_unix_usec * 1.0e-6
+            elif 'time_usec' in m.__dict__ and m.time_usec >= 1230768000:
+                true_time = m.time_usec * 1.0e-6
 
         # Track the vehicle's speed and status
         if m.get_type() == 'GPS_RAW_INT':
@@ -92,14 +104,11 @@ def PrintSummary(logfile):
 
     # Compute the total logtime, checking that timestamps are 2009 or newer for validity
     # (MAVLink didn't exist until 2009)
-    if start_time >= 1230768000:
-        start_time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(start_time))
-        end_time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
-        print("Timespan from {} to {}".format(start_time_str, end_time_str))
+    if true_time:
+        start_time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(true_time))
+        print("Log started at about {}".format(start_time_str))
     else:
-        print(first_gps_msg.time_usec)
-        print(last_gps_msg.time_usec)
-        print("ERROR: Invalid timestamps found.")
+        print("Warning: No absolute timestamp found in datastream. No starting time can be provided for this log.")
 
     # Print location data
     if last_gps_msg is not None:
@@ -108,15 +117,15 @@ def PrintSummary(logfile):
         print("Travelled from ({0[0]}, {0[1]}) to ({1[0]}, {1[1]})".format(first_gps_position, last_gps_position))
         print("Total distance : {:0.2f}m".format(total_dist))
     else:
-        print("ERROR: No GPS data found.")
+        print("Warning: No GPS data found, can't give position summary.")
 
     # Print out the rest of the results.
     total_time = timestamp - start_time
-    print("Total time : {}:{:02}".format(int(total_time)/60, int(total_time)%60))
+    print("Total time (mm:ss): {:3.0f}:{:02.0f}".format(total_time / 60, total_time % 60))
     # The autonomous time should be good, as a steady HEARTBEAT is required for MAVLink operation
-    print("Autonomous sections : {}".format(autonomous_sections))
+    print("Autonomous sections: {}".format(autonomous_sections))
     if autonomous_sections > 0:
-        print("Autonomous time : {}:{:02}".format(int(auto_time)/60, int(auto_time)%60))
+        print("Autonomous time (mm:ss): {:3.0f}:{:02.0f}".format(auto_time / 60, auto_time % 60))
 
 for filename in args.logs:
     for f in glob.glob(filename):

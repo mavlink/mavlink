@@ -8,10 +8,10 @@ except LookupError:
     func = lambda name, enc=ascii: {True: enc}.get(name=='mbcs')
     codecs.register(func)
 
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 import glob, os, shutil, fnmatch, platform
 
-version = '1.1.51'
+version = '1.1.66'
 
 from generator import mavgen, mavparse
 
@@ -105,6 +105,7 @@ setup (name = 'pymavlink',
                    'tools/mavtomfile.py',
                    'tools/mavgen.py',
                    'tools/mavkml.py',
+                   'tools/mavfft.py',
                    'tools/mavsummarize.py',
                    'tools/MPU6KSearch.py'],
        ext_modules = extensions

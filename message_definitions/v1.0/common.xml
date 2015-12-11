@@ -7,8 +7,8 @@
                <entry value="0" name="MAV_AUTOPILOT_GENERIC">
                     <description>Generic autopilot, full support for everything</description>
                </entry>
-               <entry value="1" name="MAV_AUTOPILOT_PIXHAWK">
-                    <description>PIXHAWK autopilot, http://pixhawk.ethz.ch</description>
+               <entry value="1" name="MAV_AUTOPILOT_RESERVED">
+                    <description>Reserved for future use.</description>
                </entry>
                <entry value="2" name="MAV_AUTOPILOT_SLUGS">
                     <description>SLUGS autopilot, http://slugsuav.soe.ucsc.edu</description>
@@ -123,10 +123,10 @@
                <entry value="20" name="MAV_TYPE_VTOL_QUADROTOR">
                     <description>Quad-rotor VTOL using a V-shaped quad config in vertical operation. Tailsitter.</description>
                </entry>
-               <!-- Entries up to 25 reserved for other VTOL airframes -->
-               <entry value="21" name="MAV_TYPE_VTOL_RESERVED1">
-                    <description>VTOL reserved 1</description>
+               <entry value="21" name="MAV_TYPE_VTOL_TILTROTOR">
+                    <description>Tiltrotor VTOL</description>
                </entry>
+               <!-- Entries up to 25 reserved for other VTOL airframes -->
                <entry value="22" name="MAV_TYPE_VTOL_RESERVED2">
                     <description>VTOL reserved 2</description>
                </entry>
@@ -142,6 +142,27 @@
                <entry value="26" name="MAV_TYPE_GIMBAL">
                     <description>Onboard gimbal</description>
                </entry>
+               <entry value="27" name="MAV_TYPE_ADSB">
+                    <description>Onboard ADSB peripheral</description>
+               </entry>
+          </enum>
+          <enum name="FIRMWARE_VERSION_TYPE">
+              <description>These values define the type of firmware release.  These values indicate the first version or release of this type.  For example the first alpha release would be 64, the second would be 65.</description>
+              <entry value="0" name="FIRMWARE_VERSION_TYPE_DEV">
+                  <description>development release</description>
+              </entry>
+              <entry value="64" name="FIRMWARE_VERSION_TYPE_ALPHA">
+                  <description>alpha release</description>
+              </entry>
+              <entry value="128" name="FIRMWARE_VERSION_TYPE_BETA">
+                  <description>beta release</description>
+              </entry>
+              <entry value="192" name="FIRMWARE_VERSION_TYPE_RC">
+                  <description>release candidate</description>
+              </entry>
+              <entry value="255" name="FIRMWARE_VERSION_TYPE_OFFICIAL">
+                  <description>official stable release</description>
+              </entry>
           </enum>
           <!-- WARNING: MAV_ACTION Enum is no longer supported - has been removed. Please use MAV_CMD -->
           <enum name="MAV_MODE_FLAG">
@@ -356,6 +377,12 @@
                     <description/>
                </entry>
                <entry value="154" name="MAV_COMP_ID_GIMBAL">
+                    <description/>
+               </entry>
+               <entry value="155" name="MAV_COMP_ID_LOG">
+                    <description/>
+               </entry>
+               <entry value="156" name="MAV_COMP_ID_ADSB">
                     <description/>
                </entry>
           </enum>
@@ -585,10 +612,10 @@
                </entry>
                <entry value="21" name="MAV_CMD_NAV_LAND">
                     <description>Land at location</description>
-                    <param index="1">Empty</param>
+                    <param index="1">Abort Alt</param>
                     <param index="2">Empty</param>
                     <param index="3">Empty</param>
-                    <param index="4">Desired yaw angle.</param>
+                    <param index="4">Desired yaw angle</param>
                     <param index="5">Latitude</param>
                     <param index="6">Longitude</param>
                     <param index="7">Altitude</param>
@@ -603,15 +630,55 @@
                     <param index="6">Longitude</param>
                     <param index="7">Altitude</param>
                </entry>
+               <entry value="23" name="MAV_CMD_NAV_LAND_LOCAL">
+                    <description>Land at local position (local frame only)</description>
+                    <param index="1">Landing target number (if available)</param>
+                    <param index="2">Maximum accepted offset from desired landing position [m] - computed magnitude from spherical coordinates: d = sqrt(x^2 + y^2 + z^2), which gives the maximum accepted distance between the desired landing position and the position where the vehicle is about to land</param>
+                    <param index="3">Landing descend rate [ms^-1]</param>
+                    <param index="4">Desired yaw angle [rad]</param>
+                    <param index="5">Y-axis position [m]</param>
+                    <param index="6">X-axis position [m]</param>
+                    <param index="7">Z-axis / ground level position [m]</param>
+               </entry>
+               <entry value="24" name="MAV_CMD_NAV_TAKEOFF_LOCAL">
+                    <description>Takeoff from local position (local frame only)</description>
+                    <param index="1">Minimum pitch (if airspeed sensor present), desired pitch without sensor [rad]</param>
+                    <param index="2">Empty</param>
+                    <param index="3">Takeoff ascend rate [ms^-1]</param>
+                    <param index="4">Yaw angle [rad] (if magnetometer or another yaw estimation source present), ignored without one of these</param>
+                    <param index="5">Y-axis position [m]</param>
+                    <param index="6">X-axis position [m]</param>
+                    <param index="7">Z-axis position [m]</param>
+               </entry>
+               <entry value="25" name="MAV_CMD_NAV_FOLLOW">
+                    <description>Vehicle following, i.e. this waypoint represents the position of a moving vehicle</description>
+                    <param index="1">Following logic to use (e.g. loitering or sinusoidal following) - depends on specific autopilot implementation</param>
+                    <param index="2">Ground speed of vehicle to be followed</param>
+                    <param index="3">Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise</param>
+                    <param index="4">Desired yaw angle.</param>
+                    <param index="5">Latitude</param>
+                    <param index="6">Longitude</param>
+                    <param index="7">Altitude</param>
+               </entry>
                <entry value="30" name="MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT">
                    <description>Continue on the current course and climb/descend to specified altitude.  When the altitude is reached continue to the next command (i.e., don't proceed to the next command until the desired altitude is reached.</description>
-                    <param index="1">Empty</param>
+                   <param index="1">Climb or Descend (0 = Neutral, command completes when within 5m of this command's altitude, 1 = Climbing, command completes when at or above this command's altitude, 2 = Descending, command completes when at or below this command's altitude. </param>
                     <param index="2">Empty</param>
                     <param index="3">Empty</param>
                     <param index="4">Empty</param>
                     <param index="5">Empty</param>
                     <param index="6">Empty</param>
                     <param index="7">Desired altitude in meters</param>
+               </entry>
+                <entry value="31" name="MAV_CMD_NAV_LOITER_TO_ALT">
+                    <description>Begin loiter at the specified Latitude and Longitude.  If Lat=Lon=0, then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached.  Additionally, if the Heading Required parameter is non-zero the  aircraft will not leave the loiter until heading toward the next waypoint. </description>
+                    <param index="1">Heading Required (0 = False)</param>
+                    <param index="2">Radius in meters. If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.</param>
+                    <param index="3">Empty</param>
+                    <param index="4">Empty</param>
+                    <param index="5">Latitude</param>
+                    <param index="6">Longitude</param>
+                    <param index="7">Altitude</param>
                </entry>
                <entry value="80" name="MAV_CMD_NAV_ROI">
                     <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
@@ -723,7 +790,7 @@
                     <description>Set system mode.</description>
                     <param index="1">Mode, as defined by ENUM MAV_MODE</param>
                     <param index="2">Custom mode - this is system specific, please refer to the individual autopilot specifications for details.</param>
-                    <param index="3">Empty</param>
+                    <param index="3">Custom sub mode - this is system specific, please refer to the individual autopilot specifications for details.</param>
                     <param index="4">Empty</param>
                     <param index="5">Empty</param>
                     <param index="6">Empty</param>
@@ -929,7 +996,7 @@
 
                <entry name="MAV_CMD_DO_FENCE_ENABLE" value="207">
                    <description>Mission command to enable the geofence</description>
-                   <param index="1">enable? (0=disable, 1=enable)</param>
+                   <param index="1">enable? (0=disable, 1=enable, 2=disable_floor_only)</param>
                    <param index="2">Empty</param>
                    <param index="3">Empty</param>
                    <param index="4">Empty</param>
@@ -1023,11 +1090,21 @@
                     <param index="6">Generic dimension 5, in the sensor's raw units</param>
                     <param index="7">Generic dimension 6, in the sensor's raw units</param>
                </entry>
+               <entry value="243" name="MAV_CMD_PREFLIGHT_UAVCAN">
+                    <description>Trigger UAVCAN config. This command will be only accepted if in pre-flight mode.</description>
+                    <param index="1">1: Trigger actuator ID assignment and direction mapping.</param>
+                    <param index="2">Reserved</param>
+                    <param index="3">Reserved</param>
+                    <param index="4">Reserved</param>
+                    <param index="5">Reserved</param>
+                    <param index="6">Reserved</param>
+                    <param index="7">Reserved</param>
+               </entry>
                <entry value="245" name="MAV_CMD_PREFLIGHT_STORAGE">
                     <description>Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.</description>
-                    <param index="1">Parameter storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM</param>
-                    <param index="2">Mission storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM</param>
-                    <param index="3">Reserved</param>
+                    <param index="1">Parameter storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM, 2: Reset to defaults</param>
+                    <param index="2">Mission storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM, 2: Reset to defaults</param>
+                    <param index="3">Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, > 1: start logging with rate of param 3 in Hz (e.g. set to 1000 for 1000 Hz logging)</param>
                     <param index="4">Reserved</param>
                     <param index="5">Empty</param>
                     <param index="6">Empty</param>
@@ -1062,10 +1139,29 @@
                     <description>Arms / Disarms a component</description>
                     <param index="1">1 to arm, 0 to disarm</param>
                </entry>
+               <entry value="410" name="MAV_CMD_GET_HOME_POSITION">
+                    <description>Request the home position from the vehicle.</description>
+                    <param index="1">Reserved</param>
+                    <param index="2">Reserved</param>
+                    <param index="3">Reserved</param>
+                    <param index="4">Reserved</param>
+                    <param index="5">Reserved</param>
+                    <param index="6">Reserved</param>
+                    <param index="7">Reserved</param>
+               </entry>
                <entry value="500" name="MAV_CMD_START_RX_PAIR">
                     <description>Starts receiver pairing</description>
                     <param index="1">0:Spektrum</param>
                     <param index="2">0:Spektrum DSM2, 1:Spektrum DSMX</param>
+               </entry>
+               <entry value="510" name="MAV_CMD_GET_MESSAGE_INTERVAL">
+                    <description>Request the interval between messages for a particular MAVLink message ID</description>
+                    <param index="1">The MAVLink message ID</param>
+               </entry>
+               <entry value="511" name="MAV_CMD_SET_MESSAGE_INTERVAL">
+                    <description>Request the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM</description>
+                    <param index="1">The MAVLink message ID</param>
+                    <param index="2">The interval between two messages, in microseconds. Set to -1 to disable and 0 to request default rate.</param>
                </entry>
                <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES">
                  <description>Request autopilot capabilities</description>
@@ -1113,6 +1209,11 @@
                   <param index="4">Speed of the vertical rotation (in degrees per second)</param>
               </entry>
 
+              <entry value="3000" name="MAV_CMD_DO_VTOL_TRANSITION">
+                  <description>Request VTOL transition</description>
+                  <param index="1">The target VTOL state, as defined by ENUM MAV_VTOL_STATE. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.</param>
+              </entry>
+
               <!-- VALUES FROM 0-40000 are reserved for the common message set. Values from 40000 to UINT16_MAX are available for dialects -->
 
               <!-- BEGIN of payload range (30000 to 30999) -->
@@ -1139,7 +1240,7 @@
               <!-- END of payload range (30000 to 30999) -->
           </enum>
           <enum name="MAV_DATA_STREAM">
-               <description>Data stream IDs. A data stream is not a fixed set of messages, but rather a
+               <description>THIS INTERFACE IS DEPRECATED AS OF JULY 2015. Please use MESSAGE_INTERVAL instead. A data stream is not a fixed set of messages, but rather a
      recommendation to the autopilot software. Individual autopilots may or may not obey
      the recommended messages.</description>
                <entry value="0" name="MAV_DATA_STREAM_ALL">
@@ -1381,6 +1482,9 @@
                <entry value="3" name="SERIAL_CONTROL_DEV_GPS2">
                     <description>Second GPS port</description>
                </entry>
+               <entry value="10" name="SERIAL_CONTROL_DEV_SHELL">
+                    <description>system shell</description>
+               </entry>
           </enum>
           <enum name="SERIAL_CONTROL_FLAG">
                <description>SERIAL_CONTROL flags (bitmask)</description>
@@ -1403,10 +1507,133 @@
           <enum name="MAV_DISTANCE_SENSOR">
               <description>Enumeration of distance sensor types</description>
               <entry value="0" name="MAV_DISTANCE_SENSOR_LASER">
-                  <description>Laser altimeter, e.g. LightWare SF02/F or PulsedLight units</description>
+                  <description>Laser rangefinder, e.g. LightWare SF02/F or PulsedLight units</description>
               </entry>
               <entry value="1" name="MAV_DISTANCE_SENSOR_ULTRASOUND">
-                  <description>Ultrasound altimeter, e.g. MaxBotix units</description>
+                  <description>Ultrasound rangefinder, e.g. MaxBotix units</description>
+              </entry>
+              <entry value="2" name="MAV_DISTANCE_SENSOR_INFRARED">
+                  <description>Infrared rangefinder, e.g. Sharp units</description>
+              </entry>
+          </enum>
+          <enum name="MAV_SENSOR_ORIENTATION">
+              <description>Enumeration of sensor orientation, according to its rotations</description>
+              <entry value="0" name="MAV_SENSOR_ROTATION_NONE">
+                  <description>Roll: 0, Pitch: 0, Yaw: 0</description>
+              </entry>
+              <entry value="1" name="MAV_SENSOR_ROTATION_YAW_45">
+                  <description>Roll: 0, Pitch: 0, Yaw: 45</description>
+              </entry>
+              <entry value="2" name="MAV_SENSOR_ROTATION_YAW_90">
+                  <description>Roll: 0, Pitch: 0, Yaw: 90</description>
+              </entry>
+              <entry value="3" name="MAV_SENSOR_ROTATION_YAW_135">
+                  <description>Roll: 0, Pitch: 0, Yaw: 135</description>
+              </entry>
+              <entry value="4" name="MAV_SENSOR_ROTATION_YAW_180">
+                  <description>Roll: 0, Pitch: 0, Yaw: 180</description>
+              </entry>
+              <entry value="5" name="MAV_SENSOR_ROTATION_YAW_225">
+                  <description>Roll: 0, Pitch: 0, Yaw: 225</description>
+              </entry>
+              <entry value="6" name="MAV_SENSOR_ROTATION_YAW_270">
+                  <description>Roll: 0, Pitch: 0, Yaw: 270</description>
+              </entry>
+              <entry value="7" name="MAV_SENSOR_ROTATION_YAW_315">
+                  <description>Roll: 0, Pitch: 0, Yaw: 315</description>
+              </entry>
+              <entry value="8" name="MAV_SENSOR_ROTATION_ROLL_180">
+                  <description>Roll: 180, Pitch: 0, Yaw: 0</description>
+              </entry>
+              <entry value="9" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_45">
+                  <description>Roll: 180, Pitch: 0, Yaw: 45</description>
+              </entry>
+              <entry value="10" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_90">
+                  <description>Roll: 180, Pitch: 0, Yaw: 90</description>
+              </entry>
+              <entry value="11" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_135">
+                  <description>Roll: 180, Pitch: 0, Yaw: 135</description>
+              </entry>
+              <entry value="12" name="MAV_SENSOR_ROTATION_PITCH_180">
+                  <description>Roll: 0, Pitch: 180, Yaw: 0</description>
+              </entry>
+              <entry value="13" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_225">
+                  <description>Roll: 180, Pitch: 0, Yaw: 225</description>
+              </entry>
+              <entry value="14" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_270">
+                  <description>Roll: 180, Pitch: 0, Yaw: 270</description>
+              </entry>
+              <entry value="15" name="MAV_SENSOR_ROTATION_ROLL_180_YAW_315">
+                  <description>Roll: 180, Pitch: 0, Yaw: 315</description>
+              </entry>
+              <entry value="16" name="MAV_SENSOR_ROTATION_ROLL_90">
+                  <description>Roll: 90, Pitch: 0, Yaw: 0</description>
+              </entry>
+              <entry value="17" name="MAV_SENSOR_ROTATION_ROLL_90_YAW_45">
+                  <description>Roll: 90, Pitch: 0, Yaw: 45</description>
+              </entry>
+              <entry value="18" name="MAV_SENSOR_ROTATION_ROLL_90_YAW_90">
+                  <description>Roll: 90, Pitch: 0, Yaw: 90</description>
+              </entry>
+              <entry value="19" name="MAV_SENSOR_ROTATION_ROLL_90_YAW_135">
+                  <description>Roll: 90, Pitch: 0, Yaw: 135</description>
+              </entry>
+              <entry value="20" name="MAV_SENSOR_ROTATION_ROLL_270">
+                  <description>Roll: 270, Pitch: 0, Yaw: 0</description>
+              </entry>
+              <entry value="21" name="MAV_SENSOR_ROTATION_ROLL_270_YAW_45">
+                  <description>Roll: 270, Pitch: 0, Yaw: 45</description>
+              </entry>
+              <entry value="22" name="MAV_SENSOR_ROTATION_ROLL_270_YAW_90">
+                  <description>Roll: 270, Pitch: 0, Yaw: 90</description>
+              </entry>
+              <entry value="23" name="MAV_SENSOR_ROTATION_ROLL_270_YAW_135">
+                  <description>Roll: 270, Pitch: 0, Yaw: 135</description>
+              </entry>
+              <entry value="24" name="MAV_SENSOR_ROTATION_PITCH_90">
+                  <description>Roll: 0, Pitch: 90, Yaw: 0</description>
+              </entry>
+              <entry value="25" name="MAV_SENSOR_ROTATION_PITCH_270">
+                <description>Roll: 0, Pitch: 270, Yaw: 0</description>
+              </entry>   
+              <entry value="26" name="MAV_SENSOR_ROTATION_PITCH_180_YAW_90">
+                <description>Roll: 0, Pitch: 180, Yaw: 90</description>
+              </entry>  
+              <entry value="27" name="MAV_SENSOR_ROTATION_PITCH_180_YAW_270">
+                  <description>Roll: 0, Pitch: 180, Yaw: 270</description>
+              </entry>
+              <entry value="28" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_90">
+                  <description>Roll: 90, Pitch: 90, Yaw: 0</description>
+              </entry>
+              <entry value="29" name="MAV_SENSOR_ROTATION_ROLL_180_PITCH_90">
+                  <description>Roll: 180, Pitch: 90, Yaw: 0</description>
+              </entry>
+              <entry value="30" name="MAV_SENSOR_ROTATION_ROLL_270_PITCH_90">
+                  <description>Roll: 270, Pitch: 90, Yaw: 0</description>
+              </entry>
+              <entry value="31" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_180">
+                  <description>Roll: 90, Pitch: 180, Yaw: 0</description>
+              </entry>
+              <entry value="32" name="MAV_SENSOR_ROTATION_ROLL_270_PITCH_180">
+                  <description>Roll: 270, Pitch: 180, Yaw: 0</description>
+              </entry>
+              <entry value="33" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_270">
+                  <description>Roll: 90, Pitch: 270, Yaw: 0</description>
+              </entry>
+              <entry value="34" name="MAV_SENSOR_ROTATION_ROLL_180_PITCH_270">
+                  <description>Roll: 180, Pitch: 270, Yaw: 0</description>
+              </entry>
+              <entry value="35" name="MAV_SENSOR_ROTATION_ROLL_270_PITCH_270">
+                  <description>Roll: 270, Pitch: 270, Yaw: 0</description>
+              </entry>
+              <entry value="36" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_180_YAW_90">
+                  <description>Roll: 90, Pitch: 180, Yaw: 90</description>
+              </entry>
+              <entry value="37" name="MAV_SENSOR_ROTATION_ROLL_90_YAW_270">
+                  <description>Roll: 90, Pitch: 0, Yaw: 270</description>
+              </entry>
+              <entry value="38" name="MAV_SENSOR_ROTATION_ROLL_315_PITCH_315_YAW_315">
+                  <description>Roll: 315, Pitch: 315, Yaw: 315</description>
               </entry>
           </enum>
           <enum name="MAV_PROTOCOL_CAPABILITY">
@@ -1443,6 +1670,12 @@
               </entry>
               <entry value="1024" name="MAV_PROTOCOL_CAPABILITY_SET_ACTUATOR_TARGET">
                   <description>Autopilot supports direct actuator control.</description>
+              </entry>
+              <entry value="2048" name="MAV_PROTOCOL_CAPABILITY_FLIGHT_TERMINATION">
+                  <description>Autopilot supports the flight termination command.</description>
+              </entry>
+              <entry value="4096" name="MAV_PROTOCOL_CAPABILITY_COMPASS_CALIBRATION">
+                  <description>Autopilot supports onboard compass calibration.</description>
               </entry>
           </enum>
           <enum name="MAV_ESTIMATOR_TYPE">
@@ -1498,6 +1731,78 @@
               <entry value="4" name="MAV_BATTERY_TYPE_PAYLOAD">
                   <description>Payload battery</description>
               </entry>
+          </enum>
+          <enum name="MAV_VTOL_STATE">
+              <description>Enumeration of VTOL states</description>
+              <entry value="0" name="MAV_VTOL_STATE_UNDEFINED">
+                  <description>MAV is not configured as VTOL</description>
+              </entry>
+              <entry value="1" name="MAV_VTOL_STATE_TRANSITION_TO_FW">
+                  <description>VTOL is in transition from multicopter to fixed-wing</description>
+              </entry>
+              <entry value="2" name="MAV_VTOL_STATE_TRANSITION_TO_MC">
+                  <description>VTOL is in transition from fixed-wing to multicopter</description>
+              </entry>
+              <entry value="3" name="MAV_VTOL_STATE_MC">
+                  <description>VTOL is in multicopter state</description>
+              </entry>
+              <entry value="4" name="MAV_VTOL_STATE_FW">
+                  <description>VTOL is in fixed-wing state</description>
+              </entry>
+          </enum>
+          <enum name="MAV_LANDED_STATE">
+              <description>Enumeration of landed detector states</description>
+              <entry value="0" name="MAV_LANDED_STATE_UNDEFINED">
+                  <description>MAV landed state is unknown</description>
+              </entry>
+              <entry value="1" name="MAV_LANDED_STATE_ON_GROUND">
+                  <description>MAV is landed (on ground)</description>
+              </entry>
+              <entry value="2" name="MAV_LANDED_STATE_IN_AIR">
+                  <description>MAV is in air</description>
+              </entry>
+          </enum>
+          <enum name="ADSB_ALTITUDE_TYPE">
+              <description>Enumeration of the ADSB altimeter types</description>
+              <entry value="0" name="ADSB_ALTITUDE_TYPE_PRESSURE_QNH">
+                  <description>Altitude reported from a Baro source using QNH reference</description>
+              </entry>
+              <entry value="1" name="ADSB_ALTITUDE_TYPE_GEOMETRIC">
+                  <description>Altitude reported from a GNSS source</description>
+              </entry>
+          </enum>
+          <enum name="ADSB_EMITTER_TYPE">
+              <description>ADSB classification for the type of vehicle emitting the transponder signal</description>
+              <entry value="0" name="ADSB_EMITTER_TYPE_NO_INFO"></entry>
+              <entry value="1" name="ADSB_EMITTER_TYPE_LIGHT"></entry>
+              <entry value="2" name="ADSB_EMITTER_TYPE_SMALL"></entry>
+              <entry value="3" name="ADSB_EMITTER_TYPE_LARGE"></entry>
+              <entry value="4" name="ADSB_EMITTER_TYPE_HIGH_VORTEX_LARGE"></entry>
+              <entry value="5" name="ADSB_EMITTER_TYPE_HEAVY"></entry>
+              <entry value="6" name="ADSB_EMITTER_TYPE_HIGHLY_MANUV"></entry>
+              <entry value="7" name="ADSB_EMITTER_TYPE_ROTOCRAFT"></entry>
+              <entry value="8" name="ADSB_EMITTER_TYPE_UNASSIGNED"></entry>
+              <entry value="9" name="ADSB_EMITTER_TYPE_GLIDER"></entry>
+              <entry value="10" name="ADSB_EMITTER_TYPE_LIGHTER_AIR"></entry>
+              <entry value="11" name="ADSB_EMITTER_TYPE_PARACHUTE"></entry>
+              <entry value="12" name="ADSB_EMITTER_TYPE_ULTRA_LIGHT"></entry>
+              <entry value="13" name="ADSB_EMITTER_TYPE_UNASSIGNED2"></entry>
+              <entry value="14" name="ADSB_EMITTER_TYPE_UAV"></entry>
+              <entry value="15" name="ADSB_EMITTER_TYPE_SPACE"></entry>
+              <entry value="16" name="ADSB_EMITTER_TYPE_UNASSGINED3"></entry>
+              <entry value="17" name="ADSB_EMITTER_TYPE_EMERGENCY_SURFACE"></entry>
+              <entry value="18" name="ADSB_EMITTER_TYPE_SERVICE_SURFACE"></entry>
+              <entry value="19" name="ADSB_EMITTER_TYPE_POINT_OBSTACLE"></entry>
+          </enum>
+          <enum name="ADSB_FLAGS">
+              <description>These flags indicate status such as data validity of each data source. Set = data valid</description>
+              <entry value="1" name="ADSB_FLAGS_VALID_COORDS"></entry>
+              <entry value="2" name="ADSB_FLAGS_VALID_ALTITUDE"></entry>
+              <entry value="4" name="ADSB_FLAGS_VALID_HEADING"></entry>
+              <entry value="8" name="ADSB_FLAGS_VALID_VELOCITY"></entry>
+              <entry value="16" name="ADSB_FLAGS_VALID_CALLSIGN"></entry>
+              <entry value="32" name="ADSB_FLAGS_VALID_SQUAWK"></entry>
+              <entry value="64" name="ADSB_FLAGS_SIMULATED"></entry>
           </enum>
      </enums>
      <messages>
@@ -1557,7 +1862,7 @@
                <field type="char[32]" name="key">key</field>
           </message>
           <message id="11" name="SET_MODE">
-               <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
+               <description>THIS INTERFACE IS DEPRECATED. USE COMMAND_LONG with MAV_CMD_DO_SET_MODE INSTEAD. Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
                <field type="uint8_t" name="target_system">The system setting the mode</field>
                <field type="uint8_t" name="base_mode" enum="MAV_MODE">The new base mode</field>
                <field type="uint32_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
@@ -1599,8 +1904,8 @@
                <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="alt">Altitude (AMSL, NOT WGS84), in meters * 1000 (positive for up). Note that virtually all GPS modules provide the AMSL altitude in addition to the WGS84 altitude.</field>
-               <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position in cm (m*100). If unknown, set to: UINT16_MAX</field>
-               <field type="uint16_t" name="epv">GPS VDOP vertical dilution of position in cm (m*100). If unknown, set to: UINT16_MAX</field>
+               <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
+               <field type="uint16_t" name="epv">GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
                <field type="uint16_t" name="vel">GPS ground speed (m/s * 100). If unknown, set to: UINT16_MAX</field>
                <field type="uint16_t" name="cog">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
                <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
@@ -1936,15 +2241,17 @@
                <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 100: 100%, 255: invalid/unknown.</field>
           </message>
           <message id="66" name="REQUEST_DATA_STREAM">
+               <description>THIS INTERFACE IS DEPRECATED. USE SET_MESSAGE_INTERVAL INSTEAD.</description>
                <field type="uint8_t" name="target_system">The target requested to send the message stream.</field>
                <field type="uint8_t" name="target_component">The target requested to send the message stream.</field>
                <field type="uint8_t" name="req_stream_id">The ID of the requested data stream</field>
-               <field type="uint16_t" name="req_message_rate">The requested interval between two messages of this type</field>
+               <field type="uint16_t" name="req_message_rate">The requested message rate</field>
                <field type="uint8_t" name="start_stop">1 to start sending, 0 to stop sending.</field>
           </message>
           <message id="67" name="DATA_STREAM">
+               <description>THIS INTERFACE IS DEPRECATED. USE MESSAGE_INTERVAL INSTEAD.</description>
                <field type="uint8_t" name="stream_id">The ID of the requested data stream</field>
-               <field type="uint16_t" name="message_rate">The requested interval between two messages of this type</field>
+               <field type="uint16_t" name="message_rate">The message rate</field>
                <field type="uint8_t" name="on_off">1 stream is enabled, 0 stream is stopped.</field>
           </message>
           <message id="69" name="MANUAL_CONTROL">
@@ -1952,7 +2259,7 @@
                <field type="uint8_t" name="target">The system to be controlled.</field>
                <field type="int16_t" name="x">X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.</field>
                <field type="int16_t" name="y">Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.</field>
-               <field type="int16_t" name="z">Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle.</field>
+               <field type="int16_t" name="z">Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are positive thrust, negative values are negative thrust.</field>
                <field type="int16_t" name="r">R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with counter-clockwise being 1000 and clockwise being -1000, and the yaw of a vehicle.</field>
                <field type="uint16_t" name="buttons">A bitfield corresponding to the joystick buttons' current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.</field>
           </message>
@@ -2549,7 +2856,7 @@
             <field type="uint16_t" name="current_distance">Current distance reading</field>
             <field type="uint8_t" name="type">Type from MAV_DISTANCE_SENSOR enum.</field>
             <field type="uint8_t" name="id">Onboard ID of the sensor</field>
-            <field type="uint8_t" name="orientation">Direction the sensor faces from FIXME enum.</field>
+            <field type="uint8_t" name="orientation">Direction the sensor faces from MAV_SENSOR_ORIENTATION enum.</field>
             <field type="uint8_t" name="covariance">Measurement covariance in centimeters, 0 for unknown / invalid readings</field>
          </message>
          <message id="133" name="TERRAIN_REQUEST">
@@ -2611,6 +2918,51 @@
             <field type="uint8_t" name="group_mlx">Actuator group. The "_mlx" indicates this is a multi-instance message and a MAVLink parser should use this field to difference between instances.</field>
             <field type="float[8]" name="controls">Actuator controls. Normed to -1..+1 where 0 is neutral position. Throttle for single rotation direction motors is 0..1, negative range for reverse direction. Standard mapping for attitude controls (group 0): (index 0-7): roll, pitch, yaw, throttle, flaps, spoilers, airbrakes, landing gear. Load a pass-through mixer to repurpose them as generic outputs.</field>
         </message>
+        <message id="141" name="ALTITUDE">
+            <description>The current system altitude.</description>
+            <field type="uint64_t" name="time_usec">Timestamp (milliseconds since system boot)</field>
+            <field type="float" name="altitude_monotonic">This altitude measure is initialized on system boot and monotonic (it is never reset, but represents the local altitude change). The only guarantee on this field is that it will never be reset and is consistent within a flight. The recommended value for this field is the uncorrected barometric altitude at boot time. This altitude will also drift and vary between flights.</field>
+            <field type="float" name="altitude_amsl">This altitude measure is strictly above mean sea level and might be non-monotonic (it might reset on events like GPS lock or when a new QNH value is set). It should be the altitude to which global altitude waypoints are compared to. Note that it is *not* the GPS altitude, however, most GPS modules already output AMSL by default and not the WGS84 altitude.</field>
+            <field type="float" name="altitude_local">This is the local altitude in the local coordinate frame. It is not the altitude above home, but in reference to the coordinate origin (0, 0, 0). It is up-positive.</field>
+            <field type="float" name="altitude_relative">This is the altitude above the home position. It resets on each change of the current home position.</field>
+            <field type="float" name="altitude_terrain">This is the altitude above terrain. It might be fed by a terrain database or an altimeter. Values smaller than -1000 should be interpreted as unknown.</field>
+            <field type="float" name="bottom_clearance">This is not the altitude, but the clear space below the system according to the fused clearance estimate. It generally should max out at the maximum range of e.g. the laser altimeter. It is generally a moving target. A negative value indicates no measurement available.</field>
+        </message>
+        <message id="142" name="RESOURCE_REQUEST">
+            <description>The autopilot is requesting a resource (file, binary, other type of data)</description>
+            <field type="uint8_t" name="request_id">Request ID. This ID should be re-used when sending back URI contents</field>
+            <field type="uint8_t" name="uri_type">The type of requested URI. 0 = a file via URL. 1 = a UAVCAN binary</field>
+            <field type="uint8_t[120]" name="uri">The requested unique resource identifier (URI). It is not necessarily a straight domain name (depends on the URI type enum)</field>
+            <field type="uint8_t" name="transfer_type">The way the autopilot wants to receive the URI. 0 = MAVLink FTP. 1 = binary stream.</field>
+            <field type="uint8_t[120]" name="storage">The storage path the autopilot wants the URI to be stored in. Will only be valid if the transfer_type has a storage associated (e.g. MAVLink FTP).</field>
+        </message>
+        <message id="143" name="SCALED_PRESSURE3">
+          <description>Barometer readings for 3rd barometer</description>
+          <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
+          <field type="float" name="press_abs">Absolute pressure (hectopascal)</field>
+          <field type="float" name="press_diff">Differential pressure 1 (hectopascal)</field>
+           <field type="int16_t" name="temperature">Temperature measurement (0.01 degrees celsius)</field>
+        </message>
+        <message id="146" name="CONTROL_SYSTEM_STATE">
+            <description>The smoothed, monotonic system state used to feed the control loops of the system.</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="float" name="x_acc">X acceleration in body frame</field>
+            <field type="float" name="y_acc">Y acceleration in body frame</field>
+            <field type="float" name="z_acc">Z acceleration in body frame</field>
+            <field type="float" name="x_vel">X velocity in body frame</field>
+            <field type="float" name="y_vel">Y velocity in body frame</field>
+            <field type="float" name="z_vel">Z velocity in body frame</field>
+            <field type="float" name="x_pos">X position in local frame</field>
+            <field type="float" name="y_pos">Y position in local frame</field>
+            <field type="float" name="z_pos">Z position in local frame</field>
+            <field type="float" name="airspeed">Airspeed, set to -1 if unknown</field>
+            <field type="float[3]" name="vel_variance">Variance of body velocity estimate</field>
+            <field type="float[3]" name="pos_variance">Variance in local position</field>
+            <field type="float[4]" name="q">The attitude, represented as Quaternion</field>
+            <field type="float" name="roll_rate">Angular rate in roll axis</field>
+            <field type="float" name="pitch_rate">Angular rate in pitch axis</field>
+            <field type="float" name="yaw_rate">Angular rate in yaw axis</field>
+        </message>
         <message id="147" name="BATTERY_STATUS">
             <description>Battery information</description>
             <field type="uint8_t" name="id">Battery ID</field>
@@ -2637,7 +2989,81 @@
             <field type="uint16_t" name="product_id">ID of the product</field>
             <field type="uint64_t" name="uid">UID if provided by hardware</field>
         </message>
+        <message id="149" name="LANDING_TARGET">
+            <description>The location of a landing area captured from a downward facing camera</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="uint8_t" name="target_num">The ID of the target if multiple targets are present</field>
+            <field type="uint8_t" name="frame">MAV_FRAME enum specifying the whether the following feilds are earth-frame, body-frame, etc.</field>
+            <field type="float" name="angle_x">X-axis angular offset (in radians) of the target from the center of the image</field>
+            <field type="float" name="angle_y">Y-axis angular offset (in radians) of the target from the center of the image</field>
+            <field type="float" name="distance">Distance to the target from the vehicle in meters</field>
+            <field type="float" name="size_x">Size in radians of target along x-axis</field>
+            <field type="float" name="size_y">Size in radians of target along y-axis</field>
+        </message>
         <!-- MESSAGE IDs 180 - 240: Space for custom messages in individual projectname_messages.xml files -->
+        <message id="241" name="VIBRATION">
+            <description>Vibration levels and accelerometer clipping</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="float" name="vibration_x">Vibration levels on X-axis</field>
+            <field type="float" name="vibration_y">Vibration levels on Y-axis</field>
+            <field type="float" name="vibration_z">Vibration levels on Z-axis</field>
+            <field type="uint32_t" name="clipping_0">first accelerometer clipping count</field>
+            <field type="uint32_t" name="clipping_1">second accelerometer clipping count</field>
+            <field type="uint32_t" name="clipping_2">third accelerometer clipping count</field>
+        </message>
+        <message id="242" name="HOME_POSITION">
+               <description>This message can be requested by sending the MAV_CMD_GET_HOME_POSITION command. The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitely set by the operator before or after. The position the system will return to and land on. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.</description>
+               <field type="int32_t" name="latitude">Latitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="longitude">Longitude (WGS84, in degrees * 1E7</field>
+               <field type="int32_t" name="altitude">Altitude (AMSL), in meters * 1000 (positive for up)</field>
+               <field type="float" name="x">Local X position of this position in the local coordinate frame</field>
+               <field type="float" name="y">Local Y position of this position in the local coordinate frame</field>
+               <field type="float" name="z">Local Z position of this position in the local coordinate frame</field>
+               <field type="float[4]" name="q">World to surface normal and heading transformation of the takeoff position. Used to indicate the heading and slope of the ground</field>
+               <field type="float" name="approach_x">Local X position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
+               <field type="float" name="approach_y">Local Y position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
+               <field type="float" name="approach_z">Local Z position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
+        </message>
+        <message id="243" name="SET_HOME_POSITION">
+               <description>The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitely set by the operator before or after. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.</description>
+               <field type="uint8_t" name="target_system">System ID.</field>
+               <field type="int32_t" name="latitude">Latitude (WGS84), in degrees * 1E7</field>
+               <field type="int32_t" name="longitude">Longitude (WGS84, in degrees * 1E7</field>
+               <field type="int32_t" name="altitude">Altitude (AMSL), in meters * 1000 (positive for up)</field>
+               <field type="float" name="x">Local X position of this position in the local coordinate frame</field>
+               <field type="float" name="y">Local Y position of this position in the local coordinate frame</field>
+               <field type="float" name="z">Local Z position of this position in the local coordinate frame</field>
+               <field type="float[4]" name="q">World to surface normal and heading transformation of the takeoff position. Used to indicate the heading and slope of the ground</field>
+               <field type="float" name="approach_x">Local X position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
+               <field type="float" name="approach_y">Local Y position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
+               <field type="float" name="approach_z">Local Z position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
+        </message>
+        <message id="244" name="MESSAGE_INTERVAL">
+            <description>This interface replaces DATA_STREAM</description>
+            <field type="uint16_t" name="message_id">The ID of the requested MAVLink message. v1.0 is limited to 254 messages.</field>
+            <field type="int32_t" name="interval_us">The interval between two messages, in microseconds. A value of -1 indicates this stream is disabled, 0 indicates it is not available, > 0 indicates the interval at which it is sent.</field>
+        </message>
+        <message id="245" name="EXTENDED_SYS_STATE">
+            <description>Provides state for additional features</description>
+            <field type="uint8_t" name="vtol_state" enum="MAV_VTOL_STATE">The VTOL state if applicable. Is set to MAV_VTOL_STATE_UNDEFINED if UAV is not in VTOL configuration.</field>
+            <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
+        </message>
+        <message id="246" name="ADSB_VEHICLE">
+          <description>The location and information of an ADSB vehicle</description>
+          <field type="uint32_t" name="ICAO_address">ICAO address</field>
+          <field type="int32_t" name="lat">Latitude, expressed as degrees * 1E7</field>
+          <field type="int32_t" name="lon">Longitude, expressed as degrees * 1E7</field>
+          <field type="uint8_t" name="altitude_type" enum="ADSB_ALTITUDE_TYPE">Type from ADSB_ALTITUDE_TYPE enum</field>
+          <field type="int32_t" name="altitude">Altitude(ASL) in millimeters</field>
+          <field type="uint16_t" name="heading">Course over ground in centidegrees</field>
+          <field type="uint16_t" name="hor_velocity">The horizontal velocity in centimeters/second</field>
+          <field type="uint16_t" name="ver_velocity">The vertical velocity in centimeters/second, positive is up</field>
+          <field type="char[9]" name="callsign">The callsign, 8+null</field>
+          <field type="uint8_t" name="emitter_type" enum="ADSB_EMITTER_TYPE">Type from ADSB_EMITTER_TYPE enum</field>
+          <field type="uint8_t" name="tslc">Time since last communication in seconds</field>
+          <field type="uint16_t" name="flags" enum="ADSB_FLAGS">Flags to indicate various statuses including valid data fields</field>
+          <field type="uint16_t" name="squawk">Squawk code</field>
+        </message>
         <message id="248" name="V2_EXTENSION">
             <description>Message implementing parts of the V2 payload specs in V1 frames for transitional support.</description>
             <field type="uint8_t" name="target_network">Network ID (0 for broadcast)</field>
