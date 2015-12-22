@@ -837,16 +837,15 @@ class mavudp(mavfile):
         '''message receive routine for UDP link'''
         self.pre_message()
         s = self.recv()
-        if len(s) == 0:
-            return None
-        if self.first_byte:
-            self.auto_mavlink_version(s)
-        msg = self.mav.parse_buffer(s)
-        if msg is not None:
-            for m in msg:
-                self.post_message(m)
-            return msg[0]
-        return None
+        if len(s) > 0:
+            if self.first_byte:
+                self.auto_mavlink_version(s)
+
+        m = self.mav.parse_char(s)
+        if m is not None:
+            self.post_message(m)
+
+        return m
 
 
 class mavtcp(mavfile):
