@@ -1287,7 +1287,10 @@ mode_mapping_apm = {
     12 : 'LOITER',
     14 : 'LAND',
     15 : 'GUIDED',
-    16 : 'INITIALISING'
+    16 : 'INITIALISING',
+    17 : 'QSTABILIZE',
+    18 : 'QHOVER',
+    19 : 'QLOITER',
     }
 mode_mapping_acm = {
     0 : 'STABILIZE',
