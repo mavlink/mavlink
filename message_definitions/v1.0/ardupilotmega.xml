@@ -49,13 +49,58 @@
                 <param index="7">Empty</param>
             </entry>
 
+            <entry name="MAV_CMD_POWER_OFF_INITIATED" value="42000">
+                <description>A system wide power-off event has been initiated.</description>
+                <param index="1">Empty</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <!-- MAV_CMD_SOLO_BTN_* are here to provide vendor-specific support for 3DR Solo until a better solution is found to atomically make multiple commands with control flow -->
+            <entry name="MAV_CMD_SOLO_BTN_FLY_CLICK" value="42001">
+                <description>FLY button has been clicked.</description>
+                <param index="1">Empty</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_SOLO_BTN_FLY_HOLD" value="42002">
+                <description>FLY button has been held for 1.5 seconds.</description>
+                <param index="1">Takeoff altitude</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_SOLO_BTN_PAUSE_CLICK" value="42003">
+                <description>PAUSE button has been clicked.</description>
+                <param index="1">1 if Solo is in a shot mode, 0 otherwise</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
             <entry name="MAV_CMD_DO_START_MAG_CAL" value="42424">
                 <description>Initiate a magnetometer calibration</description>
                 <param index="1">uint8_t bitmask of magnetometers (0 means all)</param>
                 <param index="2">Automatically retry on failure (0=no retry, 1=retry).</param>
                 <param index="3">Save without user input (0=require input, 1=autosave).</param>
                 <param index="4">Delay (seconds)</param>
-                <param index="5">Empty</param>
+                <param index="5">Autoreboot (0=user reboot, 1=autoreboot)</param>
                 <param index="6">Empty</param>
                 <param index="7">Empty</param>
             </entry>
@@ -91,6 +136,61 @@
                 <param index="5">Empty</param>
                 <param index="6">Empty</param>
                 <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_GIMBAL_RESET" value="42501">
+                <description>Causes the gimbal to reset and boot as if it was just powered on</description>
+                <param index="1">Empty</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_SET_FACTORY_TEST_MODE" value="42427">
+                <description>Command autopilot to get into factory test/diagnostic mode</description>
+                <param index="1">0 means get out of test mode, 1 means get into test mode</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_GIMBAL_AXIS_CALIBRATION_STATUS" value="42502">
+                <description>Reports progress and success or failure of gimbal axis calibration procedure</description>
+                <param index="1">Gimbal axis we're reporting calibration progress for</param>
+                <param index="2">Current calibration progress for this axis, 0x64=100%</param>
+                <param index="3">Status of the calibration</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_GIMBAL_REQUEST_AXIS_CALIBRATION" value="42503">
+                <description>Starts commutation calibration on the gimbal</description>
+                <param index="1">Empty</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+
+            <entry name="MAV_CMD_GIMBAL_FULL_RESET" value="42505">
+                <description>Erases gimbal application and parameters</description>
+                <param index="1">Magic number</param>
+                <param index="2">Magic number</param>
+                <param index="3">Magic number</param>
+                <param index="4">Magic number</param>
+                <param index="5">Magic number</param>
+                <param index="6">Magic number</param>
+                <param index="7">Magic number</param>
             </entry>
         </enum>
 
@@ -303,60 +403,541 @@
             </entry>
         </enum>
 
-        <enum name="FACTORY_TEST">
-            <entry name="FACTORY_TEST_AXIS_RANGE_LIMITS" value="0">
-                <description>Tests to make sure each axis can move to its mechanical limits</description>
+        <enum name="GIMBAL_AXIS_CALIBRATION_REQUIRED">
+            <entry name="GIMBAL_AXIS_CALIBRATION_REQUIRED_UNKNOWN" value="0">
+                <description>Whether or not this axis requires calibration is unknown at this time</description>
+            </entry>
+
+            <entry name="GIMBAL_AXIS_CALIBRATION_REQUIRED_TRUE" value="1">
+                <description>This axis requires calibration</description>
+            </entry>
+
+            <entry name="GIMBAL_AXIS_CALIBRATION_REQUIRED_FALSE" value="2">
+                <description>This axis does not require calibration</description>
             </entry>
         </enum>
 
-        <!-- GoPro command result enumeration -->
-        <enum name="GOPRO_CMD_RESULT">
-            <entry name="GOPRO_CMD_RESULT_UNKNOWN" value="0">
-                <description>The result of the command is unknown</description>
+        <!-- GoPro System Enumerations -->
+        <enum name="GOPRO_HEARTBEAT_STATUS">
+            <entry name="GOPRO_HEARTBEAT_STATUS_DISCONNECTED" value="0">
+                <description>No GoPro connected</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RESULT_SUCCESSFUL" value="1">
-                <description>The command was successfully sent, and a response was successfully received</description>
+            <entry name="GOPRO_HEARTBEAT_STATUS_INCOMPATIBLE" value="1">
+                <description>The detected GoPro is not HeroBus compatible</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RESULT_SEND_CMD_START_TIMEOUT" value="2">
-                <description>Timed out waiting for the GoPro to acknowledge our request to send a command</description>
+            <entry name="GOPRO_HEARTBEAT_STATUS_CONNECTED" value="2">
+                <description>A HeroBus compatible GoPro is connected</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RESULT_SEND_CMD_COMPLETE_TIMEOUT" value="3">
-                <description>Timed out waiting for the GoPro to read the command</description>
+            <entry name="GOPRO_HEARTBEAT_STATUS_ERROR" value="3">
+                <description>An unrecoverable error was encountered with the connected GoPro, it may require a power cycle</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_HEARTBEAT_FLAGS">
+            <!-- each entry is a mask to test a bit in GOPRO_HEARTBEAT_STATUS.flags -->
+            <entry name="GOPRO_FLAG_RECORDING" value="1">
+                <description>GoPro is currently recording</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_REQUEST_STATUS">
+            <entry name="GOPRO_REQUEST_SUCCESS" value="0">
+                <description>The write message with ID indicated succeeded</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RESULT_GET_RESPONSE_START_TIMEOUT" value="4">
-                <description>Timed out waiting for the GoPro to begin transmitting a response to the command</description>
+            <entry name="GOPRO_REQUEST_FAILED" value="1">
+                <description>The write message with ID indicated failed</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_COMMAND">
+            <entry name="GOPRO_COMMAND_POWER" value="0">
+                <description>(Get/Set)</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RESULT_GET_RESPONSE_COMPLETE_TIMEOUT" value="5">
-                <description>Timed out waiting for the GoPro to finish transmitting a response to the command</description>
+            <entry name="GOPRO_COMMAND_CAPTURE_MODE" value="1">
+                <description>(Get/Set)</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RESULT_GET_CMD_COMPLETE_TIMEOUT" value="6">
-                <description>Timed out waiting for the GoPro to finish transmitting its own command</description>
+            <entry name="GOPRO_COMMAND_SHUTTER" value="2">
+                <description>(___/Set)</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RESULT_SEND_RESPONSE_START_TIMEOUT" value="7">
-                <description>Timed out waiting for the GoPro to start reading a response to its own command</description>
+            <entry name="GOPRO_COMMAND_BATTERY" value="3">
+                <description>(Get/___)</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RESULT_SEND_RESPONSE_COMPLETE_TIMEOUT" value="8">
-                <description>Timed out waiting for the GoPro to finish reading a response to its own command</description>
+            <entry name="GOPRO_COMMAND_MODEL" value="4">
+                <description>(Get/___)</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RESULT_PREEMPTED" value="9">
-                <description>Command to the GoPro was preempted by the GoPro sending its own command</description>
+            <entry name="GOPRO_COMMAND_VIDEO_SETTINGS" value="5">
+                <description>(Get/Set)</description>
+                <!-- Packet structure for the four values is as follows byte 0: GOPRO_RESOLUTION byte 1: GOPRO_FRAME_RATE byte 2: GOPRO_FIELD_OF_VIEW byte 3: GOPRO_VIDEO_SETTINGS_FLAGS -->
             </entry>
 
-            <entry name="GOPRO_CMD_RECEIVED_DATA_OVERFLOW" value="10">
-                <description>More data than expected received in response to the command</description>
+            <entry name="GOPRO_COMMAND_LOW_LIGHT" value="6">
+                <description>(Get/Set)</description>
             </entry>
 
-            <entry name="GOPRO_CMD_RECEIVED_DATA_UNDERFLOW" value="11">
-                <description>Less data than expected received in response to the command</description>
+            <entry name="GOPRO_COMMAND_PHOTO_RESOLUTION" value="7">
+                <description>(Get/Set)</description>
+            </entry>
+
+            <entry name="GOPRO_COMMAND_PHOTO_BURST_RATE" value="8">
+                <description>(Get/Set)</description>
+            </entry>
+
+            <entry name="GOPRO_COMMAND_PROTUNE" value="9">
+                <description>(Get/Set)</description>
+            </entry>
+
+            <entry name="GOPRO_COMMAND_PROTUNE_WHITE_BALANCE" value="10">
+                <description>(Get/Set) Hero 3+ Only</description>
+            </entry>
+
+            <entry name="GOPRO_COMMAND_PROTUNE_COLOUR" value="11">
+                <description>(Get/Set) Hero 3+ Only</description>
+            </entry>
+
+            <entry name="GOPRO_COMMAND_PROTUNE_GAIN" value="12">
+                <description>(Get/Set) Hero 3+ Only</description>
+            </entry>
+
+            <entry name="GOPRO_COMMAND_PROTUNE_SHARPNESS" value="13">
+                <description>(Get/Set) Hero 3+ Only</description>
+            </entry>
+
+            <entry name="GOPRO_COMMAND_PROTUNE_EXPOSURE" value="14">
+                <description>(Get/Set) Hero 3+ Only</description>
+            </entry>
+
+            <entry name="GOPRO_COMMAND_TIME" value="15">
+                <description>(Get/Set)</description>
+                <!-- Packet structure for the four values is as follows byte 0...3: uint32_t unix timestamp (byte 0 is MSB) -->
+            </entry>
+
+            <entry name="GOPRO_COMMAND_CHARGING" value="16">
+                <description>(Get/Set)</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_CAPTURE_MODE">
+            <entry name="GOPRO_CAPTURE_MODE_VIDEO" value="0">
+                <description>Video mode</description>
+            </entry>
+
+            <entry name="GOPRO_CAPTURE_MODE_PHOTO" value="1">
+                <description>Photo mode</description>
+            </entry>
+
+            <entry name="GOPRO_CAPTURE_MODE_BURST" value="2">
+                <description>Burst mode, hero 3+ only</description>
+            </entry>
+
+            <entry name="GOPRO_CAPTURE_MODE_TIME_LAPSE" value="3">
+                <description>Time lapse mode, hero 3+ only</description>
+            </entry>
+
+            <entry name="GOPRO_CAPTURE_MODE_MULTI_SHOT" value="4">
+                <description>Multi shot mode, hero 4 only</description>
+            </entry>
+
+            <entry name="GOPRO_CAPTURE_MODE_PLAYBACK" value="5">
+                <description>Playback mode, hero 4 only, silver only except when LCD or HDMI is connected to black</description>
+            </entry>
+
+            <entry name="GOPRO_CAPTURE_MODE_SETUP" value="6">
+                <description>Playback mode, hero 4 only</description>
+            </entry>
+
+            <entry name="GOPRO_CAPTURE_MODE_UNKNOWN" value="255">
+                <description>Mode not yet known</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_RESOLUTION">
+            <entry name="GOPRO_RESOLUTION_480p" value="0">
+                <description>848 x 480 (480p)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_720p" value="1">
+                <description>1280 x 720 (720p)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_960p" value="2">
+                <description>1280 x 960 (960p)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_1080p" value="3">
+                <description>1920 x 1080 (1080p)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_1440p" value="4">
+                <description>1920 x 1440 (1440p)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_2_7k_17_9" value="5">
+                <description>2704 x 1440 (2.7k-17:9)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_2_7k_16_9" value="6">
+                <description>2704 x 1524 (2.7k-16:9)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_2_7k_4_3" value="7">
+                <description>2704 x 2028 (2.7k-4:3)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_4k_16_9" value="8">
+                <description>3840 x 2160 (4k-16:9)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_4k_17_9" value="9">
+                <description>4096 x 2160 (4k-17:9)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_720p_SUPERVIEW" value="10">
+                <description>1280 x 720 (720p-SuperView)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_1080p_SUPERVIEW" value="11">
+                <description>1920 x 1080 (1080p-SuperView)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_2_7k_SUPERVIEW" value="12">
+                <description>2704 x 1520 (2.7k-SuperView)</description>
+            </entry>
+
+            <entry name="GOPRO_RESOLUTION_4k_SUPERVIEW" value="13">
+                <description>3840 x 2160 (4k-SuperView)</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_FRAME_RATE">
+            <entry name="GOPRO_FRAME_RATE_12" value="0">
+                <description>12 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_15" value="1">
+                <description>15 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_24" value="2">
+                <description>24 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_25" value="3">
+                <description>25 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_30" value="4">
+                <description>30 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_48" value="5">
+                <description>48 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_50" value="6">
+                <description>50 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_60" value="7">
+                <description>60 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_80" value="8">
+                <description>80 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_90" value="9">
+                <description>90 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_100" value="10">
+                <description>100 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_120" value="11">
+                <description>120 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_240" value="12">
+                <description>240 FPS</description>
+            </entry>
+
+            <entry name="GOPRO_FRAME_RATE_12_5" value="13">
+                <description>12.5 FPS</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_FIELD_OF_VIEW">
+            <entry name="GOPRO_FIELD_OF_VIEW_WIDE" value="0">
+                <description>0x00: Wide</description>
+            </entry>
+
+            <entry name="GOPRO_FIELD_OF_VIEW_MEDIUM" value="1">
+                <description>0x01: Medium</description>
+            </entry>
+
+            <entry name="GOPRO_FIELD_OF_VIEW_NARROW" value="2">
+                <description>0x02: Narrow</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_VIDEO_SETTINGS_FLAGS">
+            <entry name="GOPRO_VIDEO_SETTINGS_TV_MODE" value="1">
+                <description>0=NTSC, 1=PAL</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_PHOTO_RESOLUTION">
+            <entry name="GOPRO_PHOTO_RESOLUTION_5MP_MEDIUM" value="0">
+                <description>5MP Medium</description>
+            </entry>
+
+            <entry name="GOPRO_PHOTO_RESOLUTION_7MP_MEDIUM" value="1">
+                <description>7MP Medium</description>
+            </entry>
+
+            <entry name="GOPRO_PHOTO_RESOLUTION_7MP_WIDE" value="2">
+                <description>7MP Wide</description>
+            </entry>
+
+            <entry name="GOPRO_PHOTO_RESOLUTION_10MP_WIDE" value="3">
+                <description>10MP Wide</description>
+            </entry>
+
+            <entry name="GOPRO_PHOTO_RESOLUTION_12MP_WIDE" value="4">
+                <description>12MP Wide</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_PROTUNE_WHITE_BALANCE">
+            <entry name="GOPRO_PROTUNE_WHITE_BALANCE_AUTO" value="0">
+                <description>Auto</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_WHITE_BALANCE_3000K" value="1">
+                <description>3000K</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_WHITE_BALANCE_5500K" value="2">
+                <description>5500K</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_WHITE_BALANCE_6500K" value="3">
+                <description>6500K</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_WHITE_BALANCE_RAW" value="4">
+                <description>Camera Raw</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_PROTUNE_COLOUR">
+            <entry name="GOPRO_PROTUNE_COLOUR_STANDARD" value="0">
+                <description>Auto</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_COLOUR_NEUTRAL" value="1">
+                <description>Neutral</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_PROTUNE_GAIN">
+            <entry name="GOPRO_PROTUNE_GAIN_400" value="0">
+                <description>ISO 400</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_GAIN_800" value="1">
+                <description>ISO 800 (Only Hero 4)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_GAIN_1600" value="2">
+                <description>ISO 1600</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_GAIN_3200" value="3">
+                <description>ISO 3200 (Only Hero 4)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_GAIN_6400" value="4">
+                <description>ISO 6400</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_PROTUNE_SHARPNESS">
+            <entry name="GOPRO_PROTUNE_SHARPNESS_LOW" value="0">
+                <description>Low Sharpness</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_SHARPNESS_MEDIUM" value="1">
+                <description>Medium Sharpness</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_SHARPNESS_HIGH" value="2">
+                <description>High Sharpness</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_PROTUNE_EXPOSURE">
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_5_0" value="0">
+                <description>-5.0 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_4_5" value="1">
+                <description>-4.5 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_4_0" value="2">
+                <description>-4.0 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_3_5" value="3">
+                <description>-3.5 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_3_0" value="4">
+                <description>-3.0 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_2_5" value="5">
+                <description>-2.5 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_2_0" value="6">
+                <description>-2.0 EV</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_1_5" value="7">
+                <description>-1.5 EV</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_1_0" value="8">
+                <description>-1.0 EV</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_NEG_0_5" value="9">
+                <description>-0.5 EV</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_ZERO" value="10">
+                <description>0.0 EV</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_0_5" value="11">
+                <description>+0.5 EV</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_1_0" value="12">
+                <description>+1.0 EV</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_1_5" value="13">
+                <description>+1.5 EV</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_2_0" value="14">
+                <description>+2.0 EV</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_2_5" value="15">
+                <description>+2.5 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_3_0" value="16">
+                <description>+3.0 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_3_5" value="17">
+                <description>+3.5 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_4_0" value="18">
+                <description>+4.0 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_4_5" value="19">
+                <description>+4.5 EV (Hero 3+ Only)</description>
+            </entry>
+
+            <entry name="GOPRO_PROTUNE_EXPOSURE_POS_5_0" value="20">
+                <description>+5.0 EV (Hero 3+ Only)</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_CHARGING">
+            <entry name="GOPRO_CHARGING_DISABLED" value="0">
+                <description>Charging disabled</description>
+            </entry>
+
+            <entry name="GOPRO_CHARGING_ENABLED" value="1">
+                <description>Charging enabled</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_MODEL">
+            <entry name="GOPRO_MODEL_UNKNOWN" value="0">
+                <description>Unknown gopro model</description>
+            </entry>
+
+            <entry name="GOPRO_MODEL_HERO_3_PLUS_SILVER" value="1">
+                <description>Hero 3+ Silver (HeroBus not supported by GoPro)</description>
+            </entry>
+
+            <entry name="GOPRO_MODEL_HERO_3_PLUS_BLACK" value="2">
+                <description>Hero 3+ Black</description>
+            </entry>
+
+            <entry name="GOPRO_MODEL_HERO_4_SILVER" value="3">
+                <description>Hero 4 Silver</description>
+            </entry>
+
+            <entry name="GOPRO_MODEL_HERO_4_BLACK" value="4">
+                <description>Hero 4 Black</description>
+            </entry>
+        </enum>
+
+        <enum name="GOPRO_BURST_RATE">
+            <entry name="GOPRO_BURST_RATE_3_IN_1_SECOND" value="0">
+                <description>3 Shots / 1 Second</description>
+            </entry>
+
+            <entry name="GOPRO_BURST_RATE_5_IN_1_SECOND" value="1">
+                <description>5 Shots / 1 Second</description>
+            </entry>
+
+            <entry name="GOPRO_BURST_RATE_10_IN_1_SECOND" value="2">
+                <description>10 Shots / 1 Second</description>
+            </entry>
+
+            <entry name="GOPRO_BURST_RATE_10_IN_2_SECOND" value="3">
+                <description>10 Shots / 2 Second</description>
+            </entry>
+
+            <entry name="GOPRO_BURST_RATE_10_IN_3_SECOND" value="4">
+                <description>10 Shots / 3 Second (Hero 4 Only)</description>
+            </entry>
+
+            <entry name="GOPRO_BURST_RATE_30_IN_1_SECOND" value="5">
+                <description>30 Shots / 1 Second</description>
+            </entry>
+
+            <entry name="GOPRO_BURST_RATE_30_IN_2_SECOND" value="6">
+                <description>30 Shots / 2 Second</description>
+            </entry>
+
+            <entry name="GOPRO_BURST_RATE_30_IN_3_SECOND" value="7">
+                <description>30 Shots / 3 Second</description>
+            </entry>
+
+            <entry name="GOPRO_BURST_RATE_30_IN_6_SECOND" value="8">
+                <description>30 Shots / 6 Second</description>
             </entry>
         </enum>
 
@@ -419,6 +1000,14 @@
             </entry>
         </enum>
 
+        <enum name="PID_TUNING_AXIS">
+            <entry name="PID_TUNING_ROLL" value="1"/>
+            <entry name="PID_TUNING_PITCH" value="2"/>
+            <entry name="PID_TUNING_YAW" value="3"/>
+            <entry name="PID_TUNING_ACCZ" value="4"/>
+            <entry name="PID_TUNING_STEER" value="5"/>
+        </enum>
+
         <enum name="MAG_CAL_STATUS">
             <entry name="MAG_CAL_NOT_STARTED" value="0"/>
             <entry name="MAG_CAL_WAITING_TO_START" value="1"/>
@@ -453,14 +1042,6 @@
             <entry name="MAV_REMOTE_LOG_DATA_BLOCK_ACK" value="1">
                 <description>This block has been received</description>
             </entry>
-        </enum>
-
-        <enum name="PID_TUNING_AXIS">
-            <entry name="PID_TUNING_ROLL" value="1"/>
-            <entry name="PID_TUNING_PITCH" value="2"/>
-            <entry name="PID_TUNING_YAW" value="3"/>
-            <entry name="PID_TUNING_ACCZ" value="4"/>
-            <entry name="PID_TUNING_STEER" value="5"/>
         </enum>
     </enums>
 
@@ -903,7 +1484,7 @@
         </message>
 
         <message id="200" name="GIMBAL_REPORT">
-            <description>3 axis gimbal measurements</description>
+            <description>3 axis gimbal mesuraments</description>
             <field name="target_system" type="uint8_t">System ID</field>
             <field name="target_component" type="uint8_t">Component ID</field>
             <field name="delta_time" type="float">Time since last update (seconds)</field>
@@ -927,106 +1508,53 @@
             <field name="demanded_rate_z" type="float">Demanded angular rate Z (rad/s)</field>
         </message>
 
-        <message id="202" name="GIMBAL_RESET">
-            <description>Causes the gimbal to reset and boot as if it was just powered on</description>
+        <message id="214" name="GIMBAL_TORQUE_CMD_REPORT">
+            <description>100 Hz gimbal torque command telemetry</description>
             <field name="target_system" type="uint8_t">System ID</field>
             <field name="target_component" type="uint8_t">Component ID</field>
+            <field name="rl_torque_cmd" type="int16_t">Roll Torque Command</field>
+            <field name="el_torque_cmd" type="int16_t">Elevation Torque Command</field>
+            <field name="az_torque_cmd" type="int16_t">Azimuth Torque Command</field>
         </message>
 
-        <message id="203" name="GIMBAL_AXIS_CALIBRATION_PROGRESS">
-            <description>Reports progress and success or failure of gimbal axis calibration procedure</description>
-            <field enum="GIMBAL_AXIS" name="calibration_axis" type="uint8_t">Which gimbal axis we're reporting calibration progress for</field>
-            <field name="calibration_progress" type="uint8_t">The current calibration progress for this axis, 0x64=100%</field>
-            <field enum="GIMBAL_AXIS_CALIBRATION_STATUS" name="calibration_status" type="uint8_t">The status of the running calibration</field>
+        <!-- GoPro Messages -->
+        <message id="215" name="GOPRO_HEARTBEAT">
+            <description>Heartbeat from a HeroBus attached GoPro</description>
+            <field enum="GOPRO_HEARTBEAT_STATUS" name="status" type="uint8_t">Status</field>
+            <field enum="GOPRO_CAPTURE_MODE" name="capture_mode" type="uint8_t">Current capture mode</field>
+            <field name="flags" type="uint8_t">additional status bits</field>
+            <!-- see GOPRO_HEARTBEAT_FLAGS -->
         </message>
 
-        <message id="204" name="GIMBAL_SET_HOME_OFFSETS">
-            <description>Instructs the gimbal to set its current position as its new home position. Will primarily be used for factory calibration</description>
+        <message id="216" name="GOPRO_GET_REQUEST">
+            <description>Request a GOPRO_COMMAND response from the GoPro</description>
             <field name="target_system" type="uint8_t">System ID</field>
             <field name="target_component" type="uint8_t">Component ID</field>
+            <field enum="GOPRO_COMMAND" name="cmd_id" type="uint8_t">Command ID</field>
         </message>
 
-        <message id="205" name="GIMBAL_HOME_OFFSET_CALIBRATION_RESULT">
-            <description>Sent by the gimbal after it receives a SET_HOME_OFFSETS message to indicate the result of the home offset calibration</description>
-            <field enum="GIMBAL_AXIS_CALIBRATION_STATUS" name="calibration_result" type="uint8_t">The result of the home offset calibration</field>
+        <message id="217" name="GOPRO_GET_RESPONSE">
+            <description>Response from a GOPRO_COMMAND get request</description>
+            <field enum="GOPRO_COMMAND" name="cmd_id" type="uint8_t">Command ID</field>
+            <field enum="GOPRO_REQUEST_STATUS" name="status" type="uint8_t">Status</field>
+            <field name="value" type="uint8_t[4]">Value</field>
         </message>
 
-        <message id="206" name="GIMBAL_SET_FACTORY_PARAMETERS">
-            <description>Set factory configuration parameters (such as assembly date and time, and serial number). This is only intended to be used during manufacture, not by end users, so it is protected by a simple checksum of sorts (this won't stop anybody determined, it's mostly just to keep the average user from trying to modify these values. This will need to be revisited if that isn't adequate.</description>
+        <message id="218" name="GOPRO_SET_REQUEST">
+            <description>Request to set a GOPRO_COMMAND with a desired</description>
             <field name="target_system" type="uint8_t">System ID</field>
             <field name="target_component" type="uint8_t">Component ID</field>
-            <field name="magic_1" type="uint32_t">Magic number 1 for validation</field>
-            <field name="magic_2" type="uint32_t">Magic number 2 for validation</field>
-            <field name="magic_3" type="uint32_t">Magic number 3 for validation</field>
-            <field name="assembly_year" type="uint16_t">Assembly Date Year</field>
-            <field name="assembly_month" type="uint8_t">Assembly Date Month</field>
-            <field name="assembly_day" type="uint8_t">Assembly Date Day</field>
-            <field name="assembly_hour" type="uint8_t">Assembly Time Hour</field>
-            <field name="assembly_minute" type="uint8_t">Assembly Time Minute</field>
-            <field name="assembly_second" type="uint8_t">Assembly Time Second</field>
-            <field name="serial_number_pt_1" type="uint32_t">Unit Serial Number Part 1 (part code, design, language/country)</field>
-            <field name="serial_number_pt_2" type="uint32_t">Unit Serial Number Part 2 (option, year, month)</field>
-            <field name="serial_number_pt_3" type="uint32_t">Unit Serial Number Part 3 (incrementing serial number per month)</field>
+            <field enum="GOPRO_COMMAND" name="cmd_id" type="uint8_t">Command ID</field>
+            <field name="value" type="uint8_t[4]">Value</field>
         </message>
 
-        <message id="207" name="GIMBAL_FACTORY_PARAMETERS_LOADED">
-            <description>Sent by the gimbal after the factory parameters are successfully loaded, to inform the factory software that the load is complete</description>
-            <field name="dummy" type="uint8_t">Dummy field because mavgen doesn't allow messages with no fields</field>
+        <message id="219" name="GOPRO_SET_RESPONSE">
+            <description>Response from a GOPRO_COMMAND set request</description>
+            <field enum="GOPRO_COMMAND" name="cmd_id" type="uint8_t">Command ID</field>
+            <field enum="GOPRO_REQUEST_STATUS" name="status" type="uint8_t">Status</field>
         </message>
 
-        <message id="208" name="GIMBAL_ERASE_FIRMWARE_AND_CONFIG">
-            <description>Commands the gimbal to erase its firmware image and flash configuration, leaving only the bootloader. The gimbal will then reboot into the bootloader, ready for the load of a new application firmware image. Erasing the flash configuration will cause the gimbal to re-perform axis calibration when a new firmware image is loaded, and will cause all tuning parameters to return to their factory defaults. WARNING: sending this command will render a gimbal inoperable until a new firmware image is loaded onto it. For this reason, a particular &quot;knock&quot; value must be sent for the command to take effect. Use this command at your own risk</description>
-            <field name="target_system" type="uint8_t">System ID</field>
-            <field name="target_component" type="uint8_t">Component ID</field>
-            <field name="knock" type="uint32_t">Knock value to confirm this is a valid request</field>
-        </message>
-
-        <message id="209" name="GIMBAL_PERFORM_FACTORY_TESTS">
-            <description>Command the gimbal to perform a series of factory tests. Should not be needed by end users</description>
-            <field name="target_system" type="uint8_t">System ID</field>
-            <field name="target_component" type="uint8_t">Component ID</field>
-        </message>
-
-        <message id="210" name="GIMBAL_REPORT_FACTORY_TESTS_PROGRESS">
-            <description>Reports the current status of a section of a running factory test</description>
-            <field enum="FACTORY_TEST" name="test" type="uint8_t">Which factory test is currently running</field>
-            <field name="test_section" type="uint8_t">Which section of the test is currently running. The meaning of this is test-dependent</field>
-            <field name="test_section_progress" type="uint8_t">The progress of the current test section, 0x64=100%</field>
-            <field name="test_status" type="uint8_t">The status of the currently executing test section. The meaning of this is test and section-dependent</field>
-        </message>
-
-        <!-- 211 to 214 RESERVED for more GIMBAL -->
-        <message id="215" name="GOPRO_POWER_ON">
-            <description>Instruct a HeroBus attached GoPro to power on</description>
-            <field name="target_system" type="uint8_t">System ID</field>
-            <field name="target_component" type="uint8_t">Component ID</field>
-        </message>
-
-        <message id="216" name="GOPRO_POWER_OFF">
-            <description>Instruct a HeroBus attached GoPro to power off</description>
-            <field name="target_system" type="uint8_t">System ID</field>
-            <field name="target_component" type="uint8_t">Component ID</field>
-        </message>
-
-        <message id="217" name="GOPRO_COMMAND">
-            <description>Send a command to a HeroBus attached GoPro. Will generate a GOPRO_RESPONSE message with results of the command</description>
-            <field name="target_system" type="uint8_t">System ID</field>
-            <field name="target_component" type="uint8_t">Component ID</field>
-            <field name="gp_cmd_name_1" type="uint8_t">First character of the 2 character GoPro command</field>
-            <field name="gp_cmd_name_2" type="uint8_t">Second character of the 2 character GoPro command</field>
-            <field name="gp_cmd_parm" type="uint8_t">Parameter for the command</field>
-        </message>
-
-        <message id="218" name="GOPRO_RESPONSE">
-            <description>Response to a command sent to a HeroBus attached GoPro with a GOPRO_COMMAND message. Contains response from the camera as well as information about any errors encountered while attempting to communicate with the camera</description>
-            <field name="gp_cmd_name_1" type="uint8_t">First character of the 2 character GoPro command that generated this response</field>
-            <field name="gp_cmd_name_2" type="uint8_t">Second character of the 2 character GoPro command that generated this response</field>
-            <field name="gp_cmd_response_status" type="uint8_t">Response byte from the GoPro's response to the command. 0 = Success, 1 = Failure</field>
-            <field name="gp_cmd_response_argument" type="uint8_t">Response argument from the GoPro's response to the command</field>
-            <field enum="GOPRO_CMD_RESULT" name="gp_cmd_result" type="uint16_t">Result of the command attempt to the GoPro, as defined by GOPRO_CMD_RESULT enum.</field>
-        </message>
-
-        <!-- 219 to 225 RESERVED for more GOPRO-->
+        <!-- 219 to 224 RESERVED for more GOPRO-->
         <message id="226" name="RPM">
             <description>RPM sensor output</description>
             <field name="rpm1" type="float">RPM Sensor1</field>
