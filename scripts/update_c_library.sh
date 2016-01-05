@@ -69,6 +69,8 @@ generate_headers test
 generate_headers ualberta
 generate_headers ASLUAV
 generate_headers common
+mkdir -p $CLIBRARY_PATH/message_definitions
+cp message_definitions/v1.0/* $CLIBRARY_PATH/message_definitions/.
 echo -e "\0033[34mFinished generating c headers\0033[0m\n"
 
 # git add and git commit in local c_library repository
