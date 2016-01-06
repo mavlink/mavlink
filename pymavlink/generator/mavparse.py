@@ -178,7 +178,7 @@ class MAVXML(object):
             self.multi_dialect = False
         elif wire_protocol_version == PROTOCOL_2_0:
             self.protocol_marker = 0xFD
-            self.sort_fields = False
+            self.sort_fields = True
             self.little_endian = True
             self.crc_extra = True
             self.command_16bit = True
