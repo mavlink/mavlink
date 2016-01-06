@@ -29,3 +29,9 @@ testmav1.0_${TESTPROTOCOL}: testmav.c
 
 testmav2.0_${TESTPROTOCOL}: testmav.c
 	$(CC) $(CFLAGS) -I../../include_v2.0 -I../../include_v2.0/${TESTPROTOCOL} -o $@ testmav.c
+
+testmav1.0_ardupilotmega: testmav.c
+	$(CC) $(CFLAGS) -I../../include_v1.0 -I../../include_v1.0/ardupilotmega -o $@ testmav.c
+
+testmav2.0_ardupilotmega: testmav.c
+	$(CC) $(CFLAGS) -I../../include_v2.0 -I../../include_v2.0/ardupilotmega -o $@ testmav.c
