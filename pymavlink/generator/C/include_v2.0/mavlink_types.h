@@ -21,6 +21,7 @@
 #endif
 
 #define MAVLINK_CORE_HEADER_LEN 9 ///< Length of core header (of the comm. layer)
+#define MAVLINK_CORE_HEADER_MAVLINK1_LEN 5 ///< Length of MAVLink1 core header (of the comm. layer)
 #define MAVLINK_NUM_HEADER_BYTES (MAVLINK_CORE_HEADER_LEN + 1) ///< Length of all header bytes, including core and checksum
 #define MAVLINK_NUM_CHECKSUM_BYTES 2
 #define MAVLINK_NUM_NON_PAYLOAD_BYTES (MAVLINK_NUM_HEADER_BYTES + MAVLINK_NUM_CHECKSUM_BYTES)
@@ -217,6 +218,11 @@ typedef enum {
     MAVLINK_FRAMING_BAD_CRC=2
 } mavlink_framing_t;
 
+#define MAVLINK_STATUS_FLAG_IN_MAVLINK1  1 // last incoming packet was MAVLink1
+#define MAVLINK_STATUS_FLAG_OUT_MAVLINK1 2 // generate MAVLink1 by default
+
+#define MAVLINK_STX_MAVLINK1 0xFE          // marker for old protocol
+
 typedef struct __mavlink_status {
     uint8_t msg_received;               ///< Number of received messages
     uint8_t buffer_overrun;             ///< Number of buffer overruns
@@ -227,6 +233,7 @@ typedef struct __mavlink_status {
     uint8_t current_tx_seq;             ///< Sequence number of last packet sent
     uint16_t packet_rx_success_count;   ///< Received packets
     uint16_t packet_rx_drop_count;      ///< Number of packet drops
+    uint8_t flags;                      ///< MAVLINK_STATUS_FLAG_*
 } mavlink_status_t;
 
 #define MAVLINK_BIG_ENDIAN 0
