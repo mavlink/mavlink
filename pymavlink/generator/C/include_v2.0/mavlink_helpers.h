@@ -101,7 +101,8 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
 /**
  * @brief Finalize a MAVLink message with channel assignment and send
  */
-MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint16_t msgid, const char *packet, 
+MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t dialect, uint16_t msgid,
+                                                    const char *packet, 
 						    uint8_t length, uint8_t crc_extra)
 {
 	uint16_t checksum;
@@ -130,7 +131,7 @@ MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint
             buf[4] = status->current_tx_seq;
             buf[5] = mavlink_system.sysid;
             buf[6] = mavlink_system.compid;
-            buf[7] = 0; // dialect
+            buf[7] = dialect;
             buf[8] = msgid & 0xFF;
             buf[9] = msgid >> 8;
         }
@@ -203,6 +204,66 @@ MAVLINK_HELPER void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 	crc_accumulate(c, &msg->checksum);
 }
 
+/*
+  return the crc_extra value for a dialect, msgid tuple
+*/
+MAVLINK_HELPER uint8_t mavlink_get_crc_extra(uint8_t dialect, uint16_t msgid)
+{
+	static const mavlink_crc_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
+        /*
+	  use a bisection search to find the right entry. A perfect hash may be better
+	  Note that this assumes the table is sorted with primary key msgid and secondary key dialect
+	*/
+        uint32_t low=0, high=sizeof(mavlink_message_crcs)/sizeof(mavlink_message_crcs[0]);
+        while (low < high) {
+            uint32_t mid = (low+1+high)/2;
+            if (msgid < mavlink_message_crcs[mid].msgid) {
+                high = mid-1;
+                continue;
+            }
+            if (msgid > mavlink_message_crcs[mid].msgid) {
+                low = mid;
+                continue;
+            }
+            if (dialect < mavlink_message_crcs[mid].dialect) {
+                high = mid-1;
+                continue;
+            }
+            if (dialect > mavlink_message_crcs[mid].dialect) {
+                low = mid;
+                continue;
+            }
+            low = mid;
+            break;
+        }
+        return mavlink_message_crcs[low].crc_extra;
+}
+
+/*
+  return the crc_extra value for a dialect, msgid tuple
+*/
+MAVLINK_HELPER uint8_t mavlink_get_crc_extra_mavlink1(uint16_t msgid)
+{
+	static const mavlink_crc_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
+        // use a bisection search to find the right entry. A perfect hash may be better
+        uint32_t low=0, high=sizeof(mavlink_message_crcs)/sizeof(mavlink_message_crcs[0]);
+        while (low < high) {
+            uint32_t mid = (low+1+high)/2;
+            if (msgid < mavlink_message_crcs[mid].msgid) {
+                high = mid-1;
+                continue;
+            }
+            if (msgid > mavlink_message_crcs[mid].msgid) {
+                low = mid;
+                continue;
+            }
+            low = mid;
+            break;
+        }
+        return mavlink_message_crcs[low].crc_extra;
+}
+
+
 /**
  * This is a varient of mavlink_frame_char() but with caller supplied
  * parsing buffers. It is useful when you want to create a MAVLink
@@ -243,15 +304,6 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
                                                  mavlink_message_t* r_message, 
                                                  mavlink_status_t* r_mavlink_status)
 {
-        /*
-	  default message crc function. You can override this per-system to
-	  put this data in a different memory segment
-	*/
-#ifndef MAVLINK_MESSAGE_CRC
-	static const uint8_t mavlink_message_crcs[256] = MAVLINK_MESSAGE_CRCS;
-#define MAVLINK_MESSAGE_CRC(msgid) mavlink_message_crcs[msgid]
-#endif
-
 	/* Enable this option to check the length of each message.
 	   This allows invalid messages to be caught much sooner. Use if the transmission
 	   medium is prone to missing (or extra) characters (e.g. a radio that fades in
@@ -402,8 +454,14 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		}
 		break;
 
-	case MAVLINK_PARSE_STATE_GOT_PAYLOAD:
-		mavlink_update_checksum(rxmsg, MAVLINK_MESSAGE_CRC(rxmsg->msgid));
+	case MAVLINK_PARSE_STATE_GOT_PAYLOAD: {
+		uint8_t crc_extra;
+                if (status->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
+			crc_extra = mavlink_get_crc_extra_mavlink1(rxmsg->msgid);
+		} else {
+			crc_extra = mavlink_get_crc_extra(rxmsg->dialect, rxmsg->msgid);
+		}
+		mavlink_update_checksum(rxmsg, crc_extra);
 		if (c != (rxmsg->checksum & 0xFF)) {
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
 		} else {
@@ -411,6 +469,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		}
                 _MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx] = (char)c;
 		break;
+        }
 
 	case MAVLINK_PARSE_STATE_GOT_CRC1:
 	case MAVLINK_PARSE_STATE_GOT_BAD_CRC1:

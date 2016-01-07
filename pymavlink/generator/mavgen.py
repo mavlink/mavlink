@@ -7,7 +7,7 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 
 '''
-import sys, textwrap, os
+import sys, textwrap, os, copy
 from . import mavparse
 
 # XSD schema file
@@ -77,8 +77,8 @@ def mavgen(opts, args) :
             for idx in range(0, 256):
                 if x.message_lengths[idx] == 0:
                     x.message_lengths[idx] = xml[-1].message_lengths[idx]
-                    x.message_crcs[idx] = xml[-1].message_crcs[idx]
                     x.message_names[idx] = xml[-1].message_names[idx]
+            x.message_crcs.update(xml[-1].message_crcs)
 
     # work out max payload size across all includes
     largest_payload = 0
