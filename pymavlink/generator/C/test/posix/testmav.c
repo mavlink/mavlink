@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
 #define MAVLINK_COMM_NUM_BUFFERS 2
@@ -155,6 +156,26 @@ int main(void)
 		exit(1);
 	}
 	printf("No errors detected\n");
+
+#ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
+        mavlink_status_t *status;
+        status = mavlink_get_channel_status(MAVLINK_COMM_0);
+        status->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+        status = mavlink_get_channel_status(MAVLINK_COMM_1);
+        status->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+        printf("Trying sending as MAVLink1\n");
+        
+	mavlink_test_all(11, 10, &last_msg);
+	for (chan=MAVLINK_COMM_0; chan<=MAVLINK_COMM_1; chan++) {
+		printf("Received %u messages on channel %u OK\n", 
+		       chan_counts[chan], (unsigned)chan);
+	}
+	if (error_count != 0) {
+		printf("Error count %u\n", error_count);
+		exit(1);
+	}
+	printf("No errors detected\n");
+#endif
 	return 0;
 }
 
