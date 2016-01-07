@@ -167,6 +167,7 @@ class MAVXML(object):
             self.sort_fields = False
             self.little_endian = False
             self.crc_extra = False
+            self.crc_struct = False
             self.command_16bit = False
             self.multi_dialect = False
         elif wire_protocol_version == PROTOCOL_1_0:
@@ -174,6 +175,7 @@ class MAVXML(object):
             self.sort_fields = True
             self.little_endian = True
             self.crc_extra = True
+            self.crc_struct = False
             self.command_16bit = False
             self.multi_dialect = False
         elif wire_protocol_version == PROTOCOL_2_0:
@@ -181,6 +183,7 @@ class MAVXML(object):
             self.sort_fields = True
             self.little_endian = True
             self.crc_extra = True
+            self.crc_struct = True
             self.command_16bit = True
             self.multi_dialect = True
         else:
@@ -270,7 +273,7 @@ class MAVXML(object):
         f.close()
 
         self.message_lengths = [ 0 ] * 256
-        self.message_crcs = [ 0 ] * 256
+        self.message_crcs = {}
         self.message_names = [ None ] * 256
         self.largest_payload = 0
 
@@ -308,7 +311,10 @@ class MAVXML(object):
             m.crc_extra = message_checksum(m)
             self.message_lengths[m.id] = m.wire_length
             self.message_names[m.id] = m.name
-            self.message_crcs[m.id] = m.crc_extra
+            if self.multi_dialect:
+                self.message_crcs[(m.dialect,m.id)] = m.crc_extra
+            else:
+                self.message_crcs[m.id] = m.crc_extra
             if m.wire_length > self.largest_payload:
                 self.largest_payload = m.wire_length
 

@@ -239,4 +239,13 @@ typedef struct __mavlink_status {
 #define MAVLINK_BIG_ENDIAN 0
 #define MAVLINK_LITTLE_ENDIAN 1
 
+/*
+  entry in mavlink CRC table
+ */
+typedef struct __mavlink_crc_entry {
+	uint16_t msgid;
+	uint8_t dialect;
+	uint8_t crc_extra;
+} mavlink_crc_entry_t;
+
 #endif /* MAVLINK_TYPES_H_ */
