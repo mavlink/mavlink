@@ -116,41 +116,51 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
 /**
  * @brief Finalize a MAVLink message with channel assignment and send
  */
-#if MAVLINK_CRC_EXTRA
-MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t msgid, const char *packet, 
+MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint16_t msgid, const char *packet, 
 						    uint8_t length, uint8_t crc_extra)
-#else
-MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t msgid, const char *packet, uint8_t length)
-#endif
 {
 	uint16_t checksum;
 	uint8_t buf[MAVLINK_NUM_HEADER_BYTES];
 	uint8_t ck[2];
 	mavlink_status_t *status = mavlink_get_channel_status(chan);
-	buf[0] = MAVLINK_STX;
-	buf[1] = length;
-        buf[2] = 0; // incompat_flags
-        buf[3] = 0; // compat_flags
-	buf[4] = status->current_tx_seq;
-	buf[5] = mavlink_system.sysid;
-	buf[6] = mavlink_system.compid;
-	buf[7] = 0; // dialect
-	buf[8] = msgid & 0xFF;
-	buf[9] = msgid >> 8;
+        uint8_t header_len = MAVLINK_CORE_HEADER_LEN;
+        if (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) {
+            if (msgid > 255) {
+                // can't send 16 bit messages
+                status->parse_error++;
+                return;
+            }
+            header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN;
+            buf[0] = MAVLINK_STX_MAVLINK1;
+            buf[1] = length;
+            buf[2] = status->current_tx_seq;
+            buf[3] = mavlink_system.sysid;
+            buf[4] = mavlink_system.compid;
+            buf[5] = msgid & 0xFF;
+        } else {
+            buf[0] = MAVLINK_STX;
+            buf[1] = length;
+            buf[2] = 0; // incompat_flags
+            buf[3] = 0; // compat_flags
+            buf[4] = status->current_tx_seq;
+            buf[5] = mavlink_system.sysid;
+            buf[6] = mavlink_system.compid;
+            buf[7] = 0; // dialect
+            buf[8] = msgid & 0xFF;
+            buf[9] = msgid >> 8;
+        }
 	status->current_tx_seq++;
-	checksum = crc_calculate((const uint8_t*)&buf[1], MAVLINK_CORE_HEADER_LEN);
+	checksum = crc_calculate((const uint8_t*)&buf[1], header_len);
 	crc_accumulate_buffer(&checksum, packet, length);
-#if MAVLINK_CRC_EXTRA
 	crc_accumulate(crc_extra, &checksum);
-#endif
 	ck[0] = (uint8_t)(checksum & 0xFF);
 	ck[1] = (uint8_t)(checksum >> 8);
 
-	MAVLINK_START_UART_SEND(chan, MAVLINK_NUM_NON_PAYLOAD_BYTES + (uint16_t)length);
-	_mavlink_send_uart(chan, (const char *)buf, MAVLINK_NUM_HEADER_BYTES);
+	MAVLINK_START_UART_SEND(chan, header_len + 3 + (uint16_t)length);
+	_mavlink_send_uart(chan, (const char *)buf, header_len+1);
 	_mavlink_send_uart(chan, packet, length);
 	_mavlink_send_uart(chan, (const char *)ck, 2);
-	MAVLINK_END_UART_SEND(chan, MAVLINK_NUM_NON_PAYLOAD_BYTES + (uint16_t)length);
+	MAVLINK_END_UART_SEND(chan, header_len + 3 + (uint16_t)length);
 }
 
 /**
@@ -285,6 +295,14 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
 			rxmsg->len = 0;
 			rxmsg->magic = c;
+                        status->flags &= ~MAVLINK_STATUS_FLAG_IN_MAVLINK1;
+			mavlink_start_checksum(rxmsg);
+		} else if (c == MAVLINK_STX_MAVLINK1)
+		{
+			status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
+			rxmsg->len = 0;
+			rxmsg->magic = c;
+                        status->flags |= MAVLINK_STATUS_FLAG_IN_MAVLINK1;
 			mavlink_start_checksum(rxmsg);
 		}
 		break;
@@ -309,7 +327,13 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 			rxmsg->len = c;
 			status->packet_idx = 0;
 			mavlink_update_checksum(rxmsg, c);
-			status->parse_state = MAVLINK_PARSE_STATE_GOT_LENGTH;
+                        if (status->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
+                            rxmsg->incompat_flags = 0;
+                            rxmsg->compat_flags = 0;
+                            status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPAT_FLAGS;
+                        } else {
+                            status->parse_state = MAVLINK_PARSE_STATE_GOT_LENGTH;
+                        }
 		}
 		break;
 
@@ -340,7 +364,12 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 	case MAVLINK_PARSE_STATE_GOT_SYSID:
 		rxmsg->compid = c;
 		mavlink_update_checksum(rxmsg, c);
-		status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPID;
+                if (status->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
+                    rxmsg->dialect = 0;
+                    status->parse_state = MAVLINK_PARSE_STATE_GOT_DIALECT;
+                } else {
+                    status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPID;
+                }
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_COMPID:
@@ -352,7 +381,19 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 	case MAVLINK_PARSE_STATE_GOT_DIALECT:
 		rxmsg->msgid = c;
 		mavlink_update_checksum(rxmsg, c);
-		status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID1;
+                if (status->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
+                    status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID2;
+#ifdef MAVLINK_CHECK_MESSAGE_LENGTH
+                    if (rxmsg->len != MAVLINK_MESSAGE_LENGTH(rxmsg->msgid))
+                    {
+			status->parse_error++;
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			break;
+                    }
+#endif
+                } else {
+                    status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID1;
+                }
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_MSGID1:
