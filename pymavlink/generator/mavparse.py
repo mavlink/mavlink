@@ -272,9 +272,9 @@ class MAVXML(object):
         p.ParseFile(f)
         f.close()
 
-        self.message_lengths = [ 0 ] * 256
+        self.message_lengths = {}
         self.message_crcs = {}
-        self.message_names = [ None ] * 256
+        self.message_names = {}
         self.largest_payload = 0
 
         for m in self.message:
@@ -309,12 +309,15 @@ class MAVXML(object):
                 raise MAVParseError("num_fields=%u : Maximum number of field names allowed is" % (
                     m.num_fields, 64))
             m.crc_extra = message_checksum(m)
-            self.message_lengths[m.id] = m.wire_length
-            self.message_names[m.id] = m.name
+
             if self.multi_dialect:
-                self.message_crcs[(m.dialect,m.id)] = m.crc_extra
+                key = (m.dialect,m.id)
             else:
-                self.message_crcs[m.id] = m.crc_extra
+                key = m.id
+            self.message_crcs[key] = m.crc_extra
+            self.message_lengths[key] = m.wire_length
+            self.message_names[key] = m.name
+
             if m.wire_length > self.largest_payload:
                 self.largest_payload = m.wire_length
 

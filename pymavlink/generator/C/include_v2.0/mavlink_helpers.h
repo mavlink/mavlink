@@ -42,7 +42,7 @@ MAVLINK_HELPER mavlink_message_t* mavlink_get_channel_buffer(uint8_t chan)
 #endif
 	return &m_mavlink_buffer[chan];
 }
-#endif
+#endif // MAVLINK_GET_CHANNEL_BUFFER
 
 /**
  * @brief Reset the status of a channel.
@@ -205,9 +205,9 @@ MAVLINK_HELPER void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 }
 
 /*
-  return the crc_extra value for a dialect, msgid tuple
+  return the crc_entry value for a dialect, msgid tuple
 */
-MAVLINK_HELPER uint8_t mavlink_get_crc_extra(uint8_t dialect, uint16_t msgid)
+MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry(uint8_t dialect, uint16_t msgid)
 {
 	static const mavlink_crc_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
         /*
@@ -236,13 +236,13 @@ MAVLINK_HELPER uint8_t mavlink_get_crc_extra(uint8_t dialect, uint16_t msgid)
             low = mid;
             break;
         }
-        return mavlink_message_crcs[low].crc_extra;
+        return &mavlink_message_crcs[low];
 }
 
 /*
-  return the crc_extra value for a dialect, msgid tuple
+  return the crc_extra value for a msgid
 */
-MAVLINK_HELPER uint8_t mavlink_get_crc_extra_mavlink1(uint16_t msgid)
+MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry_mavlink1(uint16_t msgid)
 {
 	static const mavlink_crc_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
         // use a bisection search to find the right entry. A perfect hash may be better
@@ -260,9 +260,39 @@ MAVLINK_HELPER uint8_t mavlink_get_crc_extra_mavlink1(uint16_t msgid)
             low = mid;
             break;
         }
-        return mavlink_message_crcs[low].crc_extra;
+        return &mavlink_message_crcs[low];
 }
 
+
+
+/*
+  return the crc_extra value for a message
+*/
+MAVLINK_HELPER uint8_t mavlink_get_crc_extra(const mavlink_message_t *msg)
+{
+	const mavlink_crc_entry_t *e;
+	if (msg->magic == MAVLINK_STX_MAVLINK1) {
+		e = mavlink_get_crc_entry_mavlink1(msg->msgid);
+	} else {
+		e = mavlink_get_crc_entry(msg->dialect, msg->msgid);
+	}
+	return e?e->crc_extra:0;
+}
+
+/*
+  return the expected message length
+*/
+#define MAVLINK_HAVE_EXPECTED_MESSAGE_LENGTH
+MAVLINK_HELPER uint8_t mavlink_expected_message_length(const mavlink_message_t *msg)
+{
+	const mavlink_crc_entry_t *e;
+	if (msg->magic == MAVLINK_STX_MAVLINK1) {
+		e = mavlink_get_crc_entry_mavlink1(msg->msgid);
+	} else {
+		e = mavlink_get_crc_entry(msg->dialect, msg->msgid);
+	}
+	return e?e->msg_len:0;
+}
 
 /**
  * This is a varient of mavlink_frame_char() but with caller supplied
@@ -455,12 +485,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_PAYLOAD: {
-		uint8_t crc_extra;
-                if (status->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
-			crc_extra = mavlink_get_crc_extra_mavlink1(rxmsg->msgid);
-		} else {
-			crc_extra = mavlink_get_crc_extra(rxmsg->dialect, rxmsg->msgid);
-		}
+		uint8_t crc_extra = mavlink_get_crc_extra(rxmsg);
 		mavlink_update_checksum(rxmsg, crc_extra);
 		if (c != (rxmsg->checksum & 0xFF)) {
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
@@ -777,3 +802,5 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
 #endif // MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
 #endif /* _MAVLINK_HELPERS_H_ */
+
+

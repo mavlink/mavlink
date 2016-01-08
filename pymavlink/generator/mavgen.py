@@ -74,11 +74,10 @@ def mavgen(opts, args) :
             xml.append(mavparse.MAVXML(fname, opts.wire_protocol))
 
             # include message lengths and CRCs too
-            for idx in range(0, 256):
-                if x.message_lengths[idx] == 0:
-                    x.message_lengths[idx] = xml[-1].message_lengths[idx]
-                    x.message_names[idx] = xml[-1].message_names[idx]
             x.message_crcs.update(xml[-1].message_crcs)
+            x.message_lengths.update(xml[-1].message_lengths)
+            x.message_names.update(xml[-1].message_names)
+            x.largest_payload = max(x.largest_payload, xml[-1].largest_payload)
 
     # work out max payload size across all includes
     largest_payload = 0
