@@ -76,6 +76,7 @@
 
 #endif // MAVLINK_SEPARATE_HELPERS
 
+
 /**
  * @brief Get the required buffer size for this message
  */

@@ -9,6 +9,7 @@
 #include <stdbool.h>
 
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
+#define MAVLINK_USE_MESSAGE_INFO
 #define MAVLINK_COMM_NUM_BUFFERS 2
 
 // this trick allows us to make mavlink_message_t as small as possible
@@ -29,10 +30,18 @@ static mavlink_message_t last_msg;
 
 static unsigned chan_counts[MAVLINK_COMM_NUM_BUFFERS];
 
-static const unsigned message_lengths[] = MAVLINK_MESSAGE_LENGTHS;
+#ifndef MAVLINK_HAVE_EXPECTED_MESSAGE_LENGTH
+static const uint8_t message_lengths[] = MAVLINK_MESSAGE_LENGTHS;
+#define mavlink_expected_message_length(msg) message_lengths[(msg)->msgid]
+#endif
+
+#ifndef MAVLINK_HAVE_GET_MESSAGE_INFO
+static const mavlink_message_info_t message_info[] = MAVLINK_MESSAGE_INFO;
+#define mavlink_get_message_info(msg) &message_info[(msg)->msgid]
+#endif
+
 static unsigned error_count;
 
-static const mavlink_message_info_t message_info[256] = MAVLINK_MESSAGE_INFO;
 
 static void print_one_field(mavlink_message_t *msg, const mavlink_field_info_t *f, int idx)
 {
@@ -103,7 +112,12 @@ static void print_field(mavlink_message_t *msg, const mavlink_field_info_t *f)
 
 static void print_message(mavlink_message_t *msg)
 {
-	const mavlink_message_info_t *m = &message_info[msg->msgid];
+	const mavlink_message_info_t *m = mavlink_get_message_info(msg);
+	if (m == NULL) {
+		printf("ERROR: no message info for %u\n", msg->msgid);
+		error_count++;
+		return;
+	}
 	const mavlink_field_info_t *f = m->fields;
 	unsigned i;
 	printf("%s { ", m->name);
@@ -131,9 +145,10 @@ static void comm_send_ch(mavlink_channel_t chan, uint8_t c)
 			       (unsigned)chan, chan_counts[chan], status.current_rx_seq);
 			error_count++;
 		}
-		if (message_lengths[last_msg.msgid] != last_msg.len) {
+		if (mavlink_expected_message_length(&last_msg) != last_msg.len) {
 			printf("Incorrect message length %u for message %u - expected %u\n", 
-			       (unsigned)last_msg.len, (unsigned)last_msg.msgid, message_lengths[last_msg.msgid]);
+			       (unsigned)last_msg.len, (unsigned)last_msg.msgid,
+                               mavlink_expected_message_length(&last_msg));
 			error_count++;
 		}
 	}

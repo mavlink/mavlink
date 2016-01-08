@@ -119,9 +119,6 @@ ${{entry:	${name}=${value}, /* ${description} |${{param:${description}| }} */
 #endif
 }}
 
-${{include_list:#include "../${base}/${base}.h"
-}}
-
 // MAVLINK VERSION
 
 #ifndef MAVLINK_VERSION
@@ -136,6 +133,14 @@ ${{include_list:#include "../${base}/${base}.h"
 // MESSAGE DEFINITIONS
 ${{message:#include "./mavlink_msg_${name_lower}.h"
 }}
+
+// base include
+${{include_list:#include "../${base}/${base}.h"
+}}
+
+#if MAVLINK_MULTI_DIALECT
+#include "../mavlink_get_info.h"
+#endif
 
 #ifdef __cplusplus
 }
@@ -174,13 +179,22 @@ ${{ordered_fields: ${type} ${name}${array_suffix}; /*< ${description}*/
 ${{array_fields:#define MAVLINK_MSG_${msg_name}_FIELD_${name_upper}_LEN ${array_length}
 }}
 
+#if MAVLINK_MULTI_DIALECT
+#define MAVLINK_MESSAGE_INFO_${name} { \\
+	${id}, ${dialect}, \\
+	"${name}", \\
+	${num_fields}, \\
+	{ ${{ordered_fields: { "${name}", ${c_print_format}, MAVLINK_TYPE_${type_upper}, ${array_length}, ${wire_offset}, offsetof(mavlink_${name_lower}_t, ${name}) }, \\
+        }} } \\
+}
+#else
 #define MAVLINK_MESSAGE_INFO_${name} { \\
 	"${name}", \\
 	${num_fields}, \\
 	{ ${{ordered_fields: { "${name}", ${c_print_format}, MAVLINK_TYPE_${type_upper}, ${array_length}, ${wire_offset}, offsetof(mavlink_${name_lower}_t, ${name}) }, \\
         }} } \\
 }
-
+#endif
 
 /**
  * @brief Pack a ${name_lower} message
@@ -520,35 +534,43 @@ def generate_one(basename, xml):
 
     # form message lengths array
     xml.message_lengths_array = ''
-    for mlen in xml.message_lengths:
-        xml.message_lengths_array += '%u, ' % mlen
-    xml.message_lengths_array = xml.message_lengths_array[:-2]
+    if not xml.multi_dialect:
+        for msgid in range(256):
+            mlen = xml.message_lengths.get(msgid, 0)
+            xml.message_lengths_array += '%u, ' % mlen
+        xml.message_lengths_array = xml.message_lengths_array[:-2]
 
     # and message CRCs array
     xml.message_crcs_array = ''
-    if xml.crc_struct:
+    if xml.multi_dialect:
         # we sort with primary key msgid, secondary key dialect
         for (dialect,msgid) in sorted(xml.message_crcs.keys(), key=lambda x: (x[1]<<8)|x[0]):
-            xml.message_crcs_array += '{%u, %u, %u}, ' % (msgid, dialect, xml.message_crcs[(dialect, msgid)])
+            xml.message_crcs_array += '{%u, %u, %u, %u}, ' % (msgid, dialect,
+                                                              xml.message_crcs[(dialect, msgid)],
+                                                              xml.message_lengths[(dialect,msgid)])
     else:
         for msgid in range(256):
-            if msgid in xml.message_crcs:
-                crc = xml.message_crcs[msgid]
-            else:
-                crc = 0
+            crc = xml.message_crcs.get(msgid, 0)
             xml.message_crcs_array += '%u, ' % crc
     xml.message_crcs_array = xml.message_crcs_array[:-2]
 
     # form message info array
     xml.message_info_array = ''
-    for name in xml.message_names:
-        if name is not None:
+    if xml.multi_dialect:
+        # we sort with primary key msgid, secondary key dialect
+        for (dialect,msgid) in sorted(xml.message_names.keys(), key=lambda x: (x[1]<<8)|x[0]):
+            name = xml.message_names[(dialect,msgid)]
             xml.message_info_array += 'MAVLINK_MESSAGE_INFO_%s, ' % name
-        else:
-            # Several C compilers don't accept {NULL} for
-            # multi-dimensional arrays and structs
-            # feed the compiler a "filled" empty message
-            xml.message_info_array += '{"EMPTY",0,{{"","",MAVLINK_TYPE_CHAR,0,0,0}}}, '
+    else:
+        for msgid in range(256):
+            name = xml.message_names.get(msgid, None)
+            if name is not None:
+                xml.message_info_array += 'MAVLINK_MESSAGE_INFO_%s, ' % name
+            else:
+                # Several C compilers don't accept {NULL} for
+                # multi-dimensional arrays and structs
+                # feed the compiler a "filled" empty message
+                xml.message_info_array += '{"EMPTY",0,{{"","",MAVLINK_TYPE_CHAR,0,0,0}}}, '
     xml.message_info_array = xml.message_info_array[:-2]
 
     # add some extra field attributes for convenience with arrays

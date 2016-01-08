@@ -151,7 +151,7 @@ typedef enum {
 #define MAVLINK_MAX_FIELDS 64
 
 typedef struct __mavlink_field_info {
-        const char *name;                 // name of this field
+	const char *name;                 // name of this field
         const char *print_format;         // printing format hint, or NULL
         mavlink_message_type_t type;      // type of this field
         unsigned int array_length;        // if non-zero, field is an array
@@ -162,6 +162,8 @@ typedef struct __mavlink_field_info {
 // note that in this structure the order of fields is the order
 // in the XML file, not necessary the wire order
 typedef struct __mavlink_message_info {
+	uint16_t msgid;                                        // message ID
+	uint8_t dialect;                                       // dialect
 	const char *name;                                      // name of the message
 	unsigned num_fields;                                   // how many fields in this message
 	mavlink_field_info_t fields[MAVLINK_MAX_FIELDS];       // field information
@@ -246,6 +248,7 @@ typedef struct __mavlink_crc_entry {
 	uint16_t msgid;
 	uint8_t dialect;
 	uint8_t crc_extra;
+	uint8_t msg_len;
 } mavlink_crc_entry_t;
 
 #endif /* MAVLINK_TYPES_H_ */
