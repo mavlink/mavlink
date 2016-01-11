@@ -19,32 +19,32 @@ from generator import mavgen, mavparse
 mdef_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'message_definitions')
 dialects_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dialects')
 
-v09_dialects = glob.glob(os.path.join(mdef_path, 'v0.9', '*.xml'))
 v10_dialects = glob.glob(os.path.join(mdef_path, 'v1.0', '*.xml'))
 
-v09_dialects
+# for now v2.0 uses same XML files as v1.0
+v20_dialects = glob.glob(os.path.join(mdef_path, 'v1.0', '*.xml'))
 
 if not "NOGEN" in os.environ:
-    for xml in v09_dialects:
-        shutil.copy(xml, os.path.join(dialects_path, 'v09'))
     for xml in v10_dialects:
         shutil.copy(xml, os.path.join(dialects_path, 'v10'))
-
-    for xml in v09_dialects:
-        dialect = os.path.basename(xml)[:-4]
-        wildcard = os.getenv("MAVLINK_DIALECT",'*')
-        if not fnmatch.fnmatch(dialect, wildcard):
-            continue
-        print("Building %s" % xml)
-        mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_0_9)
+    for xml in v20_dialects:
+        shutil.copy(xml, os.path.join(dialects_path, 'v20'))
 
     for xml in v10_dialects:
         dialect = os.path.basename(xml)[:-4]
         wildcard = os.getenv("MAVLINK_DIALECT",'*')
         if not fnmatch.fnmatch(dialect, wildcard):
             continue
-        print("Building %s" % xml)
+        print("Building %s for protocol 1.0" % xml)
         mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_1_0)
+
+    for xml in v20_dialects:
+        dialect = os.path.basename(xml)[:-4]
+        wildcard = os.getenv("MAVLINK_DIALECT",'*')
+        if not fnmatch.fnmatch(dialect, wildcard):
+            continue
+        print("Building %s for protocol 2.0" % xml)
+        mavgen.mavgen_python_dialect(dialect, mavparse.PROTOCOL_2_0)
 
 extensions = [] # Assume we might be unable to build native code
 if platform.system() != 'Windows':
@@ -52,6 +52,7 @@ if platform.system() != 'Windows':
                     sources = ['mavnative/mavnative.c'],
                     include_dirs = [
                         'generator/C/include_v1.0',
+                        'generator/C/include_v2.0',
                         'mavnative'
                         ]
                     ) ]
@@ -73,12 +74,11 @@ setup (name = 'pymavlink',
                     ],
        license='LGPLv3',
        package_dir = { 'pymavlink' : '.' },
-       package_data = { 'pymavlink.dialects.v09' : ['*.xml'],
-                        'pymavlink.dialects.v10' : ['*.xml'],
+       package_data = { 'pymavlink.dialects.v10' : ['*.xml'],
+                        'pymavlink.dialects.v20' : ['*.xml'],
                         'pymavlink.generator'    : [ '*.xsd',
                                                      'java/lib/*.*',
                                                      'java/lib/Messages/*.*',
-                                                     'C/include_v0.9/*.h',
                                                      'C/include_v1.0/*.h',
                                                      'C/include_v1.0/*.hpp',
                                                      'C/include_v2.0/*.h',
@@ -91,8 +91,8 @@ setup (name = 'pymavlink',
                    'pymavlink.generator.lib.genxmlif',
                    'pymavlink.generator.lib.minixsv',
                    'pymavlink.dialects',
-                   'pymavlink.dialects.v09',
-                   'pymavlink.dialects.v10'],
+                   'pymavlink.dialects.v10',
+                   'pymavlink.dialects.v20'],
        scripts = [ 'tools/magfit_delta.py', 'tools/mavextract.py',
                    'tools/mavgraph.py', 'tools/mavparmdiff.py',
                    'tools/mavtogpx.py', 'tools/magfit_gps.py',
