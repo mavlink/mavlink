@@ -423,7 +423,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 	case MAVLINK_PARSE_STATE_GOT_SEQ:
 		rxmsg->sysid = c;
 		mavlink_update_checksum(rxmsg, c);
-		status->parse_state++;
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_SYSID;
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_SYSID:
