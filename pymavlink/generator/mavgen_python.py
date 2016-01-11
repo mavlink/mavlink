@@ -352,7 +352,7 @@ class MAVLink_bad_data(MAVLink_message):
         a piece of bad data in a mavlink stream
         '''
         def __init__(self, data, reason):
-                MAVLink_message.__init__(self, MAVLINK_MSG_ID_BAD_DATA, 'BAD_DATA')
+                MAVLink_message.__init__(self, 0, MAVLINK_MSG_ID_BAD_DATA, 'BAD_DATA')
                 self._fieldnames = ['data', 'reason']
                 self.data = data
                 self.reason = reason
