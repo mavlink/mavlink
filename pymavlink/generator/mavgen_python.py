@@ -26,21 +26,26 @@ import struct, array, time, json, os, sys, platform
 
 from ...generator.mavcrc import x25crc
 
-WIRE_PROTOCOL_VERSION = "${WIRE_PROTOCOL_VERSION}"
-DIALECT = "${DIALECT}"
+WIRE_PROTOCOL_VERSION = '${WIRE_PROTOCOL_VERSION}'
+DIALECT = '${DIALECT}'
 
 PROTOCOL_MARKER_V1 = 0xFE
+PROTOCOL_MARKER_V2 = 0xFD
+HEADER_LEN_V1 = 6
+HEADER_LEN_V2 = 10
 
 native_supported = platform.system() != 'Windows' # Not yet supported on other dialects
 native_force = 'MAVNATIVE_FORCE' in os.environ # Will force use of native code regardless of what client app wants
 native_testing = 'MAVNATIVE_TESTING' in os.environ # Will force both native and legacy code to be used and their results compared
 
-if native_supported:
+if native_supported and float(WIRE_PROTOCOL_VERSION) <= 1:
     try:
         import mavnative
     except ImportError:
-        print("ERROR LOADING MAVNATIVE - falling back to python implementation")
+        print('ERROR LOADING MAVNATIVE - falling back to python implementation')
         native_supported = False
+else:
+    native_supported = False
 
 # some base types from mavlink_types.h
 MAVLINK_TYPE_CHAR     = 0
@@ -376,8 +381,7 @@ class MAVLink(object):
                 self.send_callback_args = None
                 self.send_callback_kwargs = None
                 self.buf = bytearray()
-                self.buf_index = 0      # index into self.buf to avoid rewriting the buffer
-                self.expected_length = 8
+                self.expected_length = HEADER_LEN_V1+2
                 self.have_prefix_error = False
                 self.robust_parsing = False
                 self.protocol_marker = ${protocol_marker}
@@ -475,12 +479,16 @@ class MAVLink(object):
 
         def __parse_char_legacy(self):
             '''input some data bytes, possibly returning a new message (uses no native code)'''
-            if self.buf_len() >= 1 and self.buf[self.buf_index] != ${protocol_marker}:
-                magic = self.buf[self.buf_index]
-                self.buf_index += 1
+            header_len = HEADER_LEN_V1
+            if len(self.buf) >= 1 and self.buf[0] == PROTOCOL_MARKER_V2:
+                header_len = HEADER_LEN_V2
+                
+            if len(self.buf) >= 1 and self.buf[0] != ${protocol_marker}:
+                magic = self.buf[0]
+                self.buf = self.buf[1:]
                 if self.robust_parsing:
-                    m = MAVLink_bad_data(chr(magic), "Bad prefix")
-                    self.expected_length = 8
+                    m = MAVLink_bad_data(chr(magic), 'Bad prefix')
+                    self.expected_length = header_len+2
                     self.total_receive_errors += 1
                     return m
                 if self.have_prefix_error:
@@ -493,12 +501,12 @@ class MAVLink(object):
                 if sys.version_info[0] < 3:
                     (magic, self.expected_length) = struct.unpack('BB', str(self.buf[self.buf_index:self.buf_index+2])) # bytearrays are not supported in py 2.7.3
                 else:
-                    (magic, self.expected_length) = struct.unpack('BB', self.buf[self.buf_index:self.buf_index+2])
-                self.expected_length += 8
-            if self.expected_length >= 8 and self.buf_len()  >= self.expected_length:
-                mbuf = array.array('B', self.buf[self.buf_index:self.expected_length+self.buf_index])
-                self.buf_index += self.expected_length
-                self.expected_length = 8
+                    (magic, self.expected_length) = struct.unpack('BB', self.buf[0:2])
+                self.expected_length += header_len + 2
+            if self.expected_length >= (header_len+2) and len(self.buf) >= self.expected_length:
+                mbuf = array.array('B', self.buf[0:self.expected_length])
+                self.buf = self.buf[self.expected_length:]
+                self.expected_length = header_len+2
                 if self.robust_parsing:
                     try:
                         m = self.decode(mbuf)
