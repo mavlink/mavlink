@@ -29,6 +29,8 @@ from ...generator.mavcrc import x25crc
 WIRE_PROTOCOL_VERSION = "${WIRE_PROTOCOL_VERSION}"
 DIALECT = "${DIALECT}"
 
+PROTOCOL_MARKER_V1 = 0xFE
+
 native_supported = platform.system() != 'Windows' # Not yet supported on other dialects
 native_force = 'MAVNATIVE_FORCE' in os.environ # Will force use of native code regardless of what client app wants
 native_testing = 'MAVNATIVE_TESTING' in os.environ # Will force both native and legacy code to be used and their results compared
@@ -67,13 +69,18 @@ class MAVLink_header(object):
         self.compat_flags = compat_flags
 
     def pack(self):
-        return struct.pack('BBBBBB', ${PROTOCOL_MARKER}, self.mlen, self.seq,
-                          self.srcSystem, self.srcComponent, self.msgId)
+        if WIRE_PROTOCOL_VERSION == '2.0':
+            return struct.pack('<BBBBBBBBH', ${PROTOCOL_MARKER}, self.mlen,
+                               self.incompat_flags, self.compat_flags,
+                               self.seq, self.srcSystem, self.srcComponent,
+                               self.dialect, self.msgId)
+        return struct.pack('<BBBBBB', PROTOCOL_MARKER_V1, self.mlen, self.seq,
+                           self.srcSystem, self.srcComponent, self.msgId)
 
 class MAVLink_message(object):
     '''base MAVLink message class'''
-    def __init__(self, msgId, name):
-        self._header     = MAVLink_header(msgId)
+    def __init__(self, dialect, msgId, name):
+        self._header     = MAVLink_header(dialect, msgId)
         self._payload    = None
         self._msgbuf     = None
         self._crc        = None
@@ -161,8 +168,8 @@ class MAVLink_message(object):
 
     def pack(self, mav, crc_extra, payload):
         self._payload = payload
-        self._header  = MAVLink_header(self._header.msgId, len(payload), mav.seq,
-                                       mav.srcSystem, mav.srcComponent)
+        self._header  = MAVLink_header(self._header.dialect, self._header.msgId, mlen=len(payload), seq=mav.seq,
+                                       srcSystem=mav.srcSystem, srcComponent=mav.srcComponent)
         self._msgbuf = self._header.pack() + payload
         crc = x25crc(self._msgbuf[1:])
         if ${crc_extra}: # using CRC extra
@@ -210,6 +217,7 @@ def generate_message_ids(outf, msgs):
     outf.write("\n# message IDs\n")
     outf.write("MAVLINK_MSG_ID_BAD_DATA = -1\n")
     for m in msgs:
+        outf.write("MAVLINK_MSG_DIALECT_%s = %u\n" % (m.name.upper(), m.dialect))
         outf.write("MAVLINK_MSG_ID_%s = %u\n" % (m.name.upper(), m.id))
 
 def generate_classes(outf, msgs):
@@ -225,6 +233,7 @@ class %s(MAVLink_message):
         '''
 %s
         '''
+        dialect = MAVLINK_MSG_DIALECT_%s
         id = MAVLINK_MSG_ID_%s
         name = '%s'
         fieldnames = [%s]
@@ -238,6 +247,7 @@ class %s(MAVLink_message):
 
         def __init__(self""" % (classname, wrapper.fill(m.description.strip()), 
             m.name.upper(), 
+            m.name.upper(), 
             m.name.upper(),
             fieldname_str,
             ordered_fieldname_str,
@@ -250,7 +260,7 @@ class %s(MAVLink_message):
         if len(m.fields) != 0:
                 outf.write(", " + ", ".join(m.fieldnames))
         outf.write("):\n")
-        outf.write("                MAVLink_message.__init__(self, %s.id, %s.name)\n" % (classname, classname))
+        outf.write("                MAVLink_message.__init__(self, %s.dialect, %s.id, %s.name)\n" % (classname, classname, classname))
         outf.write("                self._fieldnames = %s.fieldnames\n" % (classname))
         for f in m.fields:
                 outf.write("                self.%s = %s\n" % (f.name, f.name))
@@ -312,7 +322,12 @@ def generate_mavlink_class(outf, msgs, xml):
 
     outf.write("\n\nmavlink_map = {\n");
     for m in msgs:
-        outf.write("        MAVLINK_MSG_ID_%s : MAVLink_%s_message,\n" % (m.name.upper(), m.name.lower()))
+        if m.id < 256:
+            outf.write("        MAVLINK_MSG_ID_%s : MAVLink_%s_message,\n" % (
+                m.name.upper(), m.name.lower()))
+    for m in msgs:
+        outf.write("        (MAVLINK_MSG_DIALECT_%s,MAVLINK_MSG_ID_%s) : MAVLink_%s_message,\n" % (
+            m.name.upper(), m.name.upper(), m.name.lower()))
     outf.write("}\n\n")
 
     t.write(outf, """
@@ -509,22 +524,33 @@ class MAVLink(object):
             return ret
 
         def decode(self, msgbuf):
-                '''decode a buffer as a MAVLink message'''
+                '''decode a buffer as a MAVLink message'''                    
                 # decode the header
-                try:
-                    magic, mlen, seq, srcSystem, srcComponent, msgId = struct.unpack('cBBBBB', msgbuf[:6])
-                except struct.error as emsg:
-                    raise MAVError('Unable to unpack MAVLink header: %s' % emsg)
+                if msgbuf[0] != PROTOCOL_MARKER_V1:
+                    headerlen = 10
+                    try:
+                        magic, mlen, incompat_flags, compat_flags, seq, srcSystem, srcComponent, dialect, msgId = struct.unpack('<cBBBBBBBH', msgbuf[:headerlen])
+                    except struct.error as emsg:
+                        raise MAVError('Unable to unpack MAVLink header: %s' % emsg)
+                    mapkey = (dialect,msgId)
+                else:
+                    headerlen = 6
+                    dialect = 0
+                    try:
+                        magic, mlen, seq, srcSystem, srcComponent, msgId = struct.unpack('<cBBBBB', msgbuf[:headerlen])
+                    except struct.error as emsg:
+                        raise MAVError('Unable to unpack MAVLink header: %s' % emsg)
+                    mapkey = msgId
                 if ord(magic) != ${protocol_marker}:
                     raise MAVError("invalid MAVLink prefix '%s'" % magic)
-                if mlen != len(msgbuf)-8:
-                    raise MAVError('invalid MAVLink message length. Got %u expected %u, msgId=%u' % (len(msgbuf)-8, mlen, msgId))
+                if mlen != len(msgbuf)-(headerlen+2):
+                    raise MAVError('invalid MAVLink message length. Got %u expected %u, msgId=%u headerlen=%u' % (len(msgbuf)-(headerlen+2), mlen, msgId, headerlen))
 
-                if not msgId in mavlink_map:
-                    raise MAVError('unknown MAVLink message ID %u' % msgId)
+                if not mapkey in mavlink_map:
+                    raise MAVError('unknown MAVLink message ID %s' % str(mapkey))
 
                 # decode the payload
-                type = mavlink_map[msgId]
+                type = mavlink_map[mapkey]
                 fmt = type.format
                 order_map = type.orders
                 len_map = type.lengths
@@ -543,7 +569,7 @@ class MAVLink(object):
                     raise MAVError('invalid MAVLink CRC in msgID %u 0x%04x should be 0x%04x' % (msgId, crc, crc2.crc))
 
                 try:
-                    t = struct.unpack(fmt, msgbuf[6:-2])
+                    t = struct.unpack(fmt, msgbuf[headerlen:-2])
                 except struct.error as emsg:
                     raise MAVError('Unable to unpack MAVLink payload type=%s fmt=%s payloadLength=%u: %s' % (
                         type, fmt, len(msgbuf[6:-2]), emsg))
@@ -582,7 +608,7 @@ class MAVLink(object):
                 m._msgbuf = msgbuf
                 m._payload = msgbuf[6:-2]
                 m._crc = crc
-                m._header = MAVLink_header(msgId, mlen, seq, srcSystem, srcComponent)
+                m._header = MAVLink_header(dialect, msgId, mlen, seq, srcSystem, srcComponent)
                 return m
 """, xml)
 
