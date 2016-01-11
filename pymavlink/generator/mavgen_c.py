@@ -482,17 +482,20 @@ ${{message:	mavlink_test_${name_lower}(system_id, component_id, last_msg);
 def copy_fixed_headers(directory, xml):
     '''copy the fixed protocol headers to the target directory'''
     import shutil, filecmp
-    hlist = [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h', 'mavlink_conversions.h' ]
+    hlist = {
+        "0.9": [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h' ],
+        "1.0": [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h', 'mavlink_conversions.h' ],
+        "2.0": [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h', 'mavlink_conversions.h', 'mavlink_get_info.h' ]
+        }
     basepath = os.path.dirname(os.path.realpath(__file__))
     srcpath = os.path.join(basepath, 'C/include_v%s' % xml.wire_protocol_version)
-    print("Copying fixed headers")
-    for h in hlist:
-        if (not ((h == 'mavlink_conversions.h') and xml.wire_protocol_version == '0.9')):
-           src = os.path.realpath(os.path.join(srcpath, h))
-           dest = os.path.realpath(os.path.join(directory, h))
-           if src == dest or filecmp.cmp(src, dest):
-               continue
-           shutil.copy(src, dest)
+    print("Copying fixed headers for protocol %s to %s" % (xml.wire_protocol_version, directory))
+    for h in hlist[xml.wire_protocol_version]:
+        src = os.path.realpath(os.path.join(srcpath, h))
+        dest = os.path.realpath(os.path.join(directory, h))
+        if src == dest or (os.path.exists(dest) and filecmp.cmp(src, dest)):
+            continue
+        shutil.copy(src, dest)
 
 class mav_include(object):
     def __init__(self, base):
