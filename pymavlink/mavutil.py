@@ -37,8 +37,12 @@ if not 'MAVLINK_DIALECT' in os.environ:
     os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
 
 def mavlink10():
-    '''return True if using MAVLink 1.0'''
+    '''return True if using MAVLink 1.0 or later'''
     return not 'MAVLINK09' in os.environ
+
+def mavlink20():
+    '''return True if using MAVLink 2.0'''
+    return 'MAVLINK20' in os.environ
 
 def evaluate_expression(expression, vars):
     '''evaluation an expression'''
@@ -70,10 +74,16 @@ def set_dialect(dialect):
     '''
     global mavlink, current_dialect
     from .generator import mavparse
-    if mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
+    if 'MAVLINK20' in os.environ:
+        print("Using MAVLink 2.0")
+        wire_protocol = mavparse.PROTOCOL_2_0
+        modname = "pymavlink.dialects.v20." + dialect
+    elif mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
+        print("Using MAVLink 1.0")
         wire_protocol = mavparse.PROTOCOL_1_0
         modname = "pymavlink.dialects.v10." + dialect
     else:
+        print("Using MAVLink 0.9")
         wire_protocol = mavparse.PROTOCOL_0_9
         modname = "pymavlink.dialects.v09." + dialect
 
@@ -102,7 +112,7 @@ class mavfile(object):
         self.fd = fd
         self.address = address
         self.messages = { 'MAV' : self }
-        if mavlink.WIRE_PROTOCOL_VERSION == "1.0":
+        if float(mavlink.WIRE_PROTOCOL_VERSION) >= 1:
             self.messages['HOME'] = mavlink.MAVLink_gps_raw_int_message(0,0,0,0,0,0,0,0,0,0)
             mavlink.MAVLink_waypoint_message = mavlink.MAVLink_mission_item_message
         else:
@@ -149,7 +159,7 @@ class mavfile(object):
             magic = ord(buf[0])
         except:
             magic = buf[0]
-        if not magic in [ 85, 254 ]:
+        if not magic in [ 85, 254, 253 ]:
             return
         self.first_byte = False
         if self.WIRE_PROTOCOL_VERSION == "0.9" and magic == 254:
@@ -159,6 +169,10 @@ class mavfile(object):
             self.WIRE_PROTOCOL_VERSION = "0.9"
             set_dialect(current_dialect)
             os.environ['MAVLINK09'] = '1'
+        elif self.WIRE_PROTOCOL_VERSION != "2.0" and magic == 253:
+            self.WIRE_PROTOCOL_VERSION = "2.0"
+            set_dialect(current_dialect)
+            os.environ['MAVLINK20'] = '1'
         else:
             return
         # switch protocol 
@@ -247,7 +261,7 @@ class mavfile(object):
         if type == 'HEARTBEAT' and msg.get_srcComponent() != mavlink.MAV_COMP_ID_GIMBAL:
             self.target_system = msg.get_srcSystem()
             self.target_component = msg.get_srcComponent()
-            if mavlink.WIRE_PROTOCOL_VERSION == '1.0' and msg.type != mavlink.MAV_TYPE_GCS:
+            if float(mavlink.WIRE_PROTOCOL_VERSION) >= 1 and msg.type != mavlink.MAV_TYPE_GCS:
                 self.flightmode = mode_string_v10(msg)
                 self.mav_type = msg.type
                 self.base_mode = msg.base_mode
@@ -340,8 +354,12 @@ class mavfile(object):
         return evaluate_condition(condition, self.messages)
 
     def mavlink10(self):
-        '''return True if using MAVLink 1.0'''
-        return self.WIRE_PROTOCOL_VERSION == "1.0"
+        '''return True if using MAVLink 1.0 or later'''
+        return float(self.WIRE_PROTOCOL_VERSION) >= 1
+
+    def mavlink20(self):
+        '''return True if using MAVLink 2.0 or later'''
+        return float(self.WIRE_PROTOCOL_VERSION) >= 2
 
     def setup_logfile(self, logfile, mode='w'):
         '''start logging to the given logfile, with timestamps'''
