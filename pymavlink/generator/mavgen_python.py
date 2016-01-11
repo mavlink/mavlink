@@ -56,12 +56,15 @@ MAVLINK_TYPE_DOUBLE   = 10
 
 class MAVLink_header(object):
     '''MAVLink message header'''
-    def __init__(self, msgId, mlen=0, seq=0, srcSystem=0, srcComponent=0):
+    def __init__(self, dialect, msgId, incompat_flags=0, compat_flags=0, mlen=0, seq=0, srcSystem=0, srcComponent=0):
         self.mlen = mlen
         self.seq = seq
         self.srcSystem = srcSystem
         self.srcComponent = srcComponent
+        self.dialect = dialect
         self.msgId = msgId
+        self.incompat_flags = incompat_flags
+        self.compat_flags = compat_flags
 
     def pack(self):
         return struct.pack('BBBBBB', ${PROTOCOL_MARKER}, self.mlen, self.seq,
