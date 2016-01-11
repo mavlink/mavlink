@@ -546,6 +546,8 @@ class MAVLink(object):
                     dialect = 0
                     try:
                         magic, mlen, seq, srcSystem, srcComponent, msgId = struct.unpack('<cBBBBB', msgbuf[:headerlen])
+                        incompat_flags = 0
+                        compat_flags = 0
                     except struct.error as emsg:
                         raise MAVError('Unable to unpack MAVLink header: %s' % emsg)
                     mapkey = msgId
@@ -616,7 +618,7 @@ class MAVLink(object):
                 m._msgbuf = msgbuf
                 m._payload = msgbuf[6:-2]
                 m._crc = crc
-                m._header = MAVLink_header(dialect, msgId, mlen, seq, srcSystem, srcComponent)
+                m._header = MAVLink_header(dialect, msgId, incompat_flags, compat_flags, mlen, seq, srcSystem, srcComponent)
                 return m
 """, xml)
 
