@@ -2,8 +2,8 @@
 
 import sys, os
 
-from pymavlink.dialects.v10 import common as mavlink1
-from pymavlink.dialects.v20 import common as mavlink2
+from pymavlink.dialects.v10 import ardupilotmega as mavlink1
+from pymavlink.dialects.v20 import ardupilotmega as mavlink2
 
 class fifo(object):
     def __init__(self):
