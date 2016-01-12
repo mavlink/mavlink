@@ -166,7 +166,10 @@ class App():
             self.root.after(100, self.next_message)
             return
 
-        speed = float(self.playback.get())
+        try:
+            speed = float(self.playback.get())
+        except:
+            speed = 0.0
         timestamp = getattr(msg, '_timestamp')
 
         now = time.strftime("%H:%M:%S", time.localtime(timestamp))

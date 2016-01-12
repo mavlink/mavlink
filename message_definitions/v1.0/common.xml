@@ -379,7 +379,10 @@
                <entry value="154" name="MAV_COMP_ID_GIMBAL">
                     <description/>
                </entry>
-               <entry value="155" name="MAV_COMP_ID_ADSB">
+               <entry value="155" name="MAV_COMP_ID_LOG">
+                    <description/>
+               </entry>
+               <entry value="156" name="MAV_COMP_ID_ADSB">
                     <description/>
                </entry>
           </enum>
@@ -656,7 +659,7 @@
                </entry>
                <entry value="30" name="MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT">
                    <description>Continue on the current course and climb/descend to specified altitude.  When the altitude is reached continue to the next command (i.e., don't proceed to the next command until the desired altitude is reached.</description>
-                    <param index="1">Empty</param>
+                   <param index="1">Climb or Descend (0 = Neutral, command completes when within 5m of this command's altitude, 1 = Climbing, command completes when at or above this command's altitude, 2 = Descending, command completes when at or below this command's altitude. </param>
                     <param index="2">Empty</param>
                     <param index="3">Empty</param>
                     <param index="4">Empty</param>
@@ -703,6 +706,26 @@
                     <param index="5">Latitude/X of goal</param>
                     <param index="6">Longitude/Y of goal</param>
                     <param index="7">Altitude/Z of goal</param>
+               </entry>
+               <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF">
+                    <description>Takeoff from ground using VTOL mode</description>
+                    <param index="1">Empty</param>
+                    <param index="2">Empty</param>
+                    <param index="3">Empty</param>
+                    <param index="4">Yaw angle in degrees</param>
+                    <param index="5">Latitude</param>
+                    <param index="6">Longitude</param>
+                    <param index="7">Altitude</param>
+               </entry>
+               <entry value="85" name="MAV_CMD_NAV_VTOL_LAND">
+                    <description>Land using VTOL mode</description>
+                    <param index="1">Empty</param>
+                    <param index="2">Empty</param>
+                    <param index="3">Empty</param>
+                    <param index="4">Yaw angle in degrees</param>
+                    <param index="5">Latitude</param>
+                    <param index="6">Longitude</param>
+                    <param index="7">Altitude</param>
                </entry>
 
                <!-- IDs 90 and 91 are reserved until the end of 2014,
@@ -784,7 +807,7 @@
                     <description>Set system mode.</description>
                     <param index="1">Mode, as defined by ENUM MAV_MODE</param>
                     <param index="2">Custom mode - this is system specific, please refer to the individual autopilot specifications for details.</param>
-                    <param index="3">Empty</param>
+                    <param index="3">Custom sub mode - this is system specific, please refer to the individual autopilot specifications for details.</param>
                     <param index="4">Empty</param>
                     <param index="5">Empty</param>
                     <param index="6">Empty</param>
@@ -1106,13 +1129,13 @@
                </entry>
                <entry value="246" name="MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN">
                     <description>Request the reboot or shutdown of system components.</description>
-                    <param index="1">0: Do nothing for autopilot, 1: Reboot autopilot, 2: Shutdown autopilot.</param>
-                    <param index="2">0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer.</param>
-                    <param index="3">Reserved</param>
-                    <param index="4">Reserved</param>
-                    <param index="5">Empty</param>
-                    <param index="6">Empty</param>
-                    <param index="7">Empty</param>
+                    <param index="1">0: Do nothing for autopilot, 1: Reboot autopilot, 2: Shutdown autopilot, 3: Reboot autopilot and keep it in the bootloader until upgraded.</param>
+                    <param index="2">0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer, 3: Reboot onboard computer and keep it in the bootloader until upgraded.</param>
+                    <param index="3">Reserved, send 0</param>
+                    <param index="4">Reserved, send 0</param>
+                    <param index="5">Reserved, send 0</param>
+                    <param index="6">Reserved, send 0</param>
+                    <param index="7">Reserved, send 0</param>
                </entry>
                <entry value="252" name="MAV_CMD_OVERRIDE_GOTO">
                     <description>Hold / continue the current action</description>
@@ -1795,7 +1818,8 @@
               <entry value="4" name="ADSB_FLAGS_VALID_HEADING"></entry>
               <entry value="8" name="ADSB_FLAGS_VALID_VELOCITY"></entry>
               <entry value="16" name="ADSB_FLAGS_VALID_CALLSIGN"></entry>
-              <entry value="32" name="ADSB_FLAGS_SIMULATED"></entry>
+              <entry value="32" name="ADSB_FLAGS_VALID_SQUAWK"></entry>
+              <entry value="64" name="ADSB_FLAGS_SIMULATED"></entry>
           </enum>
      </enums>
      <messages>
@@ -1855,7 +1879,7 @@
                <field type="char[32]" name="key">key</field>
           </message>
           <message id="11" name="SET_MODE">
-               <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
+               <description>THIS INTERFACE IS DEPRECATED. USE COMMAND_LONG with MAV_CMD_DO_SET_MODE INSTEAD. Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
                <field type="uint8_t" name="target_system">The system setting the mode</field>
                <field type="uint8_t" name="base_mode" enum="MAV_MODE">The new base mode</field>
                <field type="uint32_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
@@ -1897,8 +1921,8 @@
                <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="alt">Altitude (AMSL, NOT WGS84), in meters * 1000 (positive for up). Note that virtually all GPS modules provide the AMSL altitude in addition to the WGS84 altitude.</field>
-               <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position in cm (m*100). If unknown, set to: UINT16_MAX</field>
-               <field type="uint16_t" name="epv">GPS VDOP vertical dilution of position in cm (m*100). If unknown, set to: UINT16_MAX</field>
+               <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
+               <field type="uint16_t" name="epv">GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
                <field type="uint16_t" name="vel">GPS ground speed (m/s * 100). If unknown, set to: UINT16_MAX</field>
                <field type="uint16_t" name="cog">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
                <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
@@ -2252,7 +2276,7 @@
                <field type="uint8_t" name="target">The system to be controlled.</field>
                <field type="int16_t" name="x">X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.</field>
                <field type="int16_t" name="y">Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.</field>
-               <field type="int16_t" name="z">Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are forward thrust, negative values are reverse thrust.</field>
+               <field type="int16_t" name="z">Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are positive thrust, negative values are negative thrust.</field>
                <field type="int16_t" name="r">R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with counter-clockwise being 1000 and clockwise being -1000, and the yaw of a vehicle.</field>
                <field type="uint16_t" name="buttons">A bitfield corresponding to the joystick buttons' current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.</field>
           </message>
@@ -3047,14 +3071,15 @@
           <field type="int32_t" name="lat">Latitude, expressed as degrees * 1E7</field>
           <field type="int32_t" name="lon">Longitude, expressed as degrees * 1E7</field>
           <field type="uint8_t" name="altitude_type" enum="ADSB_ALTITUDE_TYPE">Type from ADSB_ALTITUDE_TYPE enum</field>
-          <field type="float" name="altitude">Altitude(ASL) in meters</field>
+          <field type="int32_t" name="altitude">Altitude(ASL) in millimeters</field>
           <field type="uint16_t" name="heading">Course over ground in centidegrees</field>
-          <field type="float" name="hor_velocity">The horizontal velocity in meters/second</field>
-          <field type="float" name="ver_velocity">The vertical velocity in meters/second, positive is up</field>
+          <field type="uint16_t" name="hor_velocity">The horizontal velocity in centimeters/second</field>
+          <field type="uint16_t" name="ver_velocity">The vertical velocity in centimeters/second, positive is up</field>
           <field type="char[9]" name="callsign">The callsign, 8+null</field>
           <field type="uint8_t" name="emitter_type" enum="ADSB_EMITTER_TYPE">Type from ADSB_EMITTER_TYPE enum</field>
           <field type="uint8_t" name="tslc">Time since last communication in seconds</field>
           <field type="uint16_t" name="flags" enum="ADSB_FLAGS">Flags to indicate various statuses including valid data fields</field>
+          <field type="uint16_t" name="squawk">Squawk code</field>
         </message>
         <message id="248" name="V2_EXTENSION">
             <description>Message implementing parts of the V2 payload specs in V1 frames for transitional support.</description>

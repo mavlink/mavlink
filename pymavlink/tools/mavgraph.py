@@ -9,7 +9,10 @@ import math, re
 import matplotlib
 from math import *
 
-from pymavlink.mavextra import *
+try:
+    from pymavlink.mavextra import *
+except:
+    print("WARNING: Numpy missing, mathematical notation will not be supported.")
 
 # cope with rename of raw_input in python3
 try:

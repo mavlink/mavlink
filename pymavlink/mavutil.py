@@ -18,9 +18,8 @@ try:
 except Exception:
     pass
 
-# these imports allow for mavgraph and mavlogdump to use maths expressions more easily
-from math import *
-from .mavextra import *
+# maximum packet length for a single receive call - use the UDP limit
+UDP_MAX_PACKET_LEN = 65535
 
 '''
 Support having a $HOME/.pymavlink/mavextra.py for extra graphing functions
@@ -817,7 +816,7 @@ class mavudp(mavfile):
 
     def recv(self,n=None):
         try:
-            data, self.last_address = self.port.recvfrom(300)
+            data, self.last_address = self.port.recvfrom(UDP_MAX_PACKET_LEN)
         except socket.error as e:
             if e.errno in [ errno.EAGAIN, errno.EWOULDBLOCK, errno.ECONNREFUSED ]:
                 return ""
@@ -838,16 +837,15 @@ class mavudp(mavfile):
         '''message receive routine for UDP link'''
         self.pre_message()
         s = self.recv()
-        if len(s) == 0:
-            return None
-        if self.first_byte:
-            self.auto_mavlink_version(s)
-        msg = self.mav.parse_buffer(s)
-        if msg is not None:
-            for m in msg:
-                self.post_message(m)
-            return msg[0]
-        return None
+        if len(s) > 0:
+            if self.first_byte:
+                self.auto_mavlink_version(s)
+
+        m = self.mav.parse_char(s)
+        if m is not None:
+            self.post_message(m)
+
+        return m
 
 
 class mavtcp(mavfile):
@@ -1288,7 +1286,10 @@ mode_mapping_apm = {
     12 : 'LOITER',
     14 : 'LAND',
     15 : 'GUIDED',
-    16 : 'INITIALISING'
+    16 : 'INITIALISING',
+    17 : 'QSTABILIZE',
+    18 : 'QHOVER',
+    19 : 'QLOITER',
     }
 mode_mapping_acm = {
     0 : 'STABILIZE',
