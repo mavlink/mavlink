@@ -127,10 +127,17 @@ static void print_message(mavlink_message_t *msg)
 	printf("}\n");
 }
 
+#ifdef MAVLINK_SIGNING_FLAG_SIGN_OUTGOING
+static mavlink_signing_t signing_in[MAVLINK_COMM_NUM_BUFFERS];
+#endif
+
 static void comm_send_ch(mavlink_channel_t chan, uint8_t c)
 {
 	mavlink_status_t status;
 	memset(&status, 0, sizeof(status));
+#ifdef MAVLINK_SIGNING_FLAG_SIGN_OUTGOING
+	status.signing = &signing_in[chan];
+#endif
 	if (mavlink_parse_char(chan, c, &last_msg, &status)) {
 		print_message(&last_msg);
 		chan_counts[chan]++;
@@ -161,6 +168,7 @@ static void comm_send_ch(mavlink_channel_t chan, uint8_t c)
 int main(void)
 {
 	mavlink_channel_t chan;
+
 	mavlink_test_all(11, 10, &last_msg);
 	for (chan=MAVLINK_COMM_0; chan<=MAVLINK_COMM_1; chan++) {
 		printf("Received %u messages on channel %u OK\n", 
@@ -172,8 +180,32 @@ int main(void)
 	}
 	printf("No errors detected\n");
 
+#ifdef MAVLINK_SIGNING_FLAG_SIGN_OUTGOING
+	mavlink_status_t *status;
+
+	printf("Testing signing\n");
+	mavlink_signing_t signing;
+	signing.flags = MAVLINK_SIGNING_FLAG_SIGN_OUTGOING;
+	signing.link_id = 0;
+	signing.timestamp = 1;
+	memset(signing.secret_key, 42, sizeof(signing.secret_key));
+
+        status = mavlink_get_channel_status(MAVLINK_COMM_1);
+	status->signing = &signing;
+
+	mavlink_test_all(11, 10, &last_msg);
+	for (chan=MAVLINK_COMM_0; chan<=MAVLINK_COMM_1; chan++) {
+		printf("Received %u messages on channel %u OK\n", 
+		       chan_counts[chan], (unsigned)chan);
+	}
+	if (error_count != 0) {
+		printf("Error count %u\n", error_count);
+		exit(1);
+	}
+	printf("No errors detected\n");	
+#endif
+	
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
-        mavlink_status_t *status;
         status = mavlink_get_channel_status(MAVLINK_COMM_0);
         status->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
         status = mavlink_get_channel_status(MAVLINK_COMM_1);
