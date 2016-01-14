@@ -82,6 +82,9 @@
  */
 static inline uint16_t mavlink_msg_get_send_buffer_length(const mavlink_message_t* msg)
 {
+	if (msg->magic == MAVLINK_STX_MAVLINK1) {
+		return msg->len + MAVLINK_CORE_HEADER_MAVLINK1_LEN+1 + 2;
+	}
     	uint16_t signature_len = (msg->incompat_flags & MAVLINK_IFLAG_SIGNED)?MAVLINK_SIGNATURE_BLOCK_LEN:0;
 	return msg->len + MAVLINK_NUM_NON_PAYLOAD_BYTES + signature_len;
 }
