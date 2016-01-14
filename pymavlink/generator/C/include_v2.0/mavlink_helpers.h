@@ -67,14 +67,14 @@ MAVLINK_HELPER uint8_t mavlink_sign_packet(mavlink_signing_t *signing,
 	mavlink_sha256_ctx ctx;
 	union {
 	    uint64_t t64;
-	    uint8_t t8[6];
+	    uint8_t t8[8];
 	} tstamp;
 	if (signing == NULL || !(signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING)) {
 	    return 0;
 	}
 	signature[0] = signing->link_id;
 	tstamp.t64 = signing->timestamp;
-	memcpy(&signing[1], tstamp.t8, 6);
+	memcpy(&signature[1], tstamp.t8, 6);
 	signing->timestamp++;
 	
 	mavlink_sha256_init(&ctx);
@@ -82,6 +82,7 @@ MAVLINK_HELPER uint8_t mavlink_sign_packet(mavlink_signing_t *signing,
 	mavlink_sha256_update(&ctx, header, header_len);
 	mavlink_sha256_update(&ctx, packet, packet_len);
 	mavlink_sha256_update(&ctx, crc, 2);
+	mavlink_sha256_update(&ctx, signature, 7);
 	mavlink_sha256_final_48(&ctx, &signature[7]);
 	
 	return MAVLINK_SIGNATURE_BLOCK_LEN;
@@ -101,8 +102,7 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
 	mavlink_sha256_init(&ctx);
 	mavlink_sha256_update(&ctx, signing->secret_key, sizeof(signing->secret_key));
 	mavlink_sha256_update(&ctx, &msg->magic, MAVLINK_CORE_HEADER_LEN+1);
-	mavlink_sha256_update(&ctx, _MAV_PAYLOAD(msg), msg->len);
-	mavlink_sha256_update(&ctx, _MAV_PAYLOAD(msg)+msg->len, 2); // crc
+	mavlink_sha256_update(&ctx, _MAV_PAYLOAD(msg), msg->len+2+1+6); // payload+crc+linkid+timestamp
 	mavlink_sha256_final_48(&ctx, signature);
 	const uint8_t *incoming_signature = (const uint8_t *)(_MAV_PAYLOAD(msg)+msg->len+2+7);
 	return memcmp(signature, incoming_signature, 6) == 0;
