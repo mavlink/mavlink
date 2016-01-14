@@ -95,6 +95,60 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t
 	return mavlink_finalize_message_chan(msg, system_id, component_id, MAVLINK_COMM_0, length, crc_extra);
 }
 
+
+/**
+ * @brief create a signature block for a packet
+ */
+MAVLINK_HELPER uint8_t mavlink_sign_packet(mavlink_signing_t *signing,
+					   uint8_t signature[MAVLINK_SIGNATURE_BLOCK_LEN],
+					   const uint8_t *header, uint8_t header_len,
+					   const uint8_t *packet, uint8_t packet_len,
+					   const uint8_t crc[2])
+{
+	SHA256_CTX ctx;
+	union {
+	    uint64_t t64;
+	    uint8_t t8[6];
+	} tstamp;
+	if (signing == NULL || !(signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING)) {
+	    return 0;
+	}
+	signature[0] = signing->link_id;
+	tstamp.t64 = signing->timestamp;
+	memcpy(&signing[1], tstamp.t8, 6);
+	signing->timestamp++;
+	
+	SHA256_Init(&ctx);
+	SHA256_Update(&ctx, signing->secret_key, sizeof(signing->secret_key));
+	SHA256_Update(&ctx, header, header_len);
+	SHA256_Update(&ctx, packet, packet_len);
+	SHA256_Update(&ctx, crc, 2);
+	SHA256_Final_48(&ctx, &signature[7]);
+	
+	return MAVLINK_SIGNATURE_BLOCK_LEN;
+}
+
+/**
+ * @brief check a signature block for a packet
+ */
+MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
+					    const mavlink_message_t *msg)
+{
+	if (signing == NULL) {
+		return true;
+	}
+	SHA256_CTX ctx;
+	uint8_t signature[6];
+	SHA256_Init(&ctx);
+	SHA256_Update(&ctx, signing->secret_key, sizeof(signing->secret_key));
+	SHA256_Update(&ctx, &msg->magic, MAVLINK_CORE_HEADER_LEN+1);
+	SHA256_Update(&ctx, _MAV_PAYLOAD(msg), msg->len);
+	SHA256_Update(&ctx, _MAV_PAYLOAD(msg)+msg->len, 2); // crc
+	SHA256_Final_48(&ctx, signature);
+	const uint8_t *incoming_signature = (const uint8_t *)(_MAV_PAYLOAD(msg)+msg->len+2+7);
+	return memcmp(signature, incoming_signature, 6) == 0;
+}
+
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, uint16_t len);
 
@@ -110,7 +164,12 @@ MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint
 	uint8_t ck[2];
 	mavlink_status_t *status = mavlink_get_channel_status(chan);
         uint8_t header_len = MAVLINK_CORE_HEADER_LEN;
-        if (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) {
+	uint8_t signature_len = 0;
+	uint8_t signature[MAVLINK_SIGNATURE_BLOCK_LEN];
+	bool mavlink1 = (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1);
+	bool signing = 	(!mavlink1) && status->signing && (status->signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING);
+
+        if (mavlink1) {
             if (msgid > 255) {
                 // can't send 16 bit messages
                 status->parse_error++;
@@ -124,9 +183,13 @@ MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint
             buf[4] = mavlink_system.compid;
             buf[5] = msgid & 0xFF;
         } else {
-            buf[0] = MAVLINK_STX;
+	    uint8_t incompat_flags = 0;
+	    if (signing) {
+		incompat_flags |= MAVLINK_IFLAG_SIGNED;
+	    }
+	    buf[0] = MAVLINK_STX;
             buf[1] = length;
-            buf[2] = 0; // incompat_flags
+            buf[2] = incompat_flags;
             buf[3] = 0; // compat_flags
             buf[4] = status->current_tx_seq;
             buf[5] = mavlink_system.sysid;
@@ -142,11 +205,20 @@ MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint
 	ck[0] = (uint8_t)(checksum & 0xFF);
 	ck[1] = (uint8_t)(checksum >> 8);
 
-	MAVLINK_START_UART_SEND(chan, header_len + 3 + (uint16_t)length);
+	if (signing) {
+		// possibly add a signature
+		signature_len = mavlink_sign_packet(status->signing, signature, buf, header_len+1,
+						    (const uint8_t *)packet, length, ck);
+	}
+	
+	MAVLINK_START_UART_SEND(chan, header_len + 3 + (uint16_t)length + (uint16_t)signature_len);
 	_mavlink_send_uart(chan, (const char *)buf, header_len+1);
 	_mavlink_send_uart(chan, packet, length);
 	_mavlink_send_uart(chan, (const char *)ck, 2);
-	MAVLINK_END_UART_SEND(chan, header_len + 3 + (uint16_t)length);
+	if (signature_len != 0) {
+		_mavlink_send_uart(chan, (const char *)signature, signature_len);
+	}
+	MAVLINK_END_UART_SEND(chan, header_len + 3 + (uint16_t)length + (uint16_t)signature_len);
 }
 
 /**
@@ -177,11 +249,11 @@ MAVLINK_HELPER uint16_t mavlink_msg_to_send_buffer(uint8_t *buffer, const mavlin
 	memcpy(buffer, (const uint8_t *)&msg->magic, MAVLINK_NUM_HEADER_BYTES + (uint16_t)msg->len);
 
 	uint8_t *ck = buffer + (MAVLINK_NUM_HEADER_BYTES + (uint16_t)msg->len);
-
+	uint8_t signature_len = (msg->incompat_flags & MAVLINK_IFLAG_SIGNED)?MAVLINK_SIGNATURE_BLOCK_LEN:0;
 	ck[0] = (uint8_t)(msg->checksum & 0xFF);
 	ck[1] = (uint8_t)(msg->checksum >> 8);
 
-	return MAVLINK_NUM_NON_PAYLOAD_BYTES + (uint16_t)msg->len;
+	return MAVLINK_NUM_NON_PAYLOAD_BYTES + (uint16_t)msg->len + (uint16_t)signature_len;
 }
 
 union __mavlink_bitfield {
@@ -505,9 +577,29 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 			// Successfully got message
 			status->msg_received = MAVLINK_FRAMING_OK;
                 }
-                status->parse_state = MAVLINK_PARSE_STATE_IDLE;
                 _MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx+1] = (char)c;
-                memcpy(r_message, rxmsg, sizeof(mavlink_message_t));
+		if (rxmsg->incompat_flags & MAVLINK_IFLAG_SIGNED) {
+			status->parse_state = MAVLINK_PARSE_STATE_SIGNATURE_WAIT;
+			status->signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
+			status->msg_received = MAVLINK_FRAMING_INCOMPLETE;
+		} else {
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			memcpy(r_message, rxmsg, sizeof(mavlink_message_t));
+		}
+		break;
+	case MAVLINK_PARSE_STATE_SIGNATURE_WAIT:
+                _MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx+2+(MAVLINK_SIGNATURE_BLOCK_LEN-status->signature_wait)] = (char)c;
+		status->signature_wait--;
+		if (status->signature_wait == 0) {
+			// we have the whole signature
+			if (mavlink_signature_check(status->signing, rxmsg)) {
+				status->msg_received = MAVLINK_FRAMING_OK;
+			} else {
+				status->msg_received = MAVLINK_FRAMING_BAD_SIGNATURE;
+			}
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			memcpy(r_message, rxmsg, sizeof(mavlink_message_t));
+		}
 		break;
 	}
 

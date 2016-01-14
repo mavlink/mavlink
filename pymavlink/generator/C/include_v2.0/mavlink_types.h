@@ -31,6 +31,8 @@
 #define MAVLINK_MSG_ID_EXTENDED_MESSAGE 255
 #define MAVLINK_EXTENDED_HEADER_LEN 14
 
+#define MAVLINK_SIGNATURE_BLOCK_LEN 13
+
 #if (defined _MSC_VER) || ((defined __APPLE__) && (defined __MACH__)) || (defined __linux__)
   /* full fledged 32bit++ OS */
   #define MAVLINK_MAX_EXTENDED_PACKET_LEN 65507
@@ -125,6 +127,7 @@ typedef struct __mavlink_message {
 	uint8_t dialect;        ///< dialect ID from XML
 	uint16_t msgid;         ///< ID of message in payload
 	uint64_t payload64[(MAVLINK_MAX_PAYLOAD_LEN+MAVLINK_NUM_CHECKSUM_BYTES+7)/8];
+	uint8_t signature[MAVLINK_SIGNATURE_BLOCK_LEN];
 }) mavlink_message_t;
 
 MAVPACKED(
@@ -211,17 +214,21 @@ typedef enum {
     MAVLINK_PARSE_STATE_GOT_MSGID2,
     MAVLINK_PARSE_STATE_GOT_PAYLOAD,
     MAVLINK_PARSE_STATE_GOT_CRC1,
-    MAVLINK_PARSE_STATE_GOT_BAD_CRC1
+    MAVLINK_PARSE_STATE_GOT_BAD_CRC1,
+    MAVLINK_PARSE_STATE_SIGNATURE_WAIT
 } mavlink_parse_state_t; ///< The state machine for the comm parser
 
 typedef enum {
     MAVLINK_FRAMING_INCOMPLETE=0,
     MAVLINK_FRAMING_OK=1,
-    MAVLINK_FRAMING_BAD_CRC=2
+    MAVLINK_FRAMING_BAD_CRC=2,
+    MAVLINK_FRAMING_BAD_SIGNATURE=3
 } mavlink_framing_t;
 
 #define MAVLINK_STATUS_FLAG_IN_MAVLINK1  1 // last incoming packet was MAVLink1
 #define MAVLINK_STATUS_FLAG_OUT_MAVLINK1 2 // generate MAVLink1 by default
+#define MAVLINK_STATUS_FLAG_IN_SIGNED    4 // last incoming packet was signed and validated
+#define MAVLINK_STATUS_FLAG_IN_BADSIG    8 // last incoming packet had a bad signature
 
 #define MAVLINK_STX_MAVLINK1 0xFE          // marker for old protocol
 
@@ -236,7 +243,25 @@ typedef struct __mavlink_status {
     uint16_t packet_rx_success_count;   ///< Received packets
     uint16_t packet_rx_drop_count;      ///< Number of packet drops
     uint8_t flags;                      ///< MAVLINK_STATUS_FLAG_*
+    uint8_t signature_wait;             ///< number of signature bytes left to receive
+    struct __mavlink_signing *signing;  ///< optional signing state
 } mavlink_status_t;
+
+/*
+  flags controlling signing
+ */
+#define MAVLINK_SIGNING_FLAG_SIGN_OUTGOING 1
+
+/*
+  state of MAVLink signing for this channel
+ */
+typedef struct __mavlink_signing {
+    uint8_t flags;                     ///< MAVLINK_SIGNING_FLAG_*
+    uint8_t link_id;
+    uint64_t timestamp;
+    uint8_t secret_key[32];
+} mavlink_signing_t;
+
 
 #define MAVLINK_BIG_ENDIAN 0
 #define MAVLINK_LITTLE_ENDIAN 1
@@ -250,5 +275,10 @@ typedef struct __mavlink_crc_entry {
 	uint8_t crc_extra;
 	uint8_t msg_len;
 } mavlink_crc_entry_t;
+
+/*
+  incompat_flags bits
+ */
+#define MAVLINK_IFLAG_SIGNED  0x01
 
 #endif /* MAVLINK_TYPES_H_ */
