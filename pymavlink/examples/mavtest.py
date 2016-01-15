@@ -14,12 +14,18 @@ class fifo(object):
     def read(self):
         return self.buf.pop(0)
 
-def test_protocol(mavlink):
+def test_protocol(mavlink, signing=False):
     # we will use a fifo as an encode/decode buffer
     f = fifo()
 
     # create a mavlink instance, which will do IO on file object 'f'
     mav = mavlink.MAVLink(f)
+
+    if signing:
+        mav.signing.secret_key = chr(42)*32
+        mav.signing.link_id = 0
+        mav.signing.timestamp = 0
+        mav.sign_messages = True
 
     # set the WP_RADIUS parameter on the MAV at the end of the link
     mav.param_set_send(7, 1, "WP_RADIUS", 101, mavlink.MAV_PARAM_TYPE_REAL32)
@@ -53,3 +59,6 @@ test_protocol(mavlink1)
 
 print("Testing mavlink2")
 test_protocol(mavlink2)
+
+print("Testing mavlink2 with signing")
+test_protocol(mavlink2, True)
