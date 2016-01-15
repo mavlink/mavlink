@@ -50,6 +50,7 @@ if native_supported and float(WIRE_PROTOCOL_VERSION) <= 1:
         print('ERROR LOADING MAVNATIVE - falling back to python implementation')
         native_supported = False
 else:
+    # mavnative isn't supported for MAVLink2 yet
     native_supported = False
 
 # some base types from mavlink_types.h
@@ -423,6 +424,7 @@ class MAVLink(object):
                 self.startup_time = time.time()
                 self.sign_messages = False
                 self.signing = MAVLinkSigning()
+                self.allow_unsigned_callback = None
                 if native_supported and (use_native or native_testing or native_force):
                     print("NOTE: mavnative is currently beta-test code")
                     self.native = mavnative.NativeConnection(MAVLink_message, mavlink_map)
@@ -569,8 +571,7 @@ class MAVLink(object):
             h.update(msgbuf[:-6])
             sig1 = h.digest()[:6]
             sig2 = msgbuf[-6:]
-            if sig1 != sig2:
-                raise MAVError('Invalid signature')
+            return sig1 == sig2
 
         def decode(self, msgbuf):
                 '''decode a buffer as a MAVLink message'''                    
@@ -625,8 +626,16 @@ class MAVLink(object):
                 if crc != crc2.crc:
                     raise MAVError('invalid MAVLink CRC in msgID %u 0x%04x should be 0x%04x' % (msgId, crc, crc2.crc))
 
-                if signature_len == MAVLINK_SIGNATURE_BLOCK_LEN and self.signing.secret_key is not None:
-                    self.check_signature(msgbuf)
+                if self.signing.secret_key is not None:
+                    sig_ok = False
+                    if signature_len == MAVLINK_SIGNATURE_BLOCK_LEN:
+                        sig_ok = self.check_signature(msgbuf)
+                        if not sig_ok and self.allow_unsigned_callback is not None:
+                            sig_ok = self.allow_unsigned_callback(self, dialect, msgId)
+                    elif self.allow_unsigned_callback is not None:
+                        sig_ok = self.allow_unsigned_callback(self, dialect, msgId)                        
+                    if not sig_ok:
+                        raise MAVError('Invalid signature')
                     
                 try:
                     t = struct.unpack(fmt, msgbuf[headerlen:-(2+signature_len)])
