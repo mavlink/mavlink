@@ -182,13 +182,14 @@ class MAVLink_message(object):
         self._msgbuf += struct.pack('<BQ', mav.signing.link_id, mav.signing.timestamp)[:7]
         h.update(mav.signing.secret_key)
         h.update(self._msgbuf)
-        self._msgbuf += h.digest()[:6]
+        sig = h.digest()[:6]
+        self._msgbuf += sig
         mav.signing.timestamp += 1
 
     def pack(self, mav, crc_extra, payload):
         self._payload = payload
         incompat_flags = 0
-        if mav.sign_messages:
+        if mav.signing.sign_outgoing:
             incompat_flags |= MAVLINK_IFLAG_SIGNED
         self._header  = MAVLink_header(self._header.dialect, self._header.msgId,
                                        incompat_flags=incompat_flags, compat_flags=0,
@@ -200,7 +201,7 @@ class MAVLink_message(object):
             crc.accumulate_str(struct.pack('B', crc_extra))
         self._crc = crc.crc
         self._msgbuf += struct.pack('<H', self._crc)
-        if mav.sign_messages:
+        if mav.signing.sign_outgoing:
             self.sign_packet(mav)
         return self._msgbuf
 
@@ -394,6 +395,8 @@ class MAVLinkSigning(object):
         self.secret_key = None
         self.timestamp = 0
         self.link_id = 0
+        self.sign_outgoing = True
+        self.allow_unsigned_callback = None
 
 class MAVLink(object):
         '''MAVLink protocol handling class'''
@@ -422,9 +425,7 @@ class MAVLink(object):
                 self.total_bytes_received = 0
                 self.total_receive_errors = 0
                 self.startup_time = time.time()
-                self.sign_messages = False
                 self.signing = MAVLinkSigning()
-                self.allow_unsigned_callback = None
                 if native_supported and (use_native or native_testing or native_force):
                     print("NOTE: mavnative is currently beta-test code")
                     self.native = mavnative.NativeConnection(MAVLink_message, mavlink_map)
@@ -566,11 +567,13 @@ class MAVLink(object):
 
         def check_signature(self, msgbuf):
             '''check signature on incoming message'''
+            if isinstance(msgbuf, array.array):
+                msgbuf = msgbuf.tostring()
             h = hashlib.new('sha256')
             h.update(self.signing.secret_key)
             h.update(msgbuf[:-6])
-            sig1 = h.digest()[:6]
-            sig2 = msgbuf[-6:]
+            sig1 = str(h.digest())[:6]
+            sig2 = str(msgbuf)[-6:]
             return sig1 == sig2
 
         def decode(self, msgbuf):
@@ -619,7 +622,6 @@ class MAVLink(object):
                 except struct.error as emsg:
                     raise MAVError('Unable to unpack MAVLink CRC: %s' % emsg)
                 crcbuf = msgbuf[1:-(2+signature_len)]
-                signature = msgbuf[-signature_len:]
                 if ${crc_extra}: # using CRC extra
                     crcbuf.append(crc_extra)
                 crc2 = x25crc(crcbuf)
@@ -630,10 +632,10 @@ class MAVLink(object):
                     sig_ok = False
                     if signature_len == MAVLINK_SIGNATURE_BLOCK_LEN:
                         sig_ok = self.check_signature(msgbuf)
-                        if not sig_ok and self.allow_unsigned_callback is not None:
-                            sig_ok = self.allow_unsigned_callback(self, dialect, msgId)
-                    elif self.allow_unsigned_callback is not None:
-                        sig_ok = self.allow_unsigned_callback(self, dialect, msgId)                        
+                        if not sig_ok and self.signing.allow_unsigned_callback is not None:
+                            sig_ok = self.signing.allow_unsigned_callback(self, dialect, msgId)
+                    elif self.signing.allow_unsigned_callback is not None:
+                        sig_ok = self.signing.allow_unsigned_callback(self, dialect, msgId)                        
                     if not sig_ok:
                         raise MAVError('Invalid signature')
                     
