@@ -32,6 +32,9 @@ mavfile_global = None
 # If the caller hasn't specified a particular native/legacy version, use this
 default_native = False
 
+# link_id used for signing
+global_link_id = 0
+
 # Use a globally-set MAVLink dialect if one has been specified as an environment variable.
 if not 'MAVLINK_DIALECT' in os.environ:
     os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
@@ -702,6 +705,23 @@ class mavfile(object):
         if not name in self.params:
             return default
         return self.params[name]
+
+    def setup_signing(self, secret_key, sign_outgoing=True, allow_unsigned_callback=None, initial_timestamp=None, link_id=None):
+        '''setup for MAVLink2 signing'''
+        self.mav.signing.secret_key = secret_key
+        self.mav.signing.sign_outgoing = sign_outgoing
+        self.mav.signing.allow_unsigned_callback = allow_unsigned_callback
+        if link_id is None:
+            # auto-increment the link_id for each link
+            global global_link_id
+            link_id = global_link_id
+            global_link_id = min(global_link_id + 1, 255)
+        self.mav.signing.link_id = link_id
+        if initial_timestamp is None:
+            epoch_offset = 1420070400
+            now = max(time.time(), epoch_offset)
+            initial_timestamp = now - epoch_offset
+        self.mav.signing.initial_timestamp = initial_timestamp
 
 def set_close_on_exec(fd):
     '''set the clone on exec flag on a file descriptor. Ignore exceptions'''
