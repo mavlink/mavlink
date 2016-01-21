@@ -395,7 +395,7 @@ class MAVLinkSigning(object):
         self.secret_key = None
         self.timestamp = 0
         self.link_id = 0
-        self.sign_outgoing = True
+        self.sign_outgoing = False
         self.allow_unsigned_callback = None
 
 class MAVLink(object):
