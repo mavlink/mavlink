@@ -277,7 +277,20 @@ class MAVXML(object):
         self.message_names = {}
         self.largest_payload = 0
 
+        if not self.multi_dialect:
+            # remove messages with IDs > 255
+            m2 = []
+            for m in self.message:
+                if m.id <= 255:
+                    m2.append(m)
+                else:
+                    print("Ignoring MAVLink2 message %s" % m.name)
+            self.message = m2
+
         for m in self.message:
+            if not self.multi_dialect and m.id > 255:
+                continue
+
             m.wire_length = 0
             m.fieldnames = []
             m.fieldlengths = []
