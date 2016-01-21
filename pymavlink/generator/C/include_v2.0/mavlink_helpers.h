@@ -92,6 +92,7 @@ MAVLINK_HELPER uint8_t mavlink_sign_packet(mavlink_signing_t *signing,
  * @brief check a signature block for a packet
  */
 MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
+					    mavlink_signing_streams_t *signing_streams,
 					    const mavlink_message_t *msg)
 {
 	if (signing == NULL) {
@@ -99,15 +100,72 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
 	}
         const uint8_t *p = (const uint8_t *)&msg->magic;
         uint16_t len = MAVLINK_CORE_HEADER_LEN+1+msg->len+2+1+6;
+	const uint8_t *psig = p + MAVLINK_CORE_HEADER_LEN+1+msg->len+2;
+        const uint8_t *incoming_signature = psig+7;
 	mavlink_sha256_ctx ctx;
 	uint8_t signature[6];
+	uint16_t i;
         
 	mavlink_sha256_init(&ctx);
 	mavlink_sha256_update(&ctx, signing->secret_key, sizeof(signing->secret_key));
 	mavlink_sha256_update(&ctx, p, len);
 	mavlink_sha256_final_48(&ctx, signature);
-        const uint8_t *incoming_signature = (const uint8_t *)(_MAV_PAYLOAD(msg)+msg->len+2+7);
-	return memcmp(signature, incoming_signature, 6) == 0;
+	if (memcmp(signature, incoming_signature, 6) != 0) {
+		return false;
+	}
+
+	// now check timestamp
+	union tstamp {
+	    uint64_t t64;
+	    uint8_t t8[8];
+	} tstamp;
+	uint8_t link_id = p[0];
+	tstamp.t64 = 0;
+	memcpy(tstamp.t8, psig+1, 6);
+
+	if (signing_streams == NULL) {
+		return false;
+	}
+	
+	// find stream
+	for (i=0; i<signing_streams->num_signing_streams; i++) {
+		if (msg->sysid == signing_streams->stream[i].sysid &&
+		    msg->compid == signing_streams->stream[i].compid &&
+		    link_id == signing_streams->stream[i].link_id) {
+			break;
+		}
+	}
+	if (i == signing_streams->num_signing_streams) {
+		if (signing_streams->num_signing_streams >= MAVLINK_MAX_SIGNING_STREAMS) {
+			// over max number of streams
+			return false;
+		}
+		// new stream. Only accept if timestamp is not more than 1 minute old
+		if (tstamp.t64 < signing->timestamp + 6000*1000UL) {
+			return false;
+		}
+		// add new stream
+		signing_streams->stream[i].sysid = msg->sysid;
+		signing_streams->stream[i].compid = msg->compid;
+		signing_streams->stream[i].link_id = link_id;
+		signing_streams->num_signing_streams++;
+	} else {
+		union tstamp last_tstamp;
+		memcpy(last_tstamp.t8, signing_streams->stream[i].timestamp_bytes, 6);
+		if (tstamp.t64 <= last_tstamp.t64) {
+			// repeating old timestamp
+			return false;
+		}
+	}
+
+	// remember last timestamp
+	memcpy(signing_streams->stream[i].timestamp_bytes, psig+1, 6);
+
+	// our next timestamp must be at least this timestamp
+	if (tstamp.t64 > signing->timestamp) {
+		signing->timestamp = tstamp.t64;
+	}
+	return true;
 }
 
 
@@ -658,8 +716,15 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
                 _MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx+2+(MAVLINK_SIGNATURE_BLOCK_LEN-status->signature_wait)] = (char)c;
 		status->signature_wait--;
 		if (status->signature_wait == 0) {
-			// we have the whole signature
-			if (mavlink_signature_check(status->signing, rxmsg)) {
+			// we have the whole signature, check it is OK
+			bool sig_ok = mavlink_signature_check(status->signing, status->signing_streams, rxmsg);
+			if (!sig_ok &&
+			    (status->signing->accept_unsigned_callback &&
+			     status->signing->accept_unsigned_callback(status, rxmsg->dialect, rxmsg->msgid))) {
+				// accepted via application level override
+				sig_ok = true;
+			}
+			if (sig_ok) {
 				status->msg_received = MAVLINK_FRAMING_OK;
 			} else {
 				status->msg_received = MAVLINK_FRAMING_BAD_SIGNATURE;
