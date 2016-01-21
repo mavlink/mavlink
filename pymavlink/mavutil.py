@@ -718,10 +718,12 @@ class mavfile(object):
             global_link_id = min(global_link_id + 1, 255)
         self.mav.signing.link_id = link_id
         if initial_timestamp is None:
+            # timestamp is time since 1/1/2015
             epoch_offset = 1420070400
             now = max(time.time(), epoch_offset)
             initial_timestamp = now - epoch_offset
-        self.mav.signing.initial_timestamp = initial_timestamp
+        # initial_timestamp is in 10usec units
+        self.mav.signing.initial_timestamp = int(initial_timestamp*1e5)
 
 def set_close_on_exec(fd):
     '''set the clone on exec flag on a file descriptor. Ignore exceptions'''
