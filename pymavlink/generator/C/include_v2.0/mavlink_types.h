@@ -283,5 +283,6 @@ typedef struct __mavlink_crc_entry {
   incompat_flags bits
  */
 #define MAVLINK_IFLAG_SIGNED  0x01
+#define MAVLINK_IFLAG_MASK    0x01 // mask of all understood bits
 
 #endif /* MAVLINK_TYPES_H_ */
