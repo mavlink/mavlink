@@ -285,6 +285,9 @@ class mavfile(object):
         for hook in self.message_hooks:
             hook(self, msg)
 
+        if msg.get_signed() and self.mav.signing.link_id == 0 and msg.get_link_id() != 0:
+            self.mav.signing.link_id = msg.get_link_id()
+
 
     def packet_loss(self):
         '''packet loss as a percentage'''
@@ -723,7 +726,8 @@ class mavfile(object):
             now = max(time.time(), epoch_offset)
             initial_timestamp = now - epoch_offset
         # initial_timestamp is in 10usec units
-        self.mav.signing.initial_timestamp = int(initial_timestamp*1e5)
+        initial_timestamp = int(initial_timestamp * 100 * 1000)
+        self.mav.signing.initial_timestamp = int(initial_timestamp*100*1000)
 
 def set_close_on_exec(fd):
     '''set the clone on exec flag on a file descriptor. Ignore exceptions'''
