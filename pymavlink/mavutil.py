@@ -727,7 +727,15 @@ class mavfile(object):
             initial_timestamp = now - epoch_offset
         # initial_timestamp is in 10usec units
         initial_timestamp = int(initial_timestamp * 100 * 1000)
-        self.mav.signing.initial_timestamp = int(initial_timestamp*100*1000)
+        self.mav.signing.timestamp = int(initial_timestamp*100*1000)
+
+    def disable_signing(self):
+        '''disable MAVLink2 signing'''
+        self.mav.signing.secret_key = None
+        self.mav.signing.sign_outgoing = False
+        self.mav.signing.allow_unsigned_callback = None
+        self.mav.signing.link_id = 0
+        self.mav.signing.timestamp = 0
 
 def set_close_on_exec(fd):
     '''set the clone on exec flag on a file descriptor. Ignore exceptions'''
