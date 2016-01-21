@@ -119,7 +119,7 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
 	    uint64_t t64;
 	    uint8_t t8[8];
 	} tstamp;
-	uint8_t link_id = p[0];
+	uint8_t link_id = psig[0];
 	tstamp.t64 = 0;
 	memcpy(tstamp.t8, psig+1, 6);
 
@@ -141,7 +141,7 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
 			return false;
 		}
 		// new stream. Only accept if timestamp is not more than 1 minute old
-		if (tstamp.t64 < signing->timestamp + 6000*1000UL) {
+		if (tstamp.t64 + 6000*1000UL < signing->timestamp) {
 			return false;
 		}
 		// add new stream
@@ -151,6 +151,7 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
 		signing_streams->num_signing_streams++;
 	} else {
 		union tstamp last_tstamp;
+		last_tstamp.t64 = 0;
 		memcpy(last_tstamp.t8, signing_streams->stream[i].timestamp_bytes, 6);
 		if (tstamp.t64 <= last_tstamp.t64) {
 			// repeating old timestamp
@@ -703,7 +704,6 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 	case MAVLINK_PARSE_STATE_GOT_BAD_CRC1:
 		if (status->parse_state == MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != (rxmsg->checksum >> 8)) {
 			// got a bad CRC message
-			printf("bad CRC\n");
 			status->msg_received = MAVLINK_FRAMING_BAD_CRC;
 		} else {
 			// Successfully got message
@@ -715,6 +715,12 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 			status->signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
 			status->msg_received = MAVLINK_FRAMING_INCOMPLETE;
 		} else {
+			if (status->signing &&
+			    (status->signing->accept_unsigned_callback == NULL ||
+			     !status->signing->accept_unsigned_callback(status, rxmsg->dialect, rxmsg->msgid))) {
+				// don't accept this unsigned packet
+				status->msg_received = MAVLINK_FRAMING_BAD_SIGNATURE;
+			}
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 			memcpy(r_message, rxmsg, sizeof(mavlink_message_t));
 		}
@@ -874,7 +880,8 @@ MAVLINK_HELPER uint8_t mavlink_frame_char(uint8_t chan, uint8_t c, mavlink_messa
 MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
     uint8_t msg_received = mavlink_frame_char(chan, c, r_message, r_mavlink_status);
-    if (msg_received == MAVLINK_FRAMING_BAD_CRC) {
+    if (msg_received == MAVLINK_FRAMING_BAD_CRC ||
+	msg_received == MAVLINK_FRAMING_BAD_SIGNATURE) {
 	    // we got a bad CRC. Treat as a parse failure
 	    mavlink_message_t* rxmsg = mavlink_get_channel_buffer(chan);
 	    mavlink_status_t* status = mavlink_get_channel_status(chan);
