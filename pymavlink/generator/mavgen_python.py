@@ -97,6 +97,8 @@ class MAVLink_message(object):
         self._crc        = None
         self._fieldnames = []
         self._type       = name
+        self._signed     = False
+        self._link_id    = None
 
     def get_msgbuf(self):
         if isinstance(self._msgbuf, bytearray):
@@ -129,6 +131,12 @@ class MAVLink_message(object):
 
     def get_seq(self):
         return self._header.seq
+
+    def get_signed(self):
+        return self._signed
+
+    def get_link_id(self):
+        return self._link_id
 
     def __str__(self):
         ret = '%s {' % self._type
@@ -586,7 +594,7 @@ class MAVLink(object):
             else:
                 # a new stream has appeared. Accept the timestamp if it is at most
                 # one minute behind our current timestamp
-                if timestamp < self.signing.timestamp + 6e6:
+                if timestamp + 6000*1000 < self.signing.timestamp:
                     return False
                 self.signing.stream_timestamps[stream_key] = timestamp
 
@@ -656,15 +664,17 @@ class MAVLink(object):
                 if crc != crc2.crc:
                     raise MAVError('invalid MAVLink CRC in msgID %u 0x%04x should be 0x%04x' % (msgId, crc, crc2.crc))
 
+                sig_ok = False
                 if self.signing.secret_key is not None:
-                    sig_ok = False
+                    accept_signature = False
                     if signature_len == MAVLINK_SIGNATURE_BLOCK_LEN:
                         sig_ok = self.check_signature(msgbuf, srcSystem, srcComponent)
-                        if not sig_ok and self.signing.allow_unsigned_callback is not None:
-                            sig_ok = self.signing.allow_unsigned_callback(self, dialect, msgId)
+                        accept_signature = sig_ok
+                        if not accept_signature and self.signing.allow_unsigned_callback is not None:
+                            accept_signature = self.signing.allow_unsigned_callback(self, dialect, msgId)
                     elif self.signing.allow_unsigned_callback is not None:
-                        sig_ok = self.signing.allow_unsigned_callback(self, dialect, msgId)                        
-                    if not sig_ok:
+                        accept_signature = self.signing.allow_unsigned_callback(self, dialect, msgId)                        
+                    if not accept_signature:
                         raise MAVError('Invalid signature')
                     
                 try:
@@ -704,6 +714,9 @@ class MAVLink(object):
                     m = type(*t)
                 except Exception as emsg:
                     raise MAVError('Unable to instantiate MAVLink message of type %s : %s' % (type, emsg))
+                m._signed = sig_ok
+                if m._signed:
+                    m._link_id = msgbuf[-13]
                 m._msgbuf = msgbuf
                 m._payload = msgbuf[6:-(2+signature_len)]
                 m._crc = crc
