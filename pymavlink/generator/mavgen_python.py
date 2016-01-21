@@ -397,6 +397,7 @@ class MAVLinkSigning(object):
         self.link_id = 0
         self.sign_outgoing = False
         self.allow_unsigned_callback = None
+        self.stream_timestamps = {}
 
 class MAVLink(object):
         '''MAVLink protocol handling class'''
@@ -565,16 +566,41 @@ class MAVLink(object):
                 ret.append(m)
             return ret
 
-        def check_signature(self, msgbuf):
+        def check_signature(self, msgbuf, srcSystem, srcComponent):
             '''check signature on incoming message'''
             if isinstance(msgbuf, array.array):
                 msgbuf = msgbuf.tostring()
+            timestamp_buf = msgbuf[-12:-6]
+            link_id = msgbuf[-13]
+            (tlow, thigh) = struct.unpack('<IH', timestamp_buf)
+            timestamp = tlow + (thigh<<32)
+
+            # see if the timestamp is acceptable
+            stream_key = (link_id,srcSystem,srcComponent)
+            if stream_key in self.signing.stream_timestamps:
+                if timestamp <= self.signing.stream_timestamps[stream_key]:
+                    # reject old timestamp
+                    return False
+            else:
+                # a new stream has appeared. Accept the timestamp if it is at most
+                # one minute behind our current timestamp
+                if timestamp < self.signing.timestamp + 6e6:
+                    return False
+                self.signing.stream_timestamps[stream_key] = timestamp
+
             h = hashlib.new('sha256')
             h.update(self.signing.secret_key)
             h.update(msgbuf[:-6])
             sig1 = str(h.digest())[:6]
             sig2 = str(msgbuf)[-6:]
-            return sig1 == sig2
+            if sig1 != sig2:
+                return False
+
+            # the timestamp we next send with is the max of the received timestamp and
+            # our current timestamp
+            self.signing.timestamp = max(self.signing.timestamp, timestamp)
+            return True
+            
 
         def decode(self, msgbuf):
                 '''decode a buffer as a MAVLink message'''                    
@@ -631,7 +657,7 @@ class MAVLink(object):
                 if self.signing.secret_key is not None:
                     sig_ok = False
                     if signature_len == MAVLINK_SIGNATURE_BLOCK_LEN:
-                        sig_ok = self.check_signature(msgbuf)
+                        sig_ok = self.check_signature(msgbuf, srcSystem, srcComponent)
                         if not sig_ok and self.signing.allow_unsigned_callback is not None:
                             sig_ok = self.signing.allow_unsigned_callback(self, dialect, msgId)
                     elif self.signing.allow_unsigned_callback is not None:
