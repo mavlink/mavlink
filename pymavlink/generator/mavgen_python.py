@@ -536,6 +536,8 @@ class MAVLink(object):
                     sbuf = str(sbuf)
                 (magic, self.expected_length, incompat_flags) = struct.unpack('BBB', sbuf)
                 self.expected_length += header_len + 2
+                if (incompat_flags & ~MAVLINK_IFLAG_SIGNED) != 0:
+                    raise MAVError("invalid incompat_flags 0x%x" % incompat_flags) 
                 if magic == PROTOCOL_MARKER_V2 and (incompat_flags & MAVLINK_IFLAG_SIGNED):
                     self.expected_length += MAVLINK_SIGNATURE_BLOCK_LEN
             if self.expected_length >= (header_len+2) and len(self.buf) >= self.expected_length:
