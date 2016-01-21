@@ -600,6 +600,13 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 
 	case MAVLINK_PARSE_STATE_GOT_LENGTH:
 		rxmsg->incompat_flags = c;
+		if ((rxmsg->incompat_flags & ~MAVLINK_IFLAG_MASK) != 0) {
+			// message includes an incompatible feature flag
+			status->parse_error++;
+			status->msg_received = 0;
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			break;
+		}
 		mavlink_update_checksum(rxmsg, c);
 		status->parse_state = MAVLINK_PARSE_STATE_GOT_INCOMPAT_FLAGS;
 		break;
