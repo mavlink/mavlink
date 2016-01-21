@@ -224,7 +224,13 @@ typedef struct __mavlink_status {
     uint8_t flags;                      ///< MAVLINK_STATUS_FLAG_*
     uint8_t signature_wait;             ///< number of signature bytes left to receive
     struct __mavlink_signing *signing;  ///< optional signing state
+    struct __mavlink_signing_streams *signing_streams; ///< global record of stream timestamps
 } mavlink_status_t;
+
+/*
+  a callback function to allow for accepting unsigned packets
+ */
+typedef bool (*mavlink_accept_unsigned_t)(const mavlink_status_t *status, uint8_t dialect, uint16_t msg_id);
 
 /*
   flags controlling signing
@@ -239,7 +245,25 @@ typedef struct __mavlink_signing {
     uint8_t link_id;
     uint64_t timestamp;
     uint8_t secret_key[32];
+    mavlink_accept_unsigned_t accept_unsigned_callback;
 } mavlink_signing_t;
+
+/*
+  timestamp state of each logical signing stream. This needs to be the same structure for all
+  connections in order to be secure
+ */
+#ifndef MAVLINK_MAX_SIGNING_STREAMS
+#define MAVLINK_MAX_SIGNING_STREAMS 16
+#endif
+typedef struct __mavlink_signing_streams {
+    uint16_t num_signing_streams;
+    struct __mavlink_signing_stream {
+        uint8_t link_id;
+        uint8_t sysid;
+        uint8_t compid;
+        uint8_t timestamp_bytes[6];
+    } stream[MAVLINK_MAX_SIGNING_STREAMS];
+} mavlink_signing_streams_t;
 
 
 #define MAVLINK_BIG_ENDIAN 0
