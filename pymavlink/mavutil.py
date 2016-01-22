@@ -285,7 +285,12 @@ class mavfile(object):
         for hook in self.message_hooks:
             hook(self, msg)
 
-        if msg.get_signed() and self.mav.signing.link_id == 0 and msg.get_link_id() != 0:
+        if (msg.get_signed() and
+            self.mav.signing.link_id == 0 and
+            msg.get_link_id() != 0 and
+            self.target_system == msg.get_srcSystem() and
+            self.target_component == msg.get_srcComponent()):
+            # change to link_id from incoming packet
             self.mav.signing.link_id = msg.get_link_id()
 
 
@@ -725,9 +730,9 @@ class mavfile(object):
             epoch_offset = 1420070400
             now = max(time.time(), epoch_offset)
             initial_timestamp = now - epoch_offset
+            initial_timestamp = int(initial_timestamp * 100 * 1000)
         # initial_timestamp is in 10usec units
-        initial_timestamp = int(initial_timestamp * 100 * 1000)
-        self.mav.signing.timestamp = int(initial_timestamp*100*1000)
+        self.mav.signing.timestamp = initial_timestamp
 
     def disable_signing(self):
         '''disable MAVLink2 signing'''
