@@ -590,13 +590,16 @@ class MAVLink(object):
             if stream_key in self.signing.stream_timestamps:
                 if timestamp <= self.signing.stream_timestamps[stream_key]:
                     # reject old timestamp
+                    # print('old timestamp')
                     return False
             else:
                 # a new stream has appeared. Accept the timestamp if it is at most
                 # one minute behind our current timestamp
                 if timestamp + 6000*1000 < self.signing.timestamp:
+                    # print('bad new stream ', timestamp/(100.0*1000*60*60*24*365), self.signing.timestamp/(100.0*1000*60*60*24*365))
                     return False
                 self.signing.stream_timestamps[stream_key] = timestamp
+                # print('new stream')
 
             h = hashlib.new('sha256')
             h.update(self.signing.secret_key)
@@ -604,6 +607,7 @@ class MAVLink(object):
             sig1 = str(h.digest())[:6]
             sig2 = str(msgbuf)[-6:]
             if sig1 != sig2:
+                # print('sig mismatch')
                 return False
 
             # the timestamp we next send with is the max of the received timestamp and
