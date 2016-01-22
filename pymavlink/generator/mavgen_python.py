@@ -524,7 +524,7 @@ class MAVLink(object):
             if len(self.buf) >= 1 and self.buf[0] == PROTOCOL_MARKER_V2:
                 header_len = HEADER_LEN_V2
                 
-            if len(self.buf) >= 1 and self.buf[0] != ${protocol_marker}:
+            if len(self.buf) >= 1 and self.buf[0] != PROTOCOL_MARKER_V1 and self.buf[0] != PROTOCOL_MARKER_V2:
                 magic = self.buf[0]
                 self.buf = self.buf[1:]
                 if self.robust_parsing:
@@ -543,22 +543,24 @@ class MAVLink(object):
                 if sys.version_info[0] < 3:
                     sbuf = str(sbuf)
                 (magic, self.expected_length, incompat_flags) = struct.unpack('BBB', sbuf)
-                self.expected_length += header_len + 2
-                if (incompat_flags & ~MAVLINK_IFLAG_SIGNED) != 0:
-                    raise MAVError("invalid incompat_flags 0x%x" % incompat_flags) 
                 if magic == PROTOCOL_MARKER_V2 and (incompat_flags & MAVLINK_IFLAG_SIGNED):
-                    self.expected_length += MAVLINK_SIGNATURE_BLOCK_LEN
+                        self.expected_length += MAVLINK_SIGNATURE_BLOCK_LEN
+                self.expected_length += header_len + 2
             if self.expected_length >= (header_len+2) and len(self.buf) >= self.expected_length:
                 mbuf = array.array('B', self.buf[0:self.expected_length])
                 self.buf = self.buf[self.expected_length:]
                 self.expected_length = header_len+2
                 if self.robust_parsing:
                     try:
+                        if magic == PROTOCOL_MARKER_V2 and (incompat_flags & ~MAVLINK_IFLAG_SIGNED) != 0:
+                            raise MAVError('invalid incompat_flags 0x%x 0x%x %u' % (incompat_flags, magic, self.expected_length))
                         m = self.decode(mbuf)
                     except MAVError as reason:
                         m = MAVLink_bad_data(mbuf, reason.message)
                         self.total_receive_errors += 1
                 else:
+                    if magic == PROTOCOL_MARKER_V2 and (incompat_flags & ~MAVLINK_IFLAG_SIGNED) != 0:
+                        raise MAVError('invalid incompat_flags 0x%x 0x%x %u' % (incompat_flags, magic, self.expected_length))
                     m = self.decode(mbuf)
                 return m
             return None
@@ -641,7 +643,7 @@ class MAVLink(object):
                 else:
                     signature_len = 0
 
-                if ord(magic) != ${protocol_marker}:
+                if ord(magic) != PROTOCOL_MARKER_V1 and ord(magic) != PROTOCOL_MARKER_V2:
                     raise MAVError("invalid MAVLink prefix '%s'" % magic)
                 if mlen != len(msgbuf)-(headerlen+2+signature_len):
                     raise MAVError('invalid MAVLink message length. Got %u expected %u, msgId=%u headerlen=%u' % (len(msgbuf)-(headerlen+2+signature_len), mlen, msgId, headerlen))
