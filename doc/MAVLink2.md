@@ -245,3 +245,44 @@ static bool accept_unsigned_callback(const mavlink_status_t *status,
     return false;
 }
 ```
+
+### Handling link IDs
+
+The purpose of the link_id field in the MAVLink2 signing structure is
+to prevent cross-channel replay attacks. Without the link_id an
+attacker could record a packet (such as a disarm request) on one
+channel, then play it back on a different channel.
+
+The intention with the link IDs is that each channel of communication
+between an autopilot and a GCS uses a different link ID. There is no
+requirement that the same link ID be used in both directions however.
+
+For C implementations the obvious mechanism is to use the MAVLink
+channel number as the link ID. That works well for an autopilot, but
+runs into an issue for a GCS implementation. The issue is that a user
+may launch multiple GCS instances talking to the same autopilot via
+different communication links (such as two radios, or USB and a
+radio). These multiple GCS instances will not be aware of each other,
+and so may choose the same link ID. If that happens then a large
+number of correctly signed packets will be rejected by the autopilot
+as they will have timestamps that are older than the timestamp
+received for the same stream tuple on the other communication link.
+
+The solution that I have adopted for MAVProxy is this:
+
+```
+        if (msg.get_signed() and
+            self.mav.signing.link_id == 0 and
+            msg.get_link_id() != 0 and
+            self.target_system == msg.get_srcSystem() and
+            self.target_component == msg.get_srcComponent()):
+            # change to link_id from incoming packet
+            self.mav.signing.link_id = msg.get_link_id()
+```
+
+what that says is that if the current link ID in use by MAVProxy is
+zero, and it receives a correctly signed packet with a non-zero link
+ID then it switches link ID to the one from the incoming packet.
+
+The has the effect of making the GCS slave its link ID to the link ID
+of the autopilot.
