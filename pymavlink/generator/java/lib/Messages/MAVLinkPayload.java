@@ -21,13 +21,17 @@ public class MAVLinkPayload {
 
     private static final long UNSIGNED_LONG_MIN_VALUE = 0;
 
-    public static final int MAX_PAYLOAD_SIZE = 512;
+    public static final int MAX_PAYLOAD_SIZE = 255;
     
     public final ByteBuffer payload;
     public int index;
 
-    public MAVLinkPayload() {
-        payload = ByteBuffer.allocate(MAX_PAYLOAD_SIZE);
+    public MAVLinkPayload(int payloadSize) {
+       if(payloadSize > MAX_PAYLOAD_SIZE) {
+            payload = ByteBuffer.allocate(MAX_PAYLOAD_SIZE);
+        } else {
+            payload = ByteBuffer.allocate(payloadSize);
+        }
     }
 
     public ByteBuffer getData() {
