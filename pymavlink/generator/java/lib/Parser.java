@@ -43,7 +43,6 @@ public class Parser {
 
             if (c == MAVLinkPacket.MAVLINK_STX) {
                 state = MAV_states.MAVLINK_PARSE_STATE_GOT_STX;
-                m = new MAVLinkPacket();
             }
             break;
 
@@ -52,7 +51,7 @@ public class Parser {
                 msg_received = false;
                 state = MAV_states.MAVLINK_PARSE_STATE_IDLE;
             } else {
-                m.len = c;
+                m = new MAVLinkPacket(c);
                 state = MAV_states.MAVLINK_PARSE_STATE_GOT_LENGTH;
             }
             break;

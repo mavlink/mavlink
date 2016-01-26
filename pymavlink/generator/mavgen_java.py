@@ -159,8 +159,7 @@ public class msg_${name_lower} extends MAVLinkMessage{
     * @return
     */
     public MAVLinkPacket pack(){
-        MAVLinkPacket packet = new MAVLinkPacket();
-        packet.len = MAVLINK_MSG_LENGTH;
+        MAVLinkPacket packet = new MAVLinkPacket(MAVLINK_MSG_LENGTH);
         packet.sysid = 255;
         packet.compid = 190;
         packet.msgid = MAVLINK_MSG_ID_${name};
@@ -259,7 +258,7 @@ public class MAVLinkPacket implements Serializable {
     /**
     * Message length. NOT counting STX, LENGTH, SEQ, SYSID, COMPID, MSGID, CRC1 and CRC2
     */
-    public int len;
+    public final int len;
 
     /**
     * Message sequence
@@ -297,18 +296,16 @@ public class MAVLinkPacket implements Serializable {
     */
     public CRC crc;
 
-    public MAVLinkPacket(){
-        payload = new MAVLinkPayload();
+    public MAVLinkPacket(int payloadLength){
+        len = payloadLength;
+        payload = new MAVLinkPayload(payloadLength);
     }
 
     /**
     * Check if the size of the Payload is equal to the "len" byte
     */
     public boolean payloadIsFilled() {
-        if (payload.size() >= MAVLinkPayload.MAX_PAYLOAD_SIZE-1) {
-            return true;
-        }
-        return (payload.size() == len);
+        return payload.size() >= len;
     }
 
     /**
@@ -329,8 +326,9 @@ public class MAVLinkPacket implements Serializable {
         crc.update_checksum(msgid);
 
         payload.resetIndex();
-        
-        for (int i = 0; i < payload.size(); i++) {
+
+        final int payloadSize = payload.size();
+        for (int i = 0; i < payloadSize; i++) {
             crc.update_checksum(payload.getByte());
         }
         crc.finish_checksum(msgid);
@@ -351,8 +349,9 @@ public class MAVLinkPacket implements Serializable {
         buffer[i++] = (byte) sysid;
         buffer[i++] = (byte) compid;
         buffer[i++] = (byte) msgid;
-        
-        for (int j = 0; j < payload.size(); j++) {
+
+        final int payloadSize = payload.size();
+        for (int j = 0; j < payloadSize; j++) {
             buffer[i++] = payload.payload.get(j);
         }
 
