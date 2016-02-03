@@ -122,18 +122,20 @@ class MAVEnumParam(object):
         self.description = description
 
 class MAVEnumEntry(object):
-    def __init__(self, name, value, description='', end_marker=False):
+    def __init__(self, name, value, description='', end_marker=False, autovalue=False):
         self.name = name
         self.value = value
         self.description = description
         self.param = []
         self.end_marker = end_marker
+        self.autovalue = autovalue  # True if value was *not* specified in XML
 
 class MAVEnum(object):
     def __init__(self, name, linenumber, description=''):
         self.name = name
         self.description = description
         self.entry = []
+        self.start_value = None
         self.highest_value = 0
         self.linenumber = linenumber
 
@@ -201,13 +203,22 @@ class MAVXML(object):
                 self.enum.append(MAVEnum(attrs['name'], p.CurrentLineNumber))
             elif in_element == "mavlink.enums.enum.entry":
                 check_attrs(attrs, ['name'], 'enum entry')
+                # determine value and if it was automatically assigned (for possible merging later)
                 if 'value' in attrs:
                     value = eval(attrs['value'])
+                    autovalue = False
                 else:
                     value = self.enum[-1].highest_value + 1
+                    autovalue = True
+                    print("Assigning value for enum %s : %u" % (attrs['name'], value))
+                # check lowest value
+                if (self.enum[-1].start_value == None or value < self.enum[-1].start_value):
+                    self.enum[-1].start_value = value
+                # check highest value
                 if (value > self.enum[-1].highest_value):
                     self.enum[-1].highest_value = value
-                self.enum[-1].entry.append(MAVEnumEntry(attrs['name'], value))
+                # append the new entry
+                self.enum[-1].entry.append(MAVEnumEntry(attrs['name'], value, '', False, autovalue))
             elif in_element == "mavlink.enums.enum.entry.param":
                 check_attrs(attrs, ['index'], 'enum param')
                 self.enum[-1].entry[-1].param.append(MAVEnumParam(attrs['index']))
@@ -311,7 +322,19 @@ def merge_enums(xml):
         newenums = []
         for enum in x.enum:
             if enum.name in emap:
-                emap[enum.name].entry.extend(enum.entry)
+                emapitem = emap[enum.name]
+                # merge the entries
+                emapitem.entry.extend(enum.entry)
+                # find highest value of merged entries
+                emapitem.highest_value = max(enum.highest_value, emapitem.highest_value)
+                # check for possible conflicting values after merge
+                if (enum.start_value <= emapitem.highest_value):
+                    for entry in emapitem.entry:
+                        # correct the value if necessary, but only if it wasy auto-assigned to begin with
+                        if entry.value <= emapitem.highest_value and entry.autovalue == True:
+                            entry.value = emapitem.highest_value + 1
+                            emapitem.highest_value = entry.value
+                            print("Incrementing auto-assigned value for enum %s to %u" % (entry.name, entry.value))
                 if not emap[enum.name].description:
                     emap[enum.name].description = enum.description
                 print("Merged enum %s" % enum.name)
