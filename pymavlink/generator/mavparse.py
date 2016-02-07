@@ -328,7 +328,7 @@ def merge_enums(xml):
         emap[e].entry.append(MAVEnumEntry("%s_ENUM_END" % emap[e].name,
                                             emap[e].entry[-1].value+1, end_marker=True))
 
-def check_duplicates(xml):
+def check_duplicates(xml, error_dupe_enums=True):
     '''check for duplicate message IDs'''
 
     merge_enums(xml)
@@ -357,10 +357,12 @@ def check_duplicates(xml):
                 s1 = "%s.%s" % (enum.name, entry.name)
                 s2 = "%s.%s" % (enum.name, entry.value)
                 if s1 in enummap or s2 in enummap:
-                    print("ERROR: Duplicate enums %s/%s at %s:%u and %s" % (
+                    print("%s: Duplicate enums %s/%s at %s:%u and %s" % (
+                        "ERROR" if error_dupe_enums else "WARNING",
                         s1, entry.value, x.filename, enum.linenumber,
                         enummap.get(s1) or enummap.get(s2)))
-                    return True
+                    if (error_dupe_enums):
+                        return True
                 enummap[s1] = "%s:%u" % (x.filename, enum.linenumber)
                 enummap[s2] = "%s:%u" % (x.filename, enum.linenumber)
 
