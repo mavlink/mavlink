@@ -18,6 +18,7 @@ DEFAULT_WIRE_PROTOCOL = mavparse.PROTOCOL_1_0
 DEFAULT_LANGUAGE = 'Python'
 DEFAULT_ERROR_LIMIT = 200
 DEFAULT_VALIDATE = True
+DEFAULT_ERR_ON_DUPE_ENUMS = True
 
 # List the supported languages. This is done globally because it's used by the GUI wrapper too
 supportedLanguages = ["C", "CS", "JavaScript", "Python", "WLua", "ObjC", "Swift", "Java"]
@@ -88,7 +89,7 @@ def mavgen(opts, args) :
     for x in xml:
         x.largest_payload = largest_payload
 
-    if mavparse.check_duplicates(xml):
+    if mavparse.check_duplicates(xml, opts.error_dupe_enums):
         sys.exit(1)
 
     print("Found %u MAVLink message types in %u XML files" % (
@@ -126,12 +127,14 @@ def mavgen(opts, args) :
 
 # build all the dialects in the dialects subpackage
 class Opts:
-    def __init__(self, output, wire_protocol=DEFAULT_WIRE_PROTOCOL, language=DEFAULT_LANGUAGE, validate=DEFAULT_VALIDATE, error_limit=DEFAULT_ERROR_LIMIT):
+    def __init__(self, output, wire_protocol=DEFAULT_WIRE_PROTOCOL, language=DEFAULT_LANGUAGE, validate=DEFAULT_VALIDATE, 
+            error_limit=DEFAULT_ERROR_LIMIT, error_dupe_enums=DEFAULT_ERR_ON_DUPE_ENUMS):
         self.wire_protocol = wire_protocol
         self.error_limit = error_limit
         self.language = language
         self.output = output
         self.validate = validate
+        self.error_dupe_enums = error_dupe_enums
 
 def mavgen_python_dialect(dialect, wire_protocol):
     '''generate the python code on the fly for a MAVLink dialect'''

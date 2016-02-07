@@ -24,6 +24,7 @@ parser.add_argument("--lang", dest="language", choices=mavgen.supportedLanguages
 parser.add_argument("--wire-protocol", choices=[mavparse.PROTOCOL_0_9, mavparse.PROTOCOL_1_0], default=mavgen.DEFAULT_WIRE_PROTOCOL, help="MAVLink protocol version. [default: %(default)s]")
 parser.add_argument("--no-validate", action="store_false", dest="validate", default=mavgen.DEFAULT_VALIDATE, help="Do not perform XML validation. Can speed up code generation if XML files are known to be correct.")
 parser.add_argument("--error-limit", default=mavgen.DEFAULT_ERROR_LIMIT, help="maximum number of validation errors to display")
+parser.add_argument("--no-err-dupe-enum", "--nee", action="store_false", dest="error_dupe_enums", default=mavgen.DEFAULT_ERR_ON_DUPE_ENUMS, help="Treat duplicate enum values as warning instead of error.")
 parser.add_argument("definitions", metavar="XML", nargs="+", help="MAVLink definitions")
 args = parser.parse_args()
 
