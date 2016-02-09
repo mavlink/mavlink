@@ -147,7 +147,9 @@ class MAVXML(object):
         self.basename_upper = self.basename.upper()
         self.message = []
         self.enum = []
-        self.parse_time = time.asctime()
+        # we use only the day for the parse_time, as otherwise
+        # it causes a lot of unnecessary cache misses with ccache
+        self.parse_time = time.strftime("%a %b %d %Y")
         self.version = 2
         self.include = []
         self.wire_protocol_version = wire_protocol_version
