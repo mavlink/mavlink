@@ -323,20 +323,18 @@ def merge_enums(xml):
         for enum in x.enum:
             if enum.name in emap:
                 emapitem = emap[enum.name]
+                # check for possible conflicting auto-assigned values after merge
+                if (emapitem.start_value <= enum.highest_value and emapitem.highest_value >= enum.start_value):
+                    for entry in emapitem.entry:
+                        # correct the value if necessary, but only if it was auto-assigned to begin with
+                        if entry.value <= enum.highest_value and entry.autovalue == True:
+                            entry.value = enum.highest_value + 1
+                            enum.highest_value = entry.value
+                            print("Incrementing auto-assigned value for enum %s to %u" % (entry.name, entry.value))
                 # merge the entries
                 emapitem.entry.extend(enum.entry)
-                # find highest value of merged entries
-                emapitem.highest_value = max(enum.highest_value, emapitem.highest_value)
-                # check for possible conflicting values after merge
-                if (enum.start_value <= emapitem.highest_value):
-                    for entry in emapitem.entry:
-                        # correct the value if necessary, but only if it wasy auto-assigned to begin with
-                        if entry.value <= emapitem.highest_value and entry.autovalue == True:
-                            entry.value = emapitem.highest_value + 1
-                            emapitem.highest_value = entry.value
-                            print("Incrementing auto-assigned value for enum %s to %u" % (entry.name, entry.value))
-                if not emap[enum.name].description:
-                    emap[enum.name].description = enum.description
+                if not emapitem.description:
+                    emapitem.description = enum.description
                 print("Merged enum %s" % enum.name)
             else:
                 newenums.append(enum)
