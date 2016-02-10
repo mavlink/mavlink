@@ -122,13 +122,15 @@ class MAVEnumParam(object):
         self.description = description
 
 class MAVEnumEntry(object):
-    def __init__(self, name, value, description='', end_marker=False, autovalue=False):
+    def __init__(self, name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0):
         self.name = name
         self.value = value
         self.description = description
         self.param = []
         self.end_marker = end_marker
         self.autovalue = autovalue  # True if value was *not* specified in XML
+        self.origin_file = origin_file
+        self.origin_line = origin_line
 
 class MAVEnum(object):
     def __init__(self, name, linenumber, description=''):
@@ -210,7 +212,6 @@ class MAVXML(object):
                 else:
                     value = self.enum[-1].highest_value + 1
                     autovalue = True
-                    print("Assigning value for enum %s : %u" % (attrs['name'], value))
                 # check lowest value
                 if (self.enum[-1].start_value == None or value < self.enum[-1].start_value):
                     self.enum[-1].start_value = value
@@ -218,7 +219,7 @@ class MAVXML(object):
                 if (value > self.enum[-1].highest_value):
                     self.enum[-1].highest_value = value
                 # append the new entry
-                self.enum[-1].entry.append(MAVEnumEntry(attrs['name'], value, '', False, autovalue))
+                self.enum[-1].entry.append(MAVEnumEntry(attrs['name'], value, '', False, autovalue, self.filename, p.CurrentLineNumber))
             elif in_element == "mavlink.enums.enum.entry.param":
                 check_attrs(attrs, ['index'], 'enum param')
                 self.enum[-1].entry[-1].param.append(MAVEnumParam(attrs['index']))
@@ -330,7 +331,6 @@ def merge_enums(xml):
                         if entry.value <= enum.highest_value and entry.autovalue == True:
                             entry.value = enum.highest_value + 1
                             enum.highest_value = entry.value
-                            print("Incrementing auto-assigned value for enum %s to %u" % (entry.name, entry.value))
                 # merge the entries
                 emapitem.entry.extend(enum.entry)
                 if not emapitem.description:
@@ -375,15 +375,17 @@ def check_duplicates(xml):
             msgmap[m.id] = '%s (%s:%u)' % (m.name, x.filename, m.linenumber)
         for enum in x.enum:
             for entry in enum.entry:
+                if entry.autovalue == True and "common.xml" not in entry.origin_file:
+                    print("Note: An enum value was auto-generated: %s = %u" % (entry.name, entry.value))
                 s1 = "%s.%s" % (enum.name, entry.name)
                 s2 = "%s.%s" % (enum.name, entry.value)
                 if s1 in enummap or s2 in enummap:
-                    print("ERROR: Duplicate enums %s/%s at %s:%u and %s" % (
-                        s1, entry.value, x.filename, enum.linenumber,
+                    print("ERROR: Duplicate enum %s:\n\t%s = %s @ %s:%u\n\t%s" % (
+                        "names" if s1 in enummap else "values",
+                        s1, entry.value, entry.origin_file, entry.origin_line,
                         enummap.get(s1) or enummap.get(s2)))
                     return True
-                enummap[s1] = "%s:%u" % (x.filename, enum.linenumber)
-                enummap[s2] = "%s:%u" % (x.filename, enum.linenumber)
+                enummap[s1] = enummap[s2] = "%s.%s = %s @ %s:%u" % (enum.name, entry.name, entry.value, entry.origin_file, entry.origin_line)
 
     return False
 
