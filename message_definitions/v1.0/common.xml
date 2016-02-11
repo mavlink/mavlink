@@ -1671,7 +1671,7 @@
                   <description>Autopilot supports the new param union message type.</description>
               </entry>
               <entry value="32" name="MAV_PROTOCOL_CAPABILITY_FTP">
-                  <description>Autopilot supports the new param union message type.</description>
+                  <description>Autopilot supports the new FILE_TRANSFER_PROTOCOL message type.</description>
               </entry>
               <entry value="64" name="MAV_PROTOCOL_CAPABILITY_SET_ATTITUDE_TARGET">
                   <description>Autopilot supports commanding attitude offboard.</description>
@@ -1719,10 +1719,10 @@
                   <description>Not specified.</description>
               </entry>
               <entry value="1" name="MAV_BATTERY_TYPE_LIPO">
-                  <description>Lithium polymere battery</description>
+                  <description>Lithium polymer battery</description>
               </entry>
               <entry value="2" name="MAV_BATTERY_TYPE_LIFE">
-                  <description>Lithium ferrite battery</description>
+                  <description>Lithium-iron-phosphate battery</description>
               </entry>
               <entry value="3" name="MAV_BATTERY_TYPE_LION">
                   <description>Lithium-ION battery</description>
@@ -1734,7 +1734,7 @@
           <enum name="MAV_BATTERY_FUNCTION">
               <description>Enumeration of battery functions</description>
               <entry value="0" name="MAV_BATTERY_FUNCTION_UNKNOWN">
-                  <description>Lithium polymere battery</description>
+                  <description>Battery function is unknown</description>
               </entry>
               <entry value="1" name="MAV_BATTERY_FUNCTION_ALL">
                   <description>Battery supports all flight systems</description>
@@ -1966,8 +1966,8 @@
                <description>The RAW pressure readings for the typical setup of one absolute pressure and one differential pressure sensor. The sensor values should be the raw, UNSCALED ADC values.</description>
                <field type="uint64_t" name="time_usec">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
                <field type="int16_t" name="press_abs">Absolute pressure (raw)</field>
-               <field type="int16_t" name="press_diff1">Differential pressure 1 (raw)</field>
-               <field type="int16_t" name="press_diff2">Differential pressure 2 (raw)</field>
+               <field type="int16_t" name="press_diff1">Differential pressure 1 (raw, 0 if nonexistant)</field>
+               <field type="int16_t" name="press_diff2">Differential pressure 2 (raw, 0 if nonexistant)</field>
                <field type="int16_t" name="temperature">Raw Temperature measurement (raw)</field>
           </message>
           <message id="29" name="SCALED_PRESSURE">
@@ -2012,14 +2012,14 @@
                <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It
                is designed as scaled integer message since the resolution of float is not sufficient.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
-               <field type="int32_t" name="lat">Latitude, expressed as * 1E7</field>
-               <field type="int32_t" name="lon">Longitude, expressed as * 1E7</field>
+               <field type="int32_t" name="lat">Latitude, expressed as degrees * 1E7</field>
+               <field type="int32_t" name="lon">Longitude, expressed as degrees * 1E7</field>
                <field type="int32_t" name="alt">Altitude in meters, expressed as * 1000 (millimeters), AMSL (not WGS84 - note that virtually all GPS modules provide the AMSL as well)</field>
                <field type="int32_t" name="relative_alt">Altitude above ground in meters, expressed as * 1000 (millimeters)</field>
-               <field type="int16_t" name="vx">Ground X Speed (Latitude), expressed as m/s * 100</field>
-               <field type="int16_t" name="vy">Ground Y Speed (Longitude), expressed as m/s * 100</field>
-               <field type="int16_t" name="vz">Ground Z Speed (Altitude), expressed as m/s * 100</field>
-               <field type="uint16_t" name="hdg">Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+               <field type="int16_t" name="vx">Ground X Speed (Latitude, positive north), expressed as m/s * 100</field>
+               <field type="int16_t" name="vy">Ground Y Speed (Longitude, positive east), expressed as m/s * 100</field>
+               <field type="int16_t" name="vz">Ground Z Speed (Altitude, positive down), expressed as m/s * 100</field>
+               <field type="uint16_t" name="hdg">Vehicle heading (yaw angle) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
           </message>
           <message id="34" name="RC_CHANNELS_SCALED">
                <description>The scaled values of the RC channels received. (-100%) -10000, (0%) 0, (100%) 10000. Channels that are inactive should be set to UINT16_MAX.</description>
@@ -2366,7 +2366,7 @@
              <field type="uint8_t" name="manual_override_switch">Override mode switch position, 0.. 255</field>
          </message>
           <message id="82" name="SET_ATTITUDE_TARGET">
-               <description>Set the vehicle attitude and body angular rates.</description>
+               <description>Sets a desired vehicle attitude. Used by an external controller to command the vehicle (manual controller or other system).</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
@@ -2378,7 +2378,7 @@
                <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse trust)</field>
           </message>
           <message id="83" name="ATTITUDE_TARGET">
-               <description>Set the vehicle attitude and body angular rates.</description>
+               <description>Reports the current commanded attitude of the vehicle as specified by the autopilot. This should match the commands sent in a SET_ATTITUDE_TARGET message if the vehicle is being controlled this way.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
                <field type="uint8_t" name="type_mask">Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 7: reserved, bit 8: attitude</field>
                <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
@@ -2388,7 +2388,7 @@
                <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse trust)</field>
           </message>
           <message id="84" name="SET_POSITION_TARGET_LOCAL_NED">
-               <description>Set vehicle position, velocity and acceleration setpoint in local frame.</description>
+               <description>Sets a desired vehicle position in a local north-east-down coordinate frame. Used by an external controller to command the vehicle (manual controller or other system).</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
@@ -2407,7 +2407,7 @@
                <field type="float" name="yaw_rate">yaw rate setpoint in rad/s</field>
           </message>
           <message id="85" name="POSITION_TARGET_LOCAL_NED">
-               <description>Set vehicle position, velocity and acceleration setpoint in local frame.</description>
+               <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED if the vehicle is being controlled this way.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
                <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
                <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
@@ -2424,7 +2424,7 @@
                <field type="float" name="yaw_rate">yaw rate setpoint in rad/s</field>
           </message>
           <message id="86" name="SET_POSITION_TARGET_GLOBAL_INT">
-               <description>Set vehicle position, velocity and acceleration setpoint in the WGS84 coordinate system.</description>
+               <description>Sets a desired vehicle position, velocity, and/or acceleration in a global coordinate system (WGS84). Used by an external controller to command the vehicle (manual controller or other system).</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot. The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.</field>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
@@ -2443,7 +2443,7 @@
                <field type="float" name="yaw_rate">yaw rate setpoint in rad/s</field>
           </message>
           <message id="87" name="POSITION_TARGET_GLOBAL_INT">
-               <description>Set vehicle position, velocity and acceleration setpoint in the WGS84 coordinate system.</description>
+               <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_GLOBAL_INT if the vehicle is being controlled this way.</description>
                <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot. The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.</field>
                <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11</field>
                <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
@@ -3074,7 +3074,7 @@
           <field type="int32_t" name="altitude">Altitude(ASL) in millimeters</field>
           <field type="uint16_t" name="heading">Course over ground in centidegrees</field>
           <field type="uint16_t" name="hor_velocity">The horizontal velocity in centimeters/second</field>
-          <field type="uint16_t" name="ver_velocity">The vertical velocity in centimeters/second, positive is up</field>
+          <field type="int16_t" name="ver_velocity">The vertical velocity in centimeters/second, positive is up</field>
           <field type="char[9]" name="callsign">The callsign, 8+null</field>
           <field type="uint8_t" name="emitter_type" enum="ADSB_EMITTER_TYPE">Type from ADSB_EMITTER_TYPE enum</field>
           <field type="uint8_t" name="tslc">Time since last communication in seconds</field>
