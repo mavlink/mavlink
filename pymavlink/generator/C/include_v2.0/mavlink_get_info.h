@@ -11,10 +11,9 @@ MAVLINK_HELPER const mavlink_message_info_t *mavlink_get_message_info(const mavl
 	static const mavlink_message_info_t mavlink_message_info[] = MAVLINK_MESSAGE_INFO;
         /*
 	  use a bisection search to find the right entry. A perfect hash may be better
-	  Note that this assumes the table is sorted with primary key msgid and secondary key dialect
+	  Note that this assumes the table is sorted with primary key msgid
 	*/
-	uint8_t dialect = msg->dialect;
-	uint16_t msgid = msg->msgid;
+	uint32_t msgid = msg->msgid;
         uint32_t low=0, high=sizeof(mavlink_message_info)/sizeof(mavlink_message_info[0]);
         while (low < high) {
             uint32_t mid = (low+1+high)/2;
@@ -23,14 +22,6 @@ MAVLINK_HELPER const mavlink_message_info_t *mavlink_get_message_info(const mavl
                 continue;
             }
             if (msgid > mavlink_message_info[mid].msgid) {
-                low = mid;
-                continue;
-            }
-            if (dialect < mavlink_message_info[mid].dialect) {
-                high = mid-1;
-                continue;
-            }
-            if (dialect > mavlink_message_info[mid].dialect) {
                 low = mid;
                 continue;
             }
