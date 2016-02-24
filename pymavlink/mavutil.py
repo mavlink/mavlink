@@ -803,6 +803,7 @@ class mavudp(mavfile):
             sys.exit(1)
         self.port = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_server = input
+        self.broadcast = False
         if input:
             self.port.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.port.bind((a[0], int(a[1])))
@@ -810,6 +811,7 @@ class mavudp(mavfile):
             self.destination_addr = (a[0], int(a[1]))
             if broadcast:
                 self.port.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+                self.broadcast = True
         set_close_on_exec(self.port.fileno())
         self.port.setblocking(0)
         self.last_address = None
@@ -820,11 +822,13 @@ class mavudp(mavfile):
 
     def recv(self,n=None):
         try:
-            data, self.last_address = self.port.recvfrom(UDP_MAX_PACKET_LEN)
+            data, new_addr = self.port.recvfrom(UDP_MAX_PACKET_LEN)
         except socket.error as e:
             if e.errno in [ errno.EAGAIN, errno.EWOULDBLOCK, errno.ECONNREFUSED ]:
                 return ""
             raise
+        if self.udp_server or self.broadcast:
+            self.last_address = new_addr
         return data
 
     def write(self, buf):
@@ -833,6 +837,10 @@ class mavudp(mavfile):
                 if self.last_address:
                     self.port.sendto(buf, self.last_address)
             else:
+                if self.last_address and self.broadcast:
+                    self.destination_addr = self.last_address
+                    self.broadcast = False
+                    self.port.connect(self.destination_addr)
                 self.port.sendto(buf, self.destination_addr)
         except socket.error:
             pass
@@ -1073,6 +1081,8 @@ def mavlink_connection(device, baud=115200, source_system=255,
         return mavudp(device[6:], input=True, source_system=source_system, use_native=use_native)
     if device.startswith('udpout:'):
         return mavudp(device[7:], input=False, source_system=source_system, use_native=use_native)
+    if device.startswith('udpbcast:'):
+        return mavudp(device[9:], input=False, source_system=source_system, use_native=use_native, broadcast=True)
     # For legacy purposes we accept the following syntax and let the caller to specify direction
     if device.startswith('udp:'):
         return mavudp(device[4:], input=input, source_system=source_system, use_native=use_native)
