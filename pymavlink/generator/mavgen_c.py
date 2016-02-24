@@ -57,8 +57,8 @@ def generate_mavlink_h(directory, xml):
 #define MAVLINK_CRC_EXTRA ${crc_extra_define}
 #endif
 
-#ifndef MAVLINK_MULTI_DIALECT
-#define MAVLINK_MULTI_DIALECT ${multi_dialect_define}
+#ifndef MAVLINK_COMMAND_24BIT
+#define MAVLINK_COMMAND_24BIT ${command_24bit_define}
 #endif
 
 #include "version.h"
@@ -138,7 +138,7 @@ ${{message:#include "./mavlink_msg_${name_lower}.h"
 ${{include_list:#include "../${base}/${base}.h"
 }}
 
-#if MAVLINK_MULTI_DIALECT
+#if MAVLINK_COMMAND_24BIT
 #include "../mavlink_get_info.h"
 #endif
 
@@ -158,11 +158,6 @@ def generate_message_h(directory, m):
 // MESSAGE ${name} PACKING
 
 #define MAVLINK_MSG_ID_${name} ${id}
-#if MAVLINK_MULTI_DIALECT
-#define MAVLINK_MSG_ID_${name}_TUPLE ${dialect}, MAVLINK_MSG_ID_${name}
-#else
-#define MAVLINK_MSG_ID_${name}_TUPLE MAVLINK_MSG_ID_${name}
-#endif
 
 typedef struct __mavlink_${name_lower}_t
 {
@@ -179,9 +174,9 @@ ${{ordered_fields: ${type} ${name}${array_suffix}; /*< ${description}*/
 ${{array_fields:#define MAVLINK_MSG_${msg_name}_FIELD_${name_upper}_LEN ${array_length}
 }}
 
-#if MAVLINK_MULTI_DIALECT
+#if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_${name} { \\
-	${id}, ${dialect}, \\
+	${id}, \\
 	"${name}", \\
 	${num_fields}, \\
 	{ ${{ordered_fields: { "${name}", ${c_print_format}, MAVLINK_TYPE_${type_upper}, ${array_length}, ${wire_offset}, offsetof(mavlink_${name_lower}_t, ${name}) }, \\
@@ -225,9 +220,6 @@ ${{array_fields:	mav_array_memcpy(packet.${name}, ${name}, sizeof(${type})*${arr
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_${name}_LEN);
 #endif
 
-#if MAVLINK_MULTI_DIALECT
-	msg->dialect = ${dialect};
-#endif
 	msg->msgid = MAVLINK_MSG_ID_${name};
     return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
 }
@@ -262,9 +254,6 @@ ${{array_fields:	mav_array_memcpy(packet.${name}, ${name}, sizeof(${type})*${arr
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_${name}_LEN);
 #endif
 
-#if MAVLINK_MULTI_DIALECT
-	msg->dialect = ${dialect};
-#endif
 	msg->msgid = MAVLINK_MSG_ID_${name};
     return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
 }
@@ -320,7 +309,7 @@ ${{scalar_fields:	packet.${name} = ${putname};
 }}
 ${{array_fields:	mav_array_memcpy(packet.${name}, ${name}, sizeof(${type})*${array_length});
 }}
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}_TUPLE, (const char *)&packet, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}, (const char *)&packet, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
 #endif
 }
 
@@ -340,14 +329,14 @@ ${{scalar_fields:	_mav_put_${type}(buf, ${wire_offset}, ${putname});
 }}
 ${{array_fields:	_mav_put_${type}_array(buf, ${wire_offset}, ${name}, ${array_length});
 }}
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}_TUPLE, buf, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}, buf, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
 #else
 	mavlink_${name_lower}_t *packet = (mavlink_${name_lower}_t *)msgbuf;
 ${{scalar_fields:	packet->${name} = ${putname};
 }}
 ${{array_fields:	mav_array_memcpy(packet->${name}, ${name}, sizeof(${type})*${array_length});
 }}
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}_TUPLE, (const char *)packet, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_${name}, (const char *)packet, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
 #endif
 }
 #endif
@@ -520,10 +509,10 @@ def generate_one(basename, xml):
     else:
         xml.crc_extra_define = "0"
 
-    if xml.multi_dialect:
-        xml.multi_dialect_define = "1"
+    if xml.command_24bit:
+        xml.command_24bit_define = "1"
     else:
-        xml.multi_dialect_define = "0"
+        xml.command_24bit_define = "0"
 
     if xml.sort_fields:
         xml.aligned_fields_define = "1"
@@ -538,7 +527,7 @@ def generate_one(basename, xml):
 
     # form message lengths array
     xml.message_lengths_array = ''
-    if not xml.multi_dialect:
+    if not xml.command_24bit:
         for msgid in range(256):
             mlen = xml.message_lengths.get(msgid, 0)
             xml.message_lengths_array += '%u, ' % mlen
@@ -546,12 +535,12 @@ def generate_one(basename, xml):
 
     # and message CRCs array
     xml.message_crcs_array = ''
-    if xml.multi_dialect:
-        # we sort with primary key msgid, secondary key dialect
-        for (dialect,msgid) in sorted(xml.message_crcs.keys(), key=lambda x: (x[1]<<8)|x[0]):
-            xml.message_crcs_array += '{%u, %u, %u, %u}, ' % (msgid, dialect,
-                                                              xml.message_crcs[(dialect, msgid)],
-                                                              xml.message_lengths[(dialect,msgid)])
+    if xml.command_24bit:
+        # we sort with primary key msgid
+        for msgid in sorted(xml.message_crcs.keys()):
+            xml.message_crcs_array += '{%u, %u, %u}, ' % (msgid,
+                                                          xml.message_crcs[msgid],
+                                                          xml.message_lengths[msgid])
     else:
         for msgid in range(256):
             crc = xml.message_crcs.get(msgid, 0)
@@ -560,10 +549,10 @@ def generate_one(basename, xml):
 
     # form message info array
     xml.message_info_array = ''
-    if xml.multi_dialect:
-        # we sort with primary key msgid, secondary key dialect
-        for (dialect,msgid) in sorted(xml.message_names.keys(), key=lambda x: (x[1]<<8)|x[0]):
-            name = xml.message_names[(dialect,msgid)]
+    if xml.command_24bit:
+        # we sort with primary key msgid
+        for msgid in sorted(xml.message_names.keys()):
+            name = xml.message_names[msgid]
             xml.message_info_array += 'MAVLINK_MESSAGE_INFO_%s, ' % name
     else:
         for msgid in range(256):
