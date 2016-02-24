@@ -110,8 +110,7 @@ typedef struct __mavlink_message {
 	uint8_t seq;            ///< Sequence of packet
 	uint8_t sysid;          ///< ID of message sender system/aircraft
 	uint8_t compid;         ///< ID of the message sender component
-	uint8_t dialect;        ///< dialect ID from XML
-	uint16_t msgid;         ///< ID of message in payload
+	uint32_t msgid:24;      ///< ID of message in payload
 	uint64_t payload64[(MAVLINK_MAX_PAYLOAD_LEN+MAVLINK_NUM_CHECKSUM_BYTES+7)/8];
 	uint8_t signature[MAVLINK_SIGNATURE_BLOCK_LEN];
 }) mavlink_message_t;
@@ -144,8 +143,7 @@ typedef struct __mavlink_field_info {
 // note that in this structure the order of fields is the order
 // in the XML file, not necessary the wire order
 typedef struct __mavlink_message_info {
-	uint16_t msgid;                                        // message ID
-	uint8_t dialect;                                       // dialect
+	uint32_t msgid;                                        // message ID
 	const char *name;                                      // name of the message
 	unsigned num_fields;                                   // how many fields in this message
 	mavlink_field_info_t fields[MAVLINK_MAX_FIELDS];       // field information
@@ -188,9 +186,9 @@ typedef enum {
     MAVLINK_PARSE_STATE_GOT_SEQ,
     MAVLINK_PARSE_STATE_GOT_SYSID,
     MAVLINK_PARSE_STATE_GOT_COMPID,
-    MAVLINK_PARSE_STATE_GOT_DIALECT,
     MAVLINK_PARSE_STATE_GOT_MSGID1,
     MAVLINK_PARSE_STATE_GOT_MSGID2,
+    MAVLINK_PARSE_STATE_GOT_MSGID3,
     MAVLINK_PARSE_STATE_GOT_PAYLOAD,
     MAVLINK_PARSE_STATE_GOT_CRC1,
     MAVLINK_PARSE_STATE_GOT_BAD_CRC1,
@@ -273,8 +271,7 @@ typedef struct __mavlink_signing_streams {
   entry in mavlink CRC table
  */
 typedef struct __mavlink_crc_entry {
-	uint16_t msgid;
-	uint8_t dialect;
+	uint32_t msgid;
 	uint8_t crc_extra;
 	uint8_t msg_len;
 } mavlink_crc_entry_t;

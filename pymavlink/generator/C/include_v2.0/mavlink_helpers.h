@@ -222,9 +222,9 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, ui
 		buf[4] = msg->seq;
 		buf[5] = msg->sysid;
 		buf[6] = msg->compid;
-		buf[7] = msg->dialect;
-		buf[8] = msg->msgid & 0xFF;
-		buf[9] = msg->msgid >> 8;
+		buf[7] = msg->msgid & 0xFF;
+		buf[8] = (msg->msgid >> 8) & 0xFF;
+		buf[9] = (msg->msgid >> 16) & 0xFF;
 	}
 	
 	msg->checksum = crc_calculate(&buf[1], header_len-1);
@@ -261,7 +261,7 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
 /**
  * @brief Finalize a MAVLink message with channel assignment and send
  */
-MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t dialect, uint16_t msgid,
+MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint32_t msgid,
                                                     const char *packet, 
 						    uint8_t length, uint8_t crc_extra)
 {
@@ -300,9 +300,9 @@ MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint
             buf[4] = status->current_tx_seq;
             buf[5] = mavlink_system.sysid;
             buf[6] = mavlink_system.compid;
-            buf[7] = dialect;
-            buf[8] = msgid & 0xFF;
-            buf[9] = msgid >> 8;
+            buf[7] = msgid & 0xFF;
+            buf[8] = (msgid >> 8) & 0xFF;
+            buf[9] = (msgid >> 16) & 0xFF;
         }
 	status->current_tx_seq++;
 	checksum = crc_calculate((const uint8_t*)&buf[1], header_len);
@@ -402,14 +402,14 @@ MAVLINK_HELPER void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 }
 
 /*
-  return the crc_entry value for a dialect, msgid tuple
+  return the crc_entry value for a msgid
 */
-MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry(uint8_t dialect, uint16_t msgid)
+MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry(uint32_t msgid)
 {
 	static const mavlink_crc_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
         /*
 	  use a bisection search to find the right entry. A perfect hash may be better
-	  Note that this assumes the table is sorted with primary key msgid and secondary key dialect
+	  Note that this assumes the table is sorted with primary key msgid
 	*/
         uint32_t low=0, high=sizeof(mavlink_message_crcs)/sizeof(mavlink_message_crcs[0]);
         while (low < high) {
@@ -422,14 +422,6 @@ MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry(uint8_t dialect,
                 low = mid;
                 continue;
             }
-            if (dialect < mavlink_message_crcs[mid].dialect) {
-                high = mid-1;
-                continue;
-            }
-            if (dialect > mavlink_message_crcs[mid].dialect) {
-                low = mid;
-                continue;
-            }
             low = mid;
             break;
         }
@@ -439,7 +431,7 @@ MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry(uint8_t dialect,
 /*
   return the crc_extra value for a msgid
 */
-MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry_mavlink1(uint16_t msgid)
+MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry_mavlink1(uint32_t msgid)
 {
 	static const mavlink_crc_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
         // use a bisection search to find the right entry. A perfect hash may be better
@@ -471,7 +463,7 @@ MAVLINK_HELPER uint8_t mavlink_get_crc_extra(const mavlink_message_t *msg)
 	if (msg->magic == MAVLINK_STX_MAVLINK1) {
 		e = mavlink_get_crc_entry_mavlink1(msg->msgid);
 	} else {
-		e = mavlink_get_crc_entry(msg->dialect, msg->msgid);
+		e = mavlink_get_crc_entry(msg->msgid);
 	}
 	return e?e->crc_extra:0;
 }
@@ -486,7 +478,7 @@ MAVLINK_HELPER uint8_t mavlink_expected_message_length(const mavlink_message_t *
 	if (msg->magic == MAVLINK_STX_MAVLINK1) {
 		e = mavlink_get_crc_entry_mavlink1(msg->msgid);
 	} else {
-		e = mavlink_get_crc_entry(msg->dialect, msg->msgid);
+		e = mavlink_get_crc_entry(msg->msgid);
 	}
 	return e?e->msg_len:0;
 }
@@ -633,25 +625,14 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 	case MAVLINK_PARSE_STATE_GOT_SYSID:
 		rxmsg->compid = c;
 		mavlink_update_checksum(rxmsg, c);
-                if (status->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
-                    rxmsg->dialect = 0;
-                    status->parse_state = MAVLINK_PARSE_STATE_GOT_DIALECT;
-                } else {
-                    status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPID;
-                }
+                status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPID;
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_COMPID:
-		rxmsg->dialect = c;
-		mavlink_update_checksum(rxmsg, c);
-		status->parse_state = MAVLINK_PARSE_STATE_GOT_DIALECT;
-		break;
-
-	case MAVLINK_PARSE_STATE_GOT_DIALECT:
 		rxmsg->msgid = c;
 		mavlink_update_checksum(rxmsg, c);
                 if (status->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
-                    status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID2;
+                    status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID3;
 #ifdef MAVLINK_CHECK_MESSAGE_LENGTH
                     if (rxmsg->len != MAVLINK_MESSAGE_LENGTH(rxmsg->msgid))
                     {
@@ -669,6 +650,12 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		rxmsg->msgid |= c<<8;
 		mavlink_update_checksum(rxmsg, c);
 		status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID2;
+		break;
+
+	case MAVLINK_PARSE_STATE_GOT_MSGID2:
+		rxmsg->msgid |= c<<16;
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID3;
 #ifdef MAVLINK_CHECK_MESSAGE_LENGTH
 	        if (rxmsg->len != MAVLINK_MESSAGE_LENGTH(rxmsg->msgid))
 		{
@@ -679,7 +666,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 #endif
 		break;
                 
-	case MAVLINK_PARSE_STATE_GOT_MSGID2:
+	case MAVLINK_PARSE_STATE_GOT_MSGID3:
 		_MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx++] = (char)c;
 		mavlink_update_checksum(rxmsg, c);
 		if (status->packet_idx == rxmsg->len)
