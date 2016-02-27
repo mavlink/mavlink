@@ -385,6 +385,12 @@
                <entry value="156" name="MAV_COMP_ID_ADSB">
                     <description/>
                </entry>
+               <entry value="157" name="MAV_COMP_ID_OSD">
+                    <description>On Screen Display (OSD) devices for video links</description>
+               </entry>
+               <entry value="158" name="MAV_COMP_ID_PERIPHERAL">
+                    <description>Generic autopilot peripheral component ID. Meant for devices that do not implement the parameter sub-protocol</description>
+               </entry>
           </enum>
           <enum name="MAV_SYS_STATUS_SENSOR">
                <description>These encode the sensors whose status is sent as part of the SYS_STATUS message.</description>
@@ -936,6 +942,27 @@
                     <param index="6">Empty</param>
                     <param index="7">Empty</param>
                 </entry>
+
+               <entry value="192" name="MAV_CMD_DO_REPOSITION">
+                    <description>Reposition the vehicle to a specific WGS84 global position.</description>
+                    <param index="1">Ground speed, less than 0 (-1) for default</param>
+                    <param index="2">Reserved</param>
+                    <param index="3">Reserved</param>
+                    <param index="4">Yaw heading, NaN for unchanged</param>
+                    <param index="5">Latitude (deg * 1E7)</param>
+                    <param index="6">Longitude (deg * 1E7)</param>
+                    <param index="7">Altitude (meters)</param>
+               </entry>
+               <entry value="193" name="MAV_CMD_DO_PAUSE_CONTINUE">
+                    <description>If in a GPS controlled position mode, hold the current position or continue.</description>
+                    <param index="1">0: Pause current mission or reposition command, hold current position. 1: Continue mission. A VTOL capable vehicle should enter hover mode (multicopter and VTOL planes). A plane should loiter with the default loiter radius.</param>
+                    <param index="2">Reserved</param>
+                    <param index="3">Reserved</param>
+                    <param index="4">Reserved</param>
+                    <param index="5">Reserved</param>
+                    <param index="6">Reserved</param>
+                    <param index="7">Reserved</param>
+               </entry>
                <entry value="200" name="MAV_CMD_DO_CONTROL_VIDEO">
                     <description>Control onboard camera system.</description>
                     <param index="1">Camera ID (-1 for all)</param>
