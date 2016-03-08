@@ -2417,6 +2417,12 @@
                <field type="float" name="param_value_min">Minimum param value. The protocol does not define if this overwrites an onboard minimum value. (Depends on implementation)</field>
                <field type="float" name="param_value_max">Maximum param value. The protocol does not define if this overwrites an onboard maximum value. (Depends on implementation)</field>
           </message>
+          <message id="51" name="MISSION_REQUEST_INT">
+               <description>Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM_INT message. http://qgroundcontrol.org/mavlink/waypoint_protocol</description>
+               <field type="uint8_t" name="target_system">System ID</field>
+               <field type="uint8_t" name="target_component">Component ID</field>
+               <field type="uint16_t" name="seq">Sequence</field>
+          </message>
           <message id="54" name="SAFETY_SET_ALLOWED_AREA">
                <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/MISSIONs to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
                <field type="uint8_t" name="target_system">System ID</field>
