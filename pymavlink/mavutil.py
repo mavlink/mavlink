@@ -1304,6 +1304,7 @@ mode_mapping_apm = {
     17 : 'QSTABILIZE',
     18 : 'QHOVER',
     19 : 'QLOITER',
+    20 : 'QLAND',
     }
 mode_mapping_acm = {
     0 : 'STABILIZE',
