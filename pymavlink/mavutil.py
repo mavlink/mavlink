@@ -7,7 +7,7 @@ Released under GNU GPL version 3 or later
 '''
 
 import socket, math, struct, time, os, fnmatch, array, sys, errno
-import select
+import select, mavexpression
 
 # adding these extra imports allows pymavlink to be used directly with pyinstaller
 # without having complex spec files. To allow for installs that don't have ardupilotmega
@@ -20,17 +20,6 @@ except Exception:
 
 # maximum packet length for a single receive call - use the UDP limit
 UDP_MAX_PACKET_LEN = 65535
-
-'''
-Support having a $HOME/.pymavlink/mavextra.py for extra graphing functions
-'''
-home = os.getenv('HOME')
-if home is not None:
-    extra = os.path.join(home, '.pymavlink', 'mavextra.py')
-    if os.path.exists(extra):
-        import imp
-        mavuser = imp.load_source('pymavlink.mavuser', extra)
-        from pymavlink.mavuser import *
 
 # Store the MAVLink library for the currently-selected dialect
 # (set by set_dialect())
@@ -53,13 +42,7 @@ def mavlink10():
 
 def evaluate_expression(expression, vars):
     '''evaluation an expression'''
-    try:
-        v = eval(expression, globals(), vars)
-    except NameError:
-        return None
-    except ZeroDivisionError:
-        return None
-    return v
+    return mavexpression.evaluate_expression(expression, vars)
 
 def evaluate_condition(condition, vars):
     '''evaluation a conditional (boolean) statement'''
