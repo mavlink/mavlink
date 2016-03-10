@@ -534,6 +534,7 @@ class DFReader_binary(DFReader):
         while (ord(hdr[0]) != self.HEAD1 or ord(hdr[1]) != self.HEAD2 or ord(hdr[2]) not in self.formats):
             if skip_type is None:
                 skip_type = (ord(hdr[0]), ord(hdr[1]), ord(hdr[2]))
+                skip_start = self.offset
             skip_bytes += 1
             self.offset += 1
             if self.data_len - self.offset < 3:
@@ -543,7 +544,7 @@ class DFReader_binary(DFReader):
         if skip_bytes != 0:
             if self.remaining < 528:
                 return None
-            print("Skipped %u bad bytes in log %s remaining=%u" % (skip_bytes, skip_type, self.remaining))
+            print("Skipped %u bad bytes in log at offset %u, type=%s" % (skip_bytes, skip_start, skip_type))
             self.remaining -= skip_bytes
 
         self.offset += 3
