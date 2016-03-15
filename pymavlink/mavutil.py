@@ -891,6 +891,63 @@ class mavtcp(mavfile):
             pass
 
 
+class mavtcpin(mavfile):
+    '''a TCP input mavlink socket'''
+    def __init__(self, device, source_system=255, retries=3, use_native=default_native):
+        a = device.split(':')
+        if len(a) != 2:
+            print("TCP ports must be specified as host:port")
+            sys.exit(1)
+        self.listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.listen_addr = (a[0], int(a[1]))
+        self.listen.bind(self.listen_addr)
+        self.listen.listen(1)
+        self.listen.setblocking(0)
+        set_close_on_exec(self.listen.fileno())
+        self.listen.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+        mavfile.__init__(self, self.listen.fileno(), "tcpin:" + device, source_system=source_system, use_native=use_native)
+        self.port = None
+
+    def close(self):
+        self.listen.close()
+
+    def recv(self,n=None):
+        if not self.port:
+            try:
+                (self.port, addr) = self.listen.accept()
+            except Exception:
+                return ''
+            self.port.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1) 
+            self.port.setblocking(0) 
+            set_close_on_exec(self.port.fileno())
+            self.fd = self.port.fileno()
+
+        if n is None:
+            n = self.mav.bytes_needed()
+        try:
+            data = self.port.recv(n)
+        except socket.error as e:
+            if e.errno in [ errno.EAGAIN, errno.EWOULDBLOCK ]:
+                return ""
+            self.port.close()
+            self.port = None
+            self.fd = self.listen.fileno()
+            return ''
+        return data
+
+    def write(self, buf):
+        if self.port is None:
+            return
+        try:
+            self.port.send(buf)
+        except socket.error as e:
+            if e.errno in [ errno.EPIPE ]:
+                self.port.close()
+                self.port = None
+                self.fd = self.listen.fileno()
+            pass
+
+
 class mavlogfile(mavfile):
     '''a MAVLink logfile reader/writer'''
     def __init__(self, filename, planner_format=None,
@@ -1060,6 +1117,8 @@ def mavlink_connection(device, baud=115200, source_system=255,
         set_dialect(dialect)
     if device.startswith('tcp:'):
         return mavtcp(device[4:], source_system=source_system, retries=retries, use_native=use_native)
+    if device.startswith('tcpin:'):
+        return mavtcpin(device[6:], source_system=source_system, retries=retries, use_native=use_native)
     if device.startswith('udpin:'):
         return mavudp(device[6:], input=True, source_system=source_system, use_native=use_native)
     if device.startswith('udpout:'):
