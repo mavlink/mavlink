@@ -92,24 +92,24 @@ public class MAVLinkPayload {
 
     public long getUnsignedInt(){
         long result = 0;
-        result |= (payload.get(index + 3) & 0xFFFFL) << 24;
-        result |= (payload.get(index + 2) & 0xFFFFL) << 16;
-        result |= (payload.get(index + 1) & 0xFFFFL) << 8;
-        result |= (payload.get(index + 0) & 0xFFFFL);
+        result |= (payload.get(index + 3) & 0xFFL) << 24;
+        result |= (payload.get(index + 2) & 0xFFL) << 16;
+        result |= (payload.get(index + 1) & 0xFFL) << 8;
+        result |= (payload.get(index + 0) & 0xFFL);
         index += 4;
         return result;
     }
 
     public long getLong() {
         long result = 0;
-        result |= (payload.get(index + 7) & 0xFFFFL) << 56;
-        result |= (payload.get(index + 6) & 0xFFFFL) << 48;
-        result |= (payload.get(index + 5) & 0xFFFFL) << 40;
-        result |= (payload.get(index + 4) & 0xFFFFL) << 32;
-        result |= (payload.get(index + 3) & 0xFFFFL) << 24;
-        result |= (payload.get(index + 2) & 0xFFFFL) << 16;
-        result |= (payload.get(index + 1) & 0xFFFFL) << 8;
-        result |= (payload.get(index + 0) & 0xFFFFL);
+        result |= (payload.get(index + 7) & 0xFFL) << 56;
+        result |= (payload.get(index + 6) & 0xFFL) << 48;
+        result |= (payload.get(index + 5) & 0xFFL) << 40;
+        result |= (payload.get(index + 4) & 0xFFL) << 32;
+        result |= (payload.get(index + 3) & 0xFFL) << 24;
+        result |= (payload.get(index + 2) & 0xFFL) << 16;
+        result |= (payload.get(index + 1) & 0xFFL) << 8;
+        result |= (payload.get(index + 0) & 0xFFL);
         index += 8;
         return result;
     }
@@ -120,14 +120,14 @@ public class MAVLinkPayload {
     
     public long getLongReverse() {
         long result = 0;
-        result |= (payload.get(index + 0) & 0xFFFFL) << 56;
-        result |= (payload.get(index + 1) & 0xFFFFL) << 48;
-        result |= (payload.get(index + 2) & 0xFFFFL) << 40;
-        result |= (payload.get(index + 3) & 0xFFFFL) << 32;
-        result |= (payload.get(index + 4) & 0xFFFFL) << 24;
-        result |= (payload.get(index + 5) & 0xFFFFL) << 16;
-        result |= (payload.get(index + 6) & 0xFFFFL) << 8;
-        result |= (payload.get(index + 7) & 0xFFFFL);
+        result |= (payload.get(index + 0) & 0xFFL) << 56;
+        result |= (payload.get(index + 1) & 0xFFL) << 48;
+        result |= (payload.get(index + 2) & 0xFFL) << 40;
+        result |= (payload.get(index + 3) & 0xFFL) << 32;
+        result |= (payload.get(index + 4) & 0xFFL) << 24;
+        result |= (payload.get(index + 5) & 0xFFL) << 16;
+        result |= (payload.get(index + 6) & 0xFFL) << 8;
+        result |= (payload.get(index + 7) & 0xFFL);
         index += 8;
         return result;
     }
