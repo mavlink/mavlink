@@ -228,7 +228,7 @@ typedef struct __mavlink_status {
 /*
   a callback function to allow for accepting unsigned packets
  */
-typedef bool (*mavlink_accept_unsigned_t)(const mavlink_status_t *status, uint8_t dialect, uint16_t msg_id);
+typedef bool (*mavlink_accept_unsigned_t)(const mavlink_status_t *status, uint32_t msgid);
 
 /*
   flags controlling signing
