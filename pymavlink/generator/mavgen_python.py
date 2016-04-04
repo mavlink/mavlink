@@ -266,7 +266,6 @@ class %s(MAVLink_message):
         '''
 %s
         '''
-        dialect = MAVLINK_MSG_DIALECT_%s
         id = MAVLINK_MSG_ID_%s
         name = '%s'
         fieldnames = [%s]
@@ -281,7 +280,6 @@ class %s(MAVLink_message):
         def __init__(self""" % (classname, wrapper.fill(m.description.strip()), 
             m.name.upper(), 
             m.name.upper(), 
-            m.name.upper(),
             fieldname_str,
             ordered_fieldname_str,
             m.fmtstr,
@@ -381,7 +379,7 @@ class MAVLink_bad_data(MAVLink_message):
         a piece of bad data in a mavlink stream
         '''
         def __init__(self, data, reason):
-                MAVLink_message.__init__(self, 0, MAVLINK_MSG_ID_BAD_DATA, 'BAD_DATA')
+                MAVLink_message.__init__(self, MAVLINK_MSG_ID_BAD_DATA, 'BAD_DATA')
                 self._fieldnames = ['data', 'reason']
                 self.data = data
                 self.reason = reason
@@ -621,8 +619,8 @@ class MAVLink(object):
                         magic, mlen, incompat_flags, compat_flags, seq, srcSystem, srcComponent, msgIdlow, msgIdhigh = struct.unpack('<cBBBBBBHB', msgbuf[:headerlen])
                     except struct.error as emsg:
                         raise MAVError('Unable to unpack MAVLink header: %s' % emsg)
+                    msgId = msgIdlow | (msgIdhigh<<16)
                     mapkey = msgId
-                    msgId = msgIdlow | (msgIdHhigh<<16)
                 else:
                     headerlen = 6
                     try:
