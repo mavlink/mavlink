@@ -129,6 +129,7 @@ static void print_message(mavlink_message_t *msg)
 
 #ifdef MAVLINK_SIGNING_FLAG_SIGN_OUTGOING
 static mavlink_signing_t signing_in[MAVLINK_COMM_NUM_BUFFERS];
+static mavlink_signing_streams_t signing_streams_in;
 #endif
 
 static void comm_send_ch(mavlink_channel_t chan, uint8_t c)
@@ -137,6 +138,7 @@ static void comm_send_ch(mavlink_channel_t chan, uint8_t c)
 	memset(&status, 0, sizeof(status));
 #ifdef MAVLINK_SIGNING_FLAG_SIGN_OUTGOING
 	status.signing = &signing_in[chan];
+        status.signing_streams = &signing_streams_in;
 #endif
 	if (mavlink_parse_char(chan, c, &last_msg, &status)) {
 		print_message(&last_msg);
@@ -185,6 +187,9 @@ int main(void)
 
 	printf("Testing signing\n");
 	mavlink_signing_t signing;
+	mavlink_signing_streams_t signing_streams;
+        memset(&signing, 0, sizeof(signing));
+        memset(&signing_streams, 0, sizeof(signing_streams));
 	signing.flags = MAVLINK_SIGNING_FLAG_SIGN_OUTGOING;
 	signing.link_id = 0;
 	signing.timestamp = 1;
@@ -192,6 +197,7 @@ int main(void)
 
         status = mavlink_get_channel_status(MAVLINK_COMM_1);
 	status->signing = &signing;
+        status->signing_streams = &signing_streams;
 
 	mavlink_test_all(11, 10, &last_msg);
 	for (chan=MAVLINK_COMM_0; chan<=MAVLINK_COMM_1; chan++) {
@@ -204,13 +210,15 @@ int main(void)
 	}
 	printf("No errors detected\n");	
 #endif
-	
+
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
         status = mavlink_get_channel_status(MAVLINK_COMM_0);
         status->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+        status->signing = NULL;
         status = mavlink_get_channel_status(MAVLINK_COMM_1);
         status->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
-        printf("Trying sending as MAVLink1\n");
+        status->signing = NULL;
+        printf("Testing sending as MAVLink1\n");
         
 	mavlink_test_all(11, 10, &last_msg);
 	for (chan=MAVLINK_COMM_0; chan<=MAVLINK_COMM_1; chan++) {
@@ -223,6 +231,8 @@ int main(void)
 	}
 	printf("No errors detected\n");
 #endif
+
+	
 	return 0;
 }
 
