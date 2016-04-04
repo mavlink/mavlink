@@ -704,7 +704,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		} else {
 			if (status->signing &&
 			    (status->signing->accept_unsigned_callback == NULL ||
-			     !status->signing->accept_unsigned_callback(status, rxmsg->dialect, rxmsg->msgid))) {
+			     !status->signing->accept_unsigned_callback(status, rxmsg->msgid))) {
 				// don't accept this unsigned packet
 				status->msg_received = MAVLINK_FRAMING_BAD_SIGNATURE;
 			}
@@ -720,7 +720,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 			bool sig_ok = mavlink_signature_check(status->signing, status->signing_streams, rxmsg);
 			if (!sig_ok &&
 			    (status->signing->accept_unsigned_callback &&
-			     status->signing->accept_unsigned_callback(status, rxmsg->dialect, rxmsg->msgid))) {
+			     status->signing->accept_unsigned_callback(status, rxmsg->msgid))) {
 				// accepted via application level override
 				sig_ok = true;
 			}

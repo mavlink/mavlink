@@ -270,7 +270,7 @@ class MAVXML(object):
         self.message_names = {}
         self.largest_payload = 0
 
-        if not self.multi_dialect:
+        if not self.command_24bit:
             # remove messages with IDs > 255
             m2 = []
             for m in self.message:
@@ -281,7 +281,7 @@ class MAVXML(object):
             self.message = m2
 
         for m in self.message:
-            if not self.multi_dialect and m.id > 255:
+            if not self.command_24bit and m.id > 255:
                 continue
 
             m.wire_length = 0
