@@ -199,8 +199,7 @@ In the signing structure there is an optional accept_unsigned_callback
 function pointer. The C prototype for this function is:
 
 ```
-    bool accept_unsigned_callback(const mavlink_status_t *status,
-                                  uint8_t dialect, uint16_t msgId);
+    bool accept_unsigned_callback(const mavlink_status_t *status, uint32_t msgId);
 ```                                     
 
 If set in the signing structure then this function will be called on
@@ -221,15 +220,11 @@ considered:
 For example:
 
 ```
-static const struct {
-    uint8_t dialect;
-    uint16_t msgId;
-} accept_list[] = {
-    { MAVLINK_MSG_ID_RADIO_STATUS_TUPLE }
+static const uint32_t accept_list[] = {
+    MAVLINK_MSG_ID_RADIO_STATUS
 };
     
-static bool accept_unsigned_callback(const mavlink_status_t *status,
-                                     uint8_t dialect, uint16_t msgId)
+static bool accept_unsigned_callback(const mavlink_status_t *status, uint32_t msgId)
 {
     if (status == mavlink_get_channel_status(MAVLINK_COMM_0)) {
         // always accept channel 0, assumed to be secure channel. This
@@ -237,8 +232,7 @@ static bool accept_unsigned_callback(const mavlink_status_t *status,
         return true;
     }
     for (uint8_t i=0; i<ARRAY_SIZE(accept_list); i++) {
-        if (accept_list[i].dialect == dialect &&
-            accept_list[i].msgId == msgId) {
+        if (accept_list[i] == msgId) {
             return true;
         }
     }
