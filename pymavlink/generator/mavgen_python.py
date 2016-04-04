@@ -671,9 +671,9 @@ class MAVLink(object):
                         sig_ok = self.check_signature(msgbuf, srcSystem, srcComponent)
                         accept_signature = sig_ok
                         if not accept_signature and self.signing.allow_unsigned_callback is not None:
-                            accept_signature = self.signing.allow_unsigned_callback(self, dialect, msgId)
+                            accept_signature = self.signing.allow_unsigned_callback(self, msgId)
                     elif self.signing.allow_unsigned_callback is not None:
-                        accept_signature = self.signing.allow_unsigned_callback(self, dialect, msgId)                        
+                        accept_signature = self.signing.allow_unsigned_callback(self, msgId)                        
                     if not accept_signature:
                         raise MAVError('Invalid signature')
                     
