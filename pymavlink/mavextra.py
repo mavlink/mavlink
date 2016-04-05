@@ -177,6 +177,19 @@ def average(var, key, N):
     average_data[key].append(var)
     return sum(average_data[key])/N
 
+min_data = {}
+
+def minimum(var, key, N):
+    '''min over N points'''
+    global min_data
+    if not key in min_data:
+        min_data[key] = [var]*N
+        return var
+    min_data[key].pop(0)
+    min_data[key].append(var)
+    return min(min_data[key])
+
+
 derivative_data = {}
 
 def second_derivative_5(var, key):
