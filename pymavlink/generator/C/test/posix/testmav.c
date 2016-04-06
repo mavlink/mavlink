@@ -154,7 +154,7 @@ static void comm_send_ch(mavlink_channel_t chan, uint8_t c)
 			       (unsigned)chan, chan_counts[chan], status.current_rx_seq);
 			error_count++;
 		}
-		if (mavlink_expected_message_length(&last_msg) != last_msg.len) {
+		if (mavlink_expected_message_length(&last_msg) > last_msg.len) {
 			printf("Incorrect message length %u for message %u - expected %u\n", 
 			       (unsigned)last_msg.len, (unsigned)last_msg.msgid,
                                mavlink_expected_message_length(&last_msg));
