@@ -11,14 +11,13 @@ it is suggested that you start by reading that document.
 
 The key features of MAVLink2 are:
 
-* support for more than 256 message IDs
-* support for multiple message dialects in one implementation
+* support for more than 256 message IDs (24 bit message ID)
 * support for packet signing
 * support for extending existing MAVLink messages
 * support for variable length arrays
 
 The first 3 features in this list are implemented now and ready for
-testing. The last two features are not implemented yet.
+testing. The last feature is not implemented yet.
 
 Most of the rest of this document is a guide for programmers
 interested in using MAVLink2 in their applications. The two language
@@ -40,29 +39,11 @@ This will generate a set of C headers in the generator/C/include_v2.0
 directory. These headers offer the same range of APIs as was offered
 by MAVLink1. The major changes from an API perspective are:
 
-* all methods that take a uint8_t msgId as an argument now take both a
-  uint8_t dialect and a uint16_t msgId. This reflects to change in the
-  MAVLink2 protocol to extend the msgId to 16 bits and to add the
-  dialect in the message header.
-
 * you don't need to provide a message CRC table any more, or message
   length table. These have been folded into a single packed table,
   replacing the old table which was indexed by msgId. That was
   necessary to cope with the much larger 24 bit namespace of message
-  IDs and dialects.
-
-For convenience in converting code a new MAVLINK_MSG_ID_name_TUPLE
-macro is generated for every message which gives the tuple of
-"dialect, msgId". This can be used in the argument to functions that
-take a dialect and msgId. For example:
-
-```
-     _mav_finalize_message_chan_send(chan, 
-                                     MAVLINK_MSG_ID_MISSION_ITEM_TUPLE,
-                                     (const char *)&ret_packet,
-                                     MAVLINK_MSG_ID_MISSION_ITEM_LEN,
-                                     MAVLINK_MSG_ID_MISSION_ITEM_CRC);
-```
+  IDs.
 
 ### Sending and receiving MAVLink1 packets
 
@@ -96,6 +77,32 @@ treat incoming MAVLink1 messages the same as MAVLink2 messages.
 
 Note that MAVLink1 is restricted to messageIDs less than 256, so any
 messages with a higher messageID won't be received as MAVLink1.
+
+### Handling message extensions
+
+The XML for messages can contain extensions that are optional in the
+protocol. This allows for extra fields to be added to a message. For
+example:
+
+```
+  <message id="152" name="MEMINFO">
+    <description>state of APM memory</description>
+    <field name="brkval" type="uint16_t">heap top</field>
+    <field name="freemem" type="uint16_t">free memory</field>
+    <extensions/>
+    <field name="extrafield1" type="uint8_t">extension1</field>
+    <field name="extrafield2" type="uint32_t">extension2</field>
+  </message>
+```
+
+the fields after the extensions line are extended fields. The rules
+for extended messages are:
+
+* if sent as a MAVLink1 message then extended fields are not sent
+* if received by an implementation that doesn't have the extended
+  fields then the fields will not be seen
+* if sent by an implementation that doesn't have the extended fields
+  then the recipient will see zero values for the extended fields
 
 ### Handling message signing
 
