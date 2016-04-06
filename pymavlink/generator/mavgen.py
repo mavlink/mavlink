@@ -76,6 +76,7 @@ def mavgen(opts, args) :
             # include message lengths and CRCs too
             x.message_crcs.update(xml[-1].message_crcs)
             x.message_lengths.update(xml[-1].message_lengths)
+            x.message_min_lengths.update(xml[-1].message_min_lengths)
             x.message_names.update(xml[-1].message_names)
             x.largest_payload = max(x.largest_payload, xml[-1].largest_payload)
 

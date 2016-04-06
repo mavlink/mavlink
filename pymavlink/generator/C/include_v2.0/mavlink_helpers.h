@@ -183,7 +183,7 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
  * @param length Message length
  */
 MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
-						      uint8_t chan, uint8_t length, uint8_t crc_extra)
+						      uint8_t chan, uint8_t min_length, uint8_t length, uint8_t crc_extra)
 {
 	mavlink_status_t *status = mavlink_get_channel_status(chan);
 	bool mavlink1 = (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) != 0;
@@ -197,7 +197,7 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, ui
 	} else {
 		msg->magic = MAVLINK_STX;
 	}
-	msg->len = length;
+	msg->len = mavlink1?min_length:length;
 	msg->sysid = system_id;
 	msg->compid = component_id;
 	msg->incompat_flags = 0;
@@ -241,7 +241,7 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, ui
 				    (const uint8_t *)_MAV_PAYLOAD(msg)+(uint16_t)msg->len);
 	}
 	
-	return length + header_len + 2 + signature_len;
+	return msg->len + header_len + 2 + signature_len;
 }
 
 
@@ -249,9 +249,9 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, ui
  * @brief Finalize a MAVLink message with MAVLINK_COMM_0 as default channel
  */
 MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
-						 uint8_t length, uint8_t crc_extra)
+						 uint8_t min_length, uint8_t length, uint8_t crc_extra)
 {
-	return mavlink_finalize_message_chan(msg, system_id, component_id, MAVLINK_COMM_0, length, crc_extra);
+    return mavlink_finalize_message_chan(msg, system_id, component_id, MAVLINK_COMM_0, min_length, length, crc_extra);
 }
 
 
@@ -268,7 +268,7 @@ static inline void _mav_parse_error(mavlink_status_t *status)
  */
 MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint32_t msgid,
                                                     const char *packet, 
-						    uint8_t length, uint8_t crc_extra)
+						    uint8_t min_length, uint8_t length, uint8_t crc_extra)
 {
 	uint16_t checksum;
 	uint8_t buf[MAVLINK_NUM_HEADER_BYTES];
@@ -281,6 +281,7 @@ MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint
 	bool signing = 	(!mavlink1) && status->signing && (status->signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING);
 
         if (mavlink1) {
+            length = min_length;
             if (msgid > 255) {
                 // can't send 16 bit messages
                 _mav_parse_error(status);
