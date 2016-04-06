@@ -29,6 +29,15 @@
     </xs:restriction>
   </xs:simpleType>
 </xs:attribute>
+<xs:attribute name="default">
+  <xs:simpleType>
+    <xs:restriction base="xs:string">
+        <xs:pattern value="^\d{1,10}$"/> <!-- base 10 int -->
+        <xs:pattern value="^0[xX][0-9a-fA-F]{1,8}$"/> <!-- base 16 -->
+        <xs:pattern value="^0[bB][0-1]{1,32}$"/> <!-- base 1 -->
+    </xs:restriction>
+  </xs:simpleType>
+</xs:attribute>
 <xs:attribute name="type">
   <xs:simpleType>
     <xs:restriction base="xs:string">
@@ -65,7 +74,11 @@
         <xs:attribute ref="name" use="required"/>
         <xs:attribute ref="print_format" />
         <xs:attribute ref="enum" />
+        <xs:attribute ref="default" />
     </xs:complexType>
+</xs:element>
+
+<xs:element name="extensions">
 </xs:element>
 
 <xs:element name="entry">
@@ -94,6 +107,8 @@
         <xs:sequence>
             <xs:element ref="description" minOccurs="0"/>
             <xs:element ref="field" maxOccurs="unbounded"/>
+            <xs:element ref="extensions" minOccurs="0" maxOccurs="1"/>
+            <xs:element ref="field" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute ref="id" use="required"/>
         <xs:attribute ref="name" use="required"/>
