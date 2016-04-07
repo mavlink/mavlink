@@ -254,14 +254,13 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t
     return mavlink_finalize_message_chan(msg, system_id, component_id, MAVLINK_COMM_0, min_length, length, crc_extra);
 }
 
-
-#ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
-MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, uint16_t len);
-
 static inline void _mav_parse_error(mavlink_status_t *status)
 {
     status->parse_error++;
 }
+
+#ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
+MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, uint16_t len);
 
 /**
  * @brief Finalize a MAVLink message with channel assignment and send
