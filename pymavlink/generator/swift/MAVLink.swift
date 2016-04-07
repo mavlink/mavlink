@@ -117,19 +117,19 @@ extension Message {
     }
     
     public var description: String {
-        let describeField: ((String, Any)) -> String = { (let name, var value) in
-            value = value is String ? "\"\(value)\"" : value
-            return "\(name): \(value)"
+        let describeField: ((String, Any)) -> String = { (let name, value) in
+            let valueString = value is String ? "\"\(value)\"" : value
+            return "\(name): \(valueString)"
         }
         let fieldsDescription = allFields.map(describeField).joinWithSeparator(", ")
         return "\(self.dynamicType)(\(fieldsDescription))"
     }
     
     public var debugDescription: String {
-        let describeFieldVerbose: ((String, Any)) -> String = { (let name, var value) in
-            value = value is String ? "\"\(value)\"" : value
+        let describeFieldVerbose: ((String, Any)) -> String = { (let name, value) in
+            let valueString = value is String ? "\"\(value)\"" : value
             let (_, _, _, _, description) = Self.fieldDefinitions.filter { $0.name == name }.first!
-            return "\(name) = \(value) : \(description)"
+            return "\(name) = \(valueString) : \(description)"
         }
         let fieldsDescription = allFields.map(describeFieldVerbose).joinWithSeparator("\n\t")
         return "\(Self.typeName): \(Self.typeDescription)\nFields:\n\t\(fieldsDescription)"
@@ -438,7 +438,7 @@ public class MAVLink {
             // If `messageLengths` does not contain info for current messageId, parsing will fail later on CRC check.
             if checkMessageLength && (messageLengths[char] != nil) {
                 if let messageLength = messageLengths[char] where rxpack.length != messageLength {
-                    status.parseError++
+                    status.parseError += 1
                     status.parseState = .Idle
                     let error = ParseError.InvalidPayloadLength(messageId: char, receivedLength: rxpack.length, properLength: messageLength)
                     delegate?.link(self, didFailToReceivePacketWithError: error, data: nil, channel: channel)
@@ -475,7 +475,7 @@ public class MAVLink {
             
         case .GotCRC1, .GotBadCRC1:
             if (status.parseState == .GotBadCRC1) || (char != rxpack.checksum.highByte) {
-                status.parseError++
+                status.parseError += 1
                 status.packetReceived = .BadCRC
                 let error = messageIdToClass[rxpack.messageId] == nil ? ParseError.UnknownMessageId(messageId: rxpack.messageId) : ParseError.BadCRC
                 delegate?.link(self, didFailToReceivePacketWithError: error, data: Packet(packet: rxpack), channel: channel)
