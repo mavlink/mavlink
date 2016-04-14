@@ -358,6 +358,7 @@ class MAVLink(object):
                 self.send_callback_args = None
                 self.send_callback_kwargs = None
                 self.buf = bytearray()
+                self.buf_index = 0      # index into self.buf to avoid rewriting the buffer
                 self.expected_length = 8
                 self.have_prefix_error = False
                 self.robust_parsing = False
@@ -399,12 +400,15 @@ class MAVLink(object):
                 if self.send_callback:
                     self.send_callback(mavmsg, *self.send_callback_args, **self.send_callback_kwargs)
 
+        def buf_len(self):
+            return len(self.buf) - self.buf_index
+
         def bytes_needed(self):
             '''return number of bytes needed for next parsing stage'''
             if self.native:
-                ret = self.native.expected_length - len(self.buf)
+                ret = self.native.expected_length - self.buf_len()
             else:
-                ret = self.expected_length - len(self.buf)
+                ret = self.expected_length - self.buf_len()
             
             if ret <= 0:
                 return 1
@@ -442,14 +446,20 @@ class MAVLink(object):
             if m != None:
                 self.total_packets_received += 1
                 self.__callbacks(m)
+            else:
+                # XXX The idea here is if we've read something and there's nothing left in
+                # the buffer, reset it to 0 which frees the memory
+                if self.buf_len() == 0 and self.buf_index != 0:
+                    self.buf = bytearray()
+                    self.buf_index = 0
 
             return m
 
         def __parse_char_legacy(self):
             '''input some data bytes, possibly returning a new message (uses no native code)'''
-            if len(self.buf) >= 1 and self.buf[0] != ${protocol_marker}:
-                magic = self.buf[0]
-                self.buf = self.buf[1:]
+            if self.buf_len() >= 1 and self.buf[self.buf_index] != ${protocol_marker}:
+                magic = self.buf[self.buf_index]
+                self.buf_index += 1
                 if self.robust_parsing:
                     m = MAVLink_bad_data(chr(magic), "Bad prefix")
                     self.expected_length = 8
@@ -461,15 +471,15 @@ class MAVLink(object):
                 self.total_receive_errors += 1
                 raise MAVError("invalid MAVLink prefix '%s'" % magic)
             self.have_prefix_error = False
-            if len(self.buf) >= 2:
+            if self.buf_len() >= 2:
                 if sys.version_info[0] < 3:
-                    (magic, self.expected_length) = struct.unpack('BB', str(self.buf[0:2])) # bytearrays are not supported in py 2.7.3
+                    (magic, self.expected_length) = struct.unpack('BB', str(self.buf[self.buf_index:self.buf_index+2])) # bytearrays are not supported in py 2.7.3
                 else:
-                    (magic, self.expected_length) = struct.unpack('BB', self.buf[0:2])
+                    (magic, self.expected_length) = struct.unpack('BB', self.buf[self.buf_index:self.buf_index+2])
                 self.expected_length += 8
-            if self.expected_length >= 8 and len(self.buf) >= self.expected_length:
-                mbuf = array.array('B', self.buf[0:self.expected_length])
-                self.buf = self.buf[self.expected_length:]
+            if self.expected_length >= 8 and self.buf_len()  >= self.expected_length:
+                mbuf = array.array('B', self.buf[self.buf_index:self.expected_length+self.buf_index])
+                self.buf_index += self.expected_length
                 self.expected_length = 8
                 if self.robust_parsing:
                     try:
