@@ -686,6 +686,26 @@
                     <param index="6">Longitude</param>
                     <param index="7">Altitude</param>
                </entry>
+               <entry value="32" name="MAV_CMD_DO_FOLLOW">
+                    <description>Being following a target</description>
+                    <param index="1">System ID (the system ID of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode</param>
+                    <param index="2">RESERVED</param>
+                    <param index="3">RESERVED</param>
+                    <param index="4">altitude flag: 0: Keep current altitude, 1: keep altitude difference to target, 2: go to a fixed altitude above home</param>
+                    <param index="5">altitude</param>
+                    <param index="6">RESERVED</param>
+                    <param index="7">TTL in seconds in which the MAV should go to the default position hold mode after a message rx timeout</param>
+               </entry>
+               <entry value="33" name="MAV_CMD_DO_FOLLOW_REPOSITION">
+                    <description>Reposition the MAV after a follow target command has been sent</description>
+                    <param index="1">Camera q1 (where 0 is on the ray from the camera to the tracking device)</param>
+                    <param index="2">Camera q2</param>
+                    <param index="3">Camera q3</param>
+                    <param index="4">Camera q4</param>
+                    <param index="5">altitude offset from target (m)</param>
+                    <param index="6">X offset from target (m)</param>
+                    <param index="7">Y offset from target (m)</param>
+               </entry>
                <entry value="80" name="MAV_CMD_NAV_ROI">
                     <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
                     <param index="1">Region of intereset mode. (see MAV_ROI enum)</param>
@@ -1285,6 +1305,159 @@
                   <param index="7">Reserved</param>
               </entry>
               <!-- END of payload range (30000 to 30999) -->
+              
+              <!-- BEGIN user defined range (31000 to 31999) -->
+              <entry value="31000" name="MAV_CMD_WAYPOINT_USER_1">
+                  <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31001" name="MAV_CMD_WAYPOINT_USER_2">
+                  <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31002" name="MAV_CMD_WAYPOINT_USER_3">
+                  <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31003" name="MAV_CMD_WAYPOINT_USER_4">
+                  <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31004" name="MAV_CMD_WAYPOINT_USER_5">
+                  <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31005" name="MAV_CMD_SPATIAL_USER_1">
+                  <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31006" name="MAV_CMD_SPATIAL_USER_2">
+                  <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31007" name="MAV_CMD_SPATIAL_USER_3">
+                  <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31008" name="MAV_CMD_SPATIAL_USER_4">
+                  <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31009" name="MAV_CMD_SPATIAL_USER_5">
+                  <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">Latitude unscaled</param>
+                  <param index="6">Longitude unscaled</param>
+                  <param index="7">Altitude, in meters AMSL</param>
+              </entry>
+              <entry value="31010" name="MAV_CMD_USER_1">
+                  <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">User defined</param>
+                  <param index="6">User defined</param>
+                  <param index="7">User defined</param>
+              </entry>
+              <entry value="31011" name="MAV_CMD_USER_2">
+                  <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">User defined</param>
+                  <param index="6">User defined</param>
+                  <param index="7">User defined</param>
+              </entry>
+              <entry value="31012" name="MAV_CMD_USER_3">
+                  <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">User defined</param>
+                  <param index="6">User defined</param>
+                  <param index="7">User defined</param>
+              </entry>
+              <entry value="31013" name="MAV_CMD_USER_4">
+                  <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">User defined</param>
+                  <param index="6">User defined</param>
+                  <param index="7">User defined</param>
+              </entry>
+              <entry value="31014" name="MAV_CMD_USER_5">
+                  <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
+                  <param index="1">User defined</param>
+                  <param index="2">User defined</param>
+                  <param index="3">User defined</param>
+                  <param index="4">User defined</param>
+                  <param index="5">User defined</param>
+                  <param index="6">User defined</param>
+                  <param index="7">User defined</param>
+              </entry>
+              <!-- END of user range (31000 to 31999) -->
           </enum>
           <enum name="MAV_DATA_STREAM">
                <description>THIS INTERFACE IS DEPRECATED AS OF JULY 2015. Please use MESSAGE_INTERVAL instead. A data stream is not a fixed set of messages, but rather a
@@ -2642,7 +2815,7 @@
            <field type="float" name="diff_pressure">Differential pressure (airspeed) in millibar</field>
            <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
            <field type="float" name="temperature">Temperature in degrees celsius</field>
-           <field type="uint32_t" name="fields_updated">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
+           <field type="uint32_t" name="fields_updated">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature, bit 31: full reset of attitude/position/velocities/etc was performed in sim.</field>
          </message>
 
 	  <message name="SIM_STATE" id="108">
@@ -2989,6 +3162,20 @@
           <field type="float" name="press_abs">Absolute pressure (hectopascal)</field>
           <field type="float" name="press_diff">Differential pressure 1 (hectopascal)</field>
            <field type="int16_t" name="temperature">Temperature measurement (0.01 degrees celsius)</field>
+        </message>
+        <message id="144" name="FOLLOW_TARGET">
+              <description>current motion information from a designated system</description>
+              <field type="uint64_t" name="timestamp">Timestamp in milliseconds since system boot</field>
+              <field type="uint8_t" name="est_capabilities">bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3)</field>
+              <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
+              <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
+              <field type="float" name="alt">AMSL, in meters</field>
+              <field type="float[3]" name="vel">target velocity (0,0,0) for unknown</field>
+              <field type="float[3]" name="acc">linear target acceleration (0,0,0) for unknown</field>
+              <field type="float[4]" name="attitude_q">(1 0 0 0 for unknown)</field>
+              <field type="float[3]" name="rates">(0 0 0 for unknown)</field>
+              <field type="float[3]" name="position_cov">eph epv</field>
+              <field type="uint64_t" name="custom_state">button states or switches of a tracker device</field>
         </message>
         <message id="146" name="CONTROL_SYSTEM_STATE">
             <description>The smoothed, monotonic system state used to feed the control loops of the system.</description>
