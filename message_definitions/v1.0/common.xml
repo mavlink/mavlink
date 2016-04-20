@@ -2030,6 +2030,53 @@
                   <description>The aircraft should immediately transition into guided. This should not be set for follow me applications</description>
               </entry>
           </enum>
+          <!-- ESTIMATOR_STATUS_FLAGS - these values should be bit-and with the messages flags field to know if flag has been set -->
+          <enum name="ESTIMATOR_STATUS_FLAGS">
+              <description>Flags in EKF_STATUS message</description>
+              <entry name="ESTIMATOR_ATTITUDE" value="1">
+                  <description>True if the attitude estimate is good</description>
+              </entry>
+
+              <entry name="ESTIMATOR_VELOCITY_HORIZ" value="2">
+                  <description>True if the horizontal velocity estimate is good</description>
+              </entry>
+
+              <entry name="ESTIMATOR_VELOCITY_VERT" value="4">
+                  <description>True if the  vertical velocity estimate is good</description>
+              </entry>
+
+              <entry name="ESTIMATOR_POS_HORIZ_REL" value="8">
+                  <description>True if the horizontal position (relative) estimate is good</description>
+              </entry>
+
+              <entry name="ESTIMATOR_POS_HORIZ_ABS" value="16">
+                  <description>True if the horizontal position (absolute) estimate is good</description>
+              </entry>
+
+              <entry name="ESTIMATOR_POS_VERT_ABS" value="32">
+                  <description>True if the vertical position (absolute) estimate is good</description>
+              </entry>
+
+              <entry name="ESTIMATOR_POS_VERT_AGL" value="64">
+                  <description>True if the vertical position (above ground) estimate is good</description>
+              </entry>
+
+              <entry name="ESTIMATOR_CONST_POS_MODE" value="128">
+                  <description>True if the EKF is in a constant position mode and is not using external measurements (eg GPS or optical flow)</description>
+              </entry>
+
+              <entry name="ESTIMATOR_PRED_POS_HORIZ_REL" value="256">
+                  <description>True if the EKF has sufficient data to enter a mode that will provide a (relative) position estimate</description>
+              </entry>
+
+              <entry name="ESTIMATOR_PRED_POS_HORIZ_ABS" value="512">
+                  <description>True if the EKF has sufficient data to enter a mode that will provide a (absolute) position estimate</description>
+              </entry>
+
+              <entry name="ESTIMATOR_GPS_GLITCH" value="1024">
+                  <description>True if the EKF has detected a GPS glitch</description>
+              </entry>
+          </enum>
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -3240,7 +3287,31 @@
             <field type="float" name="size_x">Size in radians of target along x-axis</field>
             <field type="float" name="size_y">Size in radians of target along y-axis</field>
         </message>
-        <!-- MESSAGE IDs 180 - 240: Space for custom messages in individual projectname_messages.xml files -->
+        <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
+        <message id="230" name="ESTIMATOR_STATUS">
+            <description>Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovaton test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovaton test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field name="flags" type="uint16_t" enum="ESTIMATOR_STATUS_FLAGS">Integer bitmask indicating which EKF outputs are valid. See definition for ESTIMATOR_STATUS_FLAGS.</field>
+            <field name="vel_ratio" type="float">Velocity innovation test ratio</field>
+            <field name="pos_horiz_ratio" type="float">Horizontal position innovation test ratio</field>
+            <field name="pos_vert_ratio" type="float">Vertical position innovation test ratio</field>
+            <field name="mag_ratio" type="float">Magnetometer innovation test ratio</field>
+            <field name="hagl_ratio" type="float">Height above terrain innovation test ratio</field>
+            <field name="tas_ratio" type="float">True airspeed innovation test ratio</field>
+            <field name="pos_horiz_accuracy" type="float">Horizontal position 1-STD accuracy relative to the EKF local origin (m)</field>
+            <field name="pos_vert_accuracy" type="float">Vertical position 1-STD accuracy relative to the EKF local origin (m)</field>
+        </message>
+        <message id="231" name="WIND_COV">
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="float" name="wind_x">Wind in X (NED) direction in m/s</field>
+            <field type="float" name="wind_y">Wind in Y (NED) direction in m/s</field>
+            <field type="float" name="wind_z">Wind in Z (NED) direction in m/s</field>
+            <field type="float" name="var_horiz">Variability of the wind in XY. RMS of a 1 Hz lowpassed wind estimate.</field>
+            <field type="float" name="var_vert">Variability of the wind in Z. RMS of a 1 Hz lowpassed wind estimate.</field>
+            <field type="float" name="wind_alt">AMSL altitude (m) this measurement was taken at</field>
+            <field name="horiz_accuracy" type="float">Horizontal speed 1-STD accuracy</field>
+            <field name="vert_accuracy" type="float">Vertical speed 1-STD accuracy</field>
+        </message>
         <message id="241" name="VIBRATION">
             <description>Vibration levels and accelerometer clipping</description>
             <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
