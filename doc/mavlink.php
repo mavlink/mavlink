@@ -6,12 +6,13 @@
 // Load the file from the repository / server.
 // Update this URL if the file location changes
 
-$xml_file_name = "https://raw.github.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml";
+$xml_file_name = dirname(__FILE__) . "/../message_definitions/v1.0/common.xml";
+
 
 // Load the XSL transformation file from the repository / server.
 // This file can be updated by any client to adjust the table
 
-$xsl_file_name= "https://raw.github.com/mavlink/mavlink/master/doc/mavlink_to_html_table.xsl";
+$xsl_file_name= dirname(__FILE__) . "/mavlink_to_html_table.xsl";
 
 // Load data XML file
 $xml = file_get_contents($xml_file_name);
