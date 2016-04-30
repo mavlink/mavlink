@@ -31,6 +31,9 @@ public protocol Enumeration: RawRepresentable, Equatable, MAVLinkEntity {
     // Array with `Name` - `Description` tuples (values from declarations xml file)
     static var membersDescriptions: [(String, String)] { get }
     
+    /// `ENUM_END` flag for checking if enum case value is valid
+    static var enumEnd: UInt { get }
+    
     /// Original MAVLinks enum member name (as declared in definitions xml file)
     var memberName: String { get }
     

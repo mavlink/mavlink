@@ -78,6 +78,7 @@ extension ${swift_name} {
     public static var typeDescription = "${entity_description}"
     public static var allMembers = [${all_entities}]
     public static var membersDescriptions = [${entities_info}]
+    public static var enumEnd = UInt(${enum_end})
 }
 """, enum)
         outf.close()
@@ -232,6 +233,11 @@ def generate_enums_type_info(enums, msgs):
             enum.description = " ".join(enum.description.split())
             enum.formatted_description = "\n/**\n    %s\n*/\n" % enum.description
 
+        for index, entry in enumerate(enum.entry):
+            if entry.name.endswith("_ENUM_END"):
+                enum.enum_end = entry.value
+                del enum.entry[index]
+
         all_entities = []
         entities_info = []
 
@@ -241,7 +247,7 @@ def generate_enums_type_info(enums, msgs):
             if name[0].isdigit():
                 name = "MAV_" + name
             entry.swift_name = camel_case_from_underscores(name)
-            
+
             entry.formatted_description = ""
             if entry.description:
                 entry.description = " ".join(entry.description.split())
