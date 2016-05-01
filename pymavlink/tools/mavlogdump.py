@@ -7,7 +7,7 @@ of a series of MAVLink packets, each with a 64 bit timestamp
 header. The timestamp is in microseconds since 1970 (unix epoch)
 '''
 
-import sys, time, os, struct, json
+import sys, time, os, struct, json, fnmatch
 
 try:
     from pymavlink.mavextra import *
@@ -27,8 +27,8 @@ parser.add_argument("-o", "--output", default=None, help="output matching packet
 parser.add_argument("-p", "--parms", action='store_true', help="preserve parameters in output with -o")
 parser.add_argument("--format", default=None, help="Change the output format between 'standard', 'json', and 'csv'. For the CSV output, you must supply types that you want.")
 parser.add_argument("--csv_sep", dest="csv_sep", default=",", help="Select the delimiter between columns for the output CSV file. Use 'tab' to specify tabs. Only applies when --format=csv")
-parser.add_argument("--types", default=None, help="types of messages (comma separated)")
-parser.add_argument("--nottypes", default=None, help="types of messages not to include (comma separated)")
+parser.add_argument("--types", default=None, help="types of messages (comma separated with wildcard)")
+parser.add_argument("--nottypes", default=None, help="types of messages not to include (comma separated with wildcard)")
 parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect")
 parser.add_argument("--zero-time-base", action='store_true', help="use Z time base for DF logs")
 parser.add_argument("--no-bad-data", action='store_true', help="Don't output corrupted messages")
@@ -65,6 +65,13 @@ islog = ext in ['.log', '.LOG','.tlog','.TLOG']
 
 if args.csv_sep == "tab":
     args.csv_sep = "\t"
+
+def match_type(mtype, patterns):
+    '''return True if mtype matches pattern'''
+    for p in patterns:
+        if fnmatch.fnmatch(mtype, p):
+            return True
+    return False
 
 # Write out a header row as we're outputting in CSV format.
 fields = ['timestamp']
@@ -122,10 +129,10 @@ while True:
     if not mavutil.evaluate_condition(args.condition, mlog.messages):
         continue
 
-    if types is not None and m.get_type() not in types and m.get_type() != 'BAD_DATA':
+    if types is not None and m.get_type() != 'BAD_DATA' and not match_type(m.get_type(), types):
         continue
 
-    if nottypes is not None and m.get_type() in nottypes:
+    if nottypes is not None and match_type(m.get_type(), nottypes):
         continue
 
     # Ignore BAD_DATA messages is the user requested or if they're because of a bad prefix. The
