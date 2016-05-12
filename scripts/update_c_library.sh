@@ -64,6 +64,7 @@ generate_headers autoquad
 generate_headers matrixpilot
 generate_headers minimal
 generate_headers pixhawk
+generate_headers rosflight
 generate_headers slugs
 generate_headers test
 generate_headers ualberta
