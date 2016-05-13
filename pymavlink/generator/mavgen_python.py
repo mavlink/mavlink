@@ -279,7 +279,7 @@ class %s(MAVLink_message):
 
         def __init__(self""" % (classname, wrapper.fill(m.description.strip()), 
             m.name.upper(), 
-            m.name.upper(), 
+            m.name.upper(),
             fieldname_str,
             ordered_fieldname_str,
             m.fmtstr,
@@ -608,10 +608,9 @@ class MAVLink(object):
             # our current timestamp
             self.signing.timestamp = max(self.signing.timestamp, timestamp)
             return True
-            
 
         def decode(self, msgbuf):
-                '''decode a buffer as a MAVLink message'''                    
+                '''decode a buffer as a MAVLink message'''
                 # decode the header
                 if msgbuf[0] != PROTOCOL_MARKER_V1:
                     headerlen = 10
@@ -673,10 +672,10 @@ class MAVLink(object):
                         if not accept_signature and self.signing.allow_unsigned_callback is not None:
                             accept_signature = self.signing.allow_unsigned_callback(self, msgId)
                     elif self.signing.allow_unsigned_callback is not None:
-                        accept_signature = self.signing.allow_unsigned_callback(self, msgId)                        
+                        accept_signature = self.signing.allow_unsigned_callback(self, msgId)
                     if not accept_signature:
                         raise MAVError('Invalid signature')
-                    
+
                 csize = struct.calcsize(fmt)
                 mbuf = msgbuf[headerlen:-(2+signature_len)]
                 if len(mbuf) < csize and allow_smaller:
