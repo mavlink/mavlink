@@ -5,10 +5,13 @@
 #include "checksum.h"
 #include "mavlink_types.h"
 #include "mavlink_conversions.h"
+#include <stdio.h>
 
 #ifndef MAVLINK_HELPER
 #define MAVLINK_HELPER
 #endif
+
+#include "mavlink_sha256.h"
 
 /*
  * Internal function to give access to the channel status for each channel
@@ -41,7 +44,7 @@ MAVLINK_HELPER mavlink_message_t* mavlink_get_channel_buffer(uint8_t chan)
 #endif
 	return &m_mavlink_buffer[chan];
 }
-#endif
+#endif // MAVLINK_GET_CHANNEL_BUFFER
 
 /**
  * @brief Reset the status of a channel.
@@ -51,6 +54,121 @@ MAVLINK_HELPER void mavlink_reset_channel_status(uint8_t chan)
 	mavlink_status_t *status = mavlink_get_channel_status(chan);
 	status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 }
+
+/**
+ * @brief create a signature block for a packet
+ */
+MAVLINK_HELPER uint8_t mavlink_sign_packet(mavlink_signing_t *signing,
+					   uint8_t signature[MAVLINK_SIGNATURE_BLOCK_LEN],
+					   const uint8_t *header, uint8_t header_len,
+					   const uint8_t *packet, uint8_t packet_len,
+					   const uint8_t crc[2])
+{
+	mavlink_sha256_ctx ctx;
+	union {
+	    uint64_t t64;
+	    uint8_t t8[8];
+	} tstamp;
+	if (signing == NULL || !(signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING)) {
+	    return 0;
+	}
+	signature[0] = signing->link_id;
+	tstamp.t64 = signing->timestamp;
+	memcpy(&signature[1], tstamp.t8, 6);
+	signing->timestamp++;
+	
+	mavlink_sha256_init(&ctx);
+	mavlink_sha256_update(&ctx, signing->secret_key, sizeof(signing->secret_key));
+	mavlink_sha256_update(&ctx, header, header_len);
+	mavlink_sha256_update(&ctx, packet, packet_len);
+	mavlink_sha256_update(&ctx, crc, 2);
+	mavlink_sha256_update(&ctx, signature, 7);
+	mavlink_sha256_final_48(&ctx, &signature[7]);
+	
+	return MAVLINK_SIGNATURE_BLOCK_LEN;
+}
+
+/**
+ * @brief check a signature block for a packet
+ */
+MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
+					    mavlink_signing_streams_t *signing_streams,
+					    const mavlink_message_t *msg)
+{
+	if (signing == NULL) {
+		return true;
+	}
+        const uint8_t *p = (const uint8_t *)&msg->magic;
+        uint16_t len = MAVLINK_CORE_HEADER_LEN+1+msg->len+2+1+6;
+	const uint8_t *psig = p + MAVLINK_CORE_HEADER_LEN+1+msg->len+2;
+        const uint8_t *incoming_signature = psig+7;
+	mavlink_sha256_ctx ctx;
+	uint8_t signature[6];
+	uint16_t i;
+        
+	mavlink_sha256_init(&ctx);
+	mavlink_sha256_update(&ctx, signing->secret_key, sizeof(signing->secret_key));
+	mavlink_sha256_update(&ctx, p, len);
+	mavlink_sha256_final_48(&ctx, signature);
+	if (memcmp(signature, incoming_signature, 6) != 0) {
+		return false;
+	}
+
+	// now check timestamp
+	union tstamp {
+	    uint64_t t64;
+	    uint8_t t8[8];
+	} tstamp;
+	uint8_t link_id = psig[0];
+	tstamp.t64 = 0;
+	memcpy(tstamp.t8, psig+1, 6);
+
+	if (signing_streams == NULL) {
+		return false;
+	}
+	
+	// find stream
+	for (i=0; i<signing_streams->num_signing_streams; i++) {
+		if (msg->sysid == signing_streams->stream[i].sysid &&
+		    msg->compid == signing_streams->stream[i].compid &&
+		    link_id == signing_streams->stream[i].link_id) {
+			break;
+		}
+	}
+	if (i == signing_streams->num_signing_streams) {
+		if (signing_streams->num_signing_streams >= MAVLINK_MAX_SIGNING_STREAMS) {
+			// over max number of streams
+			return false;
+		}
+		// new stream. Only accept if timestamp is not more than 1 minute old
+		if (tstamp.t64 + 6000*1000UL < signing->timestamp) {
+			return false;
+		}
+		// add new stream
+		signing_streams->stream[i].sysid = msg->sysid;
+		signing_streams->stream[i].compid = msg->compid;
+		signing_streams->stream[i].link_id = link_id;
+		signing_streams->num_signing_streams++;
+	} else {
+		union tstamp last_tstamp;
+		last_tstamp.t64 = 0;
+		memcpy(last_tstamp.t8, signing_streams->stream[i].timestamp_bytes, 6);
+		if (tstamp.t64 <= last_tstamp.t64) {
+			// repeating old timestamp
+			return false;
+		}
+	}
+
+	// remember last timestamp
+	memcpy(signing_streams->stream[i].timestamp_bytes, psig+1, 6);
+
+	// our next timestamp must be at least this timestamp
+	if (tstamp.t64 > signing->timestamp) {
+		signing->timestamp = tstamp.t64;
+	}
+	return true;
+}
+
 
 /**
  * @brief Finalize a MAVLink message with channel assignment
@@ -64,50 +182,82 @@ MAVLINK_HELPER void mavlink_reset_channel_status(uint8_t chan)
  * @param system_id Id of the sending (this) system, 1-127
  * @param length Message length
  */
-#if MAVLINK_CRC_EXTRA
 MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
 						      uint8_t chan, uint8_t min_length, uint8_t length, uint8_t crc_extra)
-#else
-MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
-						      uint8_t chan, uint8_t length)
-#endif
 {
-	// This code part is the same for all messages;
-	msg->magic = MAVLINK_STX;
-	msg->len = length;
+	mavlink_status_t *status = mavlink_get_channel_status(chan);
+	bool mavlink1 = (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) != 0;
+	bool signing = 	(!mavlink1) && status->signing && (status->signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING);
+	uint8_t signature_len = signing? MAVLINK_SIGNATURE_BLOCK_LEN : 0;
+        uint8_t header_len = MAVLINK_CORE_HEADER_LEN+1;
+	uint8_t buf[MAVLINK_CORE_HEADER_LEN+1];
+	if (mavlink1) {
+		msg->magic = MAVLINK_STX_MAVLINK1;
+		header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN+1;
+	} else {
+		msg->magic = MAVLINK_STX;
+	}
+	msg->len = mavlink1?min_length:length;
 	msg->sysid = system_id;
 	msg->compid = component_id;
-	// One sequence number per channel
-	msg->seq = mavlink_get_channel_status(chan)->current_tx_seq;
-	mavlink_get_channel_status(chan)->current_tx_seq = mavlink_get_channel_status(chan)->current_tx_seq+1;
-	msg->checksum = crc_calculate(((const uint8_t*)(msg)) + 3, MAVLINK_CORE_HEADER_LEN);
+	msg->incompat_flags = 0;
+	if (signing) {
+		msg->incompat_flags |= MAVLINK_IFLAG_SIGNED;
+	}
+	msg->compat_flags = 0;
+	msg->seq = status->current_tx_seq;
+	status->current_tx_seq = status->current_tx_seq + 1;
+
+	// form the header as a byte array for the crc
+	buf[0] = msg->magic;
+	buf[1] = msg->len;
+	if (mavlink1) {
+		buf[2] = msg->seq;
+		buf[3] = msg->sysid;
+		buf[4] = msg->compid;
+		buf[5] = msg->msgid & 0xFF;
+	} else {
+		buf[2] = msg->incompat_flags;
+		buf[3] = msg->compat_flags;
+		buf[4] = msg->seq;
+		buf[5] = msg->sysid;
+		buf[6] = msg->compid;
+		buf[7] = msg->msgid & 0xFF;
+		buf[8] = (msg->msgid >> 8) & 0xFF;
+		buf[9] = (msg->msgid >> 16) & 0xFF;
+	}
+	
+	msg->checksum = crc_calculate(&buf[1], header_len-1);
 	crc_accumulate_buffer(&msg->checksum, _MAV_PAYLOAD(msg), msg->len);
-#if MAVLINK_CRC_EXTRA
 	crc_accumulate(crc_extra, &msg->checksum);
-#endif
 	mavlink_ck_a(msg) = (uint8_t)(msg->checksum & 0xFF);
 	mavlink_ck_b(msg) = (uint8_t)(msg->checksum >> 8);
 
-	return length + MAVLINK_NUM_NON_PAYLOAD_BYTES;
+	if (signing) {
+		mavlink_sign_packet(status->signing,
+				    msg->signature,
+				    (const uint8_t *)buf, header_len,
+				    (const uint8_t *)_MAV_PAYLOAD(msg), msg->len,
+				    (const uint8_t *)_MAV_PAYLOAD(msg)+(uint16_t)msg->len);
+	}
+	
+	return msg->len + header_len + 2 + signature_len;
 }
 
 
 /**
  * @brief Finalize a MAVLink message with MAVLINK_COMM_0 as default channel
  */
-#if MAVLINK_CRC_EXTRA
 MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
 						 uint8_t min_length, uint8_t length, uint8_t crc_extra)
 {
     return mavlink_finalize_message_chan(msg, system_id, component_id, MAVLINK_COMM_0, min_length, length, crc_extra);
 }
-#else
-MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
-						 uint8_t length)
+
+static inline void _mav_parse_error(mavlink_status_t *status)
 {
-	return mavlink_finalize_message_chan(msg, system_id, component_id, MAVLINK_COMM_0, length);
+    status->parse_error++;
 }
-#endif
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, uint16_t len);
@@ -115,42 +265,77 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
 /**
  * @brief Finalize a MAVLink message with channel assignment and send
  */
-#if MAVLINK_CRC_EXTRA
-MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t msgid, const char *packet, 
+MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint32_t msgid,
+                                                    const char *packet, 
 						    uint8_t min_length, uint8_t length, uint8_t crc_extra)
-#else
-MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t msgid, const char *packet, uint8_t length)
-#endif
 {
 	uint16_t checksum;
 	uint8_t buf[MAVLINK_NUM_HEADER_BYTES];
 	uint8_t ck[2];
 	mavlink_status_t *status = mavlink_get_channel_status(chan);
-	buf[0] = MAVLINK_STX;
-	buf[1] = length;
-	buf[2] = status->current_tx_seq;
-	buf[3] = mavlink_system.sysid;
-	buf[4] = mavlink_system.compid;
-	buf[5] = msgid;
+        uint8_t header_len = MAVLINK_CORE_HEADER_LEN;
+	uint8_t signature_len = 0;
+	uint8_t signature[MAVLINK_SIGNATURE_BLOCK_LEN];
+	bool mavlink1 = (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) != 0;
+	bool signing = 	(!mavlink1) && status->signing && (status->signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING);
+
+        if (mavlink1) {
+            length = min_length;
+            if (msgid > 255) {
+                // can't send 16 bit messages
+                _mav_parse_error(status);
+                return;
+            }
+            header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN;
+            buf[0] = MAVLINK_STX_MAVLINK1;
+            buf[1] = length;
+            buf[2] = status->current_tx_seq;
+            buf[3] = mavlink_system.sysid;
+            buf[4] = mavlink_system.compid;
+            buf[5] = msgid & 0xFF;
+        } else {
+	    uint8_t incompat_flags = 0;
+	    if (signing) {
+		incompat_flags |= MAVLINK_IFLAG_SIGNED;
+	    }
+	    buf[0] = MAVLINK_STX;
+            buf[1] = length;
+            buf[2] = incompat_flags;
+            buf[3] = 0; // compat_flags
+            buf[4] = status->current_tx_seq;
+            buf[5] = mavlink_system.sysid;
+            buf[6] = mavlink_system.compid;
+            buf[7] = msgid & 0xFF;
+            buf[8] = (msgid >> 8) & 0xFF;
+            buf[9] = (msgid >> 16) & 0xFF;
+        }
 	status->current_tx_seq++;
-	checksum = crc_calculate((const uint8_t*)&buf[1], MAVLINK_CORE_HEADER_LEN);
+	checksum = crc_calculate((const uint8_t*)&buf[1], header_len);
 	crc_accumulate_buffer(&checksum, packet, length);
-#if MAVLINK_CRC_EXTRA
 	crc_accumulate(crc_extra, &checksum);
-#endif
 	ck[0] = (uint8_t)(checksum & 0xFF);
 	ck[1] = (uint8_t)(checksum >> 8);
 
-	MAVLINK_START_UART_SEND(chan, MAVLINK_NUM_NON_PAYLOAD_BYTES + (uint16_t)length);
-	_mavlink_send_uart(chan, (const char *)buf, MAVLINK_NUM_HEADER_BYTES);
+	if (signing) {
+		// possibly add a signature
+		signature_len = mavlink_sign_packet(status->signing, signature, buf, header_len+1,
+						    (const uint8_t *)packet, length, ck);
+	}
+	
+	MAVLINK_START_UART_SEND(chan, header_len + 3 + (uint16_t)length + (uint16_t)signature_len);
+	_mavlink_send_uart(chan, (const char *)buf, header_len+1);
 	_mavlink_send_uart(chan, packet, length);
 	_mavlink_send_uart(chan, (const char *)ck, 2);
-	MAVLINK_END_UART_SEND(chan, MAVLINK_NUM_NON_PAYLOAD_BYTES + (uint16_t)length);
+	if (signature_len != 0) {
+		_mavlink_send_uart(chan, (const char *)signature, signature_len);
+	}
+	MAVLINK_END_UART_SEND(chan, header_len + 3 + (uint16_t)length + (uint16_t)signature_len);
 }
 
 /**
  * @brief re-send a message over a uart channel
  * this is more stack efficient than re-marshalling the message
+ * This does not send the signature if signing
  */
 MAVLINK_HELPER void _mavlink_resend_uart(mavlink_channel_t chan, const mavlink_message_t *msg)
 {
@@ -160,27 +345,60 @@ MAVLINK_HELPER void _mavlink_resend_uart(mavlink_channel_t chan, const mavlink_m
 	ck[1] = (uint8_t)(msg->checksum >> 8);
 	// XXX use the right sequence here
 
-	MAVLINK_START_UART_SEND(chan, MAVLINK_NUM_NON_PAYLOAD_BYTES + msg->len);
-	_mavlink_send_uart(chan, (const char *)&msg->magic, MAVLINK_NUM_HEADER_BYTES);
+        uint8_t header_len = MAVLINK_CORE_HEADER_LEN + 1;
+        if (msg->magic == MAVLINK_STX_MAVLINK1) {
+            header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN + 1;
+        }
+	MAVLINK_START_UART_SEND(chan, header_len + msg->len + 2);
+	_mavlink_send_uart(chan, (const char *)&msg->magic, header_len);
 	_mavlink_send_uart(chan, _MAV_PAYLOAD(msg), msg->len);
 	_mavlink_send_uart(chan, (const char *)ck, 2);
-	MAVLINK_END_UART_SEND(chan, MAVLINK_NUM_NON_PAYLOAD_BYTES + msg->len);
+	MAVLINK_END_UART_SEND(chan, header_len + msg->len + 2);
 }
 #endif // MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
 /**
  * @brief Pack a message to send it over a serial byte stream
  */
-MAVLINK_HELPER uint16_t mavlink_msg_to_send_buffer(uint8_t *buffer, const mavlink_message_t *msg)
+MAVLINK_HELPER uint16_t mavlink_msg_to_send_buffer(uint8_t *buf, const mavlink_message_t *msg)
 {
-	memcpy(buffer, (const uint8_t *)&msg->magic, MAVLINK_NUM_HEADER_BYTES + (uint16_t)msg->len);
-
-	uint8_t *ck = buffer + (MAVLINK_NUM_HEADER_BYTES + (uint16_t)msg->len);
-
+	uint8_t signature_len, header_len;
+	uint8_t *ck;
+	
+	if (msg->magic == MAVLINK_STX_MAVLINK1) {
+		signature_len = 0;
+		header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN;
+		buf[0] = msg->magic;
+		buf[1] = msg->len;
+		buf[2] = msg->seq;
+		buf[3] = msg->sysid;
+		buf[4] = msg->compid;
+		buf[5] = msg->msgid & 0xFF;
+		memcpy(&buf[6], _MAV_PAYLOAD(msg), msg->len);
+		ck = buf + header_len + 1 + (uint16_t)msg->len;
+	} else {
+		header_len = MAVLINK_CORE_HEADER_LEN;
+		buf[0] = msg->magic;
+		buf[1] = msg->len;
+		buf[2] = msg->incompat_flags;
+		buf[3] = msg->compat_flags;
+		buf[4] = msg->seq;
+		buf[5] = msg->sysid;
+		buf[6] = msg->compid;
+		buf[7] = msg->msgid & 0xFF;
+		buf[8] = (msg->msgid >> 8) & 0xFF;
+		buf[9] = (msg->msgid >> 16) & 0xFF;
+		memcpy(&buf[10], _MAV_PAYLOAD(msg), msg->len);
+		ck = buf + header_len + 1 + (uint16_t)msg->len;
+		signature_len = (msg->incompat_flags & MAVLINK_IFLAG_SIGNED)?MAVLINK_SIGNATURE_BLOCK_LEN:0;
+	}
 	ck[0] = (uint8_t)(msg->checksum & 0xFF);
 	ck[1] = (uint8_t)(msg->checksum >> 8);
+	if (signature_len > 0) {
+		memcpy(&ck[2], msg->signature, signature_len);
+	}
 
-	return MAVLINK_NUM_NON_PAYLOAD_BYTES + (uint16_t)msg->len;
+	return header_len + 1 + 2 + (uint16_t)msg->len + (uint16_t)signature_len;
 }
 
 union __mavlink_bitfield {
@@ -201,6 +419,56 @@ MAVLINK_HELPER void mavlink_start_checksum(mavlink_message_t* msg)
 MAVLINK_HELPER void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 {
 	crc_accumulate(c, &msg->checksum);
+}
+
+/*
+  return the crc_entry value for a msgid
+*/
+MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry(uint32_t msgid)
+{
+	static const mavlink_crc_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
+        /*
+	  use a bisection search to find the right entry. A perfect hash may be better
+	  Note that this assumes the table is sorted by msgid
+	*/
+        uint32_t low=0, high=sizeof(mavlink_message_crcs)/sizeof(mavlink_message_crcs[0]);
+        while (low < high) {
+            uint32_t mid = (low+1+high)/2;
+            if (msgid < mavlink_message_crcs[mid].msgid) {
+                high = mid-1;
+                continue;
+            }
+            if (msgid > mavlink_message_crcs[mid].msgid) {
+                low = mid;
+                continue;
+            }
+            low = mid;
+            break;
+        }
+        if (mavlink_message_crcs[low].msgid != msgid) {
+            // msgid is not in the table
+            return NULL;
+        }
+        return &mavlink_message_crcs[low];
+}
+
+/*
+  return the crc_extra value for a message
+*/
+MAVLINK_HELPER uint8_t mavlink_get_crc_extra(const mavlink_message_t *msg)
+{
+	const mavlink_crc_entry_t *e = mavlink_get_crc_entry(msg->msgid);
+	return e?e->crc_extra:0;
+}
+
+/*
+  return the expected message length
+*/
+#define MAVLINK_HAVE_EXPECTED_MESSAGE_LENGTH
+MAVLINK_HELPER uint8_t mavlink_expected_message_length(const mavlink_message_t *msg)
+{
+	const mavlink_crc_entry_t *e = mavlink_get_crc_entry(msg->msgid);
+	return e?e->msg_len:0;
 }
 
 /**
@@ -243,17 +511,6 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
                                                  mavlink_message_t* r_message, 
                                                  mavlink_status_t* r_mavlink_status)
 {
-        /*
-	  default message crc function. You can override this per-system to
-	  put this data in a different memory segment
-	*/
-#if MAVLINK_CRC_EXTRA
-#ifndef MAVLINK_MESSAGE_CRC
-	static const uint8_t mavlink_message_crcs[256] = MAVLINK_MESSAGE_CRCS;
-#define MAVLINK_MESSAGE_CRC(msgid) mavlink_message_crcs[msgid]
-#endif
-#endif
-
 	/* Enable this option to check the length of each message.
 	   This allows invalid messages to be caught much sooner. Use if the transmission
 	   medium is prone to missing (or extra) characters (e.g. a radio that fades in
@@ -280,6 +537,14 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
 			rxmsg->len = 0;
 			rxmsg->magic = c;
+                        status->flags &= ~MAVLINK_STATUS_FLAG_IN_MAVLINK1;
+			mavlink_start_checksum(rxmsg);
+		} else if (c == MAVLINK_STX_MAVLINK1)
+		{
+			status->parse_state = MAVLINK_PARSE_STATE_GOT_STX;
+			rxmsg->len = 0;
+			rxmsg->magic = c;
+                        status->flags |= MAVLINK_STATUS_FLAG_IN_MAVLINK1;
 			mavlink_start_checksum(rxmsg);
 		}
 		break;
@@ -294,7 +559,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 				)
 		{
 			status->buffer_overrun++;
-			status->parse_error++;
+			_mav_parse_error(status);
 			status->msg_received = 0;
 			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 		}
@@ -304,16 +569,41 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 			rxmsg->len = c;
 			status->packet_idx = 0;
 			mavlink_update_checksum(rxmsg, c);
-			status->parse_state = MAVLINK_PARSE_STATE_GOT_LENGTH;
+                        if (status->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
+                            rxmsg->incompat_flags = 0;
+                            rxmsg->compat_flags = 0;
+                            status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPAT_FLAGS;
+                        } else {
+                            status->parse_state = MAVLINK_PARSE_STATE_GOT_LENGTH;
+                        }
 		}
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_LENGTH:
+		rxmsg->incompat_flags = c;
+		if ((rxmsg->incompat_flags & ~MAVLINK_IFLAG_MASK) != 0) {
+			// message includes an incompatible feature flag
+			_mav_parse_error(status);
+			status->msg_received = 0;
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			break;
+		}
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_INCOMPAT_FLAGS;
+		break;
+
+	case MAVLINK_PARSE_STATE_GOT_INCOMPAT_FLAGS:
+		rxmsg->compat_flags = c;
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPAT_FLAGS;
+		break;
+
+	case MAVLINK_PARSE_STATE_GOT_COMPAT_FLAGS:
 		rxmsg->seq = c;
 		mavlink_update_checksum(rxmsg, c);
 		status->parse_state = MAVLINK_PARSE_STATE_GOT_SEQ;
 		break;
-
+                
 	case MAVLINK_PARSE_STATE_GOT_SEQ:
 		rxmsg->sysid = c;
 		mavlink_update_checksum(rxmsg, c);
@@ -323,31 +613,48 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 	case MAVLINK_PARSE_STATE_GOT_SYSID:
 		rxmsg->compid = c;
 		mavlink_update_checksum(rxmsg, c);
-		status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPID;
+                status->parse_state = MAVLINK_PARSE_STATE_GOT_COMPID;
 		break;
 
 	case MAVLINK_PARSE_STATE_GOT_COMPID:
-#ifdef MAVLINK_CHECK_MESSAGE_LENGTH
-	        if (rxmsg->len != MAVLINK_MESSAGE_LENGTH(c))
-		{
-			status->parse_error++;
-			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
-			break;
-	    }
-#endif
 		rxmsg->msgid = c;
 		mavlink_update_checksum(rxmsg, c);
-		if (rxmsg->len == 0)
-		{
-			status->parse_state = MAVLINK_PARSE_STATE_GOT_PAYLOAD;
-		}
-		else
-		{
-			status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID;
-		}
+                if (status->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
+                    status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID3;
+#ifdef MAVLINK_CHECK_MESSAGE_LENGTH
+                    if (rxmsg->len != MAVLINK_MESSAGE_LENGTH(rxmsg->msgid))
+                    {
+			_mav_parse_error(status);
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			break;
+                    }
+#endif
+                } else {
+                    status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID1;
+                }
 		break;
 
-	case MAVLINK_PARSE_STATE_GOT_MSGID:
+	case MAVLINK_PARSE_STATE_GOT_MSGID1:
+		rxmsg->msgid |= c<<8;
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID2;
+		break;
+
+	case MAVLINK_PARSE_STATE_GOT_MSGID2:
+		rxmsg->msgid |= c<<16;
+		mavlink_update_checksum(rxmsg, c);
+		status->parse_state = MAVLINK_PARSE_STATE_GOT_MSGID3;
+#ifdef MAVLINK_CHECK_MESSAGE_LENGTH
+	        if (rxmsg->len != MAVLINK_MESSAGE_LENGTH(rxmsg->msgid))
+		{
+			_mav_parse_error(status);
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			break;
+                }
+#endif
+		break;
+                
+	case MAVLINK_PARSE_STATE_GOT_MSGID3:
 		_MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx++] = (char)c;
 		mavlink_update_checksum(rxmsg, c);
 		if (status->packet_idx == rxmsg->len)
@@ -356,10 +663,9 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		}
 		break;
 
-	case MAVLINK_PARSE_STATE_GOT_PAYLOAD:
-#if MAVLINK_CRC_EXTRA
-		mavlink_update_checksum(rxmsg, MAVLINK_MESSAGE_CRC(rxmsg->msgid));
-#endif
+	case MAVLINK_PARSE_STATE_GOT_PAYLOAD: {
+		uint8_t crc_extra = mavlink_get_crc_extra(rxmsg);
+		mavlink_update_checksum(rxmsg, crc_extra);
 		if (c != (rxmsg->checksum & 0xFF)) {
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
 		} else {
@@ -367,6 +673,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		}
                 _MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx] = (char)c;
 		break;
+        }
 
 	case MAVLINK_PARSE_STATE_GOT_CRC1:
 	case MAVLINK_PARSE_STATE_GOT_BAD_CRC1:
@@ -377,9 +684,42 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 			// Successfully got message
 			status->msg_received = MAVLINK_FRAMING_OK;
                 }
-                status->parse_state = MAVLINK_PARSE_STATE_IDLE;
                 _MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx+1] = (char)c;
-                memcpy(r_message, rxmsg, sizeof(mavlink_message_t));
+		if (rxmsg->incompat_flags & MAVLINK_IFLAG_SIGNED) {
+			status->parse_state = MAVLINK_PARSE_STATE_SIGNATURE_WAIT;
+			status->signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
+			status->msg_received = MAVLINK_FRAMING_INCOMPLETE;
+		} else {
+			if (status->signing &&
+			    (status->signing->accept_unsigned_callback == NULL ||
+			     !status->signing->accept_unsigned_callback(status, rxmsg->msgid))) {
+				// don't accept this unsigned packet
+				status->msg_received = MAVLINK_FRAMING_BAD_SIGNATURE;
+			}
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			memcpy(r_message, rxmsg, sizeof(mavlink_message_t));
+		}
+		break;
+	case MAVLINK_PARSE_STATE_SIGNATURE_WAIT:
+                _MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx+2+(MAVLINK_SIGNATURE_BLOCK_LEN-status->signature_wait)] = (char)c;
+		status->signature_wait--;
+		if (status->signature_wait == 0) {
+			// we have the whole signature, check it is OK
+			bool sig_ok = mavlink_signature_check(status->signing, status->signing_streams, rxmsg);
+			if (!sig_ok &&
+			    (status->signing->accept_unsigned_callback &&
+			     status->signing->accept_unsigned_callback(status, rxmsg->msgid))) {
+				// accepted via application level override
+				sig_ok = true;
+			}
+			if (sig_ok) {
+				status->msg_received = MAVLINK_FRAMING_OK;
+			} else {
+				status->msg_received = MAVLINK_FRAMING_BAD_SIGNATURE;
+			}
+			status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+			memcpy(r_message, rxmsg, sizeof(mavlink_message_t));
+		}
 		break;
 	}
 
@@ -405,6 +745,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 	r_mavlink_status->current_rx_seq = status->current_rx_seq+1;
 	r_mavlink_status->packet_rx_success_count = status->packet_rx_success_count;
 	r_mavlink_status->packet_rx_drop_count = status->parse_error;
+	r_mavlink_status->flags = status->flags;
 	status->parse_error = 0;
 
 	if (status->msg_received == MAVLINK_FRAMING_BAD_CRC) {
@@ -515,11 +856,12 @@ MAVLINK_HELPER uint8_t mavlink_frame_char(uint8_t chan, uint8_t c, mavlink_messa
 MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_message_t* r_message, mavlink_status_t* r_mavlink_status)
 {
     uint8_t msg_received = mavlink_frame_char(chan, c, r_message, r_mavlink_status);
-    if (msg_received == MAVLINK_FRAMING_BAD_CRC) {
+    if (msg_received == MAVLINK_FRAMING_BAD_CRC ||
+	msg_received == MAVLINK_FRAMING_BAD_SIGNATURE) {
 	    // we got a bad CRC. Treat as a parse failure
 	    mavlink_message_t* rxmsg = mavlink_get_channel_buffer(chan);
 	    mavlink_status_t* status = mavlink_get_channel_status(chan);
-	    status->parse_error++;
+	    _mav_parse_error(status);
 	    status->msg_received = MAVLINK_FRAMING_INCOMPLETE;
 	    status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 	    if (c == MAVLINK_STX)
@@ -674,3 +1016,5 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
 #endif // MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
 #endif /* _MAVLINK_HELPERS_H_ */
+
+

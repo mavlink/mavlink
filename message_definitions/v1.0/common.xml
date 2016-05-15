@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <mavlink>
      <version>3</version>
+     <dialect>0</dialect>
      <enums>
           <enum name="MAV_AUTOPILOT">
                <description>Micro air vehicle / autopilot classes. This identifies the individual model.</description>
@@ -3442,5 +3443,13 @@
                <field type="uint8_t" name="ind">index of debug variable</field>
                <field type="float" name="value">DEBUG value</field>
           </message>
-     </messages>
+
+          <message id="256" name="SETUP_SIGNING">
+               <description>Setup a MAVLink2 signing key. If called with secret_key of all zero and zero initial_timestamp will disable signing</description>
+               <field type="uint8_t" name="target_system">system id of the target</field>
+               <field type="uint8_t" name="target_component">component ID of the target</field>
+               <field type="uint8_t[32]" name="secret_key">signing key</field>
+               <field type="uint64_t" name="initial_timestamp">initial timestamp</field>
+          </message>
+        </messages>
 </mavlink>

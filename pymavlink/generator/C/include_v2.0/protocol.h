@@ -44,24 +44,14 @@
     MAVLINK_HELPER mavlink_status_t* mavlink_get_channel_status(uint8_t chan);
     #endif
     MAVLINK_HELPER void mavlink_reset_channel_status(uint8_t chan);
-    #if MAVLINK_CRC_EXTRA
     MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id,
                                                           uint8_t chan, uint8_t min_length, uint8_t length, uint8_t crc_extra);
     MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id,
                                                      uint8_t min_length, uint8_t length, uint8_t crc_extra);
     #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
-    MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t msgid, const char *packet,
+    MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint32_t msgid, const char *packet,
                                                         uint8_t min_length, uint8_t length, uint8_t crc_extra);
     #endif
-    #else
-    MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id,
-                                                          uint8_t chan, uint8_t length);
-    MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id,
-                                                     uint8_t length);
-    #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
-    MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t msgid, const char *packet, uint8_t length);
-    #endif
-    #endif // MAVLINK_CRC_EXTRA
     MAVLINK_HELPER uint16_t mavlink_msg_to_send_buffer(uint8_t *buffer, const mavlink_message_t *msg);
     MAVLINK_HELPER void mavlink_start_checksum(mavlink_message_t* msg);
     MAVLINK_HELPER void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c);
@@ -86,12 +76,17 @@
 
 #endif // MAVLINK_SEPARATE_HELPERS
 
+
 /**
  * @brief Get the required buffer size for this message
  */
 static inline uint16_t mavlink_msg_get_send_buffer_length(const mavlink_message_t* msg)
 {
-	return msg->len + MAVLINK_NUM_NON_PAYLOAD_BYTES;
+	if (msg->magic == MAVLINK_STX_MAVLINK1) {
+		return msg->len + MAVLINK_CORE_HEADER_MAVLINK1_LEN+1 + 2;
+	}
+    	uint16_t signature_len = (msg->incompat_flags & MAVLINK_IFLAG_SIGNED)?MAVLINK_SIGNATURE_BLOCK_LEN:0;
+	return msg->len + MAVLINK_NUM_NON_PAYLOAD_BYTES + signature_len;
 }
 
 #if MAVLINK_NEED_BYTE_SWAP
