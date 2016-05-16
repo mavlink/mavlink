@@ -267,14 +267,20 @@ typedef struct __mavlink_signing_streams {
 #define MAVLINK_BIG_ENDIAN 0
 #define MAVLINK_LITTLE_ENDIAN 1
 
+#define MAV_MSG_ENTRY_FLAG_HAVE_TARGET_SYSTEM    1
+#define MAV_MSG_ENTRY_FLAG_HAVE_TARGET_COMPONENT 2
+
 /*
-  entry in mavlink CRC table
+  entry in table of information about each message type
  */
-typedef struct __mavlink_crc_entry {
+typedef struct __mavlink_msg_entry {
 	uint32_t msgid;
 	uint8_t crc_extra;
 	uint8_t msg_len;
-} mavlink_crc_entry_t;
+	uint8_t flags;             // MAV_MSG_ENTRY_FLAG_*
+	uint8_t target_system_ofs; // payload offset to target_system, or 0
+	uint8_t target_component_ofs; // payload offset to target_component, or 0
+} mavlink_msg_entry_t;
 
 /*
   incompat_flags bits

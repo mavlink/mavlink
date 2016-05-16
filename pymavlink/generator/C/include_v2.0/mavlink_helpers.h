@@ -424,9 +424,9 @@ MAVLINK_HELPER void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 /*
   return the crc_entry value for a msgid
 */
-MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry(uint32_t msgid)
+MAVLINK_HELPER const mavlink_msg_entry_t *mavlink_get_msg_entry(uint32_t msgid)
 {
-	static const mavlink_crc_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
+	static const mavlink_msg_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
         /*
 	  use a bisection search to find the right entry. A perfect hash may be better
 	  Note that this assumes the table is sorted by msgid
@@ -457,7 +457,7 @@ MAVLINK_HELPER const mavlink_crc_entry_t *mavlink_get_crc_entry(uint32_t msgid)
 */
 MAVLINK_HELPER uint8_t mavlink_get_crc_extra(const mavlink_message_t *msg)
 {
-	const mavlink_crc_entry_t *e = mavlink_get_crc_entry(msg->msgid);
+	const mavlink_msg_entry_t *e = mavlink_get_msg_entry(msg->msgid);
 	return e?e->crc_extra:0;
 }
 
@@ -467,7 +467,7 @@ MAVLINK_HELPER uint8_t mavlink_get_crc_extra(const mavlink_message_t *msg)
 #define MAVLINK_HAVE_EXPECTED_MESSAGE_LENGTH
 MAVLINK_HELPER uint8_t mavlink_expected_message_length(const mavlink_message_t *msg)
 {
-	const mavlink_crc_entry_t *e = mavlink_get_crc_entry(msg->msgid);
+	const mavlink_msg_entry_t *e = mavlink_get_msg_entry(msg->msgid);
 	return e?e->msg_len:0;
 }
 
