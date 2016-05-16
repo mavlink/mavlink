@@ -77,6 +77,9 @@ def mavgen(opts, args) :
             x.message_crcs.update(xml[-1].message_crcs)
             x.message_lengths.update(xml[-1].message_lengths)
             x.message_min_lengths.update(xml[-1].message_min_lengths)
+            x.message_flags.update(xml[-1].message_flags)
+            x.message_target_system_ofs.update(xml[-1].message_target_system_ofs)
+            x.message_target_component_ofs.update(xml[-1].message_target_component_ofs)
             x.message_names.update(xml[-1].message_names)
             x.largest_payload = max(x.largest_payload, xml[-1].largest_payload)
 

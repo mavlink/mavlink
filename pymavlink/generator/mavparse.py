@@ -12,6 +12,10 @@ PROTOCOL_0_9 = "0.9"
 PROTOCOL_1_0 = "1.0"
 PROTOCOL_2_0 = "2.0"
 
+# message flags
+FLAG_HAVE_TARGET_SYSTEM    = 1
+FLAG_HAVE_TARGET_COMPONENT = 2
+
 class MAVParseError(Exception):
     def __init__(self, message, inner_exception=None):
         self.message = message
@@ -281,6 +285,9 @@ class MAVXML(object):
 
         self.message_lengths = {}
         self.message_min_lengths = {}
+        self.message_flags = {}
+        self.message_target_system_ofs = {}
+        self.message_target_component_ofs = {}
         self.message_crcs = {}
         self.message_names = {}
         self.largest_payload = 0
@@ -304,6 +311,10 @@ class MAVXML(object):
             m.fieldnames = []
             m.fieldlengths = []
             m.ordered_fieldnames = []
+            m.message_flags = 0
+            m.target_system_ofs = 0
+            m.target_component_ofs = 0
+            
             if self.sort_fields:
                 # when we have extensions we only sort up to the first extended field
                 sort_end = m.base_fields()
@@ -332,6 +343,13 @@ class MAVXML(object):
                 f.set_test_value()
                 if f.name.find('[') != -1:
                     raise MAVParseError("invalid field name with array descriptor %s" % f.name)
+                # having flags for target_system and target_component helps a lot for routing code
+                if f.name == 'target_system':
+                    m.message_flags |= FLAG_HAVE_TARGET_SYSTEM
+                    m.target_system_ofs = f.wire_offset
+                elif f.name == 'target_component':
+                    m.message_flags |= FLAG_HAVE_TARGET_COMPONENT
+                    m.target_component_ofs = f.wire_offset
             m.num_fields = len(m.fieldnames)
             if m.num_fields > 64:
                 raise MAVParseError("num_fields=%u : Maximum number of field names allowed is" % (
@@ -343,6 +361,9 @@ class MAVXML(object):
             self.message_lengths[key] = m.wire_length
             self.message_min_lengths[key] = m.wire_min_length
             self.message_names[key] = m.name
+            self.message_flags[key] = m.message_flags
+            self.message_target_system_ofs[key] = m.target_system_ofs
+            self.message_target_component_ofs[key] = m.target_component_ofs
 
             if m.wire_length > self.largest_payload:
                 self.largest_payload = m.wire_length
