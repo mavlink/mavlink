@@ -413,6 +413,7 @@ class MAVLink(object):
                 self.send_callback_args = None
                 self.send_callback_kwargs = None
                 self.buf = bytearray()
+                self.buf_index = 0
                 self.expected_length = HEADER_LEN_V1+2
                 self.have_prefix_error = False
                 self.robust_parsing = False
@@ -513,12 +514,12 @@ class MAVLink(object):
         def __parse_char_legacy(self):
             '''input some data bytes, possibly returning a new message (uses no native code)'''
             header_len = HEADER_LEN_V1
-            if len(self.buf) >= 1 and self.buf[0] == PROTOCOL_MARKER_V2:
+            if self.buf_len() >= 1 and self.buf[self.buf_index] == PROTOCOL_MARKER_V2:
                 header_len = HEADER_LEN_V2
                 
-            if len(self.buf) >= 1 and self.buf[0] != PROTOCOL_MARKER_V1 and self.buf[0] != PROTOCOL_MARKER_V2:
-                magic = self.buf[0]
-                self.buf = self.buf[1:]
+            if self.buf_len() >= 1 and self.buf[self.buf_index] != PROTOCOL_MARKER_V1 and self.buf[self.buf_index] != PROTOCOL_MARKER_V2:
+                magic = self.buf[self.buf_index]
+                self.buf_index += 1
                 if self.robust_parsing:
                     m = MAVLink_bad_data(chr(magic), 'Bad prefix')
                     self.expected_length = header_len+2
@@ -530,17 +531,17 @@ class MAVLink(object):
                 self.total_receive_errors += 1
                 raise MAVError("invalid MAVLink prefix '%s'" % magic)
             self.have_prefix_error = False
-            if len(self.buf) >= 3:
-                sbuf = self.buf[0:3]
+            if self.buf_len() >= 3:
+                sbuf = self.buf[self.buf_index:3+self.buf_index]
                 if sys.version_info[0] < 3:
                     sbuf = str(sbuf)
                 (magic, self.expected_length, incompat_flags) = struct.unpack('BBB', sbuf)
                 if magic == PROTOCOL_MARKER_V2 and (incompat_flags & MAVLINK_IFLAG_SIGNED):
                         self.expected_length += MAVLINK_SIGNATURE_BLOCK_LEN
                 self.expected_length += header_len + 2
-            if self.expected_length >= (header_len+2) and len(self.buf) >= self.expected_length:
-                mbuf = array.array('B', self.buf[0:self.expected_length])
-                self.buf = self.buf[self.expected_length:]
+            if self.expected_length >= (header_len+2) and self.buf_len() >= self.expected_length:
+                mbuf = array.array('B', self.buf[self.buf_index:self.buf_index+self.expected_length])
+                self.buf_index += self.expected_length
                 self.expected_length = header_len+2
                 if self.robust_parsing:
                     try:
