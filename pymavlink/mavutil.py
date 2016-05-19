@@ -777,7 +777,10 @@ class mavserial(mavfile):
 
     def set_rtscts(self, enable):
         '''enable/disable RTS/CTS if applicable'''
-        self.port.setRtsCts(enable)
+        try:
+            self.port.setRtsCts(enable)
+        except Exception:
+            self.port.rtscts = enable
         self.rtscts = enable
 
     def set_baudrate(self, baudrate):
