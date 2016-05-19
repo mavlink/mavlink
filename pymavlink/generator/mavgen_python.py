@@ -615,7 +615,6 @@ class MAVLink(object):
                 # decode the header
                 if msgbuf[0] != PROTOCOL_MARKER_V1:
                     headerlen = 10
-                    allow_smaller = True
                     try:
                         magic, mlen, incompat_flags, compat_flags, seq, srcSystem, srcComponent, msgIdlow, msgIdhigh = struct.unpack('<cBBBBBBHB', msgbuf[:headerlen])
                     except struct.error as emsg:
@@ -624,7 +623,6 @@ class MAVLink(object):
                     mapkey = msgId
                 else:
                     headerlen = 6
-                    allow_smaller = False
                     try:
                         magic, mlen, seq, srcSystem, srcComponent, msgId = struct.unpack('<cBBBBB', msgbuf[:headerlen])
                         incompat_flags = 0
@@ -679,7 +677,7 @@ class MAVLink(object):
 
                 csize = struct.calcsize(fmt)
                 mbuf = msgbuf[headerlen:-(2+signature_len)]
-                if len(mbuf) < csize and allow_smaller:
+                if len(mbuf) < csize:
                     # zero pad to give right size
                     mbuf.extend([0]*(csize - len(mbuf)))
                 if len(mbuf) < csize:
