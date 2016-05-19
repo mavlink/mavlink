@@ -78,8 +78,8 @@ class MAVLink_header(object):
         self.incompat_flags = incompat_flags
         self.compat_flags = compat_flags
 
-    def pack(self):
-        if WIRE_PROTOCOL_VERSION == '2.0':
+    def pack(self, force_mavlink1=False):
+        if WIRE_PROTOCOL_VERSION == '2.0' and not force_mavlink1:
             return struct.pack('<BBBBBBBHB', ${PROTOCOL_MARKER}, self.mlen,
                                self.incompat_flags, self.compat_flags,
                                self.seq, self.srcSystem, self.srcComponent,
@@ -193,7 +193,7 @@ class MAVLink_message(object):
         self._msgbuf += sig
         mav.signing.timestamp += 1
 
-    def pack(self, mav, crc_extra, payload):
+    def pack(self, mav, crc_extra, payload, force_mavlink1=False):
         self._payload = payload
         incompat_flags = 0
         if mav.signing.sign_outgoing:
@@ -202,13 +202,13 @@ class MAVLink_message(object):
                                        incompat_flags=incompat_flags, compat_flags=0,
                                        mlen=len(payload), seq=mav.seq,
                                        srcSystem=mav.srcSystem, srcComponent=mav.srcComponent)
-        self._msgbuf = self._header.pack() + payload
+        self._msgbuf = self._header.pack(force_mavlink1=force_mavlink1) + payload
         crc = x25crc(self._msgbuf[1:])
         if ${crc_extra}: # using CRC extra
             crc.accumulate_str(struct.pack('B', crc_extra))
         self._crc = crc.crc
         self._msgbuf += struct.pack('<H', self._crc)
-        if mav.signing.sign_outgoing:
+        if mav.signing.sign_outgoing and not force_mavlink1:
             self.sign_packet(mav)
         return self._msgbuf
 
@@ -296,7 +296,7 @@ class %s(MAVLink_message):
         for f in m.fields:
                 outf.write("                self.%s = %s\n" % (f.name, f.name))
         outf.write("""
-        def pack(self, mav):
+        def pack(self, mav, force_mavlink1=False):
                 return MAVLink_message.pack(self, mav, %u, struct.pack('%s'""" % (m.crc_extra, m.fmtstr))
         for field in m.ordered_fields:
                 if (field.type != "char" and field.array_length > 1):
@@ -304,7 +304,7 @@ class %s(MAVLink_message):
                                 outf.write(", self.{0:s}[{1:d}]".format(field.name,i))
                 else:
                         outf.write(", self.{0:s}".format(field.name))
-        outf.write("))\n")
+        outf.write("), force_mavlink1=force_mavlink1)\n")
 
 
 def native_mavfmt(field):
@@ -446,9 +446,9 @@ class MAVLink(object):
             self.send_callback_args = args
             self.send_callback_kwargs = kwargs
 
-        def send(self, mavmsg):
+        def send(self, mavmsg, force_mavlink1=False):
                 '''send a MAVLink message'''
-                buf = mavmsg.pack(self)
+                buf = mavmsg.pack(self, force_mavlink1=force_mavlink1)
                 self.file.write(buf)
                 self.seq = (self.seq + 1) % 256
                 self.total_packets_sent += 1
@@ -768,11 +768,11 @@ def generate_methods(outf, msgs):
 """, sub)
 
         t.write(outf, """
-        def ${NAMELOWER}_send(${SELFFIELDNAMES}):
+        def ${NAMELOWER}_send(${SELFFIELDNAMES}, force_mavlink1=False):
                 '''
                 ${COMMENT}
                 '''
-                return self.send(self.${NAMELOWER}_encode(${FIELDNAMES}))
+                return self.send(self.${NAMELOWER}_encode(${FIELDNAMES}), force_mavlink1=force_mavlink1)
 
 """, sub)
 
