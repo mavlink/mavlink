@@ -3351,6 +3351,26 @@
             <field name="horiz_accuracy" type="float">Horizontal speed 1-STD accuracy</field>
             <field name="vert_accuracy" type="float">Vertical speed 1-STD accuracy</field>
         </message>
+        <message id="232" name="GPS_MAV">
+            <description>GPS sensor input message for the AP_GPS_MAV type</description>
+            <field type="uint8_t" name="gps_id">ID of the GPS for multiple GPS_MAV inputs</field>
+            <field type="uint16_t" name="ignore">Flags indicating which fields to ignore: bit0:alt, bit1:hdop, bit2:vdop, bit3:vel_horiz(vn+ve), bit4:vel_vert(vd), bit5:speed_accuracy, bit6:horiz_accuracy, bit7:vert_accuracy. All other fields must be provided.</field>
+            <field type="uint32_t" name="time_week_ms">GPS time (milliseconds from start of GPS week)</field>
+            <field type="uint16_t" name="time_week">GPS week number</field>
+            <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK</field>
+            <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
+            <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
+            <field type="float" name="alt">Altitude (AMSL, not WGS84), in m (positive for up)</field>
+            <field type="float" name="hdop">GPS HDOP horizontal dilution of position in m</field>
+            <field type="float" name="vdop">GPS VDOP vertical dilution of position in m</field>
+            <field type="float" name="vn">GPS velocity in m/s in NORTH direction in earth-fixed NED frame</field>
+            <field type="float" name="ve">GPS velocity in m/s in EAST direction in earth-fixed NED frame</field>
+            <field type="float" name="vd">GPS velocity in m/s in DOWN direction in earth-fixed NED frame</field>
+            <field type="float" name="speed_accuracy">GPS speed accuracy in m/s</field>
+            <field type="float" name="horiz_accuracy">GPS horizontal accuracy in m</field>
+            <field type="float" name="vert_accuracy">GPS vertical accuracy in m</field>
+            <field type="uint8_t" name="satellites_visible">Number of satellites visible.</field>
+        </message>
         <message id="233" name="GPS_RTCM_DATA">
            <description>WORK IN PROGRESS! RTCM message for injecting into the onboard GPS (used for DGPS)</description>
            <field type="uint8_t" name="flags">LSB: 1 means message is fragmented</field>
