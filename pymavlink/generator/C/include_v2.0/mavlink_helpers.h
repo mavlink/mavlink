@@ -702,7 +702,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
                 rxmsg->ck[0] = c;
 
 		// zero-fill the packet to cope with short incoming packets
-		if (status->packet_idx < e->msg_len) {
+		if (e && status->packet_idx < e->msg_len) {
 			memset(&_MAV_PAYLOAD_NON_CONST(rxmsg)[status->packet_idx], 0, e->msg_len - status->packet_idx);
 		}
 		break;
