@@ -404,6 +404,10 @@ class MAVLinkSigning(object):
         self.sign_outgoing = False
         self.allow_unsigned_callback = None
         self.stream_timestamps = {}
+        self.badsig_count = 0
+        self.goodsig_count = 0
+        self.unsigned_count = 0
+        self.reject_count = 0
 
 class MAVLink(object):
         '''MAVLink protocol handling class'''
@@ -674,10 +678,22 @@ class MAVLink(object):
                     if signature_len == MAVLINK_SIGNATURE_BLOCK_LEN:
                         sig_ok = self.check_signature(msgbuf, srcSystem, srcComponent)
                         accept_signature = sig_ok
+                        if sig_ok:
+                            self.signing.goodsig_count += 1
+                        else:
+                            self.signing.badsig_count += 1
                         if not accept_signature and self.signing.allow_unsigned_callback is not None:
                             accept_signature = self.signing.allow_unsigned_callback(self, msgId)
+                            if accept_signature:
+                                self.signing.unsigned_count += 1
+                            else:
+                                self.signing.reject_count += 1
                     elif self.signing.allow_unsigned_callback is not None:
                         accept_signature = self.signing.allow_unsigned_callback(self, msgId)
+                        if accept_signature:
+                            self.signing.unsigned_count += 1
+                        else:
+                            self.signing.reject_count += 1
                     if not accept_signature:
                         raise MAVError('Invalid signature')
 
