@@ -194,15 +194,21 @@ class MAVLink_message(object):
         mav.signing.timestamp += 1
 
     def pack(self, mav, crc_extra, payload, force_mavlink1=False):
-        self._payload = payload
+        plen = len(payload)
+        if WIRE_PROTOCOL_VERSION != '1.0' and not force_mavlink1:
+            # in MAVLink2 we can strip trailing zeros off payloads. This allows for simple
+            # variable length arrays and smaller packets
+            while plen > 0 and payload[plen-1] == chr(0):
+                plen -= 1
+        self._payload = payload[:plen]
         incompat_flags = 0
         if mav.signing.sign_outgoing:
             incompat_flags |= MAVLINK_IFLAG_SIGNED
         self._header  = MAVLink_header(self._header.msgId,
                                        incompat_flags=incompat_flags, compat_flags=0,
-                                       mlen=len(payload), seq=mav.seq,
+                                       mlen=len(self._payload), seq=mav.seq,
                                        srcSystem=mav.srcSystem, srcComponent=mav.srcComponent)
-        self._msgbuf = self._header.pack(force_mavlink1=force_mavlink1) + payload
+        self._msgbuf = self._header.pack(force_mavlink1=force_mavlink1) + self._payload
         crc = x25crc(self._msgbuf[1:])
         if ${crc_extra}: # using CRC extra
             crc.accumulate_str(struct.pack('B', crc_extra))
