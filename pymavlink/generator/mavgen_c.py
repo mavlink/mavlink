@@ -451,7 +451,12 @@ static void mavlink_test_${name_lower}(uint8_t system_id, uint8_t component_id, 
         }}
         ${{array_fields:mav_array_memcpy(packet1.${name}, packet_in.${name}, sizeof(${type})*${array_length});
         }}
-
+#ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
+        if (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) {
+           // cope with extensions
+           memset(MAVLINK_MSG_ID_${name}_MIN_LEN + (char *)&packet1, 0, sizeof(packet1)-MAVLINK_MSG_ID_${name}_MIN_LEN);
+        }
+#endif
         memset(&packet2, 0, sizeof(packet2));
 	mavlink_msg_${name_lower}_encode(system_id, component_id, &msg, &packet1);
 	mavlink_msg_${name_lower}_decode(&msg, &packet2);
