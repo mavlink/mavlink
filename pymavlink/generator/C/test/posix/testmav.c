@@ -154,7 +154,8 @@ static void comm_send_ch(mavlink_channel_t chan, uint8_t c)
 			       (unsigned)chan, chan_counts[chan], status.current_rx_seq);
 			error_count++;
 		}
-		if (mavlink_expected_message_length(&last_msg) > last_msg.len) {
+                // we only check the lengtth for MAVLink1. In MAVLink2 packets are zero trimmed
+		if (mavlink_expected_message_length(&last_msg) > last_msg.len && last_msg.magic == 254) {
 			printf("Incorrect message length %u for message %u - expected %u\n", 
 			       (unsigned)last_msg.len, (unsigned)last_msg.msgid,
                                mavlink_expected_message_length(&last_msg));
