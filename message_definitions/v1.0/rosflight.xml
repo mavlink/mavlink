@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<mavlink>
+    <include>common.xml</include>
+    <enums>
+      <enum name="OFFBOARD_CONTROL_MODE">
+          <entry value="0" name="PASS_THROUGH">
+              <description>Pass commanded values directly to actuators</description>
+          </entry>
+          <entry value="1" name="ROLL_PITCH_YAWRATE_THROTTLE">
+              <description>Command roll angle, pitch angle, yaw rate, and throttle</description>
+          </entry>
+          <entry value="2" name="ROLL_PITCH_YAWRATE_ALTITUDE">
+              <description>Command roll angle, pitch angle, yaw rate, and altitude above ground</description>
+          </entry>
+      </enum>
+    </enums>
+    <messages>
+        <message id="180" name="OFFBOARD_CONTROL">
+            <field type="uint8_t" name="mode" enum="OFFBOARD_CONTROL_MODE">Offboard control mode, see OFFBOARD_CONTROL_MODE</field>
+            <field type="int16_t" name="value1">First value, interpreted according to mode</field>
+            <field type="int16_t" name="value2">Second value, interpreted according to mode</field>
+            <field type="int16_t" name="value3">Third value, interpreted according to mode</field>
+            <field type="int16_t" name="value4">Fourth value, interpreted according to mode</field>
+        </message>
+        <message id="181" name="SMALL_IMU">
+            <field type="int16_t" name="xacc">Acceleration along X axis</field>
+            <field type="int16_t" name="yacc">Acceleration along Y axis</field>
+            <field type="int16_t" name="zacc">Acceleration along Z axis</field>
+            <field type="int16_t" name="xgyro">Angular speed around X axis</field>
+            <field type="int16_t" name="ygyro">Angular speed around Y axis</field>
+            <field type="int16_t" name="zgyro">Angular speed around Z axis</field>
+            <field type="int16_t" name="time">Time since last IMU measurement in us</field>
+        </message>
+        <message id="182" name="SMALL_MAG">
+            <field type="int16_t" name="xmag">Magnetic field along X axis</field>
+            <field type="int16_t" name="ymag">Magnetic field along Y axis</field>
+            <field type="int16_t" name="zmag">Magnetic field along Z axis</field>
+        </message>
+        <message id="183" name="ATTITUDE">
+            <field type="int32_t" name="phi">Roll angle in urad</field>
+            <field type="int32_t" name="theta">Pitch angle in urad</field>
+            <field type="int32_t" name="psi">Yaw angle in urad</field>
+        </message>
+    </messages>
+</mavlink>
