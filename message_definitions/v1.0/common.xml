@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <mavlink>
      <version>3</version>
+     <dialect>0</dialect>
      <enums>
           <enum name="MAV_AUTOPILOT">
                <description>Micro air vehicle / autopilot classes. This identifies the individual model.</description>
@@ -2159,7 +2160,7 @@
                <field type="int16_t" name="param_index">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
           </message>
           <message id="21" name="PARAM_REQUEST_LIST">
-               <description>Request all parameters of this component. After his request, all parameters are emitted.</description>
+               <description>Request all parameters of this component. After this request, all parameters are emitted.</description>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
           </message>
@@ -3328,6 +3329,12 @@
             <field name="horiz_accuracy" type="float">Horizontal speed 1-STD accuracy</field>
             <field name="vert_accuracy" type="float">Vertical speed 1-STD accuracy</field>
         </message>
+        <message id="233" name="GPS_RTCM_DATA">
+           <description>WORK IN PROGRESS! RTCM message for injecting into the onboard GPS (used for DGPS)</description>
+           <field type="uint8_t" name="flags">LSB: 1 means message is fragmented</field>
+           <field type="uint8_t" name="len">data length</field>
+           <field type="uint8_t[180]" name="data">RTCM message (may be fragmented)</field>
+        </message>
         <message id="241" name="VIBRATION">
             <description>Vibration levels and accelerometer clipping</description>
             <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
@@ -3436,5 +3443,13 @@
                <field type="uint8_t" name="ind">index of debug variable</field>
                <field type="float" name="value">DEBUG value</field>
           </message>
-     </messages>
+
+          <message id="256" name="SETUP_SIGNING">
+               <description>Setup a MAVLink2 signing key. If called with secret_key of all zero and zero initial_timestamp will disable signing</description>
+               <field type="uint8_t" name="target_system">system id of the target</field>
+               <field type="uint8_t" name="target_component">component ID of the target</field>
+               <field type="uint8_t[32]" name="secret_key">signing key</field>
+               <field type="uint64_t" name="initial_timestamp">initial timestamp</field>
+          </message>
+        </messages>
 </mavlink>

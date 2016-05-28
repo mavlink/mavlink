@@ -4,6 +4,7 @@
 <!-- definition of simple elements -->
 <xs:element name="include" type="xs:anyURI"/>
 <xs:element name="version" type="xs:unsignedByte"/>
+<xs:element name="dialect" type="xs:unsignedByte"/>
 <xs:element name="description" type="xs:string"/>
 
 
@@ -16,10 +17,19 @@
     </xs:simpleType>
 </xs:attribute>
 <xs:attribute name="index" type="xs:unsignedByte"/> <!-- param -->
-<xs:attribute name="id" type="xs:unsignedByte"/> <!-- message -->
+<xs:attribute name="id" type="xs:unsignedShort"/> <!-- message -->
 <xs:attribute name="print_format" type="xs:string"/> <!-- field -->
 <xs:attribute name="enum" type="xs:string"/>
 <xs:attribute name="value"> <!-- entry -->
+  <xs:simpleType>
+    <xs:restriction base="xs:string">
+        <xs:pattern value="^\d{1,10}$"/> <!-- base 10 int -->
+        <xs:pattern value="^0[xX][0-9a-fA-F]{1,8}$"/> <!-- base 16 -->
+        <xs:pattern value="^0[bB][0-1]{1,32}$"/> <!-- base 1 -->
+    </xs:restriction>
+  </xs:simpleType>
+</xs:attribute>
+<xs:attribute name="default">
   <xs:simpleType>
     <xs:restriction base="xs:string">
         <xs:pattern value="^\d{1,10}$"/> <!-- base 10 int -->
@@ -64,7 +74,11 @@
         <xs:attribute ref="name" use="required"/>
         <xs:attribute ref="print_format" />
         <xs:attribute ref="enum" />
+        <xs:attribute ref="default" />
     </xs:complexType>
+</xs:element>
+
+<xs:element name="extensions">
 </xs:element>
 
 <xs:element name="entry">
@@ -93,6 +107,8 @@
         <xs:sequence>
             <xs:element ref="description" minOccurs="0"/>
             <xs:element ref="field" maxOccurs="unbounded"/>
+            <xs:element ref="extensions" minOccurs="0" maxOccurs="1"/>
+            <xs:element ref="field" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute ref="id" use="required"/>
         <xs:attribute ref="name" use="required"/>
@@ -120,6 +136,7 @@
         <xs:sequence>
             <xs:element ref="include" minOccurs="0"/>
             <xs:element ref="version" minOccurs="0"/>
+            <xs:element ref="dialect" minOccurs="0"/>
             <xs:element ref="enums" minOccurs="0"/>
             <xs:element ref="messages"/>
         </xs:sequence>

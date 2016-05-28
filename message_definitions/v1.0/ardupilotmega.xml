@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <mavlink>
     <include>common.xml</include>
+     <dialect>2</dialect>
     <!-- note that APM specific messages should use the command id range from 150 to 250, to leave plenty of room for growth of common.xml If you prototype a message here, then you should consider if it is general enough to move into common.xml later -->
     <enums>
         <!-- ardupilot specific MAV_CMD_* commands -->
@@ -1075,6 +1076,8 @@
             <description>state of APM memory</description>
             <field name="brkval" type="uint16_t">heap top</field>
             <field name="freemem" type="uint16_t">free memory</field>
+            <extensions/>
+            <field name="freemem32" type="uint32_t">free memory (32 bit)</field>
         </message>
 
         <message id="153" name="AP_ADC">

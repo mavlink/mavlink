@@ -32,13 +32,20 @@ mavfile_global = None
 # If the caller hasn't specified a particular native/legacy version, use this
 default_native = False
 
+# link_id used for signing
+global_link_id = 0
+
 # Use a globally-set MAVLink dialect if one has been specified as an environment variable.
 if not 'MAVLINK_DIALECT' in os.environ:
     os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
 
 def mavlink10():
-    '''return True if using MAVLink 1.0'''
+    '''return True if using MAVLink 1.0 or later'''
     return not 'MAVLINK09' in os.environ
+
+def mavlink20():
+    '''return True if using MAVLink 2.0'''
+    return 'MAVLINK20' in os.environ
 
 def evaluate_expression(expression, vars):
     '''evaluation an expression'''
@@ -70,10 +77,16 @@ def set_dialect(dialect):
     '''
     global mavlink, current_dialect
     from .generator import mavparse
-    if mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
+    if 'MAVLINK20' in os.environ:
+        print("Using MAVLink 2.0")
+        wire_protocol = mavparse.PROTOCOL_2_0
+        modname = "pymavlink.dialects.v20." + dialect
+    elif mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
+        print("Using MAVLink 1.0")
         wire_protocol = mavparse.PROTOCOL_1_0
         modname = "pymavlink.dialects.v10." + dialect
     else:
+        print("Using MAVLink 0.9")
         wire_protocol = mavparse.PROTOCOL_0_9
         modname = "pymavlink.dialects.v09." + dialect
 
@@ -102,7 +115,7 @@ class mavfile(object):
         self.fd = fd
         self.address = address
         self.messages = { 'MAV' : self }
-        if mavlink.WIRE_PROTOCOL_VERSION == "1.0":
+        if float(mavlink.WIRE_PROTOCOL_VERSION) >= 1:
             self.messages['HOME'] = mavlink.MAVLink_gps_raw_int_message(0,0,0,0,0,0,0,0,0,0)
             mavlink.MAVLink_waypoint_message = mavlink.MAVLink_mission_item_message
         else:
@@ -149,7 +162,7 @@ class mavfile(object):
             magic = ord(buf[0])
         except:
             magic = buf[0]
-        if not magic in [ 85, 254 ]:
+        if not magic in [ 85, 254, 253 ]:
             return
         self.first_byte = False
         if self.WIRE_PROTOCOL_VERSION == "0.9" and magic == 254:
@@ -157,8 +170,12 @@ class mavfile(object):
             set_dialect(current_dialect)
         elif self.WIRE_PROTOCOL_VERSION == "1.0" and magic == 85:
             self.WIRE_PROTOCOL_VERSION = "0.9"
-            set_dialect(current_dialect)
             os.environ['MAVLINK09'] = '1'
+            set_dialect(current_dialect)
+        elif self.WIRE_PROTOCOL_VERSION != "2.0" and magic == 253:
+            self.WIRE_PROTOCOL_VERSION = "2.0"
+            os.environ['MAVLINK20'] = '1'
+            set_dialect(current_dialect)
         else:
             return
         # switch protocol 
@@ -247,7 +264,7 @@ class mavfile(object):
         if type == 'HEARTBEAT' and msg.get_srcComponent() != mavlink.MAV_COMP_ID_GIMBAL:
             self.target_system = msg.get_srcSystem()
             self.target_component = msg.get_srcComponent()
-            if mavlink.WIRE_PROTOCOL_VERSION == '1.0' and msg.type != mavlink.MAV_TYPE_GCS:
+            if float(mavlink.WIRE_PROTOCOL_VERSION) >= 1 and msg.type != mavlink.MAV_TYPE_GCS:
                 self.flightmode = mode_string_v10(msg)
                 self.mav_type = msg.type
                 self.base_mode = msg.base_mode
@@ -267,6 +284,14 @@ class mavfile(object):
                 self.messages['HOME'] = msg
         for hook in self.message_hooks:
             hook(self, msg)
+
+        if (msg.get_signed() and
+            self.mav.signing.link_id == 0 and
+            msg.get_link_id() != 0 and
+            self.target_system == msg.get_srcSystem() and
+            self.target_component == msg.get_srcComponent()):
+            # change to link_id from incoming packet
+            self.mav.signing.link_id = msg.get_link_id()
 
 
     def packet_loss(self):
@@ -340,8 +365,12 @@ class mavfile(object):
         return evaluate_condition(condition, self.messages)
 
     def mavlink10(self):
-        '''return True if using MAVLink 1.0'''
-        return self.WIRE_PROTOCOL_VERSION == "1.0"
+        '''return True if using MAVLink 1.0 or later'''
+        return float(self.WIRE_PROTOCOL_VERSION) >= 1
+
+    def mavlink20(self):
+        '''return True if using MAVLink 2.0 or later'''
+        return float(self.WIRE_PROTOCOL_VERSION) >= 2
 
     def setup_logfile(self, logfile, mode='w'):
         '''start logging to the given logfile, with timestamps'''
@@ -471,6 +500,7 @@ class mavfile(object):
                         mavlink.MAV_TYPE_HELICOPTER,
                         mavlink.MAV_TYPE_HEXAROTOR,
                         mavlink.MAV_TYPE_OCTOROTOR,
+                        mavlink.MAV_TYPE_COAXIAL,
                         mavlink.MAV_TYPE_TRICOPTER]:
             map = mode_mapping_acm
         if mav_type == mavlink.MAV_TYPE_FIXED_WING:
@@ -685,6 +715,34 @@ class mavfile(object):
             return default
         return self.params[name]
 
+    def setup_signing(self, secret_key, sign_outgoing=True, allow_unsigned_callback=None, initial_timestamp=None, link_id=None):
+        '''setup for MAVLink2 signing'''
+        self.mav.signing.secret_key = secret_key
+        self.mav.signing.sign_outgoing = sign_outgoing
+        self.mav.signing.allow_unsigned_callback = allow_unsigned_callback
+        if link_id is None:
+            # auto-increment the link_id for each link
+            global global_link_id
+            link_id = global_link_id
+            global_link_id = min(global_link_id + 1, 255)
+        self.mav.signing.link_id = link_id
+        if initial_timestamp is None:
+            # timestamp is time since 1/1/2015
+            epoch_offset = 1420070400
+            now = max(time.time(), epoch_offset)
+            initial_timestamp = now - epoch_offset
+            initial_timestamp = int(initial_timestamp * 100 * 1000)
+        # initial_timestamp is in 10usec units
+        self.mav.signing.timestamp = initial_timestamp
+
+    def disable_signing(self):
+        '''disable MAVLink2 signing'''
+        self.mav.signing.secret_key = None
+        self.mav.signing.sign_outgoing = False
+        self.mav.signing.allow_unsigned_callback = None
+        self.mav.signing.link_id = 0
+        self.mav.signing.timestamp = 0
+
 def set_close_on_exec(fd):
     '''set the clone on exec flag on a file descriptor. Ignore exceptions'''
     try:
@@ -720,7 +778,10 @@ class mavserial(mavfile):
 
     def set_rtscts(self, enable):
         '''enable/disable RTS/CTS if applicable'''
-        self.port.setRtsCts(enable)
+        try:
+            self.port.setRtsCts(enable)
+        except Exception:
+            self.port.rtscts = enable
         self.rtscts = enable
 
     def set_baudrate(self, baudrate):
@@ -1401,6 +1462,7 @@ def mode_mapping_byname(mav_type):
                     mavlink.MAV_TYPE_HELICOPTER,
                     mavlink.MAV_TYPE_HEXAROTOR,
                     mavlink.MAV_TYPE_OCTOROTOR,
+                    mavlink.MAV_TYPE_COAXIAL,
                     mavlink.MAV_TYPE_TRICOPTER]:
         map = mode_mapping_acm
     if mav_type == mavlink.MAV_TYPE_FIXED_WING:
@@ -1421,6 +1483,7 @@ def mode_mapping_bynumber(mav_type):
                     mavlink.MAV_TYPE_HELICOPTER,
                     mavlink.MAV_TYPE_HEXAROTOR,
                     mavlink.MAV_TYPE_OCTOROTOR,
+                    mavlink.MAV_TYPE_COAXIAL,
                     mavlink.MAV_TYPE_TRICOPTER]:
         map = mode_mapping_acm
     if mav_type == mavlink.MAV_TYPE_FIXED_WING:
