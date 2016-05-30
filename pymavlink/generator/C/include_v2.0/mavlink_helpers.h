@@ -471,6 +471,7 @@ MAVLINK_HELPER void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 /*
   return the crc_entry value for a msgid
 */
+#ifndef MAVLINK_GET_MSG_ENTRY
 MAVLINK_HELPER const mavlink_msg_entry_t *mavlink_get_msg_entry(uint32_t msgid)
 {
 	static const mavlink_msg_entry_t mavlink_message_crcs[] = MAVLINK_MESSAGE_CRCS;
@@ -498,6 +499,7 @@ MAVLINK_HELPER const mavlink_msg_entry_t *mavlink_get_msg_entry(uint32_t msgid)
         }
         return &mavlink_message_crcs[low];
 }
+#endif // MAVLINK_GET_MSG_ENTRY
 
 /*
   return the crc_extra value for a message
