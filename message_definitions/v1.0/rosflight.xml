@@ -2,21 +2,42 @@
 <mavlink>
     <include>common.xml</include>
     <enums>
-      <enum name="OFFBOARD_CONTROL_MODE">
-          <entry value="0" name="PASS_THROUGH">
-              <description>Pass commanded values directly to actuators</description>
-          </entry>
-          <entry value="1" name="ROLL_PITCH_YAWRATE_THROTTLE">
-              <description>Command roll angle, pitch angle, yaw rate, and throttle</description>
-          </entry>
-          <entry value="2" name="ROLL_PITCH_YAWRATE_ALTITUDE">
-              <description>Command roll angle, pitch angle, yaw rate, and altitude above ground</description>
-          </entry>
-      </enum>
+        <enum name="OFFBOARD_CONTROL_MODE">
+            <entry value="0" name="MODE_PASS_THROUGH">
+                <description>Pass commanded values directly to actuators</description>
+            </entry>
+            <entry value="1" name="MODE_ROLLRATE_PITCHRATE_YAWRATE_THROTTLE">
+                <description>Command roll rate, pitch rate, yaw rate, and throttle</description>
+            </entry>
+            <entry value="2" name="MODE_ROLL_PITCH_YAWRATE_THROTTLE">
+                <description>Command roll angle, pitch angle, yaw rate, and throttle</description>
+            </entry>
+            <entry value="3" name="MODE_ROLL_PITCH_YAWRATE_ALTITUDE">
+                <description>Command roll angle, pitch angle, yaw rate, and altitude above ground</description>
+            </entry>
+        </enum>
+        <enum name="OFFBOARD_CONTROL_IGNORE">
+            <entry value="0x00" name="IGNORE_NONE">
+                <description>Convenience value for specifying no fields should be ignored</description>
+            </entry>
+            <entry value="0x01" name="IGNORE_VALUE1">
+                <description>Field value1 should be ignored</description>
+            </entry>
+            <entry value="0x02" name="IGNORE_VALUE2">
+                <description>Field value2 should be ignored</description>
+            </entry>
+            <entry value="0x04" name="IGNORE_VALUE3">
+                <description>Field value3 should be ignored</description>
+            </entry>
+            <entry value="0x08" name="IGNORE_VALUE4">
+                <description>Field value4 should be ignored</description>
+            </entry>
+        </enum>
     </enums>
     <messages>
         <message id="180" name="OFFBOARD_CONTROL">
             <field type="uint8_t" name="mode" enum="OFFBOARD_CONTROL_MODE">Offboard control mode, see OFFBOARD_CONTROL_MODE</field>
+            <field type="uint8_t" name="ignore" enum="OFFBOARD_CONTROL_IGNORE">Bitfield specifying which fields should be ignored, see OFFBOARD_CONTROL_IGNORE</field>
             <field type="int16_t" name="value1">First value, interpreted according to mode</field>
             <field type="int16_t" name="value2">Second value, interpreted according to mode</field>
             <field type="int16_t" name="value3">Third value, interpreted according to mode</field>
