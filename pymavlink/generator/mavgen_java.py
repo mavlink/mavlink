@@ -41,7 +41,8 @@ ${{entry:   public static final int ${name} = ${value}; /* ${description} |${{pa
 def generate_CRC(directory, xml):
     # and message CRCs array
     xml.message_crcs_array = ''
-    for crc in xml.message_crcs:
+    for msgid in range(256):
+        crc = xml.message_crcs.get(msgid, 0)
         xml.message_crcs_array += '%u, ' % crc
     xml.message_crcs_array = xml.message_crcs_array[:-2]
     
