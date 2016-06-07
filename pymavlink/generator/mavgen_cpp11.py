@@ -54,7 +54,7 @@ ${{enum:
 /** @brief ${description} */
 enum class ${name} : int
 {
-${{entry:    ${name}=${value}, /* ${description} |${{param:${description}| }} */
+${{entry:    ${name_trim}=${value}, /* ${description} |${{param:${description}| }} */
 }}
 };
 }}
@@ -142,16 +142,15 @@ ${{ordered_fields:        map >> ${name};${ser_whitespace}// offset: ${wire_offs
 
 # XXX: gtest-based testing suite
 
-## XXX fixme!
+
 def copy_fixed_headers(directory, xml):
     '''copy the fixed protocol headers to the target directory'''
     import shutil, filecmp
     hlist = {
-        "2.0": [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h', 'mavlink_conversions.h',
-                 'mavlink_get_info.h', 'mavlink_sha256.h' ]
+        "2.0": ['message.hpp', 'msgmap.hpp']
         }
     basepath = os.path.dirname(os.path.realpath(__file__))
-    srcpath = os.path.join(basepath, 'C/include_v%s' % xml.wire_protocol_version)
+    srcpath = os.path.join(basepath, 'CPP11/include_v%s' % xml.wire_protocol_version)
     print("Copying fixed headers for protocol %s to %s" % (xml.wire_protocol_version, directory))
     for h in hlist[xml.wire_protocol_version]:
         src = os.path.realpath(os.path.join(srcpath, h))
@@ -164,6 +163,23 @@ def copy_fixed_headers(directory, xml):
 class mav_include(object):
     def __init__(self, base):
         self.base = base
+
+
+def enum_remove_prefix(prefix, s):
+    '''remove prefix from enum entry'''
+    pl = prefix.split('_')
+    sl = s.split('_')
+
+    for i in range(len(pl)):
+        if pl[i] == sl[0]:
+            sl = sl[1:]
+        else:
+            break
+
+    if sl[0][0].isdigit():
+        sl.insert(0, pl[-1])
+
+    return '_'.join(sl)
 
 
 def generate_one(basename, xml):
@@ -195,6 +211,11 @@ def generate_one(basename, xml):
             xml.message_target_system_ofs[msgid],
             xml.message_target_component_ofs[msgid])
         for msgid in sorted(xml.message_crcs.keys())])
+
+    # add trimmed filed name to enums
+    for e in xml.enum:
+        for f in e.entry:
+            f.name_trim = enum_remove_prefix(e.name, f.name)
 
     # add some extra field attributes for convenience with arrays
     for m in xml.message:
@@ -231,4 +252,4 @@ def generate(basename, xml_list):
 
     for xml in xml_list:
         generate_one(basename, xml)
-    #XXX copy_fixed_headers(basename, xml_list[0])
+    copy_fixed_headers(basename, xml_list[0])
