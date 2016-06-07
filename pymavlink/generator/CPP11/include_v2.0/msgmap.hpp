@@ -1,15 +1,13 @@
 
 #pragma once
 
-#include <array>
-
 namespace mavlink {
 
 class MsgMap {
 public:
-	inline void reset_header(uint32_t msgid)
+	inline void reset(uint32_t msgid)
 	{
-
+		pos = 0;
 	}
 
 	template<typename _T>
@@ -23,6 +21,10 @@ public:
 
 	template<class _T, size_t _Size>
 	void operator>> (std::array<_T, _Size> &data);
+
+private:
+	void *msg;
+	size_t pos;
 };
 
 } // namespace mavlink
@@ -32,7 +34,7 @@ public:
 template<typename _T>
 void mavlink::MsgMap::operator<< (const _T data)
 {
-	// TODO
+
 }
 
 template<class _T, size_t _Size>

@@ -1,5 +1,9 @@
+#ifdef MAVLINK_USE_CXX_NAMESPACE
+namespace mavlink {
+#else
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 #ifndef _CHECKSUM_H_
@@ -91,6 +95,10 @@ static inline void crc_accumulate_buffer(uint16_t *crcAccum, const char *pBuffer
 
 #endif /* _CHECKSUM_H_ */
 
+#ifdef MAVLINK_USE_CXX_NAMESPACE
+} // namespace mavlink
+#else
 #ifdef __cplusplus
 }
+#endif
 #endif

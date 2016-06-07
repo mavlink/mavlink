@@ -15,49 +15,6 @@ from . import mavparse, mavtemplate
 t = mavtemplate.MAVTemplate()
 
 
-def generate_mavlink_hpp(directory, xml):
-    '''generate mavlink.h'''
-    f = open(os.path.join(directory, "mavlink.hpp"), mode='w')
-    t.write(f,'''
-/** @file
- *	@brief MAVLink comm protocol built from ${basename}.xml
- *	@see http://mavlink.org
- */
-
-#pragma once
-
-#ifndef MAVLINK_STX
-#define MAVLINK_STX ${protocol_marker}
-#endif
-
-#ifndef MAVLINK_ENDIAN
-#define MAVLINK_ENDIAN $ {mavlink_endian}
-#endif
-
-#ifndef MAVLINK_ALIGNED_FIELDS
-#define MAVLINK_ALIGNED_FIELDS $ {aligned_fields_define}
-#endif
-
-#ifndef MAVLINK_CRC_EXTRA
-#define MAVLINK_CRC_EXTRA $ {crc_extra_define}
-#endif
-
-#ifndef MAVLINK_COMMAND_24BIT
-#define MAVLINK_COMMAND_24BIT $ {command_24bit_define}
-#endif
-
-#ifndef MAVLINK_PACKED
-#define MAVLINK_PACKED __attribute__((__packed__))
-#endif
-
-#include "version.h"
-#include "${basename}.h"
-
-// XXX ???? do i realy need that file????
-''', xml)
-    f.close()
-
-
 def generate_main_hpp(directory, xml):
     '''generate main header per XML file'''
     f = open(os.path.join(directory, xml.basename + ".hpp"), mode='w')
@@ -73,7 +30,10 @@ def generate_main_hpp(directory, xml):
 #include <cstdint>
 #include <sstream>
 
-//#include "../protocol.h"
+#ifndef MAVLINK_STX
+#define MAVLINK_STX ${protocol_marker}
+#endif
+
 #include "../message.hpp"
 
 namespace mavlink {
@@ -82,7 +42,10 @@ namespace ${basename} {
 /**
  * Array of msg_entry needed for @p mavlink_parse_char() (trought @p mavlink_get_msg_entry())
  */
-//constexpr std::array<mavlink_msg_entry_t, ${message_entry_len}> MESSAGE_ENTRIES {{ ${message_entry_array} }};
+constexpr std::array<mavlink_msg_entry_t, ${message_entry_len}> MESSAGE_ENTRIES {{ ${message_entry_array} }};
+
+//! MAVLINK VERSION
+constexpr auto MAVLINK_VERSION = ${version};
 
 
 // ENUM DEFINITIONS
@@ -96,12 +59,6 @@ ${{entry:    ${name}=${value}, /* ${description} |${{param:${description}| }} */
 };
 }}
 
-// MAVLINK VERSION
-
-// XXX for what?
-#ifndef MAVLINK_VERSION
-#define MAVLINK_VERSION ${version}
-#endif
 
 } // namespace ${basename}
 } // namespace mavlink
@@ -123,6 +80,8 @@ def generate_message_hpp(directory, m):
     f = open(os.path.join(directory, 'mavlink_msg_%s.hpp' % m.name_lower), mode='w')
     t.write(f, '''
 // MESSAGE ${name} support class
+
+#pragma once
 
 namespace mavlink {
 namespace ${dialect_name} {
@@ -158,7 +117,7 @@ ${{fields:        //XXX fix me! ss << "  ${name}: " << ${name} << std::endl;
 
     inline void serialize(mavlink::MsgMap &map)
     {
-        map.reset_header(MSG_ID);
+        map.reset(MSG_ID);
 
 ${{const_fileds:        ${name} = ${const_value};
 }}
@@ -216,27 +175,7 @@ def generate_one(basename, xml):
     mavparse.mkdir_p(directory)
 
     if xml.wire_protocol_version != mavparse.PROTOCOL_2_0:
-        raise ValueError("C++ implementation require --wire-protocol=2.0")
-
-    #if xml.little_endian:
-    #    xml.mavlink_endian = "MAVLINK_LITTLE_ENDIAN"
-    #else:
-    #    xml.mavlink_endian = "MAVLINK_BIG_ENDIAN"
-
-    #if xml.crc_extra:
-    #    xml.crc_extra_define = "1"
-    #else:
-    #    xml.crc_extra_define = "0"
-
-    #if xml.command_24bit:
-    #    xml.command_24bit_define = "1"
-    #else:
-    #    xml.command_24bit_define = "0"
-
-    #if xml.sort_fields:
-    #    xml.aligned_fields_define = "1"
-    #else:
-    #    xml.aligned_fields_define = "0"
+        raise ValueError("C++ implementation only support --wire-protocol=2.0")
 
     # work out the included headers
     xml.include_list = []
@@ -276,7 +215,6 @@ def generate_one(basename, xml):
             if f.omit_arg:
                 m.const_fileds.append(f)
 
-    generate_mavlink_hpp(directory, xml)
     generate_main_hpp(directory, xml)
     for m in xml.message:
         generate_message_hpp(directory, m)

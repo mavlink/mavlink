@@ -13,6 +13,10 @@
 
 #include "mavlink_sha256.h"
 
+#ifdef MAVLINK_USE_CXX_NAMESPACE
+namespace mavlink {
+#endif
+
 /*
  * Internal function to give access to the channel status for each channel
  */
@@ -1069,6 +1073,10 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
 #endif
 }
 #endif // MAVLINK_USE_CONVENIENCE_FUNCTIONS
+
+#ifdef MAVLINK_USE_CXX_NAMESPACE
+} // namespace mavlink
+#endif
 
 #endif /* _MAVLINK_HELPERS_H_ */
 
