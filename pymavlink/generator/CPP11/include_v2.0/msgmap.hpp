@@ -10,15 +10,15 @@ class MsgMap {
 public:
 
 	explicit MsgMap(mavlink_message_t *p) :
-		pos(0), msg(p), cmsg(p)
+		msg(p), cmsg(p), pos(0)
 	{ }
 
 	explicit MsgMap(mavlink_message_t &p) :
-		pos(0), msg(&p), cmsg(&p)
+		msg(&p), cmsg(&p), pos(0)
 	{ }
 
 	explicit MsgMap(const mavlink_message_t *p) :
-		pos(0), msg(nullptr), cmsg(p)
+		msg(nullptr), cmsg(p), pos(0)
 	{ }
 
 	inline void reset()

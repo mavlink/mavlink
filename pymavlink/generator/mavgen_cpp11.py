@@ -68,7 +68,7 @@ ${{message:#include "./mavlink_msg_${name_lower}.hpp"
 }}
 
 // base include
-${{include_list:#include "../${base}/${base}.h"
+${{include_list:#include "../${base}/${base}.hpp"
 }}
 ''', xml)
 
@@ -140,7 +140,50 @@ ${{ordered_fields:        map >> ${name};${ser_whitespace}// offset: ${wire_offs
     f.close()
 
 
-# XXX: gtest-based testing suite
+def generate_gtestsuite_hpp(directory, xml):
+    '''generate gtestsuite.hpp per XML file'''
+    f = open(os.path.join(directory, "gtestsuite.hpp"), mode='w')
+    t.write(f, '''
+/** @file
+ *	@brief MAVLink comm testsuite protocol generated from ${basename}.xml
+ *	@see http://mavlink.org
+ */
+
+#pragma once
+
+#include <gtest/gtest.h>
+#include "${basename}.hpp"
+
+${{message:
+TEST(${dialect_name}, ${name})
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::${dialect_name}::msg::${name} packet_in{};
+${{fields:    packet_in.${name} = ${cxx_test_value};
+}}
+
+    mavlink::${dialect_name}::msg::${name} packet1{};
+    mavlink::${dialect_name}::msg::${name} packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    packet2.deserialize(map2);
+
+${{fields:    EXPECT_EQ(packet1.${name}, packet2.${name});
+}}
+}
+}}
+''', xml)
+
+    f.close()
+
 
 
 def copy_fixed_headers(directory, xml):
@@ -233,9 +276,24 @@ def generate_one(basename, xml):
                 f.cxx_type = 'std::array<%s, %s>' % (f.type, f.array_length)
                 f.to_yaml_code = """ss << "  %s: ["; for (auto &_v : %s) { ss << %s(_v) << ", "; }; ss << "]" << std::endl;""" % (
                     f.name, f.name, to_yaml_cast)
+
+                if f.type == 'char':
+                    # XXX find how to make std::array<> from const char[]
+                    f.cxx_test_value = 'make_str_array(packet_in.%s, "%s")' % (f.name, f.test_value)
+                else:
+                    f.cxx_test_value = '{ %s }' % ', '.join([str(v) for v in f.test_value])
             else:
                 f.cxx_type = f.type
                 f.to_yaml_code = """ss << "  %s: " << %s(%s) << std::endl;""" % (f.name, to_yaml_cast, f.name)
+
+                if f.type == 'char':
+                    f.cxx_test_value = "'%s'" % f.test_value
+                elif f.type == 'int64_t':
+                    f.cxx_test_value = "%sLL" % f.test_value
+                elif f.type == 'uint64_t':
+                    f.cxx_test_value = "%sULL" % f.test_value
+                else:
+                    f.cxx_test_value = f.test_value
 
             # cope with uint8_t_mavlink_version
             if f.omit_arg:
@@ -244,7 +302,7 @@ def generate_one(basename, xml):
     generate_main_hpp(directory, xml)
     for m in xml.message:
         generate_message_hpp(directory, m)
-    #generate_testsuite_h(directory, xml)
+    generate_gtestsuite_hpp(directory, xml)
 
 
 def generate(basename, xml_list):
