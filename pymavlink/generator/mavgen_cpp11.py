@@ -73,7 +73,8 @@ def generate_main_hpp(directory, xml):
 #include <cstdint>
 #include <sstream>
 
-#include "../protocol.h"
+//#include "../protocol.h"
+#include "../message.hpp"
 
 namespace mavlink {
 namespace ${basename} {
@@ -81,7 +82,7 @@ namespace ${basename} {
 /**
  * Array of msg_entry needed for @p mavlink_parse_char() (trought @p mavlink_get_msg_entry())
  */
-constexpr std::array<mavlink_msg_entry_t, ${message_entry_len}> MESSAGE_ENTRIES {{ ${message_entry_array} }};
+//constexpr std::array<mavlink_msg_entry_t, ${message_entry_len}> MESSAGE_ENTRIES {{ ${message_entry_array} }};
 
 
 // ENUM DEFINITIONS
@@ -149,7 +150,7 @@ ${{fields:    ${cxx_type} ${name}; /*< ${description} */
         std::stringstream ss;
 
         ss << NAME << ":" << std::endl;
-${{fields:        ss << "  ${name}: " << ${name} << std::endl;
+${{fields:        //XXX fix me! ss << "  ${name}: " << ${name} << std::endl;
 }}
 
         return ss.str();
@@ -247,7 +248,7 @@ def generate_one(basename, xml):
     # we sort with primary key msgid
     xml.message_entry_len = len(xml.message_crcs)
     xml.message_entry_array = ', '.join([
-        '{%u, %u, %u, %u, %u, %u}, ' % (
+        '{%u, %u, %u, %u, %u, %u}' % (
             msgid,
             xml.message_crcs[msgid],
             xml.message_min_lengths[msgid],
