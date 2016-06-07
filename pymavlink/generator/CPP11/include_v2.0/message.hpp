@@ -2,6 +2,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <string>
 #include <iostream>
 

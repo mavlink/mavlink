@@ -206,12 +206,15 @@ def generate_one(basename, xml):
             spaces = 30 - len(f.name)
             f.ser_whitespace = ' ' * (spaces if spaces > 1 else 1)
 
+            to_yaml_cast = 'int' if f.type in ['uint8_t', 'int8_t'] else ''
+
             if f.array_length != 0:
                 f.cxx_type = 'std::array<%s, %s>' % (f.type, f.array_length)
-                f.to_yaml_code = """ss << "  %s: ["; for (auto &_v : %s) { ss << _v << ", "; }; ss << "]" << std::endl;""" % (f.name, f.name)
+                f.to_yaml_code = """ss << "  %s: ["; for (auto &_v : %s) { ss << %s(_v) << ", "; }; ss << "]" << std::endl;""" % (
+                    f.name, f.name, to_yaml_cast)
             else:
                 f.cxx_type = f.type
-                f.to_yaml_code = """ss << "  %s: " << %s << std::endl;""" % (f.name, f.name)
+                f.to_yaml_code = """ss << "  %s: " << %s(%s) << std::endl;""" % (f.name, to_yaml_cast, f.name)
 
             # cope with uint8_t_mavlink_version
             if f.omit_arg:
