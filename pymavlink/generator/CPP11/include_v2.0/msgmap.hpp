@@ -23,7 +23,7 @@ public:
 	void operator>> (std::array<_T, _Size> &data);
 
 private:
-	void *msg;
+	mavlink_message_t *msg;
 	size_t pos;
 };
 
@@ -34,13 +34,16 @@ private:
 template<typename _T>
 void mavlink::MsgMap::operator<< (const _T data)
 {
+	std::cout << sizeof(_T) << " " << data << std::endl;
+
 
 }
 
 template<class _T, size_t _Size>
 void mavlink::MsgMap::operator<< (const std::array<_T, _Size> &data)
 {
-
+	for (auto &v : data)
+		*this << v;
 }
 
 template<typename _T>

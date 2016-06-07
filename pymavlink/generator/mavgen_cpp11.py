@@ -109,7 +109,7 @@ ${{fields:    ${cxx_type} ${name}; /*< ${description} */
         std::stringstream ss;
 
         ss << NAME << ":" << std::endl;
-${{fields:        //XXX fix me! ss << "  ${name}: " << ${name} << std::endl;
+${{fields:        ${to_yaml_code}
 }}
 
         return ss.str();
@@ -208,8 +208,10 @@ def generate_one(basename, xml):
 
             if f.array_length != 0:
                 f.cxx_type = 'std::array<%s, %s>' % (f.type, f.array_length)
+                f.to_yaml_code = """ss << "  %s: ["; for (auto &_v : %s) { ss << _v << ", "; }; ss << "]" << std::endl;""" % (f.name, f.name)
             else:
                 f.cxx_type = f.type
+                f.to_yaml_code = """ss << "  %s: " << %s << std::endl;""" % (f.name, f.name)
 
             # cope with uint8_t_mavlink_version
             if f.omit_arg:
