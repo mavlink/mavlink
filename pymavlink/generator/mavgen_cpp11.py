@@ -117,7 +117,7 @@ ${{fields:        ${to_yaml_code}
 
     inline void serialize(mavlink::MsgMap &map)
     {
-        map.reset(MSG_ID);
+        map.reset(MSG_ID, LENGTH);
 
 ${{const_fileds:        ${name} = ${const_value};
 }}
@@ -179,6 +179,8 @@ ${{fields:    packet_in.${name} = ${cxx_test_value};
     //std::cout << packet1.to_yaml() << std::endl;
 
     packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
 
     packet2.deserialize(map2);
 
@@ -309,6 +311,10 @@ def generate_one(basename, xml):
             f.ser_whitespace = ' ' * (spaces if spaces > 1 else 1)
 
             to_yaml_cast = 'int' if f.type in ['uint8_t', 'int8_t'] else ''
+
+            # XXX use TIMESYNC message to test trimmed message decoding
+            if m.name == 'TIMESYNC' and f.name == 'ts1':
+                f.test_value = 0xAA
 
             if f.array_length != 0:
                 f.cxx_type = 'std::array<%s, %s>' % (f.type, f.array_length)

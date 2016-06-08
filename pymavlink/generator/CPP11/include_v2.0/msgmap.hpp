@@ -26,11 +26,12 @@ public:
 		pos = 0;
 	}
 
-	inline void reset(uint32_t msgid)
+	inline void reset(uint32_t msgid, uint8_t len)
 	{
 		assert(msg);
 
-		msg->msgid = msgid;
+		msg->msgid = msgid;	// necessary for finalize
+		msg->len = len;		// needed only for deserialization w/o finalize
 		pos = 0;
 	}
 
@@ -50,11 +51,47 @@ private:
 	mavlink_message_t *msg;		// for serialization
 	const mavlink_message_t *cmsg;	// for deserialization
 	size_t pos;
+
+	template<typename _T, typename _Tin>
+	inline void msg_swap_memcpy(_T &buf, _Tin data);
+
+	template<typename _T, typename _Tout>
+	inline void cmsg_memcpy_bzero_swap_set_data(_T &buf, _Tout &data);
 };
 
 } // namespace mavlink
 
 // implementation
+
+template<typename _T, typename _Tin>
+void mavlink::MsgMap::msg_swap_memcpy(_T &buf, _Tin data)
+{
+	if (std::is_floating_point<_Tin>::value)
+		buf = *static_cast<const _T *>(static_cast<const void *>(&data));
+	else
+		buf = data;
+
+	// htoleXX functions may be empty macros,
+	// switch will be optimized-out
+	switch (sizeof(_T)) {
+	case 2:
+		buf = htole16(buf);
+		break;
+
+	case 4:
+		buf = htole32(buf);
+		break;
+
+	case 8:
+		buf = htole64(buf);
+		break;
+
+	default:
+		assert(false);
+	}
+
+	memcpy(&_MAV_PAYLOAD_NON_CONST(msg)[pos], &buf, sizeof(buf));
+}
 
 template<typename _T>
 void mavlink::MsgMap::operator<< (const _T data)
@@ -69,32 +106,17 @@ void mavlink::MsgMap::operator<< (const _T data)
 
 	case 2:
 		uint16_t data_le16;
-		if (std::is_floating_point<_T>::value)
-			data_le16 = htole16(*static_cast<const uint16_t *>(static_cast<const void *>(&data)));
-		else
-			data_le16 = htole16(data);
-
-		memcpy(&_MAV_PAYLOAD_NON_CONST(msg)[pos], &data_le16, sizeof(data_le16));
+		msg_swap_memcpy(data_le16, data);
 		break;
 
 	case 4:
 		uint32_t data_le32;
-		if (std::is_floating_point<_T>::value)
-			data_le32 = htole32(*static_cast<const uint32_t *>(static_cast<const void *>(&data)));
-		else
-			data_le32 = htole32(data);
-
-		memcpy(&_MAV_PAYLOAD_NON_CONST(msg)[pos], &data_le32, sizeof(data_le32));
+		msg_swap_memcpy(data_le32, data);
 		break;
 
 	case 8:
 		uint64_t data_le64;
-		if (std::is_floating_point<_T>::value)
-			data_le64 = htole64(*static_cast<const uint64_t *>(static_cast<const void *>(&data)));
-		else
-			data_le64 = htole64(data);
-
-		memcpy(&_MAV_PAYLOAD_NON_CONST(msg)[pos], &data_le64, sizeof(data_le64));
+		msg_swap_memcpy(data_le64, data);
 		break;
 
 	default:
@@ -113,11 +135,65 @@ void mavlink::MsgMap::operator<< (const std::array<_T, _Size> &data)
 		*this << v;
 }
 
+template<typename _T, typename _Tout>
+void mavlink::MsgMap::cmsg_memcpy_bzero_swap_set_data(_T &buf, _Tout &data)
+{
+	memcpy(&buf, &_MAV_PAYLOAD(cmsg)[pos], sizeof(_T));
+
+	// if message is trimmed - bzero tail
+	if (pos + sizeof(_T) > cmsg->len) {
+		union {
+			_T d;
+			uint8_t u8[sizeof(_T)];
+		} bz;
+
+		size_t toclean = (pos + sizeof(_T)) - cmsg->len;
+		size_t start_pos = sizeof(_T) - toclean;
+
+		//std::cout << "B> bzero s: " << sizeof(_T) << " c: " << toclean << " p: " << start_pos << std::endl;
+
+		bz.d = buf;
+		memset(&bz.u8[start_pos], 0, toclean);
+		buf = bz.d;
+	}
+
+	// leXXtoh functions may be empty macros,
+	// switch will be optimized-out
+	switch (sizeof(_T)) {
+	case 2:
+		buf = le16toh(buf);
+		break;
+
+	case 4:
+		buf = le32toh(buf);
+		break;
+
+	case 8:
+		buf = le64toh(buf);
+		break;
+
+	default:
+		assert(false);
+	}
+
+	if (std::is_floating_point<_Tout>::value)
+		data = *static_cast<_Tout *>(static_cast<void *>(&buf));
+	else
+		data = buf;
+}
+
 template<typename _T>
 void mavlink::MsgMap::operator>> (_T &data)
 {
 	assert(cmsg);
 	assert(pos + sizeof(_T) <= MAVLINK_MAX_PAYLOAD_LEN);
+
+	// message is trimmed - fill with zeroes
+	if (pos >= cmsg->len) {
+		data = 0;
+		pos += sizeof(_T);
+		return;
+	}
 
 	switch (sizeof(_T)) {
 	case 1:
@@ -126,38 +202,17 @@ void mavlink::MsgMap::operator>> (_T &data)
 
 	case 2:
 		uint16_t data_le16;
-		memcpy(&data_le16, &_MAV_PAYLOAD(cmsg)[pos], sizeof(data_le16));
-		data_le16 = le16toh(data_le16);
-
-		if (std::is_floating_point<_T>::value)
-			data = *static_cast<_T *>(static_cast<void *>(&data_le16));
-		else
-			data = data_le16;
-
+		cmsg_memcpy_bzero_swap_set_data(data_le16, data);
 		break;
 
 	case 4:
 		uint32_t data_le32;
-		memcpy(&data_le32, &_MAV_PAYLOAD(cmsg)[pos], sizeof(data_le32));
-		data_le32 = le32toh(data_le32);
-
-		if (std::is_floating_point<_T>::value)
-			data = *static_cast<_T *>(static_cast<void *>(&data_le32));
-		else
-			data = data_le32;
-
+		cmsg_memcpy_bzero_swap_set_data(data_le32, data);
 		break;
 
 	case 8:
 		uint64_t data_le64;
-		memcpy(&data_le64, &_MAV_PAYLOAD(cmsg)[pos], sizeof(data_le64));
-		data_le64 = le64toh(data_le64);
-
-		if (std::is_floating_point<_T>::value)
-			data = *static_cast<_T *>(static_cast<void *>(&data_le64));
-		else
-			data = data_le64;
-
+		cmsg_memcpy_bzero_swap_set_data(data_le64, data);
 		break;
 
 	default:

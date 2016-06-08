@@ -22,7 +22,7 @@ std::array<char, N>&& make_str_array(std::array<char, N> &unused, const char str
 	return std::move(a);
 }
 
-#define PRINT_MSG(m)	print_msg(m)
+//#define PRINT_MSG(m)	print_msg(m)
 namespace mavlink {
 struct __mavlink_message;
 void print_msg(struct __mavlink_message &m);
