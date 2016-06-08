@@ -104,7 +104,7 @@ ${{fields:    ${cxx_type} ${name}; /*< ${description} */
 }}
 
 
-    inline std::string to_yaml(void)
+    inline std::string to_yaml(void) const
     {
         std::stringstream ss;
 

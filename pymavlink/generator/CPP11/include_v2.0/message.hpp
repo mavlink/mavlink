@@ -28,7 +28,7 @@ struct Message {
 	static constexpr uint8_t CRC_EXTRA = 0;
 	static constexpr auto NAME = "BASE";
 
-	virtual std::string to_yaml(void) = 0;
+	virtual std::string to_yaml(void) const = 0;
 	virtual void serialize(MsgMap &map) const = 0;
 	virtual void deserialize(MsgMap &msp) = 0;
 };
