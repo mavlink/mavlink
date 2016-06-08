@@ -103,6 +103,15 @@ struct ${name} : mavlink::Message {
 ${{fields:    ${cxx_type} ${name}; /*< ${description} */
 }}
 
+    inline std::string get_name(void) const
+    {
+            return NAME;
+    }
+
+    inline MessageInfo&& get_message_info(void) const
+    {
+            return std::move(MessageInfo{ MSG_ID, LENGTH, MIN_LENGTH, CRC_EXTRA });
+    }
 
     inline std::string to_yaml(void) const
     {

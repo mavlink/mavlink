@@ -21,15 +21,48 @@ const mavlink_msg_entry_t *mavlink_get_msg_entry(uint32_t msgid);
 
 namespace mavlink {
 
+using msgid_t = uint32_t;
+struct MessageInfo {
+	msgid_t id;
+	size_t length;
+	size_t min_length;
+	uint8_t crc_extra;
+};
+
 struct Message {
-	static constexpr uint32_t MSG_ID = UINT32_MAX;
+	static constexpr msgid_t MSG_ID = UINT32_MAX;
 	static constexpr size_t LENGTH = 0;
 	static constexpr size_t MIN_LENGTH = 0;
 	static constexpr uint8_t CRC_EXTRA = 0;
 	static constexpr auto NAME = "BASE";
 
+	/**
+	 * Get NAME constant. Helper for overloaded class access.
+	 */
+	virtual std::string get_name(void) const = 0;
+
+	/**
+	 * Get info needed for mavlink_finalize_message_xxx()
+	 */
+	virtual MessageInfo&& get_message_info(void) const = 0;
+
+	/**
+	 * Make YAML-string from message content.
+	 */
 	virtual std::string to_yaml(void) const = 0;
+
+	/**
+	 * Serialize message.
+	 *
+	 * @param[out] map
+	 */
 	virtual void serialize(MsgMap &map) const = 0;
+
+	/**
+	 * Deserialize message.
+	 *
+	 * @param[in] map
+	 */
 	virtual void deserialize(MsgMap &msp) = 0;
 };
 
