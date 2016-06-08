@@ -29,7 +29,7 @@ struct Message {
 	static constexpr auto NAME = "BASE";
 
 	virtual std::string to_yaml(void) = 0;
-	virtual void serialize(MsgMap &map) = 0;
+	virtual void serialize(MsgMap &map) const = 0;
 	virtual void deserialize(MsgMap &msp) = 0;
 };
 

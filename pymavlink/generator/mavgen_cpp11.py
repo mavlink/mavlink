@@ -115,7 +115,7 @@ ${{fields:        ${to_yaml_code}
         return ss.str();
     }
 
-    inline void serialize(mavlink::MsgMap &map)
+    inline void serialize(mavlink::MsgMap &map) const
     {
         map.reset(MSG_ID, LENGTH);
 
