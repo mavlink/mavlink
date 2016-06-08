@@ -154,6 +154,12 @@ def generate_gtestsuite_hpp(directory, xml):
 #include <gtest/gtest.h>
 #include "${basename}.hpp"
 
+#ifdef TEST_INTEROP
+using namespace mavlink;
+#undef MAVLINK_HELPER
+#include "mavlink.h"
+#endif
+
 ${{message:
 TEST(${dialect_name}, ${name})
 {
@@ -179,6 +185,38 @@ ${{fields:    packet_in.${name} = ${cxx_test_value};
 ${{fields:    EXPECT_EQ(packet1.${name}, packet2.${name});
 }}
 }
+
+#ifdef TEST_INTEROP
+TEST(${dialect_name}_interop, ${name})
+{
+    mavlink_message_t msg;
+    MsgMap map2(msg);
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_${name_lower}_t packet_c {
+        ${{ordered_fields: ${c_test_value},}}
+    };
+
+    mavlink::${dialect_name}::msg::${name} packet_in{};
+${{fields:    packet_in.${name} = ${cxx_test_value};
+}}
+
+    mavlink::${dialect_name}::msg::${name} packet2{};
+
+    mavlink_msg_${name_lower}_encode(1, 1, &msg, &packet_c);
+
+    packet2.deserialize(map2);
+
+${{fields:    EXPECT_EQ(packet_in.${name}, packet2.${name});
+}}
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
 }}
 ''', xml)
 
@@ -280,11 +318,17 @@ def generate_one(basename, xml):
                 if f.type == 'char':
                     # XXX find how to make std::array<> from const char[]
                     f.cxx_test_value = 'make_str_array(packet_in.%s, "%s")' % (f.name, f.test_value)
+                    f.c_test_value = '"%s"' % f.test_value
                 else:
                     f.cxx_test_value = '{ %s }' % ', '.join([str(v) for v in f.test_value])
+                    f.c_test_value = f.cxx_test_value
             else:
                 f.cxx_type = f.type
                 f.to_yaml_code = """ss << "  %s: " << %s(%s) << std::endl;""" % (f.name, to_yaml_cast, f.name)
+
+                # XXX sometime test_value is > 127 for int8_t, monkeypatch
+                if f.type == 'int8_t' and f.test_value > 127:
+                    f.test_value -= 128;
 
                 if f.type == 'char':
                     f.cxx_test_value = "'%s'" % f.test_value
@@ -294,6 +338,9 @@ def generate_one(basename, xml):
                     f.cxx_test_value = "%sULL" % f.test_value
                 else:
                     f.cxx_test_value = f.test_value
+
+                f.c_test_value = f.cxx_test_value
+
 
             # cope with uint8_t_mavlink_version
             if f.omit_arg:
