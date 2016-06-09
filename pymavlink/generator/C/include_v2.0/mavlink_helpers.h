@@ -865,6 +865,33 @@ MAVLINK_HELPER uint8_t mavlink_frame_char(uint8_t chan, uint8_t c, mavlink_messa
 					 r_mavlink_status);
 }
 
+/**
+ * Set the protocol version
+ */
+MAVLINK_HELPER void mavlink_set_proto_version(uint8_t chan, unsigned int version)
+{
+	mavlink_status_t *status = mavlink_get_channel_status(chan);
+	if (version > 1) {
+		status->flags &= ~(MAVLINK_STATUS_FLAG_OUT_MAVLINK1);
+	} else {
+		status->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+	}
+}
+
+/**
+ * Get the protocol version
+ *
+ * @return 1 for v1, 2 for v2
+ */
+MAVLINK_HELPER unsigned int mavlink_get_proto_version(uint8_t chan, unsigned int version)
+{
+	mavlink_status_t *status = mavlink_get_channel_status(chan);
+	if ((status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) > 0) {
+		return 1;
+	} else {
+		return 2;
+	}
+}
 
 /**
  * This is a convenience function which handles the complete MAVLink parsing.
