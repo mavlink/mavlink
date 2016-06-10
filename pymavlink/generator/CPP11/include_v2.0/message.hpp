@@ -6,6 +6,10 @@
 #include <string>
 #include <iostream>
 
+#ifndef MAVLINK_HELPER
+#define MAVLINK_HELPER static inline
+#endif
+
 #define MAVLINK_USE_CXX_NAMESPACE	// put C-lib into namespace
 #include "mavlink_types.h"
 
@@ -22,12 +26,6 @@ const mavlink_msg_entry_t *mavlink_get_msg_entry(uint32_t msgid);
 namespace mavlink {
 
 using msgid_t = uint32_t;
-struct MessageInfo {
-	msgid_t id;
-	size_t length;
-	size_t min_length;
-	uint8_t crc_extra;
-};
 
 struct Message {
 	static constexpr msgid_t MSG_ID = UINT32_MAX;
@@ -35,6 +33,13 @@ struct Message {
 	static constexpr size_t MIN_LENGTH = 0;
 	static constexpr uint8_t CRC_EXTRA = 0;
 	static constexpr auto NAME = "BASE";
+
+	struct Info {
+		msgid_t id;
+		size_t length;
+		size_t min_length;
+		uint8_t crc_extra;
+	};
 
 	/**
 	 * Get NAME constant. Helper for overloaded class access.
@@ -44,7 +49,7 @@ struct Message {
 	/**
 	 * Get info needed for mavlink_finalize_message_xxx()
 	 */
-	virtual MessageInfo&& get_message_info(void) const = 0;
+	virtual Info&& get_message_info(void) const = 0;
 
 	/**
 	 * Make YAML-string from message content.
