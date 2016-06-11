@@ -197,7 +197,7 @@ void mavlink::MsgMap::operator>> (_T &data)
 
 	switch (sizeof(_T)) {
 	case 1:
-		data = _MAV_PAYLOAD(msg)[pos];
+		data = _MAV_PAYLOAD(cmsg)[pos];
 		break;
 
 	case 2:
