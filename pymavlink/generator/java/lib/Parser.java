@@ -22,8 +22,16 @@ public class Parser {
 
     static boolean msg_received;
 
-    public MAVLinkStats stats = new MAVLinkStats();
+    public MAVLinkStats stats;
     private MAVLinkPacket m;
+
+    public Parser() {
+        this(false);
+    }
+
+    public Parser(boolean ignoreRadioPacketStats) {
+        stats = new MAVLinkStats(ignoreRadioPacketStats);
+    }
 
     /**
      * This is a convenience function which handles the complete MAVLink
