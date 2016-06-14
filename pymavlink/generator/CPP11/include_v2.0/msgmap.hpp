@@ -6,6 +6,9 @@
 
 namespace mavlink {
 
+/**
+ * Serialization helper wrapper for mavlink_message_t
+ */
 class MsgMap {
 public:
 

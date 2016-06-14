@@ -104,19 +104,20 @@ ${{fields:    ${cxx_type} ${name}; /*< ${description} */
 }}
 
 
-    inline std::string get_name(void) const
+    inline std::string get_name(void) const override
     {
             return NAME;
     }
 
-    inline Info&& get_message_info(void) const
+    inline Info&& get_message_info(void) const override
     {
             return std::move(Info{ MSG_ID, LENGTH, MIN_LENGTH, CRC_EXTRA });
     }
 
-    inline std::string to_yaml(void) const
+    inline std::string to_yaml(void) const override
     {
         std::stringstream ss;
+        size_t i; (void)i;
 
         ss << NAME << ":" << std::endl;
 ${{fields:        ${to_yaml_code}
@@ -125,7 +126,7 @@ ${{fields:        ${to_yaml_code}
         return ss.str();
     }
 
-    inline void serialize(mavlink::MsgMap &map) const
+    inline void serialize(mavlink::MsgMap &map) const override
     {
         map.reset(MSG_ID, LENGTH);
 
@@ -133,7 +134,7 @@ ${{ordered_fields:        map << ${ser_name};${ser_whitespace}// offset: ${wire_
 }}
     }
 
-    inline void deserialize(mavlink::MsgMap &map)
+    inline void deserialize(mavlink::MsgMap &map) override
     {
 ${{ordered_fields:        map >> ${name};${ser_whitespace}// offset: ${wire_offset}
 }}
@@ -199,7 +200,6 @@ ${{fields:    EXPECT_EQ(packet1.${name}, packet2.${name});
 TEST(${dialect_name}_interop, ${name})
 {
     mavlink_message_t msg;
-    MsgMap map2(msg);
 
     // to get nice print
     memset(&msg, 0, sizeof(msg));
@@ -216,7 +216,12 @@ ${{fields:    packet_in.${name} = ${cxx_test_value};
 
     mavlink_msg_${name_lower}_encode(1, 1, &msg, &packet_c);
 
-    packet2.deserialize(map2);
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
 
 ${{fields:    EXPECT_EQ(packet_in.${name}, packet2.${name});
 }}
@@ -317,27 +322,36 @@ def generate_one(basename, xml):
             f.ser_whitespace = ' ' * (spaces if spaces > 1 else 1)
             f.ser_name = f.name  # for most of fields it is name
 
-            to_yaml_cast = 'int' if f.type in ['uint8_t', 'int8_t'] else ''
+            to_yaml_cast = '+' if f.type in ['char', 'uint8_t', 'int8_t'] else ''
 
             # XXX use TIMESYNC message to test trimmed message decoding
             if m.name == 'TIMESYNC' and f.name == 'ts1':
                 f.test_value = 0xAA
 
+            # XXX use V2_EXTENSION to test 0 in array (to_yaml)
+            #if m.name == 'V2_EXTENSION' and f.name == 'payload':
+            #    f.test_value[5] = 0
+
             if f.array_length != 0:
                 f.cxx_type = 'std::array<%s, %s>' % (f.type, f.array_length)
-                f.to_yaml_code = """ss << "  %s: ["; for (auto &_v : %s) { ss << %s(_v) << ", "; }; ss << "]" << std::endl;""" % (
-                    f.name, f.name, to_yaml_cast)
 
                 if f.type == 'char':
+                    f.to_yaml_code = """ss << "  %s: \\"" << to_string(%s) << "\\"" << std::endl;""" % (f.name, f.name)
+
                     # XXX find how to make std::array<> from const char[]
                     f.cxx_test_value = 'make_str_array(packet_in.%s, "%s")' % (f.name, f.test_value)
                     f.c_test_value = '"%s"' % f.test_value
                 else:
+                    f.to_yaml_code = """ss << "  %s: ["; i = %s.size(); """ \
+                                     """for (auto &_v : %s) { ss << %s_v; if (--i) { ss << ", "; } }; """ \
+                                     """ss << "]" << std::endl;""" % (
+                                         f.name, f.name, f.name, to_yaml_cast)
+
                     f.cxx_test_value = '{ %s }' % ', '.join([str(v) for v in f.test_value])
                     f.c_test_value = f.cxx_test_value
             else:
                 f.cxx_type = f.type
-                f.to_yaml_code = """ss << "  %s: " << %s(%s) << std::endl;""" % (f.name, to_yaml_cast, f.name)
+                f.to_yaml_code = """ss << "  %s: " << %s%s << std::endl;""" % (f.name, to_yaml_cast, f.name)
 
                 # XXX sometime test_value is > 127 for int8_t, monkeypatch
                 if f.type == 'int8_t' and f.test_value > 127:
