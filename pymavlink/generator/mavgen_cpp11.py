@@ -11,6 +11,7 @@ Released under GNU GPL version 3 or later
 
 import sys, textwrap, os, time
 from . import mavparse, mavtemplate
+import collections
 
 t = mavtemplate.MAVTemplate()
 
@@ -52,7 +53,7 @@ constexpr auto MAVLINK_VERSION = ${version};
 
 ${{enum:
 /** @brief ${description} */
-enum class ${name} : int
+enum class ${name}${cxx_base_type}
 {
 ${{entry:    ${name_trim}=${value}, /* ${description} |${{param:${description}| }} */
 }}
@@ -307,10 +308,8 @@ def generate_one(basename, xml):
             xml.message_target_component_ofs[msgid])
         for msgid in sorted(xml.message_crcs.keys())])
 
-    # add trimmed filed name to enums
-    for e in xml.enum:
-        for f in e.entry:
-            f.name_trim = enum_remove_prefix(e.name, f.name)
+    # store types of fields with enum="" attr
+    enum_types = collections.defaultdict(list)
 
     # add some extra field attributes for convenience with arrays
     for m in xml.message:
@@ -323,6 +322,9 @@ def generate_one(basename, xml):
             f.ser_name = f.name  # for most of fields it is name
 
             to_yaml_cast = '+' if f.type in ['char', 'uint8_t', 'int8_t'] else ''
+
+            if f.enum:
+                enum_types[f.enum].append((f.type, f.type_length))
 
             # XXX use TIMESYNC message to test trimmed message decoding
             if m.name == 'TIMESYNC' and f.name == 'ts1':
@@ -372,6 +374,18 @@ def generate_one(basename, xml):
             # cope with uint8_t_mavlink_version
             if f.omit_arg:
                 f.ser_name = "%s(%s)" % (f.type, f.const_value)
+
+    # add trimmed filed name to enums
+    for e in xml.enum:
+        if e.name in enum_types:
+            types = enum_types[e.name]
+            types.sort(key=lambda x: x[1])  # sort by type size
+            e.cxx_base_type = " : " + types[-1][0]
+        else:
+            e.cxx_base_type = ''
+
+        for f in e.entry:
+            f.name_trim = enum_remove_prefix(e.name, f.name)
 
     generate_main_hpp(directory, xml)
     for m in xml.message:

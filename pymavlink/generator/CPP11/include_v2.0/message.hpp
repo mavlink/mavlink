@@ -84,7 +84,7 @@ struct Message {
 template<size_t _N>
 std::string to_string(const std::array<char, _N> &a)
 {
-	return std::string(a.data(), std::strnlen(a.data(), a.size()));
+	return std::string(a.data(), strnlen(a.data(), a.size()));
 }
 
 } // namespace mavlink
