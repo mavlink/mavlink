@@ -19,6 +19,21 @@ from pymavlink import mavutil
 from pymavlink.mavextra import distance_two
 
 
+class Totals:
+    def __init__(self):
+        self.time = 0
+        self.distance = 0
+        self.flights = 0
+
+    def print_summary(self):
+        print("===============================")
+        print("Num Flights : %u" % self.flights)
+        print("Total distance : {:0.2f}m".format(self.distance))
+        print("Total time (mm:ss): {:3.0f}:{:02.0f}".format(self.time / 60, self.time % 60))
+
+
+totals = Totals()
+
 def PrintSummary(logfile):
     '''Calculate some interesting datapoints of the file'''
     # Open the log file
@@ -83,6 +98,8 @@ def PrintSummary(logfile):
             last_gps_msg = m
 
         elif m.get_type() == 'HEARTBEAT':
+            if m.type == mavutil.mavlink.MAV_TYPE_GCS:
+                continue
             if (m.base_mode & mavutil.mavlink.MAV_MODE_FLAG_GUIDED_ENABLED or
                 m.base_mode & mavutil.mavlink.MAV_MODE_FLAG_AUTO_ENABLED) and autonomous == False:
                 autonomous = True
@@ -127,7 +144,13 @@ def PrintSummary(logfile):
     if autonomous_sections > 0:
         print("Autonomous time (mm:ss): {:3.0f}:{:02.0f}".format(auto_time / 60, auto_time % 60))
 
+    totals.time += total_time
+    totals.distance += total_dist
+    totals.flights += 1
+
 for filename in args.logs:
     for f in glob.glob(filename):
         print("Processing log %s" % filename)
         PrintSummary(f)
+
+totals.print_summary()
