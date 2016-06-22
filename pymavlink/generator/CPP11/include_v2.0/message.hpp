@@ -87,4 +87,28 @@ std::string to_string(const std::array<char, _N> &a)
 	return std::string(a.data(), strnlen(a.data(), a.size()));
 }
 
+/**
+ * Convert std::array to comma separated string
+ */
+template<typename _T, size_t _N>
+std::string to_string(const std::array<_T, _N> &a)
+{
+	std::stringstream ss;
+	bool first = true;
+
+	for (auto const &v : a) {
+		if (first)
+			first = false;
+		else
+			ss << ", ";
+
+		//if (sizeof(_T) == 1)
+			ss << +v;
+		//else
+		//	ss << v;
+	}
+
+	return ss.str();
+}
+
 } // namespace mavlink

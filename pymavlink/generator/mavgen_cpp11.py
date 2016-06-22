@@ -118,7 +118,6 @@ ${{fields:    ${cxx_type} ${name}; /*< ${description} */
     inline std::string to_yaml(void) const override
     {
         std::stringstream ss;
-        size_t i; (void)i;
 
         ss << NAME << ":" << std::endl;
 ${{fields:        ${to_yaml_code}
@@ -344,10 +343,7 @@ def generate_one(basename, xml):
                     f.cxx_test_value = 'make_str_array(packet_in.%s, "%s")' % (f.name, f.test_value)
                     f.c_test_value = '"%s"' % f.test_value
                 else:
-                    f.to_yaml_code = """ss << "  %s: ["; i = %s.size(); """ \
-                                     """for (auto &_v : %s) { ss << %s_v; if (--i) { ss << ", "; } }; """ \
-                                     """ss << "]" << std::endl;""" % (
-                                         f.name, f.name, f.name, to_yaml_cast)
+                    f.to_yaml_code = """ss << "  %s: [" << to_string(%s) << "]" << std::endl;""" % (f.name, f.name)
 
                     f.cxx_test_value = '{ %s }' % ', '.join([str(v) for v in f.test_value])
                     f.c_test_value = f.cxx_test_value
