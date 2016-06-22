@@ -53,7 +53,7 @@ constexpr auto MAVLINK_VERSION = ${version};
 
 ${{enum:
 /** @brief ${description} */
-enum class ${name}${cxx_base_type}
+enum class ${name}${cxx_underlying_type}
 {
 ${{entry:    ${name_trim}=${value}, /* ${description} |${{param:${description}| }} */
 }}
@@ -376,9 +376,12 @@ def generate_one(basename, xml):
         if e.name in enum_types:
             types = enum_types[e.name]
             types.sort(key=lambda x: x[1])  # sort by type size
-            e.cxx_base_type = " : " + types[-1][0]
+            # XXX ENUM_END break builds!
+            #     Example: APM GOPRO_CAPTURE_MODE ENUM_END = 256 > uint8_t
+            #e.cxx_underlying_type = " : " + types[-1][0]
+            e.cxx_underlying_type = ''
         else:
-            e.cxx_base_type = ''
+            e.cxx_underlying_type = ''
 
         for f in e.entry:
             f.name_trim = enum_remove_prefix(e.name, f.name)
