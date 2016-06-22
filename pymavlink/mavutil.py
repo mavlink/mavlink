@@ -21,6 +21,10 @@ except Exception:
 # maximum packet length for a single receive call - use the UDP limit
 UDP_MAX_PACKET_LEN = 65535
 
+# maximum timeout for clients connected to the UDP Server
+# 10 seconds
+CLIENT_TIMEOUT_US = 10
+
 # Store the MAVLink library for the currently-selected dialect
 # (set by set_dialect())
 mavlink = None
@@ -175,7 +179,7 @@ class mavfile(object):
             set_dialect(current_dialect)
         else:
             return
-        # switch protocol 
+        # switch protocol
         (callback, callback_args, callback_kwargs) = (self.mav.callback,
                                                       self.mav.callback_args,
                                                       self.mav.callback_kwargs)
@@ -256,7 +260,7 @@ class mavfile(object):
                 #print("lost %u seq=%u seq2=%u last_seq=%u src_system=%u %s" % (diff, seq, seq2, last_seq, src_system, msg.get_type()))
             self.last_seq[src_tuple] = seq2
             self.mav_count += 1
-        
+
         self.timestamp = msg._timestamp
         if type == 'HEARTBEAT' and msg.get_srcComponent() != mavlink.MAV_COMP_ID_GIMBAL:
             self.target_system = msg.get_srcSystem()
@@ -326,7 +330,7 @@ class mavfile(object):
                 # timeout
                 if numnew == 0:
                     return None
-                
+
     def recv_match(self, condition=None, type=None, blocking=False, timeout=None):
         '''recv the next MAVLink message that matches the given condition
         type can be a string or a list of strings'''
@@ -461,7 +465,7 @@ class mavfile(object):
     def set_mode_flag(self, flag, enable):
         '''
         Enables/ disables MAV_MODE_FLAG
-        @param flag The mode flag, 
+        @param flag The mode flag,
           see MAV_MODE_FLAG enum
         @param enable Enable the flag, (True/False)
         '''
@@ -788,7 +792,7 @@ class mavserial(mavfile):
         except Exception:
             # for pySerial 3.0, which doesn't have setBaudrate()
             self.port.baudrate = baudrate
-    
+
     def close(self):
         self.port.close()
 
@@ -814,7 +818,7 @@ class mavserial(mavfile):
             if self.autoreconnect:
                 self.reset()
             return -1
-            
+
     def reset(self):
         import serial
         try:
@@ -833,18 +837,22 @@ class mavserial(mavfile):
             return True
         except Exception:
             return False
-        
+
 
 class mavudp(mavfile):
     '''a UDP mavlink socket'''
-    def __init__(self, device, input=True, broadcast=False, source_system=255, use_native=default_native):
+    def __init__(self, device, input=True, broadcast=False, source_system=255, use_native=default_native, udp_server=False):
         a = device.split(':')
         if len(a) != 2:
             print("UDP ports must be specified as host:port")
             sys.exit(1)
         self.port = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.udp_server = input
+        self.udp_single = input
+        self.udp_server = udp_server
         self.broadcast = False
+        self.addresses = {}
+        self.next_client_timeout_check = 0
+        self.client_timeout_check_interval = 5
         if input:
             self.port.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.port.bind((a[0], int(a[1])))
@@ -868,13 +876,18 @@ class mavudp(mavfile):
             if e.errno in [ errno.EAGAIN, errno.EWOULDBLOCK, errno.ECONNREFUSED ]:
                 return ""
             raise
-        if self.udp_server or self.broadcast:
+        if self.udp_server:
+			self.addresses[new_addr] = time.time()
+        elif self.udp_single or self.broadcast:
             self.last_address = new_addr
         return data
 
     def write(self, buf):
         try:
             if self.udp_server:
+                for addr, last_message in self.addresses:
+                    self.port.sendto(buf, addr)
+            if self.udp_single:
                 if self.last_address:
                     self.port.sendto(buf, self.last_address)
             else:
@@ -895,11 +908,27 @@ class mavudp(mavfile):
                 self.auto_mavlink_version(s)
 
         m = self.mav.parse_char(s)
+
+        # we check for healty recipients of incoming messages from pixhawk
+        # the check happens every 5 seconds, and checks if a client
+        # hasn't sent any messages in the last 10 seconds
+        now = time.time()
+        if self.next_client_timeout_check < now:
+            self._check_client_timeouts(now)
+            self.next_client_timeout_check = now + client_timeout_check_interval
+
         if m is not None:
             self.post_message(m)
 
         return m
 
+    def _check_client_timeouts(now):
+        '''checks for idle clients and removes them'''
+        for addr, last_timestamp in self.addresses:
+            delta = now - last_timestamp
+            if delta > CLIENT_TIMEOUT_US:
+                # idle client we can safely remove from list
+                del self.addresses[addr]
 
 class mavtcp(mavfile):
     '''a TCP mavlink socket'''
@@ -975,8 +1004,8 @@ class mavtcpin(mavfile):
                 (self.port, addr) = self.listen.accept()
             except Exception:
                 return ''
-            self.port.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1) 
-            self.port.setblocking(0) 
+            self.port.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+            self.port.setblocking(0)
             set_close_on_exec(self.port.fileno())
             self.fd = self.port.fileno()
 
@@ -1136,7 +1165,7 @@ class mavchildexec(mavfile):
     def __init__(self, filename, source_system=255, use_native=default_native):
         from subprocess import Popen, PIPE
         import fcntl
-        
+
         self.filename = filename
         self.child = Popen(filename, shell=False, stdout=PIPE, stdin=PIPE, bufsize=0)
         self.fd = self.child.stdout.fileno()
@@ -1183,6 +1212,8 @@ def mavlink_connection(device, baud=115200, source_system=255,
         return mavudp(device[7:], input=False, source_system=source_system, use_native=use_native)
     if device.startswith('udpbcast:'):
         return mavudp(device[9:], input=False, source_system=source_system, use_native=use_native, broadcast=True)
+	if device.startswith('udpserver:'):
+		return mavudp(device[10:], input=True, source_system=source_system, use_native=use_native, udp_server=True)
     # For legacy purposes we accept the following syntax and let the caller to specify direction
     if device.startswith('udp:'):
         return mavudp(device[4:], input=input, source_system=source_system, use_native=use_native)
@@ -1200,7 +1231,7 @@ def mavlink_connection(device, baud=115200, source_system=255,
         if DFReader.DFReader_is_text_log(device):
             m = DFReader.DFReader_text(device, zero_time_base=zero_time_base)
             mavfile_global = m
-            return m    
+            return m
 
     # list of suffixes to prevent setting DOS paths as UDP sockets
     logsuffixes = ['mavlink', 'log', 'raw', 'tlog' ]
@@ -1226,7 +1257,7 @@ class periodic_event(object):
     def force(self):
         '''force immediate triggering'''
         self.last_time = 0
-        
+
     def trigger(self):
         '''return True if we should trigger now'''
         tnow = time.time()
@@ -1304,9 +1335,9 @@ def auto_detect_serial_win32(preferred_list=['*']):
     # now the rest
     ret.extend(others)
     return ret
-        
 
-        
+
+
 
 def auto_detect_serial_unix(preferred_list=['*']):
     '''try to auto-detect serial ports on unix'''
@@ -1331,7 +1362,7 @@ def auto_detect_serial_unix(preferred_list=['*']):
 
 def auto_detect_serial(preferred_list=['*']):
     '''try to auto-detect serial port'''
-    # see if 
+    # see if
     if os.name == 'nt':
         return auto_detect_serial_win32(preferred_list=preferred_list)
     return auto_detect_serial_unix(preferred_list=preferred_list)
@@ -1358,7 +1389,7 @@ def mode_string_v09(msg):
     MAV_NAV_LANDING = 6
     MAV_NAV_LOST = 7
     MAV_NAV_LOITER = 8
-    
+
     cmode = (mode, nav_mode)
     mapping = {
         (MAV_MODE_UNINIT, MAV_NAV_GROUNDED)  : "INITIALISING",
