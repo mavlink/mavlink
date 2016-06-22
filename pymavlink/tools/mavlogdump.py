@@ -32,6 +32,7 @@ parser.add_argument("--nottypes", default=None, help="types of messages not to i
 parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect")
 parser.add_argument("--zero-time-base", action='store_true', help="use Z time base for DF logs")
 parser.add_argument("--no-bad-data", action='store_true', help="Don't output corrupted messages")
+parser.add_argument("--show-source", action='store_true', help="Show source system ID and component ID")
 parser.add_argument("log", metavar="LOG")
 args = parser.parse_args()
 
@@ -202,10 +203,13 @@ while True:
                 csv_out = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
     # Otherwise we output in a standard Python dict-style format
     else:
-        print("%s.%02u: %s" % (
-            time.strftime("%Y-%m-%d %H:%M:%S",
-                          time.localtime(timestamp)),
-                          int(timestamp*100.0)%100, m))
+        if m.get_srcComponent() == 0 and m.get_srcSystem() == 255:
+            s = "%s.%02u: %s" % (time.strftime("%Y-%m-%d %H:%M:%S",
+                                               time.localtime(timestamp)),
+                                 int(timestamp*100.0)%100, m)
+            if args.show_source:
+                s += " srcSystem=%u srcComponent=%u" % (m.get_srcSystem(), m.get_srcComponent())
+            print(s)
 
     # Update our last timestamp value.
     last_timestamp = timestamp
