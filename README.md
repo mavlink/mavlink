@@ -6,7 +6,7 @@
 *   Source: [Mavlink Generator](https://github.com/mavlink/mavlink)
 *   Binaries (always up-to-date from master):
   * [C/C++ header-only library v1](https://github.com/mavlink/c_library_v1)
-  * [C/C++ header-only library v2](https://github.com/mavlink/c_library_v1)
+  * [C/C++ header-only library v2](https://github.com/mavlink/c_library_v2)
 *   Mailing list: [Google Groups](http://groups.google.com/group/mavlink)
 
 MAVLink -- Micro Air Vehicle Message Marshalling Library.
