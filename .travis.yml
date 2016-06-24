@@ -8,6 +8,13 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
+
+sudo: false
+addons:
+  apt:
+    packages:
+      - libgtest-dev
+
 script:
   # NOTE: we must do all testing on the installed python package, not 
   # on the build tree. Otherwise the testing is invalid and may not
@@ -42,8 +49,8 @@ script:
   - cd $TRAVIS_BUILD_DIR
   - pymavlink/tools/quaterniontest.py
 
-  # Text C++11 and C interop: require libgtest-dev and at least g++ 4.8
-  #- make -C pymavlink/generator/CPP11/test/posix run_tests GENDIR=/tmp/v2
+  # Test C++11 and C interop: require libgtest-dev and at least g++ 4.8
+  - make -C pymavlink/generator/CPP11/test/posix run_tests CXX=clang++ GENDIR=/tmp/v2
 
 after_success:
 - ./scripts/travis_update_generated_repos.sh
