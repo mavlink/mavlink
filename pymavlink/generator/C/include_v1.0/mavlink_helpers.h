@@ -72,6 +72,8 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, ui
 						      uint8_t chan, uint8_t length)
 #endif
 {
+	// This is only used for the v2 protocol and we silence it here
+	(void)min_length;
 	// This code part is the same for all messages;
 	msg->magic = MAVLINK_STX;
 	msg->len = length;
