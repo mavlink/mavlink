@@ -62,7 +62,11 @@ def generate_mavlink_h(directory, xml):
 #endif
 
 #ifndef MAVLINK_PACKED
+#ifdef __GNUC__
 #define MAVLINK_PACKED __attribute__((__packed__))
+#else
+#define MAVLINK_PACKED
+#endif
 #endif
 
 #include "version.h"
