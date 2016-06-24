@@ -54,7 +54,7 @@ struct Message {
 	/**
 	 * Get info needed for mavlink_finalize_message_xxx()
 	 */
-	virtual Info&& get_message_info(void) const = 0;
+	virtual Info get_message_info(void) const = 0;
 
 	/**
 	 * Make YAML-string from message content.

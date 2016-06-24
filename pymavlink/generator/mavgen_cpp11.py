@@ -110,9 +110,9 @@ ${{fields:    ${cxx_type} ${name}; /*< ${description} */
             return NAME;
     }
 
-    inline Info&& get_message_info(void) const override
+    inline Info get_message_info(void) const override
     {
-            return std::move(Info{ MSG_ID, LENGTH, MIN_LENGTH, CRC_EXTRA });
+            return { MSG_ID, LENGTH, MIN_LENGTH, CRC_EXTRA };
     }
 
     inline std::string to_yaml(void) const override
