@@ -66,7 +66,6 @@ generate_headers matrixpilot $1
 generate_headers minimal $1
 generate_headers slugs $1
 generate_headers test $1
-generate_headers ualberta $1
 generate_headers ASLUAV $1
 generate_headers common $1
 mkdir -p $CLIBRARY_PATH/message_definitions
