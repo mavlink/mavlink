@@ -30,7 +30,7 @@ function generate_headers() {
 python pymavlink/tools/mavgen.py \
     --output $CLIBRARY_PATH \
     --lang C \
-    --version $2 \
+    --wire-protocol $2.0 \
     message_definitions/v1.0/$1.xml
 }
 
