@@ -30,7 +30,7 @@ function generate_headers() {
 python pymavlink/tools/mavgen.py \
     --output $CLIBRARY_PATH \
     --lang C \
-    --wire-protocol $2.0 \
+    --wire-protocol $2 \
     message_definitions/v1.0/$1.xml
 }
 
@@ -38,7 +38,7 @@ python pymavlink/tools/mavgen.py \
 MAVLINK_PATH=$PWD
 MAVLINK_GIT_REMOTENAME=upstream
 MAVLINK_GIT_BRANCHNAME=master
-CLIBRARY_PATH=$MAVLINK_PATH/include/mavlink/v$1.0/c_library
+CLIBRARY_PATH=$MAVLINK_PATH/include/mavlink/v$1/c_library
 CLIBRARY_GIT_REMOTENAME=origin
 CLIBRARY_GIT_BRANCHNAME=master
 
