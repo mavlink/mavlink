@@ -18,7 +18,7 @@
 # cd include/mavlink/v1.0
 # git clone git@github.com:mavlink/c_library_v1.git
 # cd ~/src/mavlink
-# ./scripts/update_c_library.sh
+# ./scripts/update_c_library.sh 1
 #
 # A one-liner for the TMP directory (e.g. for crontab)
 # cd /tmp; git clone git@github.com:mavlink/mavlink.git &> /dev/null; \
