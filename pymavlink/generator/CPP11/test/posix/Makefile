@@ -1,18 +1,24 @@
 
 CXX ?= g++
-CXXFLAGS ?= -std=c++11 -g -O0 -Wall -pthread -I/usr/src/gtest
+CXXFLAGS ?= -std=c++11 -g -O0 -Wall -pthread
 GENDIR ?= /tmp/mavlink
 GTESTSRC ?= /usr/src/gtest/src/gtest-all.cc
 
-TARGETS = mavtest_common mavtest_ardupilotmega
+DIALECTS := $(notdir $(shell find $(GENDIR) -mindepth 1 -maxdepth 1 -type d))
+TARGETS := $(foreach d,$(DIALECTS),mavtest_$(d))
 
-all: $(TARGETS)
+all: run_tests
 
-mavtest_common: mtest.cpp $(GENDIR)/common/common.hpp
-	$(CXX) $(CXXFLAGS) -I $(GENDIR)/common -o $@ $< $(GTESTSRC)
+gtest-all.o: $(GTESTSRC)
+	$(CXX) $(CXXFLAGS) -I"$(dir $(GTESTSRC))../" -c -o $@ $<
 
-mavtest_ardupilotmega: mtest.cpp $(GENDIR)/ardupilotmega/ardupilotmega.hpp
-	$(CXX) $(CXXFLAGS) -I $(GENDIR)/ardupilotmega -o $@ $< $(GTESTSRC)
+mavtest_%: mtest.cpp gtest-all.o $(foreach d,$(DIALECTS),$(GENDIR)/$(d)/$(d).hpp)
+	$(CXX) $(CXXFLAGS) -I $(GENDIR)/$* -o $@ $< gtest-all.o
+
+run_tests: $(TARGETS)
+	for f in $(TARGETS); do \
+		./$$f; \
+	done
 
 clean:
-	rm -f $(TARGETS)
+	rm -f gtest-all.o $(TARGETS)
