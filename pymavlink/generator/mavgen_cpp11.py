@@ -345,8 +345,8 @@ def generate_one(basename, xml):
                 else:
                     f.to_yaml_code = """ss << "  %s: [" << to_string(%s) << "]" << std::endl;""" % (f.name, f.name)
 
-                    f.cxx_test_value = '{ %s }' % ', '.join([str(v) for v in f.test_value])
-                    f.c_test_value = f.cxx_test_value
+                    f.cxx_test_value = '{{ %s }}' % ', '.join([str(v) for v in f.test_value])
+                    f.c_test_value = '{ %s }' % ', '.join([str(v) for v in f.test_value])
             else:
                 f.cxx_type = f.type
                 f.to_yaml_code = """ss << "  %s: " << %s%s << std::endl;""" % (f.name, to_yaml_cast, f.name)
