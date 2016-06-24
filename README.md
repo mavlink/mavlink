@@ -5,7 +5,8 @@
 *   Official Website: http://mavlink.org
 *   Source: [Mavlink Generator](https://github.com/mavlink/mavlink)
 *   Binaries (always up-to-date from master):
-  * [C/C++ header-only library](https://github.com/mavlink/c_library)
+  * [C/C++ header-only library v1](https://github.com/mavlink/c_library_v1)
+  * [C/C++ header-only library v2](https://github.com/mavlink/c_library_v2)
 *   Mailing list: [Google Groups](http://groups.google.com/group/mavlink)
 
 MAVLink -- Micro Air Vehicle Message Marshalling Library.
@@ -15,8 +16,6 @@ This is a library for lightweight communication between Micro Air Vehicles (swar
 The MAVLink protocol performs byte-level serialization and so is appropriate for use with any type of radio modem.
 
 This repository is largely Python scripts that convert XML files into language-specific libraries. There are additional Python scripts providing examples and utilities for working with MAVLink data. These scripts, as well as the generated Python code for MAVLink dialects, require Python 2.7 or greater.
-
-Note that there are two incompatible versions of the MAVLink protocol: v0.9 and v1.0. Most programs, including [QGroundControl](https://github.com/mavlink/qgroundcontrol), have switched over to v1.0. The v0.9 protocol is **DEPRECATED** and should only be used to maintain backwards compatibility where necessary.
 
 ### Requirements ###
   * Python 2.7+
@@ -91,7 +90,7 @@ Running these scripts can be done by running Python with the '-m' switch, which 
 
 ### License ###
 
-MAVLink is licensed under the terms of the Lesser General Public License (version 3) of the Free Software Foundation (LGPLv3). The C-language version of MAVLink is a header-only library, and as such compiling an application with it is considered "using the library", not a derived work. MAVLink can therefore be used without limits in any closed-source application without publishing the source code of the closed-source application.
+MAVLink is licensed under the terms of the Lesser General Public License (version 3) of the Free Software Foundation (LGPLv3). The C-language version of MAVLink is a header-only library which is generated as MIT-licensed code. MAVLink can therefore be used without limits in any closed-source application without publishing the source code of the closed-source application.
 
 See the *COPYING* file for more info.
 
