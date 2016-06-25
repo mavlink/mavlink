@@ -91,11 +91,12 @@ def PrintSummary(logfile):
 
             # Track the distance travelled, being sure to skip GPS fixes
             # that are bad (at lat/lon of 0,0)
-            if last_gps_msg is not None:
-                total_dist += distance_two(last_gps_msg, m)
+            if last_gps_msg is None or m.time_usec > last_gps_msg.time_usec or m.time_usec+30e6 < last_gps_msg.time_usec:
+                if last_gps_msg is not None:
+                    total_dist += distance_two(last_gps_msg, m)
 
-            # Save this GPS message to do simple distance calculations with
-            last_gps_msg = m
+                # Save this GPS message to do simple distance calculations with
+                last_gps_msg = m
 
         elif m.get_type() == 'HEARTBEAT':
             if m.type == mavutil.mavlink.MAV_TYPE_GCS:

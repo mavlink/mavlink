@@ -29,6 +29,7 @@ def flight_time(logfile):
     total_dist = 0.0
     t = None
     last_msg = None
+    last_time_usec = None
 
     while True:
         m = mlog.recv_match(type=['GPS','GPS_RAW_INT'], condition=args.condition)
@@ -41,9 +42,11 @@ def flight_time(logfile):
         if m.get_type() == 'GPS_RAW_INT':
             groundspeed = m.vel*0.01
             status = m.fix_type
+            time_usec = m.time_usec
         else:
             groundspeed = m.Spd
             status = m.Status
+            time_usec = m.TimeUS
         if status < 3:
             continue
         t = time.localtime(m._timestamp)
@@ -57,9 +60,11 @@ def flight_time(logfile):
             in_air = False
             total_time += time.mktime(t) - start_time
 
-        if last_msg is not None:
-            total_dist += distance_two(last_msg, m)
-        last_msg = m
+        if last_msg is None or time_usec > last_time_usec or time_usec+30e6 < last_time_usec:
+            if last_msg is not None:
+                total_dist += distance_two(last_msg, m)
+            last_msg = m
+            last_time_usec = time_usec
     return (total_time, total_dist)
 
 total_time = 0.0
