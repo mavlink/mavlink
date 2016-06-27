@@ -506,6 +506,8 @@ class mavfile(object):
             map = mode_mapping_rover
         if mav_type == mavlink.MAV_TYPE_ANTENNA_TRACKER:
             map = mode_mapping_tracker
+        if mav_type == mavlink.MAV_TYPE_SUBMARINE:
+            map = mode_mapping_acm
         if map is None:
             return None
         inv_map = dict((a, b) for (b, a) in list(map.items()))
@@ -1468,6 +1470,8 @@ def mode_mapping_byname(mav_type):
         map = mode_mapping_rover
     if mav_type == mavlink.MAV_TYPE_ANTENNA_TRACKER:
         map = mode_mapping_tracker
+    if mav_type == mavlink.MAV_TYPE_SUBMARINE:
+        map = mode_mapping_acm
     if map is None:
         return None
     inv_map = dict((a, b) for (b, a) in map.items())
@@ -1489,6 +1493,8 @@ def mode_mapping_bynumber(mav_type):
         map = mode_mapping_rover
     if mav_type == mavlink.MAV_TYPE_ANTENNA_TRACKER:
         map = mode_mapping_tracker
+    if mav_type == mavlink.MAV_TYPE_SUBMARINE:
+        map = mode_mapping_acm
     if map is None:
         return None
     return map
@@ -1513,6 +1519,9 @@ def mode_string_v10(msg):
     if msg.type == mavlink.MAV_TYPE_ANTENNA_TRACKER:
         if msg.custom_mode in mode_mapping_tracker:
             return mode_mapping_tracker[msg.custom_mode]
+    if msg.type == mavlink.MAV_TYPE_SUBMARINE:
+        if msg.custom_mode in mode_mapping_acm:
+            return mode_mapping_acm[msg.custom_mode]
     return "Mode(%u)" % msg.custom_mode
 
 def mode_string_apm(mode_number):
