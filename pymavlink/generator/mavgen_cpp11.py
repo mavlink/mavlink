@@ -336,6 +336,10 @@ def generate_one(basename, xml):
             if f.array_length != 0:
                 f.cxx_type = 'std::array<%s, %s>' % (f.type, f.array_length)
 
+                # XXX sometime test_value is > 127 for int8_t, monkeypatch
+                if f.type == 'int8_t':
+                    f.test_value = [v - 128 if v > 127 else v for v in f.test_value]
+
                 if f.type == 'char':
                     f.to_yaml_code = """ss << "  %s: \\"" << to_string(%s) << "\\"" << std::endl;""" % (f.name, f.name)
 
