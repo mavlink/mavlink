@@ -20,5 +20,11 @@ run_tests: $(TARGETS)
 		./$$f; \
 	done
 
+gen: $(wildcard ../../../../../message_definitions/v1.0/*.xml)
+	for d in $^; do	\
+		../../../../tools/mavgen.py -o $(GENDIR) --wire-protocol 2.0 --lang C $$d;	\
+		../../../../tools/mavgen.py -o $(GENDIR) --wire-protocol 2.0 --lang C++11 $$d;	\
+	done
+
 clean:
 	rm -f gtest-all.o $(TARGETS)
