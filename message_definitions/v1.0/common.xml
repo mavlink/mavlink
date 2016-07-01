@@ -2665,8 +2665,8 @@
                <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
                <field type="uint8_t" name="target_system">System ID</field>
                <field type="uint8_t" name="target_component">Component ID</field>
-               <field type="uint8_t" name="type_mask">Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 6: reserved, bit 7: throttle, bit 8: attitude</field>
-               <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+               <field type="uint8_t" name="type_mask">Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate, bit 4: unused, bit5: unused, bit 6: reserved, bit 7: throttle, bit 8: attitude</field>
+               <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0). You can not set an attitude and a rate at the same time so the rate becomes a flag for setting a partial quaternion. For example if setting only attitude.roll the type_mask should be 0b01111110 but data is only available in the q.roll field and you ignore body_roll_rate field</field>
                <field type="float" name="body_roll_rate">Body roll rate in radians per second</field>
                <field type="float" name="body_pitch_rate">Body roll rate in radians per second</field>
                <field type="float" name="body_yaw_rate">Body roll rate in radians per second</field>
