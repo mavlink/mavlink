@@ -367,8 +367,7 @@ def generate_one(basename, xml):
                 if f.type == 'char':
                     f.to_yaml_code = """ss << "  %s: \\"" << to_string(%s) << "\\"" << std::endl;""" % (f.name, f.name)
 
-                    # XXX find how to make std::array<> from const char[]
-                    f.cxx_test_value = 'make_str_array(packet_in.%s, "%s")' % (f.name, f.test_value)
+                    f.cxx_test_value = 'to_char_array("%s")' % (f.test_value)
                     f.c_test_value = '"%s"' % f.test_value
                 else:
                     f.to_yaml_code = """ss << "  %s: [" << to_string(%s) << "]" << std::endl;""" % (f.name, f.name)

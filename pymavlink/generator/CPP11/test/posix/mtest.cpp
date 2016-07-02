@@ -13,19 +13,19 @@
 #include <iostream>
 #include <array>
 
-// XXX TODO: find better way to make `std::array<char, N>` from `const char[N]`
-template<size_t N>
-std::array<char, N>&& make_str_array(std::array<char, N> &unused, const char str[N])
-{
-	std::array<char, N> a;
-	std::copy(str, str+N, a.begin());
-	return std::move(a);
-}
-
 //#define PRINT_MSG(m)	print_msg(m)
 namespace mavlink {
 struct __mavlink_message;
 void print_msg(struct __mavlink_message &m);
+}
+
+// Since C++11 do not have things like std::to_array() which needs C++14 features
+template<size_t _N>
+std::array<char, _N> to_char_array(const char (&a)[_N])
+{
+	std::array<char, _N> out{};
+	std::copy(a, a+_N, out.begin());
+	return out;
 }
 
 #define TEST_INTEROP

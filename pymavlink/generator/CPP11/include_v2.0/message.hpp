@@ -111,4 +111,23 @@ std::string to_string(const std::array<_T, _N> &a)
 	return ss.str();
 }
 
+/**
+ * Set std::string value to std::array<char, N> (may be not null-terminated)
+ */
+template<size_t _N>
+void set_string(std::array<char, _N> &a, const std::string &s)
+{
+	strncpy(a.data(), s.c_str(), a.size());
+}
+
+/**
+ * Set std::string value to std::array<char, N> (always null-terminated)
+ */
+template<size_t _N>
+void set_string_z(std::array<char, _N> &a, const std::string &s)
+{
+	strncpy(a.data(), s.c_str(), a.size() - 1);
+	a[a.size() - 1] = '\0';
+}
+
 } // namespace mavlink
