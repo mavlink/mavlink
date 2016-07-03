@@ -12,6 +12,7 @@ Released under GNU GPL version 3 or later
 import sys, textwrap, os, time
 from . import mavparse, mavtemplate
 import collections
+import struct
 
 t = mavtemplate.MAVTemplate()
 
@@ -301,6 +302,11 @@ def enum_remove_prefix(prefix, s):
     return '_'.join(sl)
 
 
+def fix_int8_t(v):
+    '''convert unsigned char value to signed char'''
+    return struct.unpack('b', struct.pack('B', v))[0]
+
+
 def generate_one(basename, xml):
     '''generate headers for one XML file'''
 
@@ -362,7 +368,7 @@ def generate_one(basename, xml):
 
                 # XXX sometime test_value is > 127 for int8_t, monkeypatch
                 if f.type == 'int8_t':
-                    f.test_value = [v - 128 if v > 127 else v for v in f.test_value]
+                    f.test_value = [fix_int8_t(v) for v in f.test_value]
 
                 if f.type == 'char':
                     f.to_yaml_code = """ss << "  %s: \\"" << to_string(%s) << "\\"" << std::endl;""" % (f.name, f.name)
@@ -379,8 +385,8 @@ def generate_one(basename, xml):
                 f.to_yaml_code = """ss << "  %s: " << %s%s << std::endl;""" % (f.name, to_yaml_cast, f.name)
 
                 # XXX sometime test_value is > 127 for int8_t, monkeypatch
-                if f.type == 'int8_t' and f.test_value > 127:
-                    f.test_value -= 128;
+                if f.type == 'int8_t':
+                    f.test_value = fix_int8_t(f.test_value);
 
                 if f.type == 'char':
                     f.cxx_test_value = "'%s'" % f.test_value
