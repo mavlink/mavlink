@@ -17,6 +17,15 @@
 #define  _MAVLINK_CONVERSIONS_H_	// do not include mavlink_conversions.h
 #define MAVLINK_GET_MSG_ENTRY		// user should provide mavlink_get_msg_entry()
 namespace mavlink {
+/**
+ * Return message entry data for msgid.
+ *
+ * @note user of MAVLink library should provide
+ *       implementation for this function.
+ *       Use mavlink::<dialect-name>::MESSAGE_ENTRIES array to make hash map.
+ *
+ * @returns nullptr  if message is unknown
+ */
 const mavlink_msg_entry_t *mavlink_get_msg_entry(uint32_t msgid);
 } // namespace mavlink
 
@@ -97,15 +106,15 @@ std::string to_string(const std::array<_T, _N> &a)
 	bool first = true;
 
 	for (auto const &v : a) {
-		if (first)
+		if (first) {
 			first = false;
-		else
+		} else {
 			ss << ", ";
+		}
 
-		//if (sizeof(_T) == 1)
-			ss << +v;
-		//else
-		//	ss << v;
+		// +v treated as 0+v, it's safe for all types,
+		// but force int8_t/uint8_t to be print as number.
+		ss << +v;
 	}
 
 	return ss.str();
@@ -113,6 +122,9 @@ std::string to_string(const std::array<_T, _N> &a)
 
 /**
  * Set std::string value to std::array<char, N> (may be not null-terminated)
+ *
+ * @param[out] a
+ * @param[in]  s
  */
 template<size_t _N>
 void set_string(std::array<char, _N> &a, const std::string &s)
@@ -122,6 +134,9 @@ void set_string(std::array<char, _N> &a, const std::string &s)
 
 /**
  * Set std::string value to std::array<char, N> (always null-terminated)
+ *
+ * @param[out] a
+ * @param[in]  s
  */
 template<size_t _N>
 void set_string_z(std::array<char, _N> &a, const std::string &s)
