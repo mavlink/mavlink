@@ -914,6 +914,7 @@ class mavtcp(mavfile):
             retries -= 1
             if retries <= 0:
                 self.port.connect(self.destination_addr)
+                break
             else:
                 try:
                     self.port.connect(self.destination_addr)
