@@ -58,7 +58,7 @@ namespace MavLink
         {
             var arr = new UInt32[size];
             for (int i = 0; i < size; i++)
-                arr[i] = bitConverter.ToUInt16(source, sourceOffset + (i * sizeof(UInt32)));
+                arr[i] = bitConverter.ToUInt32(source, sourceOffset + (i * sizeof(UInt32)));
             return arr;
         }
 
@@ -66,7 +66,7 @@ namespace MavLink
         {
             var arr = new Int32[size];
             for (int i = 0; i < size; i++)
-                arr[i] = bitConverter.ToInt16(source, sourceOffset + (i * sizeof(Int32)));
+                arr[i] = bitConverter.ToInt32(source, sourceOffset + (i * sizeof(Int32)));
             return arr;
         }
 
@@ -74,7 +74,7 @@ namespace MavLink
         {
             var arr = new UInt64[size];
             for (int i = 0; i < size; i++)
-                arr[i] = bitConverter.ToUInt16(source, sourceOffset + (i * sizeof(UInt64)));
+                arr[i] = bitConverter.ToUInt64(source, sourceOffset + (i * sizeof(UInt64)));
             return arr;
         }
 
@@ -82,7 +82,7 @@ namespace MavLink
         {
             var arr = new Int64[size];
             for (int i = 0; i < size; i++)
-                arr[i] = bitConverter.ToInt16(source, sourceOffset + (i * sizeof(Int64)));
+                arr[i] = bitConverter.ToInt64(source, sourceOffset + (i * sizeof(Int64)));
             return arr;
         }
 
@@ -90,7 +90,7 @@ namespace MavLink
         {
             var arr = new Single[size];
             for (int i = 0; i < size; i++)
-                arr[i] = bitConverter.ToUInt16(source, sourceOffset + (i * sizeof(Single)));
+                arr[i] = bitConverter.ToSingle(source, sourceOffset + (i * sizeof(Single)));
             return arr;
         }
 
@@ -98,7 +98,7 @@ namespace MavLink
         {
             var arr = new Double[size];
             for (int i = 0; i < size; i++)
-                arr[i] = bitConverter.ToInt16(source, sourceOffset + (i * sizeof(Double)));
+                arr[i] = bitConverter.ToDouble(source, sourceOffset + (i * sizeof(Double)));
             return arr;
         }
 
