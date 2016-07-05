@@ -1000,6 +1000,16 @@
                     <param index="6">Reserved</param>
                     <param index="7">Reserved</param>
                </entry>
+                <entry value="198" name="MAV_CMD_DO_ROTATE_LANDING_DIR">
+                    <description>Mission command to rotate landing sequence to optimize into-wind landing (and reduce tail-wind) when executing MAV_CMD_NAV_LAND.</description>
+                    <param index="1">Action - see enum MAV_ROTATE_LANDING_DIR_ACTION</param>
+                    <param index="2">Type - see enum MAV_ROTATE_LANDING_DIR_TYPE</param>
+                    <param index="3">Offset - axis offset to rotate around LAND waypoint in meters. Can be positive or negative</param>
+                    <param index="4">Empty</param>
+                    <param index="5">Empty</param>
+                    <param index="6">Empty</param>
+                    <param index="7">Empty</param>
+                </entry>
                <entry value="200" name="MAV_CMD_DO_CONTROL_VIDEO">
                     <description>Control onboard camera system.</description>
                     <param index="1">Camera ID (-1 for all)</param>
@@ -2014,6 +2024,45 @@
               <entry value="2" name="MAV_LANDED_STATE_IN_AIR">
                   <description>MAV is in air</description>
               </entry>
+          </enum>
+          <enum name="MAV_ROTATE_LANDING_DIR_ACTION">
+               <description>Action to perform when rotating a landing using MAV_CMD_DO_ROTATE_LANDING_DIR for an automatic into-wind land decision</description>
+               <entry value="0" name="MAV_ROTATE_LANDING_DIR_ACTION_AFTER_HERE">
+                    <description>Rotate all WAYPOINTs between here and LAND</description>
+               </entry>
+               <entry value="1" name="MAV_ROTATE_LANDING_DIR_ACTION_AFTER_DO_LAND_START">
+                    <description>Rotate all WAYPOINTs between DO_LAND_START and LAND</description>
+               </entry>
+               <entry value="2" name="MAV_ROTATE_LANDING_DIR_ACTION_APPROACH_POINT_ONLY">
+                    <description>Rotate the single WAYPOINT before LAND</description>
+               </entry>
+          </enum>
+          <enum name="MAV_ROTATE_LANDING_DIR_TYPE">
+               <description>Type of action to perform when rotating a landing using MAV_CMD_DO_ROTATE_LANDING_DIR</description>
+               <entry value="0" name="MAV_ROTATE_LANDING_DIR_TYPE_180_DEG">
+                    <description>Rotate the mission 0 or 180 degs only</description>
+               </entry>
+               <entry value="1" name="MAV_ROTATE_LANDING_DIR_TYPE_UP_TO_10_DEG">
+                    <description>Rotate the mission up to +- 10 degrees to reduce tail-wind</description>
+               </entry>
+               <entry value="2" name="MAV_ROTATE_LANDING_DIR_TYPE_UP_TO_30_DEG">
+                    <description>Rotate the mission up to +- 30 degrees to reduce tail-wind</description>
+               </entry>
+               <entry value="3" name="MAV_ROTATE_LANDING_DIR_TYPE_UP_TO_45_DEG">
+                    <description>Rotate the mission up to +- 45 degrees to reduce tail-wind</description>
+               </entry>
+               <entry value="4" name="MAV_ROTATE_LANDING_DIR_TYPE_UP_TO_90_DEG">
+                    <description>Rotate the mission up to +- 90 degrees only to reduce tail-wind</description>
+               </entry>
+               <entry value="5" name="MAV_ROTATE_LANDING_DIR_TYPE_90_DEG_ONLY">
+                    <description>Rotate the mission exactly 0 or +- 90 degrees only to reduce tail-wind</description>
+               </entry>
+               <entry value="6" name="MAV_ROTATE_LANDING_DIR_TYPE_CROSS">
+                    <description>Rotate the mission 0, 90, 180 or 270 degrees to reduce tail-wind</description>
+               </entry>
+               <entry value="7" name="MAV_ROTATE_LANDING_DIR_TYPE_MATCH_WIND">
+                    <description>Rotate the mission to any angle to match the wind giving a perfect into-wind landing</description>
+               </entry>
           </enum>
           <enum name="ADSB_ALTITUDE_TYPE">
               <description>Enumeration of the ADSB altimeter types</description>
