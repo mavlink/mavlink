@@ -254,23 +254,7 @@ namespace MavLink
 def generate(basename, xml):
     '''generate complete MAVLink CSharp implemenation'''
     structsfilename = basename + '.generated.cs'
-
-     # Some build commands depend on the platform - eg MS .NET Windows Vs Mono on Linux
-    if platform.system() == "Windows":
-        winpath=os.environ['WinDir']
-        cscCommand = winpath + "\\Microsoft.NET\\Framework\\v4.0.30319\\csc.exe"
-        
-        if (os.path.exists(cscCommand)==False):
-            print("\nError: CS compiler not found. .Net Assembly generation skipped")
-            return   
-    else:
-        print("Error:.Net Assembly generation not yet supported on non Windows platforms")
-        return
-        cscCommand = "csc"
-    
-    
-    
-    
+   
     msgs = []
     enums = []
     filelist = []
@@ -323,7 +307,18 @@ using System.Reflection;
     
     outf.close()
     
-   
+    # Some build commands depend on the platform - eg MS .NET Windows Vs Mono on Linux
+    if platform.system() == "Windows":
+        winpath=os.environ['WinDir']
+        cscCommand = winpath + "\\Microsoft.NET\\Framework\\v4.0.30319\\csc.exe"
+        
+        if (os.path.exists(cscCommand)==False):
+            print("\nError: CS compiler not found. .Net Assembly generation skipped")
+            return   
+    else:
+        print("Error:.Net Assembly generation not yet supported on non Windows platforms")
+        return
+        cscCommand = "csc"
 
     print("Compiling Assembly for .Net Framework 4.0")
     
@@ -335,7 +330,6 @@ using System.Reflection;
     
     compileCommand = "%s %s" % (cscCommand, "/target:library /debug /out:" + outputLibraryPath)
     compileCommand = compileCommand + " /doc:" + os.path.normpath(dir + "/mavlink.xml")  
-    
     
     for csFile in generatedCsFiles + includedCsFiles:
         compileCommand = compileCommand + " " + os.path.normpath(csFile)
