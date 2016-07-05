@@ -138,7 +138,7 @@ def generate_Deserialization(outf, messages):
         for f in m.ordered_fields:
             if (f.array_length):
                 outf.write("\t\t\t\t%s =  ByteArrayUtil.%s(bytes, offset + %s, %s),\n" % (mapFieldName.get(f.name, f.name), mapType[f.type][0], offset, f.array_length))
-                offset += f.array_length
+                offset += (f.array_length * mapType[f.type][1])
                 continue
           
             # mapping 'char' to byte here since there is no real equivalent in the CLR
