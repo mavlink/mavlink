@@ -37,7 +37,7 @@ python pymavlink/tools/mavgen.py \
 MAVLINK_PATH=$PWD
 MAVLINK_GIT_REMOTENAME=upstream
 MAVLINK_GIT_BRANCHNAME=master
-CLIBRARY_PATH=~/mavlink_c_library
+CLIBRARY_PATH=$MAVLINK_PATH/include/mavlink/v1.0/c_library
 CLIBRARY_GIT_REMOTENAME=origin
 CLIBRARY_GIT_BRANCHNAME=master
 
