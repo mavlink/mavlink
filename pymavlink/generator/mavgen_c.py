@@ -61,10 +61,6 @@ def generate_mavlink_h(directory, xml):
 #define MAVLINK_COMMAND_24BIT ${command_24bit_define}
 #endif
 
-#ifndef MAVLINK_PACKED
-#define MAVLINK_PACKED __attribute__((__packed__))
-#endif
-
 #include "version.h"
 #include "${basename}.h"
 
@@ -163,11 +159,11 @@ def generate_message_h(directory, m):
 
 #define MAVLINK_MSG_ID_${name} ${id}
 
-typedef struct MAVLINK_PACKED __mavlink_${name_lower}_t
-{
+MAVPACKED(
+typedef struct __mavlink_${name_lower}_t {
 ${{ordered_fields: ${type} ${name}${array_suffix}; /*< ${description}*/
 }}
-} mavlink_${name_lower}_t;
+}) mavlink_${name_lower}_t;
 
 #define MAVLINK_MSG_ID_${name}_LEN ${wire_length}
 #define MAVLINK_MSG_ID_${name}_MIN_LEN ${wire_min_length}

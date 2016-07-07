@@ -66,7 +66,7 @@
               <field type="float" name="uElev"> </field>
               <field type="float" name="uThrot"> </field>
               <field type="float" name="uThrot2"> </field>
-              <field type="float" name="aZ"> </field>
+              <field type="float" name="nZ"> </field>
               <field type="float" name="AirspeedRef">Airspeed reference [m/s]</field>
               <field type="uint8_t" name="SpoilersEngaged"> </field>
               <field type="float" name="YawAngle">Yaw angle [deg]</field>
@@ -148,7 +148,6 @@
               <description>Fixed-wing soaring (i.e. thermal seeking) data</description>
               <field type="uint64_t" name="timestamp">Timestamp [ms]</field>
               <field type="uint64_t" name="timestampModeChanged">Timestamp since last mode change[ms]</field>
-              <field type="float" name="CurrentUpdraftSpeed">Updraft speed at current/local airplane position [m/s]</field>
               <field type="float" name="xW">Thermal core updraft strength [m/s]</field>
               <field type="float" name="xR">Thermal radius [m]</field>
               <field type="float" name="xLat">Thermal center latitude [deg]</field>
@@ -158,6 +157,18 @@
               <field type="float" name="VarLat">Variance Lat</field>
               <field type="float" name="VarLon">Variance Lon </field>
               <field type="float" name="LoiterRadius">Suggested loiter radius [m]</field>
+              <field type="float" name="LoiterDirection">Suggested loiter direction</field>
+              <field type="float" name="DistToSoarPoint">Distance to soar point [m]</field>
+              <field type="float" name="vSinkExp">Expected sink rate at current airspeed, roll and throttle [m/s]</field>
+              <field type="float" name="z1_LocalUpdraftSpeed">Measurement / updraft speed at current/local airplane position [m/s]</field>
+              <field type="float" name="z2_DeltaRoll">Measurement / roll angle tracking error [deg]</field>
+              <field type="float" name="z1_exp">Expected measurement 1</field>
+              <field type="float" name="z2_exp">Expected measurement 2</field>
+              <field type="float" name="ThermalGSNorth">Thermal drift (from estimator prediction step only) [m/s]</field>
+              <field type="float" name="ThermalGSEast">Thermal drift (from estimator prediction step only) [m/s]</field>
+              <field type="float" name="TSE_dot"> Total specific energy change (filtered) [m/s]</field>
+              <field type="float" name="DebugVar1"> Debug variable 1</field>
+              <field type="float" name="DebugVar2"> Debug variable 2</field>
               <field type="uint8_t" name="ControlMode">Control Mode [-]</field>
               <field type="uint8_t" name="valid">Data valid [-]</field>
            </message>
@@ -171,6 +182,21 @@
               <field type="uint8_t" name="recording_nodes_count">Number of recording nodes</field>
               <field type="uint8_t" name="cpu_temp">Temperature of sensorpod CPU in [deg C]</field>
               <field type="uint16_t" name="free_space">Free space available in recordings directory in [Gb] * 1e2</field>
+           </message>
+           <message id="212" name="SENS_POWER_BOARD">
+              <description>Monitoring of power board status</description>
+              <field type="uint64_t" name="timestamp">Timestamp</field>
+              <field type="uint8_t" name="pwr_brd_status">Power board status register</field>
+              <field type="uint8_t" name="pwr_brd_led_status">Power board leds status</field>
+              <field type="float" name="pwr_brd_system_volt">Power board system voltage</field>
+              <field type="float" name="pwr_brd_servo_volt">Power board servo voltage</field>
+              <field type="float" name="pwr_brd_mot_l_amp">Power board left motor current sensor</field>
+              <field type="float" name="pwr_brd_mot_r_amp">Power board right motor current sensor</field>
+              <field type="float" name="pwr_brd_servo_1_amp">Power board servo1 current sensor</field>
+              <field type="float" name="pwr_brd_servo_2_amp">Power board servo1 current sensor</field>
+              <field type="float" name="pwr_brd_servo_3_amp">Power board servo1 current sensor</field>
+              <field type="float" name="pwr_brd_servo_4_amp">Power board servo1 current sensor</field>
+              <field type="float" name="pwr_brd_aux_amp">Power board aux current sensor</field>
            </message>
      </messages>
 </mavlink>

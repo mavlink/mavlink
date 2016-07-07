@@ -33,6 +33,8 @@ parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect"
 parser.add_argument("--zero-time-base", action='store_true', help="use Z time base for DF logs")
 parser.add_argument("--no-bad-data", action='store_true', help="Don't output corrupted messages")
 parser.add_argument("--show-source", action='store_true', help="Show source system ID and component ID")
+parser.add_argument("--source-system", type=int, default=None, help="filter by source system ID")
+parser.add_argument("--source-component", type=int, default=None, help="filter by source component ID")
 parser.add_argument("log", metavar="LOG")
 args = parser.parse_args()
 
@@ -62,7 +64,7 @@ if nottypes is not None:
 
 ext = os.path.splitext(filename)[1]
 isbin = ext in ['.bin', '.BIN']
-islog = ext in ['.log', '.LOG','.tlog','.TLOG']
+islog = ext in ['.log', '.LOG'] # NOTE: "islog" does not mean a tlog
 
 if args.csv_sep == "tab":
     args.csv_sep = "\t"
@@ -127,7 +129,12 @@ while True:
             timestamp = getattr(m, '_timestamp', None)
             output.write(struct.pack('>Q', timestamp*1.0e6) + m.get_msgbuf())
             continue
+
     if not mavutil.evaluate_condition(args.condition, mlog.messages):
+        continue
+    if args.source_system is not None and args.source_system != m.get_srcSystem():
+        continue
+    if args.source_component is not None and args.source_component != m.get_srcComponent():
         continue
 
     if types is not None and m.get_type() != 'BAD_DATA' and not match_type(m.get_type(), types):
@@ -203,13 +210,12 @@ while True:
                 csv_out = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
     # Otherwise we output in a standard Python dict-style format
     else:
-        if m.get_srcComponent() == 0 and m.get_srcSystem() == 255:
-            s = "%s.%02u: %s" % (time.strftime("%Y-%m-%d %H:%M:%S",
-                                               time.localtime(timestamp)),
-                                 int(timestamp*100.0)%100, m)
-            if args.show_source:
-                s += " srcSystem=%u srcComponent=%u" % (m.get_srcSystem(), m.get_srcComponent())
-            print(s)
+        s = "%s.%02u: %s" % (time.strftime("%Y-%m-%d %H:%M:%S",
+                                           time.localtime(timestamp)),
+                             int(timestamp*100.0)%100, m)
+        if args.show_source:
+            s += " srcSystem=%u srcComponent=%u" % (m.get_srcSystem(), m.get_srcComponent())
+        print(s)
 
     # Update our last timestamp value.
     last_timestamp = timestamp
