@@ -73,7 +73,7 @@ def generate_enums(outf, enums):
     for e in enums:
             #if len(e.description) > 0:
         generate_xmlDocSummary(outf, e.description, 1)
-        outf.write("\tpublic enum %s : ushort\n\t{\n" % e.name)
+        outf.write("\tpublic enum %s : uint\n\t{\n" % e.name)
 
         for entry in e.entry:
             if len(entry.description) > 0:
