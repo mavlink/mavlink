@@ -1110,6 +1110,17 @@
                    <param index="7">Empty</param>
                </entry>
 
+               <entry name="MAV_CMD_DO_MOTOR_TEST" value="209">
+                   <description>Mission command to perform motor test</description>
+                   <param index="1">motor sequence number (a number from 1 to max number of motors on the vehicle)</param>
+                   <param index="2">throttle type (0=throttle percentage, 1=PWM, 2=pilot throttle channel pass-through. See MOTOR_TEST_THROTTLE_TYPE enum)</param>
+                   <param index="3">throttle</param>
+                   <param index="4">timeout (in seconds)</param>
+                   <param index="5">Empty</param>
+                   <param index="6">Empty</param>
+                   <param index="7">Empty</param>
+               </entry>
+
                <entry name="MAV_CMD_DO_INVERTED_FLIGHT" value="210">
                    <description>Change to/from inverted flight</description>
                    <param index="1">inverted (0=normal, 1=inverted)</param>
@@ -2118,6 +2129,21 @@
 
               <entry name="ESTIMATOR_GPS_GLITCH" value="1024">
                   <description>True if the EKF has detected a GPS glitch</description>
+              </entry>
+          </enum>
+
+          <!-- motor test type enum -->
+          <enum name="MOTOR_TEST_THROTTLE_TYPE">
+              <entry name="MOTOR_TEST_THROTTLE_PERCENT" value="0">
+                  <description>throttle as a percentage from 0 ~ 100</description>
+              </entry>
+
+              <entry name="MOTOR_TEST_THROTTLE_PWM" value="1">
+                  <description>throttle as an absolute PWM value (normally in range of 1000~2000)</description>
+              </entry>
+
+              <entry name="MOTOR_TEST_THROTTLE_PILOT" value="2">
+                  <description>throttle pass-through from pilot's transmitter</description>
               </entry>
           </enum>
      </enums>
