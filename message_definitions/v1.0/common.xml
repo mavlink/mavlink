@@ -2146,6 +2146,34 @@
                   <description>throttle pass-through from pilot's transmitter</description>
               </entry>
           </enum>
+
+          <!-- GPS_MAV ignore flags enum -->
+          <enum name="GPS_MAV_IGNORE_FLAGS">
+              <entry name="GPS_MAV_IGNORE_FLAG_ALT" value="1">
+                  <description>ignore altitude field</description>
+              </entry>
+              <entry name="GPS_MAV_IGNORE_FLAG_HDOP" value="2">
+                  <description>ignore hdop field</description>
+              </entry>
+              <entry name="GPS_MAV_IGNORE_FLAG_VDOP" value="4">
+                  <description>ignore vdop field</description>
+              </entry>
+              <entry name="GPS_MAV_IGNORE_FLAG_VEL_HORIZ" value="8">
+                  <description>ignore horizontal velocity field (vn and ve)</description>
+              </entry>
+              <entry name="GPS_MAV_IGNORE_FLAG_VEL_VERT" value="16">
+                  <description>ignore vertical velocity field (vd)</description>
+              </entry>
+              <entry name="GPS_MAV_IGNORE_FLAG_SPEED_ACCURACY" value="32">
+                  <description>ignore speed accuracy field</description>
+              </entry>
+              <entry name="GPS_MAV_IGNORE_FLAG_HORIZONTAL_ACCURACY" value="64">
+                  <description>ignore horizontal accuracy field</description>
+              </entry>
+              <entry name="GPS_MAV_IGNORE_FLAG_VERTICAL_ACCURACY" value="128">
+                  <description>ignore vertical accuracy field</description>
+              </entry>
+          </enum>
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -3391,7 +3419,7 @@
             <description>GPS sensor input message for the AP_GPS_MAV type</description>
             <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
             <field type="uint8_t" name="gps_id">ID of the GPS for multiple GPS_MAV inputs</field>
-            <field type="uint16_t" name="ignore">Flags indicating which fields to ignore: bit0:alt, bit1:hdop, bit2:vdop, bit3:vel_horiz(vn+ve), bit4:vel_vert(vd), bit5:speed_accuracy, bit6:horiz_accuracy, bit7:vert_accuracy. All other fields must be provided.</field>
+            <field type="uint16_t" name="ignore_flags" enum="GPS_MAV_IGNORE_FLAGS">Flags indicating which fields to ignore (see GPS_MAV_IGNORE_FLAGS enum).  All other fields must be provided.</field>
             <field type="uint32_t" name="time_week_ms">GPS time (milliseconds from start of GPS week)</field>
             <field type="uint16_t" name="time_week">GPS week number</field>
             <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK</field>
