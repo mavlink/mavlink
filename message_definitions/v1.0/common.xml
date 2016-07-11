@@ -2759,8 +2759,7 @@
           </message>
           <message id="61" name="ATTITUDE_QUATERNION_COV">
                <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right), expressed as quaternion. Quaternion order is w, x, y, z and a zero rotation would be expressed as (1 0 0 0).</description>
-               <field type="uint64_t" name="time_usec">Timestamp (microseconds since system boot). 0 for system without monotonic timestamp</field>
-               <field type="uint64_t" name="time_utc">Timestamp (microseconds since UNIX epoch) in UTC. 0 for unknown. Commonly filled by the precision time source of a GPS receiver.</field>
+               <field type="uint64_t" name="time_usec">Timestamp (microseconds since system boot or since UNIX epoch)</field>
                <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation)</field>
                <field type="float" name="rollspeed">Roll angular speed (rad/s)</field>
                <field type="float" name="pitchspeed">Pitch angular speed (rad/s)</field>
@@ -2780,8 +2779,7 @@
           </message>
           <message id="63" name="GLOBAL_POSITION_INT_COV">
               <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It  is designed as scaled integer message since the resolution of float is not sufficient. NOTE: This message is intended for onboard networks / companion computers and higher-bandwidth links and optimized for accuracy and completeness. Please use the GLOBAL_POSITION_INT message for a minimal subset.</description>
-              <field type="uint64_t" name="time_usec">Timestamp (microseconds since system boot). 0 for system without monotonic timestamp</field>
-              <field type="uint64_t" name="time_utc">Timestamp (microseconds since UNIX epoch) in UTC. 0 for unknown. Commonly filled by the precision time source of a GPS receiver.</field>
+              <field type="uint64_t" name="time_usec">Timestamp (microseconds since system boot or since UNIX epoch)</field>
               <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Class id of the estimator this estimate originated from.</field>
               <field type="int32_t" name="lat">Latitude, expressed as degrees * 1E7</field>
               <field type="int32_t" name="lon">Longitude, expressed as degrees * 1E7</field>
@@ -2794,8 +2792,7 @@
           </message>
           <message id="64" name="LOCAL_POSITION_NED_COV">
               <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
-              <field type="uint64_t" name="time_usec">Timestamp (microseconds since system boot). 0 for system without monotonic timestamp</field>
-              <field type="uint64_t" name="time_utc">Timestamp (microseconds since UNIX epoch) in UTC. 0 for unknown. Commonly filled by the precision time source of a GPS receiver.</field>
+              <field type="uint64_t" name="time_usec">Timestamp (microseconds since system boot or since UNIX epoch)</field>
               <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Class id of the estimator this estimate originated from.</field>
               <field type="float" name="x">X Position</field>
               <field type="float" name="y">Y Position</field>
