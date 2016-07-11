@@ -2146,6 +2146,34 @@
                   <description>throttle pass-through from pilot's transmitter</description>
               </entry>
           </enum>
+
+          <!-- GPS_INPUT ignore flags enum -->
+          <enum name="GPS_INPUT_IGNORE_FLAGS">
+              <entry name="GPS_INPUT_IGNORE_FLAG_ALT" value="1">
+                  <description>ignore altitude field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_HDOP" value="2">
+                  <description>ignore hdop field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_VDOP" value="4">
+                  <description>ignore vdop field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_VEL_HORIZ" value="8">
+                  <description>ignore horizontal velocity field (vn and ve)</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_VEL_VERT" value="16">
+                  <description>ignore vertical velocity field (vd)</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_SPEED_ACCURACY" value="32">
+                  <description>ignore speed accuracy field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_HORIZONTAL_ACCURACY" value="64">
+                  <description>ignore horizontal accuracy field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_VERTICAL_ACCURACY" value="128">
+                  <description>ignore vertical accuracy field</description>
+              </entry>
+          </enum>
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -3386,6 +3414,27 @@
             <field type="float" name="wind_alt">AMSL altitude (m) this measurement was taken at</field>
             <field name="horiz_accuracy" type="float">Horizontal speed 1-STD accuracy</field>
             <field name="vert_accuracy" type="float">Vertical speed 1-STD accuracy</field>
+        </message>
+        <message id="232" name="GPS_INPUT">
+            <description>GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the sytem.</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="uint8_t" name="gps_id">ID of the GPS for multiple GPS inputs</field>
+            <field type="uint16_t" name="ignore_flags" enum="GPS_INPUT_IGNORE_FLAGS">Flags indicating which fields to ignore (see GPS_INPUT_IGNORE_FLAGS enum).  All other fields must be provided.</field>
+            <field type="uint32_t" name="time_week_ms">GPS time (milliseconds from start of GPS week)</field>
+            <field type="uint16_t" name="time_week">GPS week number</field>
+            <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK</field>
+            <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
+            <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
+            <field type="float" name="alt">Altitude (AMSL, not WGS84), in m (positive for up)</field>
+            <field type="float" name="hdop">GPS HDOP horizontal dilution of position in m</field>
+            <field type="float" name="vdop">GPS VDOP vertical dilution of position in m</field>
+            <field type="float" name="vn">GPS velocity in m/s in NORTH direction in earth-fixed NED frame</field>
+            <field type="float" name="ve">GPS velocity in m/s in EAST direction in earth-fixed NED frame</field>
+            <field type="float" name="vd">GPS velocity in m/s in DOWN direction in earth-fixed NED frame</field>
+            <field type="float" name="speed_accuracy">GPS speed accuracy in m/s</field>
+            <field type="float" name="horiz_accuracy">GPS horizontal accuracy in m</field>
+            <field type="float" name="vert_accuracy">GPS vertical accuracy in m</field>
+            <field type="uint8_t" name="satellites_visible">Number of satellites visible.</field>
         </message>
         <message id="233" name="GPS_RTCM_DATA">
            <description>WORK IN PROGRESS! RTCM message for injecting into the onboard GPS (used for DGPS)</description>
