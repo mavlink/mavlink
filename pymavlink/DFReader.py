@@ -7,6 +7,12 @@ Released under GNU GPL version 3 or later
 
 Partly based on SDLog2Parser by Anton Babushkin
 '''
+from __future__ import print_function
+from __future__ import division
+from past.utils import old_div
+from builtins import range
+from builtins import object
+from past.builtins import long
 
 import struct, time, os
 from . import mavutil
@@ -29,8 +35,8 @@ FORMAT_TO_STRUCT = {
     "L": ("i", 1.0e-7, float),
     "d": ("d", None, float),
     "M": ("b", None, int),
-    "q": ("q", None, long),
-    "Q": ("Q", None, long),
+    "q": ("q", None, long),  # Backward compat
+    "Q": ("Q", None, long),  # Backward compat
     }
 
 class DFFormat(object):
@@ -137,7 +143,7 @@ class DFMessage(object):
     def get_fieldnames(self):
         return self._fieldnames
 
-class DFReaderClock():
+class DFReaderClock(object):
     '''base class for all the different ways we count time in logs'''
 
     def __init__(self):
@@ -146,7 +152,7 @@ class DFReaderClock():
 
     def _gpsTimeToTime(self, week, msec):
         '''convert GPS week and TOW to a time in seconds since 1970'''
-        epoch = 86400*(10*365 + (1980-1969)/4 + 1 + 6 - 2)
+        epoch = 86400*(10*365 + old_div((1980-1969),4) + 1 + 6 - 2)
         return epoch + 86400*7*week + msec*0.001 - 15
 
     def set_timebase(self, base):
@@ -290,7 +296,7 @@ class DFReaderClock_gps_interpolated(DFReaderClock):
             return
 
         for type in self.counts_since_gps:
-            rate = self.counts_since_gps[type] / deltat
+            rate = old_div(self.counts_since_gps[type], deltat)
             if rate > self.msg_rate.get(type, 0):
                 self.msg_rate[type] = rate
         self.msg_rate['IMU'] = 50.0
@@ -302,7 +308,7 @@ class DFReaderClock_gps_interpolated(DFReaderClock):
         if int(rate) == 0:
             rate = 50
         count = self.counts_since_gps.get(m.fmt.name, 0)
-        m._timestamp = self.timebase + count/rate
+        m._timestamp = self.timebase + old_div(count,rate)
 
 
 class DFReader(object):
