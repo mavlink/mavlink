@@ -18,7 +18,7 @@ version = '2.0.3'
 # Python 2 to 3 compatibility
 try:
     from .generator import mavgen, mavparse
-except ImportError:
+except Exception: #ImportError
     from generator import mavgen, mavparse
 
 
