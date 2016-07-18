@@ -22,10 +22,14 @@
 
 '''rotation matrix class
 '''
+from __future__ import print_function
+from past.builtins import range
+from builtins import object
+from past.utils import old_div
 
 from math import sin, cos, sqrt, asin, atan2, pi, radians, acos, degrees
 
-class Vector3:
+class Vector3(object):
     '''a vector'''
     def __init__(self, x=None, y=None, z=None):
         if x != None and y != None and z != None:
@@ -90,9 +94,9 @@ class Vector3:
     __rmul__ = __mul__
 
     def __div__(self, v):
-        return Vector3(self.x / v,
-                       self.y / v,
-                       self.z / v)
+        return Vector3(old_div(self.x, v),
+                       old_div(self.y, v),
+                       old_div(self.z, v))
 
     def __mod__(self, v):
         '''cross product'''
@@ -113,7 +117,7 @@ class Vector3:
 
     def angle(self, v):
         '''return the angle between this vector and another vector'''
-        return acos((self * v) / (self.length() * v.length()))
+        return acos(old_div((self * v), (self.length() * v.length())))
 
     def normalized(self):
         return self.__div__(self.length())
@@ -124,7 +128,7 @@ class Vector3:
         self.y = v.y
         self.z = v.z
 
-class Matrix3:
+class Matrix3(object):
     '''a 3x3 matrix, intended as a rotation matrix'''
     def __init__(self, a=None, b=None, c=None):
         if a is not None and b is not None and c is not None:
@@ -249,7 +253,7 @@ class Matrix3:
         return Matrix3(self.a * v, self.b * v, self.c * v)
 
     def __div__(self, v):
-        return Matrix3(self.a / v, self.b / v, self.c / v)
+        return Matrix3(old_div(self.a, v), old_div(self.b, v), old_div(self.c, v))
 
     def __neg__(self):
         return Matrix3(-self.a, -self.b, -self.c)
@@ -284,9 +288,9 @@ class Matrix3:
         t0 = self.a - (self.b * (0.5 * error))
         t1 = self.b - (self.a * (0.5 * error))
         t2 = t0 % t1
-        self.a = t0 * (1.0 / t0.length())
-        self.b = t1 * (1.0 / t1.length())
-        self.c = t2 * (1.0 / t2.length())
+        self.a = t0 * (old_div(1.0, t0.length()))
+        self.b = t1 * (old_div(1.0, t1.length()))
+        self.c = t2 * (old_div(1.0, t2.length()))
 
     def trace(self):
         '''the trace of the matrix'''
@@ -325,7 +329,7 @@ class Matrix3:
     def close(self, m, tol=1e-7):
         return self.a.close(m.a) and self.b.close(m.b) and self.c.close(m.c)
 
-class Plane:
+class Plane(object):
     '''a plane in 3 space, defined by a point and a vector normal'''
     def __init__(self, point=None, normal=None):
         if point is None:
@@ -335,7 +339,7 @@ class Plane:
         self.point = point
         self.normal = normal
 
-class Line:
+class Line(object):
     '''a line in 3 space, defined by a point and a vector'''
     def __init__(self, point=None, vector=None):
         if point is None:
@@ -351,7 +355,7 @@ class Line:
         if l_dot_n == 0.0:
             # line is parallel to the plane
             return None
-        d = ((plane.point - self.point) * plane.normal) / l_dot_n
+        d = old_div(((plane.point - self.point) * plane.normal), l_dot_n)
         if forward_only and d < 0:
             return None
         return (self.vector * d) + self.point
@@ -371,7 +375,7 @@ def test_euler():
                 v2 = Vector3(degrees(r2),degrees(p2),degrees(y2))
                 diff = v1 - v2
                 if diff.length() > 1.0e-12:
-                    print('EULER ERROR:', v1, v2, diff.length())
+                    print(('EULER ERROR:', v1, v2, diff.length()))
 
 
 def test_two_vectors():
@@ -389,7 +393,7 @@ def test_two_vectors():
             print('err=%f' % diff.length())
             print("r/p/y = %.1f %.1f %.1f" % (
                 degrees(r), degrees(p), degrees(y)))
-            print(v1.normalized(), v2.normalized(), v3.normalized())
+            print((v1.normalized(), v2.normalized(), v3.normalized()))
 
 def test_plane():
     '''testing line/plane intersection'''
