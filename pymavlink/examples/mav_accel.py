@@ -3,6 +3,8 @@
 '''
 show accel calibration for a set of logs
 '''
+from __future__ import print_function
+from past.utils import old_div
 
 import sys, time, os
 
@@ -27,7 +29,7 @@ def process(logfile):
 
     m = mlog.recv_match(type='SENSOR_OFFSETS')
     if m is not None:
-        z_sensor = (m.accel_cal_z - 9.805) * (4096/9.81)
+        z_sensor = (m.accel_cal_z - 9.805) * (old_div(4096,9.81))
         print("accel cal %5.2f %5.2f %5.2f %6u  %s" % (
             m.accel_cal_x, m.accel_cal_y, m.accel_cal_z,
             z_sensor,

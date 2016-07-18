@@ -4,6 +4,8 @@
 rotate APMs on bench to test magnetometers
 
 '''
+from __future__ import print_function
+from past.utils import old_div
 
 import sys, os, time
 from math import radians
@@ -78,7 +80,7 @@ mav1.mav.set_mag_offsets_send(mav1.target_system, mav1.target_component, 0, 0, 0
 mav2.mav.set_mag_offsets_send(mav2.target_system, mav2.target_component, 0, 0, 0)
 
 def TrueHeading(SERVO_OUTPUT_RAW):
-    p = float(SERVO_OUTPUT_RAW.servo3_raw - rc3_min) / (rc3_max - rc3_min)
+    p = old_div(float(SERVO_OUTPUT_RAW.servo3_raw - rc3_min), (rc3_max - rc3_min))
     return 172 + p*(326 - 172)
 
 while True:
