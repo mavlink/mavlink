@@ -1,6 +1,8 @@
 '''
 module for loading/saving sets of mavlink parameters
 '''
+from __future__ import print_function
+from builtins import str
 
 import fnmatch, math, time
 
@@ -76,7 +78,7 @@ class MAVParmDict(dict):
                 continue
             if mav is not None:
                 if check:
-                    if a[0] not in self.keys():
+                    if a[0] not in list(self.keys()):
                         print("Unknown parameter %s" % a[0])
                         continue
                     old_value = self.__getitem__(a[0])
