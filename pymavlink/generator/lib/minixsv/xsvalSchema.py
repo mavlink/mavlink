@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from builtins import str
 #
 # minixsv, Release 0.9.0
 # file: xsvalSchema.py
@@ -46,8 +48,8 @@ import os
 from decimal             import Decimal
 from ..genxmlif.xmlifUtils import collapseString
 from ..minixsv             import *
-from xsvalBase           import XsValBase, TagException
-from xsvalUtils          import substituteSpecialEscChars
+from .xsvalBase           import XsValBase, TagException
+from .xsvalUtils          import substituteSpecialEscChars
 
 _localFacetDict = {(XSD_NAMESPACE,"list"): ("length", "minLength", "maxLength", "enumeration", "pattern", "whiteSpace"),
                    (XSD_NAMESPACE,"union"): ("enumeration", "pattern", "whiteSpace"),
@@ -190,7 +192,7 @@ class XsValSchema (XsValBase):
         for childGroupRefNode in childGroupsRefNodes:
             if childGroupRefNode.hasAttribute("ref"):
                 childGroupNode = self.xsdGroupDict[childGroupRefNode.getQNameAttribute("ref")]
-                if not groupNameDict.has_key(childGroupNode["name"]):
+                if childGroupNode["name"] not in groupNameDict:
                     groupNameDict[childGroupNode["name"]] = 1
                     self._checkGroupNodeCircularDef(childGroupNode, groupNameDict)
                 else:
@@ -293,7 +295,7 @@ class XsValSchema (XsValBase):
             self._updateAttributeDict (complexTypeNode, validAttrDict, 1)
             # check for duplicate ID attributes
             idAttrNode = None
-            for key, val in validAttrDict.items():
+            for key, val in list(validAttrDict.items()):
                 attrType = val["RefNode"].getQNameAttribute("type")
                 if attrType == (XSD_NAMESPACE, "ID"):
                     if not idAttrNode:
@@ -342,7 +344,7 @@ class XsValSchema (XsValBase):
             elif childParticleType in ("group"):
                 if childNode["ref"] != None:
                     childGroupNode = self.xsdGroupDict[childNode.getQNameAttribute("ref")]
-                    if not groupNameDict.has_key(childGroupNode["name"]):
+                    if childGroupNode["name"] not in groupNameDict:
                         groupNameDict[childGroupNode["name"]] = 1
                         for cChildNode in childGroupNode.getChildren():
                             if cChildNode.getLocalName() != "annotation":
@@ -360,12 +362,12 @@ class XsValSchema (XsValBase):
                     elementName = childNode.getAttributeOrDefault("name", childNode.getAttribute("ref"))
 
                 if childNode.hasAttribute("type"):
-                    if not elementTypeDict.has_key(elementName):
+                    if elementName not in elementTypeDict:
                         elementTypeDict[elementName] = childNode["type"]
                     elif childNode["type"] != elementTypeDict[elementName]:
                         self._addError ("Element %s has identical name and different types within %s!" %(repr(elementName), repr(particleType)), childNode)
                 if particleType != "sequence":
-                    if not elementNameDict.has_key(elementName):
+                    if elementName not in elementNameDict:
                         elementNameDict[elementName] = 1
                     else:
                         self._addError ("Element %s is not unique within %s!" %(repr(elementName), repr(particleType)), childNode)
@@ -413,7 +415,7 @@ class XsValSchema (XsValBase):
                     facetNsName = self._getFacetType (restrictionNode, [restrictionNode.getParentNode(),], self.xsdTypeDict)
                     if not facetNsName:
                         continue
-                    if _localFacetDict.has_key(facetNsName):
+                    if facetNsName in _localFacetDict:
                         suppFacets = _localFacetDict[facetNsName]
                     else:
                         suppFacets, dummy, dummy = self.xsdTypeDict[facetNsName].getXPathList (".//hfp:hasFacet/@name" % vars())
@@ -423,16 +425,16 @@ class XsValSchema (XsValBase):
                                        "totalDigits": None, "fractionDigits":None}
                     for childNode in restrictionNode.getChildren():
                         if childNode.getLocalName() in suppFacets:
-                            if specifiedFacets.has_key(childNode.getLocalName()):
+                            if childNode.getLocalName() in specifiedFacets:
                                 specifiedFacets[childNode.getLocalName()] = childNode["value"]
                             facetElementNode = self.xsdElementDict[childNode.getNsName()]
                             try:
                                 self._checkElementTag (facetElementNode, restrictionNode, (childNode,), 0)
-                            except TagException, errInst:
+                            except TagException as errInst:
                                 self._addError (errInst.errstr, errInst.node, errInst.endTag)
                             if childNode.getLocalName() in ("enumeration", "minExclusive", "minInclusive", "maxExclusive", "maxInclusive"):
                                 simpleTypeReturnDict = self._checkSimpleType (restrictionNode, "base", childNode, "value", childNode["value"], None, checkAttribute=1)
-                                if simpleTypeReturnDict != None and simpleTypeReturnDict.has_key("orderedValue"):
+                                if simpleTypeReturnDict != None and "orderedValue" in simpleTypeReturnDict:
                                     if childNode.getLocalName() != "enumeration":
                                         specifiedFacets[childNode.getLocalName()] = simpleTypeReturnDict["orderedValue"]
                         elif childNode.getLocalName() == "enumeration":
@@ -480,7 +482,7 @@ class XsValSchema (XsValBase):
                 self._addError ("List type must not have 'itemType' attribute and 'simpleType' child tag!", listNode)
             elif listNode.hasAttribute("itemType"):
                 itemType = self._checkType(listNode, "itemType", self.xsdTypeDict)
-                if self.xsdTypeDict.has_key(itemType):
+                if itemType in self.xsdTypeDict:
                     if self.xsdTypeDict[itemType].getLocalName() != "simpleType":
                         self._addError ("ItemType %s must be a simple type!" %(repr(itemType)), listNode)
                     elif self.xsdTypeDict[itemType].getFirstChild().getLocalName() == "list":
@@ -501,7 +503,7 @@ class XsValSchema (XsValBase):
                 for memberType in string.split(unionNode["memberTypes"]):
                     memberNsName = unionNode.qName2NsName(memberType, 1)
                     self._checkBaseType(unionNode, memberNsName, self.xsdTypeDict)
-                    if self.xsdTypeDict.has_key(memberNsName):
+                    if memberNsName in self.xsdTypeDict:
                         if self.xsdTypeDict[memberNsName].getLocalName() != "simpleType":
                             self._addError ("MemberType %s must be a simple type!" %(repr(memberNsName)), unionNode)
 
@@ -512,10 +514,10 @@ class XsValSchema (XsValBase):
                 pattern = substituteSpecialEscChars (pattern)
                 try:
                     test = re.compile(pattern)
-                except Exception, errstr:
+                except Exception as errstr:
                     self._addError (str(errstr), patternNode)
                     self._addError ("%s is not a valid regular expression!" %(repr(patternNode["value"])), patternNode)
-            except SyntaxError, errInst:
+            except SyntaxError as errInst:
                     self._addError (repr(errInst[0]), patternNode)
 
 
@@ -534,14 +536,14 @@ class XsValSchema (XsValBase):
                 completeChildList, attrNodeList, attrNsNameFirst = identityConstraintNode.getParentNode().getXPathList (selectorNode["xpath"], selectorNode)
                 if attrNsNameFirst != None:
                     self._addError ("Selection of attributes is not allowed for selector!", selectorNode)
-            except Exception, errstr:
+            except Exception as errstr:
                 self._addError (errstr, selectorNode)
 
             try:
                 fieldNode = identityConstraintNode.getFirstChildNS(XSD_NAMESPACE, "field")
                 identityConstraintNode.getParentNode().getXPathList (fieldNode["xpath"], fieldNode)
                 self._checkNodeId (fieldNode)
-            except Exception, errstr:
+            except Exception as errstr:
                 self._addError (errstr, fieldNode)
 
 
@@ -586,7 +588,7 @@ class XsValSchema (XsValBase):
     
     def _checkReference(self, node, dict):
         baseNsName = node.getQNameAttribute("ref")
-        if dict.has_key(baseNsName):
+        if baseNsName in dict:
             refNode = dict[baseNsName]
             fixedValue = node.getAttribute("fixed")
             fixedRefValue = refNode.getAttribute("fixed")
@@ -602,7 +604,7 @@ class XsValSchema (XsValBase):
         return baseNsName
     
     def _checkBaseType(self, node, baseNsName, dict, typeNsName=None):
-        if not dict.has_key(baseNsName) and baseNsName != (XSD_NAMESPACE, "anySimpleType"):
+        if baseNsName not in dict and baseNsName != (XSD_NAMESPACE, "anySimpleType"):
             self._addError ("Definition of type %s not found!" %(repr(baseNsName)), node)
         elif typeNsName != None:
             if typeNsName == (XSD_NAMESPACE, "simpleContent"):
@@ -630,7 +632,7 @@ class XsValSchema (XsValBase):
 
     def _checkKeyRef(self, keyrefNode, dict):
         baseNsName = keyrefNode.getQNameAttribute("refer")
-        if not dict.has_key(baseNsName):
+        if baseNsName not in dict:
             self._addError ("keyref refers unknown key %s!" %(repr(baseNsName)), keyrefNode)
         else:
             keyNode = dict[baseNsName]["Node"]
@@ -655,7 +657,7 @@ class XsValSchema (XsValBase):
                 nodeId = (node.getAbsUrl(), collapseString(node["id"]))
             else:
                 nodeId = collapseString(node["id"])
-            if not self.xsdIdDict.has_key(nodeId):
+            if nodeId not in self.xsdIdDict:
                 self.xsdIdDict[nodeId] = node
             else:
                 self._addError ("There are multiple occurences of ID value %s!" %repr(nodeId), node)

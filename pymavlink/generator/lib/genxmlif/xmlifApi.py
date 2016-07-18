@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from builtins import object
 #
 # genxmlif, Release 0.9.0
 # file: xmlifapi.py
@@ -47,7 +49,7 @@ import re
 import copy
 from types      import TupleType, StringTypes
 from xml.dom    import EMPTY_PREFIX, EMPTY_NAMESPACE
-from xmlifUtils import processWhitespaceAction, NsNameTupleFactory, splitQName, nsNameToQName, escapeCdata, escapeAttribute
+from .xmlifUtils import processWhitespaceAction, NsNameTupleFactory, splitQName, nsNameToQName, escapeCdata, escapeAttribute
 
 
 ########################################
@@ -55,7 +57,7 @@ from xmlifUtils import processWhitespaceAction, NsNameTupleFactory, splitQName, 
 # All not implemented methods have to be overloaded by the derived class!!
 #
 
-class XmlInterfaceBase:
+class XmlInterfaceBase(object):
     """XML interface base class.
     
     All not implemented methods have to be overloaded by the derived class!!
@@ -149,7 +151,7 @@ class XmlInterfaceBase:
 # Tree wrapper API (interface class)
 #
 
-class XmlTreeWrapper:
+class XmlTreeWrapper(object):
     """XML tree wrapper API.
 
     Contains a DOM tree or an elementtree (depending on used XML parser)
@@ -260,7 +262,7 @@ class XmlTreeWrapper:
 # Element wrapper API (interface class)
 #
 
-class XmlElementWrapper:
+class XmlElementWrapper(object):
     """XML element wrapper API.
 
     Contains a XML element node
@@ -294,7 +296,7 @@ class XmlElementWrapper:
         self.attributeSequence = []
 
         if initAttrSeq:
-            self.attributeSequence = self.getAttributeDict().keys()
+            self.attributeSequence = list(self.getAttributeDict().keys())
 
 
     def unlink (self):
@@ -367,7 +369,7 @@ class XmlElementWrapper:
         if attrValue != None:
             return attrValue
         else:
-            raise AttributeError, "Attribute %s not found!" %(repr(tupleOrAttrName))
+            raise AttributeError("Attribute %s not found!" %(repr(tupleOrAttrName)))
 
 
     def __setitem__(self, tupleOrAttrName, attributeValue):
@@ -552,8 +554,7 @@ class XmlElementWrapper:
             children = self.element.xmlIfExtGetChildren()
         elif tagFilter[1] == '*':
             # handle (namespace, '*')
-            children = filter(lambda child:child.xmlIfExtElementWrapper.getNamespaceURI() == tagFilter[0], 
-                              self.element.xmlIfExtGetChildren())
+            children = [child for child in self.element.xmlIfExtGetChildren() if child.xmlIfExtElementWrapper.getNamespaceURI() == tagFilter[0]]
         else:
             nsNameFilter = NsNameTupleFactory(tagFilter)
             try:
@@ -563,7 +564,7 @@ class XmlElementWrapper:
                 if self.__useCaching():
                     self.__childrenCache[nsNameFilter] = children
 
-        return map(lambda child: child.xmlIfExtElementWrapper, children)
+        return [child.xmlIfExtElementWrapper for child in children]
 
 
     def getChildrenNS (self, namespaceURI, tagFilter=None):
@@ -587,7 +588,7 @@ class XmlElementWrapper:
         Returns all children of this element node which match 'tagFilter' (list)
         """
         children = self.getChildren(tagFilter)
-        return filter(lambda child:child[keyAttr]==keyValue, children)
+        return [child for child in children if child[keyAttr]==keyValue]
     
     
     def getFirstChild (self, tagFilter=None):
@@ -602,8 +603,7 @@ class XmlElementWrapper:
             element = self.element.xmlIfExtGetFirstChild()
         elif tagFilter[1] == '*':
             # handle (namespace, '*')
-            children = filter(lambda child:child.xmlIfExtElementWrapper.getNamespaceURI() == tagFilter[0], 
-                              self.element.xmlIfExtGetChildren())
+            children = [child for child in self.element.xmlIfExtGetChildren() if child.xmlIfExtElementWrapper.getNamespaceURI() == tagFilter[0]]
             try:
                 element = children[0]
             except:
@@ -645,7 +645,7 @@ class XmlElementWrapper:
         Returns all children of this element node which match 'tagFilter' (list)
         """
         children = self.getChildren(tagFilter)
-        childrenWithKey = filter(lambda child:child[keyAttr]==keyValue, children)
+        childrenWithKey = [child for child in children if child[keyAttr]==keyValue]
         if childrenWithKey != []:
             return childrenWithKey[0]
         else:
@@ -664,13 +664,12 @@ class XmlElementWrapper:
             
         elif tagFilter[1] == '*':
             # handle (namespace, '*')
-            descendants = filter(lambda desc:desc.xmlIfExtElementWrapper.getNamespaceURI() == tagFilter[0], 
-                                 self.element.xmlIfExtGetElementsByTagName())
+            descendants = [desc for desc in self.element.xmlIfExtGetElementsByTagName() if desc.xmlIfExtElementWrapper.getNamespaceURI() == tagFilter[0]]
         else:
             nsNameFilter = NsNameTupleFactory(tagFilter)
             descendants = self.element.xmlIfExtGetElementsByTagName(nsNameFilter)
 
-        return map(lambda descendant: descendant.xmlIfExtElementWrapper, descendants)
+        return [descendant.xmlIfExtElementWrapper for descendant in descendants]
 
 
     def getElementsByTagNameNS (self, namespaceURI, tagFilter=None):
@@ -697,13 +696,12 @@ class XmlElementWrapper:
             matchingElements = self.element.xmlIfExtGetIterator()
         elif tagFilter[1] == '*':
             # handle (namespace, '*')
-            matchingElements = filter(lambda desc:desc.xmlIfExtElementWrapper.getNamespaceURI() == tagFilter[0], 
-                                      self.element.xmlIfExtGetIterator())
+            matchingElements = [desc for desc in self.element.xmlIfExtGetIterator() if desc.xmlIfExtElementWrapper.getNamespaceURI() == tagFilter[0]]
         else:
             nsNameFilter = NsNameTupleFactory(tagFilter)
             matchingElements = self.element.xmlIfExtGetIterator(nsNameFilter)
 
-        return map(lambda e: e.xmlIfExtElementWrapper, matchingElements)
+        return [e.xmlIfExtElementWrapper for e in matchingElements]
 
 
     def appendChild (self, tupleOrLocalNameOrElement, attributeDict={}):
@@ -801,7 +799,7 @@ class XmlElementWrapper:
         Returns a list (copy) containing all attributes of the current element node
         in the sequence specified in the input XML file (TODO: does currently not work for 4DOM/pyXML interface).
         """
-        attrList = map(lambda a: NsNameTupleFactory(a), self.attributeSequence)
+        attrList = [NsNameTupleFactory(a) for a in self.attributeSequence]
         return attrList
 
 
@@ -870,14 +868,14 @@ class XmlElementWrapper:
             attributeValue:   attribute value to be set
         """
         if not isinstance(attributeValue, StringTypes):
-            raise TypeError, "%s (attribute %s) must be a string!" %(repr(attributeValue), repr(tupleOrAttrName))
+            raise TypeError("%s (attribute %s) must be a string!" %(repr(attributeValue), repr(tupleOrAttrName)))
 
         nsNameAttrName = NsNameTupleFactory(tupleOrAttrName)
         if nsNameAttrName not in self.attributeSequence:
             self.attributeSequence.append(nsNameAttrName)
 
         if self.__useCaching():
-            if self.__qNameAttrCache.has_key(nsNameAttrName):
+            if nsNameAttrName in self.__qNameAttrCache:
                 del self.__qNameAttrCache[nsNameAttrName]
 
         self.element.xmlIfExtSetAttribute(nsNameAttrName, attributeValue, self.getCurrentNamespaces())
@@ -905,7 +903,7 @@ class XmlElementWrapper:
         nsNameAttrName = NsNameTupleFactory(tupleOrAttrName)
 
         if self.__useCaching():
-            if self.__qNameAttrCache.has_key(nsNameAttrName):
+            if nsNameAttrName in self.__qNameAttrCache:
                 del self.__qNameAttrCache[nsNameAttrName]
 
         self.element.xmlIfExtRemoveAttribute(nsNameAttrName)
@@ -1063,7 +1061,7 @@ class XmlElementWrapper:
                 if qNamePrefix == None:
                     nsName = (EMPTY_NAMESPACE, qNameLocalName)
                 else:
-                    raise ValueError, "Namespace prefix '%s' not bound to a namespace!" % (qNamePrefix)
+                    raise ValueError("Namespace prefix '%s' not bound to a namespace!" % (qNamePrefix))
         else:
             nsName = (None, None)
         return NsNameTupleFactory(nsName)
@@ -1098,7 +1096,7 @@ class XmlElementWrapper:
                 if qNamePrefix == None:
                     namespace = EMPTY_NAMESPACE
                 else:
-                    raise LookupError, "Namespace for QName '%s' not found!" % (qName)
+                    raise LookupError("Namespace for QName '%s' not found!" % (qName))
         else:
             namespace = EMPTY_NAMESPACE
         return namespace
@@ -1119,7 +1117,7 @@ class XmlElementWrapper:
             if ns == None:
                 return None
             else:
-                raise LookupError, "Prefix for namespaceURI '%s' not found!" % (ns)
+                raise LookupError("Prefix for namespaceURI '%s' not found!" % (ns))
 
 
 #++++++++++++ limited XPath support ++++++++++++++++++++
@@ -1191,17 +1189,17 @@ class XmlElementWrapper:
                             attrNodeList.append (childNode)
                             attrDict = childNode.getAttributeDict()
                             for attrIgnore in attrIgnoreList:
-                                if attrDict.has_key(attrIgnore):
+                                if attrIgnore in attrDict:
                                     del attrDict[attrIgnore]
-                            stepChildList.extend(attrDict.values())
+                            stepChildList.extend(list(attrDict.values()))
                             try:
-                                attrNsNameFirst = attrDict.keys()[0]
+                                attrNsNameFirst = list(attrDict.keys())[0]
                             except:
                                 pass
                         else:
                             attrNsName = namespaceRef.qName2NsName (attrName, useDefaultNs=0)
                             if attrNsName[1] == '*':
-                                for attr in childNode.getAttributeDict().keys():
+                                for attr in list(childNode.getAttributeDict().keys()):
                                     if attr[0] == attrNsName[0]:
                                         if attrNodeList == []:
                                             attrNsNameFirst = attrNsName
@@ -1234,7 +1232,7 @@ class XmlElementWrapper:
                     childKey = child.element
                 except:
                     childKey = child
-                if not completeChildDict.has_key(childKey):
+                if childKey not in completeChildDict:
                     completeChildList.append(child)
                     completeChildDict[childKey] = 1
         return completeChildList, attrNodeList, attrNsNameFirst
@@ -1263,9 +1261,9 @@ class XmlElementWrapper:
         Used for pretty print to align the attributes of child nodes.
         attrMaxLengthDict is in/out parameter.
         """
-        for attrName, attrValue in self.getAttributeDict().items():
+        for attrName, attrValue in list(self.getAttributeDict().items()):
             attrLength = len(attrValue)
-            if not attrMaxLengthDict.has_key(attrName):
+            if attrName not in attrMaxLengthDict:
                 attrMaxLengthDict[attrName] = attrLength
             else:
                 attrMaxLengthDict[attrName] = max(attrMaxLengthDict[attrName], attrLength)
@@ -1276,9 +1274,9 @@ class XmlElementWrapper:
         """
         if self.__useCaching():
             if childNsName != None:
-                if self.__childrenCache.has_key(childNsName):
+                if childNsName in self.__childrenCache:
                     del self.__childrenCache[childNsName]
-                if self.__firstChildCache.has_key(childNsName):
+                if childNsName in self.__firstChildCache:
                     del self.__firstChildCache[childNsName]
             else:
                 self.__childrenCache.clear()

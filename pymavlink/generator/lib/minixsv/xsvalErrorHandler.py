@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import object
 #
 # minixsv, Release 0.9.0
 # file: xsvalErrorHandler.py
@@ -49,7 +51,7 @@ STOP_ON_WARNINGS  = 2
 # Error-Handler class for XML schema validator
 # handles only validator errors, no parser errors!
 
-class ErrorHandler:
+class ErrorHandler(object):
 
     def __init__(self, errorLimit, warningProc, verbose):
         self.errorLimit  = errorLimit
@@ -119,11 +121,11 @@ class ErrorHandler:
 
     def flushOutput (self):
         if self.infoDict != {}:
-            print string.join (self.infoDict.keys(), "\n")
+            print(string.join (list(self.infoDict.keys()), "\n"))
             self.infoList = []
 
         if self.warningProc == PRINT_WARNINGS and self.warningList != []:
-            print self._assembleOutputList(self.warningList, sorted=1)
+            print(self._assembleOutputList(self.warningList, sorted=1))
             self.warningList = []
         elif self.warningProc == STOP_ON_WARNINGS:
             self.errorList.extend (self.warningList)
@@ -163,6 +165,6 @@ class ErrorHandler:
         return "%s: %s%s%s" %(listElement[2], fileStr, lineStr, listElement[3])
     
 
-class XsvalError (StandardError):
+class XsvalError (Exception):
     pass
 

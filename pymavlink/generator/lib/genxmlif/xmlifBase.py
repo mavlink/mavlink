@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from past.builtins import range
+from builtins import object
 #
 # genxmlif, Release 0.9.0
 # file: xmlifbase.py
@@ -45,7 +48,7 @@ __date__    = "28 July 2008"
 __version__ = "0.9"
 
 from xml.dom    import XML_NAMESPACE, XMLNS_NAMESPACE
-from xmlifUtils import NsNameTupleFactory, convertToAbsUrl
+from .xmlifUtils import NsNameTupleFactory, convertToAbsUrl
 
 
 
@@ -54,7 +57,7 @@ from xmlifUtils import NsNameTupleFactory, convertToAbsUrl
 # All not implemented methods have to be overloaded by the derived class!!
 #
 
-class XmlIfBuilderExtensionBase:
+class XmlIfBuilderExtensionBase(object):
     """XmlIf builder extension base class.
     
     This class provides additional data (e.g. line numbers or caches) 
@@ -98,7 +101,7 @@ class XmlIfBuilderExtensionBase:
             for i in range (0, len(attributes), 2):
                 elementWrapper.attributeSequence.append(attributes[i])
         else:
-            attrList = elementWrapper.getAttributeDict().keys()
+            attrList = list(elementWrapper.getAttributeDict().keys())
             attrList.sort()
             elementWrapper.attributeSequence.extend (attrList)
 

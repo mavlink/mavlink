@@ -5,6 +5,9 @@ parse a MAVLink protocol XML file and generate a python implementation
 Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
+from __future__ import print_function
+from builtins import str
+from past.builtins import range
 
 import sys, textwrap, os
 from . import mavparse, mavtemplate
@@ -264,8 +267,8 @@ def generate_classes(outf, msgs):
     wrapper = textwrap.TextWrapper(initial_indent="        ", subsequent_indent="        ")
     for m in msgs:
         classname = "MAVLink_%s_message" % m.name.lower()
-        fieldname_str = ", ".join(map(lambda s: "'%s'" % s, m.fieldnames))
-        ordered_fieldname_str = ", ".join(map(lambda s: "'%s'" % s, m.ordered_fieldnames))
+        fieldname_str = ", ".join(["'%s'" % s for s in m.fieldnames])
+        ordered_fieldname_str = ", ".join(["'%s'" % s for s in m.ordered_fieldnames])
 
         outf.write("""
 class %s(MAVLink_message):

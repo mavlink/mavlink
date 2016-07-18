@@ -1,3 +1,5 @@
+from builtins import zip
+from builtins import map
 from types    import DictType
 from UserDict import UserDict
 
@@ -24,7 +26,7 @@ class odict(UserDict):
         return newInstance
 
     def items(self):
-        return zip(self._keys, self.values())
+        return list(zip(self._keys, list(self.values())))
 
     def keys(self):
         return self._keys[:]
@@ -47,11 +49,11 @@ class odict(UserDict):
 
     def update(self, dictOrTuple):
         if isinstance(dictOrTuple, DictType):
-            itemList = dictOrTuple.items()
+            itemList = list(dictOrTuple.items())
         else:
             itemList = dictOrTuple
         for key, val in itemList:
             self.__setitem__(key,val)
 
     def values(self):
-        return map(self.get, self._keys)
+        return list(map(self.get, self._keys))

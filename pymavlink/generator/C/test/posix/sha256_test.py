@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from past.builtins import range
 import hashlib, sys
 
 h = hashlib.new('sha256')

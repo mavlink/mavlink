@@ -7,6 +7,11 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 
 '''
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import sys, textwrap, os, copy
 from . import mavparse
 
@@ -34,8 +39,8 @@ def mavgen(opts, args) :
     # Enable validation by default, disabling it if explicitly requested
     if opts.validate:
         try:
-            from lib.genxmlif import GenXmlIfError
-            from lib.minixsv import pyxsval
+            from .lib.genxmlif import GenXmlIfError
+            from .lib.minixsv import pyxsval
         except:
             print("WARNING: Unable to load XML validator libraries. XML validation will not be performed")
             opts.validate = False
@@ -128,7 +133,7 @@ def mavgen(opts, args) :
 
 
 # build all the dialects in the dialects subpackage
-class Opts:
+class Opts(object):
     def __init__(self, output, wire_protocol=DEFAULT_WIRE_PROTOCOL, language=DEFAULT_LANGUAGE, validate=DEFAULT_VALIDATE, error_limit=DEFAULT_ERROR_LIMIT):
         self.wire_protocol = wire_protocol
         self.error_limit = error_limit
@@ -159,7 +164,7 @@ def mavgen_python_dialect(dialect, wire_protocol):
 
      # Python 2 to 3 compatibility
     try:
-        import StringIO as io
+        import io as io
     except ImportError:
         import io
 

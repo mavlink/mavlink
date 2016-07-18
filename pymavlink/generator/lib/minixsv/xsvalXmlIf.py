@@ -109,7 +109,7 @@ class XsvXmlElementWrapper (XmlElementWrapper):
         except:
             if isinstance(tupleOrAttrName, TupleType):
                 if tupleOrAttrName[1] == '*' and len(self.xsdAttrNodes) == 1:
-                    return self.xsdAttrNodes.values()[0]
+                    return list(self.xsdAttrNodes.values())[0]
             return None
     
 

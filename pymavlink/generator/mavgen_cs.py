@@ -4,6 +4,9 @@ parse a MAVLink protocol XML file and generate a CSharp implementation
 
 
 '''
+from __future__ import print_function
+from builtins import str
+from past.builtins import range
 import sys, textwrap, os, time, platform
 from . import mavparse, mavtemplate
 

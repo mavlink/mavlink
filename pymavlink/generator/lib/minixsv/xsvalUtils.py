@@ -217,8 +217,8 @@ def substituteSpecialEscChars (intRePattern):
         if not (len(regexObj.group('pbs')) & 1): # even number of preceding backslashes
             id = regexObj.group('id')
             pP = regexObj.group('pP')
-            if not substMultiCharEscPDict.has_key(id):
-                raise SyntaxError, r"Unknown MultiCharEscape sequence '\%s{%s}' found!" %(pP, id)
+            if id not in substMultiCharEscPDict:
+                raise SyntaxError(r"Unknown MultiCharEscape sequence '\%s{%s}' found!" %(pP, id))
             else:
                 inv = 0
                 invstr = ""
@@ -234,8 +234,8 @@ def substituteSpecialEscChars (intRePattern):
     for regexObj in creSingleCharEsc.finditer(intRePattern):
         if not (len(regexObj.group('pbs')) & 1): # even number of preceding backslashes
             foundStr = regexObj.group("escChar")
-            if not substSingleCharEscDict.has_key(foundStr):
-                raise SyntaxError, "Unknown SingleCharEscape sequence '%s' found!" %(foundStr)
+            if foundStr not in substSingleCharEscDict:
+                raise SyntaxError("Unknown SingleCharEscape sequence '%s' found!" %(foundStr))
             else:
                 regexObjWithinSet = creWithinSet.match(intRePattern[:regexObj.start("escChar")])
                 if regexObjWithinSet:
@@ -246,7 +246,7 @@ def substituteSpecialEscChars (intRePattern):
     if substituteDict != {}:
         strFragList = []
         lastPos = 0
-        keyList = substituteDict.keys()
+        keyList = list(substituteDict.keys())
         keyList.sort()
         for startPos, endPos in keyList:
             strFragList.append(intRePattern[lastPos:startPos])

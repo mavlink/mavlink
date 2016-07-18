@@ -1,11 +1,13 @@
 #!/usr/local/bin/python
 
+from __future__ import print_function
+from __future__ import absolute_import
 import sys
 import getopt
 from ..genxmlif          import GenXmlIfError
-from xsvalErrorHandler import ErrorHandler, XsvalError
+from .xsvalErrorHandler import ErrorHandler, XsvalError
 from ..minixsv           import *
-from pyxsval           import parseAndValidate
+from .pyxsval           import parseAndValidate
 
 
 ##########################################
@@ -33,7 +35,7 @@ def checkShellInputParameter():
         (options, arguments) = getopt.getopt(sys.argv[1:], '?hp:s:')
 
         if ('-?','') in options or ('-h','') in options:
-            print validSyntaxText
+            print(validSyntaxText)
             sys.exit(-1)
         else:
             if len (arguments) == 1:
@@ -45,14 +47,14 @@ def checkShellInputParameter():
                         if a in (XMLIF_MINIDOM, XMLIF_ELEMENTTREE, XMLIF_4DOM):
                             xmlParser = a    
                         else:
-                            print 'Invalid XML parser %s!' %(a)
+                            print('Invalid XML parser %s!' %(a))
                             sys.exit(-1)
             else:
-                print 'minixsv needs one argument (XML input file)!'
+                print('minixsv needs one argument (XML input file)!')
                 sys.exit(-1)
 
-    except getopt.GetoptError, errstr:
-        print errstr
+    except getopt.GetoptError as errstr:
+        print(errstr)
         sys.exit(-1)
     return xmlInputFilename, xsdFilename, xmlParser
 
@@ -61,14 +63,14 @@ def main():
     xmlInputFilename, xsdFileName, xmlParser = checkShellInputParameter()
     try:
         parseAndValidate (xmlInputFilename, xsdFile=xsdFileName, xmlIfClass=xmlParser)
-    except IOError, errstr:
-        print errstr
+    except IOError as errstr:
+        print(errstr)
         sys.exit(-1)
-    except GenXmlIfError, errstr:
-        print errstr
+    except GenXmlIfError as errstr:
+        print(errstr)
         sys.exit(-1)
-    except XsvalError, errstr:
-        print errstr
+    except XsvalError as errstr:
+        print(errstr)
         sys.exit(-1)
     
 if __name__ == "__main__":

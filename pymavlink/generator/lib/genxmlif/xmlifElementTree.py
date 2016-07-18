@@ -1,3 +1,10 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from past.builtins import range
+from builtins import object
 #
 # genxmlif, Release 0.9.0
 # file: xmlifElementTree.py
@@ -42,9 +49,10 @@
 
 import sys
 import string
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from xml.dom           import EMPTY_NAMESPACE, XMLNS_NAMESPACE
 from xml.parsers.expat import ExpatError
+from functools import reduce
 # from version 2.5 on the elementtree module is part of the standard python distribution
 if sys.version_info[:2] >= (2,5):
     from xml.etree.ElementTree      import ElementTree, _ElementInterface, XMLTreeBuilder, TreeBuilder
@@ -53,9 +61,9 @@ else:
     from elementtree.ElementTree    import ElementTree, _ElementInterface, XMLTreeBuilder, TreeBuilder
     from elementtree import ElementInclude 
 from ..genxmlif                   import XMLIF_ELEMENTTREE, GenXmlIfError
-from xmlifUtils                 import convertToAbsUrl, processWhitespaceAction, collapseString, toClarkQName, splitQName
-from xmlifBase                  import XmlIfBuilderExtensionBase
-from xmlifApi                   import XmlInterfaceBase
+from .xmlifUtils                 import convertToAbsUrl, processWhitespaceAction, collapseString, toClarkQName, splitQName
+from .xmlifBase                  import XmlIfBuilderExtensionBase
+from .xmlifApi                   import XmlInterfaceBase
 
 #########################################################
 # Derived interface class for elementtree toolkit
@@ -69,7 +77,7 @@ class XmlInterfaceElementTree (XmlInterfaceBase):
         XmlInterfaceBase.__init__ (self, verbose, useCaching, processXInclude)
         self.xmlIfType = XMLIF_ELEMENTTREE
         if self.verbose:
-            print "Using elementtree interface module..."
+            print("Using elementtree interface module...")
 
 
     def createXmlTree (self, namespace, xmlRootTagName, attributeDict={}, publicId=None, systemId=None):
@@ -82,7 +90,7 @@ class XmlInterfaceElementTree (XmlInterfaceBase):
 
     def parse (self, file, baseUrl="", ownerDoc=None):
         absUrl = convertToAbsUrl (file, baseUrl)
-        fp     = urllib.urlopen (absUrl)
+        fp     = urllib.request.urlopen (absUrl)
         try:
             tree        = ElementTreeExtension()
             treeWrapper = self.treeWrapperClass(self, tree, self.useCaching)
@@ -95,15 +103,15 @@ class XmlInterfaceElementTree (XmlInterfaceBase):
                 loaderInst = ExtXIncludeLoader (self.parse, absUrl, ownerDoc)
                 try:
                     ElementInclude.include(treeWrapper.getTree().getroot(), loaderInst.loader)
-                except IOError, errInst:
-                    raise GenXmlIfError, "%s: IOError: %s" %(file, str(errInst))
+                except IOError as errInst:
+                    raise GenXmlIfError("%s: IOError: %s" %(file, str(errInst)))
             
-        except ExpatError, errstr:
+        except ExpatError as errstr:
             fp.close()
-            raise GenXmlIfError, "%s: ExpatError: %s" %(file, str(errstr))
-        except ElementInclude.FatalIncludeError, errInst:
+            raise GenXmlIfError("%s: ExpatError: %s" %(file, str(errstr)))
+        except ElementInclude.FatalIncludeError as errInst:
             fp.close()
-            raise GenXmlIfError, "%s: XIncludeError: %s" %(file, str(errInst))
+            raise GenXmlIfError("%s: XIncludeError: %s" %(file, str(errInst)))
             
         return treeWrapper
 
@@ -247,7 +255,7 @@ class ElementExtension (_ElementInterface):
 
     def xmlIfExtGetAttributeDict (self):
         attrDict = {}
-        for attrName, attrValue in self.attrib.items():
+        for attrName, attrValue in list(self.attrib.items()):
             namespaceEndIndex = string.find (attrName, '}')
             if namespaceEndIndex != -1:
                 attrName = (attrName[1:namespaceEndIndex], attrName[namespaceEndIndex+1:])
@@ -259,7 +267,7 @@ class ElementExtension (_ElementInterface):
 
     def xmlIfExtGetAttribute (self, tupleOrAttrName):
         clarkQName = toClarkQName(tupleOrAttrName)
-        if self.attrib.has_key(clarkQName):
+        if clarkQName in self.attrib:
             return self.attrib[clarkQName]
         else:
             return None
@@ -271,7 +279,7 @@ class ElementExtension (_ElementInterface):
 
     def xmlIfExtRemoveAttribute (self, tupleOrAttrName):
         clarkQName = toClarkQName(tupleOrAttrName)
-        if self.attrib.has_key(clarkQName):
+        if clarkQName in self.attrib:
             del self.attrib[clarkQName]
 
 
@@ -283,7 +291,7 @@ class ElementExtension (_ElementInterface):
             if child.tail != None:
                 elementValueList.append(child.tail)
         if ignoreEmtpyStringFragments:
-            elementValueList = filter (lambda s: collapseString(s) != "", elementValueList)
+            elementValueList = [s for s in elementValueList if collapseString(s) != ""]
         if elementValueList == []:
             elementValueList = ["",]
         return elementValueList
@@ -387,7 +395,7 @@ class ExtXMLTreeBuilder (XMLTreeBuilder, XmlIfBuilderExtensionBase):
 # XInclude loader
 # 
 
-class ExtXIncludeLoader:
+class ExtXIncludeLoader(object):
 
     def __init__(self, parser, baseUrl, ownerDoc):
         self.parser = parser
@@ -399,7 +407,7 @@ class ExtXIncludeLoader:
             data = self.parser(href, self.baseUrl, self.ownerDoc).getTree().getroot()
         else:
             absUrl = convertToAbsUrl (href, self.baseUrl)
-            fp     = urllib.urlopen (absUrl)
+            fp     = urllib.request.urlopen (absUrl)
             data = fp.read()
             if encoding:
                 data = data.decode(encoding)

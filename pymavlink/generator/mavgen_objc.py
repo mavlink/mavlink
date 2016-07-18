@@ -5,6 +5,7 @@ parse a MAVLink protocol XML file and generate an Objective-C implementation
 Copyright John Boiles 2013
 Released under GNU GPL version 3 or later
 '''
+from __future__ import print_function
 
 import os
 from . import mavparse, mavtemplate

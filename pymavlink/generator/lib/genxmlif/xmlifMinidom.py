@@ -1,3 +1,9 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from past.builtins import range
 #
 # genxmlif, Release 0.9.0
 # file: xmlifMinidom.py
@@ -41,13 +47,13 @@
 # --------------------------------------------------------------------
 
 import string
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from xml.dom              import Node, XMLNS_NAMESPACE
 from xml.dom.expatbuilder import ExpatBuilderNS
 from xml.parsers.expat    import ExpatError
 from ..genxmlif             import XMLIF_MINIDOM, GenXmlIfError
-from xmlifUtils           import convertToAbsUrl, NsNameTupleFactory
-from xmlifDom             import XmlInterfaceDom, InternalDomTreeWrapper, InternalDomElementWrapper, XmlIfBuilderExtensionDom
+from .xmlifUtils           import convertToAbsUrl, NsNameTupleFactory
+from .xmlifDom             import XmlInterfaceDom, InternalDomTreeWrapper, InternalDomElementWrapper, XmlIfBuilderExtensionDom
 
 
 class XmlInterfaceMinidom (XmlInterfaceDom):
@@ -60,7 +66,7 @@ class XmlInterfaceMinidom (XmlInterfaceDom):
         XmlInterfaceDom.__init__ (self, verbose, useCaching, processXInclude)
         self.xmlIfType = XMLIF_MINIDOM
         if self.verbose:
-            print "Using minidom interface module..."
+            print("Using minidom interface module...")
 
 
     def createXmlTree (self, namespace, xmlRootTagName, attributeDict={}, publicId=None, systemId=None):
@@ -72,7 +78,7 @@ class XmlInterfaceMinidom (XmlInterfaceDom):
 
         intRootNodeWrapper = InternalMinidomElementWrapper(domTree.documentElement, treeWrapper.getTree())
         rootNodeWrapper = self.elementWrapperClass (intRootNodeWrapper, treeWrapper, []) # TODO: namespace handling
-        for attrName, attrValue in attributeDict.items():
+        for attrName, attrValue in list(attributeDict.items()):
             rootNodeWrapper.setAttribute (attrName, attrValue)
 
         return treeWrapper
@@ -80,7 +86,7 @@ class XmlInterfaceMinidom (XmlInterfaceDom):
 
     def parse (self, file, baseUrl="", internalOwnerDoc=None):
         absUrl = convertToAbsUrl(file, baseUrl)
-        fp     = urllib.urlopen (absUrl)
+        fp     = urllib.request.urlopen (absUrl)
         try:
             builder = ExtExpatBuilderNS(file, absUrl, self)
             tree = builder.parseFile(fp)
@@ -92,9 +98,9 @@ class XmlInterfaceMinidom (XmlInterfaceDom):
                 self.xInclude (builder.treeWrapper.getRootNode(), absUrl, internalOwnerDoc)
 
             fp.close()
-        except ExpatError, errInst:
+        except ExpatError as errInst:
             fp.close()
-            raise GenXmlIfError, "%s: ExpatError: %s" %(file, str(errInst))
+            raise GenXmlIfError("%s: ExpatError: %s" %(file, str(errInst)))
 
         return builder.treeWrapper
 
@@ -110,8 +116,8 @@ class XmlInterfaceMinidom (XmlInterfaceDom):
                 if internalOwnerDoc == None: 
                     internalOwnerDoc = builder.treeWrapper.getTree()
                 self.xInclude (builder.treeWrapper.getRootNode(), absUrl, internalOwnerDoc)
-        except ExpatError, errInst:
-            raise GenXmlIfError, "%s: ExpatError: %s" %(baseUrl, str(errInst))
+        except ExpatError as errInst:
+            raise GenXmlIfError("%s: ExpatError: %s" %(baseUrl, str(errInst)))
 
         return builder.treeWrapper
 

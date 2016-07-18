@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 #
 # minixsv, Release 0.9.0
 # file: __init__.py
@@ -70,6 +71,6 @@ MINIXSV_DIR = os.path.dirname(__file__)
 
 # error handling definitions
 
-from xsvalErrorHandler import IGNORE_WARNINGS, PRINT_WARNINGS, STOP_ON_WARNINGS
-from xsvalErrorHandler import XsvalError
+from .xsvalErrorHandler import IGNORE_WARNINGS, PRINT_WARNINGS, STOP_ON_WARNINGS
+from .xsvalErrorHandler import XsvalError
 
