@@ -4,6 +4,8 @@
 example program to extract GPS data from a mavlink log, and create a GPX
 file, for loading into google earth
 '''
+from __future__ import print_function
+from past.utils import old_div
 
 import sys, struct, time, os
 
@@ -65,11 +67,11 @@ def mav_to_gpx(infilename, outfilename):
         if m is None:
             break
         if m.get_type() == 'GPS_RAW_INT':
-            lat = m.lat/1.0e7
-            lon = m.lon/1.0e7
-            alt = m.alt/1.0e3
-            v = m.vel/100.0
-            hdg = m.cog/100.0
+            lat = old_div(m.lat,1.0e7)
+            lon = old_div(m.lon,1.0e7)
+            alt = old_div(m.alt,1.0e3)
+            v = old_div(m.vel,100.0)
+            hdg = old_div(m.cog,100.0)
             timestamp = m._timestamp
             fix = m.fix_type
         elif m.get_type() == 'GPS_RAW':

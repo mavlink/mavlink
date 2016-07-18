@@ -4,6 +4,9 @@
 fit best estimate of magnetometer offsets using the algorithm from
 Bill Premerlani
 '''
+from __future__ import print_function
+from past.builtins import range
+from past.utils import old_div
 
 import sys, time, os, math
 
@@ -83,7 +86,7 @@ def find_offsets(data, ofs):
         # time
         delta_length = delta.length()
         if max_change != 0 and delta_length > max_change:
-            delta *= max_change / delta_length
+            delta *= old_div(max_change, delta_length)
 
         # set the new offsets
         ofs = ofs - delta

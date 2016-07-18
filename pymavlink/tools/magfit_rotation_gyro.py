@@ -3,6 +3,11 @@
 '''
 fit best estimate of magnetometer rotation to gyro data
 '''
+from __future__ import print_function
+from builtins import str
+from past.builtins import range
+from past.utils import old_div
+from builtins import object
 
 import sys, time, os, math
 
@@ -161,7 +166,7 @@ def magfit(logfile):
         if not r.is_90_degrees():
             continue
         if args.verbose:
-            print("%s err=%.2f" % (r, total_error[i]/count))
+            print("%s err=%.2f" % (r, old_div(total_error[i],count)))
         if total_error[i] < best_err:
             best_i = i
             best_err = total_error[i]
@@ -170,7 +175,7 @@ def magfit(logfile):
         rotations[AHRS_ORIENTATION],
         rotations[COMPASS_ORIENT],
         COMPASS_EXTERNAL))
-    print("Best rotation is %s err=%.2f from %u points" % (r, best_err/count, count))
+    print("Best rotation is %s err=%.2f from %u points" % (r, old_div(best_err,count), count))
     print("Please set AHRS_ORIENTATION=%s COMPASS_ORIENT=%s COMPASS_EXTERNAL=1" % (
         rotations[AHRS_ORIENTATION],
         r))

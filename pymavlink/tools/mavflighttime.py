@@ -3,6 +3,8 @@
 '''
 work out total flight time for a mavlink log
 '''
+from __future__ import print_function
+from past.utils import old_div
 
 import sys, time, os, glob
 
@@ -37,7 +39,7 @@ def flight_time(logfile):
             if in_air:
                 total_time += time.mktime(t) - start_time
             if total_time > 0:
-                print("Flight time : %u:%02u" % (int(total_time)/60, int(total_time)%60))
+                print("Flight time : %u:%02u" % (old_div(int(total_time),60), int(total_time)%60))
             return (total_time, total_dist)
         if m.get_type() == 'GPS_RAW_INT':
             groundspeed = m.vel*0.01
@@ -75,5 +77,5 @@ for filename in args.logs:
         total_time += ftime
         total_dist += fdist
 
-print("Total time in air: %u:%02u" % (int(total_time)/60, int(total_time)%60))
+print("Total time in air: %u:%02u" % (old_div(int(total_time),60), int(total_time)%60))
 print("Total distance travelled: %.1f meters" % total_dist)

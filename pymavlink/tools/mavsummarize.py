@@ -3,6 +3,9 @@
 '''
 Summarize MAVLink logs. Useful for identifying which log is of interest in a large set.
 '''
+from __future__ import print_function
+from builtins import object
+from past.utils import old_div
 
 import sys, time, os, glob
 
@@ -19,7 +22,7 @@ from pymavlink import mavutil
 from pymavlink.mavextra import distance_two
 
 
-class Totals:
+class Totals(object):
     def __init__(self):
         self.time = 0
         self.distance = 0
@@ -29,7 +32,7 @@ class Totals:
         print("===============================")
         print("Num Flights : %u" % self.flights)
         print("Total distance : {:0.2f}m".format(self.distance))
-        print("Total time (mm:ss): {:3.0f}:{:02.0f}".format(self.time / 60, self.time % 60))
+        print("Total time (mm:ss): {:3.0f}:{:02.0f}".format(old_div(self.time, 60), self.time % 60))
 
 
 totals = Totals()
@@ -130,8 +133,8 @@ def PrintSummary(logfile):
 
     # Print location data
     if last_gps_msg is not None:
-        first_gps_position = (first_gps_msg.lat / 1e7, first_gps_msg.lon / 1e7)
-        last_gps_position = (last_gps_msg.lat / 1e7, last_gps_msg.lon / 1e7)
+        first_gps_position = (old_div(first_gps_msg.lat, 1e7), old_div(first_gps_msg.lon, 1e7))
+        last_gps_position = (old_div(last_gps_msg.lat, 1e7), old_div(last_gps_msg.lon, 1e7))
         print("Travelled from ({0[0]}, {0[1]}) to ({1[0]}, {1[1]})".format(first_gps_position, last_gps_position))
         print("Total distance : {:0.2f}m".format(total_dist))
     else:
@@ -139,11 +142,11 @@ def PrintSummary(logfile):
 
     # Print out the rest of the results.
     total_time = timestamp - start_time
-    print("Total time (mm:ss): {:3.0f}:{:02.0f}".format(total_time / 60, total_time % 60))
+    print("Total time (mm:ss): {:3.0f}:{:02.0f}".format(old_div(total_time, 60), total_time % 60))
     # The autonomous time should be good, as a steady HEARTBEAT is required for MAVLink operation
     print("Autonomous sections: {}".format(autonomous_sections))
     if autonomous_sections > 0:
-        print("Autonomous time (mm:ss): {:3.0f}:{:02.0f}".format(auto_time / 60, auto_time % 60))
+        print("Autonomous time (mm:ss): {:3.0f}:{:02.0f}".format(old_div(auto_time, 60), auto_time % 60))
 
     totals.time += total_time
     totals.distance += total_dist

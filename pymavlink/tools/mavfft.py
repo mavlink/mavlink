@@ -3,6 +3,8 @@
 '''
 fit best estimate of magnetometer offsets
 '''
+from __future__ import print_function
+from past.utils import old_div
 
 import sys, time, os, math, numpy
 import matplotlib.pyplot as plt
@@ -69,10 +71,10 @@ def fft(logfile):
             d = numpy.array(d)
             if len(d) == 0:
                 continue
-            avg = numpy.sum(d) / len(d)
+            avg = old_div(numpy.sum(d), len(d))
             d -= avg
             d_fft = numpy.fft.rfft(d)
-            freq  = numpy.fft.rfftfreq(len(d), 1.0 / data[msg+'.rate'])
+            freq  = numpy.fft.rfftfreq(len(d), old_div(1.0, data[msg+'.rate']))
             pylab.plot( freq, numpy.abs(d_fft), label=field )
         pylab.legend(loc='upper right')
 

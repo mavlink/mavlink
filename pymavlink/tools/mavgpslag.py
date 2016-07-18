@@ -3,6 +3,9 @@
 '''
 calculate GPS lag from DF log
 '''
+from __future__ import print_function
+from past.builtins import range
+from past.utils import old_div
 
 import sys, time, os
 
@@ -42,7 +45,7 @@ def velocity_error(timestamps, vel, gaccel, accel_indexes, imu_dt, shift=0):
         dt1 = timestamps[i+1] - timestamps[i]
         dt2 = (accel_indexes[i+1] - accel_indexes[i]) * imu_dt
         da *= imu_dt
-        da *= dt1/dt2
+        da *= old_div(dt1,dt2)
         #print(accel_indexes[i+1] - accel_indexes[i])
         ex = abs(dv.x - da.x)
         ey = abs(dv.y - da.y)
@@ -50,7 +53,7 @@ def velocity_error(timestamps, vel, gaccel, accel_indexes, imu_dt, shift=0):
         count += 1
     if count == 0:
         return None
-    return sum/count
+    return old_div(sum,count)
 
 def gps_lag(logfile):
     '''work out gps velocity lag times for a log file'''
@@ -88,7 +91,7 @@ def gps_lag(logfile):
                     dtcount += 1
                 IMU = m
 
-    imu_dt = dtsum / dtcount
+    imu_dt = old_div(dtsum, dtcount)
 
     print("Loaded %u samples imu_dt=%.3f" % (len(vel), imu_dt))
     besti = -1
