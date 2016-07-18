@@ -1,3 +1,5 @@
+from __future__ import print_function
+from __future__ import absolute_import
 # Work around mbcs bug in distutils.
 # http://bugs.python.org/issue10945
 import codecs
@@ -13,7 +15,7 @@ import glob, os, shutil, fnmatch, platform
 
 version = '2.0.3'
 
-from generator import mavgen, mavparse
+from .generator import mavgen, mavparse
 
 # path to message_definitions directory
 mdef_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'message_definitions')
