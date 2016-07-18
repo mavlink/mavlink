@@ -5,6 +5,11 @@ mavlink python utility functions
 Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
+from __future__ import print_function
+from builtins import chr
+from builtins import str
+from past.utils import old_div
+from builtins import object
 
 import socket, math, struct, time, os, fnmatch, array, sys, errno
 import select, mavexpression
@@ -295,7 +300,7 @@ class mavfile(object):
         '''packet loss as a percentage'''
         if self.mav_count == 0:
             return 0
-        return (100.0*self.mav_loss)/(self.mav_count+self.mav_loss)
+        return old_div((100.0*self.mav_loss),(self.mav_count+self.mav_loss))  # backward compat
 
 
     def recv_msg(self):
@@ -348,7 +353,7 @@ class mavfile(object):
                     if timeout is None:
                         self.select(0.05)
                     else:
-                        self.select(timeout/2)
+                        self.select(old_div(timeout,2))  # backward compat
                     continue
                 return None
             if type is not None and not m.get_type() in type:
@@ -1063,7 +1068,7 @@ class mavlogfile(mavfile):
         '''read timestamp if needed'''
         # read the timestamp
         if self.filesize != 0:
-            self.percent = (100.0 * self.f.tell()) / self.filesize
+            self.percent = old_div((100.0 * self.f.tell()), self.filesize)  # backward compat
         if self.notimestamps:
             return
         if self.planner_format:
@@ -1121,7 +1126,7 @@ class mavmemlog(mavfile):
             return None
         m = self._msgs[self._index]
         self._index += 1
-        self.percent = (100.0 * self._index) / self._count
+        self.percent = old_div((100.0 * self._index), self._count)  # backward compat
         self.messages[m.get_type()] = m
         return m
 
@@ -1235,7 +1240,7 @@ class periodic_event(object):
             print("Warning, time moved backwards. Restarting timer.")
             self.last_time = tnow
 
-        if self.last_time + (1.0/self.frequency) <= tnow:
+        if self.last_time + (old_div(1.0,self.frequency)) <= tnow:  # backward compat
             self.last_time = tnow
             return True
         return False
@@ -1470,7 +1475,7 @@ def mode_mapping_byname(mav_type):
         map = mode_mapping_tracker
     if map is None:
         return None
-    inv_map = dict((a, b) for (b, a) in map.items())
+    inv_map = dict((a, b) for (b, a) in list(map.items()))  # backward compat
     return inv_map
 
 def mode_mapping_bynumber(mav_type):
@@ -1554,7 +1559,7 @@ class x25crc(object):
             accum = accum & 0xFFFF
         self.crc = accum
 
-class MavlinkSerialPort():
+class MavlinkSerialPort(object):
         '''an object that looks like a serial port, but
         transmits using mavlink SERIAL_CONTROL packets'''
         def __init__(self, portname, baudrate, devnum=0, devbaud=0, timeout=3, debug=0):
