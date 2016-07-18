@@ -164,7 +164,7 @@ def mavgen_python_dialect(dialect, wire_protocol):
 
      # Python 2 to 3 compatibility
     try:
-        import io as io
+        import StringIO as io
     except ImportError:
         import io
 

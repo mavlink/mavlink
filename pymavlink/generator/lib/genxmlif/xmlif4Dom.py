@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
 #
 # genxmlif, Release 0.9.0
 # file: xmlif4Dom.py
@@ -43,6 +38,13 @@ from builtins import str
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+
+
 import urllib.request, urllib.parse, urllib.error
 from xml.dom.ext.reader.Sax2   import Reader, XmlDomGenerator
 from xml.sax._exceptions       import SAXParseException
@@ -70,7 +72,11 @@ class XmlInterface4Dom (XmlInterfaceDom):
 
 
     def parseString (self, text, baseUrl="", internalOwnerDoc=None):
-        import io
+        # Python 2 to 3 compatibility
+        try:
+            import cStringIO as io
+        except ImportError:
+            import io
         fp = io.StringIO(text)
         absUrl = convertToAbsUrl ("", baseUrl)
         return self._parseStream (fp, "", absUrl, internalOwnerDoc)

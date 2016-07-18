@@ -15,7 +15,12 @@ import glob, os, shutil, fnmatch, platform
 
 version = '2.0.3'
 
-from .generator import mavgen, mavparse
+# Python 2 to 3 compatibility
+try:
+    from .generator import mavgen, mavparse
+except ImportError:
+    from generator import mavgen, mavparse
+
 
 # path to message_definitions directory
 mdef_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'message_definitions')
