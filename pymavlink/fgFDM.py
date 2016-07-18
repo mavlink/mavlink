@@ -1,8 +1,12 @@
+
 #!/usr/bin/env python
 # parse and construct FlightGear NET FDM packets
 # Andrew Tridgell, November 2011
 # released under GNU GPL version 2 or later
 
+from __future__ import division
+from past.builtins import range
+from builtins import object
 import struct, math
 
 class fgFDMError(Exception):
@@ -206,7 +210,7 @@ class fgFDM(object):
 
     def pack(self):
         '''pack a FD FDM buffer from current values'''
-        for i in range(len(self.values)):
+        for i in range(len(self.values)):  # Backward compat
             if math.isnan(self.values[i]):
                 self.values[i] = 0
         return struct.pack(self.pack_string, *self.values)
