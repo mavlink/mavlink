@@ -5,7 +5,6 @@
 # released under GNU GPL version 2 or later
 
 from builtins import object
-from builtins import range
 from past.builtins import range
 from past.utils import old_div
 import struct, math
