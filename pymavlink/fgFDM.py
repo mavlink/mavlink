@@ -4,9 +4,10 @@
 # Andrew Tridgell, November 2011
 # released under GNU GPL version 2 or later
 
-from __future__ import division
-from past.builtins import range
 from builtins import object
+from builtins import range
+from past.builtins import range
+from past.utils import old_div
 import struct, math
 
 class fgFDMError(Exception):
@@ -157,7 +158,7 @@ class fgFDM(object):
         if (fromunits,tounits) in self.unitmap:
             return value * self.unitmap[(fromunits,tounits)]
         if (tounits,fromunits) in self.unitmap:
-            return value / self.unitmap[(tounits,fromunits)]
+            return old_div(value, self.unitmap[(tounits,fromunits)] )  # backward compat
         raise fgFDMError("unknown unit mapping (%s,%s)" % (fromunits, tounits))
 
 
