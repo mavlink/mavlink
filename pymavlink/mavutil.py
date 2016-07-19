@@ -811,7 +811,7 @@ class mavserial(mavfile):
     def write(self, buf):
         try:
             return self.port.write(buf)
-        except TypeError as e :
+        except Exception:
             if not self.portdead:
                 print("Device %s is dead" % self.device)
             self.portdead = True
