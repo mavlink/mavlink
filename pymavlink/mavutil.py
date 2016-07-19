@@ -12,7 +12,8 @@ from past.utils import old_div
 from builtins import object
 
 import socket, math, struct, time, os, fnmatch, array, sys, errno
-import select, mavexpression
+import select
+from . import mavexpression
 
 # adding these extra imports allows pymavlink to be used directly with pyinstaller
 # without having complex spec files. To allow for installs that don't have ardupilotmega
@@ -809,10 +810,8 @@ class mavserial(mavfile):
 
     def write(self, buf):
         try:
-            if not isinstance(buf, str):
-                buf = str(buf)
             return self.port.write(buf)
-        except Exception:
+        except TypeError as e :
             if not self.portdead:
                 print("Device %s is dead" % self.device)
             self.portdead = True
