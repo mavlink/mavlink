@@ -3561,6 +3561,7 @@
                <field type="float" name="value">DEBUG value</field>
           </message>
 
+          <!-- messages with ID 256 and above are only available in MAVLink2 -->
           <message id="256" name="SETUP_SIGNING">
                <description>Setup a MAVLink2 signing key. If called with secret_key of all zero and zero initial_timestamp will disable signing</description>
                <field type="uint8_t" name="target_system">system id of the target</field>
@@ -3568,5 +3569,13 @@
                <field type="uint8_t[32]" name="secret_key">signing key</field>
                <field type="uint64_t" name="initial_timestamp">initial timestamp</field>
           </message>
+
+	  <message id="257" name="BUTTON_CHANGE">
+            <description>Report button state change</description>
+            <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
+            <field name="last_change_ms" type="uint32_t">Time of last change of button state</field>
+            <field name="state" type="uint8_t">Bitmap state of buttons</field>
+          </message>
+
         </messages>
 </mavlink>
