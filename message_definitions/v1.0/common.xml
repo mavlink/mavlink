@@ -949,6 +949,16 @@
                     <param index="6">Empty</param>
                     <param index="7">Empty</param>
                 </entry>
+                <entry value="186" name="MAV_CMD_DO_CHANGE_ALTITUDE">
+                    <description>Change altitude set point.</description>
+                    <param index="1">Altitude in meters</param>
+                    <param index="2">Mav frame of new altitude (see MAV_FRAME)</param>
+                    <param index="3">Empty</param>
+                    <param index="4">Empty</param>
+                    <param index="5">Empty</param>
+                    <param index="6">Empty</param>
+                    <param index="7">Empty</param>
+                </entry>
                 <entry value="189" name="MAV_CMD_DO_LAND_START">
                     <description>Mission command to perform a landing. This is used as a marker in a mission to tell the autopilot where a sequence of mission items that represents a landing starts. It may also be sent via a COMMAND_LONG to trigger a landing, in which case the nearest (geographically) landing sequence in the mission will be used. The Latitude/Longitude is optional, and may be set to 0/0 if not needed. If specified then it will be used to help find the closest landing sequence.</description>
                     <param index="1">Empty</param>
@@ -999,6 +1009,16 @@
                     <param index="5">Reserved</param>
                     <param index="6">Reserved</param>
                     <param index="7">Reserved</param>
+               </entry>
+               <entry value="194" name="MAV_CMD_DO_SET_REVERSE">
+                    <description>Set moving direction to forward or reverse.</description>
+                    <param index="1">Direction (0=Forward, 1=Reverse)</param>
+                    <param index="2">Empty</param>
+                    <param index="3">Empty</param>
+                    <param index="4">Empty</param>
+                    <param index="5">Empty</param>
+                    <param index="6">Empty</param>
+                    <param index="7">Empty</param>
                </entry>
                <entry value="200" name="MAV_CMD_DO_CONTROL_VIDEO">
                     <description>Control onboard camera system.</description>
@@ -1095,6 +1115,17 @@
                    <param index="2">Empty</param>
                    <param index="3">Empty</param>
                    <param index="4">Empty</param>
+                   <param index="5">Empty</param>
+                   <param index="6">Empty</param>
+                   <param index="7">Empty</param>
+               </entry>
+
+               <entry name="MAV_CMD_DO_MOTOR_TEST" value="209">
+                   <description>Mission command to perform motor test</description>
+                   <param index="1">motor sequence number (a number from 1 to max number of motors on the vehicle)</param>
+                   <param index="2">throttle type (0=throttle percentage, 1=PWM, 2=pilot throttle channel pass-through. See MOTOR_TEST_THROTTLE_TYPE enum)</param>
+                   <param index="3">throttle</param>
+                   <param index="4">timeout (in seconds)</param>
                    <param index="5">Empty</param>
                    <param index="6">Empty</param>
                    <param index="7">Empty</param>
@@ -2108,6 +2139,49 @@
 
               <entry name="ESTIMATOR_GPS_GLITCH" value="1024">
                   <description>True if the EKF has detected a GPS glitch</description>
+              </entry>
+          </enum>
+
+          <!-- motor test type enum -->
+          <enum name="MOTOR_TEST_THROTTLE_TYPE">
+              <entry name="MOTOR_TEST_THROTTLE_PERCENT" value="0">
+                  <description>throttle as a percentage from 0 ~ 100</description>
+              </entry>
+
+              <entry name="MOTOR_TEST_THROTTLE_PWM" value="1">
+                  <description>throttle as an absolute PWM value (normally in range of 1000~2000)</description>
+              </entry>
+
+              <entry name="MOTOR_TEST_THROTTLE_PILOT" value="2">
+                  <description>throttle pass-through from pilot's transmitter</description>
+              </entry>
+          </enum>
+
+          <!-- GPS_INPUT ignore flags enum -->
+          <enum name="GPS_INPUT_IGNORE_FLAGS">
+              <entry name="GPS_INPUT_IGNORE_FLAG_ALT" value="1">
+                  <description>ignore altitude field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_HDOP" value="2">
+                  <description>ignore hdop field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_VDOP" value="4">
+                  <description>ignore vdop field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_VEL_HORIZ" value="8">
+                  <description>ignore horizontal velocity field (vn and ve)</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_VEL_VERT" value="16">
+                  <description>ignore vertical velocity field (vd)</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_SPEED_ACCURACY" value="32">
+                  <description>ignore speed accuracy field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_HORIZONTAL_ACCURACY" value="64">
+                  <description>ignore horizontal accuracy field</description>
+              </entry>
+              <entry name="GPS_INPUT_IGNORE_FLAG_VERTICAL_ACCURACY" value="128">
+                  <description>ignore vertical accuracy field</description>
               </entry>
           </enum>
      </enums>
@@ -3351,6 +3425,27 @@
             <field name="horiz_accuracy" type="float">Horizontal speed 1-STD accuracy</field>
             <field name="vert_accuracy" type="float">Vertical speed 1-STD accuracy</field>
         </message>
+        <message id="232" name="GPS_INPUT">
+            <description>GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the sytem.</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="uint8_t" name="gps_id">ID of the GPS for multiple GPS inputs</field>
+            <field type="uint16_t" name="ignore_flags" enum="GPS_INPUT_IGNORE_FLAGS">Flags indicating which fields to ignore (see GPS_INPUT_IGNORE_FLAGS enum).  All other fields must be provided.</field>
+            <field type="uint32_t" name="time_week_ms">GPS time (milliseconds from start of GPS week)</field>
+            <field type="uint16_t" name="time_week">GPS week number</field>
+            <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK</field>
+            <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
+            <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
+            <field type="float" name="alt">Altitude (AMSL, not WGS84), in m (positive for up)</field>
+            <field type="float" name="hdop">GPS HDOP horizontal dilution of position in m</field>
+            <field type="float" name="vdop">GPS VDOP vertical dilution of position in m</field>
+            <field type="float" name="vn">GPS velocity in m/s in NORTH direction in earth-fixed NED frame</field>
+            <field type="float" name="ve">GPS velocity in m/s in EAST direction in earth-fixed NED frame</field>
+            <field type="float" name="vd">GPS velocity in m/s in DOWN direction in earth-fixed NED frame</field>
+            <field type="float" name="speed_accuracy">GPS speed accuracy in m/s</field>
+            <field type="float" name="horiz_accuracy">GPS horizontal accuracy in m</field>
+            <field type="float" name="vert_accuracy">GPS vertical accuracy in m</field>
+            <field type="uint8_t" name="satellites_visible">Number of satellites visible.</field>
+        </message>
         <message id="233" name="GPS_RTCM_DATA">
            <description>WORK IN PROGRESS! RTCM message for injecting into the onboard GPS (used for DGPS)</description>
            <field type="uint8_t" name="flags">LSB: 1 means message is fragmented</field>
@@ -3466,6 +3561,7 @@
                <field type="float" name="value">DEBUG value</field>
           </message>
 
+          <!-- messages with ID 256 and above are only available in MAVLink2 -->
           <message id="256" name="SETUP_SIGNING">
                <description>Setup a MAVLink2 signing key. If called with secret_key of all zero and zero initial_timestamp will disable signing</description>
                <field type="uint8_t" name="target_system">system id of the target</field>
@@ -3473,5 +3569,20 @@
                <field type="uint8_t[32]" name="secret_key">signing key</field>
                <field type="uint64_t" name="initial_timestamp">initial timestamp</field>
           </message>
+
+	  <message id="257" name="BUTTON_CHANGE">
+            <description>Report button state change</description>
+            <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
+            <field name="last_change_ms" type="uint32_t">Time of last change of button state</field>
+            <field name="state" type="uint8_t">Bitmap state of buttons</field>
+          </message>
+
+          <message id="258" name="PLAY_TUNE">
+            <description>Control vehicle tone generation (buzzer)</description>
+            <field name="target_system" type="uint8_t">System ID</field>
+            <field name="target_component" type="uint8_t">Component ID</field>
+            <field name="tune" type="char[30]">tune in board specific format</field>
+          </message>
+          
         </messages>
 </mavlink>
