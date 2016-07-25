@@ -1097,6 +1097,7 @@ class mavlogfile(mavfile):
         self._last_message = msg
         if msg.get_type() != "BAD_DATA":
             self._last_timestamp = msg._timestamp
+        msg._link = self._link
 
 
 class mavmemlog(mavfile):
