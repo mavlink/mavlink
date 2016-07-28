@@ -511,17 +511,21 @@ class mavfile(object):
         inv_map = dict((a, b) for (b, a) in list(map.items()))
         return inv_map
 
-    def set_mode(self, mode):
+    def set_mode(self, mode, custom_mode = 0, custom_sub_mode = 0):
         '''enter arbitrary mode'''
+        print('setting mode')
         if isinstance(mode, str):
-            map = self.mode_mapping()
-            if map is None or mode not in map:
+            mode_map = self.mode_mapping()
+            if mode_map is None or mode not in mode_map:
                 print("Unknown mode '%s'" % mode)
                 return
-            mode = map[mode]
-        self.mav.set_mode_send(self.target_system,
-                               mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
-                               mode)
+            if type(mode_map[mode_map.keys()[0]]) == tuple: # PX4 uses two fields to define modes
+                mode, custom_mode, custom_sub_mode = px4_map[mode]
+            else:
+                mode = mode_map[mode]
+        print(mode, custom_mode)
+        self.mav.command_long_send(self.target_system, self.target_component,
+                                   mavlink.MAV_CMD_DO_SET_MODE, 0, mode, custom_mode, custom_sub_mode, 0, 0, 0, 0)
 
     def set_mode_rtl(self):
         '''enter RTL mode'''
