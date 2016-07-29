@@ -97,10 +97,6 @@ extern "C" {
 #define MAVLINK_MESSAGE_CRCS {${message_crcs_array}}
 #endif
 
-#ifndef MAVLINK_MESSAGE_INFO
-#define MAVLINK_MESSAGE_INFO {${message_info_array}}
-#endif
-
 #include "../protocol.h"
 
 #define MAVLINK_ENABLED_${basename_upper}
@@ -137,6 +133,10 @@ ${{message:#include "./mavlink_msg_${name_lower}.h"
 // base include
 ${{include_list:#include "../${base}/${base}.h"
 }}
+
+#ifndef MAVLINK_MESSAGE_INFO
+#define MAVLINK_MESSAGE_INFO {${message_info_array}}
+#endif
 
 #if MAVLINK_COMMAND_24BIT
 #include "../mavlink_get_info.h"
