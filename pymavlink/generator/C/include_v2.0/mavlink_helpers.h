@@ -95,7 +95,7 @@ MAVLINK_HELPER uint8_t mavlink_sign_packet(mavlink_signing_t *signing,
  */
 MAVLINK_HELPER uint8_t _mav_trim_payload(const char *payload, uint8_t length)
 {
-	while (length > 0 && payload[length-1] == 0) {
+	while (length > 1 && payload[length-1] == 0) {
 		length--;
 	}
 	return length;
