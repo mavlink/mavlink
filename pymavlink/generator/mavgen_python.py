@@ -198,7 +198,7 @@ class MAVLink_message(object):
         if WIRE_PROTOCOL_VERSION != '1.0' and not force_mavlink1:
             # in MAVLink2 we can strip trailing zeros off payloads. This allows for simple
             # variable length arrays and smaller packets
-            while plen > 0 and payload[plen-1] == chr(0):
+            while plen > 1 and payload[plen-1] == chr(0):
                 plen -= 1
         self._payload = payload[:plen]
         incompat_flags = 0
