@@ -6,6 +6,7 @@ file, for loading into google earth
 '''
 
 import sys, struct, time, os
+import datetime
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
@@ -37,6 +38,7 @@ def mav_to_gpx(infilename, outfilename):
        hdg, v))
 
     def add_header():
+        timestamp = datetime.datetime.now()
         outf.write('''<?xml version="1.0" encoding="UTF-8"?>
 <gpx
   version="1.0"
@@ -45,8 +47,14 @@ def mav_to_gpx(infilename, outfilename):
   xmlns="http://www.topografix.com/GPX/1/0"
   xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
 <trk>
+<name> {0:04}-{1:02}-{2:02}-{3:02}{4:02}{5:02} </name>
 <trkseg>
-''')
+'''.format(timestamp.year,
+           timestamp.month,
+           timestamp.day,
+           timestamp.hour,
+           timestamp.minute,
+           timestamp.second))
 
     def add_footer():
         outf.write('''</trkseg>
