@@ -35,6 +35,7 @@ parser.add_argument("--no-bad-data", action='store_true', help="Don't output cor
 parser.add_argument("--show-source", action='store_true', help="Show source system ID and component ID")
 parser.add_argument("--source-system", type=int, default=None, help="filter by source system ID")
 parser.add_argument("--source-component", type=int, default=None, help="filter by source component ID")
+parser.add_argument("--link", type=int, default=None, help="filter by comms link ID")
 parser.add_argument("log", metavar="LOG")
 args = parser.parse_args()
 
@@ -135,6 +136,8 @@ while True:
     if args.source_system is not None and args.source_system != m.get_srcSystem():
         continue
     if args.source_component is not None and args.source_component != m.get_srcComponent():
+        continue
+    if args.link is not None and args.link != m._link:
         continue
 
     if types is not None and m.get_type() != 'BAD_DATA' and not match_type(m.get_type(), types):
