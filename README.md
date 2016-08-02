@@ -11,7 +11,9 @@
 
 MAVLink -- Micro Air Vehicle Message Marshalling Library.
 
-This is a library for lightweight communication between Micro Air Vehicles (swarm) and/or ground control stations. It allows for defining messages within XML files, which then are converted into appropriate source code for different languages. These XML files are called dialects, most of which build on the *common* dialect provided in `common.xml`.
+This is a library for lightweight communication between drones and/or ground control stations. It allows for defining messages within XML files, which then are converted into appropriate source code for different languages. These XML files are called dialects, most of which build on the *common* dialect provided in `common.xml`.
+
+The initial experimental MAVLink was created 2008 when the term drone was not used yet to describe small vehicles for consumer use.
 
 The MAVLink protocol performs byte-level serialization and so is appropriate for use with any type of radio modem.
 
