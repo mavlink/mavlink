@@ -35,6 +35,13 @@ TYPE_MAX = {
     'uint64_t' : tmax(64),
 }
 
+# macroses stopwords. Used to replace bad enum entry name.
+MACROSES = {
+    'MIN': 'MIN_',
+    'MAX': 'MAX_',
+    'NO_DATA': 'NO_DATA_',  # fix uAvionix enum bug
+}
+
 EType = collections.namedtuple('EType', ('type', 'max'))
 
 
@@ -299,7 +306,8 @@ def enum_remove_prefix(prefix, s):
     if sl[0][0].isdigit():
         sl.insert(0, pl[-1])
 
-    return '_'.join(sl)
+    ret = '_'.join(sl)
+    return MACROSES.get(ret, ret)
 
 
 def fix_int8_t(v):
