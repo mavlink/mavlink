@@ -7,7 +7,8 @@ Released under GNU GPL version 3 or later
 '''
 
 import socket, math, struct, time, os, fnmatch, array, sys, errno
-import select, mavexpression
+import select
+from pymavlink import mavexpression
 
 # adding these extra imports allows pymavlink to be used directly with pyinstaller
 # without having complex spec files. To allow for installs that don't have ardupilotmega
