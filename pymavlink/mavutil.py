@@ -1428,6 +1428,7 @@ mode_mapping_acm = {
     17 : 'BRAKE',
     18 : 'THROW',
     19 : 'AVOID_ADSB',
+    20 : 'GUIDED_NOGPS',
     }
 mode_mapping_rover = {
     0 : 'MANUAL',
