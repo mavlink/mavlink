@@ -490,6 +490,9 @@ class mavfile(object):
     def mode_mapping(self):
         '''return dictionary mapping mode names to numbers, or None if unknown'''
         mav_type = self.field('HEARTBEAT', 'type', self.mav_type)
+        mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+        if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+            return px4_map
         if mav_type is None:
             return None
         map = None
@@ -1527,6 +1530,9 @@ def interpret_px4_mode(base_mode, custom_mode):
 
 def mode_mapping_byname(mav_type):
     '''return dictionary mapping mode names to numbers, or None if unknown'''
+    mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+    if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return px4_map # no need to invert this map, it already is.
     map = None
     if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
                     mavlink.MAV_TYPE_HELICOPTER,
@@ -1548,6 +1554,9 @@ def mode_mapping_byname(mav_type):
 
 def mode_mapping_bynumber(mav_type):
     '''return dictionary mapping mode numbers to name, or None if unknown'''
+    mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+    if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return dict((a, b) for (b, a) in px4_map.items())
     map = None
     if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
                     mavlink.MAV_TYPE_HELICOPTER,
@@ -1600,12 +1609,6 @@ def mode_string_acm(mode_number):
     '''return mode string for APM:Copter'''
     if mode_number in mode_mapping_acm:
         return mode_mapping_acm[mode_number]
-    return "Mode(%u)" % mode_number
-
-def mode_string_px4(mode_number):
-    '''return mode string for PX4 flight stack'''
-    if mode_number in mode_mapping_px4:
-        return mode_mapping_px4[mode_number]
     return "Mode(%u)" % mode_number
 
 class x25crc(object):
