@@ -490,6 +490,9 @@ class mavfile(object):
     def mode_mapping(self):
         '''return dictionary mapping mode names to numbers, or None if unknown'''
         mav_type = self.field('HEARTBEAT', 'type', self.mav_type)
+        mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+        if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+            return px4_map
         if mav_type is None:
             return None
         map = None
@@ -511,17 +514,21 @@ class mavfile(object):
         inv_map = dict((a, b) for (b, a) in list(map.items()))
         return inv_map
 
-    def set_mode(self, mode):
+    def set_mode(self, mode, custom_mode = 0, custom_sub_mode = 0):
         '''enter arbitrary mode'''
+        print('setting mode')
         if isinstance(mode, str):
-            map = self.mode_mapping()
-            if map is None or mode not in map:
+            mode_map = self.mode_mapping()
+            if mode_map is None or mode not in mode_map:
                 print("Unknown mode '%s'" % mode)
                 return
-            mode = map[mode]
-        self.mav.set_mode_send(self.target_system,
-                               mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
-                               mode)
+            if type(mode_map[mode_map.keys()[0]]) == tuple: # PX4 uses two fields to define modes
+                mode, custom_mode, custom_sub_mode = px4_map[mode]
+            else:
+                mode = mode_map[mode]
+        print(mode, custom_mode)
+        self.mav.command_long_send(self.target_system, self.target_component,
+                                   mavlink.MAV_CMD_DO_SET_MODE, 0, mode, custom_mode, custom_sub_mode, 0, 0, 0, 0)
 
     def set_mode_rtl(self):
         '''enter RTL mode'''
@@ -1448,16 +1455,84 @@ mode_mapping_tracker = {
     16 : 'INITIALISING'
     }
 
-mode_mapping_px4 = {
-    0 : 'MANUAL',
-    1 : 'ATTITUDE',
-    2 : 'EASY',
-    3 : 'AUTO'
-    }
+# Custom mode definitions from PX4
+PX4_CUSTOM_MAIN_MODE_MANUAL            = 1
+PX4_CUSTOM_MAIN_MODE_ALTCTL            = 2
+PX4_CUSTOM_MAIN_MODE_POSCTL            = 3
+PX4_CUSTOM_MAIN_MODE_AUTO              = 4
+PX4_CUSTOM_MAIN_MODE_ACRO              = 5
+PX4_CUSTOM_MAIN_MODE_OFFBOARD          = 6
+PX4_CUSTOM_MAIN_MODE_STABILIZED        = 7
+PX4_CUSTOM_MAIN_MODE_RATTITUDE         = 8
 
+PX4_CUSTOM_SUB_MODE_AUTO_READY         = 1
+PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF       = 2
+PX4_CUSTOM_SUB_MODE_AUTO_LOITER        = 3
+PX4_CUSTOM_SUB_MODE_AUTO_MISSION       = 4
+PX4_CUSTOM_SUB_MODE_AUTO_RTL           = 5
+PX4_CUSTOM_SUB_MODE_AUTO_LAND          = 6
+PX4_CUSTOM_SUB_MODE_AUTO_RTGS          = 7
+PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET = 8
+
+auto_mode_flags  = mavlink.MAV_MODE_FLAG_AUTO_ENABLED \
+                 | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED \
+                 | mavlink.MAV_MODE_FLAG_GUIDED_ENABLED
+
+px4_map = { "MANUAL":        (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED | mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_MANUAL,      0                                       ),
+            "STABILIZED":    (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED | mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_STABILIZED,  0                                       ),
+            "ACRO":          (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED |                                           mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_ACRO,        0                                       ),
+            "RATTITUDE":     (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED |                                           mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_RATTITUDE,   0                                       ),
+            "ALTCTL":        (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED | mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_ALTCTL,      0                                       ),
+            "POSCTL":        (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED | mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_POSCTL,      0                                       ),
+            "LOITER":        (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_LOITER         ),
+            "MISSION":       (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_MISSION        ),
+            "RTL":           (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_RTL            ),
+            "FOLLOWME":      (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET  ),
+            "OFFBOARD":      (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_OFFBOARD,    0                                       )}
+
+
+def interpret_px4_mode(base_mode, custom_mode):
+    custom_main_mode = (custom_mode & 0xFF0000)   >> 16
+    custom_sub_mode  = (custom_mode & 0xFF000000) >> 24
+
+    if base_mode & mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED != 0: #manual modes
+        if custom_main_mode == PX4_CUSTOM_MAIN_MODE_MANUAL:
+            return "MANUAL"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_ACRO:
+            return "ACRO"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_RATTITUDE:
+            return "RATTITUDE"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_STABILIZED:
+            return "STABILIZED"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_ALTCTL:
+            return "ALTCTL"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_POSCTL:
+            return "POSCTL"
+    elif (base_mode & auto_mode_flags) == auto_mode_flags: #auto modes
+        if custom_main_mode & PX4_CUSTOM_MAIN_MODE_AUTO != 0:
+            if custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_MISSION:
+                return "TAKEOFF"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF:
+                return "MISSION"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_LOITER:
+                return "LOITER"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET:
+                return "FOLLOWME"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_RTL:
+                return "RTL"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_LAND:
+                return "LAND"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_RTGS:
+                return "RTGS"
+            elif custom_sub_mode == PX4_CUSTOM_MAIN_MODE_OFFBOARD:
+                return "OFFBOARD"
+    return "UNKNOWN"
 
 def mode_mapping_byname(mav_type):
     '''return dictionary mapping mode names to numbers, or None if unknown'''
+    mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+    if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return px4_map # no need to invert this map, it already is.
     map = None
     if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
                     mavlink.MAV_TYPE_HELICOPTER,
@@ -1479,6 +1554,9 @@ def mode_mapping_byname(mav_type):
 
 def mode_mapping_bynumber(mav_type):
     '''return dictionary mapping mode numbers to name, or None if unknown'''
+    mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+    if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return dict((a, b) for (b, a) in px4_map.items())
     map = None
     if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
                     mavlink.MAV_TYPE_HELICOPTER,
@@ -1500,6 +1578,8 @@ def mode_mapping_bynumber(mav_type):
 
 def mode_string_v10(msg):
     '''mode string for 1.0 protocol, from heartbeat'''
+    if msg.autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return interpret_px4_mode(msg.base_mode, msg.custom_mode)
     if not msg.base_mode & mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED:
         return "Mode(0x%08x)" % msg.base_mode
     if msg.type in [ mavlink.MAV_TYPE_QUADROTOR, mavlink.MAV_TYPE_HEXAROTOR,
@@ -1529,12 +1609,6 @@ def mode_string_acm(mode_number):
     '''return mode string for APM:Copter'''
     if mode_number in mode_mapping_acm:
         return mode_mapping_acm[mode_number]
-    return "Mode(%u)" % mode_number
-
-def mode_string_px4(mode_number):
-    '''return mode string for PX4 flight stack'''
-    if mode_number in mode_mapping_px4:
-        return mode_mapping_px4[mode_number]
     return "Mode(%u)" % mode_number
 
 class x25crc(object):
