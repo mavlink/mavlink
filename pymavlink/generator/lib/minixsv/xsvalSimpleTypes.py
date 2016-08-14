@@ -46,7 +46,7 @@ import datetime
 from decimal             import Decimal
 from ..genxmlif.xmlifUtils import removeWhitespaces, collapseString, normalizeString, NsNameTupleFactory
 from ..minixsv             import XSD_NAMESPACE
-from xsvalUtils          import substituteSpecialEscChars
+from .xsvalUtils          import substituteSpecialEscChars
 
 ###################################################
 # Validator class for simple types
@@ -71,14 +71,14 @@ class XsSimpleTypeVal:
     def checkSimpleType (self, inputNode, attrName, typeName, attributeValue, returnDict, idCheck):
         returnDict["adaptedAttrValue"] = attributeValue
         returnDict["BaseTypes"].append(str(typeName))
-        if _suppBaseTypeDict.has_key(typeName):
+        if typeName in _suppBaseTypeDict:
             try:
                 _suppBaseTypeDict[typeName] (inputNode, typeName, attributeValue, returnDict)
                 returnDict["primitiveType"] = typeName
-            except BaseTypeError, errstr:
+            except BaseTypeError as errstr:
                 raise SimpleTypeError("Value of %s (%s) %s" %(repr(attrName), repr(attributeValue), errstr))
 
-        elif self.parent.xsdTypeDict.has_key(typeName):
+        elif typeName in self.parent.xsdTypeDict:
             typedefNode = self.parent.xsdTypeDict[typeName]
             if typedefNode.getNsName() == (XSD_NAMESPACE, "simpleType"):
                 self.checkSimpleTypeDef (inputNode, typedefNode, attrName, attributeValue, returnDict, idCheck)
@@ -93,7 +93,7 @@ class XsSimpleTypeVal:
             if idCheck:
                 adaptedAttrValue = returnDict["adaptedAttrValue"]
                 if typeName == (XSD_NAMESPACE, "ID"):
-                    if not self.xsdIdDict.has_key(adaptedAttrValue):
+                    if adaptedAttrValue not in self.xsdIdDict:
                         self.xsdIdDict[adaptedAttrValue] = inputNode
                     else:
                         raise SimpleTypeError("There are multiple occurences of ID value %s!" %repr(adaptedAttrValue))
@@ -152,28 +152,28 @@ class XsSimpleTypeVal:
             minExclReturnDict = {"BaseTypes":[], "primitiveType":None}
             minExclValue = minExcl.getAttribute("value")
             self.checkBaseType (inputNode, xsdElement, attrName, minExclValue, minExclReturnDict, idCheck=0)
-            if returnDict.has_key("orderedValue") and minExclReturnDict.has_key("orderedValue"):
+            if "orderedValue" in returnDict and "orderedValue" in minExclReturnDict:
                 if returnDict["orderedValue"] <= minExclReturnDict["orderedValue"]:
                     raise SimpleTypeError ("Value of %s (%s) is <= minExclusive (%s)" %(repr(attrName), repr(attributeValue), repr(minExclValue)))
         elif minIncl != None:
             minInclReturnDict = {"BaseTypes":[], "primitiveType":None}
             minInclValue = minIncl.getAttribute("value")
             self.checkBaseType (inputNode, xsdElement, attrName, minInclValue, minInclReturnDict, idCheck=0)
-            if returnDict.has_key("orderedValue") and minInclReturnDict.has_key("orderedValue"):
+            if "orderedValue" in returnDict and "orderedValue" in minInclReturnDict:
                 if returnDict["orderedValue"] < minInclReturnDict["orderedValue"]:
                     raise SimpleTypeError ("Value of %s (%s) is < minInclusive (%s)" %(repr(attrName), repr(attributeValue), repr(minInclValue)))
         if maxExcl != None:
             maxExclReturnDict = {"BaseTypes":[], "primitiveType":None}
             maxExclValue = maxExcl.getAttribute("value")
             self.checkBaseType (inputNode, xsdElement, attrName, maxExclValue, maxExclReturnDict, idCheck=0)
-            if returnDict.has_key("orderedValue") and maxExclReturnDict.has_key("orderedValue"):
+            if "orderedValue" in returnDict and "orderedValue" in maxExclReturnDict:
                 if returnDict["orderedValue"] >= maxExclReturnDict["orderedValue"]:
                     raise SimpleTypeError ("Value of %s (%s) is >= maxExclusive (%s)" %(repr(attrName), repr(attributeValue), repr(maxExclValue)))
         elif maxIncl != None:
             maxInclReturnDict = {"BaseTypes":[], "primitiveType":None}
             maxInclValue = maxIncl.getAttribute("value")
             self.checkBaseType (inputNode, xsdElement, attrName, maxInclValue, maxInclReturnDict, idCheck=0)
-            if returnDict.has_key("orderedValue") and maxInclReturnDict.has_key("orderedValue"):
+            if "orderedValue" in returnDict and "orderedValue" in maxInclReturnDict:
                 if returnDict["orderedValue"] > maxInclReturnDict["orderedValue"]:
                     raise SimpleTypeError ("Value of %s (%s) is > maxInclusive (%s)" %(repr(attrName), repr(attributeValue), repr(maxInclValue)))
 
@@ -185,10 +185,10 @@ class XsSimpleTypeVal:
                 digits = digits[1:]
             totalDigitsValue = totalDigitsNode.getAttribute("value")
             if totalDigitsNode.getAttribute("fixed") == "true":
-                if len(digits) != string.atoi(totalDigitsValue):
+                if len(digits) != int(totalDigitsValue):
                     raise SimpleTypeError ("Total number of digits != %s for %s (%s)" %(repr(totalDigitsValue), repr(attrName), repr(attributeValue)))
             else:
-                if len(digits) > string.atoi(totalDigitsValue):
+                if len(digits) > int(totalDigitsValue):
                     raise SimpleTypeError ("Total number of digits > %s for %s (%s)" %(repr(totalDigitsValue), repr(attrName), repr(attributeValue)))
 
         fractionDigitsNode = xsdElement.getFirstChildNS(self.xsdNsURI, "fractionDigits")
@@ -200,25 +200,25 @@ class XsSimpleTypeVal:
                 numberOfFracDigits = len (result.group('fracDigits'))
             else:
                 numberOfFracDigits = 0
-            if fractionDigitsNode.getAttribute("fixed") == "true" and numberOfFracDigits != string.atoi(fractionDigitsValue):
+            if fractionDigitsNode.getAttribute("fixed") == "true" and numberOfFracDigits != int(fractionDigitsValue):
                 raise SimpleTypeError ("Fraction number of digits != %s for %s (%s)" %(repr(fractionDigitsValue), repr(attrName), repr(attributeValue)))
-            elif numberOfFracDigits > string.atoi(fractionDigitsValue):
+            elif numberOfFracDigits > int(fractionDigitsValue):
                 raise SimpleTypeError ("Fraction number of digits > %s for %s (%s)" %(repr(fractionDigitsValue), repr(attrName), repr(attributeValue)))
 
-        if returnDict.has_key("length"):
+        if "length" in returnDict:
             lengthNode = xsdElement.getFirstChildNS(self.xsdNsURI, "length")
             if lengthNode != None:
-                length = string.atoi(lengthNode.getAttribute("value"))
+                length = int(lengthNode.getAttribute("value"))
                 if returnDict["length"] != length:
                     raise SimpleTypeError ("Length of %s (%s) must be %d!" %(repr(attrName), repr(attributeValue), length))
             minLengthNode = xsdElement.getFirstChildNS(self.xsdNsURI, "minLength")
             if minLengthNode != None:
-                minLength = string.atoi(minLengthNode.getAttribute("value"))
+                minLength = int(minLengthNode.getAttribute("value"))
                 if returnDict["length"] < minLength:
                     raise SimpleTypeError ("Length of %s (%s) must be >= %d!" %(repr(attrName), repr(attributeValue), minLength))
             maxLengthNode = xsdElement.getFirstChildNS(self.xsdNsURI, "maxLength")
             if maxLengthNode != None:
-                maxLength = string.atoi(maxLengthNode.getAttribute("value"))
+                maxLength = int(maxLengthNode.getAttribute("value"))
                 if returnDict["length"] > maxLength:
                     raise SimpleTypeError ("Length of %s (%s) must be <= %d!" %(repr(attrName), repr(attributeValue), maxLength))
 
@@ -236,18 +236,18 @@ class XsSimpleTypeVal:
 
         enumerationElementList = xsdElement.getChildrenNS(self.xsdNsURI, "enumeration")
         if enumerationElementList != []:
-            if returnDict.has_key("orderedValue"):
+            if "orderedValue" in returnDict:
                 attributeValue = returnDict["orderedValue"]
-            elif returnDict.has_key("adaptedAttrValue"):
+            elif "adaptedAttrValue" in returnDict:
                 attributeValue = returnDict["adaptedAttrValue"]
 
             for enumeration in enumerationElementList:
                 enumReturnDict = {"BaseTypes":[], "primitiveType":None}
                 enumValue = enumeration["value"]
                 self.checkBaseType (inputNode, xsdElement, attrName, enumValue, enumReturnDict, idCheck=0)
-                if enumReturnDict.has_key("orderedValue"):
+                if "orderedValue" in enumReturnDict:
                     enumValue = enumReturnDict["orderedValue"]
-                elif enumReturnDict.has_key("adaptedAttrValue"):
+                elif "adaptedAttrValue" in enumReturnDict:
                     enumValue = enumReturnDict["adaptedAttrValue"]
                 
                 if enumValue == attributeValue:
@@ -256,7 +256,7 @@ class XsSimpleTypeVal:
                 raise SimpleTypeError ("Enumeration value %s not allowed!" %repr(attributeValue))
 
         
-        if returnDict.has_key("adaptedAttrValue"):
+        if "adaptedAttrValue" in returnDict:
             attributeValue = returnDict["adaptedAttrValue"]
 
         patternMatch = 1
@@ -266,8 +266,8 @@ class XsSimpleTypeVal:
             intRePattern = rePattern
             try:
                 intRePattern = substituteSpecialEscChars (intRePattern)
-            except SyntaxError, errInst:
-                raise SimpleTypeError, str(errInst)
+            except SyntaxError as errInst:
+                raise SimpleTypeError(str(errInst))
             patternMatch = self._matchesPattern (intRePattern, attributeValue)
 
             if patternMatch:
@@ -309,7 +309,7 @@ class XsSimpleTypeVal:
             returnDict["adaptedAttrValue"] = collapsedValue
 
             # divide up attributeValue => store it into list
-            attributeList = string.split(collapsedValue, " ")
+            attributeList = collapsedValue.split(" ")
             for attrValue in attributeList:
                 elementReturnDict = {"BaseTypes":[], "primitiveType":None}
                 if itemType != (None, None):
@@ -340,11 +340,11 @@ class XsSimpleTypeVal:
         if memberTypes != None:
             # substitute multiple whitespace characters by a single ' '
             # divide up attributeValue => store it into list
-            for memberType in string.split(collapseString(memberTypes), " "):
+            for memberType in collapseString(memberTypes).split(" "):
                 try:
                     self.checkSimpleType (inputNode, attrName, xsdElement.qName2NsName(memberType, useDefaultNs=1), attributeValue, returnDict, idCheck)
                     return
-                except SimpleTypeError, errstr:
+                except SimpleTypeError as errstr:
                     pass
 
         # memberTypes and additional type definitions is legal!
@@ -352,7 +352,7 @@ class XsSimpleTypeVal:
             try:
                 self.checkSimpleTypeDef (inputNode, childSimpleType, attrName, attributeValue, returnDict, idCheck)
                 return
-            except SimpleTypeError, errstr:
+            except SimpleTypeError as errstr:
                 pass
 
         raise SimpleTypeError ("%s (%s) is no valid union member type!" %(repr(attrName), repr(attributeValue)))
@@ -518,7 +518,7 @@ def _checkDurationType (inputNode, simpleType, attributeValue, returnDict):
         microseconds = int(Decimal(sign + regexObj.group("fracsec")) * 1000000)
     try:
         timeDeltaObj = datetime.timedelta(days=days, seconds=seconds, microseconds=microseconds)
-    except ValueError, errstr:
+    except ValueError as errstr:
         raise BaseTypeError("is invalid (%s)!" %(errstr))
     returnDict["orderedValue"] = timeDeltaObj
     returnDict["adaptedAttrValue"] = attributeValue
@@ -539,7 +539,7 @@ def _checkDateTimeType (inputNode, simpleType, attributeValue, returnDict):
             tz = None
         dtObj = datetime.datetime(int(date[0:4]),int(date[5:7]),int(date[8:10]),
                                   int(time[0:2]),int(time[3:5]),int(time[6:8]), 0, tz)
-    except ValueError, errstr:
+    except ValueError as errstr:
         raise BaseTypeError("is invalid (%s)!" %(errstr))
     returnDict["orderedValue"] = dtObj
     returnDict["adaptedAttrValue"] = attributeValue
@@ -552,7 +552,7 @@ def _checkDateType (inputNode, simpleType, attributeValue, returnDict):
         raise BaseTypeError("is not a date value!")
     try:
         dateObj = datetime.date(int(attributeValue[0:4]),int(attributeValue[5:7]),int(attributeValue[8:10]))
-    except ValueError, errstr:
+    except ValueError as errstr:
         raise BaseTypeError("is invalid (%s)!" %(errstr))
     returnDict["orderedValue"] = dateObj
     returnDict["adaptedAttrValue"] = attributeValue
@@ -576,7 +576,7 @@ def _checkTimeType (inputNode, simpleType, attributeValue, returnDict):
         else:
             fracSec = 0
         timeObj = datetime.time(int(time[0:2]),int(time[3:5]),int(time[6:8]), fracSec, tz)
-    except ValueError, errstr:
+    except ValueError as errstr:
         raise BaseTypeError("is invalid (%s)!" %(errstr))
     returnDict["orderedValue"] = timeObj
     returnDict["adaptedAttrValue"] = attributeValue
@@ -589,7 +589,7 @@ def _checkYearMonth (inputNode, simpleType, attributeValue, returnDict):
         raise BaseTypeError("is not a gYearMonth value!")
     try:
         dateObj = datetime.date(int(attributeValue[0:4]),int(attributeValue[5:7]),1)
-    except ValueError, errstr:
+    except ValueError as errstr:
         raise BaseTypeError("is invalid (%s)!" %(errstr))
     returnDict["orderedValue"] = dateObj
     returnDict["adaptedAttrValue"] = attributeValue
@@ -602,7 +602,7 @@ def _checkMonthDay (inputNode, simpleType, attributeValue, returnDict):
         raise BaseTypeError("is not a gMonthDay value!")
     try:
         dateObj = datetime.date(2004, int(attributeValue[2:4]),int(attributeValue[5:7]))
-    except ValueError, errstr:
+    except ValueError as errstr:
         raise BaseTypeError("is invalid (%s)!" %(errstr))
     returnDict["orderedValue"] = dateObj
     returnDict["adaptedAttrValue"] = attributeValue
@@ -669,10 +669,10 @@ class TimezoneFixedOffset(datetime.tzinfo):
 ########################################
 # define own exception for XML schema validation errors
 #
-class SimpleTypeError (StandardError):
+class SimpleTypeError (Exception):
     pass
 
-class BaseTypeError (StandardError):
+class BaseTypeError (Exception):
     pass
 
 

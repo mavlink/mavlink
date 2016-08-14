@@ -38,7 +38,6 @@
 # --------------------------------------------------------------------
 
 
-from types import TupleType
 from ..genxmlif.xmlifApi   import XmlElementWrapper
 
 
@@ -107,9 +106,9 @@ class XsvXmlElementWrapper (XmlElementWrapper):
         try:
             return self.xsdAttrNodes[tupleOrAttrName]
         except:
-            if isinstance(tupleOrAttrName, TupleType):
+            if isinstance(tupleOrAttrName, tuple):
                 if tupleOrAttrName[1] == '*' and len(self.xsdAttrNodes) == 1:
-                    return self.xsdAttrNodes.values()[0]
+                    return list(self.xsdAttrNodes.values())[0]
             return None
     
 

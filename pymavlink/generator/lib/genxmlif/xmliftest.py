@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from .. import genxmlif
 from ..genxmlif.xmlifODict import odict
 
@@ -9,6 +11,6 @@ xmlRootNode.appendChild("childTag", myDict)
 xmlRootNode.appendChild("childTag", {"childTag1":"123456", "childTag2":"123456"})
 xmlRootNode.appendChild("childTag", {"childTag1":"123456789", "childTag3":"1234", "childTag2":"123456789"})
 xmlRootNode.appendChild("childTag", {"childTag1":"1", "childTag2":"1"})
-print xmlTree.printTree(prettyPrint=1)
-print xmlTree
-print xmlTree.getRootNode()
+print(xmlTree.printTree(prettyPrint=1))
+print(xmlTree)
+print(xmlTree.getRootNode())

@@ -66,19 +66,19 @@ GENXMLIF_DIR = os.path.dirname(__file__)
 
 def chooseXmlIf (xmlIf, verbose=0, useCaching=1, processXInclude=1):
     if xmlIf == XMLIF_MINIDOM:
-        import xmlifMinidom
+        from . import xmlifMinidom
         return xmlifMinidom.XmlInterfaceMinidom(verbose, useCaching, processXInclude)
 
     elif xmlIf == XMLIF_4DOM:
-        import xmlif4Dom
+        from . import xmlif4Dom
         return xmlif4Dom.XmlInterface4Dom(verbose, useCaching, processXInclude)
 
     elif xmlIf == XMLIF_ELEMENTTREE:
-        import xmlifElementTree
+        from . import xmlifElementTree
         return xmlifElementTree.XmlInterfaceElementTree(verbose, useCaching, processXInclude)
 
     else:
-        raise AttributeError, "Unknown XML interface: %s" %(xmlIf)
+        raise AttributeError("Unknown XML interface: %s" %(xmlIf))
 
 
 ########################################
@@ -87,6 +87,6 @@ def chooseXmlIf (xmlIf, verbose=0, useCaching=1, processXInclude=1):
 # - Expat errors
 # - XInclude errors
 #
-class GenXmlIfError (StandardError):
+class GenXmlIfError (Exception):
     pass
 

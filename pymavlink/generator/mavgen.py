@@ -34,8 +34,8 @@ def mavgen(opts, args) :
     # Enable validation by default, disabling it if explicitly requested
     if opts.validate:
         try:
-            from lib.genxmlif import GenXmlIfError
-            from lib.minixsv import pyxsval
+            from .lib.genxmlif import GenXmlIfError
+            from .lib.minixsv import pyxsval
         except:
             print("WARNING: Unable to load XML validator libraries. XML validation will not be performed")
             opts.validate = False
