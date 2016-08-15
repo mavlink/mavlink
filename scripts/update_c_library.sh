@@ -16,20 +16,21 @@
 # git remote rename origin upstream
 # mkdir -p include/mavlink/v1.0
 # cd include/mavlink/v1.0
-# git clone git@github.com:mavlink/c_library.git
+# git clone git@github.com:mavlink/c_library_v1.git
 # cd ~/src/mavlink
-# ./scripts/update_c_library.sh
+# ./scripts/update_c_library.sh 1
 #
 # A one-liner for the TMP directory (e.g. for crontab)
 # cd /tmp; git clone git@github.com:mavlink/mavlink.git &> /dev/null; \
 # cd /tmp/mavlink && git remote rename origin upstream &> /dev/null; \
-# mkdir -p include/mavlink/v1.0 && cd include/mavlink/v1.0 && git clone git@github.com:mavlink/c_library.git &> /dev/null; \
+# mkdir -p include/mavlink/v1.0 && cd include/mavlink/v1.0 && git clone git@github.com:mavlink/c_library_v1.git &> /dev/null; \
 # cd /tmp/mavlink && ./scripts/update_c_library.sh &> /dev/null
 
 function generate_headers() {
 python pymavlink/tools/mavgen.py \
     --output $CLIBRARY_PATH \
     --lang C \
+    --wire-protocol $2.0 \
     message_definitions/v1.0/$1.xml
 }
 
@@ -37,7 +38,7 @@ python pymavlink/tools/mavgen.py \
 MAVLINK_PATH=$PWD
 MAVLINK_GIT_REMOTENAME=upstream
 MAVLINK_GIT_BRANCHNAME=master
-CLIBRARY_PATH=$MAVLINK_PATH/include/mavlink/v1.0/c_library
+CLIBRARY_PATH=$MAVLINK_PATH/include/mavlink/v$1.0/c_library_v$1
 CLIBRARY_GIT_REMOTENAME=origin
 CLIBRARY_GIT_BRANCHNAME=master
 
@@ -59,16 +60,14 @@ rm -rf $CLIBRARY_PATH/*
 
 # generate new c headers
 echo -e "\0033[34mStarting to generate c headers\0033[0m\n"
-generate_headers ardupilotmega
-generate_headers autoquad
-generate_headers matrixpilot
-generate_headers minimal
-generate_headers pixhawk
-generate_headers slugs
-generate_headers test
-generate_headers ualberta
-generate_headers ASLUAV
-generate_headers common
+generate_headers ardupilotmega $1
+generate_headers autoquad $1
+generate_headers matrixpilot $1
+generate_headers minimal $1
+generate_headers slugs $1
+generate_headers test $1
+generate_headers ASLUAV $1
+generate_headers common $1
 mkdir -p $CLIBRARY_PATH/message_definitions
 cp message_definitions/v1.0/* $CLIBRARY_PATH/message_definitions/.
 echo -e "\0033[34mFinished generating c headers\0033[0m\n"

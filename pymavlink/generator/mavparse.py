@@ -10,6 +10,11 @@ import xml.parsers.expat, os, errno, time, sys, operator, struct
 
 PROTOCOL_0_9 = "0.9"
 PROTOCOL_1_0 = "1.0"
+PROTOCOL_2_0 = "2.0"
+
+# message flags
+FLAG_HAVE_TARGET_SYSTEM    = 1
+FLAG_HAVE_TARGET_COMPONENT = 2
 
 class MAVParseError(Exception):
     def __init__(self, message, inner_exception=None):
@@ -115,6 +120,13 @@ class MAVType(object):
         self.description = description
         self.fields = []
         self.fieldnames = []
+        self.extensions_start = None
+
+    def base_fields(self):
+        '''return number of non-extended fields'''
+        if self.extensions_start is None:
+            return len(self.fields)
+        return len(self.fields[:self.extensions_start])
 
 class MAVEnumParam(object):
     def __init__(self, index, description=''):
@@ -158,19 +170,34 @@ class MAVXML(object):
         self.include = []
         self.wire_protocol_version = wire_protocol_version
 
+        # setup the protocol features for the requested protocol version
         if wire_protocol_version == PROTOCOL_0_9:
             self.protocol_marker = ord('U')
             self.sort_fields = False
             self.little_endian = False
             self.crc_extra = False
+            self.crc_struct = False
+            self.command_24bit = False
+            self.allow_extensions = False
         elif wire_protocol_version == PROTOCOL_1_0:
             self.protocol_marker = 0xFE
             self.sort_fields = True
             self.little_endian = True
             self.crc_extra = True
+            self.crc_struct = False
+            self.command_24bit = False
+            self.allow_extensions = False
+        elif wire_protocol_version == PROTOCOL_2_0:
+            self.protocol_marker = 0xFD
+            self.sort_fields = True
+            self.little_endian = True
+            self.crc_extra = True
+            self.crc_struct = True
+            self.command_24bit = True
+            self.allow_extensions = True
         else:
             print("Unknown wire protocol version")
-            print("Available versions are: %s %s" % (PROTOCOL_0_9, PROTOCOL_1_0))
+            print("Available versions are: %s %s" % (PROTOCOL_0_9, PROTOCOL_1_0, PROTOCOL_2_0))
             raise MAVParseError('Unknown MAVLink wire protocol version %s' % wire_protocol_version)
 
         in_element_list = []
@@ -188,6 +215,8 @@ class MAVXML(object):
             if in_element == "mavlink.messages.message":
                 check_attrs(attrs, ['name', 'id'], 'message')
                 self.message.append(MAVType(attrs['name'], attrs['id'], p.CurrentLineNumber))
+            elif in_element == "mavlink.messages.message.extensions":
+                self.message[-1].extensions_start = len(self.message[-1].fields)
             elif in_element == "mavlink.messages.message.field":
                 check_attrs(attrs, ['name', 'type'], 'field')
                 if 'print_format' in attrs:
@@ -198,8 +227,9 @@ class MAVXML(object):
                     enum = attrs['enum']
                 else:
                     enum = ''
-                self.message[-1].fields.append(MAVField(attrs['name'], attrs['type'],
-                                                        print_format, self, enum=enum))
+                new_field = MAVField(attrs['name'], attrs['type'], print_format, self, enum=enum)
+                if self.message[-1].extensions_start is None or self.allow_extensions:
+                    self.message[-1].fields.append(new_field)
             elif in_element == "mavlink.enums.enum":
                 check_attrs(attrs, ['name'], 'enum')
                 self.enum.append(MAVEnum(attrs['name'], p.CurrentLineNumber))
@@ -232,7 +262,8 @@ class MAVXML(object):
             if in_element == "mavlink.messages.message.description":
                 self.message[-1].description += data
             elif in_element == "mavlink.messages.message.field":
-                self.message[-1].fields[-1].description += data
+                if self.message[-1].extensions_start is None or self.allow_extensions:
+                    self.message[-1].fields[-1].description += data
             elif in_element == "mavlink.enums.enum.description":
                 self.enum[-1].description += data
             elif in_element == "mavlink.enums.enum.entry.description":
@@ -252,20 +283,45 @@ class MAVXML(object):
         p.ParseFile(f)
         f.close()
 
-        self.message_lengths = [ 0 ] * 256
-        self.message_crcs = [ 0 ] * 256
-        self.message_names = [ None ] * 256
+        self.message_lengths = {}
+        self.message_min_lengths = {}
+        self.message_flags = {}
+        self.message_target_system_ofs = {}
+        self.message_target_component_ofs = {}
+        self.message_crcs = {}
+        self.message_names = {}
         self.largest_payload = 0
 
+        if not self.command_24bit:
+            # remove messages with IDs > 255
+            m2 = []
+            for m in self.message:
+                if m.id <= 255:
+                    m2.append(m)
+                else:
+                    print("Ignoring MAVLink2 message %s" % m.name)
+            self.message = m2
+
         for m in self.message:
+            if not self.command_24bit and m.id > 255:
+                continue
+
             m.wire_length = 0
+            m.wire_min_length = 0
             m.fieldnames = []
             m.fieldlengths = []
             m.ordered_fieldnames = []
+            m.message_flags = 0
+            m.target_system_ofs = 0
+            m.target_component_ofs = 0
+            
             if self.sort_fields:
-                m.ordered_fields = sorted(m.fields,
-                                          key=operator.attrgetter('type_length'),
-                                          reverse=True)
+                # when we have extensions we only sort up to the first extended field
+                sort_end = m.base_fields()
+                m.ordered_fields = sorted(m.fields[:sort_end],
+                                                   key=operator.attrgetter('type_length'),
+                                                   reverse=True)
+                m.ordered_fields.extend(m.fields[sort_end:])
             else:
                 m.ordered_fields = m.fields
             for f in m.fields:
@@ -277,21 +333,38 @@ class MAVXML(object):
                     m.fieldlengths.append(1)
                 else:
                     m.fieldlengths.append(L)
-            for f in m.ordered_fields:
+            for i in range(len(m.ordered_fields)):
+                f = m.ordered_fields[i]
                 f.wire_offset = m.wire_length
                 m.wire_length += f.wire_length
+                if m.extensions_start is None or i < m.extensions_start:
+                    m.wire_min_length = m.wire_length
                 m.ordered_fieldnames.append(f.name)
                 f.set_test_value()
                 if f.name.find('[') != -1:
                     raise MAVParseError("invalid field name with array descriptor %s" % f.name)
+                # having flags for target_system and target_component helps a lot for routing code
+                if f.name == 'target_system':
+                    m.message_flags |= FLAG_HAVE_TARGET_SYSTEM
+                    m.target_system_ofs = f.wire_offset
+                elif f.name == 'target_component':
+                    m.message_flags |= FLAG_HAVE_TARGET_COMPONENT
+                    m.target_component_ofs = f.wire_offset
             m.num_fields = len(m.fieldnames)
             if m.num_fields > 64:
                 raise MAVParseError("num_fields=%u : Maximum number of field names allowed is" % (
                     m.num_fields, 64))
             m.crc_extra = message_checksum(m)
-            self.message_lengths[m.id] = m.wire_length
-            self.message_names[m.id] = m.name
-            self.message_crcs[m.id] = m.crc_extra
+
+            key = m.id
+            self.message_crcs[key] = m.crc_extra
+            self.message_lengths[key] = m.wire_length
+            self.message_min_lengths[key] = m.wire_min_length
+            self.message_names[key] = m.name
+            self.message_flags[key] = m.message_flags
+            self.message_target_system_ofs[key] = m.target_system_ofs
+            self.message_target_component_ofs[key] = m.target_component_ofs
+
             if m.wire_length > self.largest_payload:
                 self.largest_payload = m.wire_length
 
@@ -309,7 +382,11 @@ def message_checksum(msg):
     from .mavcrc import x25crc
     crc = x25crc()
     crc.accumulate_str(msg.name + ' ')
-    for f in msg.ordered_fields:
+    # in order to allow for extensions the crc does not include
+    # any field extensions
+    crc_end = msg.base_fields()
+    for i in range(crc_end):
+        f = msg.ordered_fields[i]
         crc.accumulate_str(f.type + ' ')
         crc.accumulate_str(f.name + ' ')
         if f.array_length:
@@ -358,11 +435,13 @@ def check_duplicates(xml):
     enummap = {}
     for x in xml:
         for m in x.message:
-            if m.id in msgmap:
+            key = m.id
+            if key in msgmap:
                 print("ERROR: Duplicate message id %u for %s (%s:%u) also used by %s" % (
-                    m.id, m.name,
+                    m.id,
+                    m.name,
                     x.filename, m.linenumber,
-                    msgmap[m.id]))
+                    msgmap[key]))
                 return True
             fieldset = set()
             for f in m.fields:
@@ -372,7 +451,7 @@ def check_duplicates(xml):
                         x.filename, m.linenumber))
                     return True
                 fieldset.add(f.name)
-            msgmap[m.id] = '%s (%s:%u)' % (m.name, x.filename, m.linenumber)
+            msgmap[key] = '%s (%s:%u)' % (m.name, x.filename, m.linenumber)
         for enum in x.enum:
             for entry in enum.entry:
                 if entry.autovalue == True and "common.xml" not in entry.origin_file:

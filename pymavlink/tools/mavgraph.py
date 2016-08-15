@@ -250,7 +250,12 @@ def process_file(filename, timeshift):
     while True:
         msg = mlog.recv_match(args.condition)
         if msg is None: break
-        tdays = matplotlib.dates.date2num(datetime.datetime.fromtimestamp(msg._timestamp+timeshift))
+        try:
+            tdays = matplotlib.dates.date2num(datetime.datetime.fromtimestamp(msg._timestamp+timeshift))
+        except ValueError:
+            # this can happen if the log is corrupt
+            # ValueError: year is out of range
+            break
         add_data(tdays, msg, mlog.messages, mlog.flightmode)
 
 if len(filenames) == 0:

@@ -7,7 +7,7 @@ of a series of MAVLink packets, each with a 64 bit timestamp
 header. The timestamp is in microseconds since 1970 (unix epoch)
 '''
 
-import sys, time, os, struct, json
+import sys, time, os, struct, json, fnmatch
 
 try:
     from pymavlink.mavextra import *
@@ -27,11 +27,15 @@ parser.add_argument("-o", "--output", default=None, help="output matching packet
 parser.add_argument("-p", "--parms", action='store_true', help="preserve parameters in output with -o")
 parser.add_argument("--format", default=None, help="Change the output format between 'standard', 'json', and 'csv'. For the CSV output, you must supply types that you want.")
 parser.add_argument("--csv_sep", dest="csv_sep", default=",", help="Select the delimiter between columns for the output CSV file. Use 'tab' to specify tabs. Only applies when --format=csv")
-parser.add_argument("--types", default=None, help="types of messages (comma separated)")
-parser.add_argument("--nottypes", default=None, help="types of messages not to include (comma separated)")
+parser.add_argument("--types", default=None, help="types of messages (comma separated with wildcard)")
+parser.add_argument("--nottypes", default=None, help="types of messages not to include (comma separated with wildcard)")
 parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect")
 parser.add_argument("--zero-time-base", action='store_true', help="use Z time base for DF logs")
 parser.add_argument("--no-bad-data", action='store_true', help="Don't output corrupted messages")
+parser.add_argument("--show-source", action='store_true', help="Show source system ID and component ID")
+parser.add_argument("--source-system", type=int, default=None, help="filter by source system ID")
+parser.add_argument("--source-component", type=int, default=None, help="filter by source component ID")
+parser.add_argument("--link", type=int, default=None, help="filter by comms link ID")
 parser.add_argument("log", metavar="LOG")
 args = parser.parse_args()
 
@@ -61,10 +65,17 @@ if nottypes is not None:
 
 ext = os.path.splitext(filename)[1]
 isbin = ext in ['.bin', '.BIN']
-islog = ext in ['.log', '.LOG','.tlog','.TLOG']
+islog = ext in ['.log', '.LOG'] # NOTE: "islog" does not mean a tlog
 
 if args.csv_sep == "tab":
     args.csv_sep = "\t"
+
+def match_type(mtype, patterns):
+    '''return True if mtype matches pattern'''
+    for p in patterns:
+        if fnmatch.fnmatch(mtype, p):
+            return True
+    return False
 
 # Write out a header row as we're outputting in CSV format.
 fields = ['timestamp']
@@ -119,13 +130,20 @@ while True:
             timestamp = getattr(m, '_timestamp', None)
             output.write(struct.pack('>Q', timestamp*1.0e6) + m.get_msgbuf())
             continue
+
     if not mavutil.evaluate_condition(args.condition, mlog.messages):
         continue
-
-    if types is not None and m.get_type() not in types and m.get_type() != 'BAD_DATA':
+    if args.source_system is not None and args.source_system != m.get_srcSystem():
+        continue
+    if args.source_component is not None and args.source_component != m.get_srcComponent():
+        continue
+    if args.link is not None and args.link != m._link:
         continue
 
-    if nottypes is not None and m.get_type() in nottypes:
+    if types is not None and m.get_type() != 'BAD_DATA' and not match_type(m.get_type(), types):
+        continue
+
+    if nottypes is not None and match_type(m.get_type(), nottypes):
         continue
 
     # Ignore BAD_DATA messages is the user requested or if they're because of a bad prefix. The
@@ -195,10 +213,12 @@ while True:
                 csv_out = [str(data[y.split('.')[-1]]) if y.split('.')[0] == type and y.split('.')[-1] in data else "" for y in fields]
     # Otherwise we output in a standard Python dict-style format
     else:
-        print("%s.%02u: %s" % (
-            time.strftime("%Y-%m-%d %H:%M:%S",
-                          time.localtime(timestamp)),
-                          int(timestamp*100.0)%100, m))
+        s = "%s.%02u: %s" % (time.strftime("%Y-%m-%d %H:%M:%S",
+                                           time.localtime(timestamp)),
+                             int(timestamp*100.0)%100, m)
+        if args.show_source:
+            s += " srcSystem=%u srcComponent=%u" % (m.get_srcSystem(), m.get_srcComponent())
+        print(s)
 
     # Update our last timestamp value.
     last_timestamp = timestamp

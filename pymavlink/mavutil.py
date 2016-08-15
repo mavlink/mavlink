@@ -32,13 +32,20 @@ mavfile_global = None
 # If the caller hasn't specified a particular native/legacy version, use this
 default_native = False
 
+# link_id used for signing
+global_link_id = 0
+
 # Use a globally-set MAVLink dialect if one has been specified as an environment variable.
 if not 'MAVLINK_DIALECT' in os.environ:
     os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
 
 def mavlink10():
-    '''return True if using MAVLink 1.0'''
+    '''return True if using MAVLink 1.0 or later'''
     return not 'MAVLINK09' in os.environ
+
+def mavlink20():
+    '''return True if using MAVLink 2.0'''
+    return 'MAVLINK20' in os.environ
 
 def evaluate_expression(expression, vars):
     '''evaluation an expression'''
@@ -70,7 +77,10 @@ def set_dialect(dialect):
     '''
     global mavlink, current_dialect
     from .generator import mavparse
-    if mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
+    if 'MAVLINK20' in os.environ:
+        wire_protocol = mavparse.PROTOCOL_2_0
+        modname = "pymavlink.dialects.v20." + dialect
+    elif mavlink is None or mavlink.WIRE_PROTOCOL_VERSION == "1.0" or not 'MAVLINK09' in os.environ:
         wire_protocol = mavparse.PROTOCOL_1_0
         modname = "pymavlink.dialects.v10." + dialect
     else:
@@ -102,7 +112,7 @@ class mavfile(object):
         self.fd = fd
         self.address = address
         self.messages = { 'MAV' : self }
-        if mavlink.WIRE_PROTOCOL_VERSION == "1.0":
+        if float(mavlink.WIRE_PROTOCOL_VERSION) >= 1:
             self.messages['HOME'] = mavlink.MAVLink_gps_raw_int_message(0,0,0,0,0,0,0,0,0,0)
             mavlink.MAVLink_waypoint_message = mavlink.MAVLink_mission_item_message
         else:
@@ -149,7 +159,7 @@ class mavfile(object):
             magic = ord(buf[0])
         except:
             magic = buf[0]
-        if not magic in [ 85, 254 ]:
+        if not magic in [ 85, 254, 253 ]:
             return
         self.first_byte = False
         if self.WIRE_PROTOCOL_VERSION == "0.9" and magic == 254:
@@ -157,8 +167,12 @@ class mavfile(object):
             set_dialect(current_dialect)
         elif self.WIRE_PROTOCOL_VERSION == "1.0" and magic == 85:
             self.WIRE_PROTOCOL_VERSION = "0.9"
-            set_dialect(current_dialect)
             os.environ['MAVLINK09'] = '1'
+            set_dialect(current_dialect)
+        elif self.WIRE_PROTOCOL_VERSION != "2.0" and magic == 253:
+            self.WIRE_PROTOCOL_VERSION = "2.0"
+            os.environ['MAVLINK20'] = '1'
+            set_dialect(current_dialect)
         else:
             return
         # switch protocol 
@@ -247,7 +261,7 @@ class mavfile(object):
         if type == 'HEARTBEAT' and msg.get_srcComponent() != mavlink.MAV_COMP_ID_GIMBAL:
             self.target_system = msg.get_srcSystem()
             self.target_component = msg.get_srcComponent()
-            if mavlink.WIRE_PROTOCOL_VERSION == '1.0' and msg.type != mavlink.MAV_TYPE_GCS:
+            if float(mavlink.WIRE_PROTOCOL_VERSION) >= 1 and msg.type != mavlink.MAV_TYPE_GCS:
                 self.flightmode = mode_string_v10(msg)
                 self.mav_type = msg.type
                 self.base_mode = msg.base_mode
@@ -267,6 +281,14 @@ class mavfile(object):
                 self.messages['HOME'] = msg
         for hook in self.message_hooks:
             hook(self, msg)
+
+        if (msg.get_signed() and
+            self.mav.signing.link_id == 0 and
+            msg.get_link_id() != 0 and
+            self.target_system == msg.get_srcSystem() and
+            self.target_component == msg.get_srcComponent()):
+            # change to link_id from incoming packet
+            self.mav.signing.link_id = msg.get_link_id()
 
 
     def packet_loss(self):
@@ -340,8 +362,12 @@ class mavfile(object):
         return evaluate_condition(condition, self.messages)
 
     def mavlink10(self):
-        '''return True if using MAVLink 1.0'''
-        return self.WIRE_PROTOCOL_VERSION == "1.0"
+        '''return True if using MAVLink 1.0 or later'''
+        return float(self.WIRE_PROTOCOL_VERSION) >= 1
+
+    def mavlink20(self):
+        '''return True if using MAVLink 2.0 or later'''
+        return float(self.WIRE_PROTOCOL_VERSION) >= 2
 
     def setup_logfile(self, logfile, mode='w'):
         '''start logging to the given logfile, with timestamps'''
@@ -464,6 +490,9 @@ class mavfile(object):
     def mode_mapping(self):
         '''return dictionary mapping mode names to numbers, or None if unknown'''
         mav_type = self.field('HEARTBEAT', 'type', self.mav_type)
+        mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+        if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+            return px4_map
         if mav_type is None:
             return None
         map = None
@@ -471,6 +500,7 @@ class mavfile(object):
                         mavlink.MAV_TYPE_HELICOPTER,
                         mavlink.MAV_TYPE_HEXAROTOR,
                         mavlink.MAV_TYPE_OCTOROTOR,
+                        mavlink.MAV_TYPE_COAXIAL,
                         mavlink.MAV_TYPE_TRICOPTER]:
             map = mode_mapping_acm
         if mav_type == mavlink.MAV_TYPE_FIXED_WING:
@@ -484,17 +514,21 @@ class mavfile(object):
         inv_map = dict((a, b) for (b, a) in list(map.items()))
         return inv_map
 
-    def set_mode(self, mode):
+    def set_mode(self, mode, custom_mode = 0, custom_sub_mode = 0):
         '''enter arbitrary mode'''
+        print('setting mode')
         if isinstance(mode, str):
-            map = self.mode_mapping()
-            if map is None or mode not in map:
+            mode_map = self.mode_mapping()
+            if mode_map is None or mode not in mode_map:
                 print("Unknown mode '%s'" % mode)
                 return
-            mode = map[mode]
-        self.mav.set_mode_send(self.target_system,
-                               mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
-                               mode)
+            if type(mode_map[mode_map.keys()[0]]) == tuple: # PX4 uses two fields to define modes
+                mode, custom_mode, custom_sub_mode = px4_map[mode]
+            else:
+                mode = mode_map[mode]
+        print(mode, custom_mode)
+        self.mav.command_long_send(self.target_system, self.target_component,
+                                   mavlink.MAV_CMD_DO_SET_MODE, 0, mode, custom_mode, custom_sub_mode, 0, 0, 0, 0)
 
     def set_mode_rtl(self):
         '''enter RTL mode'''
@@ -685,6 +719,34 @@ class mavfile(object):
             return default
         return self.params[name]
 
+    def setup_signing(self, secret_key, sign_outgoing=True, allow_unsigned_callback=None, initial_timestamp=None, link_id=None):
+        '''setup for MAVLink2 signing'''
+        self.mav.signing.secret_key = secret_key
+        self.mav.signing.sign_outgoing = sign_outgoing
+        self.mav.signing.allow_unsigned_callback = allow_unsigned_callback
+        if link_id is None:
+            # auto-increment the link_id for each link
+            global global_link_id
+            link_id = global_link_id
+            global_link_id = min(global_link_id + 1, 255)
+        self.mav.signing.link_id = link_id
+        if initial_timestamp is None:
+            # timestamp is time since 1/1/2015
+            epoch_offset = 1420070400
+            now = max(time.time(), epoch_offset)
+            initial_timestamp = now - epoch_offset
+            initial_timestamp = int(initial_timestamp * 100 * 1000)
+        # initial_timestamp is in 10usec units
+        self.mav.signing.timestamp = initial_timestamp
+
+    def disable_signing(self):
+        '''disable MAVLink2 signing'''
+        self.mav.signing.secret_key = None
+        self.mav.signing.sign_outgoing = False
+        self.mav.signing.allow_unsigned_callback = None
+        self.mav.signing.link_id = 0
+        self.mav.signing.timestamp = 0
+
 def set_close_on_exec(fd):
     '''set the clone on exec flag on a file descriptor. Ignore exceptions'''
     try:
@@ -720,7 +782,10 @@ class mavserial(mavfile):
 
     def set_rtscts(self, enable):
         '''enable/disable RTS/CTS if applicable'''
-        self.port.setRtsCts(enable)
+        try:
+            self.port.setRtsCts(enable)
+        except Exception:
+            self.port.rtscts = enable
         self.rtscts = enable
 
     def set_baudrate(self, baudrate):
@@ -1039,6 +1104,7 @@ class mavlogfile(mavfile):
         self._last_message = msg
         if msg.get_type() != "BAD_DATA":
             self._last_timestamp = msg._timestamp
+        msg._link = self._link
 
 
 class mavmemlog(mavfile):
@@ -1347,6 +1413,7 @@ mode_mapping_apm = {
     18 : 'QHOVER',
     19 : 'QLOITER',
     20 : 'QLAND',
+    21 : 'QRTL',
     }
 mode_mapping_acm = {
     0 : 'STABILIZE',
@@ -1364,7 +1431,10 @@ mode_mapping_acm = {
     13 : 'SPORT',
     14 : 'FLIP',
     15 : 'AUTOTUNE',
-    16 : 'POSHOLD'
+    16 : 'POSHOLD',
+    17 : 'BRAKE',
+    18 : 'THROW',
+    19 : 'AVOID_ADSB',
     }
 mode_mapping_rover = {
     0 : 'MANUAL',
@@ -1385,21 +1455,90 @@ mode_mapping_tracker = {
     16 : 'INITIALISING'
     }
 
-mode_mapping_px4 = {
-    0 : 'MANUAL',
-    1 : 'ATTITUDE',
-    2 : 'EASY',
-    3 : 'AUTO'
-    }
+# Custom mode definitions from PX4
+PX4_CUSTOM_MAIN_MODE_MANUAL            = 1
+PX4_CUSTOM_MAIN_MODE_ALTCTL            = 2
+PX4_CUSTOM_MAIN_MODE_POSCTL            = 3
+PX4_CUSTOM_MAIN_MODE_AUTO              = 4
+PX4_CUSTOM_MAIN_MODE_ACRO              = 5
+PX4_CUSTOM_MAIN_MODE_OFFBOARD          = 6
+PX4_CUSTOM_MAIN_MODE_STABILIZED        = 7
+PX4_CUSTOM_MAIN_MODE_RATTITUDE         = 8
 
+PX4_CUSTOM_SUB_MODE_AUTO_READY         = 1
+PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF       = 2
+PX4_CUSTOM_SUB_MODE_AUTO_LOITER        = 3
+PX4_CUSTOM_SUB_MODE_AUTO_MISSION       = 4
+PX4_CUSTOM_SUB_MODE_AUTO_RTL           = 5
+PX4_CUSTOM_SUB_MODE_AUTO_LAND          = 6
+PX4_CUSTOM_SUB_MODE_AUTO_RTGS          = 7
+PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET = 8
+
+auto_mode_flags  = mavlink.MAV_MODE_FLAG_AUTO_ENABLED \
+                 | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED \
+                 | mavlink.MAV_MODE_FLAG_GUIDED_ENABLED
+
+px4_map = { "MANUAL":        (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED | mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_MANUAL,      0                                       ),
+            "STABILIZED":    (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED | mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_STABILIZED,  0                                       ),
+            "ACRO":          (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED |                                           mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_ACRO,        0                                       ),
+            "RATTITUDE":     (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED |                                           mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_RATTITUDE,   0                                       ),
+            "ALTCTL":        (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED | mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_ALTCTL,      0                                       ),
+            "POSCTL":        (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | mavlink.MAV_MODE_FLAG_STABILIZE_ENABLED | mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,   PX4_CUSTOM_MAIN_MODE_POSCTL,      0                                       ),
+            "LOITER":        (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_LOITER         ),
+            "MISSION":       (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_MISSION        ),
+            "RTL":           (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_RTL            ),
+            "FOLLOWME":      (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET  ),
+            "OFFBOARD":      (mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | auto_mode_flags,                                                                        PX4_CUSTOM_MAIN_MODE_OFFBOARD,    0                                       )}
+
+
+def interpret_px4_mode(base_mode, custom_mode):
+    custom_main_mode = (custom_mode & 0xFF0000)   >> 16
+    custom_sub_mode  = (custom_mode & 0xFF000000) >> 24
+
+    if base_mode & mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED != 0: #manual modes
+        if custom_main_mode == PX4_CUSTOM_MAIN_MODE_MANUAL:
+            return "MANUAL"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_ACRO:
+            return "ACRO"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_RATTITUDE:
+            return "RATTITUDE"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_STABILIZED:
+            return "STABILIZED"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_ALTCTL:
+            return "ALTCTL"
+        elif custom_main_mode == PX4_CUSTOM_MAIN_MODE_POSCTL:
+            return "POSCTL"
+    elif (base_mode & auto_mode_flags) == auto_mode_flags: #auto modes
+        if custom_main_mode & PX4_CUSTOM_MAIN_MODE_AUTO != 0:
+            if custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_MISSION:
+                return "TAKEOFF"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF:
+                return "MISSION"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_LOITER:
+                return "LOITER"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET:
+                return "FOLLOWME"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_RTL:
+                return "RTL"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_LAND:
+                return "LAND"
+            elif custom_sub_mode == PX4_CUSTOM_SUB_MODE_AUTO_RTGS:
+                return "RTGS"
+            elif custom_sub_mode == PX4_CUSTOM_MAIN_MODE_OFFBOARD:
+                return "OFFBOARD"
+    return "UNKNOWN"
 
 def mode_mapping_byname(mav_type):
     '''return dictionary mapping mode names to numbers, or None if unknown'''
+    mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+    if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return px4_map # no need to invert this map, it already is.
     map = None
     if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
                     mavlink.MAV_TYPE_HELICOPTER,
                     mavlink.MAV_TYPE_HEXAROTOR,
                     mavlink.MAV_TYPE_OCTOROTOR,
+                    mavlink.MAV_TYPE_COAXIAL,
                     mavlink.MAV_TYPE_TRICOPTER]:
         map = mode_mapping_acm
     if mav_type == mavlink.MAV_TYPE_FIXED_WING:
@@ -1415,11 +1554,15 @@ def mode_mapping_byname(mav_type):
 
 def mode_mapping_bynumber(mav_type):
     '''return dictionary mapping mode numbers to name, or None if unknown'''
+    mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+    if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return dict((a, b) for (b, a) in px4_map.items())
     map = None
     if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
                     mavlink.MAV_TYPE_HELICOPTER,
                     mavlink.MAV_TYPE_HEXAROTOR,
                     mavlink.MAV_TYPE_OCTOROTOR,
+                    mavlink.MAV_TYPE_COAXIAL,
                     mavlink.MAV_TYPE_TRICOPTER]:
         map = mode_mapping_acm
     if mav_type == mavlink.MAV_TYPE_FIXED_WING:
@@ -1435,6 +1578,8 @@ def mode_mapping_bynumber(mav_type):
 
 def mode_string_v10(msg):
     '''mode string for 1.0 protocol, from heartbeat'''
+    if msg.autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return interpret_px4_mode(msg.base_mode, msg.custom_mode)
     if not msg.base_mode & mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED:
         return "Mode(0x%08x)" % msg.base_mode
     if msg.type in [ mavlink.MAV_TYPE_QUADROTOR, mavlink.MAV_TYPE_HEXAROTOR,
@@ -1464,12 +1609,6 @@ def mode_string_acm(mode_number):
     '''return mode string for APM:Copter'''
     if mode_number in mode_mapping_acm:
         return mode_mapping_acm[mode_number]
-    return "Mode(%u)" % mode_number
-
-def mode_string_px4(mode_number):
-    '''return mode string for PX4 flight stack'''
-    if mode_number in mode_mapping_px4:
-        return mode_mapping_px4[mode_number]
     return "Mode(%u)" % mode_number
 
 class x25crc(object):
