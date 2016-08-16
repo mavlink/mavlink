@@ -62,6 +62,17 @@ def mavgen(opts, args) :
         for i in x.include:
             fname = os.path.join(os.path.dirname(x.filename), i)
 
+            ## if xml file does not exist try to with mavlink "dialects" directory
+            if not os.path.exists(fname):
+                if opts.wire_protocol == mavparse.PROTOCOL_0_9:
+                    wire_protocol_dir = "09"
+                elif opts.wire_protocol == mavparse.PROTOCOL_1_0:
+                    wire_protocol_dir = "10"
+                else:
+                    wire_protocol_dir = "20"
+                fname = os.path.join(os.path.dirname(__file__), "..",
+                    "dialects", "v%s" % wire_protocol_dir, i)
+
             ## Validate XML file with XSD file if possible.
             if opts.validate:
                 print("Validating %s" % fname)
