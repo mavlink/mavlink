@@ -1,0 +1,37 @@
+<?xml version='1.0'?>
+<!-- Parrot Mavlink Message Definition File -->
+<!-- Used for the parrot drones (https://github.com/Parrot-Developers/libARMavlink) -->
+<!-- Copyright (C) 2014 Parrot SA, see https://github.com/Parrot-Developers/libARMavlink/blob/master/LICENSE.md -->
+<mavlink>
+        <include>common.xml</include>
+        <enums>
+            <!-- Parrot specific MAV_CMD_* commands -->
+            <!-- Space for custom messages starts at 40000, external custom MAV_CMD_* starts at 50000 -->
+            <enum name="MAV_CMD">
+                <entry value="50000" name="MAV_CMD_SET_VIEW_MODE">
+                    <description>Set the view mode</description>
+                    <param index="1">View mode type (see MAV_VIEW_MODE_TYPE)</param>
+                    <param index="2">Index of the ROI if view mode type is VIEW_MODE_TYPE_ROI. Empty otherwise.</param>
+                    <param index="3">Empty</param>
+                    <param index="4">Empty</param>
+                    <param index="5">Empty</param>
+                    <param index="6">Empty</param>
+                    <param index="7">Empty</param>
+               </entry>
+            </enum>
+            <enum name="MAV_VIEW_MODE_TYPE">
+               <description>Type of the view mode. This is how the vehicle should behave to set its orientation.</description>
+               <entry value="0" name="VIEW_MODE_TYPE_ABSOLUTE">
+                    <description>Vehicle orientation is fixed between two waypoints. Orientation is changed when the waypoint is validated</description>
+               </entry>
+               <entry value="1" name="VIEW_MODE_TYPE_CONTINUE">
+                    <description>Vehicle orientation changes linearly between two waypoints.</description>
+               </entry>
+               <entry value="2" name="VIEW_MODE_TYPE_ROI">
+                    <description>Vehicle orientation is given by a ROI.</description>
+               </entry>
+            </enum>
+        </enums>
+        <messages>
+        </messages>
+</mavlink>
