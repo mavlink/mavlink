@@ -75,6 +75,8 @@ def process(filename):
         # we don't use mlog.flightmode as that can be wrong if we are extracting a single link
         if mtype == 'HEARTBEAT' and m.get_srcComponent() != mavutil.mavlink.MAV_COMP_ID_GIMBAL and m.type != mavutil.mavlink.MAV_TYPE_GCS:
             flightmode = mavutil.mode_string_v10(m).upper()
+        if mtype == 'MODE':
+            flightmode = mlog.flightmode
 
         if (isbin or islog) and m.get_type() in ["FMT", "PARM", "CMD"]:
             file_header += m.get_msgbuf()
