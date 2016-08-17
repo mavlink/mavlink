@@ -1097,6 +1097,7 @@ class mavlogfile(mavfile):
         self._last_message = msg
         if msg.get_type() != "BAD_DATA":
             self._last_timestamp = msg._timestamp
+        msg._link = self._link
 
 
 class mavmemlog(mavfile):
@@ -1423,7 +1424,10 @@ mode_mapping_acm = {
     13 : 'SPORT',
     14 : 'FLIP',
     15 : 'AUTOTUNE',
-    16 : 'POSHOLD'
+    16 : 'POSHOLD',
+    17 : 'BRAKE',
+    18 : 'THROW',
+    19 : 'AVOID_ADSB',
     }
 mode_mapping_rover = {
     0 : 'MANUAL',
