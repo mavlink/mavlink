@@ -883,7 +883,7 @@ MAVLINK_HELPER void mavlink_set_proto_version(uint8_t chan, unsigned int version
  *
  * @return 1 for v1, 2 for v2
  */
-MAVLINK_HELPER unsigned int mavlink_get_proto_version(uint8_t chan, unsigned int version)
+MAVLINK_HELPER unsigned int mavlink_get_proto_version(uint8_t chan)
 {
 	mavlink_status_t *status = mavlink_get_channel_status(chan);
 	if ((status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) > 0) {
