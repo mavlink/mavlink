@@ -3,6 +3,10 @@
 graph a MAVLink log file
 Andrew Tridgell August 2011
 '''
+from __future__ import print_function
+from builtins import input
+from past.builtins import range
+from past.utils import old_div
 
 import sys, struct, time, os, datetime
 import math, re
@@ -75,7 +79,7 @@ def plotit(x, y, fields, colors=[]):
     intervals = [ 1, 2, 5, 10, 15, 30, 60, 120, 240, 300, 600,
                   900, 1800, 3600, 7200, 5*3600, 10*3600, 24*3600 ]
     for interval in intervals:
-        if xrange / interval < 15:
+        if old_div(xrange, interval) < 15:
             break
     locator = matplotlib.dates.SecondLocator(interval=interval)
     if not args.xaxis:
@@ -296,7 +300,7 @@ for fi in range(0, len(filenames)):
 if args.output is None:
     pylab.show()
     pylab.draw()
-    input('press enter to exit....')
+    eval(input('press enter to exit....'))
 else:
     pylab.legend(loc=2,prop={'size':8})
     pylab.savefig(args.output, bbox_inches='tight', dpi=200)

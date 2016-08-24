@@ -3,6 +3,7 @@
 '''
 extract mavlink mission from log
 '''
+from __future__ import print_function
 
 import sys, time, os
 

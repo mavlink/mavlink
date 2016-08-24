@@ -3,11 +3,14 @@
 '''
 test mavlink messages
 '''
+from __future__ import absolute_import
+from __future__ import print_function
 
 import sys, struct, time, os
 from curses import ascii
 
-from pymavlink import mavtest, mavutil
+from pymavlink import mavutil
+from pymavlink import mavtest
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)

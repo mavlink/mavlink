@@ -3,6 +3,9 @@
 '''
 fit best estimate of magnetometer offsets, trying to take into account motor interference
 '''
+from __future__ import print_function
+from past.builtins import range
+from past.utils import old_div
 
 import sys, time, os, math
 
@@ -31,7 +34,7 @@ def select_data(data):
     counts = {}
     for d in data:
         (mag,motor) = d
-        key = "%u:%u:%u" % (mag.x/20,mag.y/20,mag.z/20)
+        key = "%u:%u:%u" % (old_div(mag.x,20),old_div(mag.y,20),old_div(mag.z,20))
         if key in counts:
             counts[key] += 1
         else:
@@ -105,7 +108,7 @@ def magfit(logfile):
             motor_pwm *= 0.25
             rc3_min = mlog.param('RC3_MIN', 1100)
             rc3_max = mlog.param('RC3_MAX', 1900)
-            motor = (motor_pwm - rc3_min) / (rc3_max - rc3_min)
+            motor = old_div((motor_pwm - rc3_min), (rc3_max - rc3_min))
             if motor > 1.0:
                 motor = 1.0
             if motor < 0.0:
@@ -132,7 +135,7 @@ def magfit(logfile):
             radius(data[0], offsets, motor_ofs), radius(data[-1], offsets, motor_ofs)))
 
         # discard outliers, keep the middle 3/4
-        data = data[len(data)/8:-len(data)/8]
+        data = data[old_div(len(data),8):old_div(-len(data),8)]
 
         # fit again
         (offsets, motor_ofs, field_strength) = fit_data(data)

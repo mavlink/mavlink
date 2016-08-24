@@ -3,6 +3,7 @@
 '''
 extract one mode type from a log
 '''
+from __future__ import print_function
 
 import sys, time, os, struct
 

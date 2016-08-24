@@ -7,6 +7,11 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 
 '''
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import sys, textwrap, os, copy
 from . import mavparse
 
@@ -34,8 +39,12 @@ def mavgen(opts, args) :
     # Enable validation by default, disabling it if explicitly requested
     if opts.validate:
         try:
-            from lib.genxmlif import GenXmlIfError
-            from lib.minixsv import pyxsval
+            from lxml import etree
+            with open(schemaFile, 'r') as f:
+                schema_root = etree.XML(f.read())
+
+            schema = etree.XMLSchema(schema_root)
+            xmlparser = etree.XMLParser(schema=schema)
         except:
             print("WARNING: Unable to load XML validator libraries. XML validation will not be performed")
             opts.validate = False
@@ -44,7 +53,12 @@ def mavgen(opts, args) :
         """Uses minixsv to validate an XML file with a given XSD schema file. We define mavgen_validate
            here because it relies on the XML libs that were loaded in mavgen(), so it can't be called standalone"""
         # use default values of minixsv, location of the schema file must be specified in the XML file
-        domTreeWrapper = pyxsval.parseAndValidate(fname, xsdFile=schema, errorLimit=errorLimitNumber)
+        try:
+            with open(fname, 'r') as f:
+                etree.fromstring(f.read(), xmlparser)
+            return True
+        except etree.XMLSchemaError:
+            return False
 
     # Process all XML files, validating them as necessary.
     for fname in args:
@@ -128,7 +142,7 @@ def mavgen(opts, args) :
 
 
 # build all the dialects in the dialects subpackage
-class Opts:
+class Opts(object):
     def __init__(self, output, wire_protocol=DEFAULT_WIRE_PROTOCOL, language=DEFAULT_LANGUAGE, validate=DEFAULT_VALIDATE, error_limit=DEFAULT_ERROR_LIMIT):
         self.wire_protocol = wire_protocol
         self.error_limit = error_limit

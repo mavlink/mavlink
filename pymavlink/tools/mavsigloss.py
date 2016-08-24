@@ -3,6 +3,8 @@
 '''
 show times when signal is lost
 '''
+from __future__ import print_function
+from past.utils import old_div
 
 import sys, time, os
 
@@ -44,7 +46,7 @@ def sigloss(logfile):
         if args.notimestamps:
             if not 'usec' in m._fieldnames:
                 continue
-            t = m.usec / 1.0e6
+            t = old_div(m.usec, 1.0e6)
         else:
             t = m._timestamp
         if last_t != 0:

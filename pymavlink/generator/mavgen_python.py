@@ -5,6 +5,10 @@ parse a MAVLink protocol XML file and generate a python implementation
 Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
+from __future__ import print_function
+from builtins import str
+from past.builtins import range
+
 
 import sys, textwrap, os
 from . import mavparse, mavtemplate
@@ -21,7 +25,11 @@ Generated from: ${FILELIST}
 
 Note: this file has been auto-generated. DO NOT EDIT
 '''
-
+from __future__ import print_function
+from builtins import str
+from builtins import chr
+from builtins import object
+from past.builtins import range
 import struct, array, time, json, os, sys, platform
 
 from ...generator.mavcrc import x25crc
@@ -264,8 +272,8 @@ def generate_classes(outf, msgs):
     wrapper = textwrap.TextWrapper(initial_indent="        ", subsequent_indent="        ")
     for m in msgs:
         classname = "MAVLink_%s_message" % m.name.lower()
-        fieldname_str = ", ".join(map(lambda s: "'%s'" % s, m.fieldnames))
-        ordered_fieldname_str = ", ".join(map(lambda s: "'%s'" % s, m.ordered_fieldnames))
+        fieldname_str = ", ".join(["'%s'" % s for s in m.fieldnames])
+        ordered_fieldname_str = ", ".join(["'%s'" % s for s in m.ordered_fieldnames])
 
         outf.write("""
 class %s(MAVLink_message):
@@ -543,8 +551,7 @@ class MAVLink(object):
             self.have_prefix_error = False
             if self.buf_len() >= 3:
                 sbuf = self.buf[self.buf_index:3+self.buf_index]
-                if sys.version_info[0] < 3:
-                    sbuf = str(sbuf)
+
                 (magic, self.expected_length, incompat_flags) = struct.unpack('BBB', sbuf)
                 if magic == PROTOCOL_MARKER_V2 and (incompat_flags & MAVLINK_IFLAG_SIGNED):
                         self.expected_length += MAVLINK_SIGNATURE_BLOCK_LEN

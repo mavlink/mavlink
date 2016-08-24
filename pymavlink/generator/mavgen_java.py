@@ -5,6 +5,10 @@
     Copyright Andrew Tridgell 2011
     Released under GNU GPL version 3 or later
     '''
+from __future__ import print_function
+from builtins import str
+from past.builtins import range
+from builtins import object
 
 import sys, textwrap, os, time
 from . import mavparse, mavtemplate

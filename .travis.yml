@@ -6,8 +6,10 @@ language: python
 python:
   - "2.6"
   - "2.7"
-  - "3.2"
   - "3.3"
+  - "3.4"
+  - "3.5"
+  
 script:
   # NOTE: we must do all testing on the installed python package, not 
   # on the build tree. Otherwise the testing is invalid and may not
@@ -16,6 +18,7 @@ script:
   # Set pythonpath
 
   # install
+  - pip install -U pip setuptools future
   - cd pymavlink
   - python setup.py build install
   - cd ..

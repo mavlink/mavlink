@@ -3,6 +3,9 @@
 '''
 fit best estimate of magnetometer offsets
 '''
+from __future__ import print_function
+from past.utils import old_div
+from builtins import object
 
 import sys, time, os, math
 
@@ -138,8 +141,8 @@ def magfit(logfile):
             gps_heading = m.hdg
         if m.get_type() == "GPS_RAW_INT":
             # flying if groundspeed more than 5 m/s
-            flying = (m.vel/100 > args.minspeed and m.fix_type == 3)
-            gps_heading = m.cog/100
+            flying = (old_div(m.vel,100) > args.minspeed and m.fix_type == 3)
+            gps_heading = old_div(m.cog,100)
         if m.get_type() == "ATTITUDE":
             attitude = m
         if m.get_type() == "SENSOR_OFFSETS":

@@ -1,4 +1,5 @@
 '''MAVLink X25 CRC code'''
+from builtins import object
 
 
 class x25crc(object):

@@ -3,6 +3,8 @@
 '''
 set stream rate on an APM
 '''
+from __future__ import print_function
+from past.builtins import range
 
 import sys, struct, time, os
 

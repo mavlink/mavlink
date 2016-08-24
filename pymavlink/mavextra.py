@@ -5,6 +5,10 @@ useful extra functions for use by mavlink clients
 Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import object
+from past.utils import old_div
 
 import os, sys
 from math import *
@@ -36,7 +40,7 @@ def altitude(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
         ground_pressure = self.param('GND_ABS_PRESS', 1)
     if ground_temp is None:
         ground_temp = self.param('GND_TEMP', 0)
-    scaling = ground_pressure / (SCALED_PRESSURE.press_abs*100.0)
+    scaling = old_div(ground_pressure, (SCALED_PRESSURE.press_abs*100.0))  # backward compat
     temp = ground_temp + 273.15
     return log(scaling) * temp * 29271.267 * 0.001
 
@@ -57,7 +61,7 @@ def altitude2(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
 def mag_heading(RAW_IMU, ATTITUDE, declination=None, SENSOR_OFFSETS=None, ofs=None):
     '''calculate heading from raw magnetometer'''
     if declination is None:
-        import mavutil
+        from . import mavutil
         declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     mag_x = RAW_IMU.xmag
     mag_y = RAW_IMU.ymag
@@ -83,7 +87,7 @@ def mag_heading_motors(RAW_IMU, ATTITUDE, declination, SENSOR_OFFSETS, ofs, SERV
     ofs = get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs)
 
     if declination is None:
-        import mavutil
+        from . import mavutil
         declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     mag_x = RAW_IMU.xmag
     mag_y = RAW_IMU.ymag
@@ -121,7 +125,7 @@ def mag_field_df(MAG, ofs=None):
 
 def get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs):
     '''calculate magnetic field strength from raw magnetometer'''
-    import mavutil
+    from . import mavutil
     self = mavutil.mavfile_global
 
     m = SERVO_OUTPUT_RAW
@@ -129,7 +133,7 @@ def get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs):
     motor_pwm *= 0.25
     rc3_min = self.param('RC3_MIN', 1100)
     rc3_max = self.param('RC3_MAX', 1900)
-    motor = (motor_pwm - rc3_min) / (rc3_max - rc3_min)
+    motor = old_div((motor_pwm - rc3_min), (rc3_max - rc3_min))  # backward compat
     if motor > 1.0:
         motor = 1.0
     if motor < 0.0:
@@ -175,14 +179,14 @@ def average(var, key, N):
         return var
     average_data[key].pop(0)
     average_data[key].append(var)
-    return sum(average_data[key])/N
+    return old_div(sum(average_data[key]),N)  # backward compat
 
 derivative_data = {}
 
 def second_derivative_5(var, key):
     '''5 point 2nd derivative'''
     global derivative_data
-    import mavutil
+    from . import mavutil
     tnow = mavutil.mavfile_global.timestamp
 
     if not key in derivative_data:
@@ -195,13 +199,13 @@ def second_derivative_5(var, key):
     h = (tnow - last_time)
     # N=5 2nd derivative from
     # http://www.holoborodko.com/pavel/numerical-methods/numerical-derivative/smooth-low-noise-differentiators/
-    ret = ((data[4] + data[0]) - 2*data[2]) / (4*h**2)
+    ret = old_div(((data[4] + data[0]) - 2*data[2]), (4*h**2))  # backward compat
     return ret
 
 def second_derivative_9(var, key):
     '''9 point 2nd derivative'''
     global derivative_data
-    import mavutil
+    from . import mavutil
     tnow = mavutil.mavfile_global.timestamp
 
     if not key in derivative_data:
@@ -215,7 +219,7 @@ def second_derivative_9(var, key):
     # N=5 2nd derivative from
     # http://www.holoborodko.com/pavel/numerical-methods/numerical-derivative/smooth-low-noise-differentiators/
     f = data
-    ret = ((f[8] + f[0]) + 4*(f[7] + f[1]) + 4*(f[6]+f[2]) - 4*(f[5]+f[3]) - 10*f[4])/(64*h**2)
+    ret = old_div(((f[8] + f[0]) + 4*(f[7] + f[1]) + 4*(f[6]+f[2]) - 4*(f[5]+f[3]) - 10*f[4]),(64*h**2))  # backward compat # backward compat
     return ret
 
 lowpass_data = {}
@@ -250,7 +254,7 @@ def delta(var, key, tusec=None):
     if tusec is not None:
         tnow = tusec * 1.0e-6
     else:
-        import mavutil
+        from . import mavutil
         tnow = mavutil.mavfile_global.timestamp
     dv = 0
     ret = 0
@@ -261,7 +265,7 @@ def delta(var, key, tusec=None):
         if tnow == last_t:
             ret = 0
         else:
-            ret = (var - last_v) / (tnow - last_t)
+            ret = old_div((var - last_v), (tnow - last_t))  # backward compat
     last_delta[key] = (var, tnow, ret)
     return ret
 
@@ -271,7 +275,7 @@ def delta_angle(var, key, tusec=None):
     if tusec is not None:
         tnow = tusec * 1.0e-6
     else:
-        import mavutil
+        from . import mavutil
         tnow = mavutil.mavfile_global.timestamp
     dv = 0
     ret = 0
@@ -287,7 +291,7 @@ def delta_angle(var, key, tusec=None):
                 dv -= 360
             if dv < -180:
                 dv += 360
-            ret = dv / (tnow - last_t)
+            ret = old_div(dv, (tnow - last_t))  # backward compat
     last_delta[key] = (var, tnow, ret)
     return ret
 
@@ -310,7 +314,7 @@ def roll_estimate(RAW_IMU,GPS_RAW_INT=None,ATTITUDE=None,SENSOR_OFFSETS=None, of
             rx *= mul[0]
             ry *= mul[1]
             rz *= mul[2]
-    return lowpass(degrees(-asin(ry/sqrt(rx**2+ry**2+rz**2))),'_roll',smooth)
+    return lowpass(degrees(-asin(old_div(ry,sqrt(rx**2+ry**2+rz**2)))),'_roll',smooth)  # backward compat
 
 def pitch_estimate(RAW_IMU, GPS_RAW_INT=None,ATTITUDE=None, SENSOR_OFFSETS=None, ofs=None, mul=None, smooth=0.7):
     '''estimate pitch from accelerometer'''
@@ -331,7 +335,7 @@ def pitch_estimate(RAW_IMU, GPS_RAW_INT=None,ATTITUDE=None, SENSOR_OFFSETS=None,
             rx *= mul[0]
             ry *= mul[1]
             rz *= mul[2]
-    return lowpass(degrees(asin(rx/sqrt(rx**2+ry**2+rz**2))),'_pitch',smooth)
+    return lowpass(degrees(asin(old_div(rx,sqrt(rx**2+ry**2+rz**2)))),'_pitch',smooth)  # backward compat
 
 def rotation(ATTITUDE):
     '''return the current DCM rotation matrix'''
@@ -389,7 +393,7 @@ def expected_mag(RAW_IMU, ATTITUDE, inclination, declination):
 def mag_discrepancy(RAW_IMU, ATTITUDE, inclination, declination=None):
     '''give the magnitude of the discrepancy between observed and expected magnetic field'''
     if declination is None:
-        import mavutil
+        from . import mavutil
         declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     expected = expected_mag(RAW_IMU, ATTITUDE, inclination, declination)
     mag = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
@@ -399,7 +403,7 @@ def mag_discrepancy(RAW_IMU, ATTITUDE, inclination, declination=None):
 def mag_inclination(RAW_IMU, ATTITUDE, declination=None):
     '''give the magnitude of the discrepancy between observed and expected magnetic field'''
     if declination is None:
-        import mavutil
+        from . import mavutil
         declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     r = rotation(ATTITUDE)
     mag1 = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
@@ -455,11 +459,11 @@ def pitch_sim(SIMSTATE, GPS_RAW):
     xacc = SIMSTATE.xacc - lowpass(delta(GPS_RAW.v,"v")*6.6, "v", 0.9)
     zacc = SIMSTATE.zacc
     zacc += SIMSTATE.ygyro * GPS_RAW.v;
-    if xacc/zacc >= 1:
+    if old_div(xacc,zacc) >= 1:  # backward compat
         return 0
-    if xacc/zacc <= -1:
+    if old_div(xacc,zacc) <= -1:  # backward compat
         return -0
-    return degrees(-asin(xacc/zacc))
+    return degrees(-asin(old_div(xacc,zacc)))  # backward compat
 
 def distance_two(GPS_RAW1, GPS_RAW2, horizontal=True):
     '''distance between two points'''
@@ -511,10 +515,10 @@ def distance_home(GPS_RAW):
 
 def sawtooth(ATTITUDE, amplitude=2.0, period=5.0):
     '''sawtooth pattern based on uptime'''
-    mins = (ATTITUDE.usec * 1.0e-6)/60
+    mins = old_div((ATTITUDE.usec * 1.0e-6),60)  # backward compat
     p = fmod(mins, period*2)
     if p < period:
-        return amplitude * (p/period)
+        return amplitude * (old_div(p,period))  # backward compat
     return amplitude * (period - (p-period))/period
 
 def rate_of_turn(speed, bank):
@@ -527,11 +531,11 @@ def rate_of_turn(speed, bank):
 
 def wingloading(bank):
     '''return expected wing loading factor for a bank angle in radians'''
-    return 1.0/cos(bank)
+    return old_div(1.0,cos(bank))  # backward compat
 
 def airspeed(VFR_HUD, ratio=None, used_ratio=None, offset=None):
     '''recompute airspeed with a different ARSPD_RATIO'''
-    import mavutil
+    from . import mavutil
     mav = mavutil.mavfile_global
     if ratio is None:
         ratio = 1.9936 # APM default
@@ -545,7 +549,7 @@ def airspeed(VFR_HUD, ratio=None, used_ratio=None, offset=None):
         airspeed = VFR_HUD.airspeed
     else:
         airspeed = VFR_HUD.Airspeed
-    airspeed_pressure = (airspeed**2) / used_ratio
+    airspeed_pressure = old_div((airspeed**2), used_ratio)  # backward compat
     if offset is not None:
         airspeed_pressure += offset
         if airspeed_pressure < 0:
@@ -556,20 +560,20 @@ def airspeed(VFR_HUD, ratio=None, used_ratio=None, offset=None):
 def EAS2TAS(ARSP,GPS,BARO,ground_temp=25):
     '''EAS2TAS from ARSP.Temp'''
     tempK = ground_temp + 273.15 - 0.0065 * GPS.Alt
-    return sqrt(1.225 / (BARO.Press / (287.26 * tempK)))
+    return sqrt(old_div(1.225, (old_div(BARO.Press, (287.26 * tempK)))))  # backward compat
 
 
 def airspeed_ratio(VFR_HUD):
     '''recompute airspeed with a different ARSPD_RATIO'''
-    import mavutil
+    from . import mavutil
     mav = mavutil.mavfile_global
-    airspeed_pressure = (VFR_HUD.airspeed**2) / ratio
+    airspeed_pressure = old_div((VFR_HUD.airspeed**2), ratio)  # backward compat
     airspeed = sqrt(airspeed_pressure * ratio)
     return airspeed
 
 def airspeed_voltage(VFR_HUD, ratio=None):
     '''back-calculate the voltage the airspeed sensor must have seen'''
-    import mavutil
+    from . import mavutil
     mav = mavutil.mavfile_global
     if ratio is None:
         ratio = 1.9936 # APM default
@@ -581,7 +585,7 @@ def airspeed_voltage(VFR_HUD, ratio=None):
         offset = mav.params['ARSPD_OFFSET']
     else:
         return -1
-    airspeed_pressure = (pow(VFR_HUD.airspeed,2)) / used_ratio
+    airspeed_pressure = old_div((pow(VFR_HUD.airspeed,2)), used_ratio)  # backward compat
     raw = airspeed_pressure + offset
     SCALING_OLD_CALIBRATION = 204.8
     voltage = 5.0 * raw / 4096
@@ -603,7 +607,7 @@ def earth_rates(ATTITUDE):
     thetaDot = q*cos(phi) - r*sin(phi)
     if fabs(cos(theta)) < 1.0e-20:
         theta += 1.0e-10
-    psiDot   = (q*sin(phi) + r*cos(phi))/cos(theta)
+    psiDot   = old_div((q*sin(phi) + r*cos(phi)),cos(theta))  # backward compat
     return (phiDot, thetaDot, psiDot)
 
 def roll_rate(ATTITUDE):
@@ -681,7 +685,7 @@ def rover_turn_circle(SERVO_OUTPUT_RAW):
 
     steering_angle = max_wheel_turn * (SERVO_OUTPUT_RAW.servo1_raw - 1500) / 400.0
     theta = radians(steering_angle)
-    return (wheeltrack/2) + (wheelbase/sin(theta))
+    return (old_div(wheeltrack,2)) + (old_div(wheelbase,sin(theta)))  # backward compat
 
 def rover_yaw_rate(VFR_HUD, SERVO_OUTPUT_RAW):
     '''return yaw rate in degrees/second given steering_angle and speed'''
@@ -693,8 +697,8 @@ def rover_yaw_rate(VFR_HUD, SERVO_OUTPUT_RAW):
         return 0
     d = rover_turn_circle(SERVO_OUTPUT_RAW)
     c = pi * d
-    t = c / speed
-    rate = 360.0 / t
+    t = old_div(c, speed)  # backward compat
+    rate = old_div(360.0, t)  # backward compat
     return rate
 
 def rover_lat_accel(VFR_HUD, SERVO_OUTPUT_RAW):
@@ -797,7 +801,7 @@ class DCM_State(object):
 
     def update(self, gyro, accel, mag, GPS):
         if self.gyro != gyro or self.accel != accel:
-            delta_angle = (gyro+self.omega_I) / self.rate
+            delta_angle = old_div((gyro+self.omega_I), self.rate)  # backward compat
             self.dcm.rotate(delta_angle)
             correction = self.last_delta_angle % delta_angle
             #print (delta_angle - self.last_delta_angle) * 58.0
@@ -943,7 +947,7 @@ def gps_newpos(lat, lon, bearing, distance):
   lat1 = math.radians(lat)
   lon1 = math.radians(lon)
   brng = math.radians(bearing)
-  dr = distance/radius_of_earth
+  dr = old_div(distance,radius_of_earth)  # backward compat
 
   lat2 = math.asin(math.sin(lat1)*math.cos(dr) +
                    math.cos(lat1)*math.sin(dr)*math.cos(brng))

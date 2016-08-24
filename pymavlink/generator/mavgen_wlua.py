@@ -10,6 +10,10 @@ Instructions for use:
 2. convert binary stream int .pcap file format (see ../examples/mav2pcap.py)
 3. open the pcap file in Wireshark
 '''
+from __future__ import print_function
+from builtins import str
+from past.builtins import range
+from past.utils import old_div
 
 import sys, textwrap, os, re
 from . import mavparse, mavtemplate
@@ -30,7 +34,7 @@ def type_size(mavlink_type):
     re_int = re.compile('^(u?)int(8|16|32|64)_t$')
     int_parts = re_int.findall(mavlink_type)
     if len(int_parts):
-        return int(int_parts[0][1])/8
+        return old_div(int(int_parts[0][1]),8)
     elif mavlink_type == 'float':
         return 4
     elif mavlink_type == 'double':

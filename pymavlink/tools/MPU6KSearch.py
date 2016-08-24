@@ -3,6 +3,10 @@
 '''
 search a set of log files for signs of inconsistent IMU data
 '''
+from __future__ import print_function
+from builtins import input
+from past.builtins import range
+from past.utils import old_div
 
 import sys, time, os, glob
 import zipfile
@@ -54,7 +58,7 @@ def IMUCheckFail(filename):
         if mtype == 'RAW_IMU':
             accel1 = [m.xacc*9.81*0.001, m.yacc*9.81*0.001, m.zacc*9.81*0.001]
             gyro1  = [degrees(m.xgyro*0.001), degrees(m.ygyro*0.001), degrees(m.zgyro*0.001)]
-            t1 = m.time_usec/1000
+            t1 = old_div(m.time_usec,1000)
             imu1_count += 1
         elif mtype == 'SCALED_IMU2':
             accel2 = [m.xacc*9.81*0.001, m.yacc*9.81*0.001, m.zacc*9.81*0.001]
@@ -168,7 +172,7 @@ for i in range(len(filelist)):
 
 if len(found) == 0:
     print("No matching files found - all OK!")
-    raw_input('Press enter to close')
+    input('Press enter to close')
     sys.exit(0)
 
 print("Creating zip file %s" % results)
@@ -179,7 +183,7 @@ except Exception:
     print("Please send matching files manually")
     for f in found:
         print('MATCHED: %s' % f)
-    raw_input('Press enter to close')
+    input('Press enter to close')
     sys.exit(1)
 
 for f in found:
@@ -195,5 +199,5 @@ print("Created %s with %u of %u matching logs" % (results, len(found), len(filel
 print("Please send this file to %s" % email)
 print('==============================================')
 
-raw_input('Press enter to close')
+input('Press enter to close')
 sys.exit(0)

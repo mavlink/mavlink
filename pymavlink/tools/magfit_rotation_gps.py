@@ -3,6 +3,10 @@
 '''
 fit best estimate of magnetometer rotation to GPS data
 '''
+from __future__ import print_function
+from past.builtins import range
+from past.utils import old_div
+from builtins import object
 
 import sys, time, os, math
 
@@ -112,7 +116,7 @@ def magfit(logfile):
             r.roll,
             r.pitch,
             r.yaw,
-            total_error[i]/count))
+            old_div(total_error[i],count)))
         if total_error[i] < best_err:
             best_i = i
             best_err = total_error[i]
@@ -121,7 +125,7 @@ def magfit(logfile):
         r.roll,
         r.pitch,
         r.yaw,
-        best_err/count))
+        old_div(best_err,count)))
 
 for filename in args.logs:
     magfit(filename)

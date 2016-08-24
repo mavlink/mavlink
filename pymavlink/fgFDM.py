@@ -1,8 +1,12 @@
+
 #!/usr/bin/env python
 # parse and construct FlightGear NET FDM packets
 # Andrew Tridgell, November 2011
 # released under GNU GPL version 2 or later
 
+from builtins import object
+from past.builtins import range
+from past.utils import old_div
 import struct, math
 
 class fgFDMError(Exception):
@@ -153,7 +157,7 @@ class fgFDM(object):
         if (fromunits,tounits) in self.unitmap:
             return value * self.unitmap[(fromunits,tounits)]
         if (tounits,fromunits) in self.unitmap:
-            return value / self.unitmap[(tounits,fromunits)]
+            return old_div(value, self.unitmap[(tounits,fromunits)] )  # backward compat
         raise fgFDMError("unknown unit mapping (%s,%s)" % (fromunits, tounits))
 
 
@@ -206,7 +210,7 @@ class fgFDM(object):
 
     def pack(self):
         '''pack a FD FDM buffer from current values'''
-        for i in range(len(self.values)):
+        for i in range(len(self.values)):  # Backward compat
             if math.isnan(self.values[i]):
                 self.values[i] = 0
         return struct.pack(self.pack_string, *self.values)

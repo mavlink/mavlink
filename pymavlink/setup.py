@@ -1,3 +1,5 @@
+from __future__ import print_function
+from __future__ import absolute_import
 # Work around mbcs bug in distutils.
 # http://bugs.python.org/issue10945
 import codecs
@@ -13,7 +15,12 @@ import glob, os, shutil, fnmatch, platform
 
 version = '2.0.6'
 
-from generator import mavgen, mavparse
+# Python 2 to 3 compatibility
+try:
+    from .generator import mavgen, mavparse
+except Exception: #ImportError
+    from generator import mavgen, mavparse
+
 
 # path to message_definitions directory
 mdef_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'message_definitions')
@@ -83,13 +90,9 @@ setup (name = 'pymavlink',
                                                      'C/include_v1.0/*.hpp',
                                                      'C/include_v2.0/*.h',
                                                      'C/include_v2.0/*.hpp' ],
-                        'pymavlink.generator.lib.minixsv': [ '*.xsd' ],
                         'pymavlink' : ['mavnative/*.h'] },
        packages = ['pymavlink',
                    'pymavlink.generator',
-                   'pymavlink.generator.lib',
-                   'pymavlink.generator.lib.genxmlif',
-                   'pymavlink.generator.lib.minixsv',
                    'pymavlink.dialects',
                    'pymavlink.dialects.v10',
                    'pymavlink.dialects.v20'],

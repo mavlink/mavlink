@@ -4,6 +4,10 @@
 simple kml export for logfiles
 Thomas Gubler <thomasgubler@gmail.com>
 '''
+from __future__ import print_function
+from builtins import str
+from past.builtins import range
+from past.utils import old_div
 
 from argparse import ArgumentParser
 import simplekml
@@ -145,7 +149,7 @@ def process_file(filename, source):
         msg = mlog.recv_match(args.condition)
         if msg is None:
             break
-        tdays = (msg._timestamp - time.timezone) / (24 * 60 * 60)
+        tdays = old_div((msg._timestamp - time.timezone), (24 * 60 * 60))
         tdays += 719163  # pylab wants it since 0001-01-01
         add_data(tdays, msg, msg_types, mlog.messages, fields, field_types, position_field_type)
         
