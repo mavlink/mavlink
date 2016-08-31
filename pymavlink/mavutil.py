@@ -1531,6 +1531,9 @@ def interpret_px4_mode(base_mode, custom_mode):
 
 def mode_mapping_byname(mav_type):
     '''return dictionary mapping mode names to numbers, or None if unknown'''
+    mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+    if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return px4_map # no need to invert this map, it already is.
     map = None
     if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
                     mavlink.MAV_TYPE_HELICOPTER,
@@ -1552,6 +1555,9 @@ def mode_mapping_byname(mav_type):
 
 def mode_mapping_bynumber(mav_type):
     '''return dictionary mapping mode numbers to name, or None if unknown'''
+    mav_autopilot = self.field('HEARTBEAT', 'autopilot', None)
+    if mav_autopilot == mavlink.MAV_AUTOPILOT_PX4:
+        return dict((a, b) for (b, a) in px4_map.items())
     map = None
     if mav_type in [mavlink.MAV_TYPE_QUADROTOR,
                     mavlink.MAV_TYPE_HELICOPTER,
