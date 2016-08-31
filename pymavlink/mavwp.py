@@ -53,6 +53,17 @@ class MAVWPLoader(object):
 
         return False
 
+    def wp_is_loiter(self, i):
+        '''return true if waypoint is a loiter waypoint'''
+        loiter_cmds = [mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM,
+                mavutil.mavlink.MAV_CMD_NAV_LOITER_TURNS,
+                mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME]
+
+        if (self.wpoints[i].command in loiter_cmds):
+            return True    
+
+        return False
+
     def add(self, w, comment=''):
         '''add a waypoint'''
         w = copy.copy(w)
