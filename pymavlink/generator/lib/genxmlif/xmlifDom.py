@@ -40,15 +40,16 @@
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
+from __future__ import print_function
+
 import string
 import copy
-import urllib
-from types                import TupleType
+import urllib.request, urllib.parse, urllib.error
 from xml.dom              import Node, getDOMImplementation, XMLNS_NAMESPACE
 from ..genxmlif             import XINC_NAMESPACE, GenXmlIfError
-from xmlifUtils           import nsNameToQName, processWhitespaceAction, collapseString, NsNameTupleFactory, convertToAbsUrl
-from xmlifBase            import XmlIfBuilderExtensionBase
-from xmlifApi             import XmlInterfaceBase
+from .xmlifUtils           import nsNameToQName, processWhitespaceAction, collapseString, NsNameTupleFactory, convertToAbsUrl
+from .xmlifBase            import XmlIfBuilderExtensionBase
+from .xmlifApi             import XmlInterfaceBase
 
 
 class XmlInterfaceDom (XmlInterfaceBase):
@@ -66,14 +67,14 @@ class XmlInterfaceDom (XmlInterfaceBase):
                 parse = childElementWrapper.getAttributeOrDefault ("parse", "xml")
                 encoding = childElementWrapper.getAttribute ("encoding")
                 if self.verbose:
-                    print "Xinclude: %s" %href
+                    print("Xinclude: %s" %href)
                 try:
                     if parse == "xml":
                         subTreeWrapper = self.parse (href, baseUrl, ownerDoc)
                         elementWrapper.replaceChildBySubtree (childElementWrapper, subTreeWrapper)
                     elif parse == "text":
                         absUrl = convertToAbsUrl (href, baseUrl)
-                        fp = urllib.urlopen (absUrl)
+                        fp = urllib.request.urlopen (absUrl)
                         data = fp.read()
                         if encoding:
                             data = data.decode(encoding)
@@ -82,11 +83,11 @@ class XmlInterfaceDom (XmlInterfaceBase):
                         elementWrapper.removeChild (childElementWrapper)
                         fp.close()
                     else:
-                        raise GenXmlIfError, "%s: line %s: XIncludeError: Invalid 'parse' Attribut: '%s'" %(filePath, line, parse)
-                except IOError, errInst:
-                    raise GenXmlIfError, "%s: line %s: IOError: %s" %(filePath, line, str(errInst))
+                        raise GenXmlIfError("%s: line %s: XIncludeError: Invalid 'parse' Attribut: '%s'" %(filePath, line, parse))
+                except IOError as errInst:
+                    raise GenXmlIfError("%s: line %s: IOError: %s" %(filePath, line, str(errInst)))
             elif childElementWrapper.getNsName() == (XINC_NAMESPACE, "fallback"):
-                raise GenXmlIfError, "%s: line %s: XIncludeError: xi:fallback tag must be child of xi:include" %(filePath, line)
+                raise GenXmlIfError("%s: line %s: XIncludeError: xi:fallback tag must be child of xi:include" %(filePath, line))
             else:
                 self.xInclude(childElementWrapper, baseUrl, ownerDoc)
 
@@ -115,7 +116,7 @@ class InternalDomTreeWrapper:
     def xmlIfExtCreateElement (self, nsName, attributeDict, curNs):
         elementNode = self.document.createElementNS (nsName[0], nsName[1])
         intElementWrapper = self.internalElementWrapperClass(elementNode, self)
-        for attrName, attrValue in attributeDict.items():
+        for attrName, attrValue in list(attributeDict.items()):
             intElementWrapper.xmlIfExtSetAttribute (NsNameTupleFactory(attrName), attrValue, curNs)
         return intElementWrapper
 
@@ -187,12 +188,11 @@ class InternalDomElementWrapper:
 
     def xmlIfExtGetChildren (self, tagFilter=None):
         # TODO: Handle also wildcard tagFilter = (namespace, None)
-        children = filter (lambda e: (e.nodeType == Node.ELEMENT_NODE) and          # - only ELEMENTs
+        children = [e for e in self.element.childNodes if (e.nodeType == Node.ELEMENT_NODE) and          # - only ELEMENTs
                                       (tagFilter == None or 
-                                       (e.namespaceURI == tagFilter[0] and e.localName == tagFilter[1])), # - if tagFilter given --> check
-                           self.element.childNodes )                                 # from element's nodes
+                                       (e.namespaceURI == tagFilter[0] and e.localName == tagFilter[1]))]                                 # from element's nodes
 
-        return map(lambda element: element.xmlIfExtInternalWrapper, children)
+        return [element.xmlIfExtInternalWrapper for element in children]
 
 
     def xmlIfExtGetFirstChild (self, tagFilter=None):
@@ -205,7 +205,7 @@ class InternalDomElementWrapper:
 
     def xmlIfExtGetElementsByTagName (self, tagFilter=('*','*')):
         elementList = self.element.getElementsByTagNameNS( tagFilter[0], tagFilter[1] )
-        return map( lambda element: element.xmlIfExtInternalWrapper, elementList )
+        return [element.xmlIfExtInternalWrapper for element in elementList]
 
 
     def xmlIfExtGetIterator (self, tagFilter=('*','*')):
@@ -213,7 +213,7 @@ class InternalDomElementWrapper:
         if tagFilter in (('*','*'), (self.element.namespaceURI, self.element.localName)):
             elementList.append(self.element)
         elementList.extend(self.element.getElementsByTagNameNS( tagFilter[0], tagFilter[1] ))
-        return map( lambda element: element.xmlIfExtInternalWrapper, elementList )
+        return [element.xmlIfExtInternalWrapper for element in elementList]
 
     
     def xmlIfExtAppendChild (self, childElement):
@@ -243,15 +243,15 @@ class InternalDomElementWrapper:
 
     def xmlIfExtGetAttributeDict (self):
         attribDict = {}
-        for nsAttrName, attrNodeOrValue in self.element.attributes.items():
+        for nsAttrName, attrNodeOrValue in list(self.element.attributes.items()):
             attribDict[NsNameTupleFactory(nsAttrName)] = attrNodeOrValue.nodeValue
         return attribDict
 
 
     def xmlIfExtGetAttribute (self, nsAttrName):
-        if self.element.attributes.has_key (nsAttrName):
+        if nsAttrName in self.element.attributes:
             return self.element.getAttributeNS (nsAttrName[0], nsAttrName[1])
-        elif nsAttrName[1] == "xmlns" and self.element.attributes.has_key(nsAttrName[1]):
+        elif nsAttrName[1] == "xmlns" and nsAttrName[1] in self.element.attributes:
             # workaround for minidom for correct access of xmlns attribute
             return self.element.getAttribute (nsAttrName[1])
         else:
@@ -276,7 +276,7 @@ class InternalDomElementWrapper:
         for childTextNode in self.__xmlIfExtGetChildTextNodes():
             elementValueList.append(childTextNode.data)
         if ignoreEmtpyStringFragments:
-            elementValueList = filter (lambda s: collapseString(s) != "", elementValueList)
+            elementValueList = [s for s in elementValueList if collapseString(s) != ""]
         if elementValueList == []:
             elementValueList = ["",]
         return elementValueList
@@ -341,8 +341,7 @@ class InternalDomElementWrapper:
 
     def __xmlIfExtGetChildTextNodes ( self ):
         """Return list of TEXT nodes."""
-        return filter (lambda e: ( e.nodeType in (Node.TEXT_NODE, Node.CDATA_SECTION_NODE) ), # - only TEXT-NODES
-                       self.element.childNodes)                         # from element's child nodes
+        return [e for e in self.element.childNodes if ( e.nodeType in (Node.TEXT_NODE, Node.CDATA_SECTION_NODE) )]                         # from element's child nodes
         
 
 

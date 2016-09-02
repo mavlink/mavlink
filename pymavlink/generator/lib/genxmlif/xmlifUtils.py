@@ -40,11 +40,17 @@
 
 import string
 import re
+import sys
 import os
-import urllib
-import urlparse
-from types   import StringTypes, TupleType
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 from xml.dom import EMPTY_PREFIX, EMPTY_NAMESPACE
+
+if sys.version_info < (3, 0):
+    from types import StringTypes
+else:
+    StringTypes = str
+
 
 ######################################################################
 # DEFINITIONS
@@ -125,7 +131,7 @@ def convertToUrl (fileOrUrl):
     else:
         # local filename
 #        url = "file:" + urllib.pathname2url (fileOrUrl)
-        url = urllib.pathname2url (fileOrUrl)
+        url = urllib.request.pathname2url (fileOrUrl)
 
     return url
 
@@ -135,9 +141,9 @@ def convertToUrl (fileOrUrl):
 
 def convertToAbsUrl (fileOrUrl, baseUrl):
     if fileOrUrl == "" and baseUrl != "":
-        absUrl = "file:" + urllib.pathname2url (os.path.join(os.getcwd(), baseUrl, "__NO_FILE__"))
+        absUrl = "file:" + urllib.request.pathname2url (os.path.join(os.getcwd(), baseUrl, "__NO_FILE__"))
     elif os.path.isfile(fileOrUrl):
-        absUrl = "file:" + urllib.pathname2url (os.path.join(os.getcwd(), fileOrUrl))
+        absUrl = "file:" + urllib.request.pathname2url (os.path.join(os.getcwd(), fileOrUrl))
     else:
         matchObject = _reSplitUrlApplication.match(fileOrUrl)
         if matchObject:
@@ -150,7 +156,7 @@ def convertToAbsUrl (fileOrUrl, baseUrl):
         else:
             # given fileOrUrl is treated as a relative URL
             if baseUrl != "":
-                absUrl = urlparse.urljoin (baseUrl, fileOrUrl)
+                absUrl = urllib.parse.urljoin (baseUrl, fileOrUrl)
             else:
                 absUrl = fileOrUrl
 #                raise IOError, "File %s not found!" %(fileOrUrl)
@@ -162,7 +168,7 @@ def convertToAbsUrl (fileOrUrl, baseUrl):
 def normalizeFilter (filterVar):
     if filterVar == None or filterVar == '*':
         filterVar = ("*",)
-    elif not isinstance(filterVar, TupleType):
+    elif not isinstance(filterVar, tuple):
         filterVar = (filterVar,)
     return filterVar
 
@@ -190,7 +196,7 @@ def nsNameToQName (nsLocalName, curNs):
         if ns == None:
             return nsLocalName[1]
         else:
-            raise LookupError, "Prefix for namespaceURI '%s' not found!" % (ns)
+            raise LookupError("Prefix for namespaceURI '%s' not found!" % (ns))
 
 
 def splitQName (qName):
@@ -200,12 +206,12 @@ def splitQName (qName):
         'qName':  contains a string 'prefix:localName' or '{namespace}localName'
     Returns a tuple (prefixOrNamespace, localName)
     """
-    namespaceEndIndex = string.find (qName, '}')
+    namespaceEndIndex = qName.find('}')
     if namespaceEndIndex != -1:
         prefix     = qName[1:namespaceEndIndex]
         localName  = qName[namespaceEndIndex+1:]
     else:
-        namespaceEndIndex = string.find (qName, ':')
+        namespaceEndIndex = qName.find(':')
         if namespaceEndIndex != -1:
             prefix     = qName[:namespaceEndIndex]
             localName  = qName[namespaceEndIndex+1:]
@@ -223,7 +229,7 @@ def toClarkQName (tupleOrLocalName):
         'tupleOrLocalName':  tuple '(namespace, localName)' to be converted
     Returns a string {namespace}localName
     """
-    if isinstance(tupleOrLocalName, TupleType):
+    if isinstance(tupleOrLocalName, tuple):
         if tupleOrLocalName[0] != EMPTY_NAMESPACE:
             return "{%s}%s" %(tupleOrLocalName[0], tupleOrLocalName[1])
         else:
@@ -239,7 +245,7 @@ def splitClarkQName (qName):
         'qName':  {namespace}localName to be converted
     Returns prefix and localName as separate strings
     """
-    namespaceEndIndex = string.find (qName, '}')
+    namespaceEndIndex = qName.find('}')
     if namespaceEndIndex != -1:
         prefix     = qName[1:namespaceEndIndex]
         localName  = qName[namespaceEndIndex+1:]
@@ -285,14 +291,14 @@ def _encodeEntity(text, pattern=_escape):
             if text is None:
                 text = "&#%d;" % ord(char)
             append(text)
-        return string.join(out, "")
+        return "".join(out)
     try:
         return _encode(pattern.sub(escapeEntities, text), "ascii")
     except TypeError:
         _raise_serialization_error(text)
 
 
-def escapeCdata(text, encoding=None, replace=string.replace):
+def escapeCdata(text, encoding=None, replace=str.replace):
     # escape character data
     try:
         if encoding:
@@ -308,7 +314,7 @@ def escapeCdata(text, encoding=None, replace=string.replace):
         _raiseSerializationError(text)
 
 
-def escapeAttribute(text, encoding=None, replace=string.replace):
+def escapeAttribute(text, encoding=None, replace=str.replace):
     # escape attribute value
     try:
         if encoding:
@@ -343,7 +349,7 @@ class QNameTuple(tuple):
 
 def QNameTupleFactory(initValue):
     if isinstance(initValue, StringTypes):
-        separatorIndex = string.find (initValue, ':')
+        separatorIndex = initValue.find(':')
         if separatorIndex != -1:
             initValue = (initValue[:separatorIndex], initValue[separatorIndex+1:])
         else:

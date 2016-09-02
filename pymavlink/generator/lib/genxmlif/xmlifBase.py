@@ -45,7 +45,7 @@ __date__    = "28 July 2008"
 __version__ = "0.9"
 
 from xml.dom    import XML_NAMESPACE, XMLNS_NAMESPACE
-from xmlifUtils import NsNameTupleFactory, convertToAbsUrl
+from .xmlifUtils import NsNameTupleFactory, convertToAbsUrl
 
 
 
@@ -98,7 +98,7 @@ class XmlIfBuilderExtensionBase:
             for i in range (0, len(attributes), 2):
                 elementWrapper.attributeSequence.append(attributes[i])
         else:
-            attrList = elementWrapper.getAttributeDict().keys()
+            attrList = list(elementWrapper.getAttributeDict().keys())
             attrList.sort()
             elementWrapper.attributeSequence.extend (attrList)
 

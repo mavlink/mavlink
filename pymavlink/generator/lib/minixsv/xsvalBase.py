@@ -39,11 +39,13 @@
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
+from __future__ import print_function
+
 import string
 import copy
 from ..minixsv             import *
 from ..genxmlif.xmlifUtils import collapseString, convertToAbsUrl, NsNameTupleFactory, NsNameTuple
-from xsvalSimpleTypes    import XsSimpleTypeVal, SimpleTypeError
+from .xsvalSimpleTypes    import XsSimpleTypeVal, SimpleTypeError
 
 
 wxsdTree = None
@@ -128,17 +130,17 @@ class XsValBase:
         self.simpleTypeVal = XsSimpleTypeVal(self)
 
         inputRootNsName = self.inputRoot.getNsName()
-        if self.xsdElementDict.has_key(inputRootNsName):
+        if inputRootNsName in self.xsdElementDict:
             # start recursive schema validation
             try:
                 self._checkElementTag (self.xsdElementDict[inputRootNsName], self.inputRoot, (self.inputRoot,), 0)
-            except TagException, errInst:
+            except TagException as errInst:
                 self._addError (errInst.errstr, errInst.node, errInst.endTag)
 
             if not self.errorHandler.hasErrors():
                 # validate IDREFs
-                for idref in self.xsdIdRefDict.keys():
-                    if not self.xsdIdDict.has_key(idref):
+                for idref in list(self.xsdIdRefDict.keys()):
+                    if idref not in self.xsdIdDict:
                         self._addError ("There is no ID/IDREF binding for IDREF %s" %repr(idref), self.xsdIdRefDict[idref])
 
                 # validate keyrefs
@@ -204,9 +206,9 @@ class XsValBase:
                     continue
 
                 redefType = NsNameTuple ( (expNamespace, childNode.getAttribute("name")) )
-                if xsdDict.has_key(redefType):
+                if redefType in xsdDict:
                     orgRedefType = NsNameTuple( (expNamespace, redefType[1]+"__ORG") )
-                    if not xsdDict.has_key(orgRedefType):
+                    if orgRedefType not in xsdDict:
                         xsdDict[orgRedefType] = xsdDict[redefType]
 #                    else:
 #                        self._addError ("Duplicate component %s found within 'redefine'!" %repr(redefType), childNode)
@@ -274,12 +276,12 @@ class XsValBase:
         if includeUrl == None:
             self._raiseError ("Schema location attribute missing!", nextSibling)
         absUrl = convertToAbsUrl (includeUrl, baseUrl)
-        if includeDict.has_key (absUrl):
+        if absUrl in includeDict:
             # file already included
             return
 
         if self.verbose:
-            print "including %s..." %(includeUrl)
+            print("including %s..." %(includeUrl))
         rootNode = tree.getRootNode()
 
         subTree = self._parseIncludeSchemaFile(baseTree, tree, nextSibling, includeUrl, baseUrl)
@@ -316,14 +318,14 @@ class XsValBase:
         try:
             subTree = self.xmlIf.parse (includeUrl, baseUrl, baseTree.getTree())
             self._initInternalAttributes (subTree.getRootNode())
-        except IOError, errInst:
+        except IOError as errInst:
             self._raiseError ("%s" %str(errInst), nextSibling)
-        except SyntaxError, e:
+        except SyntaxError as e:
             # FIXME: sometimes an URLError is catched instead of a standard IOError
             try:
                 dummy = e.errno
             except: 
-                raise IOError, e
+                raise IOError(e)
             
             if e.errno in (2, "socket error", "url error"): # catch IOError: No such file or directory
                 self._raiseError ("%s: '%s'" %(e.strerror, e.filename), nextSibling)
@@ -345,10 +347,10 @@ class XsValBase:
                         }
 
         # retrieve all schema tags
-        for localName, lookupDictName in schemaTagDict.items():
+        for localName, lookupDictName in list(schemaTagDict.items()):
             for node in rootNode.getChildrenNS(XSD_NAMESPACE, localName):
                 targetNamespace = self._getTargetNamespace(node)
-                if not lookupDict[lookupDictName].has_key((targetNamespace, node.getAttribute("name"))):
+                if (targetNamespace, node.getAttribute("name")) not in lookupDict[lookupDictName]:
                     lookupDict[lookupDictName][(targetNamespace, node.getAttribute("name"))] = node
         
         # retrieve all identity constraints
@@ -357,7 +359,7 @@ class XsValBase:
             for identConstrNode in identConstrNodeList:
                 targetNamespace = self._getTargetNamespace(identConstrNode)
                 identConstrNsLocalName = NsNameTupleFactory ( (targetNamespace, identConstrNode.getAttribute("name")) )
-                if not lookupDict["IdentityConstrDict"].has_key(identConstrNsLocalName):
+                if identConstrNsLocalName not in lookupDict["IdentityConstrDict"]:
                     lookupDict["IdentityConstrDict"][identConstrNsLocalName] = {"Node": identConstrNode, "ValueDict":{}}
 
 #                else:
@@ -401,7 +403,7 @@ class XsValBase:
             if restrictionNode != None:
                 inputChildIndex, baseTypeAttributes = self._checkRestrictionComplexContent (xsdParentNode, restrictionNode, inputNode, inputChildIndex, usedAsBaseType, baseTypeAttributes)
             else:
-                raise AttributeError, "RestrictionNode not found!"
+                raise AttributeError("RestrictionNode not found!")
 
 #        if usedAsBaseType == None:
 #            self._checkMixed (xsdNode, inputNode)
@@ -452,8 +454,8 @@ class XsValBase:
         try:
             simpleTypeReturnDict = {"BaseTypes":[], "primitiveType":None}
             self.simpleTypeVal.checkSimpleTypeDef (inputNode, simpleContentNode, inputNode.getTagName(), inputNode.getElementValue(), simpleTypeReturnDict, idCheck=1)
-            xsdNode["BaseTypes"] = string.join (simpleTypeReturnDict["BaseTypes"], " ")
-        except SimpleTypeError, errInst:
+            xsdNode["BaseTypes"] = " ".join (simpleTypeReturnDict["BaseTypes"])
+        except SimpleTypeError as errInst:
             self._addError (errInst.args[0], inputNode)
 
         inputChildIndex, baseTypeAttributes = self._checkSimpleTypeContent (xsdParentNode, xsdNode, inputNode, inputChildIndex, usedAsBaseType, baseTypeAttributes)
@@ -526,10 +528,10 @@ class XsValBase:
     # validate inputNodeList against xsdNode
     #
     def _checkList (self, elementMethod, xsdNode, inputParentNode, inputNodeList, currIndex):
-        minOccurs = string.atoi(xsdNode.getAttributeOrDefault("minOccurs", "1"))
+        minOccurs = int(xsdNode.getAttributeOrDefault("minOccurs", "1"))
         maxOccurs = xsdNode.getAttributeOrDefault("maxOccurs", "1")
         if maxOccurs != "unbounded":
-            maxOccurs = string.atoi(maxOccurs)
+            maxOccurs = int(maxOccurs)
         else:
             maxOccurs = -1
         occurs = 0
@@ -541,7 +543,8 @@ class XsValBase:
                     currIndex = newIndex
                 else:
                     break # no suitable element found
-            except TagException, errInst:
+            except TagException as e:
+                errInst = e
                 break
 
         if occurs == 0 and minOccurs > 0:
@@ -586,9 +589,9 @@ class XsValBase:
                 # ur-type => try to check children of input node
                 for inputChild in inputNode.getChildren():
                     try:
-                        if self.xsdElementDict.has_key(inputChild.getNsName()):
+                        if inputChild.getNsName() in self.xsdElementDict:
                             self._checkElementTag (self.xsdElementDict[inputChild.getNsName()], inputNode, (inputChild,), 0)
-                    except TagException, errInst:
+                    except TagException as errInst:
                         self._addError (errInst.errstr, errInst.node, errInst.endTag)
                 return currIndex
             
@@ -598,11 +601,11 @@ class XsValBase:
             else:
                 # overloaded type is used
                 typeNsName = inputNode.getQNameAttribute((XSI_NAMESPACE, "type"))
-                if not self.xsdTypeDict.has_key(typeNsName):
+                if typeNsName not in self.xsdTypeDict:
                     self._addError ("Unknown overloaded type %s!" %(repr(typeNsName)), inputNode, 0)
                     return currIndex
 
-            if self.xsdTypeDict.has_key (typeNsName):
+            if typeNsName in self.xsdTypeDict:
                 typeType = self.xsdTypeDict[typeNsName].getLocalName()
                 if typeType == "complexType":
                     complexTypeNode = self.xsdTypeDict[typeNsName]
@@ -611,7 +614,7 @@ class XsValBase:
             if complexTypeNode != None:
                 try:
                     self._checkComplexTypeTag (xsdNode, complexTypeNode, inputNode, 0)
-                except TagException, errInst:
+                except TagException as errInst:
                     self._addError (errInst.errstr, errInst.node, errInst.endTag)
                     return currIndex
             else:
@@ -693,22 +696,22 @@ class XsValBase:
                     if fixedValue != None:
                         self.simpleTypeVal.checkSimpleType (inputNode, attrName, typeNsName, fixedValue, fixedValueReturnDict, idCheck=0)
             
-            xsdNode["BaseTypes"] = string.join (simpleTypeReturnDict["BaseTypes"], " ")
+            xsdNode["BaseTypes"] = " ".join (simpleTypeReturnDict["BaseTypes"])
             xsdNode["primitiveType"] = str(simpleTypeReturnDict["primitiveType"])
 
             retValue = simpleTypeReturnDict
-            if simpleTypeReturnDict.has_key("wsAction"):
+            if "wsAction" in simpleTypeReturnDict:
                 if checkAttribute:
                     attrValue = inputNode.processWsAttribute(attrName, simpleTypeReturnDict["wsAction"])
                 else:
                     attrValue = inputNode.processWsElementValue(simpleTypeReturnDict["wsAction"])
 
             if fixedValue != None:
-                if fixedValueReturnDict.has_key("orderedValue"):
+                if "orderedValue" in fixedValueReturnDict:
                     fixedValue = fixedValueReturnDict["orderedValue"]
-                elif fixedValueReturnDict.has_key("adaptedAttrValue"):
+                elif "adaptedAttrValue" in fixedValueReturnDict:
                     fixedValue = fixedValueReturnDict["adaptedAttrValue"]
-                if simpleTypeReturnDict.has_key("orderedValue"):
+                if "orderedValue" in simpleTypeReturnDict:
                     attrValue = simpleTypeReturnDict["orderedValue"]
                 if attrValue != fixedValue:
                     if checkAttribute:
@@ -716,7 +719,7 @@ class XsValBase:
                     else:
                         self._addError ("Element must have fixed value %s!" %repr(fixedValue), inputNode)
                         
-        except SimpleTypeError, errInst:
+        except SimpleTypeError as errInst:
             self._addError (errInst.args[0], inputNode)
 
         return retValue
@@ -745,7 +748,7 @@ class XsValBase:
                     break
                 else:
                     exceptionRaised = 0
-            except TagException, errInst:
+            except TagException as errInst:
                 exceptionRaised = 1
         else:
             if not childFound and exceptionRaised:
@@ -782,14 +785,14 @@ class XsValBase:
         for xsdChildNode in xsdNode.getChildren():
             if xsdChildNode.getNsName() != (XSD_NAMESPACE, "annotation"):
                 xsdChildDict[xsdChildNode] = 0
-        while (currIndex < len(inputNodeList)) and (0 in xsdChildDict.values()):
+        while (currIndex < len(inputNodeList)) and (0 in list(xsdChildDict.values())):
             currNode = inputNodeList[currIndex]
-            for xsdChildNode in xsdChildDict.keys():
+            for xsdChildNode in list(xsdChildDict.keys()):
                 try:
                     newIndex = self._checkParticle (xsdChildNode, inputParentNode, inputNodeList, currIndex)
                     if newIndex == currIndex:
                         continue
-                except TagException, errInst:
+                except TagException as errInst:
                     continue
 
                 if xsdChildDict[xsdChildNode] == 0:
@@ -801,7 +804,7 @@ class XsValBase:
             else:
                 raise TagException ("Unexpected child tag %s for all-group found!" %repr(currNode.getTagName()), currNode)
 
-        for xsdChildNode, occurs in xsdChildDict.items():
+        for xsdChildNode, occurs in list(xsdChildDict.items()):
             if xsdChildNode.getAttributeOrDefault("minOccurs", "1") != "0" and occurs == 0:
                 raise TagException ("Child tag %s missing in all-group (%s)" %(repr(xsdChildNode.getAttribute("name")), repr(inputParentNode.getTagName())), inputParentNode)
 
@@ -855,22 +858,22 @@ class XsValBase:
         # retrieve all valid attributes for this element from the schema file
         self._updateAttributeDict (xsdNode, validAttrDict)
         inputAttrDict = {}
-        for iAttrName, iAttrValue in inputNode.getAttributeDict().items():
+        for iAttrName, iAttrValue in list(inputNode.getAttributeDict().items()):
             # skip namespace declarations
             if iAttrName[0] != XMLNS_NAMESPACE and iAttrName[1] != "xmlns":
                 inputAttrDict[iAttrName] = iAttrValue
 
-        for qAttrName, validAttrEntry in validAttrDict.items():
+        for qAttrName, validAttrEntry in list(validAttrDict.items()):
             attrRefNode = validAttrEntry["RefNode"]
             # global attributes use always form "qualified"
-            if self.xsdAttributeDict.has_key(qAttrName) and self.xsdAttributeDict[qAttrName] == attrRefNode:
+            if qAttrName in self.xsdAttributeDict and self.xsdAttributeDict[qAttrName] == attrRefNode:
                 attributeForm = "qualified"
             else:
                 attributeForm = attrRefNode.getAttributeOrDefault ("form", self._getAttributeFormDefault(xsdNode))
             attrRefNode.setAttribute ("form", attributeForm)
             self._checkAttributeTag (qAttrName, validAttrEntry["Node"], attrRefNode, inputNode, inputAttrDict)
 
-        for inputAttribute in inputAttrDict.keys():
+        for inputAttribute in list(inputAttrDict.keys()):
             if inputAttribute == (XSI_NAMESPACE, "type"):
                 pass # for attribute xsi:type refer _checkElementTag
             elif inputAttribute == (XSI_NAMESPACE, "nil"):
@@ -878,7 +881,7 @@ class XsValBase:
                     self._addError ("Tag %s hasn't been defined as nillable!" %repr(inputNode.getTagName()), inputNode)
             elif inputNode == self.inputRoot and inputAttribute in ((XSI_NAMESPACE, "noNamespaceSchemaLocation"), (XSI_NAMESPACE, "schemaLocation")):
                 pass
-            elif validAttrDict.has_key("__ANY_ATTRIBUTE__"):
+            elif "__ANY_ATTRIBUTE__" in validAttrDict:
                 xsdNode = validAttrDict["__ANY_ATTRIBUTE__"]["Node"]
                 try:
                     inputNamespace = inputAttribute[0]
@@ -907,13 +910,13 @@ class XsValBase:
         if fixedValue == None: 
             fixedValue = xsdAttrRefNode.getAttribute("fixed")
 
-        if inputAttrDict.has_key(qAttrName):
+        if qAttrName in inputAttrDict:
             if use == "prohibited":
                 self._addError ("Attribute %s is prohibited in this context!" %repr(qAttrName[1]), inputNode)
-        elif inputAttrDict.has_key((targetNamespace, qAttrName[1])):
+        elif (targetNamespace, qAttrName[1]) in inputAttrDict:
             self._addError ("Local attribute %s must be unqualified!" %(repr(qAttrName)), inputNode)
             del inputAttrDict[(targetNamespace, qAttrName[1])]
-        elif inputAttrDict.has_key((None, qAttrName[1])) and qAttrName[0] == targetNamespace:
+        elif (None, qAttrName[1]) in inputAttrDict and qAttrName[0] == targetNamespace:
             self._addError ("Attribute %s must be qualified!" %repr(qAttrName[1]), inputNode)
             del inputAttrDict[(None, qAttrName[1])]
         else:
@@ -931,7 +934,7 @@ class XsValBase:
                     inputNode.setAttribute(qAttrName, fixedValue)
                     inputAttrDict[qAttrName] = fixedValue
 
-        if inputAttrDict.has_key(qAttrName):
+        if qAttrName in inputAttrDict:
             attributeValue = inputAttrDict[qAttrName]
             self._checkSimpleType (xsdAttrRefNode, "type", inputNode, qAttrName, attributeValue, fixedValue, 1)
             del inputAttrDict[qAttrName]
@@ -947,8 +950,8 @@ class XsValBase:
         validAttributeNodes = xsdNode.getChildrenNS(self.xsdNsURI, "attribute")
         for validAttrGroup in xsdNode.getChildrenNS(self.xsdNsURI, "attributeGroup"):
             refNsName = validAttrGroup.getQNameAttribute("ref")
-            if self.xsdAttrGroupDict.has_key(refNsName):
-                if recursionKeys.has_key(refNsName):
+            if refNsName in self.xsdAttrGroupDict:
+                if refNsName in recursionKeys:
                     self._addError ("Circular definition for attribute group %s detected!" %(repr(refNsName)), validAttrGroup)
                     continue
                 recursionKeys[refNsName] = 1
@@ -964,7 +967,7 @@ class XsValBase:
                 attrKey = (self._getTargetNamespace(validAttributeNode), validAttributeNode.getAttribute("name"))
                 attributeRefNode = validAttributeNode
                 
-            if checkForDuplicateAttr and validAttrDict.has_key(attrKey):
+            if checkForDuplicateAttr and attrKey in validAttrDict:
                 self._addError ("Duplicate attribute %s found!" %repr(attrKey), validAttributeNode)
             else:
                 validAttrDict[attrKey] = {"Node":validAttributeNode, "RefNode":attributeRefNode}
@@ -989,23 +992,23 @@ class XsValBase:
             if inputNode.hasAttribute((XSI_NAMESPACE, "type")):
                 # overloaded type is used
                 typeNsName = inputNode.getQNameAttribute((XSI_NAMESPACE, "type"))
-                if not self.xsdTypeDict.has_key(typeNsName):
+                if typeNsName not in self.xsdTypeDict:
                     self._addError ("Unknown overloaded type %s!" %(repr(typeNsName)), inputNode, 0)
                 else:
                     typeType = self.xsdTypeDict[typeNsName].getLocalName()
                     if typeType == "complexType":
                         try:
                             self._checkComplexTypeTag (None, self.xsdTypeDict[typeNsName], inputNode, 0)
-                        except TagException, errInst:
+                        except TagException as errInst:
                             self._addError (errInst.errstr, errInst.node, errInst.endTag)
                     else:
                         simpleTypeReturnDict = {"BaseTypes":[], "primitiveType":None}
                         try:
                             self.simpleTypeVal.checkSimpleType (inputNode, inputNode.getLocalName(), typeNsName, inputNode.getElementValue(), simpleTypeReturnDict, idCheck=1)
-                        except SimpleTypeError, errInst:
+                        except SimpleTypeError as errInst:
                             self._addError (errInst.args[0], inputNode)
 
-            elif self.xsdElementDict.has_key(inputNsName):
+            elif inputNsName in self.xsdElementDict:
                 self._checkElementTag (self.xsdElementDict[inputNsName], None, (inputNode,), 0)
 
             elif processContents == "strict":
@@ -1023,11 +1026,11 @@ class XsValBase:
         if processContents == "skip":
             pass
         elif processContents == "lax":
-            if self.xsdAttributeDict.has_key(qAttrName):
+            if qAttrName in self.xsdAttributeDict:
                 attrNode = self.xsdAttributeDict[qAttrName]
                 self._checkAttributeTag (qAttrName, attrNode, attrNode, inputNode, inputAttrDict)
         elif processContents == "strict":
-            if self.xsdAttributeDict.has_key(qAttrName):
+            if qAttrName in self.xsdAttributeDict:
                 attrNode = self.xsdAttributeDict[qAttrName]
                 self._checkAttributeTag (qAttrName, attrNode, attrNode, inputNode, inputAttrDict)
             else:
@@ -1046,7 +1049,7 @@ class XsValBase:
             if inputNamespace == targetNamespace or inputNamespace == None:
                 raise TagException ("Node or attribute must not be part of target namespace or local!", inputNode)
         else:
-            for namespace in string.split(collapseString(namespaces), " "):
+            for namespace in collapseString(namespaces).split(" "):
                 if namespace == "##local" and inputNamespace == None:
                     break
                 elif namespace == "##targetNamespace" and inputNamespace == targetNamespace:
@@ -1107,13 +1110,13 @@ class XsValBase:
                         try:
                             value = self._getOrderedValue (inputChild, attrName, baseType, value)
                             break
-                        except SimpleTypeError, errInst:
+                        except SimpleTypeError as errInst:
                             pass
                     keyValue.append (value)
 
             if keyValue != []:
                 keyValue = tuple(keyValue)
-                if not valueDict.has_key (keyValue):
+                if keyValue not in valueDict:
                     valueDict[keyValue] = 1
                     self.xsdIdentityConstrDict[identConstrNsLocalName]["ValueDict"][keyValue] = baseTypesList
                 else:
@@ -1155,13 +1158,13 @@ class XsValBase:
                             try:
                                 value = self._getOrderedValue (inputChild, attrName, baseType, value)
                                 break
-                            except SimpleTypeError, errInst:
+                            except SimpleTypeError as errInst:
                                 pass
                     keyValue.append (value)
 
             keyValue = tuple(keyValue)
             if keyValue != ():
-                if not self.xsdIdentityConstrDict[keyReference]["ValueDict"].has_key (keyValue):
+                if keyValue not in self.xsdIdentityConstrDict[keyReference]["ValueDict"]:
                     self._addError ("Key reference value %s is undefined for key type %s!" %(repr(keyValue), repr(keyReference)), selectorNode)
                 else:
                     baseTypesList = self.xsdIdentityConstrDict[keyReference]["ValueDict"][keyValue]
@@ -1184,7 +1187,7 @@ class XsValBase:
     def _checkInputElementForm (self, xsdNode, xsdNodeNameAttr, inputNode):
         targetNamespace = self._getTargetNamespace(xsdNode)
         nsNameAttr = (targetNamespace, xsdNodeNameAttr)
-        if self.xsdElementDict.has_key(nsNameAttr) and self.xsdElementDict[nsNameAttr] == xsdNode:
+        if nsNameAttr in self.xsdElementDict and self.xsdElementDict[nsNameAttr] == xsdNode:
             elementForm = "qualified"
         else:
             elementForm = xsdNode.getAttributeOrDefault ("form", self._getElementFormDefault(xsdNode))
@@ -1204,7 +1207,7 @@ class XsValBase:
     def _getOrderedValue (self, inputNode, attrName, typeNsName, attrValue):
         simpleTypeReturnDict = {"BaseTypes":[], "primitiveType":None}
         self.simpleTypeVal.checkSimpleType (inputNode, attrName, typeNsName, attrValue, simpleTypeReturnDict, idCheck=1)
-        if simpleTypeReturnDict.has_key("orderedValue"):
+        if "orderedValue" in simpleTypeReturnDict:
             attrValue = simpleTypeReturnDict["orderedValue"]
         return attrValue
 
@@ -1217,7 +1220,7 @@ class XsValBase:
         try:
             attrIgnoreList = [(XSI_NAMESPACE, "nil")]
             childList, attrNodeList, attrName = node.getXPathList (xPath, namespaceRef=xPathNode, useDefaultNs=0, attrIgnoreList=attrIgnoreList)
-        except Exception, errInst:
+        except Exception as errInst:
             self._addError (errInst.args, node)
             childList = []
             attrNodeList = []
@@ -1236,8 +1239,8 @@ class XsValBase:
     #
     def _setBaseTypes (self, xsdNode):
         if xsdNode.getAttribute("BaseTypes") != None:
-            baseTypes = string.split(xsdNode["BaseTypes"])
-            baseTypeList = map (lambda basetype: NsNameTupleFactory(basetype), baseTypes)
+            baseTypes = xsdNode["BaseTypes"].split()
+            baseTypeList = [NsNameTupleFactory(basetype) for basetype in baseTypes]
             if baseTypeList != []:
                 return baseTypeList
             else:
@@ -1271,10 +1274,10 @@ class XsValBase:
 ########################################
 # define own exception for XML schema validation errors
 #
-class TagException (StandardError):
+class TagException (Exception):
     def __init__ (self, errstr="", node=None, endTag=0):
         self.node   = node
         self.errstr = errstr
         self.endTag = endTag
-        StandardError.__init__(self)
+        Exception.__init__(self)
 
