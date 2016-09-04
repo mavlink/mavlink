@@ -8,6 +8,13 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
+
+sudo: required
+addons:
+  apt:
+    packages:
+      - libgtest-dev
+
 script:
   # NOTE: we must do all testing on the installed python package, not 
   # on the build tree. Otherwise the testing is invalid and may not
@@ -26,6 +33,8 @@ script:
   - mavgen.py --lang='CS' 	--output=/tmp/ message_definitions/v1.0/common.xml
   - mavgen.py --lang='WLua' 	--output=/tmp/ message_definitions/v1.0/common.xml
   - mavgen.py --lang='Java'	--output=/tmp/ message_definitions/v1.0/common.xml
+  - mavgen.py --lang='C'        --wire-protocol='2.0' --output=/tmp/v2 message_definitions/v1.0/common.xml
+  - mavgen.py --lang='C++11'    --wire-protocol='2.0' --output=/tmp/v2 message_definitions/v1.0/common.xml
   # Avoid `spurious errors` caused by ~/.npm permission issues
   # ref: https://github.com/travis-ci/travis-ci/issues/2244
   # ref: https://github.com/npm/npm/issues/4815
@@ -39,6 +48,9 @@ script:
   # Test quaternions
   - cd $TRAVIS_BUILD_DIR
   - pymavlink/tools/quaterniontest.py
+
+  # Test C++11 and C interop: require libgtest-dev and at least g++ 4.8
+  - make -C pymavlink/generator/CPP11/test/posix run_tests CXX=clang++ GENDIR=/tmp/v2
 
 after_success:
 - ./scripts/travis_update_generated_repos.sh
