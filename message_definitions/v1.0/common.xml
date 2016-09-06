@@ -1360,6 +1360,11 @@
                  <param index="2">Camera ID</param>
                  <param index="3">Reserved (all remaining params)</param>
                </entry>
+               <entry value="528" name="MAV_CMD_REQUEST_FLIGHT_INFORMATION">
+                 <description>Request flight information (FLIGHT_INFORMATION)</description>
+                 <param index="1">1: Request flight information</param>
+                 <param index="2">Reserved (all remaining params)</param>
+               </entry>
 
               <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
                   <description>Start image capture sequence</description>
@@ -3896,6 +3901,14 @@
             <field type="uint8_t[210]" name="file_path">File path of image taken.</field>
         </message>
 
+        <message id="264" name="FLIGHT_INFORMATION">
+            <description>Information about flight since last arming</description>
+            <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
+            <field type="uint64_t" name="arming_time_utc">Timestamp at arming (microseconds since UNIX epoch) in UTC, 0 for unknown</field>
+            <field type="uint64_t" name="takeoff_time_utc">Timestamp at takeoff (microseconds since UNIX epoch) in UTC, 0 for unknown</field>
+            <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of logfiles</field>
+        </message>
+
         <message id="266" name="LOGGING_DATA">
                <description>A message containing logged data (see also MAV_CMD_LOGGING_START)</description>
                <field type="uint8_t" name="target_system">system ID of the target</field>
@@ -3920,6 +3933,5 @@
                <field type="uint8_t" name="target_component">component ID of the target</field>
                <field type="uint16_t" name="sequence">sequence number (must match the one in LOGGING_DATA_ACKED)</field>
           </message>
-        </message>
     </messages>
 </mavlink>
