@@ -107,13 +107,13 @@
                     <description>Octorotor</description>
                </entry>
                <entry value="15" name="MAV_TYPE_TRICOPTER">
-                    <description>Octorotor</description>
+                    <description>Tricopter</description>
                </entry>
                <entry value="16" name="MAV_TYPE_FLAPPING_WING">
                     <description>Flapping wing</description>
                </entry>
                <entry value="17" name="MAV_TYPE_KITE">
-                    <description>Flapping wing</description>
+                    <description>Kite</description>
                </entry>
                <entry value="18" name="MAV_TYPE_ONBOARD_CONTROLLER">
                     <description>Onboard companion controller</description>
@@ -1976,6 +1976,9 @@
               <entry value="4096" name="MAV_PROTOCOL_CAPABILITY_COMPASS_CALIBRATION">
                   <description>Autopilot supports onboard compass calibration.</description>
               </entry>
+              <entry value="8192" name="MAV_PROTOCOL_CAPABILITY_MAVLINK2">
+                  <description>Autopilot supports mavlink version 2.</description>
+              </entry>
           </enum>
           <enum name="MAV_ESTIMATOR_TYPE">
               <description>Enumeration of estimator types</description>
@@ -2956,6 +2959,13 @@
                <field type="uint16_t" name="chan11_raw">RC channel 11 value, in microseconds</field>
                <field type="uint16_t" name="chan12_raw">RC channel 12 value, in microseconds</field>
                <field type="uint8_t" name="rssi">Receive signal strength indicator, 0: 0%, 255: 100%</field>
+          </message>
+          <message id="93" name="HIL_ACTUATOR_CONTROLS">
+               <description>Sent from autopilot to simulation. Hardware in the loop control outputs (replacement for HIL_CONTROLS)</description>
+               <field name="time_usec" type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
+               <field name="controls" type="float[16]">Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.</field>
+               <field name="mode" type="uint8_t">System mode (MAV_MODE), includes arming state.</field>
+               <field name="flags" type="uint64_t">Flags as bitfield, reserved for future use.</field>
           </message>
           <message id="100" name="OPTICAL_FLOW">
                <description>Optical flow from a flow sensor (e.g. optical mouse sensor)</description>
