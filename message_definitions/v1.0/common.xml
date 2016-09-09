@@ -2247,6 +2247,18 @@
                   <description>ID field references MAVLink SRC ID</description>
               </entry>
           </enum>
+          <enum name="VIDEO_STREAM_GET_CMD">
+              <description>Commands to be executed in order to get stream information on "VIDEO_STREAM_GET" message "command" field.</description>
+              <entry value="1" name="VIDEO_STREAM_GET_CMD_SERVER">
+                  <description>Command to get server attributes</description>
+              </entry>
+              <entry value="2" name="VIDEO_STREAM_GET_CMD_STREAMS">
+                  <description>Command to get available streams</description>
+              </entry>
+              <entry value="3" name="VIDEO_STREAM_GET_CMD_ATTRIBUTES">
+                  <description>Command to get attributes of a specific stream</description>
+              </entry>
+          </enum>
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -2966,6 +2978,47 @@
                <field name="controls" type="float[16]">Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.</field>
                <field name="mode" type="uint8_t">System mode (MAV_MODE), includes arming state.</field>
                <field name="flags" type="uint64_t">Flags as bitfield, reserved for future use.</field>
+          </message>
+          <message id="94" name="VIDEO_STREAM_GET">
+              <description>Message that get stream information using "VIDEO_STREAM_GET_CMD" commands.</description>
+              <field type="uint8_t" name="target_system">System ID</field>
+              <field type="uint8_t" name="target_component">Component ID</field>
+              <field type="uint8_t" name="id">Video device ID</field>
+              <field type="uint8_t" name="command">VIDEO_STREAM_GET_CMD enum</field>
+          </message>
+          <message id="95" name="VIDEO_STREAM_SERVER">
+              <description>Message that can be requested by sending the "VIDEO_STREAM_GET_CMD_SERVER" command on "VIDEO_STREAM_GET" message.</description>
+              <field type="char[45]" name="ip">Video stream server ip to accept connections on the given address</field>
+              <field type="uint16_t" name="port">Video stream port which the server will accept connections</field>
+          </message>
+          <message id="96" name="SET_VIDEO_STREAM_SERVER">
+              <description>Message that sets the video stream server attributes.</description>
+              <field type="uint8_t" name="target_system">System ID</field>
+              <field type="uint8_t" name="target_component">Component ID</field>
+              <field type="char[45]" name="ip">Video stream server ip to accept connections on the given address</field>
+              <field type="uint16_t" name="port">Video stream port which the server will accept connections</field>
+          </message>
+          <message id="97" name="VIDEO_STREAM_URI">
+              <description>Message that returns one stream URI.</description>
+              <field type="char[75]" name="uri">URI representing the stream</field>
+          </message>
+          <message id="98" name="VIDEO_STREAM_ATTRIBUTES">
+              <description>Message that can be requested by sending the "VIDEO_STREAM_GET_CMD_ATTRIBUTES" command on "VIDEO_STREAM_GET" message.</description>
+              <field type="uint8_t" name="id">Video device ID</field>
+              <field type="uint32_t" name="capabilities">Union of device capabilities flags</field>
+              <field type="uint32_t" name="format">Video format set</field>
+              <field type="uint32_t[20]" name="available_formats">Video available formats</field>
+              <field type="uint16_t[2]" name="frame_size">Video frame size, array followed by width and height</field>
+              <field type="char[75]" name="uri">Video stream URI</field>
+          </message>
+          <message id="99" name="SET_VIDEO_STREAM_ATTRIBUTES">
+              <description>Message that sets stream attributes.</description>
+              <field type="uint8_t" name="target_system">System ID</field>
+              <field type="uint8_t" name="target_component">Component ID</field>
+              <field type="uint8_t" name="id">Video device ID</field>
+              <field type="uint32_t" name="format">Video format</field>
+              <field type="uint16_t[2]" name="frame_size">Video frame size, array followed by width and height</field>
+              <field type="char[30]" name="mount_path">Video stream mount path to build the URI</field>
           </message>
           <message id="100" name="OPTICAL_FLOW">
                <description>Optical flow from a flow sensor (e.g. optical mouse sensor)</description>
