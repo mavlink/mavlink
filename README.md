@@ -24,7 +24,7 @@ This repository is largely Python scripts that convert XML files into language-s
     * Tkinter (if GUI functionality is desired)
 
 ### Installation ###
-  1. Clone into a user-writable directory.
+  1. Clone into a user-writable directory. Make sure to use the git "--recursive" option since pymavlink is a submodule. Alternately, run "git submodule init" and "git submodule update" after cloning to get pymavlink.
   2. Add the repository directory to your `PYTHONPATH`
   3. Generate MAVLink parser files following the instructions in the next section *AND/OR* run included helper scripts described in the Scripts/Examples secion.
 
