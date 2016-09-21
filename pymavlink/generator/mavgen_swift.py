@@ -10,18 +10,18 @@ import os
 from . import mavparse, mavtemplate
 
 abbreviations = ["MAV", "PX4", "UDB", "PPZ", "PIXHAWK", "SLUGS", "FP", "ASLUAV", "VTOL", "ROI", "UART", "UDP", "IMU", "IMU2", "3D", "RC", "GPS", "GPS1", "GPS2", "NED", "RTK", "ADSB"]
-swift_types = {'char' : ("String", '"\\0"', "mavString(offset: %u, length: %u)", "setMAVString(self.%s, offset: %u, allowedLength: %u)"),
-               'uint8_t' : ("UInt8", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'int8_t' : ("Int8", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'uint16_t' : ("UInt16", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'int16_t' : ("Int16", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'uint32_t' : ("UInt32", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'int32_t' : ("Int32", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'uint64_t' : ("UInt64", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'int64_t' : ("Int64", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'float' : ("Float", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'double' : ("Double", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)"),
-               'uint8_t_mavlink_version' : ("UInt8", 0, "mavNumber(offset: %u)", "setMAVNumber(self.%s, offset: %u)")}
+swift_types = {'char' : ("String", '"\\0"', "string(at: %u, length: %u)", "set(string: self.%s, at: %u, length: %u)"),
+               'uint8_t' : ("UInt8", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'int8_t' : ("Int8", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'uint16_t' : ("UInt16", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'int16_t' : ("Int16", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'uint32_t' : ("UInt32", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'int32_t' : ("Int32", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'uint64_t' : ("UInt64", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'int64_t' : ("Int64", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'float' : ("Float", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'double' : ("Double", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
+               'uint8_t_mavlink_version' : ("UInt8", 0, "number(at: %u)", "set(number: self.%s, at: %u)")}
 
 t = mavtemplate.MAVTemplate()
 
@@ -69,11 +69,11 @@ def generate_enums(directory, filelist, xml_list, enums, msgs):
         outf = open(filepath, "w")
         generate_header(outf, filelist, xml_list, filename)
         t.write(outf, """
-${formatted_description}public enum ${swift_name}: ${raw_value_type}, Enumeration {
+${formatted_description}public enum ${swift_name}: ${raw_value_type} {
 ${{entry:${formatted_description}\tcase ${swift_name} = ${value}\n}}
 }
 
-extension ${swift_name} {
+extension ${swift_name}: Enumeration {
     public static var typeName = "${name}"
     public static var typeDescription = "${entity_description}"
     public static var allMembers = [${all_entities}]
@@ -108,28 +108,23 @@ def generate_messages(directory, filelist, xml_list, msgs):
         t.write(outf, """
 import Foundation
 
-${formatted_description}public struct ${swift_name}: Message {
+${formatted_description}public struct ${swift_name} {
 ${{fields:${formatted_description}\tpublic let ${swift_name}: ${return_type}\n}}
 }
 
-extension ${swift_name} {
+extension ${swift_name}: Message {
     public static let id = UInt8(${id})
     public static var typeName = "${name}"
     public static var typeDescription = "${message_description}"
     public static var fieldDefinitions: [FieldDefinition] = [${fields_info}]
 
-    public init(data: NSData) throws {
+    public init(data: Data) throws {
 ${{ordered_fields:\t\tself.${swift_name} = ${initial_value}\n}}
     }
 
-    public func pack() throws -> NSData {
-        let payloadLength = ${wire_length}
-        guard let payload = NSMutableData(length: payloadLength) else {
-            throw PackError.BufferAllocationFailed(lenght: payloadLength)
-        }
-        
+    public func pack() throws -> Data {
+        var payload = Data(count: ${wire_length})
 ${{ordered_fields:\t\ttry payload.${payload_setter}\n}}
-
         return payload
     }
 }
@@ -156,11 +151,7 @@ def generate_message_mappings_array(outf, msgs):
         classes.append("%u: %s.self" % (msg.id, msg.swift_name))
     t.write(outf, """
 
-
-
-/**
-    Array for mapping message id to proper struct
-*/
+/// Array for mapping message id to proper struct
 private let messageIdToClass: [UInt8: Message.Type] = [${ARRAY_CONTENT}]
 """, {'ARRAY_CONTENT' : ", ".join(classes)})
 
@@ -174,10 +165,7 @@ def generate_message_lengths_array(outf, msgs):
 
     t.write(outf, """
 
-
-/**
-    Message lengths array for known messages length validation
-*/
+/// Message lengths array for known messages length validation
 private let messageLengths: [UInt8: UInt8] = [${ARRAY_CONTENT}]
 """, {'ARRAY_CONTENT' : ", ".join(lengths)})
 
@@ -190,10 +178,7 @@ def generate_message_crc_extra_array(outf, msgs):
 
     t.write(outf, """
 
-
-/**
-    Message CRSs extra for detection incompatible XML changes
-*/
+/// Message CRSs extra for detection incompatible XML changes
 private let messageCRCsExtra: [UInt8: UInt8] = [${ARRAY_CONTENT}]
 """, {'ARRAY_CONTENT' : ", ".join(crcs)})
 
@@ -282,18 +267,18 @@ def generate_messages_type_info(msgs):
             if field.enum:
                 # handle enums
                 field.return_type = camel_case_from_underscores(field.enum)
-                field.initial_value = "try data.mavEnumeration(offset: %u)" % field.wire_offset
-                field.payload_setter = "setMAVEnumeration(self.%s, offset: %u)" % (field.swift_name, field.wire_offset)
+                field.initial_value = "try data.enumeration(at: %u)" % field.wire_offset
+                field.payload_setter = "set(enumeration: self.%s, at: %u)" % (field.swift_name, field.wire_offset)
             elif field.array_length > 0:
                 if field.return_type == "String":
                     # handle strings
-                    field.initial_value = "data." + swift_types[field.type][2] % (field.wire_offset, field.array_length)
+                    field.initial_value = "try data." + swift_types[field.type][2] % (field.wire_offset, field.array_length)
                     field.payload_setter = swift_types[field.type][3] % (field.swift_name, field.wire_offset, field.array_length)
                 else:
                     # other array types
                     field.return_type = "[%s]" % field.return_type
-                    field.initial_value = "try data.mavArray(offset: %u, count: %u)" % (field.wire_offset, field.array_length)
-                    field.payload_setter = "setMAVArray(self.%s, offset: %u, allowedCount: %u)" % (field.swift_name, field.wire_offset, field.array_length)
+                    field.initial_value = "try data.array(at: %u, capacity: %u)" % (field.wire_offset, field.array_length)
+                    field.payload_setter = "set(array: self.%s, at: %u, capacity: %u)" % (field.swift_name, field.wire_offset, field.array_length)
             else:
                 # simple type field
                 field.initial_value = "try data." + swift_types[field.type][2] % field.wire_offset
