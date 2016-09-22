@@ -216,7 +216,7 @@ def generate_enums_type_info(enums, msgs):
         enum.formatted_description = ""
         if enum.description:
             enum.description = " ".join(enum.description.split())
-            enum.formatted_description = "\n/**\n    %s\n*/\n" % enum.description
+            enum.formatted_description = "/// %s\n" % enum.description
 
         for index, entry in enumerate(enum.entry):
             if entry.name.endswith("_ENUM_END"):
@@ -256,7 +256,7 @@ def generate_messages_type_info(msgs):
         msg.formatted_description = ""
         if msg.description:
             msg.description = " ".join(msg.description.split())
-            msg.formatted_description = "\n/**\n    %s\n*/\n" % " ".join(msg.description.split())
+            msg.formatted_description = "/// %s\n" % " ".join(msg.description.split())
         msg.message_description = msg.description.replace('"','\\"')
 
         for field in msg.ordered_fields:
