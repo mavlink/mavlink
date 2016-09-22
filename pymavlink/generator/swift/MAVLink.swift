@@ -745,7 +745,7 @@ extension Data {
     ///
     /// - returns: Returns `MAVLinkNumber` (UInt8, Int8, UInt16, Int16, UInt32,
     /// Int32, UInt64, Int64, Float, Double).
-    func number<T: MAVLinkNumber>(at offset: Int) throws -> T {
+    func number<T: MAVLinkNumber>(at offset: Data.Index) throws -> T {
         let size = MemoryLayout<T>.stride
         let range: Range<Int> = offset ..< offset + size
         
@@ -769,7 +769,7 @@ extension Data {
     /// - throws: Throws `ParseError`.
     ///
     /// - returns: `Array<T>`
-    func array<T: MAVLinkNumber>(at offset: Int, capacity: Int) throws -> [T] {
+    func array<T: MAVLinkNumber>(at offset: Data.Index, capacity: Int) throws -> [T] {
         var offset = offset
         var array = [T]()
         
@@ -789,7 +789,7 @@ extension Data {
     /// - throws: Throws `ParseError`.
     ///
     /// - returns: `String`
-    func string(at offset: Int, length: Int) throws -> String {
+    func string(at offset: Data.Index, length: Int) throws -> String {
         let range: Range<Int> = offset ..< offset + length
         let bytes = subdata(in: range)
         
@@ -812,7 +812,7 @@ extension Data {
     /// - throws: Throws `ParserEnumError`, `ParseError`.
     ///
     /// - returns: Properly typed `Enumeration` subtype value.
-    func enumeration<T: Enumeration>(at offset: Int) throws -> T where T.RawValue: MAVLinkNumber {
+    func enumeration<T: Enumeration>(at offset: Data.Index) throws -> T where T.RawValue: MAVLinkNumber {
         let rawValue: T.RawValue = try number(at: offset)
         
         guard let enumerationCase = T(rawValue: rawValue) else {
@@ -836,7 +836,7 @@ extension Data {
     /// - parameter offset: Offset in receiver’s bytes.
     ///
     /// - throws: Throws `PackError`.
-    mutating func set<T: MAVLinkNumber>(number: T, at offset: Int) throws -> Void {
+    mutating func set<T: MAVLinkNumber>(_ number: T, at offset: Data.Index) throws -> Void {
         let size = MemoryLayout<T>.stride
         let range = offset ..< offset + size
         
@@ -867,7 +867,7 @@ extension Data {
     /// - parameter capacity: Maximum allowed count of elements in `array`.
     ///
     /// - throws: Throws `PackError`.
-    mutating func set<T: MAVLinkNumber>(array: [T], at offset: Int, capacity: Int) throws {
+    mutating func set<T: MAVLinkNumber>(_ array: [T], at offset: Data.Index, capacity: Int) throws {
         guard array.count <= capacity else {
             throw PackError.invalidValueLength(offset: offset, providedValueLength: array.count, allowedLength: capacity)
         }
@@ -880,7 +880,7 @@ extension Data {
         }
         
         for (index, item) in array.enumerated() {
-            try set(number: item, at: index * elementSize)
+            try set(item, at: index * elementSize)
         }
     }
     
@@ -894,7 +894,7 @@ extension Data {
     /// - parameter length: Maximum allowed length of `string`.
     ///
     /// - throws: Throws `PackError`.
-    mutating func set(string: String, at offset: Int, length: Int) throws {
+    mutating func set(_ string: String, at offset: Data.Index, length: Int) throws {
         guard var bytes = string.data(using: .ascii) else {
             throw PackError.invalidStringEncoding(offset: offset, string: string)
         }
@@ -905,7 +905,7 @@ extension Data {
         }
         
         let asciiCharacters = bytes.withUnsafeBytes { Array(UnsafeBufferPointer<UInt8>(start: $0, count: bytes.count)) }
-        try set(array: asciiCharacters, at: offset, capacity: length)
+        try set(asciiCharacters, at: offset, capacity: length)
     }
     
     /// Sets correctly formated `enumeration` raw value at `offset` or throws
@@ -915,8 +915,8 @@ extension Data {
     /// - parameter offset:      Offset in receiver’s bytes.
     ///
     /// - throws: Throws `PackError`.
-    mutating func set<T: Enumeration>(enumeration: T, at offset: Int) throws where T.RawValue: MAVLinkNumber {
-        try set(number: enumeration.rawValue, at: offset)
+    mutating func set<T: Enumeration>(_ enumeration: T, at offset: Data.Index) throws where T.RawValue: MAVLinkNumber {
+        try set(enumeration.rawValue, at: offset)
     }
 }
 

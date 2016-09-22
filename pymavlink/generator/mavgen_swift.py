@@ -10,18 +10,18 @@ import os
 from . import mavparse, mavtemplate
 
 abbreviations = ["MAV", "PX4", "UDB", "PPZ", "PIXHAWK", "SLUGS", "FP", "ASLUAV", "VTOL", "ROI", "UART", "UDP", "IMU", "IMU2", "3D", "RC", "GPS", "GPS1", "GPS2", "NED", "RTK", "ADSB"]
-swift_types = {'char' : ("String", '"\\0"', "string(at: %u, length: %u)", "set(string: self.%s, at: %u, length: %u)"),
-               'uint8_t' : ("UInt8", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'int8_t' : ("Int8", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'uint16_t' : ("UInt16", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'int16_t' : ("Int16", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'uint32_t' : ("UInt32", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'int32_t' : ("Int32", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'uint64_t' : ("UInt64", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'int64_t' : ("Int64", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'float' : ("Float", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'double' : ("Double", 0, "number(at: %u)", "set(number: self.%s, at: %u)"),
-               'uint8_t_mavlink_version' : ("UInt8", 0, "number(at: %u)", "set(number: self.%s, at: %u)")}
+swift_types = {'char' : ("String", '"\\0"', "string(at: %u, length: %u)", "set(%s, at: %u, length: %u)"),
+               'uint8_t' : ("UInt8", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'int8_t' : ("Int8", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'uint16_t' : ("UInt16", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'int16_t' : ("Int16", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'uint32_t' : ("UInt32", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'int32_t' : ("Int32", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'uint64_t' : ("UInt64", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'int64_t' : ("Int64", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'float' : ("Float", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'double' : ("Double", 0, "number(at: %u)", "set(%s, at: %u)"),
+               'uint8_t_mavlink_version' : ("UInt8", 0, "number(at: %u)", "set(%s, at: %u)")}
 
 t = mavtemplate.MAVTemplate()
 
@@ -119,7 +119,7 @@ extension ${swift_name}: Message {
     public static var fieldDefinitions: [FieldDefinition] = [${fields_info}]
 
     public init(data: Data) throws {
-${{ordered_fields:\t\tself.${swift_name} = ${initial_value}\n}}
+${{ordered_fields:\t\t${init_accessor} = ${initial_value}\n}}
     }
 
     public func pack() throws -> Data {
@@ -261,6 +261,8 @@ def generate_messages_type_info(msgs):
 
         for field in msg.ordered_fields:
             field.swift_name = lower_camel_case_from_underscores(field.name)
+            field.init_accessor = field.swift_name if field.swift_name != "data" else "self.%s" % field.swift_name
+            field.pack_accessor = field.swift_name if field.swift_name != "payload" else "self.%s" % field.swift_name
             field.return_type = swift_types[field.type][0]
             
             # configure fields initializers
@@ -268,21 +270,21 @@ def generate_messages_type_info(msgs):
                 # handle enums
                 field.return_type = camel_case_from_underscores(field.enum)
                 field.initial_value = "try data.enumeration(at: %u)" % field.wire_offset
-                field.payload_setter = "set(enumeration: self.%s, at: %u)" % (field.swift_name, field.wire_offset)
+                field.payload_setter = "set(%s, at: %u)" % (field.pack_accessor, field.wire_offset)
             elif field.array_length > 0:
                 if field.return_type == "String":
                     # handle strings
                     field.initial_value = "try data." + swift_types[field.type][2] % (field.wire_offset, field.array_length)
-                    field.payload_setter = swift_types[field.type][3] % (field.swift_name, field.wire_offset, field.array_length)
+                    field.payload_setter = swift_types[field.type][3] % (field.pack_accessor, field.wire_offset, field.array_length)
                 else:
                     # other array types
                     field.return_type = "[%s]" % field.return_type
                     field.initial_value = "try data.array(at: %u, capacity: %u)" % (field.wire_offset, field.array_length)
-                    field.payload_setter = "set(array: self.%s, at: %u, capacity: %u)" % (field.swift_name, field.wire_offset, field.array_length)
+                    field.payload_setter = "set(%s, at: %u, capacity: %u)" % (field.pack_accessor, field.wire_offset, field.array_length)
             else:
                 # simple type field
                 field.initial_value = "try data." + swift_types[field.type][2] % field.wire_offset
-                field.payload_setter = swift_types[field.type][3] % (field.swift_name, field.wire_offset)
+                field.payload_setter = swift_types[field.type][3] % (field.pack_accessor, field.wire_offset)
 
             field.formatted_description = ""
             if field.description:
