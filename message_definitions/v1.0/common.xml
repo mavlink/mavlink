@@ -2259,6 +2259,33 @@
                   <description>ID field references MAVLink SRC ID</description>
               </entry>
           </enum>
+          <enum name="GPS_FIX_TYPE">
+              <description>Type of GPS fix</description>
+              <entry value="0" name="GPS_FIX_TYPE_NO_GPS">
+                  <description>No GPS connected</description>
+              </entry>
+              <entry value="1" name="GPS_FIX_TYPE_NO_FIX">
+                  <description>No position information, GPS is connected</description>
+              </entry>
+              <entry value="2" name="GPS_FIX_TYPE_2D_FIX">
+                  <description>2D position</description>
+              </entry>
+              <entry value="3" name="GPS_FIX_TYPE_3D_FIX">
+                  <description>3D position</description>
+              </entry>
+              <entry value="4" name="GPS_FIX_TYPE_DGPS">
+                  <description>DGPS/SBAS aided 3D position</description>
+              </entry>
+              <entry value="5" name="GPS_FIX_TYPE_RTK_FLOAT">
+                  <description>RTK float, 3D position</description>
+              </entry>
+              <entry value="6" name="GPS_FIX_TYPE_RTK_FIXED">
+                  <description>RTK Fixed, 3D position</description>
+              </entry>
+              <entry value="7" name="GPS_FIX_TYPE_STATIC">
+                  <description>Static fixed, typically used for base stations</description>
+              </entry>
+          </enum>
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -2355,7 +2382,7 @@
                <description>The global position, as returned by the Global Positioning System (GPS). This is
                 NOT the global position estimate of the system, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate. Coordinate frame is right-handed, Z-axis up (GPS frame).</description>
                <field type="uint64_t" name="time_usec">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
-               <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix, 4: DGPS, 5: RTK. Some applications will not use the value of this field unless it is at least two, so always correctly fill in the fix.</field>
+               <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">See the GPS_FIX_TYPE enum.</field>
                <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
                <field type="int32_t" name="alt">Altitude (AMSL, NOT WGS84), in meters * 1000 (positive for up). Note that virtually all GPS modules provide the AMSL altitude in addition to the WGS84 altitude.</field>
@@ -3241,7 +3268,7 @@
          <message id="124" name="GPS2_RAW">
            <description>Second GPS data. Coordinate frame is right-handed, Z-axis up (GPS frame).</description>
            <field type="uint64_t" name="time_usec">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
-           <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix, 4: DGPS fix, 5: RTK Fix. Some applications will not use the value of this field unless it is at least two, so always correctly fill in the fix.</field>
+           <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">See the GPS_FIX_TYPE enum.</field>
            <field type="int32_t" name="lat">Latitude (WGS84), in degrees * 1E7</field>
            <field type="int32_t" name="lon">Longitude (WGS84), in degrees * 1E7</field>
            <field type="int32_t" name="alt">Altitude (AMSL, not WGS84), in meters * 1000 (positive for up)</field>
