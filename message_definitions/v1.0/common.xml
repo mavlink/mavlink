@@ -3913,6 +3913,21 @@
             <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of logfiles</field>
         </message>
 
+        <message id="265" name="MOUNT_STATUS">
+            <description>Status and orientation of a mount</description>
+                <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
+               <field type="uint8_t" name="mav_mount_mode">Mount operation mode (see MAV_MOUNT_MODE enum)</field>
+               <field type="uint8_t" name="roll_stabilized">Roll stabilized (1: yes, 0: no)</field>
+               <field type="uint8_t" name="pitch_stabilized">Pitch stabilized (1: yes, 0: no)</field>
+               <field type="uint8_t" name="yaw_stabilized">Yaw stabilized (1: yes, 0: no)</field>
+               <field type="float" name="roll">Roll in degrees, set if appropriate mount mode.</field>
+               <field type="float" name="pitch">Pitch in degrees, set if appropriate mount mode.</field>
+               <field type="float" name="yaw">Yaw in degrees, set if appropriate mount mode.</field>
+               <field type="int32_t" name="lat">Latitude, in degrees * 1E7, set if appropriate mount mode.</field>
+               <field type="int32_t" name="lon">Longitude, in degrees * 1E7, set if appropriate mount mode.</field>
+               <field type="float" name="alt">Altitude in meters, set if appropriate mount mode.</field>
+        </message>
+
         <message id="266" name="LOGGING_DATA">
                <description>A message containing logged data (see also MAV_CMD_LOGGING_START)</description>
                <field type="uint8_t" name="target_system">system ID of the target</field>
