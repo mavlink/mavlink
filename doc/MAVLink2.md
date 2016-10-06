@@ -287,3 +287,37 @@ ID then it switches link ID to the one from the incoming packet.
 
 The has the effect of making the GCS slave its link ID to the link ID
 of the autopilot.
+
+
+### Negotiating MAVLink2
+
+It is expected that vehicle and GCS implementations will support both
+MAVLink1 and MAVLink2 for quite some time. We would like most users to
+receive the benefit of MAVLink2, while still supporting
+implementations that don't yet support MAVLink2.
+
+The following is meant to capture best practice for vehicle firmware
+and GCS authors:
+
+ * vehicle implementations should have a way to enable/disable the
+ sending of MAVLink2 messages. This should preferably be on a per-link
+ basis to allow for some peripherals to be MAVLink1 while others are
+ MAVLink2. It is acceptable for this option to require a reboot of the flight controller to take effect.
+
+ * if signing is enabled and MAVLink2 is enabled then the vehicle should
+ immediately start sending MAVLink2 on startup
+
+ * if signing is not enabled and MAVLink2 is enabled then the vehicle may
+ choose to start by sending MAVLink1 and switch to MAVLink2 on a link
+ when it first receives a MAVLink2 message on the link
+
+ * vehicles should set the MAV_PROTOCOL_CAPABILITY_MAVLINK2 capability
+ flag in the AUTOPILOT_VERSION message if MAVLink2 is available on a
+ link. This should be set in the case where the link is currently sending MAVLink1 packets but MAVLink2 packets will be accepted and will cause a switch to MAVLink2
+ 
+ * GCS implementations can choose to either automatically switch to MAVLink2 where available or to have a configuration option for MAVLink2
+ 
+ * if the GCS chooses to use a configuration option then when the option is enabled it should send MAVLink2 on starting the link
+ 
+ * if the GCS chooses to use automatic switching then it should switch to sending MAVLink2 if either it receives a MAVLink2 message on the link or by asking for the AUTOPILOT_VERSION message to be sent and seeing the MAV_PROTOCOL_CAPABILITY_MAVLINK2 flag is set
+ 
