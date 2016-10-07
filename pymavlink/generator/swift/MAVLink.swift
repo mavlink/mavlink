@@ -740,12 +740,13 @@ extension Data {
     /// Returns number value (integer or floating point) from receiver’s data.
     ///
     /// - parameter offset: Offset in receiver’s bytes.
+    /// - parameter byteOrder: Current system endianness.
     ///
     /// - throws: Throws `ParseError`.
     ///
     /// - returns: Returns `MAVLinkNumber` (UInt8, Int8, UInt16, Int16, UInt32,
     /// Int32, UInt64, Int64, Float, Double).
-    func number<T: MAVLinkNumber>(at offset: Data.Index) throws -> T {
+    func number<T: MAVLinkNumber>(at offset: Data.Index, byteOrder: CFByteOrder = CFByteOrderGetCurrent()) throws -> T {
         let size = MemoryLayout<T>.stride
         let range: Range<Int> = offset ..< offset + size
         
@@ -754,7 +755,7 @@ extension Data {
         }
         
         var bytes = subdata(in: range)
-        if CFByteOrderGetCurrent() != Int(CFByteOrderLittleEndian.rawValue) {
+        if byteOrder != Int(CFByteOrderLittleEndian.rawValue) {
             bytes.reverse()
         }
         
@@ -834,9 +835,10 @@ extension Data {
     ///
     /// - parameter number: Number value to set.
     /// - parameter offset: Offset in receiver’s bytes.
+    /// - parameter byteOrder: Current system endianness.
     ///
     /// - throws: Throws `PackError`.
-    mutating func set<T: MAVLinkNumber>(_ number: T, at offset: Data.Index) throws -> Void {
+    mutating func set<T: MAVLinkNumber>(_ number: T, at offset: Data.Index, byteOrder: CFByteOrder = CFByteOrderGetCurrent()) throws -> Void {
         let size = MemoryLayout<T>.stride
         let range = offset ..< offset + size
         
@@ -852,8 +854,7 @@ extension Data {
             return Data(bufferPointer)
         }
         
-        
-        if CFByteOrderGetCurrent() != Int(CFByteOrderLittleEndian.rawValue) {
+        if byteOrder != Int(CFByteOrderLittleEndian.rawValue) {
             bytes.reverse()
         }
         

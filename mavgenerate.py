@@ -63,6 +63,7 @@ class Application(Frame):
         # Create the XML entry
 
         self.xml_value = StringVar()
+        self.xml_value.set("/Users/modnovolyk/Documents/Projects/MAVLink/message_definitions/v1.0/ardupilotmega.xml")
         self.xml_label = Label( self, text="XML" )
         self.xml_label.grid(row=0, column = 0)
         self.xml_entry = Entry( self, width = 26, textvariable=self.xml_value )
@@ -74,6 +75,7 @@ class Application(Frame):
         # Create the Out entry
 
         self.out_value = StringVar()
+        self.out_value.set("/Users/modnovolyk/Documents/Projects/MAVLinkSwiftTest/MAVLinkSwiftTest/MAVLink")
         self.out_label = Label( self, text="Out" )
         self.out_label.grid(row=1,column = 0)
         self.out_entry = Entry( self, width = 26, textvariable=self.out_value )
@@ -89,7 +91,7 @@ class Application(Frame):
         self.language_label = Label( self, text="Language" )
         self.language_label.grid(row=2, column=0)
         self.language_menu = OptionMenu(self,self.language_value,*self.language_choices)
-        self.language_value.set(mavgen.DEFAULT_LANGUAGE)
+        self.language_value.set("Swift")
         self.language_menu.config(width=10)
         self.language_menu.grid(row=2, column=1,sticky=W)
 
