@@ -3570,6 +3570,42 @@
            <field type="uint8_t" name="len">data length</field>
            <field type="uint8_t[180]" name="data">RTCM message (may be fragmented)</field>
         </message>
+        <message id="234" name="PLANNING_TRIPLET">
+            <description>WORK IN PROGRESS! Represents the current position command state.</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="uint32_t" name="status_bits">Bit 0: Prev valid, bit 1: curr valid, bit 2: next valid, bit3: gen count valid</field>
+            <field type="uint32_t" name="gen_count">Generation count for triplet. Increases monotonically and wraps once reached.</field>
+            <field type="float" name="prev_x">Local position X (NED) of previous position command in m</field>
+            <field type="float" name="prev_y">Local position Y (NED) of previous position command in m</field>
+            <field type="float" name="prev_z">Local position Z (NED) of previous position command in m</field>
+            <field type="float" name="prev_vel">Desired velocity at previous position command in m/s</field>
+            <field type="float" name="curr_x">Local position X (NED) of current position command in m</field>
+            <field type="float" name="curr_y">Local position Y (NED) of current position command in m</field>
+            <field type="float" name="curr_z">Local position Z (NED) of current position command in m</field>
+            <field type="float" name="curr_vel">Desired velocity at current position command in m/s</field>
+            <field type="float" name="next_x">Local position X (NED) of next position command in m</field>
+            <field type="float" name="next_y">Local position Y (NED) of next position command in m</field>
+            <field type="float" name="next_z">Local position Z (NED) of next position command in m</field>
+            <field type="float" name="next_vel">Desired velocity at next position command in m/s</field>
+        </message>
+        <message id="235" name="AVOIDANCE_TRIPLET">
+            <description>WORK IN PROGRESS! Represents the current position command state.</description>
+            <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="uint32_t" name="status_bits">Bit 0: Prev valid, bit 1: curr valid, bit 2: next valid.</field>
+            <field type="uint32_t" name="gen_count">Generation count for triplet. Increases monotonically and wraps once reached. This number is a copy of the last received planning triplet, which allows the system to update a planning triplet with avoidance data.</field>
+            <field type="float" name="prev_x">Local position X (NED) of previous position command in m</field>
+            <field type="float" name="prev_y">Local position Y (NED) of previous position command in m</field>
+            <field type="float" name="prev_z">Local position Z (NED) of previous position command in m</field>
+            <field type="float" name="prev_vel">Desired velocity at previous position command in m/s</field>
+            <field type="float" name="curr_x">Local position X (NED) of current position command in m</field>
+            <field type="float" name="curr_y">Local position Y (NED) of current position command in m</field>
+            <field type="float" name="curr_z">Local position Z (NED) of current position command in m</field>
+            <field type="float" name="curr_vel">Desired velocity at current position command in m/s</field>
+            <field type="float" name="next_x">Local position X (NED) of next position command in m</field>
+            <field type="float" name="next_y">Local position Y (NED) of next position command in m</field>
+            <field type="float" name="next_z">Local position Z (NED) of next position command in m</field>
+            <field type="float" name="next_vel">Desired velocity at next position command in m/s</field>
+        </message>
         <message id="241" name="VIBRATION">
             <description>Vibration levels and accelerometer clipping</description>
             <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
