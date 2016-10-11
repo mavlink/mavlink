@@ -792,13 +792,16 @@ extension Data {
     /// - returns: `String`
     func string(at offset: Data.Index, length: Int) throws -> String {
         let range: Range<Int> = offset ..< offset + length
-        let bytes = subdata(in: range)
         
         guard range.upperBound <= count else {
             throw ParseError.valueSizeOutOfBounds(offset: offset, size: length, upperBound: count)
         }
         
-        guard let string = String(bytes: bytes, encoding: .ascii) else {
+        let bytes = subdata(in: range)
+        let emptySubSequence = Data.SubSequence(base: Data(), bounds: 0 ..< 0)
+        let firstSubSequence = bytes.split(separator: 0x0, maxSplits: 1, omittingEmptySubsequences: false).first ?? emptySubSequence
+        
+        guard let string = String(bytes: firstSubSequence, encoding: .ascii) else {
             throw ParseError.invalidStringEncoding(offset: offset, length: length)
         }
         
