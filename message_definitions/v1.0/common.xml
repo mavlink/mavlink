@@ -1258,10 +1258,10 @@
                     <param index="1">0: Do nothing for autopilot, 1: Reboot autopilot, 2: Shutdown autopilot, 3: Reboot autopilot and keep it in the bootloader until upgraded.</param>
                     <param index="2">0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer, 3: Reboot onboard computer and keep it in the bootloader until upgraded.</param>
                     <param index="3">0: Do nothing for camera, 1: Reboot onboard camera, 2: Shutdown onboard camera, 3: Reboot onboard camera and keep it in the bootloader until upgraded</param>
-                    <param index="4">0: Do nothing for gimbal, 1: Reboot gimbal, 2: Shutdown gimbal, 3: Reboot gimbal and keep it in the bootloader until upgraded</param>
+                    <param index="4">0: Do nothing for mount (e.g. gimbal), 1: Reboot mount, 2: Shutdown mount, 3: Reboot mount and keep it in the bootloader until upgraded</param>
                     <param index="5">Reserved, send 0</param>
                     <param index="6">Reserved, send 0</param>
-                    <param index="7">Reserved, send 0</param>
+                    <param index="7">ID (e.g. camera ID -1 for all IDs)</param>
                </entry>
                <entry value="252" name="MAV_CMD_OVERRIDE_GOTO">
                     <description>Hold / continue the current action</description>
@@ -1314,7 +1314,8 @@
                <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION">
                  <description>Request camera information (CAMERA_INFORMATION)</description>
                  <param index="1">1: Request camera capabilities</param>
-                 <param index="2">Reserved (all remaining params)</param>
+                 <param index="2">Camera ID</param>
+                 <param index="3">Reserved (all remaining params)</param>
                </entry>
                <entry value="522" name="MAV_CMD_REQUEST_CAMERA_SETTINGS">
                  <description>Request camera settings (CAMERA_SETTINGS)</description>
@@ -1345,7 +1346,7 @@
                <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION">
                  <description>Request storage information (STORAGE_INFORMATION)</description>
                  <param index="1">1: Request storage information</param>
-                 <param index="2">Camera ID</param>
+                 <param index="2">Storage ID</param>
                  <param index="3">Reserved (all remaining params)</param>
                </entry>
                <entry value="526" name="MAV_CMD_STORAGE_FORMAT">
@@ -1373,11 +1374,12 @@
                   <param index="3">Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used</param>
                   <param index="4">Resolution horizontally (x) in pixels</param>
                   <param index="5">Resolution horizontally (y) in pixels</param>
+                  <param index="6">Camera ID</param>
               </entry>
 
               <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE">
                   <description>Stop image capture sequence</description>
-                  <param index="1">Reserved</param>
+                  <param index="1">Camera ID</param>
                   <param index="2">Reserved</param>
               </entry>
 
@@ -1399,7 +1401,7 @@
 
               <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE">
                   <description>Stop the current video capture</description>
-                  <param index="1">Reserved</param>
+                  <param index="1">Camera ID</param>
                   <param index="2">Reserved</param>
               </entry>
 
