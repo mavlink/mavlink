@@ -1343,6 +1343,27 @@
                   <param index="2">Reserved</param>
               </entry>
 
+              <entry value="2510" name="MAV_CMD_LOGGING_START">
+                   <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
+                   <param index="1">Format: 0: ULog</param>
+                   <param index="2">Reserved (set to 0)</param>
+                   <param index="3">Reserved (set to 0)</param>
+                   <param index="4">Reserved (set to 0)</param>
+                   <param index="5">Reserved (set to 0)</param>
+                   <param index="6">Reserved (set to 0)</param>
+                   <param index="7">Reserved (set to 0)</param>
+              </entry>
+              <entry value="2511" name="MAV_CMD_LOGGING_STOP">
+                   <description>Request to stop streaming log data over MAVLink</description>
+                   <param index="1">Reserved (set to 0)</param>
+                   <param index="2">Reserved (set to 0)</param>
+                   <param index="3">Reserved (set to 0)</param>
+                   <param index="4">Reserved (set to 0)</param>
+                   <param index="5">Reserved (set to 0)</param>
+                   <param index="6">Reserved (set to 0)</param>
+                   <param index="7">Reserved (set to 0)</param>
+              </entry>
+
               <entry value="2800" name="MAV_CMD_PANORAMA_CREATE">
                   <description>Create a panorama at the current position</description>
                   <param index="1">Viewing angle horizontal of the panorama (in degrees, +- 0.5 the total angle)</param>
@@ -3741,6 +3762,31 @@
             <field name="target_system" type="uint8_t">System ID</field>
             <field name="target_component" type="uint8_t">Component ID</field>
             <field name="tune" type="char[30]">tune in board specific format</field>
+          </message>
+
+          <message id="266" name="LOGGING_DATA">
+               <description>A message containing logged data (see also MAV_CMD_LOGGING_START)</description>
+               <field type="uint8_t" name="target_system">system ID of the target</field>
+               <field type="uint8_t" name="target_component">component ID of the target</field>
+               <field type="uint16_t" name="sequence">sequence number (can wrap)</field>
+               <field type="uint8_t" name="length">data length</field>
+               <field type="uint8_t" name="first_message_offset">offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).</field>
+               <field type="uint8_t[249]" name="data">logged data</field>
+          </message>
+          <message id="267" name="LOGGING_DATA_ACKED">
+               <description>A message containing logged data which requires a LOGGING_ACK to be sent back</description>
+               <field type="uint8_t" name="target_system">system ID of the target</field>
+               <field type="uint8_t" name="target_component">component ID of the target</field>
+               <field type="uint16_t" name="sequence">sequence number (can wrap)</field>
+               <field type="uint8_t" name="length">data length</field>
+               <field type="uint8_t" name="first_message_offset">offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).</field>
+               <field type="uint8_t[249]" name="data">logged data</field>
+          </message>
+          <message id="268" name="LOGGING_ACK">
+               <description>An ack for a LOGGING_DATA_ACKED message</description>
+               <field type="uint8_t" name="target_system">system ID of the target</field>
+               <field type="uint8_t" name="target_component">component ID of the target</field>
+               <field type="uint16_t" name="sequence">sequence number (must match the one in LOGGING_DATA_ACKED)</field>
           </message>
           
         </messages>
