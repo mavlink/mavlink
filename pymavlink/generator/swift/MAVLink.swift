@@ -884,7 +884,7 @@ extension Data {
         }
         
         for (index, item) in array.enumerated() {
-            try set(item, at: index * elementSize)
+            try set(item, at: offset + index * elementSize)
         }
     }
     
@@ -903,9 +903,10 @@ extension Data {
             throw PackError.invalidStringEncoding(offset: offset, string: string)
         }
         
-        // Remove possible string’s null-termination
-        if bytes.count > length {
-            bytes.removeLast()
+        // Add optional null-termination if provided string is shorter than
+        // expectedlength
+        if bytes.count < length {
+            bytes.append(0x0)
         }
         
         let asciiCharacters = bytes.withUnsafeBytes { Array(UnsafeBufferPointer<UInt8>(start: $0, count: bytes.count)) }
