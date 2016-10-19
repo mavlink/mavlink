@@ -1,17 +1,10 @@
-## Javascript MAVLink implementation ##
+## Swift MAVLink implementation test project ##
 
-This code generates ```npm``` modules that can be used with Node.js.  As with the other implementations in Python and C, the MAVLink protocol is specified in XML manifests which can be modified to add custom messages.
+MAVLinkTests target covers `DataExtensions` with unit test (conversion between raw data and typed values). Also it contains some integration tests for `MAVLink` class.
 
-*See the gotcha's and todo's section below* for some important caveats.  This implementation should be considered pre-beta: it creates a working MAVLink parser, but there's plenty of rough edges in terms of API.
-
-### Generating the JS implementation ###
-
-Folders in the ```implementations/``` directory are ```npm``` modules, automatically generated from XML manifests that are in the [mavlink/mavlink](https://github.com/mavlink/mavlink) project.  If you wish to generate custom MAVLink packets, you would need to follow the directions there.
-
-You need to have Node.js and npm installed to build.  
-
-To build the Javascript implementations:
+To quickly generate MAVLink classes and enums for Swift you can use following script:
 
 ```bash
-npm install
+./ardugen.sh
 ```
+It will generate Swift files for `ardupilotmega.xml` definitions into `MAVLink` folder inside test project.
