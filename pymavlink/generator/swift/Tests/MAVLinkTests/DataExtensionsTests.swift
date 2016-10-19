@@ -310,7 +310,7 @@ class DataExtensionsTests: XCTestCase {
         XCTAssert(data == expectedData, "Method should set appropriate case raw value at specified offset")
     }
     
-    // MARK: Test write-read methods calls return consistent values
+    // MARK: - Test write-read methods calls return consistent values
     
     func testGetNumberDidGetSameValuePreviouslySetWithSetNumberCall() {
         var data = Data(count: 10)
