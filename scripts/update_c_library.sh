@@ -67,7 +67,6 @@ generate_headers minimal $1
 generate_headers slugs $1
 generate_headers test $1
 generate_headers ASLUAV $1
-generate_headers common $1
 mkdir -p $CLIBRARY_PATH/message_definitions
 cp message_definitions/v1.0/* $CLIBRARY_PATH/message_definitions/.
 echo -e "\0033[34mFinished generating c headers\0033[0m\n"
