@@ -192,7 +192,8 @@ public enum ParseError: Error {
     
     /// Checksum check failed. Message id is known but calculated CRC bytes
     /// does not match received CRC value.
-    case badCRC
+    /// - messageId: ID of expected `Message` type.
+    case badCRC(messageId: UInt8)
 }
 
 /// Special error type for returning Enum parsing errors with details in associated
@@ -463,7 +464,7 @@ public class MAVLink {
             if (status.parseState == .gotBadCRC1) || (char != rxpack.checksum.highByte) {
                 status.parseError += 1
                 status.packetReceived = .badCRC
-                let error = messageIdToClass[rxpack.messageId] == nil ? ParseError.unknownMessageId(messageId: rxpack.messageId) : ParseError.badCRC
+                let error = messageIdToClass[rxpack.messageId] == nil ? ParseError.unknownMessageId(messageId: rxpack.messageId) : ParseError.badCRC(messageId: rxpack.messageId)
                 delegate?.didFailToReceive(packet: Packet(packet: rxpack), with: error, on: channel, via: self)
             } else {
                 // Successfully got message
