@@ -244,48 +244,48 @@ public protocol MAVLinkDelegate {
     /// Called when MAVLink packet is successfully received, payload length check
     /// and CRC are passed.
     ///
-    /// - parameter link:    `MAVLink` object that handled `packet`.
     /// - parameter packet:  Completely received `Packet`.
     /// - parameter channel: Channel on which `packet` was received.
-    func link(_ link: MAVLink, didReceivePacket packet: Packet, channel: Channel)
+    /// - parameter link:    `MAVLink` object that handled `packet`.
+    func didReceive(packet: Packet, on channel: Channel, via link: MAVLink)
     
     
     /// Packet receiving failed due to `InvalidPayloadLength` or `BadCRC` error.
     ///
-    /// - parameter link:    `MAVLink` object that received `data`.
-    /// - parameter error:   Error that  occurred while receiving `data`
+    /// - parameter packet:    Partially received `Packet`.
+    /// - parameter error:     Error that  occurred while receiving `data`
     /// (`InvalidPayloadLength` or `BadCRC` error).
-    /// - parameter data:    Partially received `Packet`.
-    /// - parameter channel: Channel on which `data` was received.
-    func link(_ link: MAVLink, didFailToReceivePacketWithError error: Error, data: Packet?, channel: Channel)
+    /// - parameter channel:   Channel on which `data` was received.
+    /// - parameter link:      `MAVLink` object that received `data`.
+    func didFailToReceive(packet: Packet?, with error: Error, on channel: Channel, via link: MAVLink)
     
     /// Called when received data was successfully parsed into appropriate
     /// `message` structure.
     ///
-    /// - parameter link:    `MAVLink` object that handled `packet`.
     /// - parameter message: Successfully parsed `Message`.
     /// - parameter packet:  Completely received `Packet`.
-    /// - Parameter channel: Channel on which `message` was received.
-    func link(_ link: MAVLink, didParseMessage message: Message, fromPacket packet: Packet, channel: Channel)
+    /// - parameter channel: Channel on which `message` was received.
+    /// - parameter link:    `MAVLink` object that handled `packet`.
+    func didParse(message: Message, from packet: Packet, on channel: Channel, via link: MAVLink)
     
     /// Called when `packet` completely received but `MAVLink` was not able to
     /// finish `Message` processing due unknown `messageId` or type validation
     /// errors.
     ///
-    /// - parameter link:    `MAVLink` object that handled `packet`.
     /// - parameter packet:  Completely received `Packet`.
     /// - parameter error:   Error that  occurred while parsing `packet`s
     /// payload into `Message`.
     /// - parameter channel: Channel on which `message` was received.
-    func link(_ link: MAVLink, didFailToParseMessageFromPacket packet: Packet, withError error: Error, channel: Channel)
+    /// - parameter link:    `MAVLink` object that handled `packet`.
+    func didFailToParseMessage(from packet: Packet, with error: Error, on channel: Channel, via link: MAVLink)
     
     /// Called when message is finalized and ready for sending to aircraft.
     ///
-    /// - parameter link:    `MAVLink` object that handled `message`.
     /// - parameter message: Message to be sent.
     /// - parameter data:    Compiled data that represents `message`.
     /// - parameter channel: Channel on which `message` should be sent.
-    func link(_ link: MAVLink, didFinalizeMessage: Message, data: Data, channel: Channel)
+    /// - parameter link:    `MAVLink` object that handled `message`.
+    func didFinalize(message: Message, from data: Data, on channel: Channel, in link: MAVLink)
 }
 
 // MARK: MAVLink class implementation
@@ -429,7 +429,7 @@ public class MAVLink {
                     status.parseError += 1
                     status.parseState = .idle
                     let error = ParseError.invalidPayloadLength(messageId: char, receivedLength: rxpack.length, properLength: messageLength)
-                    delegate?.link(self, didFailToReceivePacketWithError: error, data: nil, channel: channel)
+                    delegate?.didFailToReceive(packet: nil, with: error, on: channel, via: self)
                     break
                 }
             }
@@ -464,7 +464,7 @@ public class MAVLink {
                 status.parseError += 1
                 status.packetReceived = .badCRC
                 let error = messageIdToClass[rxpack.messageId] == nil ? ParseError.unknownMessageId(messageId: rxpack.messageId) : ParseError.badCRC
-                delegate?.link(self, didFailToReceivePacketWithError: error, data: Packet(packet: rxpack), channel: channel)
+                delegate?.didFailToReceive(packet: Packet(packet: rxpack), with: error, on: channel, via: self)
             } else {
                 // Successfully got message
                 rxpack.payload.append(char)
@@ -486,7 +486,7 @@ public class MAVLink {
         
         // Copy and delegate received packet
         let packet = Packet(packet: rxpack)
-        delegate?.link(self, didReceivePacket: packet, channel: channel)
+        delegate?.didReceive(packet: packet, on: channel, via: self)
         
         status.currentRxSeq = rxpack.sequence
         // Initial condition: If no packet has been received so far, drop count is undefined
@@ -499,15 +499,15 @@ public class MAVLink {
         // Try to create appropriate Message structure, delegate results
         guard let messageClass = messageIdToClass[packet.messageId] else {
             let error = ParseError.unknownMessageId(messageId: rxpack.messageId)
-            delegate?.link(self, didFailToParseMessageFromPacket: packet, withError: error, channel: channel)
+            delegate?.didFailToParseMessage(from: packet, with: error, on: channel, via: self)
             return packet
         }
         
         do {
             packet.message = try messageClass.init(data: rxpack.payload)
-            delegate?.link(self, didParseMessage: packet.message!, fromPacket: packet, channel: channel)
+            delegate?.didParse(message: packet.message!, from: packet, on: channel, via: self)
         } catch {
-            delegate?.link(self, didFailToParseMessageFromPacket: packet, withError: error, channel: channel)
+            delegate?.didFailToParseMessage(from: packet, with: error, on: channel, via: self)
             return packet
         }
         
@@ -547,7 +547,7 @@ public class MAVLink {
         let channelStatus = channelStatuses[Int(channel)]
         let packet = Packet(message: message, systemId: systemId, componentId: componentId, channel: channel)
         let data = try packet.finalize(sequence: channelStatus.currentTxSeq)
-        delegate?.link(self, didFinalizeMessage: message, data: data, channel: channel)
+        delegate?.didFinalize(message: message, from: data, on: channel, in: self)
         channelStatus.currentTxSeq = channelStatus.currentTxSeq &+ 1
     }
 }
