@@ -1022,6 +1022,16 @@
                 <description>This block has been received</description>
             </entry>
         </enum>
+
+        <enum name="DEVICE_OP_BUSTYPE">
+            <description>Bus types for device operations</description>
+            <entry name="DEVICE_OP_BUSTYPE_I2C" value="0">
+                <description>I2C Device operation</description>
+            </entry>
+            <entry name="DEVICE_OP_BUSTYPE_SPI" value="1">
+                <description>SPI Device operation</description>
+            </entry>
+        </enum>
     </enums>
 
     <messages>
@@ -1541,5 +1551,49 @@
             <field name="rpm1" type="float">RPM Sensor1</field>
             <field name="rpm2" type="float">RPM Sensor2</field>
         </message>
-    </messages>
+
+        <!-- ardupilot specific mavlink2 messages starting at 11000-->
+        <message id="11000" name="DEVICE_OP_READ">
+            <description>Read registers for a device</description>
+            <field name="target_system" type="uint8_t">System ID</field>
+            <field name="target_component" type="uint8_t">Component ID</field>
+            <field type="uint32_t" name="request_id">request ID - copied to reply</field>
+            <field type="uint8_t" name="bustype" enum="DEVICE_OP_BUSTYPE">The bus type</field>
+            <field type="uint8_t" name="bus">Bus number</field>
+            <field type="uint8_t" name="address">Bus address</field>
+            <field type="char[40]" name="busname">Name of device on bus (for SPI)</field>
+            <field type="uint8_t" name="regstart">First register to read</field>
+            <field type="uint8_t" name="count">count of registers to read</field>
+        </message>
+
+        <message id="11001" name="DEVICE_OP_READ_REPLY">
+            <description>Read registers reply</description>
+            <field type="uint32_t" name="request_id">request ID - copied from request</field>
+            <field type="uint8_t" name="result">0 for success, anything else is failure code</field>
+            <field type="uint8_t" name="regstart">starting register</field>
+            <field type="uint8_t" name="count">count of bytes read</field>
+            <field type="uint8_t[128]" name="data">reply data</field>
+        </message>
+
+        <message id="11002" name="DEVICE_OP_WRITE">
+            <description>Write registers for a device</description>
+            <field name="target_system" type="uint8_t">System ID</field>
+            <field name="target_component" type="uint8_t">Component ID</field>
+            <field type="uint32_t" name="request_id">request ID - copied to reply</field>
+            <field type="uint8_t" name="bustype" enum="DEVICE_OP_BUSTYPE">The bus type</field>
+            <field type="uint8_t" name="bus">Bus number</field>
+            <field type="uint8_t" name="address">Bus address</field>
+            <field type="char[40]" name="busname">Name of device on bus (for SPI)</field>
+            <field type="uint8_t" name="regstart">First register to write</field>
+            <field type="uint8_t" name="count">count of registers to write</field>
+            <field type="uint8_t[128]" name="data">write data</field>
+        </message>
+
+        <message id="11003" name="DEVICE_OP_WRITE_REPLY">
+            <description>Write registers reply</description>
+            <field type="uint32_t" name="request_id">request ID - copied from request</field>
+            <field type="uint8_t" name="result">0 for success, anything else is failure code</field>
+        </message>
+        
+      </messages>
 </mavlink>
