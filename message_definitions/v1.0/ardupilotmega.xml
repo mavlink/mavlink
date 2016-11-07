@@ -1594,6 +1594,24 @@
             <field type="uint32_t" name="request_id">request ID - copied from request</field>
             <field type="uint8_t" name="result">0 for success, anything else is failure code</field>
         </message>
+
+        <!-- realtime Adaptive Controller tuning message -->
+        <message id="11010" name="ADAP_TUNING">
+          <description>Adaptive Controller tuning information</description>
+          <field enum="PID_TUNING_AXIS" name="axis" type="uint8_t">axis</field>
+          <field name="desired" type="float">desired rate (degrees/s)</field>
+          <field name="achieved" type="float">achieved rate (degrees/s)</field>
+          <field name="error" type="float">error between model and vehicle</field>
+          <field name="theta" type="float">theta estimated state predictor</field>
+          <field name="omega" type="float">omega estimated state predictor</field>
+          <field name="sigma" type="float">sigma estimated state predictor</field>
+          <field name="theta_dot" type="float">theta derivative</field>
+          <field name="omega_dot" type="float">omega derivative</field>
+          <field name="sigma_dot" type="float">sigma derivative</field>
+          <field name="f" type="float">projection operator value</field>
+          <field name="f_dot" type="float">projection operator derivative</field>
+          <field name="u" type="float">u adaptive controlled output command</field>
+        </message>
         
       </messages>
 </mavlink>
