@@ -3633,6 +3633,23 @@
             <field name="wp_num" type="uint8_t">current waypoint number</field>
             <field name="wp_distance" type="uint16_t">distance to target (meters)</field>
         </message>
+        <message id="235" name="AVOIDANCE_TRIPLET">
+          <description>WORK IN PROGRESS! Represents the current position command state.</description>
+          <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+          <field type="uint32_t" name="gen_count">Generation count for triplet. Increases monotonically and wraps once reached. This number is a copy of the last received planning triplet, which allows the system to update a planning triplet with avoidance data.</field>
+          <field type="float" name="prev_x">Local position X (NED) of previous position command in m</field>
+          <field type="float" name="prev_y">Local position Y (NED) of previous position command in m</field>
+          <field type="float" name="prev_z">Local position Z (NED) of previous position command in m</field>
+          <field type="float" name="ctrl_x">Local position X (NED) of control point in m</field>
+          <field type="float" name="ctrl_y">Local position Y (NED) of control point in m</field>
+          <field type="float" name="ctrl_z">Local position Z (NED) of control point in m</field>
+          <field type="float" name="next_x">Local position X (NED) of next position command in m</field>
+          <field type="float" name="next_y">Local position Y (NED) of next position command in m</field>
+          <field type="float" name="next_z">Local position Z (NED) of next position command in m</field>
+          <field type="float" name="duration">Desired time it takes to travel from prev to next in s</field>
+          <field type="float" name="max_acc">Maximum acceleration in m/s^2</field>
+          <field type="float" name="acc_per_err">Maximum acceleration in m/s^2 per meter error</field>
+        </message>
         <message id="241" name="VIBRATION">
             <description>Vibration levels and accelerometer clipping</description>
             <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
