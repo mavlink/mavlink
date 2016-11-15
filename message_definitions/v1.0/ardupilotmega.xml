@@ -8,6 +8,15 @@
      <dialect>2</dialect>
     <!-- note that APM specific messages should use the command id range from 150 to 250, to leave plenty of room for growth of common.xml If you prototype a message here, then you should consider if it is general enough to move into common.xml later -->
     <enums>
+        <enum name="ACCELCAL_VEHICLE_POS">
+            <entry name="ACCELCAL_VEHICLE_POS_LEVEL" value="1"/>
+            <entry name="ACCELCAL_VEHICLE_POS_LEFT" value="2"/>
+            <entry name="ACCELCAL_VEHICLE_POS_RIGHT" value="3"/>
+            <entry name="ACCELCAL_VEHICLE_POS_NOSEDOWN" value="4"/>
+            <entry name="ACCELCAL_VEHICLE_POS_NOSEUP" value="5"/>
+            <entry name="ACCELCAL_VEHICLE_POS_BACK" value="6"/>
+        </enum>
+            
         <!-- ardupilot specific MAV_CMD_* commands -->
         <enum name="MAV_CMD">
             <entry name="MAV_CMD_DO_GRIPPER" value="211">
@@ -113,6 +122,17 @@
             <entry name="MAV_CMD_DO_CANCEL_MAG_CAL" value="42426">
                 <description>Cancel a running magnetometer calibration</description>
                 <param index="1">uint8_t bitmask of magnetometers (0 means all)</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+            
+            <entry name="MAV_CMD_ACCELCAL_VEHICLE_POS" value="42429">
+                <description>Used when doing accelerometer calibration. When sent to the GCS tells it what position to put the vehicle in. When sent to the vehicle says what position the vehicle is in.</description>
+                <param index="1">Position, one of the ACCELCAL_VEHICLE_POS enum values</param>
                 <param index="2">Empty</param>
                 <param index="3">Empty</param>
                 <param index="4">Empty</param>
