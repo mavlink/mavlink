@@ -46,6 +46,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <arpa/inet.h>
+#include <stdbool.h> /* required for the definition of bool in C99 */
 #endif
 
 /* This assumes you have the mavlink headers on your include path
@@ -115,7 +116,12 @@ int main(int argc, char* argv[])
     } 
 	
 	/* Attempt to make it non blocking */
+#if (defined __QNX__) | (defined __QNXNTO__)
 	if (fcntl(sock, F_SETFL, O_NONBLOCK | FASYNC) < 0)
+#else
+	if (fcntl(sock, F_SETFL, O_NONBLOCK | O_ASYNC) < 0)
+#endif
+
     {
 		fprintf(stderr, "error setting nonblocking: %s\n", strerror(errno));
 		close(sock);
