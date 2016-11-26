@@ -8,6 +8,15 @@
      <dialect>2</dialect>
     <!-- note that APM specific messages should use the command id range from 150 to 250, to leave plenty of room for growth of common.xml If you prototype a message here, then you should consider if it is general enough to move into common.xml later -->
     <enums>
+        <enum name="ACCELCAL_VEHICLE_POS">
+            <entry name="ACCELCAL_VEHICLE_POS_LEVEL" value="1"/>
+            <entry name="ACCELCAL_VEHICLE_POS_LEFT" value="2"/>
+            <entry name="ACCELCAL_VEHICLE_POS_RIGHT" value="3"/>
+            <entry name="ACCELCAL_VEHICLE_POS_NOSEDOWN" value="4"/>
+            <entry name="ACCELCAL_VEHICLE_POS_NOSEUP" value="5"/>
+            <entry name="ACCELCAL_VEHICLE_POS_BACK" value="6"/>
+        </enum>
+            
         <!-- ardupilot specific MAV_CMD_* commands -->
         <enum name="MAV_CMD">
             <entry name="MAV_CMD_DO_GRIPPER" value="211">
@@ -113,6 +122,17 @@
             <entry name="MAV_CMD_DO_CANCEL_MAG_CAL" value="42426">
                 <description>Cancel a running magnetometer calibration</description>
                 <param index="1">uint8_t bitmask of magnetometers (0 means all)</param>
+                <param index="2">Empty</param>
+                <param index="3">Empty</param>
+                <param index="4">Empty</param>
+                <param index="5">Empty</param>
+                <param index="6">Empty</param>
+                <param index="7">Empty</param>
+            </entry>
+            
+            <entry name="MAV_CMD_ACCELCAL_VEHICLE_POS" value="42429">
+                <description>Used when doing accelerometer calibration. When sent to the GCS tells it what position to put the vehicle in. When sent to the vehicle says what position the vehicle is in.</description>
+                <param index="1">Position, one of the ACCELCAL_VEHICLE_POS enum values</param>
                 <param index="2">Empty</param>
                 <param index="3">Empty</param>
                 <param index="4">Empty</param>
@@ -1022,6 +1042,16 @@
                 <description>This block has been received</description>
             </entry>
         </enum>
+
+        <enum name="DEVICE_OP_BUSTYPE">
+            <description>Bus types for device operations</description>
+            <entry name="DEVICE_OP_BUSTYPE_I2C" value="0">
+                <description>I2C Device operation</description>
+            </entry>
+            <entry name="DEVICE_OP_BUSTYPE_SPI" value="1">
+                <description>SPI Device operation</description>
+            </entry>
+        </enum>
     </enums>
 
     <messages>
@@ -1541,5 +1571,67 @@
             <field name="rpm1" type="float">RPM Sensor1</field>
             <field name="rpm2" type="float">RPM Sensor2</field>
         </message>
-    </messages>
+
+        <!-- ardupilot specific mavlink2 messages starting at 11000-->
+        <message id="11000" name="DEVICE_OP_READ">
+            <description>Read registers for a device</description>
+            <field name="target_system" type="uint8_t">System ID</field>
+            <field name="target_component" type="uint8_t">Component ID</field>
+            <field type="uint32_t" name="request_id">request ID - copied to reply</field>
+            <field type="uint8_t" name="bustype" enum="DEVICE_OP_BUSTYPE">The bus type</field>
+            <field type="uint8_t" name="bus">Bus number</field>
+            <field type="uint8_t" name="address">Bus address</field>
+            <field type="char[40]" name="busname">Name of device on bus (for SPI)</field>
+            <field type="uint8_t" name="regstart">First register to read</field>
+            <field type="uint8_t" name="count">count of registers to read</field>
+        </message>
+
+        <message id="11001" name="DEVICE_OP_READ_REPLY">
+            <description>Read registers reply</description>
+            <field type="uint32_t" name="request_id">request ID - copied from request</field>
+            <field type="uint8_t" name="result">0 for success, anything else is failure code</field>
+            <field type="uint8_t" name="regstart">starting register</field>
+            <field type="uint8_t" name="count">count of bytes read</field>
+            <field type="uint8_t[128]" name="data">reply data</field>
+        </message>
+
+        <message id="11002" name="DEVICE_OP_WRITE">
+            <description>Write registers for a device</description>
+            <field name="target_system" type="uint8_t">System ID</field>
+            <field name="target_component" type="uint8_t">Component ID</field>
+            <field type="uint32_t" name="request_id">request ID - copied to reply</field>
+            <field type="uint8_t" name="bustype" enum="DEVICE_OP_BUSTYPE">The bus type</field>
+            <field type="uint8_t" name="bus">Bus number</field>
+            <field type="uint8_t" name="address">Bus address</field>
+            <field type="char[40]" name="busname">Name of device on bus (for SPI)</field>
+            <field type="uint8_t" name="regstart">First register to write</field>
+            <field type="uint8_t" name="count">count of registers to write</field>
+            <field type="uint8_t[128]" name="data">write data</field>
+        </message>
+
+        <message id="11003" name="DEVICE_OP_WRITE_REPLY">
+            <description>Write registers reply</description>
+            <field type="uint32_t" name="request_id">request ID - copied from request</field>
+            <field type="uint8_t" name="result">0 for success, anything else is failure code</field>
+        </message>
+
+        <!-- realtime Adaptive Controller tuning message -->
+        <message id="11010" name="ADAP_TUNING">
+          <description>Adaptive Controller tuning information</description>
+          <field enum="PID_TUNING_AXIS" name="axis" type="uint8_t">axis</field>
+          <field name="desired" type="float">desired rate (degrees/s)</field>
+          <field name="achieved" type="float">achieved rate (degrees/s)</field>
+          <field name="error" type="float">error between model and vehicle</field>
+          <field name="theta" type="float">theta estimated state predictor</field>
+          <field name="omega" type="float">omega estimated state predictor</field>
+          <field name="sigma" type="float">sigma estimated state predictor</field>
+          <field name="theta_dot" type="float">theta derivative</field>
+          <field name="omega_dot" type="float">omega derivative</field>
+          <field name="sigma_dot" type="float">sigma derivative</field>
+          <field name="f" type="float">projection operator value</field>
+          <field name="f_dot" type="float">projection operator derivative</field>
+          <field name="u" type="float">u adaptive controlled output command</field>
+        </message>
+        
+      </messages>
 </mavlink>
