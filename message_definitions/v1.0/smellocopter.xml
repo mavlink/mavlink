@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+<mavlink>
+  <include>common.xml</include>
+  <enums>
+    <enum name="IR_CAL_CODE">
+      <description>Codes used to provide context to the data inside of this message</description>
+      <entry value="1" name="IR_CAL_CODE_FINISH">
+        <description> Sent by FMU, indicates that calibration process is complete </description>
+      </entry>
+      <entry value="2" name="IR_CAL_CODE_START">
+        <description> Sent by GCS, indicates that calibration process should begin </description>
+      </entry>
+      <entry value="3" name="IR_CAL_CODE_SAMPLE">
+        <description> Sent by FMU, indicates that the data varaible contains the ADC sample average produced by the calibration routine for a certain range measurement</description>
+      </entry>
+      <entry value="4" name="IR_CAL_CODE_SAMPLE_VAR">
+        <description>  Sent by FMU, indicates that the data variable contains the sample variance produced by the caliberation routine for a certain range measurement</description>
+      </entry>
+      <entry value="5" name="IR_CAL_CODE_EST_COEFF">
+        <description>  Sent by FMU, indicates that the data variable contains an estmiator coefficient produced by the calibration routine for a certain term in the estimator</description>
+      </entry>
+    </enum>
+  </enums>
+
+  <messages>
+    <message id="57" name="EAG_RAW">
+      <description> Unprocessed data received from a remote portable EAG sensor. </description>
+      <field type="uint8_t" name="raw_data"> Raw integer output from EAG ADC </field>
+      <field type="uint32_t" name="time_boot_ms"> Time since system boot in milliseconds </field>
+    </message>
+    <message id="58" name="IR_CALIBRATION">
+      <description> Message structure used to communicate calibration data of IR range sensor between GCS and FMU </description>
+        <field type="uint8_t" name="data_code"> Code from IR_CAL_CODE_ENUM that puts the data into context.</field>
+        <field type="float" name="data"> Variable for exchanging sensor samples or estimator coefficients between GCS and FMU.</field>
+    </message>
+    <message id="59" name="DISTANCE_SENSOR_FILTERED">
+      <description> Contains low pass filtered data from distance sensors </description>
+      <field type="float" name="current_distance"> Current distance reading (in m)</field>
+      <field type="float" name="covariance"> Measurement covariance (in m), 0 for unknown / invalid readings </field>
+      <field type="uint32_t" name="time_boot_ms"> Time since system boot in milliseconds </field>
+    </message>
+  </messages>
+</mavlink>
