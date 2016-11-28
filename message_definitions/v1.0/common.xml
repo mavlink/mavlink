@@ -2170,6 +2170,18 @@
                   <description>MAV is in air</description>
               </entry>
           </enum>
+          <enum name="MAV_SAFETY_STATE">
+              <description>Enumeration of safety switch states</description>
+              <entry value="0" name="MAV_SAFETY_STATE_UNDEFINED">
+                  <description>Safety switch not conected or state unknown</description>
+              </entry>
+              <entry value="1" name="MAV_SAFETY_STATE_ON">
+                  <description>Safety is on</description>
+              </entry>
+              <entry value="2" name="MAV_SAFETY_STATE_OFF">
+                  <description>Safety is off and the MAV can arm</description>
+              </entry>
+          </enum>
           <enum name="ADSB_ALTITUDE_TYPE">
               <description>Enumeration of the ADSB altimeter types</description>
               <entry value="0" name="ADSB_ALTITUDE_TYPE_PRESSURE_QNH">
@@ -3736,6 +3748,7 @@
             <description>Provides state for additional features</description>
             <field type="uint8_t" name="vtol_state" enum="MAV_VTOL_STATE">The VTOL state if applicable. Is set to MAV_VTOL_STATE_UNDEFINED if UAV is not in VTOL configuration.</field>
             <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
+            <field type="uint8_t" name="safety_state" enum="MAV_SAFETY_STATE">The safety state. Is set to MAV_SAFETY_STATE_UNDEFINED if landed state is unknown.</field>
         </message>
         <message id="246" name="ADSB_VEHICLE">
           <description>The location and information of an ADSB vehicle</description>
