@@ -6,8 +6,8 @@ language: python
 python:
   - "2.6"
   - "2.7"
-  - "3.2"
   - "3.3"
+  - "3.5"
 script:
   # NOTE: we must do all testing on the installed python package, not 
   # on the build tree. Otherwise the testing is invalid and may not
@@ -16,6 +16,7 @@ script:
   # Set pythonpath
 
   # install
+  - pip install -r pymavlink/requirements.txt
   - cd pymavlink
   - python setup.py build install
   - cd ..
@@ -42,3 +43,7 @@ script:
 
 after_success:
 - ./scripts/travis_update_generated_repos.sh
+
+before_install:
+  - git submodule update --init --recursive
+
