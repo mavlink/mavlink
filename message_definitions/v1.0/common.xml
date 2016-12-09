@@ -511,6 +511,9 @@
                <entry value="11" name="MAV_FRAME_GLOBAL_TERRAIN_ALT_INT">
                    <description>Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
                </entry>
+               <entry value="12" name="MAV_FRAME_LOCAL_LATCHED_NED">
+                   <description>This frame is the same as the LOCAL_OFFSET_NED frame, but instead of being relative to the vehicle position at the time of mission evaluation, it's relative to the vehicle position at the time of message reception. The system should latch its position and attitude when it receives the MISSION_COUNT message and use this as the origin for all received *LATCHED* missions to convert them internally to LOCAL_NED. This also means that the UAS should never report missions in this frame, but instead as LOCAL_NED. This is very useful when you have a fixed mission that can be executed anywhere relative to the vehicle, but the starting condition is unknown until the time of flight because of an unknown operation environmental. For example this can be used to drive a 100m square oriented east and south from any given starting location.</description>
+               </entry>
           </enum>
           <enum name="MAVLINK_DATA_STREAM_TYPE">
                <entry name="MAVLINK_DATA_STREAM_IMG_JPEG">
