@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """\
-generate.py is a GUI front-end for mavgen, a python based MAVLink
+mavgenerate.py is a GUI front-end for mavgen, a python based MAVLink
 header generation tool.
 
 Notes:
