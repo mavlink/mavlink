@@ -2425,7 +2425,7 @@
                <field type="uint8_t" name="target_system">System the GCS requests control for</field>
                <field type="uint8_t" name="control_request">0: request control of this MAV, 1: Release control of this MAV</field>
                <field type="uint8_t" name="version">0: key as plaintext, 1-255: future, different hashing/encryption variants. The GCS should in general use the safest mode possible initially and then gradually move down the encryption level if it gets a NACK message indicating an encryption mismatch.</field>
-               <field type="char[25]" name="passkey">Password / Key, depending on version plaintext or encrypted. 25 or less characters, NULL terminated. The characters may involve A-Z, a-z, 0-9, and "!?,.-"</field>
+               <field type="char[25]" name="passkey">Password / Key, depending on version plaintext or encrypted. 25 or less characters, NULL terminated. The characters may involve A-Z, a-z, 0-9, and &quot;!?,.-&quot;</field>
           </message>
           <message id="6" name="CHANGE_OPERATOR_CONTROL_ACK">
                <description>Accept / deny control of this MAV</description>
@@ -3503,7 +3503,7 @@
         <message id="139" name="SET_ACTUATOR_CONTROL_TARGET">
             <description>Set the vehicle attitude and body angular rates.</description>
             <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
-            <field type="uint8_t" name="group_mlx">Actuator group. The "_mlx" indicates this is a multi-instance message and a MAVLink parser should use this field to difference between instances.</field>
+               <field type="uint8_t" name="group_mlx">Actuator group. The &quot;_mlx&quot; indicates this is a multi-instance message and a MAVLink parser should use this field to difference between instances.</field>
             <field type="uint8_t" name="target_system">System ID</field>
             <field type="uint8_t" name="target_component">Component ID</field>
             <field type="float[8]" name="controls">Actuator controls. Normed to -1..+1 where 0 is neutral position. Throttle for single rotation direction motors is 0..1, negative range for reverse direction. Standard mapping for attitude controls (group 0): (index 0-7): roll, pitch, yaw, throttle, flaps, spoilers, airbrakes, landing gear. Load a pass-through mixer to repurpose them as generic outputs.</field>
@@ -3511,7 +3511,7 @@
         <message id="140" name="ACTUATOR_CONTROL_TARGET">
             <description>Set the vehicle attitude and body angular rates.</description>
             <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
-            <field type="uint8_t" name="group_mlx">Actuator group. The "_mlx" indicates this is a multi-instance message and a MAVLink parser should use this field to difference between instances.</field>
+               <field type="uint8_t" name="group_mlx">Actuator group. The &quot;_mlx&quot; indicates this is a multi-instance message and a MAVLink parser should use this field to difference between instances.</field>
             <field type="float[8]" name="controls">Actuator controls. Normed to -1..+1 where 0 is neutral position. Throttle for single rotation direction motors is 0..1, negative range for reverse direction. Standard mapping for attitude controls (group 0): (index 0-7): roll, pitch, yaw, throttle, flaps, spoilers, airbrakes, landing gear. Load a pass-through mixer to repurpose them as generic outputs.</field>
         </message>
         <message id="141" name="ALTITUDE">
