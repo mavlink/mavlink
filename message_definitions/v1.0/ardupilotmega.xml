@@ -1,4 +1,4 @@
-<?xml version='1.0'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <mavlink>
     <include>common.xml</include>
     
@@ -1060,7 +1060,7 @@
             <field name="mag_ofs_x" type="int16_t">magnetometer X offset</field>
             <field name="mag_ofs_y" type="int16_t">magnetometer Y offset</field>
             <field name="mag_ofs_z" type="int16_t">magnetometer Z offset</field>
-            <field name="mag_declination" type="float">magnetic declination (radians)</field>
+               <field type="float" name="mag_declination" units="rad">magnetic declination (radians)</field>
             <field name="raw_press" type="int32_t">raw pressure from barometer</field>
             <field name="raw_temp" type="int32_t">raw temperature from barometer</field>
             <field name="gyro_cal_x" type="float">gyro X calibration</field>
@@ -1109,7 +1109,7 @@
             <field name="iso" type="uint8_t">ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore)</field>
             <field name="exposure_type" type="uint8_t">Exposure type enumeration from 1 to N (0 means ignore)</field>
             <field name="command_id" type="uint8_t">Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once</field>
-            <field name="engine_cut_off" type="uint8_t">Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)</field>
+               <field type="uint8_t" name="engine_cut_off" units="ds">Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)</field>
             <field name="extra_param" type="uint8_t">Extra parameters enumeration (0 means ignore)</field>
             <field name="extra_value" type="float">Correspondent value to given extra_param</field>
         </message>
@@ -1153,9 +1153,9 @@
             <description>Message with some status from APM to GCS about camera or antenna mount</description>
             <field name="target_system" type="uint8_t">System ID</field>
             <field name="target_component" type="uint8_t">Component ID</field>
-            <field name="pointing_a" type="int32_t">pitch(deg*100)</field>
-            <field name="pointing_b" type="int32_t">roll(deg*100)</field>
-            <field name="pointing_c" type="int32_t">yaw(deg*100)</field>
+               <field type="int32_t" name="pointing_a" units="c°">pitch(deg*100)</field>
+               <field type="int32_t" name="pointing_b" units="c°">roll(deg*100)</field>
+               <field type="int32_t" name="pointing_c" units="c°">yaw(deg*100)</field>
         </message>
 
         <!-- geo-fence messages -->
@@ -1165,8 +1165,8 @@
             <field name="target_component" type="uint8_t">Component ID</field>
             <field name="idx" type="uint8_t">point index (first point is 1, 0 is for return point)</field>
             <field name="count" type="uint8_t">total number of points (for sanity checking)</field>
-            <field name="lat" type="float">Latitude of point</field>
-            <field name="lng" type="float">Longitude of point</field>
+               <field type="float" name="lat" units="°">Latitude of point</field>
+               <field type="float" name="lng" units="°">Longitude of point</field>
         </message>
 
         <message id="161" name="FENCE_FETCH_POINT">
@@ -1181,14 +1181,14 @@
             <field name="breach_status" type="uint8_t">0 if currently inside fence, 1 if outside</field>
             <field name="breach_count" type="uint16_t">number of fence breaches</field>
             <field enum="FENCE_BREACH" name="breach_type" type="uint8_t">last breach type (see FENCE_BREACH_* enum)</field>
-            <field name="breach_time" type="uint32_t">time of last breach in milliseconds since boot</field>
+               <field type="uint32_t" name="breach_time" units="ms">time of last breach in milliseconds since boot</field>
         </message>
 
         <message id="163" name="AHRS">
             <description>Status of DCM attitude estimator</description>
-            <field name="omegaIx" type="float">X gyro drift estimate rad/s</field>
-            <field name="omegaIy" type="float">Y gyro drift estimate rad/s</field>
-            <field name="omegaIz" type="float">Z gyro drift estimate rad/s</field>
+               <field type="float" name="omegaIx" units="rad/s">X gyro drift estimate rad/s</field>
+               <field type="float" name="omegaIy" units="rad/s">Y gyro drift estimate rad/s</field>
+               <field type="float" name="omegaIz" units="rad/s">Z gyro drift estimate rad/s</field>
             <field name="accel_weight" type="float">average accel_weight</field>
             <field name="renorm_val" type="float">average renormalisation value</field>
             <field name="error_rp" type="float">average error_roll_pitch value</field>
@@ -1197,22 +1197,22 @@
 
         <message id="164" name="SIMSTATE">
             <description>Status of simulation environment, if used</description>
-            <field name="roll" type="float">Roll angle (rad)</field>
-            <field name="pitch" type="float">Pitch angle (rad)</field>
-            <field name="yaw" type="float">Yaw angle (rad)</field>
-            <field name="xacc" type="float">X acceleration m/s/s</field>
-            <field name="yacc" type="float">Y acceleration m/s/s</field>
-            <field name="zacc" type="float">Z acceleration m/s/s</field>
-            <field name="xgyro" type="float">Angular speed around X axis rad/s</field>
-            <field name="ygyro" type="float">Angular speed around Y axis rad/s</field>
-            <field name="zgyro" type="float">Angular speed around Z axis rad/s</field>
-            <field name="lat" type="int32_t">Latitude in degrees * 1E7</field>
-            <field name="lng" type="int32_t">Longitude in degrees * 1E7</field>
+               <field type="float" name="roll" units="rad">Roll angle (rad)</field>
+               <field type="float" name="pitch" units="rad">Pitch angle (rad)</field>
+               <field type="float" name="yaw" units="rad">Yaw angle (rad)</field>
+               <field type="float" name="xacc" units="m/s²">X acceleration m/s/s</field>
+               <field type="float" name="yacc" units="m/s²">Y acceleration m/s/s</field>
+               <field type="float" name="zacc" units="m/s²">Z acceleration m/s/s</field>
+               <field type="float" name="xgyro" units="rad/s">Angular speed around X axis rad/s</field>
+               <field type="float" name="ygyro" units="rad/s">Angular speed around Y axis rad/s</field>
+               <field type="float" name="zgyro" units="rad/s">Angular speed around Z axis rad/s</field>
+               <field type="int32_t" name="lat" units="°E7">Latitude in degrees * 1E7</field>
+               <field type="int32_t" name="lng" units="°E7">Longitude in degrees * 1E7</field>
         </message>
 
         <message id="165" name="HWSTATUS">
             <description>Status of key hardware</description>
-            <field name="Vcc" type="uint16_t">board voltage (mV)</field>
+               <field type="uint16_t" name="Vcc" units="mV">board voltage (mV)</field>
             <field name="I2Cerr" type="uint8_t">I2C error count</field>
         </message>
 
@@ -1220,7 +1220,7 @@
             <description>Status generated by radio</description>
             <field name="rssi" type="uint8_t">local signal strength</field>
             <field name="remrssi" type="uint8_t">remote signal strength</field>
-            <field name="txbuf" type="uint8_t">how full the tx buffer is as a percentage</field>
+               <field type="uint8_t" name="txbuf" units="%">how full the tx buffer is as a percentage</field>
             <field name="noise" type="uint8_t">background noise level</field>
             <field name="remnoise" type="uint8_t">remote background noise level</field>
             <field name="rxerrors" type="uint16_t">receive errors</field>
@@ -1231,63 +1231,63 @@
         <message id="167" name="LIMITS_STATUS">
             <description>Status of AP_Limits. Sent in extended status stream when AP_Limits is enabled</description>
             <field enum="LIMITS_STATE" name="limits_state" type="uint8_t">state of AP_Limits, (see enum LimitState, LIMITS_STATE)</field>
-            <field name="last_trigger" type="uint32_t">time of last breach in milliseconds since boot</field>
-            <field name="last_action" type="uint32_t">time of last recovery action in milliseconds since boot</field>
-            <field name="last_recovery" type="uint32_t">time of last successful recovery in milliseconds since boot</field>
-            <field name="last_clear" type="uint32_t">time of last all-clear in milliseconds since boot</field>
+               <field type="uint32_t" name="last_trigger" units="ms">time of last breach in milliseconds since boot</field>
+               <field type="uint32_t" name="last_action" units="ms">time of last recovery action in milliseconds since boot</field>
+               <field type="uint32_t" name="last_recovery" units="ms">time of last successful recovery in milliseconds since boot</field>
+               <field type="uint32_t" name="last_clear" units="ms">time of last all-clear in milliseconds since boot</field>
             <field name="breach_count" type="uint16_t">number of fence breaches</field>
-            <field name="mods_enabled" type="uint8_t">AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE)</field>
-            <field name="mods_required" type="uint8_t">AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE)</field>
-            <field name="mods_triggered" type="uint8_t">AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE)</field>
+               <field type="uint8_t" name="mods_enabled" bitmask="LIMIT_MODULE">AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE)</field>
+               <field type="uint8_t" name="mods_required" bitmask="LIMIT_MODULE">AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE)</field>
+               <field type="uint8_t" name="mods_triggered" bitmask="LIMIT_MODULE">AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE)</field>
         </message>
 
         <message id="168" name="WIND">
             <description>Wind estimation</description>
-            <field name="direction" type="float">wind direction that wind is coming from (degrees)</field>
-            <field name="speed" type="float">wind speed in ground plane (m/s)</field>
-            <field name="speed_z" type="float">vertical wind speed (m/s)</field>
+               <field type="float" name="direction" units="°">wind direction that wind is coming from (degrees)</field>
+               <field type="float" name="speed" units="m/s">wind speed in ground plane (m/s)</field>
+               <field type="float" name="speed_z" units="m/s">vertical wind speed (m/s)</field>
         </message>
 
         <message id="169" name="DATA16">
             <description>Data packet, size 16</description>
             <field name="type" type="uint8_t">data type</field>
-            <field name="len" type="uint8_t">data length</field>
+               <field type="uint8_t" name="len" units="bytes">data length</field>
             <field name="data" type="uint8_t[16]">raw data</field>
         </message>
 
         <message id="170" name="DATA32">
             <description>Data packet, size 32</description>
             <field name="type" type="uint8_t">data type</field>
-            <field name="len" type="uint8_t">data length</field>
+               <field type="uint8_t" name="len" units="bytes">data length</field>
             <field name="data" type="uint8_t[32]">raw data</field>
         </message>
 
         <message id="171" name="DATA64">
             <description>Data packet, size 64</description>
             <field name="type" type="uint8_t">data type</field>
-            <field name="len" type="uint8_t">data length</field>
+               <field type="uint8_t" name="len" units="bytes">data length</field>
             <field name="data" type="uint8_t[64]">raw data</field>
         </message>
 
         <message id="172" name="DATA96">
             <description>Data packet, size 96</description>
             <field name="type" type="uint8_t">data type</field>
-            <field name="len" type="uint8_t">data length</field>
+               <field type="uint8_t" name="len" units="bytes">data length</field>
             <field name="data" type="uint8_t[96]">raw data</field>
         </message>
 
         <message id="173" name="RANGEFINDER">
             <description>Rangefinder reporting</description>
-            <field name="distance" type="float">distance in meters</field>
-            <field name="voltage" type="float">raw voltage if available, zero otherwise</field>
+               <field type="float" name="distance" units="m">distance in meters</field>
+               <field type="float" name="voltage" units="V">raw voltage if available, zero otherwise</field>
         </message>
 
         <message id="174" name="AIRSPEED_AUTOCAL">
             <description>Airspeed auto-calibration</description>
-            <field name="vx" type="float">GPS velocity north m/s</field>
-            <field name="vy" type="float">GPS velocity east m/s</field>
-            <field name="vz" type="float">GPS velocity down m/s</field>
-            <field name="diff_pressure" type="float">Differential pressure pascals</field>
+               <field type="float" name="vx" units="m/s">GPS velocity north m/s</field>
+               <field type="float" name="vy" units="m/s">GPS velocity east m/s</field>
+               <field type="float" name="vz" units="m/s">GPS velocity down m/s</field>
+               <field type="float" name="diff_pressure" units="Pa">Differential pressure pascals</field>
             <field name="EAS2TAS" type="float">Estimated to true airspeed ratio</field>
             <field name="ratio" type="float">Airspeed ratio</field>
             <field name="state_x" type="float">EKF state x</field>
@@ -1305,13 +1305,13 @@
             <field name="target_component" type="uint8_t">Component ID</field>
             <field name="idx" type="uint8_t">point index (first point is 0)</field>
             <field name="count" type="uint8_t">total number of points (for sanity checking)</field>
-            <field name="lat" type="int32_t">Latitude of point in degrees * 1E7</field>
-            <field name="lng" type="int32_t">Longitude of point in degrees * 1E7</field>
-            <field name="alt" type="int16_t">Transit / loiter altitude in meters relative to home</field>
+               <field type="int32_t" name="lat" units="°E7">Latitude of point in degrees * 1E7</field>
+               <field type="int32_t" name="lng" units="°E7">Longitude of point in degrees * 1E7</field>
+               <field type="int16_t" name="alt" units="m">Transit / loiter altitude in meters relative to home</field>
             <!-- Path planned landings are still in the future, but we want these fields ready: -->
-            <field name="break_alt" type="int16_t">Break altitude in meters relative to home</field>
-            <field name="land_dir" type="uint16_t">Heading to aim for when landing. In centi-degrees.</field>
-            <field name="flags" type="uint8_t">See RALLY_FLAGS enum for definition of the bitmask.</field>
+               <field type="int16_t" name="break_alt" units="m">Break altitude in meters relative to home</field>
+               <field type="uint16_t" name="land_dir" units="c°">Heading to aim for when landing. In centi-degrees.</field>
+               <field type="uint8_t" name="flags" bitmask="RALLY_FLAGS">See RALLY_FLAGS enum for definition of the bitmask.</field>
         </message>
 
         <message id="176" name="RALLY_FETCH_POINT">
@@ -1323,9 +1323,9 @@
 
         <message id="177" name="COMPASSMOT_STATUS">
             <description>Status of compassmot calibration</description>
-            <field name="throttle" type="uint16_t">throttle (percent*10)</field>
-            <field name="current" type="float">current (amps)</field>
-            <field name="interference" type="uint16_t">interference (percent)</field>
+               <field type="uint16_t" name="throttle" units="d%">throttle (percent*10)</field>
+               <field type="float" name="current" units="A">current (Ampere)</field>
+               <field type="uint16_t" name="interference" units="%">interference (percent)</field>
             <field name="CompensationX" type="float">Motor Compensation X</field>
             <field name="CompensationY" type="float">Motor Compensation Y</field>
             <field name="CompensationZ" type="float">Motor Compensation Z</field>
@@ -1334,25 +1334,25 @@
         <!-- Coming soon <message name="RALLY_LAND_POINT" id="177"> <description>A rally landing point. An aircraft loitering at a rally point may choose one of these points to land at.</description> <field name="target_system" type="uint8_t">System ID</field> <field name="target_component" type="uint8_t">Component ID</field> <field name="idx" type="uint8_t">point index (first point is 0)</field> <field name="count" type="uint8_t">total number of points (for sanity checking)</field> <field name="lat" type="int32_t">Latitude of point</field> <field name="lng" type="int32_t">Longitude of point</field> <field name="alt" type="uint16_t">Ground AGL (usually 0)</field> </message> <message name="RALLY_LAND_FETCH_POINT" id="178"> <description>Request a current rally land point from MAV</description> <field name="target_system" type="uint8_t">System ID</field> <field name="target_component" type="uint8_t">Component ID</field> <field name="idx" type="uint8_t">point index (first point is 0)</field> </message> -->
         <message id="178" name="AHRS2">
             <description>Status of secondary AHRS filter if available</description>
-            <field name="roll" type="float">Roll angle (rad)</field>
-            <field name="pitch" type="float">Pitch angle (rad)</field>
-            <field name="yaw" type="float">Yaw angle (rad)</field>
-            <field name="altitude" type="float">Altitude (MSL)</field>
-            <field name="lat" type="int32_t">Latitude in degrees * 1E7</field>
-            <field name="lng" type="int32_t">Longitude in degrees * 1E7</field>
+               <field type="float" name="roll" units="rad">Roll angle (rad)</field>
+               <field type="float" name="pitch" units="rad">Pitch angle (rad)</field>
+               <field type="float" name="yaw" units="rad">Yaw angle (rad)</field>
+               <field type="float" name="altitude" units="m">Altitude (MSL)</field>
+               <field type="int32_t" name="lat" units="°E7">Latitude in degrees * 1E7</field>
+               <field type="int32_t" name="lng" units="°E7">Longitude in degrees * 1E7</field>
         </message>
 
         <!-- camera event message from CCB to autopilot: for image trigger events but also things like heartbeat, error, low power, full card, etc -->
         <message id="179" name="CAMERA_STATUS">
             <description>Camera Event</description>
-            <field name="time_usec" type="uint64_t">Image timestamp (microseconds since UNIX epoch, according to camera clock)</field>
+               <field type="uint64_t" name="time_usec" units="µs">Image timestamp (microseconds since UNIX epoch, according to camera clock)</field>
             <field name="target_system" type="uint8_t">System ID</field>
             <!-- support multiple concurrent vehicles -->
             <field name="cam_idx" type="uint8_t">Camera ID</field>
             <!-- component ID, to support multiple cameras -->
             <field name="img_idx" type="uint16_t">Image index</field>
             <!-- per camera image index, should be unique+sequential within a mission, preferably non-wrapping -->
-            <field name="event_id" type="uint8_t">See CAMERA_STATUS_TYPES enum for definition of the bitmask</field>
+               <field type="uint8_t" name="event_id" enum="CAMERA_STATUS_TYPES">See CAMERA_STATUS_TYPES enum for definition of the bitmask</field>
             <field name="p1" type="float">Parameter 1 (meaning depends on event, see CAMERA_STATUS_TYPES enum)</field>
             <field name="p2" type="float">Parameter 2 (meaning depends on event, see CAMERA_STATUS_TYPES enum)</field>
             <field name="p3" type="float">Parameter 3 (meaning depends on event, see CAMERA_STATUS_TYPES enum)</field>
@@ -1362,43 +1362,43 @@
         <!-- camera feedback message - can be originated from CCB (in response to a CAMERA_STATUS), or directly from the autopilot as part of a DO_DIGICAM_CONTROL-->
         <message id="180" name="CAMERA_FEEDBACK">
             <description>Camera Capture Feedback</description>
-            <field name="time_usec" type="uint64_t">Image timestamp (microseconds since UNIX epoch), as passed in by CAMERA_STATUS message (or autopilot if no CCB)</field>
+               <field type="uint64_t" name="time_usec" units="µs">Image timestamp (microseconds since UNIX epoch), as passed in by CAMERA_STATUS message (or autopilot if no CCB)</field>
             <field name="target_system" type="uint8_t">System ID</field>
             <!-- support multiple concurrent vehicles -->
             <field name="cam_idx" type="uint8_t">Camera ID</field>
             <!-- component ID, to support multiple cameras -->
             <field name="img_idx" type="uint16_t">Image index</field>
             <!-- per camera image index, should be unique+sequential within a mission, preferably non-wrapping -->
-            <field name="lat" type="int32_t">Latitude in (deg * 1E7)</field>
-            <field name="lng" type="int32_t">Longitude in (deg * 1E7)</field>
-            <field name="alt_msl" type="float">Altitude Absolute (meters AMSL)</field>
-            <field name="alt_rel" type="float">Altitude Relative (meters above HOME location)</field>
-            <field name="roll" type="float">Camera Roll angle (earth frame, degrees, +-180)</field>
+               <field type="int32_t" name="lat" units="°E7">Latitude in (deg * 1E7)</field>
+               <field type="int32_t" name="lng" units="°E7">Longitude in (deg * 1E7)</field>
+               <field type="float" name="alt_msl" units="m">Altitude Absolute (meters AMSL)</field>
+               <field type="float" name="alt_rel" units="m">Altitude Relative (meters above HOME location)</field>
+               <field type="float" name="roll" units="°">Camera Roll angle (earth frame, degrees, +-180)</field>
             <!-- initially only supporting fixed cameras, in future we'll need feedback messages from the gimbal so we can include that offset here -->
-            <field name="pitch" type="float">Camera Pitch angle (earth frame, degrees, +-180)</field>
+               <field type="float" name="pitch" units="°">Camera Pitch angle (earth frame, degrees, +-180)</field>
             <!-- initially only supporting fixed cameras, in future we'll need feedback messages from the gimbal so we can include that offset here -->
-            <field name="yaw" type="float">Camera Yaw (earth frame, degrees, 0-360, true)</field>
+               <field type="float" name="yaw" units="°">Camera Yaw (earth frame, degrees, 0-360, true)</field>
             <!-- initially only supporting fixed cameras, in future we'll need feedback messages from the gimbal so we can include that offset here -->
-            <field name="foc_len" type="float">Focal Length (mm)</field>
+               <field type="float" name="foc_len" units="mm">Focal Length (mm)</field>
             <!-- per-image to support zooms. Zero means fixed focal length or unknown. Should be true mm, not scaled to 35mm film equivalent -->
-            <field name="flags" type="uint8_t">See CAMERA_FEEDBACK_FLAGS enum for definition of the bitmask</field>
+               <field type="uint8_t" name="flags" enum="CAMERA_FEEDBACK_FLAGS" units="mm">See CAMERA_FEEDBACK_FLAGS enum for definition of the bitmask</field>
             <!-- future proofing -->
         </message>
 
         <message id="181" name="BATTERY2">
             <description>2nd Battery status</description>
-            <field name="voltage" type="uint16_t">voltage in millivolts</field>
-            <field name="current_battery" type="int16_t">Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current</field>
+               <field type="uint16_t" name="voltage" units="mV">voltage in millivolts</field>
+               <field type="int16_t" name="current_battery" units="cA">Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current</field>
         </message>
 
         <message id="182" name="AHRS3">
             <description>Status of third AHRS filter if available. This is for ANU research group (Ali and Sean)</description>
-            <field name="roll" type="float">Roll angle (rad)</field>
-            <field name="pitch" type="float">Pitch angle (rad)</field>
-            <field name="yaw" type="float">Yaw angle (rad)</field>
+               <field type="float" name="roll" units="rad">Roll angle (rad)</field>
+               <field type="float" name="pitch" units="rad">Pitch angle (rad)</field>
+               <field type="float" name="yaw" units="rad">Yaw angle (rad)</field>
             <field name="altitude" type="float">Altitude (MSL)</field>
-            <field name="lat" type="int32_t">Latitude in degrees * 1E7</field>
-            <field name="lng" type="int32_t">Longitude in degrees * 1E7</field>
+               <field type="int32_t" name="lat" units="°E7">Latitude in degrees * 1E7</field>
+               <field type="int32_t" name="lng" units="°E7">Longitude in degrees * 1E7</field>
             <field name="v1" type="float">test variable1</field>
             <field name="v2" type="float">test variable2</field>
             <field name="v3" type="float">test variable3</field>
@@ -1442,9 +1442,9 @@
             <description>Reports progress of compass calibration.</description>
             <field name="compass_id" type="uint8_t">Compass being calibrated</field>
             <field name="cal_mask" type="uint8_t">Bitmask of compasses being calibrated</field>
-            <field name="cal_status" type="uint8_t">Status (see MAG_CAL_STATUS enum)</field>
+               <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Status (see MAG_CAL_STATUS enum)</field>
             <field name="attempt" type="uint8_t">Attempt number</field>
-            <field name="completion_pct" type="uint8_t">Completion percentage</field>
+               <field type="uint8_t" name="completion_pct" units="%">Completion percentage</field>
             <field name="completion_mask" type="uint8_t[10]">Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid)</field>
             <field name="direction_x" type="float">Body frame direction vector for display</field>
             <field name="direction_y" type="float">Body frame direction vector for display</field>
@@ -1455,9 +1455,9 @@
             <description>Reports results of completed compass calibration. Sent until MAG_CAL_ACK received.</description>
             <field name="compass_id" type="uint8_t">Compass being calibrated</field>
             <field name="cal_mask" type="uint8_t">Bitmask of compasses being calibrated</field>
-            <field name="cal_status" type="uint8_t">Status (see MAG_CAL_STATUS enum)</field>
+               <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Status (see MAG_CAL_STATUS enum)</field>
             <field name="autosaved" type="uint8_t">0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters</field>
-            <field name="fitness" type="float">RMS milligauss residuals</field>
+               <field type="float" name="fitness" units="mgauss">RMS milligauss residuals</field>
             <field name="ofs_x" type="float">X offset</field>
             <field name="ofs_y" type="float">Y offset</field>
             <field name="ofs_z" type="float">Z offset</field>
@@ -1486,8 +1486,8 @@
         <message id="194" name="PID_TUNING">
             <description>PID tuning information</description>
             <field enum="PID_TUNING_AXIS" name="axis" type="uint8_t">axis</field>
-            <field name="desired" type="float">desired rate (degrees/s)</field>
-            <field name="achieved" type="float">achieved rate (degrees/s)</field>
+               <field type="float" name="desired" units="°/s">desired rate (degrees/s)</field>
+               <field type="float" name="achieved" units="°/s">achieved rate (degrees/s)</field>
             <field name="FF" type="float">FF component</field>
             <field name="P" type="float">P component</field>
             <field name="I" type="float">I component</field>
@@ -1498,25 +1498,25 @@
             <description>3 axis gimbal mesuraments</description>
             <field name="target_system" type="uint8_t">System ID</field>
             <field name="target_component" type="uint8_t">Component ID</field>
-            <field name="delta_time" type="float">Time since last update (seconds)</field>
-            <field name="delta_angle_x" type="float">Delta angle X (radians)</field>
-            <field name="delta_angle_y" type="float">Delta angle Y (radians)</field>
-            <field name="delta_angle_z" type="float">Delta angle X (radians)</field>
-            <field name="delta_velocity_x" type="float">Delta velocity X (m/s)</field>
-            <field name="delta_velocity_y" type="float">Delta velocity Y (m/s)</field>
-            <field name="delta_velocity_z" type="float">Delta velocity Z (m/s)</field>
-            <field name="joint_roll" type="float">Joint ROLL (radians)</field>
-            <field name="joint_el" type="float">Joint EL (radians)</field>
-            <field name="joint_az" type="float">Joint AZ (radians)</field>
+               <field type="float" name="delta_time" units="s">Time since last update (seconds)</field>
+               <field type="float" name="delta_angle_x" units="rad">Delta angle X (radians)</field>
+               <field type="float" name="delta_angle_y" units="rad">Delta angle Y (radians)</field>
+               <field type="float" name="delta_angle_z" units="rad">Delta angle X (radians)</field>
+               <field type="float" name="delta_velocity_x" units="m/s">Delta velocity X (m/s)</field>
+               <field type="float" name="delta_velocity_y" units="m/s">Delta velocity Y (m/s)</field>
+               <field type="float" name="delta_velocity_z" units="m/s">Delta velocity Z (m/s)</field>
+               <field type="float" name="joint_roll" units="rad">Joint ROLL (radians)</field>
+               <field type="float" name="joint_el" units="rad">Joint EL (radians)</field>
+               <field type="float" name="joint_az" units="rad">Joint AZ (radians)</field>
         </message>
 
         <message id="201" name="GIMBAL_CONTROL">
             <description>Control message for rate gimbal</description>
             <field name="target_system" type="uint8_t">System ID</field>
             <field name="target_component" type="uint8_t">Component ID</field>
-            <field name="demanded_rate_x" type="float">Demanded angular rate X (rad/s)</field>
-            <field name="demanded_rate_y" type="float">Demanded angular rate Y (rad/s)</field>
-            <field name="demanded_rate_z" type="float">Demanded angular rate Z (rad/s)</field>
+               <field type="float" name="demanded_rate_x" units="rad/s">Demanded angular rate X (rad/s)</field>
+               <field type="float" name="demanded_rate_y" units="rad/s">Demanded angular rate Y (rad/s)</field>
+               <field type="float" name="demanded_rate_z" units="rad/s">Demanded angular rate Z (rad/s)</field>
         </message>
 
         <message id="214" name="GIMBAL_TORQUE_CMD_REPORT">
@@ -1533,7 +1533,7 @@
             <description>Heartbeat from a HeroBus attached GoPro</description>
             <field enum="GOPRO_HEARTBEAT_STATUS" name="status" type="uint8_t">Status</field>
             <field enum="GOPRO_CAPTURE_MODE" name="capture_mode" type="uint8_t">Current capture mode</field>
-            <field name="flags" type="uint8_t">additional status bits</field>
+               <field type="uint8_t" name="flags" enum="GOPRO_HEARTBEAT_FLAGS">additional status bits</field>
             <!-- see GOPRO_HEARTBEAT_FLAGS -->
         </message>
 
@@ -1619,8 +1619,8 @@
         <message id="11010" name="ADAP_TUNING">
           <description>Adaptive Controller tuning information</description>
           <field enum="PID_TUNING_AXIS" name="axis" type="uint8_t">axis</field>
-          <field name="desired" type="float">desired rate (degrees/s)</field>
-          <field name="achieved" type="float">achieved rate (degrees/s)</field>
+               <field type="float" name="desired" units="°/s">desired rate (degrees/s)</field>
+               <field type="float" name="achieved" units="°/s">achieved rate (degrees/s)</field>
           <field name="error" type="float">error between model and vehicle</field>
           <field name="theta" type="float">theta estimated state predictor</field>
           <field name="omega" type="float">omega estimated state predictor</field>
