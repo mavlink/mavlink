@@ -1391,6 +1391,12 @@
         <param index="1">WIP: Camera ID</param>
         <param index="2">Reserved</param>
       </entry>
+      <entry value="2502" name="MAV_CMD_REQUEST_VIDEO_STREAM_TARGET">
+        <description>WIP: Request video stream target (VIDEO_STREAM_TARGET)</description>
+        <param index="1">1: Request video stream target</param>
+        <param index="2">Camera ID</param>
+        <param index="3">Reserved (all remaining params)</param>
+      </entry>
       <entry value="2510" name="MAV_CMD_LOGGING_START">
         <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
         <param index="1">Format: 0: ULog</param>
@@ -3894,6 +3900,20 @@
       <field type="uint8_t" name="target_system">system ID of the target</field>
       <field type="uint8_t" name="target_component">component ID of the target</field>
       <field type="uint16_t" name="sequence">sequence number (must match the one in LOGGING_DATA_ACKED)</field>
+    </message>
+    <message id="269" name="VIDEO_STREAM_TARGET">
+      <description>WIP: Information about a video stream target</description>
+      <field type="uint8_t" name="camera_id">Camera ID if there are multiple</field>
+      <field type="char[45]" name="ip">Video stream target ip address</field>
+      <field type="uint16_t" name="port">Video stream target port</field>
+    </message>
+    <message id="270" name="SET_VIDEO_STREAM_TARGET">
+      <description>WIP: Message that sets the video stream target</description>
+      <field type="uint8_t" name="target_system">system ID of the target</field>
+      <field type="uint8_t" name="target_component">component ID of the target</field>
+      <field type="uint8_t" name="camera_id">Camera ID if there are multiple</field>
+      <field type="char[45]" name="ip">Video stream target ip address</field>
+      <field type="uint16_t" name="port">Video stream target port</field>
     </message>
   </messages>
 </mavlink>
