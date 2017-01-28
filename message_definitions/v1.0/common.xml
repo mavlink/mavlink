@@ -2380,6 +2380,57 @@
                   <description>Static fixed, typically used for base stations</description>
               </entry>
           </enum>
+          <enum name="MIXER_DATA_TYPE">
+              <description>Mixer data type</description>
+              <entry value="0" name="MIXER_DATA_TYPE_MIXER_COUNT">
+                  <description>Mixer count at a given group</description>
+              </entry>
+              <entry value="1" name="MIXER_DATA_TYPE_SUBMIXER_COUNT">
+                  <description>Submixer count at a given group and mixer</description>
+              </entry>
+              <entry value="2" name="MIXER_DATA_TYPE_MIXTYPE">
+                  <description>Mixer type at a given group, index and subindex</description>
+              </entry>
+              <entry value="3" name="MIXER_DATA_TYPE_PARAMETER">
+                  <description>Parameter at a given group, index and subindex</description>
+              </entry>
+          </enum>
+          <enum name="MIXER_GROUP">
+              <description>To determine where the mixers are located</description>
+              <entry value="0" name="MIXER_GROUP_LOCAL">
+                  <description>Mixers on the local processor</description>
+              </entry>
+              <entry value="1" name="MIXER_GROUP_FAILSAFE">
+                  <description>Mixers on a failsafe device</description>
+              </entry>
+              <entry value="2" name="MIXER_GROUP_BUS">
+                  <description>Bus connected mixers</description>
+              </entry>
+          </enum>
+          <enum name="MIXER_TYPE">
+              <description>Type of mixer</description>
+              <entry value="0" name="MIXER_TYPE_NONE">
+                  <description>Not a valid mixer</description>
+              </entry>
+              <entry value="1" name="MIXER_TYPE_NULL">
+                  <description>Null mixer - does nothing</description>
+              </entry>
+              <entry value="2" name="MIXER_TYPE_SIMPLE">
+                  <description>A compound mixer with multiple inputs as submixers</description>
+              </entry>
+              <entry value="3" name="MIXER_TYPE_MULTIROTOR">
+                  <description>A mixer for multirotors</description>
+              </entry>
+              <entry value="4" name="MIXER_TYPE_HELICOPTER">
+                  <description>A mixer for helicopters</description>
+              </entry>
+              <entry value="5" name="MIXER_TYPE_SIMPLE_INPUT">
+                  <description>Submixer of a simple mixer</description>
+              </entry>
+              <entry value="6" name="MIXER_TYPE_MULTIROTOR_ROTOR">
+                  <description>Submixer for each motor of a multirotor</description>
+              </entry>
+          </enum>
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -3938,5 +3989,41 @@
                <field type="uint8_t" name="target_component">component ID of the target</field>
                <field type="uint16_t" name="sequence">sequence number (must match the one in LOGGING_DATA_ACKED)</field>
           </message>
+
+          <message id="269" name="MIXER_DATA_REQUEST">
+               <description>Mixer data or parameter request</description>
+               <field type="uint8_t" name="target_system">system ID of the target</field>
+               <field type="uint8_t" name="target_component">component ID of the target</field>
+               <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers ie. onboard, failsafe, uavcan etc..</field>
+               <field type="uint8_t" name="mixer_index">Index of the mixer in the group</field>
+               <field type="uint8_t" name="mixer_sub_index">Index of the sub mixer in the mixer</field>
+               <field type="uint8_t" name="parameter_index">Index of the parameter in the mixer or sub mixer</field>
+               <field type="uint8_t" name="data_type" enum="MIXER_DATA_TYPE">The requested data from the message</field>
+          </message>
+          <message id="270" name="MIXER_DATA">
+               <description>Mixer data emitted after a read or set request</description>
+               <field type="uint8_t" name="target_system">system ID of the target</field>
+               <field type="uint8_t" name="target_component">component ID of the target</field>
+               <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers ie. onboard, failsafe, uavcan etc..</field>
+               <field type="uint8_t" name="mixer_index">Index of the mixer in the group</field>
+               <field type="uint8_t" name="mixer_sub_index">Index of the sub mixer in the mixer</field>
+               <field type="uint8_t" name="parameter_index">Index of the parameter in the mixer or sub mixer</field>
+               <field type="uint8_t" name="data_type" enum="MIXER_DATA_TYPE">Mixer data type</field>
+               <field type="int32_t" name="data_value">Integer mixer data</field>
+               <field type="float" name="param_value">Parameter value</field>
+               <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+          </message>
+          <message id="271" name="MIXER_PARAMETER_SET">
+               <description>Set a mixer parameter</description>
+               <field type="uint8_t" name="target_system">system ID of the target</field>
+               <field type="uint8_t" name="target_component">component ID of the target</field>
+               <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers ie. onboard, failsafe, uavcan etc..</field>
+               <field type="uint8_t" name="mixer_index">Index of the mixer in the group</field>
+               <field type="uint8_t" name="mixer_sub_index">Index of the sub mixer in the mixer</field>
+               <field type="uint8_t" name="parameter_index">Index of the parameter in the mixer or sub mixer</field>
+               <field type="float" name="param_value">Parameter value</field>
+               <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+          </message>
+
     </messages>
 </mavlink>
