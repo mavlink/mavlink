@@ -4599,53 +4599,6 @@
       <field type="uint8_t" name="increment" units="deg">Angular width in degrees of each array element.</field>
       <field type="uint16_t" name="min_distance" units="cm">Minimum distance the sensor can measure in centimeters.</field>
       <field type="uint16_t" name="max_distance" units="cm">Maximum distance the sensor can measure in centimeters.</field>
-    <message id="335" name="ESTIMATOR_STATE">
-      <description>An estimator agnostic state message</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
-      <field type="uint8_t" name="n">Number of states, max 21</field>
-      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
-      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
-      <field type="float[21]" name="state">The estimator state</field>
-    </message>
-    <message id="336" name="ESTIMATOR_STATE_STD">
-      <description>An estimator agnostic state standard deviation message</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
-      <field type="uint8_t" name="n">Number of states, max 21</field>
-      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
-      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
-      <field type="float[21]" name="std">The estimator state standard deviation sqrt(diag(P))</field>
-    </message>
-    <message id="337" name="ESTIMATOR_STATE_COV">
-      <description>An estimator agnostic state covariance message. Note: Very large, not meant for use over radio.</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
-      <field type="uint8_t" name="n">Number of states, max 21, limited by mavlink protocol</field>
-      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
-      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
-      <field type="float[210]" name="cov">The estimator covariance matrix (upper triangle), horizontally stacked with lengths [n, n-1, n-2, ..., 1]</field>
-    </message>
-    <message id="338" name="ESTIMATOR_INNOV">
-      <description>An estimator agnostic innovation message</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
-      <field type="uint8_t" name="n">Number of innovations, max 21</field>
-      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
-      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
-      <field type="float[21]" name="innov">The estimator innovation</field>
-    </message>
-    <message id="339" name="ESTIMATOR_INNOV_STD">
-      <description>An estimator agnostic innovation standard deviation message</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
-      <field type="uint8_t" name="n">Number of innovations, max 21</field>
-      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
-      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
-      <field type="float[21]" name="std">The estimator innovation standard deviation sqrt(diag(S))</field>
-    </message>
-    <message id="340" name="ESTIMATOR_INNOV_COV">
-      <description>An estimator agnostic innovation covariance message. Note: Very large, not meant for use over radio.</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
-      <field type="uint8_t" name="n">Number of innovations, max 21, limited by mavlink protocol</field>
-      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
-      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
-      <field type="float[210]" name="cov">The estimator covariance matrix (upper triangle), horizontally stacked with lengths [n, n-1, n-2, ..., 1]</field>
     </message>
     <message id="331" name="ODOMETRY">
       <description>Odometry message to communicate odometry information with an external interface. Fits ROS REP 147 standard for aerial vehicles (http://www.ros.org/reps/rep-0147.html).</description>
@@ -4663,6 +4616,46 @@
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
       <field type="float[21]" name="pose_covariance">Pose (states: x, y, z, roll, pitch, yaw) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
       <field type="float[21]" name="twist_covariance">Twist (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
+    </message>
+    <message id="335" name="ESTIMATOR_STATE">
+      <description>An estimator agnostic state message</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of states, max 21</field>
+      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[21]" name="state">The estimator state</field>
+    </message>
+    <message id="336" name="ESTIMATOR_STATE_STD">
+      <description>An estimator agnostic state standard deviation message</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of states, max 21</field>
+      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[21]" name="std">The estimator state standard deviation sqrt(diag(P))</field>
+    </message>
+    <message id="337" name="ESTIMATOR_INNOV">
+      <description>An estimator agnostic innovation message</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of innovations, max 21</field>
+      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[21]" name="innov">The estimator innovation</field>
+    </message>
+    <message id="338" name="ESTIMATOR_INNOV_STD">
+      <description>An estimator agnostic innovation standard deviation message</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of innovations, max 21</field>
+      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[21]" name="std">The estimator innovation standard deviation sqrt(diag(S))</field>
+    </message>
+    <message id="340" name="ESTIMATOR_INNOV_COV">
+      <description>An estimator agnostic innovation covariance message. Note: Very large, not meant for use over radio.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of innovations, max 21, limited by mavlink protocol</field>
+      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[210]" name="cov">The estimator covariance matrix (upper triangle), horizontally stacked with lengths [n, n-1, n-2, ..., 1]</field>
     </message>
   </messages>
 </mavlink>
