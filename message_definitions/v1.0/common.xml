@@ -2342,6 +2342,39 @@
         <description>Static fixed, typically used for base stations</description>
       </entry>
     </enum>
+    <enum name="POSITION_TARGET_TYPEMASK">
+    	<description>Provides enumerated bit masks for the typemask of the SET_POSITION_TARGET_LOCAL_NED msg</description>
+    	<entry value="0x1000" name="PX4_TAKEOFF">
+    		<description>Offboard control set takeoff mode</description>
+    	</entry>
+    	<entry value="0x2000" name="PX4_LAND">
+    		<description>Offboard control set land mode</description>
+    	</entry>    	
+    	<entry value="0x4000" name="PX4_LOITER">
+    		<description>Offboard control set loiter mode</description>
+    	</entry>
+    	<entry value="0x8000" name="PX4_IDLE">
+    		<description>Offboard control not doing much</description>
+    	</entry>
+    	<entry value="0x0007" name="IGNORE_POSITION">
+    		<description>Ignore position parts</description>
+    	</entry>
+    	<entry value="0x0038" name="IGNORE_VELOCITY">
+    		<description>Ignore velocity parts</description>
+    	</entry>
+    	<entry value="0x01C0" name="IGNORE_ACCELERATION_FORCE">
+    		<description>Ignore acceleration or force parts of message</description>
+    	</entry>
+    	<entry value="0x0200" name="ACCEL_OR_FORCE">
+    		<description>Causes accel inputs to be read as forces</description>
+    	</entry>
+    	<entry value="0x0400" name="IGNORE_YAW">
+    		<description>ignore yaw parts of message or body attitude for px4</description>
+    	</entry>
+    	<entry value="0x0800" name="IGNORE_YAWRATE">
+    		<description>ignore yawrate parts of message</description>
+    	</entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -2927,7 +2960,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
-      <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
       <field type="float" name="x">X Position in NED frame in meters</field>
       <field type="float" name="y">Y Position in NED frame in meters</field>
       <field type="float" name="z">Z Position in NED frame in meters (note, altitude is negative in NED)</field>
