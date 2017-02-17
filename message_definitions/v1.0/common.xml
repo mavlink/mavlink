@@ -1204,14 +1204,14 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="241" name="MAV_CMD_PREFLIGHT_CALIBRATION">
-        <description>Trigger calibration. This command will be only accepted if in pre-flight mode.</description>
-        <param index="1">Gyro calibration: 0: no, 1: yes</param>
-        <param index="2">Magnetometer calibration: 0: no, 1: yes</param>
-        <param index="3">Ground pressure: 0: no, 1: yes</param>
-        <param index="4">Radio calibration: 0: no, 1: yes</param>
-        <param index="5">Accelerometer calibration: 0: no, 1: yes</param>
-        <param index="6">Compass/Motor interference calibration: 0: no, 1: yes</param>
-        <param index="7">Empty</param>
+        <description>Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Temperature Calibration, only one sensor should be set in a single message and all others should be zero.</description>
+        <param index="1">1: gyro calibration, 3: gyro temperature calibration</param>
+        <param index="2">1: magnetometer calibration</param>
+        <param index="3">1: ground pressure calibration</param>
+        <param index="4">1: radio RC calibration, 2: RC trim calibration</param>
+        <param index="5">1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration</param>
+        <param index="6">1: APM: compass/motor interference calibration / PX4: airspeed calibration</param>
+        <param index="7">1: ESC calibration, 3: barometer temperature calibration</param>
       </entry>
       <entry value="242" name="MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS">
         <description>Set sensor offsets. This command will be only accepted if in pre-flight mode.</description>
