@@ -2359,18 +2359,18 @@
   <messages>
     <message id="0" name="HEARTBEAT">
       <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
-      <field type="uint8_t" name="type">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
-      <field type="uint8_t" name="autopilot">Autopilot type / class. defined in MAV_AUTOPILOT ENUM</field>
-      <field type="uint8_t" name="base_mode">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
+      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. defined in MAV_AUTOPILOT ENUM</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags.</field>
-      <field type="uint8_t" name="system_status">System status flag, see MAV_STATE ENUM</field>
+      <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag, see MAV_STATE ENUM</field>
       <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
     </message>
     <message id="1" name="SYS_STATUS">
       <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows wether the system is currently active or not and if an emergency occured. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occured it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
-      <field type="uint32_t" name="onboard_control_sensors_present" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
-      <field type="uint32_t" name="onboard_control_sensors_enabled" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
-      <field type="uint32_t" name="onboard_control_sensors_health" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are operational or have an error:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
+      <field type="uint32_t" name="onboard_control_sensors_present" enum="MAV_SYS_STATUS_SENSOR" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
+      <field type="uint32_t" name="onboard_control_sensors_enabled" enum="MAV_SYS_STATUS_SENSOR" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
+      <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are operational or have an error:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
       <field type="uint16_t" name="load">Maximum usage in percent of the mainloop time, (0%: 0, 100%: 1000) should be always below 1000</field>
       <field type="uint16_t" name="voltage_battery">Battery voltage, in millivolts (1 = 1 millivolt)</field>
       <field type="int16_t" name="current_battery">Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current</field>
@@ -2625,8 +2625,8 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
-      <field type="uint8_t" name="frame">The coordinate system of the MISSION. see MAV_FRAME in mavlink_types.h</field>
-      <field type="uint16_t" name="command">The scheduled action for the MISSION. see MAV_CMD in common.xml MAVLink specs</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the MISSION. see MAV_FRAME in mavlink_types.h</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the MISSION. see MAV_CMD in common.xml MAVLink specs</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
       <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
@@ -2846,8 +2846,8 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Waypoint ID (sequence number). Starts at zero. Increases monotonically for each waypoint, no gaps in the sequence (0,1,2,3,4).</field>
-      <field type="uint8_t" name="frame">The coordinate system of the MISSION. see MAV_FRAME in mavlink_types.h</field>
-      <field type="uint16_t" name="command">The scheduled action for the MISSION. see MAV_CMD in common.xml MAVLink specs</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the MISSION. see MAV_FRAME in mavlink_types.h</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the MISSION. see MAV_CMD in common.xml MAVLink specs</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
       <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
@@ -2871,8 +2871,8 @@
       <description>Message encoding a command with parameters as scaled integers. Scaling depends on the actual command value.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="frame">The coordinate system of the COMMAND. see MAV_FRAME in mavlink_types.h</field>
-      <field type="uint16_t" name="command">The scheduled action for the mission item. see MAV_CMD in common.xml MAVLink specs</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the COMMAND. see MAV_FRAME in mavlink_types.h</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the mission item. see MAV_CMD in common.xml MAVLink specs</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
       <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
@@ -2900,7 +2900,7 @@
     <message id="77" name="COMMAND_ACK">
       <description>Report status of a command. Includes feedback wether the command was executed.</description>
       <field type="uint16_t" name="command" enum="MAV_CMD">Command ID, as defined by MAV_CMD enum.</field>
-      <field type="uint8_t" name="result">See MAV_RESULT enum</field>
+      <field type="uint8_t" name="result" enum="MAV_RESULT">See MAV_RESULT enum</field>
     </message>
     <message id="81" name="MANUAL_SETPOINT">
       <description>Setpoint in roll, pitch, yaw and thrust from the operator</description>
@@ -3352,12 +3352,12 @@
       <description>Power supply status</description>
       <field type="uint16_t" name="Vcc">5V rail voltage in millivolts</field>
       <field type="uint16_t" name="Vservo">servo rail voltage in millivolts</field>
-      <field type="uint16_t" name="flags">power supply status flags (see MAV_POWER_STATUS enum)</field>
+      <field type="uint16_t" name="flags" enum="MAV_POWER_STATUS">power supply status flags (see MAV_POWER_STATUS enum)</field>
     </message>
     <message name="SERIAL_CONTROL" id="126">
       <description>Control a serial port. This can be used for raw access to an onboard serial peripheral such as a GPS or telemetry radio. It is designed to make it possible to update the devices firmware via MAVLink messages or change the devices settings. A message with zero bytes can be used to change just the baudrate.</description>
-      <field type="uint8_t" name="device">See SERIAL_CONTROL_DEV enum</field>
-      <field type="uint8_t" name="flags">See SERIAL_CONTROL_FLAG enum</field>
+      <field type="uint8_t" name="device"enum="SERIAL_CONTROL_DEV">See SERIAL_CONTROL_DEV enum</field>
+      <field type="uint8_t" name="flags" enum="SERIAL_CONTROL_FLAG">See SERIAL_CONTROL_FLAG enum</field>
       <field type="uint16_t" name="timeout">Timeout for reply data in milliseconds</field>
       <field type="uint32_t" name="baudrate">Baudrate of transfer. Zero means no change.</field>
       <field type="uint8_t" name="count">how many bytes in this transfer</field>
@@ -3426,9 +3426,9 @@
       <field type="uint16_t" name="min_distance">Minimum distance the sensor can measure in centimeters</field>
       <field type="uint16_t" name="max_distance">Maximum distance the sensor can measure in centimeters</field>
       <field type="uint16_t" name="current_distance">Current distance reading</field>
-      <field type="uint8_t" name="type">Type from MAV_DISTANCE_SENSOR enum.</field>
+      <field type="uint8_t" name="type" enum="MAV_DISTANCE_SENSOR">Type from MAV_DISTANCE_SENSOR enum.</field>
       <field type="uint8_t" name="id">Onboard ID of the sensor</field>
-      <field type="uint8_t" name="orientation">Direction the sensor faces from MAV_SENSOR_ORIENTATION enum.</field>
+      <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces from MAV_SENSOR_ORIENTATION enum.</field>
       <field type="uint8_t" name="covariance">Measurement covariance in centimeters, 0 for unknown / invalid readings</field>
     </message>
     <message id="133" name="TERRAIN_REQUEST">
@@ -3563,7 +3563,7 @@
     </message>
     <message id="148" name="AUTOPILOT_VERSION">
       <description>Version and capability of autopilot software</description>
-      <field type="uint64_t" name="capabilities">bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)</field>
+      <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY">bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)</field>
       <field type="uint32_t" name="flight_sw_version">Firmware version number</field>
       <field type="uint32_t" name="middleware_sw_version">Middleware version number</field>
       <field type="uint32_t" name="os_sw_version">Operating system version number</field>
@@ -3579,7 +3579,7 @@
       <description>The location of a landing area captured from a downward facing camera</description>
       <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
       <field type="uint8_t" name="target_num">The ID of the target if multiple targets are present</field>
-      <field type="uint8_t" name="frame">MAV_FRAME enum specifying the whether the following feilds are earth-frame, body-frame, etc.</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">MAV_FRAME enum specifying the whether the following feilds are earth-frame, body-frame, etc.</field>
       <field type="float" name="angle_x">X-axis angular offset (in radians) of the target from the center of the image</field>
       <field type="float" name="angle_y">Y-axis angular offset (in radians) of the target from the center of the image</field>
       <field type="float" name="distance">Distance to the target from the vehicle in meters</field>
@@ -3640,7 +3640,7 @@
     </message>
     <message id="234" name="HIGH_LATENCY">
       <description>Message appropriate for high latency connections like Iridium</description>
-      <field name="base_mode" type="uint8_t">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
+      <field name="base_mode" type="uint8_t" enum="MAV_MODE_FLAG">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
       <field name="custom_mode" type="uint32_t">A bitfield for use for autopilot-specific flags.</field>
       <field name="landed_state" type="uint8_t" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
       <field name="roll" type="int16_t">roll (centidegrees)</field>
@@ -3657,7 +3657,7 @@
       <field name="groundspeed" type="uint8_t">groundspeed (m/s)</field>
       <field name="climb_rate" type="int8_t">climb rate (m/s)</field>
       <field name="gps_nsat" type="uint8_t">Number of satellites visible. If unknown, set to 255</field>
-      <field name="gps_fix_type" type="uint8_t">See the GPS_FIX_TYPE enum.</field>
+      <field name="gps_fix_type" type="uint8_t" enum="GPS_FIX_TYPE">See the GPS_FIX_TYPE enum.</field>
       <field name="battery_remaining" type="uint8_t">Remaining battery (percentage)</field>
       <field name="temperature" type="int8_t">Autopilot temperature (degrees C)</field>
       <field name="temperature_air" type="int8_t">Air temperature (degrees C) from airspeed sensor</field>

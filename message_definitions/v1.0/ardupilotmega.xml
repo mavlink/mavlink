@@ -1082,7 +1082,7 @@
       <!-- Path planned landings are still in the future, but we want these fields ready: -->
       <field name="break_alt" type="int16_t">Break altitude in meters relative to home</field>
       <field name="land_dir" type="uint16_t">Heading to aim for when landing. In centi-degrees.</field>
-      <field name="flags" type="uint8_t">See RALLY_FLAGS enum for definition of the bitmask.</field>
+      <field name="flags" type="uint8_t" enum="RALLY_FLAGS">See RALLY_FLAGS enum for definition of the bitmask.</field>
     </message>
     <message id="176" name="RALLY_FETCH_POINT">
       <description>Request a current rally point from MAV. MAV should respond with a RALLY_POINT message. MAV should not respond if the request is invalid.</description>
@@ -1119,7 +1119,7 @@
       <!-- component ID, to support multiple cameras -->
       <field name="img_idx" type="uint16_t">Image index</field>
       <!-- per camera image index, should be unique+sequential within a mission, preferably non-wrapping -->
-      <field name="event_id" type="uint8_t">See CAMERA_STATUS_TYPES enum for definition of the bitmask</field>
+      <field name="event_id" type="uint8_t" enum="CAMERA_STATUS_TYPES">See CAMERA_STATUS_TYPES enum for definition of the bitmask</field>
       <field name="p1" type="float">Parameter 1 (meaning depends on event, see CAMERA_STATUS_TYPES enum)</field>
       <field name="p2" type="float">Parameter 2 (meaning depends on event, see CAMERA_STATUS_TYPES enum)</field>
       <field name="p3" type="float">Parameter 3 (meaning depends on event, see CAMERA_STATUS_TYPES enum)</field>
@@ -1147,7 +1147,7 @@
       <!-- initially only supporting fixed cameras, in future we'll need feedback messages from the gimbal so we can include that offset here -->
       <field name="foc_len" type="float">Focal Length (mm)</field>
       <!-- per-image to support zooms. Zero means fixed focal length or unknown. Should be true mm, not scaled to 35mm film equivalent -->
-      <field name="flags" type="uint8_t">See CAMERA_FEEDBACK_FLAGS enum for definition of the bitmask</field>
+      <field name="flags" type="uint8_t" enum="CAMERA_FEEDBACK_FLAGS">See CAMERA_FEEDBACK_FLAGS enum for definition of the bitmask</field>
       <!-- future proofing -->
     </message>
     <message id="181" name="BATTERY2">
@@ -1201,7 +1201,7 @@
       <description>Reports progress of compass calibration.</description>
       <field name="compass_id" type="uint8_t">Compass being calibrated</field>
       <field name="cal_mask" type="uint8_t">Bitmask of compasses being calibrated</field>
-      <field name="cal_status" type="uint8_t">Status (see MAG_CAL_STATUS enum)</field>
+      <field name="cal_status" type="uint8_t" enum="MAG_CAL_STATUS">Status (see MAG_CAL_STATUS enum)</field>
       <field name="attempt" type="uint8_t">Attempt number</field>
       <field name="completion_pct" type="uint8_t">Completion percentage</field>
       <field name="completion_mask" type="uint8_t[10]">Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid)</field>
@@ -1213,7 +1213,7 @@
       <description>Reports results of completed compass calibration. Sent until MAG_CAL_ACK received.</description>
       <field name="compass_id" type="uint8_t">Compass being calibrated</field>
       <field name="cal_mask" type="uint8_t">Bitmask of compasses being calibrated</field>
-      <field name="cal_status" type="uint8_t">Status (see MAG_CAL_STATUS enum)</field>
+      <field name="cal_status" type="uint8_t" enum="MAG_CAL_STATUS">Status (see MAG_CAL_STATUS enum)</field>
       <field name="autosaved" type="uint8_t">0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters</field>
       <field name="fitness" type="float">RMS milligauss residuals</field>
       <field name="ofs_x" type="float">X offset</field>
@@ -1229,7 +1229,7 @@
     <!-- EKF status message from autopilot to GCS. -->
     <message id="193" name="EKF_STATUS_REPORT">
       <description>EKF Status message including flags and variances</description>
-      <field name="flags" type="uint16_t">Flags</field>
+      <field name="flags" type="uint16_t" enum="EKF_STATUS_FLAGS">Flags</field>
       <!-- supported flags see EKF_STATUS_FLAGS enum -->
       <field name="velocity_variance" type="float">Velocity variance</field>
       <!-- below 0.5 is good, 0.5~0.79 is warning, 0.8 or higher is bad -->
@@ -1285,7 +1285,7 @@
       <description>Heartbeat from a HeroBus attached GoPro</description>
       <field enum="GOPRO_HEARTBEAT_STATUS" name="status" type="uint8_t">Status</field>
       <field enum="GOPRO_CAPTURE_MODE" name="capture_mode" type="uint8_t">Current capture mode</field>
-      <field name="flags" type="uint8_t">additional status bits</field>
+      <field name="flags" type="uint8_t" enum="GOPRO_HEARTBEAT_FLAGS">additional status bits</field>
       <!-- see GOPRO_HEARTBEAT_FLAGS -->
     </message>
     <message id="216" name="GOPRO_GET_REQUEST">
