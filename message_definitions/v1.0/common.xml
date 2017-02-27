@@ -1432,6 +1432,12 @@
         <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
         <param index="2">Reserved</param>
       </entry>
+      <entry value="2504" name="MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION">
+        <description>WIP: Request video stream information (VIDEO_STREAM_INFORMATION)</description>
+        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
+        <param index="2">0: No Action 1: Request video stream information</param>
+        <param index="3">Reserved (all remaining params)</param>
+      </entry>
       <entry value="2510" name="MAV_CMD_LOGGING_START">
         <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
         <param index="1">Format: 0: ULog</param>
@@ -4039,6 +4045,29 @@
       <field type="uint8_t" name="target_system">system ID of the target</field>
       <field type="uint8_t" name="target_component">component ID of the target</field>
       <field type="uint16_t" name="sequence">sequence number (must match the one in LOGGING_DATA_ACKED)</field>
+    </message>
+    <message id="269" name="VIDEO_STREAM_INFORMATION">
+      <description>WIP: Information about video stream</description>
+      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="status">Current status of video streaming (0: not running, 1: in progress)</field>
+      <field type="float" name="framerate" units="Hz">Frames per second</field>
+      <field type="uint16_t" name="resolution_h" units="pix">Resolution horizontal in pixels</field>
+      <field type="uint16_t" name="resolution_v" units="pix">Resolution vertical in pixels</field>
+      <field type="uint32_t" name="bitrate" units="b/s">Bit rate in bits per second</field>
+      <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
+      <field type="char[230]" name="uri">Video stream URI</field>
+    </message>
+    <message id="270" name="SET_VIDEO_STREAM_SETTINGS">
+      <description>WIP: Message that sets video stream settings</description>
+      <field type="uint8_t" name="target_system">system ID of the target</field>
+      <field type="uint8_t" name="target_component">component ID of the target</field>
+      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
+      <field type="float" name="framerate" units="Hz">Frames per second (set to -1 for highest framerate possible)</field>
+      <field type="uint16_t" name="resolution_h" units="pix">Resolution horizontal in pixels (set to -1 for highest resolution possible)</field>
+      <field type="uint16_t" name="resolution_v" units="pix">Resolution vertical in pixels (set to -1 for highest resolution possible)</field>
+      <field type="uint32_t" name="bitrate" units="b/s">Bit rate in bits per second (set to -1 for auto)</field>
+      <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise (0-359 degrees)</field>
+      <field type="char[230]" name="uri">Video stream URI</field>
     </message>
   </messages>
 </mavlink>
