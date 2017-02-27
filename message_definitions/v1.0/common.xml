@@ -1445,6 +1445,39 @@
         <param index="5">Unscaled target latitude of center of circle in CIRCLE_MODE</param>
         <param index="6">Unscaled target longitude of center of circle in CIRCLE_MODE</param>
       </entry>
+      <entry value="4100" name="MAV_CMD_REQUEST_MIXER_DATA">
+        <description>Request to send mixer data in a group and a given mixer, submixer, type and parameter index.
+        </description>
+        <param index="1">Mixer Group</param>
+        <param index="2">Mixer Index</param>
+        <param index="3">Submixer Index</param>
+        <param index="4">Parameter Index</param>
+        <param index="5">Data type</param>
+      </entry>
+      <entry value="4101" name="MAV_CMD_REQUEST_MIXER_SEND_ALL">
+        <description>Request to send all mixer data.</description>
+        <param index="1">Mixer Group</param>
+      </entry>
+      <entry value="4102" name="MAV_CMD_SET_MIXER_PARAMETER">
+        <description>Set a mixer parameter value for a given group, mixer, submix and parameter index.</description>
+        <param index="1">Mixer Group</param>
+        <param index="2">Mixer Index</param>
+        <param index="3">Submixer Index</param>
+        <param index="4">Parameter Index</param>
+        <param index="5">Parameter Value</param>
+      </entry>
+      <entry value="4103" name="MAV_CMD_REQUEST_MIXER_STORE">
+        <description>Request to send all mixer data.</description>
+        <param index="1">Mixer Group</param>
+      </entry>
+      <entry value="4104" name="MAV_CMD_REQUEST_MIXER_CONN">
+        <description>Request information on a specific mixer connection</description>
+        <param index="1">Mixer Group</param>
+        <param index="2">Mixer Index</param>
+        <param index="3">Submixer Index</param>
+        <param index="4">Connection Type</param>
+        <param index="5">Connection Index</param>
+      </entry>
       <!-- VALUES FROM 0-40000 are reserved for the common message set. Values from 40000 to UINT16_MAX are available for dialects -->
       <!-- BEGIN of payload range (30000 to 30999) -->
       <entry value="30001" name="MAV_CMD_PAYLOAD_PREPARE_DEPLOY">
@@ -2341,6 +2374,51 @@
       </entry>
       <entry value="7" name="GPS_FIX_TYPE_STATIC">
         <description>Static fixed, typically used for base stations</description>
+      </entry>
+    </enum>
+    <enum name="MIXER_DATA_TYPE">
+      <description>Mixer data type</description>
+      <entry value="0" name="MIXER_DATA_TYPE_MIXER_COUNT">
+        <description>Mixer count at a given group</description>
+      </entry>
+      <entry value="1" name="MIXER_DATA_TYPE_SUBMIXER_COUNT">
+        <description>Submixer count at a given group and mixer</description>
+      </entry>
+      <entry value="2" name="MIXER_DATA_TYPE_MIXTYPE">
+        <description>Mixer type at a given group, mixer and submixer</description>
+      </entry>
+      <entry value="3" name="MIXER_DATA_TYPE_PARAMETER">
+        <description>Parameter at a given group, mixer, submixer and parameter index</description>
+      </entry>
+      <entry value="4" name="MIXER_DATA_TYPE_CONNECTION">
+        <description>Parameter at a given group, mixer, submixer, connection type and connection index</description>
+      </entry>
+      <entry value="5" name="MIXER_DATA_TYPE_PARAMETER_COUNT">
+        <description>Parameter count at a given group, mixer and submixer</description>
+      </entry>
+      <entry value="6" name="MIXER_DATA_TYPE_CONNECTION_COUNT">
+        <description>Parameter at a given group, mixer, submixer and connection type</description>
+      </entry>
+    </enum>
+    <enum name="MIXER_GROUP">
+      <description>To determine where the mixers are located</description>
+      <entry value="0" name="MIXER_GROUP_LOCAL">
+        <description>Mixers on the local processor</description>
+      </entry>
+      <entry value="1" name="MIXER_GROUP_FAILSAFE">
+        <description>Mixers on a failsafe device</description>
+      </entry>
+      <entry value="2" name="MIXER_GROUP_BUS">
+        <description>Bus connected mixers</description>
+      </entry>
+    </enum>
+    <enum name="MIXER_CONN_TYPE">
+      <description>Type of mixer</description>
+      <entry value="0" name="MIXER_CONNECTION_OUTPUT">
+        <description>Mixer connection for output</description>
+      </entry>
+      <entry value="1" name="MIXER_CONNECTION_INPUT">
+        <description>Mixer connection for input</description>
       </entry>
     </enum>
   </enums>
@@ -3649,6 +3727,19 @@
       <field name="failsafe" type="uint8_t">failsafe (each bit represents a failsafe where 0=ok, 1=failsafe active (bit0:RC, bit1:batt, bit2:GPS, bit3:GCS, bit4:fence)</field>
       <field name="wp_num" type="uint8_t">current waypoint number</field>
       <field name="wp_distance" type="uint16_t">distance to target (meters)</field>
+    </message>
+    <message id="235" name="MIXER_DATA">
+      <description>Mixer data emitted after a read or set request</description>
+      <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers ie. onboard, failsafe, uavcan etc..</field>
+      <field type="uint8_t" name="mixer_index">Index of the mixer in the group</field>
+      <field type="uint8_t" name="mixer_sub_index">Index of the sub mixer in the mixer</field>
+      <field type="uint8_t" name="parameter_index">Index of the parameter in the mixer or sub mixer. Reused as connection_index when getting connection info</field>
+      <field type="uint8_t" name="connection_type">Connection type as defined by the vehicle(input, output, register etc..)</field>
+      <field type="uint8_t" name="connection_group">Connection group for a mixer connection</field>
+      <field type="uint8_t" name="data_type" enum="MIXER_DATA_TYPE">Mixer data type</field>
+      <field type="int32_t" name="data_value">Integer mixer data</field>
+      <field type="float" name="param_value">Parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
     </message>
     <message id="241" name="VIBRATION">
       <description>Vibration levels and accelerometer clipping</description>
