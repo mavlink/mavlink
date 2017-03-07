@@ -3,17 +3,15 @@
     <include>common.xml</include>
     <enums>
         <!-- ROSflight specific MAV_CMD_* commands -->
-        <enum name="MAV_CMD">
-          <entry name="MAV_CMD_DO_RC_CALIBRATION" value="223">
-            <description>Perform an RC Calibration, must be disarmed</description>
-            <param index="1">Empty</param>
-            <param index="2">Empty</param>
-            <param index="3">Empty</param>
-            <param index="4">Empty</param>
-            <param index="5">Empty</param>
-            <param index="6">Empty</param>
-            <param index="7">Empty</param>
-          </entry>
+        <enum name="ROSFLIGHT_CMD">
+            <entry value=0 name="ROSFLIGHT_CMD_RC_CALIBRATION"/>
+            <entry value=1 name="ROSFLIGHT_CMD_ACCEL_CALIBRATION"/>
+            <entry value=2 name="ROSFLIGHT_CMD_GYRO_CALIBRATION"/>
+            <entry value=3 name="ROSFLIGHT_CMD_BARO_CALIBRATION"/>
+            <entry value=4 name="ROSFLIGHT_CMD_AIRSPEED_CALIBRATION"/>
+            <entry value=5 name="ROSFLIGHT_CMD_READ_PARAMS"/>
+            <entry value=6 name="ROSFLIGHT_CMD_WRITE_PARAMS"/>
+            <entry value=7 name="ROSFLIGHT_CMD_SET_PARAM_DEFAULTS"/>
         </enum>
         <enum name="OFFBOARD_CONTROL_MODE">
             <entry value="0" name="MODE_PASS_THROUGH">
@@ -105,6 +103,12 @@
          <field type="float" name="range">Range Measurement (m)</field>
          <field type="float" name="max_range">Max Range (m)</field>
          <field type="float" name="min_range">Min Range (m)</field>
+       </message>
+       <message id="188" name="ROSFLIGHT_CMD">
+         <field type="uint8_t" name="command" enum="ROSFLIHT_CMD"/>
+       </message>
+       <message id="189" name="ROSFLIGHT_CMD_ACK">
+         <field type="uint8_t" name="command" enum="ROSFLIHT_CMD"/>
        </message>
     </messages>
 </mavlink>
