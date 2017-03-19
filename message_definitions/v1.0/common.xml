@@ -1204,14 +1204,14 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="241" name="MAV_CMD_PREFLIGHT_CALIBRATION">
-        <description>Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Temperature Calibration, only one sensor should be set in a single message and all others should be zero.</description>
-        <param index="1">1: gyro calibration, 3: gyro temperature calibration</param>
-        <param index="2">1: magnetometer calibration</param>
-        <param index="3">1: ground pressure calibration</param>
-        <param index="4">1: radio RC calibration, 2: RC trim calibration</param>
-        <param index="5">1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration</param>
-        <param index="6">1: APM: compass/motor interference calibration / PX4: airspeed calibration</param>
-        <param index="7">1: ESC calibration, 3: barometer temperature calibration</param>
+        <description>Trigger calibration. This command will be only accepted if in pre-flight mode.</description>
+        <param index="1">Gyro calibration: 0: no, 1: yes</param>
+        <param index="2">Magnetometer calibration: 0: no, 1: yes</param>
+        <param index="3">Ground pressure: 0: no, 1: yes</param>
+        <param index="4">Radio calibration: 0: no, 1: yes</param>
+        <param index="5">Accelerometer calibration: 0: no, 1: yes</param>
+        <param index="6">Compass/Motor interference calibration: 0: no, 1: yes</param>
+        <param index="7">Empty</param>
       </entry>
       <entry value="242" name="MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS">
         <description>Set sensor offsets. This command will be only accepted if in pre-flight mode.</description>
@@ -1357,10 +1357,10 @@
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
-        <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture.</description>
+        <description>Start image capture sequence</description>
         <param index="1">Duration between two consecutive pictures (in seconds)</param>
         <param index="2">Number of images to capture total - 0 for unlimited capture</param>
-        <param index="3">Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used, set to -1 for highest resolution possible.</param>
+        <param index="3">Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used</param>
         <param index="4">WIP: Resolution horizontal in pixels</param>
         <param index="5">WIP: Resolution horizontal in pixels</param>
         <param index="6">WIP: Camera ID</param>
@@ -1377,16 +1377,15 @@
         <param index="3">Reserved</param>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
-        <description>Starts video capture (recording)</description>
+        <description>Starts video capture</description>
         <param index="1">Camera ID (0 for all cameras), 1 for first, 2 for second, etc.</param>
-        <param index="2">Frames per second, set to -1 for highest framerate possible.</param>
-        <param index="3">Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used, set to -1 for highest resolution possible.</param>
+        <param index="2">Frames per second</param>
+        <param index="3">Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used</param>
         <param index="4">WIP: Resolution horizontal in pixels</param>
         <param index="5">WIP: Resolution horizontal in pixels</param>
-        <param index="6">WIP: Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise time in Hz)</param>
       </entry>
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE">
-        <description>Stop the current video capture (recording)</description>
+        <description>Stop the current video capture</description>
         <param index="1">WIP: Camera ID</param>
         <param index="2">Reserved</param>
       </entry>
@@ -3840,8 +3839,6 @@
       <field type="uint16_t" name="image_resolution_v">Image resolution in pixels vertical</field>
       <field type="uint16_t" name="video_resolution_h">Video resolution in pixels horizontal</field>
       <field type="uint16_t" name="video_resolution_v">Video resolution in pixels vertical</field>
-      <field type="uint32_t" name="recording_time_ms">Time in milliseconds since recording started</field>
-      <field type="float" name="available_capacity">Available storage capacity in MiB</field>
     </message>
     <message id="263" name="CAMERA_IMAGE_CAPTURED">
       <description>WIP: Information about a captured image</description>
@@ -3853,9 +3850,7 @@
       <field type="int32_t" name="alt">Altitude in meters, expressed as * 1E3 (AMSL, not WGS84) where image was taken</field>
       <field type="int32_t" name="relative_alt">Altitude above ground in meters, expressed as * 1E3 where image was taken</field>
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 0, 0, 0, 0)</field>
-      <field type="int32_t" name="image_index">Zero based index of this image (image count since armed -1)</field>
-      <field type="int8_t" name="capture_result">Boolean indicating success (1) or failure (0) while capturing this image.</field>
-      <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
+      <field type="char[210]" name="file_path">File path of image taken.</field>
     </message>
     <message id="264" name="FLIGHT_INFORMATION">
       <description>WIP: Information about flight since last arming</description>
@@ -3895,10 +3890,10 @@
       <field type="uint8_t" name="target_component">component ID of the target</field>
       <field type="uint16_t" name="sequence">sequence number (must match the one in LOGGING_DATA_ACKED)</field>
     </message>
-    <message id="269" name="VOLIRO_COMMAND">
-      <description>Commands for gazebo simulation</description>
-      <field type="float[6]" name="alpha">tiltingAngles</field>
-      <field type="float[6]" name="omega">motorSpeeds</field>
+    <message id="269" name="VOLIRO_AO">
+      <description>Pretty please with cherry on top!</description>
+      <field type="float[6]" name="alpha">alpha</field>
+      <field type="float[6]" name="omega">omega</field>
     </message>
   </messages>
 </mavlink>
