@@ -1445,6 +1445,50 @@
         <param index="5">Unscaled target latitude of center of circle in CIRCLE_MODE</param>
         <param index="6">Unscaled target longitude of center of circle in CIRCLE_MODE</param>
       </entry>
+      <entry value="5000" name="MAV_CMD_NAV_FENCE_RETURN_POINT">
+        <description>Fence return point. There can only be one fence return point.
+        </description>
+        <param index="1">Reserved</param>
+        <param index="2">Reserved</param>
+        <param index="3">Reserved</param>
+        <param index="4">Reserved</param>
+        <param index="5">Latitude</param>
+        <param index="6">Longitude</param>
+        <param index="7">Altitude</param>
+      </entry>
+      <entry value="5001" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_INCLUSION">
+        <description>Fence vertex for an inclusion polygon. The vehicle must stay within this area. Minimum of 3 vertices required.
+        </description>
+        <param index="1">Polygon vertex count</param>
+        <param index="2">Reserved</param>
+        <param index="3">Reserved</param>
+        <param index="4">Reserved</param>
+        <param index="5">Latitude</param>
+        <param index="6">Longitude</param>
+        <param index="7">Reserved</param>
+      </entry>
+      <entry value="5002" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION">
+        <description>Fence vertex for an exclusion polygon. The vehicle must stay outside this area. Minimum of 3 vertices required.
+        </description>
+        <param index="1">Polygon vertex count</param>
+        <param index="2">Reserved</param>
+        <param index="3">Reserved</param>
+        <param index="4">Reserved</param>
+        <param index="5">Latitude</param>
+        <param index="6">Longitude</param>
+        <param index="7">Reserved</param>
+      </entry>
+      <entry value="5100" name="MAV_CMD_NAV_RALLY_POINT">
+        <description>Rally point. You can have multiple rally points defined.
+        </description>
+        <param index="1">Reserved</param>
+        <param index="2">Reserved</param>
+        <param index="3">Reserved</param>
+        <param index="4">Reserved</param>
+        <param index="5">Latitude</param>
+        <param index="6">Longitude</param>
+        <param index="7">Altitude</param>
+      </entry>
       <!-- VALUES FROM 0-40000 are reserved for the common message set. Values from 40000 to UINT16_MAX are available for dialects -->
       <!-- BEGIN of payload range (30000 to 30999) -->
       <entry value="30001" name="MAV_CMD_PAYLOAD_PREPARE_DEPLOY">
@@ -2062,6 +2106,27 @@
       <entry value="8192" name="MAV_PROTOCOL_CAPABILITY_MAVLINK2">
         <description>Autopilot supports mavlink version 2.</description>
       </entry>
+      <entry value="16384" name="MAV_PROTOCOL_CAPABILITY_MISSION_FENCE">
+        <description>Autopilot supports mission fence protocol.</description>
+      </entry>
+      <entry value="32768" name="MAV_PROTOCOL_CAPABILITY_MISSION_RALLY">
+        <description>Autopilot supports mission rally point protocol.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_MISSION_TYPE">
+      <description>Type of mission items being requested/sent in mission protocol.</description>
+      <entry value="0" name="MAV_MISSION_TYPE_MISSION">
+        <description>Items are mission commands for main mission.</description>
+      </entry>
+      <entry value="1" name="MAV_MISSION_TYPE_FENCE">
+        <description>Specifies GeoFence area(s). Items are MAV_CMD_FENCE_ GeoFence items.</description>
+      </entry>
+      <entry value="2" name="MAV_MISSION_TYPE_RALLY">
+        <description>Specifies the rally points for the vehicle. Rally points are alternative RTL points. Items are MAV_CMD_RALLY_POINT rally point items.</description>
+      </entry>
+      <entry value="255" name="MAV_MISSION_TYPE_ALL">
+        <description>Only used in MISSION_CLEAR_ALL to clear all mission types.</description>
+      </entry>
     </enum>
     <enum name="MAV_ESTIMATOR_TYPE">
       <description>Enumeration of estimator types</description>
@@ -2599,6 +2664,8 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="int16_t" name="start_index">Start index, 0 by default</field>
       <field type="int16_t" name="end_index">End index, -1 by default (-1: send list to end). Else a valid index of the list</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="38" name="MISSION_WRITE_PARTIAL_LIST">
       <description>This message is sent to the MAV to write a partial list. If start index == end index, only one item will be transmitted / updated. If the start index is NOT 0 and above the current list size, this request should be REJECTED!</description>
@@ -2606,6 +2673,8 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="int16_t" name="start_index">Start index, 0 by default and smaller / equal to the largest index of the current onboard list.</field>
       <field type="int16_t" name="end_index">End index, equal or greater than start index.</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="39" name="MISSION_ITEM">
       <description>Message encoding a mission item. This message is emitted to announce
@@ -2624,12 +2693,16 @@
       <field type="float" name="x">PARAM5 / local: x position, global: latitude</field>
       <field type="float" name="y">PARAM6 / y position: global: longitude</field>
       <field type="float" name="z">PARAM7 / z position: global: altitude (relative or absolute, depending on frame.</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="40" name="MISSION_REQUEST">
       <description>Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM message. http://qgroundcontrol.org/mavlink/waypoint_protocol</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="41" name="MISSION_SET_CURRENT">
       <description>Set the mission item with sequence number seq as current item. This means that the MAV will continue to this mission item on the shortest path (not following the mission items in-between).</description>
@@ -2645,17 +2718,23 @@
       <description>Request the overall list of mission items from the system/component.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="44" name="MISSION_COUNT">
       <description>This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of MISSIONs.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="count">Number of mission items in the sequence</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="45" name="MISSION_CLEAR_ALL">
       <description>Delete all mission items at once.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="46" name="MISSION_ITEM_REACHED">
       <description>A certain mission item has been reached. The system will either hold this position (or circle on the orbit) or (if the autocontinue on the WP was set) continue to the next MISSION.</description>
@@ -2666,6 +2745,8 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="type" enum="MAV_MISSION_RESULT">See MAV_MISSION_RESULT enum</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
       <description>As local waypoints exist, the global MISSION reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
@@ -2697,6 +2778,8 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="54" name="SAFETY_SET_ALLOWED_AREA">
       <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/MISSIONs to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
@@ -2845,6 +2928,8 @@
       <field type="int32_t" name="x">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
       <field type="int32_t" name="y">PARAM6 / y position: local: x position in meters * 1e4, global: longitude in degrees *10^7</field>
       <field type="float" name="z">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame.</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="74" name="VFR_HUD">
       <description>Metrics typically displayed on a HUD for fixed wing aircraft</description>
