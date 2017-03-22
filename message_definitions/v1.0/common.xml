@@ -1456,8 +1456,19 @@
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
       </entry>
-      <entry value="5001" name="MAV_CMD__NAV_FENCE_POLYGON_VERTEX">
-        <description>Fence polygon vertex. Minimum of 3 required.
+      <entry value="5001" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_INCLUSION">
+        <description>Fence vertex for an inclusion polygon. The vehicle must stay within this area. Minimum of 3 vertices required.
+        </description>
+        <param index="1">Polygon vertex count</param>
+        <param index="2">Reserved</param>
+        <param index="3">Reserved</param>
+        <param index="4">Reserved</param>
+        <param index="5">Latitude</param>
+        <param index="6">Longitude</param>
+        <param index="7">Reserved</param>
+      </entry>
+      <entry value="5002" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION">
+        <description>Fence vertex for an exclusion polygon. The vehicle must stay outside this area. Minimum of 3 vertices required.
         </description>
         <param index="1">Polygon vertex count</param>
         <param index="2">Reserved</param>
@@ -2107,14 +2118,11 @@
       <entry value="0" name="MAV_MISSION_TYPE_MISSION">
         <description>Items are mission commands for main mission.</description>
       </entry>
-      <entry value="1" name="MAV_MISSION_TYPE_FENCE_INCLUSION">
-        <description>Specifies an inclusion GeoFence. The vehicle must stay with these areas. Items are MAV_CMD_FENCE_ GeoFence items.</description>
-      </entry>
-      <entry value="1" name="MAV_MISSION_TYPE_FENCE_EXCLUSION">
-        <description>Specifies an exclusion GeoFence. The vehicle must stay outside these areas. Items are MAV_CMD_FENCE_ GeoFence items.</description>
+      <entry value="1" name="MAV_MISSION_TYPE_FENCE">
+        <description>Specifies GeoFence area(s). Items are MAV_CMD_FENCE_ GeoFence items.</description>
       </entry>
       <entry value="2" name="MAV_MISSION_TYPE_RALLY">
-        <description>Specifies the rally points for the vehicle. Items are MAV_CMD_RALLY_POINT rally point items.</description>
+        <description>Specifies the rally points for the vehicle. Rally points are alternative RTL points. Items are MAV_CMD_RALLY_POINT rally point items.</description>
       </entry>
       <entry value="255" name="MAV_MISSION_TYPE_ALL">
         <description>Only used in MISSION_CLEAR_ALL to clear all mission types.</description>
