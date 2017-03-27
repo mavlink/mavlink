@@ -7,7 +7,14 @@ Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 
 '''
-import sys, textwrap, os, copy
+
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
+import os
+import re
+import sys
 from . import mavparse
 
 # XSD schema file
@@ -23,7 +30,7 @@ DEFAULT_VALIDATE = True
 supportedLanguages = ["C", "CS", "JavaScript", "Python", "WLua", "ObjC", "Swift", "Java", "C++11"]
 
 
-def mavgen(opts, args) :
+def mavgen(opts, args):
     """Generate mavlink message formatters and parsers (C and Python ) using options
     and args where args are a list of xml files. This function allows python
     scripts under Windows to control mavgen using the same interface as
@@ -34,23 +41,44 @@ def mavgen(opts, args) :
     # Enable validation by default, disabling it if explicitly requested
     if opts.validate:
         try:
-            from lib.genxmlif import GenXmlIfError
-            from lib.minixsv import pyxsval
+            from lxml import etree
+            with open(schemaFile, 'r') as f:
+                xmlschema_root = etree.parse(f)
+                xmlschema = etree.XMLSchema(xmlschema_root)
         except:
-            print("WARNING: Unable to load XML validator libraries. XML validation will not be performed")
+            print("WARNING: Unable to load XML validator libraries. XML validation will not be performed", file=sys.stderr)
             opts.validate = False
 
-    def mavgen_validate(fname, schema, errorLimitNumber) :
-        """Uses minixsv to validate an XML file with a given XSD schema file. We define mavgen_validate
+    def mavgen_validate(xmlfile):
+        """Uses lxml to validate an XML file. We define mavgen_validate
            here because it relies on the XML libs that were loaded in mavgen(), so it can't be called standalone"""
-        # use default values of minixsv, location of the schema file must be specified in the XML file
-        domTreeWrapper = pyxsval.parseAndValidate(fname, xsdFile=schema, errorLimit=errorLimitNumber)
+        xmlvalid = True
+        try:
+            with open(xmlfile, 'r') as f:
+                xmldocument = etree.parse(f)
+                xmlschema.assertValid(xmldocument)
+                forbidden_names_re = re.compile("^(break$|case$|class$|catch$|const$|continue$|debugger$|default$|delete$|do$|else$|\
+                                    export$|extends$|finally$|for$|function$|if$|import$|in$|instanceof$|let$|new$|\
+                                    return$|super$|switch$|this$|throw$|try$|typeof$|var$|void$|while$|with$|yield$|\
+                                    enum$|await$|implements$|package$|protected$|static$|interface$|private$|public$|\
+                                    abstract$|boolean$|byte$|char$|double$|final$|float$|goto$|int$|long$|native$|\
+                                    short$|synchronized$|transient$|volatile$).*", re.IGNORECASE)
+                for element in xmldocument.iter('enum', 'entry', 'message', 'field'):
+                    if forbidden_names_re.search(element.get('name')):
+                        print("Validation error:", file=sys.stderr)
+                        print("Element : %s at line : %s contains forbidden word" % (element.tag, element.sourceline), file=sys.stderr)
+                        xmlvalid = False
+
+            return xmlvalid
+        except etree.XMLSchemaError:
+            return False
 
     # Process all XML files, validating them as necessary.
     for fname in args:
         if opts.validate:
             print("Validating %s" % fname)
-            mavgen_validate(fname, schemaFile, opts.error_limit);
+            if not mavgen_validate(fname):
+                return False
         else:
             print("Validation skipped for %s." % fname)
 
@@ -62,14 +90,15 @@ def mavgen(opts, args) :
         for i in x.include:
             fname = os.path.join(os.path.dirname(x.filename), i)
 
-            ## Validate XML file with XSD file if possible.
+            # Validate XML file with XSD file if possible.
             if opts.validate:
                 print("Validating %s" % fname)
-                mavgen_validate(fname, schemaFile, opts.error_limit);
+                if not mavgen_validate(fname):
+                    return False
             else:
                 print("Validation skipped for %s." % fname)
 
-            ## Parsing
+            # Parsing
             print("Parsing %s" % fname)
             xml.append(mavparse.MAVXML(fname, opts.wire_protocol))
 
@@ -84,10 +113,7 @@ def mavgen(opts, args) :
             x.largest_payload = max(x.largest_payload, xml[-1].largest_payload)
 
     # work out max payload size across all includes
-    largest_payload = 0
-    for x in xml:
-        if x.largest_payload > largest_payload:
-            largest_payload = x.largest_payload
+    largest_payload = max(x.largest_payload for x in xml) if xml else 0
     for x in xml:
         x.largest_payload = largest_payload
 
@@ -129,9 +155,10 @@ def mavgen(opts, args) :
     else:
         print("Unsupported language %s" % opts.language)
 
+    return True
 
 # build all the dialects in the dialects subpackage
-class Opts:
+class Opts(object):
     def __init__(self, output, wire_protocol=DEFAULT_WIRE_PROTOCOL, language=DEFAULT_LANGUAGE, validate=DEFAULT_VALIDATE, error_limit=DEFAULT_ERROR_LIMIT):
         self.wire_protocol = wire_protocol
         self.error_limit = error_limit
@@ -160,7 +187,7 @@ def mavgen_python_dialect(dialect, wire_protocol):
             xml = os.path.join(mdef, 'v1.0', dialect + '.xml')
     opts = Opts(py, wire_protocol)
 
-     # Python 2 to 3 compatibility
+    # Python 2 to 3 compatibility
     try:
         import StringIO as io
     except ImportError:
@@ -171,11 +198,14 @@ def mavgen_python_dialect(dialect, wire_protocol):
     sys.stdout = io.StringIO()
     try:
         xml = os.path.relpath(xml)
-        mavgen( opts, [xml] )
+        if not mavgen(opts, [xml]):
+            sys.stdout = stdout_saved
+            return False
     except Exception:
         sys.stdout = stdout_saved
         raise
     sys.stdout = stdout_saved
+    return True
 
 if __name__ == "__main__":
     raise DeprecationWarning("Executable was moved to pymavlink.tools.mavgen")

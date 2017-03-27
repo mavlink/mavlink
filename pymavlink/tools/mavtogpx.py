@@ -4,8 +4,9 @@
 example program to extract GPS data from a mavlink log, and create a GPX
 file, for loading into google earth
 '''
+from __future__ import print_function
 
-import sys, struct, time, os
+import time
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
@@ -89,7 +90,7 @@ def mav_to_gpx(infilename, outfilename):
             timestamp = m._timestamp
             fix = m.Status
         else:
-	    pass
+            pass
 
         if fix < 2 and not args.nofixcheck:
             continue

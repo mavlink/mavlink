@@ -1,5 +1,4 @@
-#ifndef  _MAVLINK_GET_INFO_H_
-#define  _MAVLINK_GET_INFO_H_
+#pragma once
 
 #ifdef MAVLINK_USE_MESSAGE_INFO
 #define MAVLINK_HAVE_GET_MESSAGE_INFO
@@ -28,9 +27,11 @@ MAVLINK_HELPER const mavlink_message_info_t *mavlink_get_message_info(const mavl
             low = mid;
             break;
         }
-        return &mavlink_message_info[low];
+        if (mavlink_message_info[low].msgid == msgid) {
+            return &mavlink_message_info[low];
+        }
+        return NULL;
 }
 #endif // MAVLINK_USE_MESSAGE_INFO
 
-#endif // _MAVLINK_GET_INFO_H_
 

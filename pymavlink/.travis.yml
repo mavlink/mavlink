@@ -1,0 +1,45 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.5"
+
+install:
+  - pip install -r requirements.txt
+  - pip install flake8
+
+before_script:
+  # --exit-zero means that flake8 will only warn and not stop the build
+  flake8 . --exit-zero
+
+script:
+  # NOTE: we must do all testing on the installed python package, not 
+  # on the build tree. Otherwise the testing is invalid and may not
+  # indicate the code actually works
+  #
+  # Set pythonpath
+
+  # install
+  - git clone git://github.com/mavlink/mavlink.git
+  - ln -s $PWD/mavlink/message_definitions ../
+  - python setup.py build install
+
+  # Generate messages
+  - mavgen.py --lang='Python' 	--output=/tmp/ mavlink/message_definitions/v1.0/common.xml
+  - mavgen.py --lang='C' 	--output=/tmp/ mavlink/message_definitions/v1.0/common.xml
+  - mavgen.py --lang='CS' 	--output=/tmp/ mavlink/message_definitions/v1.0/common.xml
+  - mavgen.py --lang='WLua' 	--output=/tmp/ mavlink/message_definitions/v1.0/common.xml
+  - mavgen.py --lang='Java'	--output=/tmp/ mavlink/message_definitions/v1.0/common.xml
+  # Avoid `spurious errors` caused by ~/.npm permission issues
+  # ref: https://github.com/travis-ci/travis-ci/issues/2244
+  # ref: https://github.com/npm/npm/issues/4815
+  # Does it already exist? Who owns? What permissions?
+  - ls -lah ~/.npm || mkdir ~/.npm
+  # Make sure we own it
+  # $USER references the current user in Travis env
+  - sudo chown -R $USER ~/.npm
+  - "cd generator/javascript && npm test"
+
+  # Test quaternions
+  - cd $TRAVIS_BUILD_DIR
+  - tools/quaterniontest.py

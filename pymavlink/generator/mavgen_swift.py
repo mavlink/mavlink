@@ -5,9 +5,10 @@ Parse a MAVLink protocol XML file and generate Swift implementation
 Copyright Max Odnovolyk 2015
 Released under GNU GPL version 3 or later
 """
+from __future__ import print_function
 
 import os
-from . import mavparse, mavtemplate
+from . import mavtemplate
 
 abbreviations = ["MAV", "PX4", "UDB", "PPZ", "PIXHAWK", "SLUGS", "FP", "ASLUAV", "VTOL", "ROI", "UART", "UDP", "IMU", "IMU2", "3D", "RC", "GPS", "GPS1", "GPS2", "NED", "RTK"]
 swift_types = {'char' : ("String", '"\\0"', "mavString(offset: %u, length: %u)"),
@@ -399,7 +400,7 @@ def generate_messages_info(msgs):
                 field.description = " ".join(field.description.split())
                 field.formatted_description = "\n\t/// " + field.description + "\n"
          
-        fields_info = map(lambda field: '("%s", %u, "%s", "%s")' % (field.swift_name, field.wire_offset, field.return_type, field.description.replace('"','\\"')), msg.fields)
+        fields_info = ['("%s", %u, "%s", "%s")' % (field.swift_name, field.wire_offset, field.return_type, field.description.replace('"','\\"')) for field in msg.fields]
         msg.fields_info = ", ".join(fields_info)
 
     msgs.sort(key = lambda msg : msg.id)

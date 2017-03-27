@@ -5,10 +5,13 @@ parse a MAVLink protocol XML file and generate a Node.js javascript module imple
 Based on original work Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
+from __future__ import print_function
 
-import sys, textwrap, os
-from . import mavparse, mavtemplate
-from shutil import copyfile
+from builtins import range
+
+import os
+import textwrap
+from . import mavtemplate
 
 t = mavtemplate.MAVTemplate()
 

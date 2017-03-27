@@ -3,8 +3,7 @@
 '''
 extract mavlink mission from log
 '''
-
-import sys, time, os
+from __future__ import print_function
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)

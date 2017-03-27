@@ -20,8 +20,6 @@ public class Parser {
 
     MAV_states state = MAV_states.MAVLINK_PARSE_STATE_UNINIT;
 
-    static boolean msg_received;
-
     public MAVLinkStats stats;
     private MAVLinkPacket m;
 
@@ -43,7 +41,6 @@ public class Parser {
      *            The char to parse
      */
     public MAVLinkPacket mavlink_parse_char(int c) {
-        msg_received = false;
 
         switch (state) {
         case MAVLINK_PARSE_STATE_UNINIT:
@@ -55,13 +52,8 @@ public class Parser {
             break;
 
         case MAVLINK_PARSE_STATE_GOT_STX:
-            if (msg_received) {
-                msg_received = false;
-                state = MAV_states.MAVLINK_PARSE_STATE_IDLE;
-            } else {
-                m = new MAVLinkPacket(c);
-                state = MAV_states.MAVLINK_PARSE_STATE_GOT_LENGTH;
-            }
+            m = new MAVLinkPacket(c);
+            state = MAV_states.MAVLINK_PARSE_STATE_GOT_LENGTH;
             break;
 
         case MAVLINK_PARSE_STATE_GOT_LENGTH:
@@ -99,7 +91,6 @@ public class Parser {
             m.generateCRC();
             // Check first checksum byte
             if (c != m.crc.getLSB()) {
-                msg_received = false;
                 state = MAV_states.MAVLINK_PARSE_STATE_IDLE;
                 if (c == MAVLinkPacket.MAVLINK_STX) {
                     state = MAV_states.MAVLINK_PARSE_STATE_GOT_STX;
@@ -114,7 +105,6 @@ public class Parser {
         case MAVLINK_PARSE_STATE_GOT_CRC1:
             // Check second checksum byte
             if (c != m.crc.getMSB()) {
-                msg_received = false;
                 state = MAV_states.MAVLINK_PARSE_STATE_IDLE;
                 if (c == MAVLinkPacket.MAVLINK_STX) {
                     state = MAV_states.MAVLINK_PARSE_STATE_GOT_STX;
@@ -123,18 +113,13 @@ public class Parser {
                 stats.crcError();
             } else { // Successfully received the message
                 stats.newPacket(m);
-                msg_received = true;
                 state = MAV_states.MAVLINK_PARSE_STATE_IDLE;
+                return m;
             }
 
             break;
 
         }
-        if (msg_received) {
-            return m;
-        } else {
-            return null;
-        }
+        return null;
     }
-
 }

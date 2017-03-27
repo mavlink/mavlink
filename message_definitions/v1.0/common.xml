@@ -3895,12 +3895,34 @@
       <field type="float[6]" name="alpha">alpha</field>
       <field type="float[6]" name="omega">omega</field>
     </message>
+    <message id="270" name="SET_ATTITUDE_POSITION_VOLIRO">
+      <description>Sets a desired vehicle attitude. Used by an external controller to command the vehicle (manual controller or other system).</description>
+      <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+
+      <field type="uint8_t" name="type_mask_att">Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 6: reserved, bit 7: throttle, bit 8: attitude</field>
+      <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="float" name="body_roll_rate">Body roll rate in radians per second</field>
+      <field type="float" name="body_pitch_rate">Body roll rate in radians per second</field>
+      <field type="float" name="body_yaw_rate">Body roll rate in radians per second</field>
+
+
+      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
+      <field type="uint16_t" name="type_mask_pos">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="float" name="x">X Position in NED frame in meters</field>
+      <field type="float" name="y">Y Position in NED frame in meters</field>
+      <field type="float" name="z">Z Position in NED frame in meters (note, altitude is negative in NED)</field>
+      <field type="float" name="vx">X velocity in NED frame in meter / s</field>
+      <field type="float" name="vy">Y velocity in NED frame in meter / s</field>
+      <field type="float" name="vz">Z velocity in NED frame in meter / s</field>
+
+    </message>
 
     <message id="271" name="VOLIRO_ALPHA">
       <description>Pretty please with cherry on top!</description>
       <field type="float[6]" name="alpha">alpha</field>
     </message>
-
 
   </messages>
 </mavlink>

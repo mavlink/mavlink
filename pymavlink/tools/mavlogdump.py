@@ -6,8 +6,13 @@ assumed to be in the format that qgroundcontrol uses, which consists
 of a series of MAVLink packets, each with a 64 bit timestamp
 header. The timestamp is in microseconds since 1970 (unix epoch)
 '''
+from __future__ import print_function
 
-import sys, time, os, struct, json, fnmatch
+import fnmatch
+import json
+import os
+import struct
+import time
 
 try:
     from pymavlink.mavextra import *
@@ -33,6 +38,7 @@ parser.add_argument("--dialect", default="ardupilotmega", help="MAVLink dialect"
 parser.add_argument("--zero-time-base", action='store_true', help="use Z time base for DF logs")
 parser.add_argument("--no-bad-data", action='store_true', help="Don't output corrupted messages")
 parser.add_argument("--show-source", action='store_true', help="Show source system ID and component ID")
+parser.add_argument("--show-seq", action='store_true', help="Show sequence numbers")
 parser.add_argument("--source-system", type=int, default=None, help="filter by source system ID")
 parser.add_argument("--source-component", type=int, default=None, help="filter by source component ID")
 parser.add_argument("--link", type=int, default=None, help="filter by comms link ID")
@@ -64,8 +70,9 @@ if nottypes is not None:
     nottypes = nottypes.split(',')
 
 ext = os.path.splitext(filename)[1]
-isbin = ext in ['.bin', '.BIN']
+isbin = ext in ['.bin', '.BIN', '.px4log']
 islog = ext in ['.log', '.LOG'] # NOTE: "islog" does not mean a tlog
+istlog = ext in ['.tlog', '.TLOG']
 
 if args.csv_sep == "tab":
     args.csv_sep = "\t"
@@ -80,7 +87,7 @@ def match_type(mtype, patterns):
 # Write out a header row as we're outputting in CSV format.
 fields = ['timestamp']
 offsets = {}
-if islog and args.format == 'csv': # we know our fields from the get-go
+if istlog and args.format == 'csv': # we know our fields from the get-go
     try:
         currentOffset = 1 # Store how many fields in we are for each message.
         for type in types:
@@ -182,7 +189,11 @@ while True:
 
         # Prepare the message as a single object with 'meta' and 'data' keys holding
         # the message's metadata and actual data respectively.
-        outMsg = {"meta": {"type": m.get_type(), "timestamp": timestamp}, "data": data}
+        meta = {"type": m.get_type(), "timestamp": timestamp}
+        if args.show_source:
+            meta["srcSystem"] = m.get_srcSystem()
+            meta["srcComponent"] = m.get_srcComponent()
+        outMsg = {"meta": meta, "data": data}
 
         # Now print out this object with stringified properly.
         print(json.dumps(outMsg))
@@ -218,6 +229,8 @@ while True:
                              int(timestamp*100.0)%100, m)
         if args.show_source:
             s += " srcSystem=%u srcComponent=%u" % (m.get_srcSystem(), m.get_srcComponent())
+        if args.show_seq:
+            s += " seq=%u" % m.get_seq()
         print(s)
 
     # Update our last timestamp value.

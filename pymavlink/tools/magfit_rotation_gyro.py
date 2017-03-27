@@ -3,8 +3,10 @@
 '''
 fit best estimate of magnetometer rotation to gyro data
 '''
+from __future__ import print_function
 
-import sys, time, os, math
+from builtins import range
+from builtins import object
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
@@ -17,7 +19,7 @@ args = parser.parse_args()
 
 from pymavlink import mavutil
 from pymavlink.rotmat import Vector3, Matrix3
-from math import radians, degrees
+from math import radians
 
 
 class Rotation(object):

@@ -3,8 +3,8 @@
 '''
 fit best estimate of magnetometer offsets
 '''
-
-import sys, time, os, math
+from __future__ import print_function
+from builtins import range
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
@@ -58,7 +58,6 @@ def radius_cmp(a, b, offsets):
     return 0
 
 def sphere_error(p, data):
-    from scipy import sqrt
     x,y,z,r = p
     if args.radius is not None:
         r = args.radius
@@ -71,7 +70,6 @@ def sphere_error(p, data):
     return ret
 
 def fit_data(data):
-    import numpy, scipy
     from scipy import optimize
 
     p0 = [0.0, 0.0, 0.0, 0.0]
@@ -153,8 +151,6 @@ def magfit(logfile):
 
 def plot_data(orig_data, data):
     '''plot data in 3D'''
-    import numpy as np
-    from mpl_toolkits.mplot3d import Axes3D
     import matplotlib.pyplot as plt
 
     for dd, c in [(orig_data, 'r'), (data, 'b')]:

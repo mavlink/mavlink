@@ -4,15 +4,17 @@
 example program to extract GPS data from a waypoint file, and create a GPX
 file, for loading into google earth
 '''
+from __future__ import print_function
+from builtins import range
 
-import sys, struct, time, os
+import time
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
 parser.add_argument("wpfiles", metavar="WP_FILE", nargs="+")
 args = parser.parse_args()
 
-from pymavlink import mavutil, mavwp
+from pymavlink import mavwp
 
 
 def wp_to_gpx(infilename, outfilename):

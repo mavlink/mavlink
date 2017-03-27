@@ -7,8 +7,11 @@ Released under GNU GPL version 3 or later
 
 Partly based on SDLog2Parser by Anton Babushkin
 '''
+from __future__ import print_function
+from builtins import range
+from builtins import object
 
-import struct, time, os
+import struct
 from . import mavutil
 
 FORMAT_TO_STRUCT = {
@@ -29,8 +32,8 @@ FORMAT_TO_STRUCT = {
     "L": ("i", 1.0e-7, float),
     "d": ("d", None, float),
     "M": ("b", None, int),
-    "q": ("q", None, long),
-    "Q": ("Q", None, long),
+    "q": ("q", None, long),  # Backward compat
+    "Q": ("Q", None, long),  # Backward compat
     }
 
 class DFFormat(object):
@@ -137,7 +140,7 @@ class DFMessage(object):
     def get_fieldnames(self):
         return self._fieldnames
 
-class DFReaderClock():
+class DFReaderClock(object):
     '''base class for all the different ways we count time in logs'''
 
     def __init__(self):
@@ -353,7 +356,6 @@ class DFReader(object):
         px4_msg_time = None
         px4_msg_gps = None
         gps_interp_msg_gps1 = None
-        gps_interp_msg_gps2 = None
         first_us_stamp = None
         first_ms_stamp = None
 
@@ -534,6 +536,7 @@ class DFReader_binary(DFReader):
         while (ord(hdr[0]) != self.HEAD1 or ord(hdr[1]) != self.HEAD2 or ord(hdr[2]) not in self.formats):
             if skip_type is None:
                 skip_type = (ord(hdr[0]), ord(hdr[1]), ord(hdr[2]))
+                skip_start = self.offset
             skip_bytes += 1
             self.offset += 1
             if self.data_len - self.offset < 3:
@@ -543,7 +546,7 @@ class DFReader_binary(DFReader):
         if skip_bytes != 0:
             if self.remaining < 528:
                 return None
-            print("Skipped %u bad bytes in log %s remaining=%u" % (skip_bytes, skip_type, self.remaining))
+            print("Skipped %u bad bytes in log at offset %u, type=%s" % (skip_bytes, skip_start, skip_type))
             self.remaining -= skip_bytes
 
         self.offset += 3

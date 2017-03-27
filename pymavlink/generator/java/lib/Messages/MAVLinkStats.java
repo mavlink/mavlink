@@ -70,7 +70,7 @@ public class MAVLinkStats /* implements Serializable */{
     }
 
     // stat structure for every system id
-    private class SystemStat {
+    public static class SystemStat {
         public int lostPacketCount; // the lost count for this source
         public int receivedPacketCount;
 
@@ -101,7 +101,7 @@ public class MAVLinkStats /* implements Serializable */{
     }
 
     // stat structure for every system id
-    private class ComponentStat {
+    public static class ComponentStat {
         public int lastPacketSeq;
         public int lostPacketCount; // the lost count for this source
         public int receivedPacketCount;

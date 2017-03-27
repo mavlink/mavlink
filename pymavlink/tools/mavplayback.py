@@ -6,9 +6,16 @@ realtime mavlink stream
 
 Useful for visualising flights
 '''
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 
-import sys, time, os, struct
-import Tkinter
+from builtins import object
+
+import os
+import sys
+import time
+import tkinter
 
 from pymavlink import fgFDM
 
@@ -38,12 +45,12 @@ def LoadImage(filename):
     '''return an image from the images/ directory'''
     app_dir = os.path.dirname(os.path.realpath(__file__))
     path = os.path.join(app_dir, 'images', filename)
-    return Tkinter.PhotoImage(file=path)
+    return tkinter.PhotoImage(file=path)
 
 
-class App():
+class App(object):
     def __init__(self, filename):
-        self.root = Tkinter.Tk()
+        self.root = tkinter.Tk()
 
         self.filesize = os.path.getsize(filename)
         self.filepos = 0.0
@@ -67,21 +74,21 @@ class App():
 
         self.paused = False
 
-        self.topframe = Tkinter.Frame(self.root)
-        self.topframe.pack(side=Tkinter.TOP)
+        self.topframe = tkinter.Frame(self.root)
+        self.topframe.pack(side=tkinter.TOP)
 
-        self.frame = Tkinter.Frame(self.root)
-        self.frame.pack(side=Tkinter.LEFT)
+        self.frame = tkinter.Frame(self.root)
+        self.frame.pack(side=tkinter.LEFT)
 
-        self.slider = Tkinter.Scale(self.topframe, from_=0, to=1.0, resolution=0.01,
-                                    orient=Tkinter.HORIZONTAL, command=self.slew)
-        self.slider.pack(side=Tkinter.LEFT)
+        self.slider = tkinter.Scale(self.topframe, from_=0, to=1.0, resolution=0.01,
+                                    orient=tkinter.HORIZONTAL, command=self.slew)
+        self.slider.pack(side=tkinter.LEFT)
 
-        self.clock = Tkinter.Label(self.topframe,text="")
-        self.clock.pack(side=Tkinter.RIGHT)
+        self.clock = tkinter.Label(self.topframe,text="")
+        self.clock.pack(side=tkinter.RIGHT)
 
-        self.playback = Tkinter.Spinbox(self.topframe, from_=0, to=20, increment=0.1, width=3)
-        self.playback.pack(side=Tkinter.BOTTOM)
+        self.playback = tkinter.Spinbox(self.topframe, from_=0, to=20, increment=0.1, width=3)
+        self.playback.pack(side=tkinter.BOTTOM)
         self.playback.delete(0, "end")
         self.playback.insert(0, 1)
 
@@ -91,8 +98,8 @@ class App():
         self.button('rewind', 'media-seek-backward.gif', self.rewind)
         self.button('forward', 'media-seek-forward.gif', self.forward)
         self.button('status', 'Status', self.status)
-        self.flightmode = Tkinter.Label(self.frame,text="")
-        self.flightmode.pack(side=Tkinter.RIGHT)
+        self.flightmode = tkinter.Label(self.frame,text="")
+        self.flightmode.pack(side=tkinter.RIGHT)
 
         self.next_message()
         self.root.mainloop()
@@ -101,11 +108,11 @@ class App():
         '''add a button'''
         try:
             img = LoadImage(filename)
-            b = Tkinter.Button(self.frame, image=img, command=command)
+            b = tkinter.Button(self.frame, image=img, command=command)
             b.image = img
         except Exception:
-            b = Tkinter.Button(self.frame, text=filename, command=command)
-        b.pack(side=Tkinter.LEFT)
+            b = tkinter.Button(self.frame, text=filename, command=command)
+        b.pack(side=tkinter.LEFT)
         self.buttons[name] = b
 
 

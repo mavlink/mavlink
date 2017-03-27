@@ -5,8 +5,12 @@
     Copyright Andrew Tridgell 2011
     Released under GNU GPL version 3 or later
     '''
+from __future__ import print_function
 
-import sys, textwrap, os, time
+from builtins import range
+from builtins import object
+
+import os
 from . import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
@@ -540,14 +544,14 @@ def generate_one(basename, xml):
     * Gets the message, formated as a string
     */
     public String get%s() {
-        String result = "";
+        StringBuffer buf = new StringBuffer();
         for (int i = 0; i < %d; i++) {
             if (%s[i] != 0)
-                result = result + (char) %s[i];
+                buf.append((char) %s[i]);
             else
                 break;
         }
-        return result;
+        return buf.toString();
 
     }
                         ''' % (f.name.title(),f.array_length,f.name,f.array_length,f.name,f.name.title(),f.array_length,f.name,f.name)

@@ -69,10 +69,11 @@ private:
 template<typename _T, typename _Tin>
 void mavlink::MsgMap::msg_swap_memcpy(_T &buf, _Tin data)
 {
-	if (std::is_floating_point<_Tin>::value)
+	if (std::is_floating_point<_Tin>::value) {
 		buf = *static_cast<const _T *>(static_cast<const void *>(&data));
-	else
+	} else {
 		buf = data;
+	}
 
 	// htoleXX functions may be empty macros,
 	// switch will be optimized-out
@@ -134,8 +135,9 @@ void mavlink::MsgMap::operator<< (const _T data)
 template<class _T, size_t _Size>
 void mavlink::MsgMap::operator<< (const std::array<_T, _Size> &data)
 {
-	for (auto &v : data)
+	for (auto &v : data) {
 		*this << v;
+	}
 }
 
 template<typename _T, typename _Tout>
@@ -179,10 +181,11 @@ void mavlink::MsgMap::cmsg_memcpy_bzero_swap_set_data(_T &buf, _Tout &data)
 		assert(false);
 	}
 
-	if (std::is_floating_point<_Tout>::value)
+	if (std::is_floating_point<_Tout>::value) {
 		data = *static_cast<_Tout *>(static_cast<void *>(&buf));
-	else
+	} else {
 		data = buf;
+	}
 }
 
 template<typename _T>
@@ -230,7 +233,8 @@ void mavlink::MsgMap::operator>> (_T &data)
 template<class _T, size_t _Size>
 void mavlink::MsgMap::operator>> (std::array<_T, _Size> &data)
 {
-	for (auto &v : data)
+	for (auto &v : data) {
 		*this >> v;
+	}
 }
 

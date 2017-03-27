@@ -3,9 +3,7 @@
 '''
 test mavlink messages
 '''
-
-import sys, struct, time, os
-from curses import ascii
+from __future__ import print_function
 
 from pymavlink import mavtest, mavutil
 

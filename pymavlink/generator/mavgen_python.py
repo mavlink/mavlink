@@ -5,9 +5,13 @@ parse a MAVLink protocol XML file and generate a python implementation
 Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
+from __future__ import print_function
 
-import sys, textwrap, os
-from . import mavparse, mavtemplate
+from builtins import range
+
+import os
+import textwrap
+from . import mavtemplate
 
 t = mavtemplate.MAVTemplate()
 
@@ -21,7 +25,9 @@ Generated from: ${FILELIST}
 
 Note: this file has been auto-generated. DO NOT EDIT
 '''
-
+from __future__ import print_function
+from builtins import range
+from builtins import object
 import struct, array, time, json, os, sys, platform
 
 from ...generator.mavcrc import x25crc
@@ -264,8 +270,8 @@ def generate_classes(outf, msgs):
     wrapper = textwrap.TextWrapper(initial_indent="        ", subsequent_indent="        ")
     for m in msgs:
         classname = "MAVLink_%s_message" % m.name.lower()
-        fieldname_str = ", ".join(map(lambda s: "'%s'" % s, m.fieldnames))
-        ordered_fieldname_str = ", ".join(map(lambda s: "'%s'" % s, m.ordered_fieldnames))
+        fieldname_str = ", ".join(["'%s'" % s for s in m.fieldnames])
+        ordered_fieldname_str = ", ".join(["'%s'" % s for s in m.ordered_fieldnames])
 
         outf.write("""
 class %s(MAVLink_message):
@@ -404,6 +410,7 @@ class MAVLinkSigning(object):
         self.sign_outgoing = False
         self.allow_unsigned_callback = None
         self.stream_timestamps = {}
+        self.sig_count = 0
         self.badsig_count = 0
         self.goodsig_count = 0
         self.unsigned_count = 0
@@ -673,6 +680,8 @@ class MAVLink(object):
                     raise MAVError('invalid MAVLink CRC in msgID %u 0x%04x should be 0x%04x' % (msgId, crc, crc2.crc))
 
                 sig_ok = False
+                if signature_len == MAVLINK_SIGNATURE_BLOCK_LEN:
+                    self.signing.sig_count += 1
                 if self.signing.secret_key is not None:
                     accept_signature = False
                     if signature_len == MAVLINK_SIGNATURE_BLOCK_LEN:

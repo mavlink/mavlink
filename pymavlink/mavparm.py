@@ -1,6 +1,8 @@
 '''
 module for loading/saving sets of mavlink parameters
 '''
+from __future__ import print_function
+
 
 import fnmatch, math, time
 
@@ -76,7 +78,7 @@ class MAVParmDict(dict):
                 continue
             if mav is not None:
                 if check:
-                    if a[0] not in self.keys():
+                    if a[0] not in list(self.keys()):
                         print("Unknown parameter %s" % a[0])
                         continue
                     old_value = self.__getitem__(a[0])
@@ -99,12 +101,15 @@ class MAVParmDict(dict):
             print("Loaded %u parameters from %s" % (count, filename))
         return True
 
+    def show_param_value(self, name, value):
+        print("%-16.16s %s" % (name, value))
+
     def show(self, wildcard='*'):
         '''show parameters'''
         k = sorted(self.keys())
         for p in k:
             if fnmatch.fnmatch(str(p).upper(), wildcard.upper()):
-                print("%-16.16s %f" % (str(p), self.get(p)))
+                self.show_param_value(str(p), "%f" % self.get(p))
 
     def diff(self, filename, wildcard='*'):
         '''show differences with another parameter file'''

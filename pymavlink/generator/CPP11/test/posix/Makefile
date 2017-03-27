@@ -3,6 +3,7 @@ CXX ?= g++
 CXXFLAGS ?= -std=c++11 -g -O0 -Wall -pthread
 GENDIR ?= /tmp/mavlink
 GTESTSRC ?= /usr/src/gtest/src/gtest-all.cc
+MSGDEFDIR ?= ../../../../../message_definitions/v1.0
 
 DIALECTS := $(notdir $(shell find $(GENDIR) -mindepth 1 -maxdepth 1 -type d))
 TARGETS := $(foreach d,$(DIALECTS),mavtest_$(d))
@@ -20,7 +21,8 @@ run_tests: $(TARGETS)
 		./$$f; \
 	done
 
-gen: $(wildcard ../../../../../message_definitions/v1.0/*.xml)
+gen: $(wildcard $(MSGDEFDIR)/*.xml)
+	mkdir -p $(GENDIR)
 	for d in $^; do	\
 		../../../../tools/mavgen.py -o $(GENDIR) --wire-protocol 2.0 --lang C $$d;	\
 		../../../../tools/mavgen.py -o $(GENDIR) --wire-protocol 2.0 --lang C++11 $$d;	\

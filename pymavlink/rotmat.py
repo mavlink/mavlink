@@ -22,10 +22,13 @@
 
 '''rotation matrix class
 '''
+from __future__ import print_function
+from builtins import range
+from builtins import object
 
 from math import sin, cos, sqrt, asin, atan2, pi, radians, acos, degrees
 
-class Vector3:
+class Vector3(object):
     '''a vector'''
     def __init__(self, x=None, y=None, z=None):
         if x != None and y != None and z != None:
@@ -124,7 +127,7 @@ class Vector3:
         self.y = v.y
         self.z = v.z
 
-class Matrix3:
+class Matrix3(object):
     '''a 3x3 matrix, intended as a rotation matrix'''
     def __init__(self, a=None, b=None, c=None):
         if a is not None and b is not None and c is not None:
@@ -325,7 +328,7 @@ class Matrix3:
     def close(self, m, tol=1e-7):
         return self.a.close(m.a) and self.b.close(m.b) and self.c.close(m.c)
 
-class Plane:
+class Plane(object):
     '''a plane in 3 space, defined by a point and a vector normal'''
     def __init__(self, point=None, normal=None):
         if point is None:
@@ -335,7 +338,7 @@ class Plane:
         self.point = point
         self.normal = normal
 
-class Line:
+class Line(object):
     '''a line in 3 space, defined by a point and a vector'''
     def __init__(self, point=None, vector=None):
         if point is None:
@@ -361,7 +364,6 @@ class Line:
 def test_euler():
     '''check that from_euler() and to_euler() are consistent'''
     m = Matrix3()
-    from math import radians, degrees
     for r in range(-179, 179, 3):
         for p in range(-89, 89, 3):
             for y in range(-179, 179, 3):

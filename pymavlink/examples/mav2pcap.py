@@ -14,6 +14,11 @@
 # dependency: Python construct library (python-construct on Debian/Ubuntu), "easy_install construct" elsewhere
 
 
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
+from builtins import open
 import sys
 import os
 
@@ -31,11 +36,10 @@ write_junk = True
 MAVLINK_MESSAGE_CRCS  = (50, 124, 137, 0, 237, 217, 104, 119, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0, 214, 159, 220, 168, 24, 23, 170, 144, 67, 115, 39, 246, 185, 104, 237, 244, 242, 212, 9, 254, 230, 28, 28, 132, 221, 232, 11, 153, 41, 39, 214, 223, 141, 33, 15, 3, 100, 24, 239, 238, 30, 240, 183, 130, 130, 0, 148, 21, 0, 243, 124, 0, 0, 0, 20, 0, 152, 143, 0, 0, 127, 106, 0, 0, 0, 0, 0, 0, 0, 231, 183, 63, 54, 0, 0, 0, 0, 0, 0, 0, 175, 102, 158, 208, 56, 93, 0, 0, 0, 0, 235, 93, 124, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 241, 15, 134, 219, 208, 188, 84, 22, 19, 21, 134, 0, 78, 68, 189, 127, 111, 21, 21, 144, 1, 234, 73, 181, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 204, 49, 170, 44, 83, 46, 0)
 
 
-import __builtin__
 import struct
 
 # Helper class for writing pcap files
-class pcap:
+class pcap(object):
     """
        Used under the terms of GNU GPL v3.
        Original author: Neale Pickett
@@ -44,7 +48,7 @@ class pcap:
     _MAGIC = 0xA1B2C3D4
     def __init__(self, stream, mode='rb', snaplen=65535, linktype=1):
         try:
-            self.stream = __builtin__.open(stream, mode)
+            self.stream = open(stream, mode)
         except TypeError:
             self.stream = stream
         try:

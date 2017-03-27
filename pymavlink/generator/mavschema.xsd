@@ -10,11 +10,6 @@
 
 <!-- definition of attributes -->
 <xs:attribute name="name"> <!-- enum,entry,message,field -->
-    <xs:simpleType>
-        <xs:restriction base="xs:string">
-            <xs:pattern value="^(?!break$|case$|class$|catch$|const$|continue$|debugger$|default$|delete$|do$|else$|export$|extends$|finally$|for$|function$|if$|import$|in$|instanceof$|let$|new$|return$|super$|switch$|this$|throw$|try$|typeof$|var$|void$|while$|with$|yield$|enum$|await$|implements$|package$|protected$|static$|interface$|private$|public$|abstract$|boolean$|byte$|char$|double$|final$|float$|goto$|int$|long$|native$|short$|synchronized$|transient$|volatile$).+"/>
-        </xs:restriction>
-    </xs:simpleType>
 </xs:attribute>
 <xs:attribute name="index" type="xs:unsignedByte"/> <!-- param -->
 <xs:attribute name="id" type="xs:unsignedShort"/> <!-- message -->
@@ -23,18 +18,18 @@
 <xs:attribute name="value"> <!-- entry -->
   <xs:simpleType>
     <xs:restriction base="xs:string">
-        <xs:pattern value="^\d{1,10}$"/> <!-- base 10 int -->
-        <xs:pattern value="^0[xX][0-9a-fA-F]{1,8}$"/> <!-- base 16 -->
-        <xs:pattern value="^0[bB][0-1]{1,32}$"/> <!-- base 1 -->
+        <xs:pattern value="\d{1,10}"/> <!-- base 10 int -->
+        <xs:pattern value="0[xX][0-9a-fA-F]{1,8}"/> <!-- base 16 -->
+        <xs:pattern value="0[bB][0-1]{1,32}"/> <!-- base 1 -->
     </xs:restriction>
   </xs:simpleType>
 </xs:attribute>
 <xs:attribute name="default">
   <xs:simpleType>
     <xs:restriction base="xs:string">
-        <xs:pattern value="^\d{1,10}$"/> <!-- base 10 int -->
-        <xs:pattern value="^0[xX][0-9a-fA-F]{1,8}$"/> <!-- base 16 -->
-        <xs:pattern value="^0[bB][0-1]{1,32}$"/> <!-- base 1 -->
+        <xs:pattern value="\d{1,10}"/> <!-- base 10 int -->
+        <xs:pattern value="0[xX][0-9a-fA-F]{1,8}"/> <!-- base 16 -->
+        <xs:pattern value="0[bB][0-1]{1,32}"/> <!-- base 1 -->
     </xs:restriction>
   </xs:simpleType>
 </xs:attribute>
@@ -105,10 +100,17 @@
 <xs:element name="message">
     <xs:complexType>
         <xs:sequence>
-            <xs:element ref="description" minOccurs="0"/>
-            <xs:element ref="field" maxOccurs="unbounded"/>
-            <xs:element ref="extensions" minOccurs="0" maxOccurs="1"/>
-            <xs:element ref="field" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:choice minOccurs="0" maxOccurs="2">
+                    <xs:sequence>
+                        <xs:element ref="description" minOccurs="0"/>
+                        <xs:element ref="field" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                    <xs:element ref="extensions" minOccurs="0" maxOccurs="1"/>
+
+            </xs:choice>
+                    <xs:sequence>
+                        <xs:element ref="field" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
         </xs:sequence>
         <xs:attribute ref="id" use="required"/>
         <xs:attribute ref="name" use="required"/>

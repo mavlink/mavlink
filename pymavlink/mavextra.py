@@ -5,8 +5,10 @@ useful extra functions for use by mavlink clients
 Copyright Andrew Tridgell 2011
 Released under GNU GPL version 3 or later
 '''
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import object
 
-import os, sys
 from math import *
 
 try:
@@ -57,7 +59,7 @@ def altitude2(SCALED_PRESSURE, ground_pressure=None, ground_temp=None):
 def mag_heading(RAW_IMU, ATTITUDE, declination=None, SENSOR_OFFSETS=None, ofs=None):
     '''calculate heading from raw magnetometer'''
     if declination is None:
-        import mavutil
+        from . import mavutil
         declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     mag_x = RAW_IMU.xmag
     mag_y = RAW_IMU.ymag
@@ -83,7 +85,7 @@ def mag_heading_motors(RAW_IMU, ATTITUDE, declination, SENSOR_OFFSETS, ofs, SERV
     ofs = get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs)
 
     if declination is None:
-        import mavutil
+        from . import mavutil
         declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     mag_x = RAW_IMU.xmag
     mag_y = RAW_IMU.ymag
@@ -121,7 +123,7 @@ def mag_field_df(MAG, ofs=None):
 
 def get_motor_offsets(SERVO_OUTPUT_RAW, ofs, motor_ofs):
     '''calculate magnetic field strength from raw magnetometer'''
-    import mavutil
+    from . import mavutil
     self = mavutil.mavfile_global
 
     m = SERVO_OUTPUT_RAW
@@ -182,7 +184,7 @@ derivative_data = {}
 def second_derivative_5(var, key):
     '''5 point 2nd derivative'''
     global derivative_data
-    import mavutil
+    from . import mavutil
     tnow = mavutil.mavfile_global.timestamp
 
     if not key in derivative_data:
@@ -201,7 +203,7 @@ def second_derivative_5(var, key):
 def second_derivative_9(var, key):
     '''9 point 2nd derivative'''
     global derivative_data
-    import mavutil
+    from . import mavutil
     tnow = mavutil.mavfile_global.timestamp
 
     if not key in derivative_data:
@@ -250,9 +252,8 @@ def delta(var, key, tusec=None):
     if tusec is not None:
         tnow = tusec * 1.0e-6
     else:
-        import mavutil
+        from . import mavutil
         tnow = mavutil.mavfile_global.timestamp
-    dv = 0
     ret = 0
     if key in last_delta:
         (last_v, last_t, last_ret) = last_delta[key]
@@ -271,7 +272,7 @@ def delta_angle(var, key, tusec=None):
     if tusec is not None:
         tnow = tusec * 1.0e-6
     else:
-        import mavutil
+        from . import mavutil
         tnow = mavutil.mavfile_global.timestamp
     dv = 0
     ret = 0
@@ -389,7 +390,7 @@ def expected_mag(RAW_IMU, ATTITUDE, inclination, declination):
 def mag_discrepancy(RAW_IMU, ATTITUDE, inclination, declination=None):
     '''give the magnitude of the discrepancy between observed and expected magnetic field'''
     if declination is None:
-        import mavutil
+        from . import mavutil
         declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     expected = expected_mag(RAW_IMU, ATTITUDE, inclination, declination)
     mag = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
@@ -399,7 +400,7 @@ def mag_discrepancy(RAW_IMU, ATTITUDE, inclination, declination=None):
 def mag_inclination(RAW_IMU, ATTITUDE, declination=None):
     '''give the magnitude of the discrepancy between observed and expected magnetic field'''
     if declination is None:
-        import mavutil
+        from . import mavutil
         declination = degrees(mavutil.mavfile_global.param('COMPASS_DEC', 0))
     r = rotation(ATTITUDE)
     mag1 = Vector3(RAW_IMU.xmag, RAW_IMU.ymag, RAW_IMU.zmag)
@@ -531,7 +532,7 @@ def wingloading(bank):
 
 def airspeed(VFR_HUD, ratio=None, used_ratio=None, offset=None):
     '''recompute airspeed with a different ARSPD_RATIO'''
-    import mavutil
+    from . import mavutil
     mav = mavutil.mavfile_global
     if ratio is None:
         ratio = 1.9936 # APM default
@@ -561,7 +562,7 @@ def EAS2TAS(ARSP,GPS,BARO,ground_temp=25):
 
 def airspeed_ratio(VFR_HUD):
     '''recompute airspeed with a different ARSPD_RATIO'''
-    import mavutil
+    from . import mavutil
     mav = mavutil.mavfile_global
     airspeed_pressure = (VFR_HUD.airspeed**2) / ratio
     airspeed = sqrt(airspeed_pressure * ratio)
@@ -569,7 +570,7 @@ def airspeed_ratio(VFR_HUD):
 
 def airspeed_voltage(VFR_HUD, ratio=None):
     '''back-calculate the voltage the airspeed sensor must have seen'''
-    import mavutil
+    from . import mavutil
     mav = mavutil.mavfile_global
     if ratio is None:
         ratio = 1.9936 # APM default
@@ -797,7 +798,7 @@ class DCM_State(object):
 
     def update(self, gyro, accel, mag, GPS):
         if self.gyro != gyro or self.accel != accel:
-            delta_angle = (gyro+self.omega_I) / self.rate
+            delta_angle = old_div((gyro+self.omega_I), self.rate)
             self.dcm.rotate(delta_angle)
             correction = self.last_delta_angle % delta_angle
             #print (delta_angle - self.last_delta_angle) * 58.0

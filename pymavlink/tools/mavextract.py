@@ -3,8 +3,10 @@
 '''
 extract one mode type from a log
 '''
+from __future__ import print_function
 
-import sys, time, os, struct
+import os
+import struct
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
@@ -24,7 +26,7 @@ def older_message(m, lastm):
     atts = {'time_boot_ms' : 1.0e-3,
             'time_unix_usec' : 1.0e-6,
             'time_usec' : 1.0e-6}
-    for a in atts.keys():
+    for a in list(atts.keys()):
         if hasattr(m, a):
             mul = atts[a]
             t1 = m.getattr(a) * mul

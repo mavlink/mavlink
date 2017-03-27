@@ -3,8 +3,10 @@
 '''
 extract mavlink parameter values
 '''
+from __future__ import print_function
 
-import sys, time, os
+
+import time
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)
@@ -45,7 +47,7 @@ for filename in args.logs:
     mavparms(filename)
 
 if (args.changesOnly is False):
-    keys = parms.keys()
+    keys = list(parms.keys())
     keys.sort()
     for p in keys:
         print("%-15s %.6f" % (p, parms[p]))

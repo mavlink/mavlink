@@ -1,8 +1,11 @@
+
 #!/usr/bin/env python
 # parse and construct FlightGear NET FDM packets
 # Andrew Tridgell, November 2011
 # released under GNU GPL version 2 or later
 
+from builtins import range
+from builtins import object
 import struct, math
 
 class fgFDMError(Exception):
@@ -60,42 +63,42 @@ class fgFDM(object):
         self.mapping.add('version')
 
         # position
-        self.mapping.add('longitude', units='radians')	# geodetic (radians)
-        self.mapping.add('latitude', units='radians')	# geodetic (radians)
-        self.mapping.add('altitude', units='meters')	# above sea level (meters)
-        self.mapping.add('agl', units='meters')		# above ground level (meters)
+        self.mapping.add('longitude', units='radians')      # geodetic (radians)
+        self.mapping.add('latitude', units='radians')       # geodetic (radians)
+        self.mapping.add('altitude', units='meters')        # above sea level (meters)
+        self.mapping.add('agl', units='meters')             # above ground level (meters)
 
         # attitude
-        self.mapping.add('phi', units='radians')	# roll (radians)
-        self.mapping.add('theta', units='radians')	# pitch (radians)
-        self.mapping.add('psi', units='radians')	# yaw or true heading (radians)
-        self.mapping.add('alpha', units='radians')      # angle of attack (radians)
-        self.mapping.add('beta', units='radians')       # side slip angle (radians)
+        self.mapping.add('phi', units='radians')            # roll (radians)
+        self.mapping.add('theta', units='radians')          # pitch (radians)
+        self.mapping.add('psi', units='radians')            # yaw or true heading (radians)
+        self.mapping.add('alpha', units='radians')          # angle of attack (radians)
+        self.mapping.add('beta', units='radians')           # side slip angle (radians)
 
         # Velocities
-        self.mapping.add('phidot', units='rps')		# roll rate (radians/sec)
-        self.mapping.add('thetadot', units='rps')	# pitch rate (radians/sec)
-        self.mapping.add('psidot', units='rps')		# yaw rate (radians/sec)
-        self.mapping.add('vcas', units='fps')		# calibrated airspeed
-        self.mapping.add('climb_rate', units='fps')	# feet per second
-        self.mapping.add('v_north', units='fps')        # north velocity in local/body frame, fps
-        self.mapping.add('v_east', units='fps')         # east velocity in local/body frame, fps
-        self.mapping.add('v_down', units='fps')         # down/vertical velocity in local/body frame, fps
-        self.mapping.add('v_wind_body_north', units='fps')   # north velocity in local/body frame
-        self.mapping.add('v_wind_body_east', units='fps')    # east velocity in local/body frame
-        self.mapping.add('v_wind_body_down', units='fps')    # down/vertical velocity in local/body
+        self.mapping.add('phidot', units='rps')             # roll rate (radians/sec)
+        self.mapping.add('thetadot', units='rps')           # pitch rate (radians/sec)
+        self.mapping.add('psidot', units='rps')             # yaw rate (radians/sec)
+        self.mapping.add('vcas', units='fps')               # calibrated airspeed
+        self.mapping.add('climb_rate', units='fps')         # feet per second
+        self.mapping.add('v_north', units='fps')            # north velocity in local/body frame, fps
+        self.mapping.add('v_east', units='fps')             # east velocity in local/body frame, fps
+        self.mapping.add('v_down', units='fps')             # down/vertical velocity in local/body frame, fps
+        self.mapping.add('v_wind_body_north', units='fps')  # north velocity in local/body frame
+        self.mapping.add('v_wind_body_east', units='fps')   # east velocity in local/body frame
+        self.mapping.add('v_wind_body_down', units='fps')   # down/vertical velocity in local/body
 
         # Accelerations
-        self.mapping.add('A_X_pilot', units='fpss')	# X accel in body frame ft/sec^2
-        self.mapping.add('A_Y_pilot', units='fpss')	# Y accel in body frame ft/sec^2
-        self.mapping.add('A_Z_pilot', units='fpss')	# Z accel in body frame ft/sec^2
+        self.mapping.add('A_X_pilot', units='fpss')         # X accel in body frame ft/sec^2
+        self.mapping.add('A_Y_pilot', units='fpss')         # Y accel in body frame ft/sec^2
+        self.mapping.add('A_Z_pilot', units='fpss')         # Z accel in body frame ft/sec^2
 
         # Stall
-        self.mapping.add('stall_warning')               # 0.0 - 1.0 indicating the amount of stall
-        self.mapping.add('slip_deg', units='degrees')	# slip ball deflection
+        self.mapping.add('stall_warning')                   # 0.0 - 1.0 indicating the amount of stall
+        self.mapping.add('slip_deg', units='degrees')       # slip ball deflection
 
         # Engine status
-        self.mapping.add('num_engines')	                    # Number of valid engines
+        self.mapping.add('num_engines')                     # Number of valid engines
         self.mapping.add('eng_state', self.FG_MAX_ENGINES)  # Engine state (off, cranking, running)
         self.mapping.add('rpm',       self.FG_MAX_ENGINES)  # Engine RPM rev/min
         self.mapping.add('fuel_flow', self.FG_MAX_ENGINES)  # Fuel flow gallons/hr
@@ -108,7 +111,7 @@ class fgFDM(object):
         self.mapping.add('oil_px',    self.FG_MAX_ENGINES)  # Oil pressure psi
             
         # Consumables
-        self.mapping.add('num_tanks')		            # Max number of fuel tanks
+        self.mapping.add('num_tanks')                       # Max number of fuel tanks
         self.mapping.add('fuel_quantity', self.FG_MAX_TANKS)
 
         # Gear status

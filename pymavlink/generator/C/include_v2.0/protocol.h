@@ -1,5 +1,4 @@
-#ifndef  _MAVLINK_PROTOCOL_H_
-#define  _MAVLINK_PROTOCOL_H_
+#pragma once
 
 #include "string.h"
 #include "mavlink_types.h"
@@ -332,4 +331,4 @@ _MAV_RETURN_ARRAY(int64_t,  i64)
 _MAV_RETURN_ARRAY(float,    f)
 _MAV_RETURN_ARRAY(double,   d)
 
-#endif // _MAVLINK_PROTOCOL_H_
+

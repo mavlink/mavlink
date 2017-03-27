@@ -3,9 +3,7 @@
 compare two MAVLink parameter files
 '''
 
-import sys, os
-
-from pymavlink import mavutil, mavparm
+from pymavlink import mavparm
 
 from argparse import ArgumentParser
 parser = ArgumentParser(description=__doc__)

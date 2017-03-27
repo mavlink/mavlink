@@ -3,8 +3,7 @@
 '''
 search a set of log files for a condition
 '''
-
-import sys, time, os
+from __future__ import print_function
 
 from pymavlink import mavutil
 
