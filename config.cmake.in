@@ -1,0 +1,29 @@
+if (@PKG_NAME@_CONFIG_INCLUDED)
+  return()
+endif()
+set(@PKG_NAME@_CONFIG_INCLUDED TRUE)
+
+get_filename_component(include "${@PKG_NAME@_DIR}/../../../include" ABSOLUTE)
+set(@PKG_NAME@_INCLUDE_DIRS ${include})
+set(@PKG_NAME@_DIALECTS @PKG_MAVLINK_DIALECTS@)
+set(@PKG2_NAME@_DIALECTS @PKG2_MAVLINK_DIALECTS@)
+
+foreach(lib @PKG_LIBRARIES@)
+  set(onelib "${lib}-NOTFOUND")
+  find_library(onelib ${lib}
+      PATHS "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@"
+    NO_DEFAULT_PATH
+    )
+  if(NOT onelib)
+    message(FATAL_ERROR "Library '${lib}' in package @PKG_NAME@ is not installed properly")
+  endif()
+  list(APPEND @PKG_NAME@_LIBRARIES ${onelib})
+endforeach()
+
+foreach(dep @PKG_DEPENDS@)
+  if(NOT ${dep}_FOUND)
+    find_package(${dep})
+  endif()
+  list(APPEND @PKG_NAME@_INCLUDE_DIRS ${${dep}_INCLUDE_DIRS})
+  list(APPEND @PKG_NAME@_LIBRARIES ${${dep}_LIBRARIES})
+endforeach()
