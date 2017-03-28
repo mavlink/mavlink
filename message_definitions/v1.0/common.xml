@@ -1466,29 +1466,9 @@
                   <param index="6">Unscaled target longitude of center of circle in CIRCLE_MODE</param>
               </entry>
 
-      <entry value="4100" name="MAV_CMD_REQUEST_MIXER_PARAM_READ">
-        <description>Request to send mixer data in a group and a given mixer, submixer, type and parameter index.
-        </description>
-        <param index="1">Index</param>
-        <param index="2">Mixer Group</param>
-        <param index="3">Mixer Index</param>
-        <param index="4">Submixer Index</param>
-        <param index="5">Parameter Index</param>
-      </entry>
       <entry value="4101" name="MAV_CMD_REQUEST_MIXER_PARAM_LIST">
         <description>Request to send a list of all mixer data.</description>
         <param index="1">Mixer Group</param>
-      </entry>
-      <entry value="4102" name="MAV_CMD_SET_MIXER_PARAM">
-        <description>Request to set mixer parameter by index or by mixer and parameter address
-        </description>
-        <param index="1">Index</param>
-        <param index="2">Mixer Group</param>
-        <param index="3">Mixer Index</param>
-        <param index="4">Submixer Index</param>
-        <param index="5">Parameter Index</param>
-        <param index="6">Parameter array index</param>
-        <param index="7">Parameter</param>
       </entry>
       <entry value="4103" name="MAV_CMD_SAVE_MIXER_PARAMS">
         <description>Save mixer parameters</description>
@@ -2409,33 +2389,6 @@
                   <description>Static fixed, typically used for base stations</description>
               </entry>
           </enum>
-         <enum name="MIXER_DATA_TYPE">
-           <description>Mixer data type</description>
-           <entry value="0" name="MIXER_DATA_TYPE_MIXER_COUNT">
-             <description>Mixer count at a given group</description>
-           </entry>
-           <entry value="1" name="MIXER_DATA_TYPE_SUBMIXER_COUNT">
-             <description>Submixer count at a given group and mixer</description>
-           </entry>
-           <entry value="2" name="MIXER_DATA_TYPE_MIXTYPE">
-             <description>Mixer type at a given group, mixer and submixer</description>
-           </entry>
-           <entry value="3" name="MIXER_DATA_TYPE_PARAMETER">
-             <description>Parameter at a given group, mixer, submixer and parameter index</description>
-           </entry>
-           <entry value="4" name="MIXER_DATA_TYPE_CONNECTION">
-             <description>Parameter at a given group, mixer, submixer, connection type and connection index</description>
-           </entry>
-           <entry value="5" name="MIXER_DATA_TYPE_PARAMETER_COUNT">
-             <description>Parameter count at a given group, mixer and submixer</description>
-           </entry>
-           <entry value="6" name="MIXER_DATA_TYPE_CONNECTION_COUNT">
-             <description>Parameter at a given group, mixer, submixer and connection type</description>
-           </entry>
-           <entry value="7" name="MIXER_DATA_TYPE_GROUP_TYPE">
-             <description>The mixer type for a particular mixer group</description>
-           </entry>
-         </enum>
    <enum name="MIXER_GROUP">
       <description>Identifies a set of mixers to access</description>
       <entry value="0" name="MIXER_GROUP_NONE">
@@ -3758,8 +3711,8 @@
             <field name="wp_num" type="uint8_t">current waypoint number</field>
             <field name="wp_distance" type="uint16_t">distance to target (meters)</field>
         </message>
-    <message id="235" name="MIXER_PARAMETER">
-      <description>Mixer paraemter emitted after a read or set request</description>
+    <message id="235" name="MIXER_PARAM_VALUE">
+      <description>Mixer parameter values emitted after a read or set request</description>
       <field type="uint16_t" name="count">Total number of onboard parameters</field>
       <field type="uint16_t" name="index">Index of this onboard parameter</field>      
       <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers</field>
@@ -3769,10 +3722,39 @@
       <field type="uint16_t" name="parameter_index">Index of the parameter in a mixer or something else</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
       <field type="uint8_t" name="param_array_size">Size of the array for this parameter</field>
+      <field type="uint8_t" name="param_array_index">Array index to support oversized arrays</field>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="float[8]" name="param_values">Array of parameter values</field>
+      <field type="float[6]" name="param_values">Array of parameter values</field>
+    </message>
+    <message id="236" name="MIXER_PARAM_SET">
+      <description>Mixer paraemter values to set</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="index">Index of this onboard parameter</field>      
+      <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers</field>
+      <field type="uint16_t" name="mixer_index">Index of the mixer in the group</field>
+      <field type="uint8_t" name="mixer_sub_index">Index of the sub mixer in the mixer</field>
+      <field type="uint8_t" name="mixer_type">Implementation specific identifier for mixer type</field>      
+      <field type="uint16_t" name="parameter_index">Index of the parameter in a mixer or something else</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+      <field type="uint8_t" name="param_array_write_count">Count of array values to write</field>
+      <field type="uint8_t" name="param_array_index">Array index</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float[6]" name="param_values">Array of parameter values</field>
     </message>    
-
+    <message id="237" name="MIXER_PARAM_REQUEST_READ">
+      <description>Mixer paraemter values to set</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="index">Index of this onboard parameter</field>      
+      <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers</field>
+      <field type="uint16_t" name="mixer_index">Index of the mixer in the group</field>
+      <field type="uint8_t" name="mixer_sub_index">Index of the sub mixer in the mixer</field>
+      <field type="uint16_t" name="parameter_index">Index of the parameter in a mixer or something else</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+      <field type="uint8_t" name="param_array_index">Array index</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+    </message>    
         <message id="241" name="VIBRATION">
             <description>Vibration levels and accelerometer clipping</description>
             <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
