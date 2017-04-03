@@ -2401,6 +2401,15 @@
         <description>Mixers on a failsafe device</description>
       </entry>
     </enum>    
+   <enum name="MIXER_PARAM_FLAGS">
+      <description>Flags for different parameter qualities and states</description>
+      <entry value="1" name="MIXER_PARAM_READ_ONLY">
+        <description>Parameter is read only</description>
+      </entry>
+    </enum>    
+    
+    
+    
      </enums>
      <messages>
           <message id="0" name="HEARTBEAT">
@@ -3713,6 +3722,7 @@
         </message>
     <message id="235" name="MIXER_PARAM_VALUE">
       <description>Mixer parameter values emitted after a read or set request</description>
+      <field type="uint8_t" name="flags" enum="MIXER_PARAM_FLAGS">Flags for the parameter</field>
       <field type="int16_t" name="count">Total number of onboard parameters</field>
       <field type="uint16_t" name="index">Index of this onboard parameter</field>      
       <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers</field>
