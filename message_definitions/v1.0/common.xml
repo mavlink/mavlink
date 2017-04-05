@@ -1137,11 +1137,11 @@
       </entry>
       <entry name="MAV_CMD_DO_MOTOR_TEST" value="209">
         <description>Mission command to perform motor test</description>
-        <param index="1">motor sequence number (a number from 1 to max number of motors on the vehicle)</param>
+        <param index="1">motor number (a number from 1 to max number of motors on the vehicle)</param>
         <param index="2">throttle type (0=throttle percentage, 1=PWM, 2=pilot throttle channel pass-through. See MOTOR_TEST_THROTTLE_TYPE enum)</param>
         <param index="3">throttle</param>
         <param index="4">timeout (in seconds)</param>
-        <param index="5">Empty</param>
+        <param index="5">motor test type (See MOTOR_TEST_TYPE enum)</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
@@ -2245,6 +2245,18 @@
       </entry>
     </enum>
     <!-- motor test type enum -->
+    <enum name="MOTOR_TEST_TYPE">
+      <entry name="MOTOR_TEST_TYPE_DEFAULT" value="0">
+        <description>default autopilot motor test method</description>
+      </entry>
+      <entry name="MOTOR_TEST_TYPE_SEQUENCE" value="1">
+        <description>motor numbers are specified as their index in a predefined vehicle-specific sequence</description>
+      </entry>
+      <entry name="MOTOR_TEST_TYPE_BOARD" value="2">
+        <description>motor numbers are specified as the output as labeled on the board</description>
+      </entry>
+    </enum>
+    <!-- motor test throttle type enum -->
     <enum name="MOTOR_TEST_THROTTLE_TYPE">
       <entry name="MOTOR_TEST_THROTTLE_PERCENT" value="0">
         <description>throttle as a percentage from 0 ~ 100</description>
