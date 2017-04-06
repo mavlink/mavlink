@@ -2764,12 +2764,14 @@
     <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
       <description>As local waypoints exist, the global MISSION reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
       <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
       <field type="int32_t" name="latitude">Latitude (WGS84), in degrees * 1E7</field>
       <field type="int32_t" name="longitude">Longitude (WGS84, in degrees * 1E7</field>
       <field type="int32_t" name="altitude">Altitude (AMSL), in meters * 1000 (positive for up)</field>
     </message>
     <message id="49" name="GPS_GLOBAL_ORIGIN">
       <description>Once the MAV sets a new GPS-Local correspondence, this message announces the origin (0,0,0) position</description>
+      <field type="uint32_t" name="time_boot_ms">Timestamp in milliseconds since system boot</field>
       <field type="int32_t" name="latitude">Latitude (WGS84), in degrees * 1E7</field>
       <field type="int32_t" name="longitude">Longitude (WGS84), in degrees * 1E7</field>
       <field type="int32_t" name="altitude">Altitude (AMSL), in meters * 1000 (positive for up)</field>
