@@ -2678,7 +2678,7 @@
       <field type="int16_t" name="start_index">Start index, 0 by default</field>
       <field type="int16_t" name="end_index">End index, -1 by default (-1: send list to end). Else a valid index of the list</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="38" name="MISSION_WRITE_PARTIAL_LIST">
       <description>This message is sent to the MAV to write a partial list. If start index == end index, only one item will be transmitted / updated. If the start index is NOT 0 and above the current list size, this request should be REJECTED!</description>
@@ -2687,7 +2687,7 @@
       <field type="int16_t" name="start_index">Start index, 0 by default and smaller / equal to the largest index of the current onboard list.</field>
       <field type="int16_t" name="end_index">End index, equal or greater than start index.</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="39" name="MISSION_ITEM">
       <description>Message encoding a mission item. This message is emitted to announce
@@ -2707,7 +2707,7 @@
       <field type="float" name="y">PARAM6 / y position: global: longitude</field>
       <field type="float" name="z">PARAM7 / z position: global: altitude (relative or absolute, depending on frame.</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="40" name="MISSION_REQUEST">
       <description>Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM message. http://qgroundcontrol.org/mavlink/waypoint_protocol</description>
@@ -2715,7 +2715,7 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="41" name="MISSION_SET_CURRENT">
       <description>Set the mission item with sequence number seq as current item. This means that the MAV will continue to this mission item on the shortest path (not following the mission items in-between).</description>
@@ -2732,7 +2732,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="44" name="MISSION_COUNT">
       <description>This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of MISSIONs.</description>
@@ -2740,14 +2740,14 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="count">Number of mission items in the sequence</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="45" name="MISSION_CLEAR_ALL">
       <description>Delete all mission items at once.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="46" name="MISSION_ITEM_REACHED">
       <description>A certain mission item has been reached. The system will either hold this position (or circle on the orbit) or (if the autocontinue on the WP was set) continue to the next MISSION.</description>
@@ -2759,7 +2759,7 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="type" enum="MAV_MISSION_RESULT">See MAV_MISSION_RESULT enum</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
       <description>As local waypoints exist, the global MISSION reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
@@ -2792,7 +2792,7 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="54" name="SAFETY_SET_ALLOWED_AREA">
       <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/MISSIONs to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
@@ -2942,7 +2942,7 @@
       <field type="int32_t" name="y">PARAM6 / y position: local: x position in meters * 1e4, global: longitude in degrees *10^7</field>
       <field type="float" name="z">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame.</field>
       <extensions/>
-      <field type="uint8_t" name="mission_type">Mission type, see MAV_MISSION_TYPE</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="74" name="VFR_HUD">
       <description>Metrics typically displayed on a HUD for fixed wing aircraft</description>
@@ -3132,7 +3132,7 @@
       <field name="aux2" type="float">Aux 2, -1 .. 1</field>
       <field name="aux3" type="float">Aux 3, -1 .. 1</field>
       <field name="aux4" type="float">Aux 4, -1 .. 1</field>
-      <field name="mode" type="uint8_t">System mode (MAV_MODE)</field>
+      <field name="mode" type="uint8_t" enum="MAV_MODE">System mode (MAV_MODE)</field>
       <field name="nav_mode" type="uint8_t">Navigation mode (MAV_NAV_MODE)</field>
     </message>
     <message id="92" name="HIL_RC_INPUTS_RAW">
@@ -3156,7 +3156,7 @@
       <description>Sent from autopilot to simulation. Hardware in the loop control outputs (replacement for HIL_CONTROLS)</description>
       <field name="time_usec" type="uint64_t">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
       <field name="controls" type="float[16]">Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.</field>
-      <field name="mode" type="uint8_t">System mode (MAV_MODE), includes arming state.</field>
+      <field name="mode" type="uint8_t" enum="MAV_MODE">System mode (MAV_MODE), includes arming state.</field>
       <field name="flags" type="uint64_t">Flags as bitfield, reserved for future use.</field>
     </message>
     <message id="100" name="OPTICAL_FLOW">
