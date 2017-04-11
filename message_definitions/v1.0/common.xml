@@ -2430,16 +2430,16 @@
       <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
       <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
       <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. defined in MAV_AUTOPILOT ENUM</field>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags.</field>
       <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag, see MAV_STATE ENUM</field>
       <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
     </message>
     <message id="1" name="SYS_STATUS">
       <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows wether the system is currently active or not and if an emergency occured. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occured it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
-      <field type="uint32_t" name="onboard_control_sensors_present" enum="MAV_SYS_STATUS_SENSOR" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
-      <field type="uint32_t" name="onboard_control_sensors_enabled" enum="MAV_SYS_STATUS_SENSOR" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
-      <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are operational or have an error:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
+      <field type="uint32_t" name="onboard_control_sensors_present" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
+      <field type="uint32_t" name="onboard_control_sensors_enabled" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
+      <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are operational or have an error:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
       <field type="uint16_t" name="load">Maximum usage in percent of the mainloop time, (0%: 0, 100%: 1000) should be always below 1000</field>
       <field type="uint16_t" name="voltage_battery">Battery voltage, in millivolts (1 = 1 millivolt)</field>
       <field type="int16_t" name="current_battery">Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current</field>
@@ -3441,12 +3441,12 @@
       <description>Power supply status</description>
       <field type="uint16_t" name="Vcc">5V rail voltage in millivolts</field>
       <field type="uint16_t" name="Vservo">servo rail voltage in millivolts</field>
-      <field type="uint16_t" name="flags" enum="MAV_POWER_STATUS">power supply status flags (see MAV_POWER_STATUS enum)</field>
+      <field type="uint16_t" name="flags" enum="MAV_POWER_STATUS" display="bitmask">power supply status flags (see MAV_POWER_STATUS enum)</field>
     </message>
     <message name="SERIAL_CONTROL" id="126">
       <description>Control a serial port. This can be used for raw access to an onboard serial peripheral such as a GPS or telemetry radio. It is designed to make it possible to update the devices firmware via MAVLink messages or change the devices settings. A message with zero bytes can be used to change just the baudrate.</description>
       <field type="uint8_t" name="device" enum="SERIAL_CONTROL_DEV">See SERIAL_CONTROL_DEV enum</field>
-      <field type="uint8_t" name="flags" enum="SERIAL_CONTROL_FLAG">See SERIAL_CONTROL_FLAG enum</field>
+      <field type="uint8_t" name="flags" enum="SERIAL_CONTROL_FLAG" display="bitmask">See SERIAL_CONTROL_FLAG enum</field>
       <field type="uint16_t" name="timeout">Timeout for reply data in milliseconds</field>
       <field type="uint32_t" name="baudrate">Baudrate of transfer. Zero means no change.</field>
       <field type="uint8_t" name="count">how many bytes in this transfer</field>
@@ -3652,7 +3652,7 @@
     </message>
     <message id="148" name="AUTOPILOT_VERSION">
       <description>Version and capability of autopilot software</description>
-      <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY">bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)</field>
+      <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY" display="bitmask">bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)</field>
       <field type="uint32_t" name="flight_sw_version">Firmware version number</field>
       <field type="uint32_t" name="middleware_sw_version">Middleware version number</field>
       <field type="uint32_t" name="os_sw_version">Operating system version number</field>
@@ -3679,7 +3679,7 @@
     <message id="230" name="ESTIMATOR_STATUS">
       <description>Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovaton test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovaton test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.</description>
       <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
-      <field name="flags" type="uint16_t" enum="ESTIMATOR_STATUS_FLAGS">Integer bitmask indicating which EKF outputs are valid. See definition for ESTIMATOR_STATUS_FLAGS.</field>
+      <field name="flags" type="uint16_t" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Integer bitmask indicating which EKF outputs are valid. See definition for ESTIMATOR_STATUS_FLAGS.</field>
       <field name="vel_ratio" type="float">Velocity innovation test ratio</field>
       <field name="pos_horiz_ratio" type="float">Horizontal position innovation test ratio</field>
       <field name="pos_vert_ratio" type="float">Vertical position innovation test ratio</field>
@@ -3704,7 +3704,7 @@
       <description>GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the sytem.</description>
       <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
       <field type="uint8_t" name="gps_id">ID of the GPS for multiple GPS inputs</field>
-      <field type="uint16_t" name="ignore_flags" enum="GPS_INPUT_IGNORE_FLAGS">Flags indicating which fields to ignore (see GPS_INPUT_IGNORE_FLAGS enum).  All other fields must be provided.</field>
+      <field type="uint16_t" name="ignore_flags" enum="GPS_INPUT_IGNORE_FLAGS" display="bitmask">Flags indicating which fields to ignore (see GPS_INPUT_IGNORE_FLAGS enum).  All other fields must be provided.</field>
       <field type="uint32_t" name="time_week_ms">GPS time (milliseconds from start of GPS week)</field>
       <field type="uint16_t" name="time_week">GPS week number</field>
       <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK</field>
@@ -3729,7 +3729,7 @@
     </message>
     <message id="234" name="HIGH_LATENCY">
       <description>Message appropriate for high latency connections like Iridium</description>
-      <field name="base_mode" type="uint8_t" enum="MAV_MODE_FLAG">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
+      <field name="base_mode" type="uint8_t" enum="MAV_MODE_FLAG" display="bitmask">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
       <field name="custom_mode" type="uint32_t">A bitfield for use for autopilot-specific flags.</field>
       <field name="landed_state" type="uint8_t" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
       <field name="roll" type="int16_t">roll (centidegrees)</field>
@@ -3814,7 +3814,7 @@
       <field type="char[9]" name="callsign">The callsign, 8+null</field>
       <field type="uint8_t" name="emitter_type" enum="ADSB_EMITTER_TYPE">Type from ADSB_EMITTER_TYPE enum</field>
       <field type="uint8_t" name="tslc">Time since last communication in seconds</field>
-      <field type="uint16_t" name="flags" enum="ADSB_FLAGS">Flags to indicate various statuses including valid data fields</field>
+      <field type="uint16_t" name="flags" enum="ADSB_FLAGS" display="bitmask">Flags to indicate various statuses including valid data fields</field>
       <field type="uint16_t" name="squawk">Squawk code</field>
     </message>
     <message id="247" name="COLLISION">
