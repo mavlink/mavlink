@@ -1,0 +1,27 @@
+#!/usr/bin/python
+""" Remove 'ERR' packets which droneshare seems to choke on with 'Invalid location data was found in that log, ignoring' error """
+from pymavlink import mavlinkv10 as mavlink
+from pymavlink import mavutil, mavextra, mavparm
+from pymavlink.dialects.v10 import pixhawk
+
+import sys, struct, time, os, array, tempfile
+
+from argparse import ArgumentParser
+parser = ArgumentParser("log_processor infile outfile [options]")
+parser.add_argument("infile", help="file to cleanup")
+parser.add_argument("outfile", help="cleaned file")
+parser.add_argument("--remove", default="ERR", help="What types of packets to remove default ERR, comma seperated for multiple")
+
+args = parser.parse_args()
+
+ilog = mavutil.mavlink_connection(args.infile)
+olog = open(args.outfile,"w")
+m = ilog.recv_msg()
+
+unwanted = args.remove.split(",")
+
+while m != None:
+    if m.get_type() not in unwanted:
+        olog.write(m.get_msgbuf())
+    m = ilog.recv_msg()
+olog.close()
