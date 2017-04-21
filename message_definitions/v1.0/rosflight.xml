@@ -50,6 +50,16 @@
                 <description>Field value4 should be ignored</description>
             </entry>
         </enum>
+        <enum name="ROSFLIGHT_FC_STATUS">
+          <entry value="0x01" name="ARMED"/>
+          <entry value="0x02" name="IN_FAILSAFE"/>
+          <entry value="0x04" name="RC_OVERRIDE"/>
+          <entry value="0x08" name="OFFBOARD_CONTROL_ACTIVE"/>
+        </enum>
+        <enum name="ROSFLIGHT_ERROR_CODE">
+          <entry value="0" name="ROSFLIGHT_ERROR_CODE_NONE"/>
+          <entry value="1" name="ROSFLIGHT_ERROR_CODE_HOT_RESTART"/>
+        </enum>
     </enums>
     <messages>
         <message id="180" name="OFFBOARD_CONTROL">
@@ -121,5 +131,10 @@
          <field type="uint64_t" name="stamp"/>
          <field type="float[8]" name="values"/>
        </message>
+       <message id="191" name="ROSFLIGHT_STATUS">
+        <field type="uint8_t" name="status" enum="ROSFLIGHT_FC_STATUS"/>
+        <field type="uint8_t" name="error_code" enum="ROSFLIGHT_ERROR_CODE"/>
+        <field type="uint16_t" name="i2c_errors"/>
+        <field type="uint32_t" name="loop_time_us"/>
     </messages>
 </mavlink>
