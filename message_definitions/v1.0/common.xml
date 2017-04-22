@@ -1465,6 +1465,14 @@
         <param index="5">Unscaled target latitude of center of circle in CIRCLE_MODE</param>
         <param index="6">Unscaled target longitude of center of circle in CIRCLE_MODE</param>
       </entry>
+      <entry value="4101" name="MAV_CMD_REQUEST_MIXER_PARAM_LIST">
+        <description>Request to send a list of all mixer data.</description>
+        <param index="1">Mixer Group</param>
+      </entry>
+      <entry value="4102" name="MAV_CMD_SAVE_MIXER_PARAMS">
+        <description>Save mixer parameters</description>
+        <param index="1">Mixer Group</param>
+      </entry>
       <entry value="5000" name="MAV_CMD_NAV_FENCE_RETURN_POINT">
         <description>Fence return point. There can only be one fence return point.
         </description>
@@ -2432,6 +2440,33 @@
       </entry>
       <entry value="7" name="GPS_FIX_TYPE_STATIC">
         <description>Static fixed, typically used for base stations</description>
+      </entry>
+    </enum>
+    <enum name="MIXER_GROUP">
+      <description>Identifies a set of mixers to access</description>
+      <entry value="0" name="MIXER_GROUP_NONE">
+        <description>No specific group selected</description>
+      </entry>
+      <entry value="1" name="MIXER_GROUP_LOCAL">
+        <description>Mixers on the local processor</description>
+      </entry>
+      <entry value="2" name="MIXER_GROUP_FAILSAFE">
+        <description>Mixers on a failsafe device</description>
+      </entry>
+    </enum>
+    <enum name="MIXER_PARAM_FLAGS">
+      <description>Flags for different parameter qualities and states</description>
+      <entry value="1" name="MIXER_PARAM_FLAG_READ_ONLY">
+        <description>Parameter is read only</description>
+      </entry>
+      <entry value="2" name="MIXER_PARAM_FLAG_MIX_CONN">
+        <description>Parameter is describing a mixer connection to a group</description>
+      </entry>
+      <entry value="4" name="MIXER_PARAM_FLAG_TYPE">
+        <description>Parameter is describing a mixer type</description>
+      </entry>
+      <entry value="8" name="MIXER_PARAM_FLAG_CONN_GROUP">
+        <description>Parameter is describing a connection group</description>
       </entry>
     </enum>
   </enums>
@@ -3763,6 +3798,47 @@
       <field type="uint8_t" name="failsafe">failsafe (each bit represents a failsafe where 0=ok, 1=failsafe active (bit0:RC, bit1:batt, bit2:GPS, bit3:GCS, bit4:fence)</field>
       <field type="uint8_t" name="wp_num">current waypoint number</field>
       <field type="uint16_t" name="wp_distance" units="m">distance to target (meters)</field>
+    </message>
+    <message id="235" name="MIXER_PARAM_VALUE">
+      <description>Mixer parameter values emitted after a read or set request</description>
+      <field type="uint8_t" name="flags" enum="MIXER_PARAM_FLAGS">Flags for the parameter</field>
+      <field type="int16_t" name="count">Total number of onboard parameters</field>
+      <field type="uint16_t" name="index">Index of this onboard parameter</field>
+      <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers</field>
+      <field type="uint16_t" name="mixer_index">Index of the mixer in the group</field>
+      <field type="uint8_t" name="mixer_sub_index">Index of the sub mixer in the mixer</field>
+      <field type="uint8_t" name="mixer_type">Implementation specific identifier for mixer type</field>
+      <field type="uint16_t" name="parameter_index">Index of the parameter in a mixer or something else</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+      <field type="uint8_t" name="param_array_size">Size of the array for this parameter</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float[6]" name="param_values">Array of parameter values</field>
+    </message>
+    <message id="236" name="MIXER_PARAM_SET">
+      <description>Mixer paraemter values to set</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="index">Index of this onboard parameter</field>
+      <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers</field>
+      <field type="uint16_t" name="mixer_index">Index of the mixer in the group</field>
+      <field type="uint8_t" name="mixer_sub_index">Index of the sub mixer in the mixer</field>
+      <field type="uint8_t" name="mixer_type">Implementation specific identifier for mixer type</field>
+      <field type="uint16_t" name="parameter_index">Index of the parameter in a mixer or something else</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float[6]" name="param_values">Array of parameter values</field>
+    </message>
+    <message id="237" name="MIXER_PARAM_REQUEST_READ">
+      <description>Mixer paraemter values to set</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="index">Index of this onboard parameter</field>
+      <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers</field>
+      <field type="uint16_t" name="mixer_index">Index of the mixer in the group</field>
+      <field type="uint8_t" name="mixer_sub_index">Index of the sub mixer in the mixer</field>
+      <field type="uint16_t" name="parameter_index">Index of the parameter in a mixer or something else</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
     </message>
     <message id="241" name="VIBRATION">
       <description>Vibration levels and accelerometer clipping</description>
