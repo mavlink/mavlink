@@ -2459,6 +2459,9 @@
       <entry value="1" name="MIXER_PARAM_FLAG_READ_ONLY">
         <description>Parameter is read only</description>
       </entry>
+      <entry value="64" name="MIXER_PARAM_FLAG_ERROR">
+        <description>Value is in error.  Error code can be returned in value[0]}</description>
+      </entry>
     </enum>
     <enum name="MIXER_PARAM_TYPE">
       <description>Flags for different parameter data types</description>
@@ -3817,7 +3820,7 @@
     <message id="235" name="MIXER_PARAM_VALUE">
       <description>Mixer parameter values emitted after a read or set request</description>
       <field type="uint8_t" name="mixer_group" enum="MIXER_GROUP">Access to different sets of mixers</field>
-      <field type="int16_t" name="count">Total number of parameters in the group</field>
+      <field type="uint16_t" name="count">Total number of parameters in the group</field>
       <field type="uint16_t" name="index">Index of the parameter in the group</field>
       <field type="uint8_t" name="flags" enum="MIXER_PARAM_FLAGS">Flags for the parameter</field>
       <field type="uint8_t" name="type" enum="MIXER_PARAM_TYPE">Type of the parameter - Used for connections, mixer names etc..</field>
@@ -3826,8 +3829,8 @@
       <field type="uint8_t" name="mixer_type">Implementation specific identifier for mixer type</field>
       <field type="uint16_t" name="parameter_index">Index of the parameter in a mixer or something else</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
-      <field type="uint8_t" name="param_array_size">Size of the array for this parameter</field>
-      <field type="char[20]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 20 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="uint8_t" name="param_array_size">Size of the array for this parameter.  Cannot be more than 8</field>
+      <field type="char[20]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 20 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 20 chars - applications have to provide 20+1 bytes storage if the ID is stored as string</field>
       <field type="float[8]" name="param_values">Array of parameter values</field>
     </message>
     <message id="236" name="MIXER_PARAM_SET">
