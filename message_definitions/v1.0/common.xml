@@ -2469,16 +2469,16 @@
         <description>Parameter is a standard parameter value</description>
       </entry>
       <entry value="1" name="MIXER_PARAM_MSG_TYPE_CAPABILITY">
-        <description>Parameter is describing capabilities of the mixer. param_id is "CAPABILITY". default is values[0] as a uint bitfield type.</description>
+        <description>Parameter is describing capabilities of the mixer. param_id is "CAPABILITY". values[0] is uint bitfield.</description>
       </entry>
-      <entry value="2" name="MIXER_PARAM_MSGTYPE_CONFIGURATION">
-        <description>Parameter configuring the mixer. param_id is "CONFIG". default is values[0] as a uint bitfield type</description>
+      <entry value="2" name="MIXER_PARAM_MSG_TYPE_CONFIGURATION">
+        <description>Parameter configuring the mixer. param_id is "CONFIG". values[0] is uint32 bitfield</description>
       </entry>
       <entry value="3" name="MIXER_PARAM_MSG_TYPE_MIX_CONN">
-        <description>Parameter is describing a mixer connection to a group.  param_id is the connection type (Input/output). Values[0] is the group index. Values[1] is the index into the group</description>
+        <description>Parameter is describing a mixer connection to a group.  param_id is "INPUT" or "OUTPUT"). Values[0] is uint group index. Values[1] is uint index into the group</description>
       </entry>
-      <entry value="4" name="MIXER_PARAM_MSG_FLAG_CONN_GROUP">
-        <description>Parameter is describing a connection group. Read only. param_id is group name. Values[0] is group index. Values[1] is the group size</description>
+      <entry value="4" name="MIXER_PARAM_MSG_TYPE_CONN_GROUP">
+        <description>Parameter is describing a connection group. Read only. param_id is group name. Values[0] is uint group index. Values[1] is uint group size</description>
       </entry>
       <entry value="5" name="MIXER_PARAM_MSG_TYPE_MIXTYPE">
         <description>Parameter is describing a mixer type. param_id is the name of the mixer.  Should have zero data length</description>
@@ -2487,7 +2487,10 @@
         <description>Parameter is an assigned name for a mixer other than its functional mixer name.  param_id is the name tag.  Should have zero data length</description>
       </entry>
       <entry value="7" name="MIXER_PARAM_MSG_TYPE_CHECKSUM">
-        <description>Parameter is checksum of the mixer config script.  param_id is normally "CHECKSUM_SCRIPT" but can describe other checksums.  Values[0] is normally uint CRC16 checksum</description>
+        <description>Parameter is checksum of the mixer config script.  param_id is normally "CHECKSUM_SCRIPT" but can describe other checksums.  Values[0] is uint CRC32 checksum</description>
+      </entry>
+      <entry value="8" name="MIXER_PARAM_MSG_TYPE_PARAM_METADATA">
+        <description>Parameter is metadata describing how to use parameters.  param_id is "METADATA_GLOBAL","METADATA_MIXER","METADATA_PARAM". Values[0]=default, Values[1]=max, Values[2]=min, Values[3]=step.  Normally read only</description>
       </entry>
     </enum>
   </enums>
