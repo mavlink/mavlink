@@ -1817,6 +1817,9 @@
       <entry value="4" name="MAV_RESULT_FAILED">
         <description>Command executed, but failed</description>
       </entry>
+      <entry value="5" name="MAV_RESULT_IN_PROGRESS">
+        <description>Command being executed</description>
+      </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
       <description>result in a mavlink mission ack</description>
@@ -3000,6 +3003,8 @@
       <description>Report status of a command. Includes feedback wether the command was executed.</description>
       <field type="uint16_t" name="command" enum="MAV_CMD">Command ID, as defined by MAV_CMD enum.</field>
       <field type="uint8_t" name="result" enum="MAV_RESULT">See MAV_RESULT enum</field>
+      <extensions/>
+      <field type="uint8_t" name="progress">Needs to be set when MAV_RESULT is MAV_RESULT_IN_PROGRESS, values from 0 to 100.</field>
     </message>
     <message id="81" name="MANUAL_SETPOINT">
       <description>Setpoint in roll, pitch, yaw and thrust from the operator</description>
