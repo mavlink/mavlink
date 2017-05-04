@@ -1085,13 +1085,13 @@
       </entry>
       <entry value="203" name="MAV_CMD_DO_DIGICAM_CONTROL">
         <description>Mission command to control an on-board camera controller system.</description>
-        <param index="1">Session control e.g. show/hide lens</param>
+        <param index="1">Session control. e.g. show/hide lens.</param>
         <param index="2">Zoom's absolute position</param>
         <param index="3">Zooming step value to offset zoom from the current position</param>
         <param index="4">Focus Locking, Unlocking or Re-locking</param>
         <param index="5">Shooting Command</param>
         <param index="6">Command Identity</param>
-        <param index="7">Empty</param>
+        <param index="7">Test shot identifier. If set to 1, image will only be captured, but not counted towards internal frame count.</param>
       </entry>
       <!-- Camera Mount Mission Commands Enumeration -->
       <entry value="204" name="MAV_CMD_DO_MOUNT_CONFIGURE">
@@ -1115,9 +1115,9 @@
         <param index="7">MAV_MOUNT_MODE enum value</param>
       </entry>
       <entry value="206" name="MAV_CMD_DO_SET_CAM_TRIGG_DIST">
-        <description>Mission command to set CAM_TRIGG_DIST for this flight</description>
-        <param index="1">Camera trigger distance (meters)</param>
-        <param index="2">Empty</param>
+        <description>Mission command to set camera trigger distance for this flight. The camera is trigerred each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.</description>
+        <param index="1">Camera trigger distance (meters). -1/0 to ignore.</param>
+        <param index="2">Camera shutter integration time (milliseconds). -1/0 to ignore.</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
@@ -1158,6 +1158,16 @@
         <description>Change to/from inverted flight</description>
         <param index="1">inverted (0=normal, 1=inverted)</param>
         <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="211" name="MAV_CMD_DO_SET_CAM_TRIGG_INTERVAL">
+        <description>Mission command to set camera trigger interval for this flight. If triggering is enabled, the camera is triggered each time this interval expires. This command can also be used to set the shutter integration time for the camera.</description>
+        <param index="1">Camera trigger cycle time (milliseconds). -1/0 to ignore.</param>
+        <param index="2">Camera shutter integration time (milliseconds). Should be less than trigger cycle time. -1/0 to ignore.</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
@@ -1406,8 +1416,8 @@
       <entry value="2003" name="MAV_CMD_DO_TRIGGER_CONTROL">
         <description>Enable or disable on-board camera triggering system.</description>
         <param index="1">Trigger enable/disable (0 for disable, 1 for start), -1 to ignore</param>
-        <param index="2">Shutter integration time (in ms), -1 to ignore</param>
-        <param index="3">1 to reset the trigger sequence, -1/0 to ignore</param>
+        <param index="2">1 to reset the trigger sequence, -1/0 to ignore</param>
+        <param index="3">Reserved.</param>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
         <description>WIP: Starts video capture (recording)</description>
