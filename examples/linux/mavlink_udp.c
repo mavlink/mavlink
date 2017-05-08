@@ -27,6 +27,27 @@
  
  the rt library is needed for the clock_gettime on linux
  */
+
+
+/*
+ 
+ MacOS xCode 6.1.1 Instructions
+ ===================================
+ 
+ Open mavlink_udp.xcodeproj in xcode. In the project navigator (left) select the
+ project. Choose Build Settings -> (scroll down to) Search Paths -> (double click)
+ Header Search Paths. Add your header directory as required. Mine is:
+ 
+ /Users/aaa/uav/Firmware/mavlink/include/mavlink/v1.0/pixhawk
+ 
+ Run with the play button.
+ 
+ 
+ 
+ */
+
+
+
 /* These headers are for QNX, but should all be standard on unix/linux */
 #include <stdio.h>
 #include <errno.h>
@@ -74,7 +95,7 @@ int main(int argc, char* argv[])
 	uint8_t buf[BUFFER_LENGTH];
 	ssize_t recsize;
 	socklen_t fromlen;
-	int bytes_sent;
+	uint64_t bytes_sent;
 	mavlink_message_t msg;
 	uint16_t len;
 	int i = 0;
@@ -150,14 +171,14 @@ int main(int argc, char* argv[])
 		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof (struct sockaddr_in));
 		
 		/* Send Local Position */
-		mavlink_msg_local_position_ned_pack(1, 200, &msg, microsSinceEpoch(), 
+		mavlink_msg_local_position_ned_pack(1, 200, &msg, (uint32_t)microsSinceEpoch(),
 										position[0], position[1], position[2],
 										position[3], position[4], position[5]);
 		len = mavlink_msg_to_send_buffer(buf, &msg);
 		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
 		
 		/* Send attitude */
-		mavlink_msg_attitude_pack(1, 200, &msg, microsSinceEpoch(), 1.2, 1.7, 3.14, 0.01, 0.02, 0.03);
+		mavlink_msg_attitude_pack(1, 200, &msg, (uint32_t)microsSinceEpoch(), 1.2, 1.7, 3.14, 0.01, 0.02, 0.03);
 		len = mavlink_msg_to_send_buffer(buf, &msg);
 		bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
 		
