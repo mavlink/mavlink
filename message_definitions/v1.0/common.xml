@@ -1456,6 +1456,12 @@
         <param index="2">0: No Action 1: Request video stream information</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
+      <entry value="2505" name="MAV_CMD_REQUEST_VIDEO_STREAM_CAPABILITIES">
+        <description>WIP: Request video stream capabilities (VIDEO_STREAM_CAPABILITIES)</description>
+        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
+        <param index="2">0: No Action 1: Request video stream capabilities</param>
+        <param index="3">Reserved (all remaining params)</param>
+      </entry>
       <entry value="2510" name="MAV_CMD_LOGGING_START">
         <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
         <param index="1">Format: 0: ULog</param>
@@ -4112,6 +4118,11 @@
       <field type="uint32_t" name="bitrate" units="b/s">Bit rate in bits per second (set to -1 for auto)</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise (0-359 degrees)</field>
       <field type="char[230]" name="uri">Video stream URI</field>
+    </message>
+    <message id="271" name="VIDEO_STREAM_CAPABILITIES">
+      <description>WIP: Capbilities of video stream</description>
+      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
+      <field type="char[254]" name="file_url">URL of file with video stream capabilities</field>
     </message>
   </messages>
 </mavlink>
