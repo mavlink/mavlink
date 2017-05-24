@@ -401,6 +401,9 @@
       <entry value="241" name="MAV_COMP_ID_UART_BRIDGE">
         <description/>
       </entry>
+      <entry value="242" name="MAV_COMP_ID_WIFI">
+        <description/>
+      </entry>
       <entry value="250" name="MAV_COMP_ID_SYSTEM_CONTROL">
         <description/>
       </entry>
@@ -1577,6 +1580,16 @@
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
       </entry>
+      <entry value="6000" name="MAV_CMD_REQUEST_WIFI_NETWORKS">
+        <description>Request saved Wi-Fi networks (WIFI_NETWORK_INFORMATION).</description>
+        <param index="1">0: No Action 1: Request messages with wifi network information</param>
+        <param index="2">Reserved (all remaining params)</param>
+      </entry>
+      <entry value="6001" name="MAV_CMD_WIFI_START_AP">
+        <description>Start in AP (Access Point) mode.</description>
+        <param index="1">0: No Action 1: Start in AP mode</param>
+        <param index="2">Reserved (all remaining params)</param>
+      </entry>
       <!-- VALUES FROM 0-40000 are reserved for the common message set. Values from 40000 to UINT16_MAX are available for dialects -->
       <!-- BEGIN of payload range (30000 to 30999) -->
       <entry value="30001" name="MAV_CMD_PAYLOAD_PREPARE_DEPLOY">
@@ -2506,6 +2519,21 @@
       </entry>
       <entry value="7" name="GPS_FIX_TYPE_STATIC">
         <description>Static fixed, typically used for base stations</description>
+      </entry>
+    </enum>
+    <enum name="WIFI_SECURITY_TYPE">
+      <description>Type of Wi-Fi security</description>
+      <entry value="0" name="WIFI_SECURITY_TYPE_OPEN">
+        <description>No security</description>
+      </entry>
+      <entry value="1" name="WIFI_SECURITY_TYPE_WEP">
+        <description>WEP (Wired Equivalent Privacy) security</description>
+      </entry>
+      <entry value="2" name="WIFI_SECURITY_TYPE_WPA">
+        <description>WPA (Wi-Fi Protected Access) security</description>
+      </entry>
+      <entry value="3" name="WIFI_SECURITY_TYPE_WPA2">
+        <description>WPA2 (Wi-Fi Protected Access II) security</description>
       </entry>
     </enum>
   </enums>
@@ -4112,6 +4140,26 @@
       <field type="uint32_t" name="bitrate" units="b/s">Bit rate in bits per second (set to -1 for auto)</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise (0-359 degrees)</field>
       <field type="char[230]" name="uri">Video stream URI</field>
+    </message>
+    <message id="300" name="WIFI_NETWORK_INFORMATION">
+      <description>WIP: </description>
+      <field type="char[32]" name="ssid">Name of Wi-Fi network</field>
+      <field type="uint8_t" name="security_type" enum="WIFI_SECURITY_TYPE">See the WIFI_SECURITY_TYPE enum.</field>
+      <field type="uint8_t" name="state">Current status of connection (0: not connected 1: connected)</field>
+    </message>
+    <message id="301" name="WIFI_NETWORK_CONNECT">
+      <description>WIP: </description>
+      <field type="char[32]" name="ssid">Name of Wi-Fi network</field>
+    </message>
+    <message id="302" name="WIFI_NETWORK_ADD">
+      <description>WIP: </description>
+      <field type="char[32]" name="ssid">Name of Wi-Fi network</field>
+      <field type="uint8_t" name="security_type" enum="WIFI_SECURITY_TYPE">See the WIFI_SECURITY_TYPE enum.</field>
+      <field type="char[64]" name="password">Password</field>
+    </message>
+    <message id="303" name="WIFI_NETWORK_DELETE">
+      <description>WIP: </description>
+      <field type="char[32]" name="ssid">Name of Wi-Fi network</field>
     </message>
   </messages>
 </mavlink>
