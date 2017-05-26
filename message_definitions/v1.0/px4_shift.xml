@@ -1,0 +1,321 @@
+<?xml version="1.0"?>
+<mavlink>
+    <include>common.xml</include>
+    <enums>
+        <enum name="NAVIGATOR_CMD">
+            <description>Navigator command for the navigator</description>
+            <entry value="1" name="NAVIGATOR_CMD_PAUSE">
+                <description>Pause the navigator</description>
+            </entry>
+            <entry name="NAVIGATOR_CMD_START">
+                <description>Start the navigator</description>
+            </entry>
+            <entry name="NAVIGATOR_CMD_REVERSE">
+                <description>Reverse start the navigator</description>
+            </entry>
+            <entry name="NAVIGATOR_CMD_LOAD_PATH">
+                <description>Preload a path into the navigator</description>
+            </entry>
+            <entry name="NAVIGATOR_CMD_RESET_PATH">
+                <description>Reset the current loaded path in the navigator</description>
+            </entry>
+        </enum>
+        
+        <enum name="NAVIGATOR_STATE">
+            <description></description>
+            <entry value="1" name="NAVIGATOR_STATE_BOOT">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_STATE_EMPTY">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_STATE_LOADING">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_STATE_LOADING_ERROR">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_STATE_PATH_READY">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_STATE_PATH_MODE">
+                <description></description>
+            </entry>
+        </enum>
+        
+        <enum name="NAVIGATOR_SUBSTATE">
+            <description></description>
+            <entry value="1" name="NAVIGATOR_SUBSTATE_BOOT">
+                <description></description>
+            </entry>
+            <entry  name="NAVIGATOR_SUBSTATE_PAUSED">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SUBSTATE_RUNNING">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SUBSTATE_RUNNING_REVERSE">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SUBSTATE_DONE">
+                <description></description>
+            </entry>
+        </enum>
+        
+        <enum name="NAVIGATOR_SYSTEM_CMD_TYPE">
+            <description></description>
+            <entry value="1" name="NAVIGATOR_SYSTEM_CMD_TYPE_RESPONSE_TO_CMD">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_TYPE_RESPONSE_TO_POINT">
+                <description></description>
+            </entry>
+        </enum>
+        
+        <enum name="NAVIGATOR_SYSTEM_CMD_RESPONSE">
+            <description></description>
+            <entry value="1" name="NAVIGATOR_SYSTEM_CMD_RESPONSE_OK">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_NOT_OK">
+                <description></description>
+            </entry>
+        </enum>
+
+        <enum name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL">
+            <description></description>
+            <entry value="1" name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_NO_DETAIL">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_UNKNOWN_COMMAND">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_SD_WRITE_ERROR">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_SD_READ_ERROR">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_SD_VERIFY_ERROR">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_PATH_INDEX_TO_LARGE">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_POINT_INDEX_TO_LARGE">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_WRONG_SUBSTATE">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_NO_MOCAP">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_STARTPOINT_TO_FAR">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_ALREADY_RUNNING">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_ALREADY_RUNNING_REV">
+                <description></description>
+            </entry>
+            <entry name="NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_ALREADY_PAUSED">
+                <description></description>
+            </entry>
+        </enum>
+        
+        <enum name="SHIFT_NAVIGATOR_YAW_BEHAVIOUR_ENUM">
+            <description>Determine the yaw behaviour for the point we are traveling to</description>
+            <entry value="1" name="FACE_TRAVEL_DIRECTION">
+                <description>Look at the point we are flying to</description>
+            </entry>
+            <entry name="FACE_TRAVEL_DIRECTION_INVERTED">
+                <description>Look away from the point we are flying to</description>
+            </entry>
+            <entry name="FIXED_AT_YAW">
+                <description>Keep looking at the yaw in the point that we are traveling to</description>
+            </entry>
+            <entry name="INTERPOLATE">
+                <description>Interpolate from previous point yaw to the next point's yaw</description>
+            </entry>
+        </enum>
+        
+        <enum name="SHIFT_NAVIGATOR_POINT_TYPE_ENUM">
+            <description>The type of the point</description>
+            <entry value="1" name="POINT">
+                <description>The point is just a point</description>
+            </entry>
+            <entry name="ARC_CW">
+                <description>The point is the center of an ARC</description>
+            </entry>
+            <entry name="ARC_CCW">
+                <description>The point is the center of an ARC</description>
+            </entry>
+        </enum>
+    </enums>
+    <messages>
+        <!-- 1-206 Reserved for common MAVLink, SHIFT starts counting from 500 and up -->
+        <!-- 500 - 550 are SHIFT - RadioDog commands -->
+        <message id="500" name="MAV_SHIFT_RADIODOG_IDENTIFICATION_MSG">
+            <description>
+                RadioDog identification message to notify the RF network of the presance of this module.
+                The ModuleID is hardcoded and programmed by the vendor (BitShift)
+                The RadioID is user programmable and it used for addressing in the RF network
+            </description>
+            <field type="uint32_t"  name="moduleId">RadioDog Module ID</field>
+            <field type="uint16_t"  name="radioId">RadioDog Radio ID</field>
+            <field type="uint8_t"   name="moduleType">Module Type</field>
+            <field type="uint8_t"   name="moduleIsActive">Module Active</field>
+            <field type="int32_t"   name="currentXposition">Module position X in mm</field>
+            <field type="int32_t"   name="currentYposition">Module position Y in mm</field>
+            <field type="int32_t"   name="currentZposition">Module position Z in mm</field>
+        </message>
+        
+        <!-- RadioDog interRF ranging packets -->
+        
+        <message id="501" name="MAV_SHIFT_RADIODOG_RANGING_REQUEST_MSG">
+            <description>
+                RadioDog's capability to range with another module works in Four steps.
+                The first would be module A (Client) sending a RANGING_REQUEST_MSG to module B (Server).
+                The second would be module B responding with a RANGING_REQUEST_ACK_MSG.
+                The third would be module A also sending an RANGING_REQUEST_ACK_MSG to module B to get rid of any asynchronous clockdrift.
+                The fourth would be the module B sending RANGING_REQUEST_DATA_MSG back to A.
+                This message is the first step.
+            </description>
+            <field type="uint32_t"  name="moduleId">RadioDog Module ID (Sending module)</field>
+            <field type="uint16_t"  name="radioId">RadioDog Radio ID (Sending module)</field>
+            <field type="uint8_t"   name="moduleType">Module Type (Sending module)</field>
+        </message>
+        <message id="502" name="MAV_SHIFT_RADIODOG_RANGING_REQUEST_ACK_MSG">
+            <description>
+                RadioDog's capability to range with another module works in Four steps.
+                The first would be module A (Client) sending a RANGING_REQUEST_MSG to module B (Server).
+                The second would be module B responding with a RANGING_REQUEST_ACK_MSG.
+                The third would be module A also sending an RANGING_REQUEST_ACK_MSG to module B to get rid of any asynchronous clockdrift.
+                The fourth would be the module B sending RANGING_REQUEST_DATA_MSG back to A.
+                This message is the second and thrid step.
+            </description>
+            <field type="uint32_t"  name="moduleId">RadioDog Module ID (Sending module)</field>
+            <field type="uint16_t"  name="radioId">RadioDog Radio ID (Sending module)</field>
+            <field type="uint8_t"   name="moduleType">Module Type (Sending module)</field>
+        </message>
+        <message id="503" name="MAV_SHIFT_RADIODOG_RANGING_REQUEST_DATA_MSG">
+            <description>
+                RadioDog's capability to range with another module works in Four steps.
+                The first would be module A (Client) sending a RANGING_REQUEST_MSG to module B (Server).
+                The second would be module B responding with a RANGING_REQUEST_ACK_MSG.
+                The third would be module A also sending an RANGING_REQUEST_ACK_MSG to module B to get rid of any asynchronous clockdrift.
+                The fourth would be the module B sending RANGING_REQUEST_DATA_MSG back to A.
+                This message is the fourth step.
+            </description>
+            <field type="uint32_t"  name="moduleId">RadioDog Module ID (Sending module)</field>
+            <field type="uint16_t"  name="radioId">RadioDog Radio ID (Sending module)</field>
+            <field type="uint8_t"   name="moduleType">Module Type (Sending module)</field>
+            <field type="uint64_t" name="t1">Server internal receive(1) timestamp (Set on reception of the RANGING_REQUEST_MSG)</field>
+            <field type="uint64_t" name="t2">Server internal transmit timestamp (Set on transmision completed of the RANGING_REQUEST_ACK)</field>
+            <field type="uint64_t" name="t5">Server internal receive(2) timestamp (Set on reception of the RANGING_REQUEST_ACK)</field>
+        </message>
+        
+        <!-- RadioDog  SHIFT (using a RadioDog Radio 'master anchor') to another RadioDog module -->
+        <message id="510" name="MAV_SHIFT_RADIODOG_MODULE_CFG_MSG">
+            <description>
+                A packet used to send configuration details to a RadioDog module.
+                Since the radioID is user configurable, we broadcast the packet to radioAddress 0xFFFF.
+                This packet also contains a moduleID. This is a hardcoded ID by the vendor BitShift.
+                This moduleID determines which module should handle the packet and accept the new configuration.
+            </description>
+            <field type="uint32_t"  name="moduleId">RadioDog Module ID (Sending module)</field>
+            <field type="uint16_t"  name="newRadioId">The new RadioDog Radio ID (Sending module)</field>
+            <field type="uint8_t"   name="newModuleType">The new Module Type</field>
+            <field type="int32_t"   name="newXposition">new position X in mm</field>
+            <field type="int32_t"   name="newYposition">new position Y in mm</field>
+            <field type="int32_t"   name="newZposition">new position Z in mm</field>
+            <field type="uint8_t"   name="storeInEeprom">if 0 do not store in eeprom, if > 1 do store in eeprom</field>
+        </message>
+        
+        <!-- RadioDog To PX4-->
+        <message id="520" name="MAV_SHIFT_RADIODOG_PX4_POSITION_SMALL">
+            <description>
+                A packet containing the minimum to tell to the PX4 about the location the RadioDog has calculated.
+            </description>
+            <field type="uint32_t"  name="moduleId">RadioDog Module ID (Sending module)</field>
+            <field type="uint16_t"  name="radioId">The new RadioDog Radio ID (Sending module)</field>
+            <field type="uint8_t"   name="moduleType">The new Module Type</field>
+            <field type="uint32_t"  name="positionTimeStamp">RadioDog Timestamp when the position was calculated</field>
+            <field type="int32_t"   name="Xposition">Position X in mm</field>
+            <field type="int32_t"   name="Yposition">Position Y in mm</field>
+            <field type="int32_t"   name="Zposition">Position Z in mm</field>
+        </message>
+        
+        <!-- RadioDog Debug to MASTER_ANCHOR-->
+        <message id="550" name="MAV_SHIFT_RADIODOG_DEBUG_TAG_INFO">
+            <description>
+                A packet containing debug information from a tag.
+            </description>
+            <field type="uint32_t"  name="moduleId">RadioDog Module ID (Sending module)</field>
+            <field type="uint16_t"  name="radioId">The RadioDog Radio ID (Sending module)</field>
+            <field type="uint8_t"   name="moduleType">The Module Type</field>
+            <field type="uint32_t" name="positionTimeStamp">RadioDog Timestamp when the position was calculated</field>
+            <field type="int32_t"   name="Anchor_A_Ranging_Raw">Raw anchor A ranging value in mm</field>
+            <field type="int32_t"   name="Anchor_A_Ranging_Filtered">Filtered anchor A ranging value in mm</field>
+            <field type="int32_t"   name="Anchor_B_Ranging_Raw">Raw anchor B ranging value in mm</field>
+            <field type="int32_t"   name="Anchor_B_Ranging_Filtered">Filtered anchor B ranging value in mm</field>
+            <field type="int32_t"   name="Anchor_C_Ranging_Raw">Raw anchor C ranging value in mm</field>
+            <field type="int32_t"   name="Anchor_C_Ranging_Filtered">Filtered anchor C ranging value in mm</field>
+        </message>
+        
+        <!-- 1-206 Reserved for common MAVLink, SHIFT starts counting from 500 and up -->
+        <!-- 551 - 599 are SHIFT - PX4 commands -->
+        <message id="551" name="SHIFT_NAVIGATOR_CMD">
+            <description>
+               SHIFT Navigator cmd, for controlling the navigator in the px4
+            </description>
+            <field type="uint64_t"  name="time_usec">Timestamp from the SHIFT PC</field>
+            <field type="uint32_t"  name="pathIndex">Index of the path which is affected by this command</field>
+            <field type="uint8_t"   name="cmd">The command itself. Using ENUM: SHIFT_NAVIGATOR_CMD_ENUM</field>
+        </message>
+        <message id="560" name="SHIFT_NAVIGATOR_POINT">
+            <description>
+                SHIFT Navigator point
+            </description>
+            <field type="uint16_t"   name="pathIndex">The pathIndex to which this point belongs</field>
+            <field type="uint16_t"   name="pointIndex">The pointIndex of this point</field>
+            <field type="float"  name="positionX">positionX value</field>
+            <field type="float"  name="positionY">positionY value</field>
+            <field type="float"  name="positionZ">positionZ value</field>
+            <field type="float"  name="positionRoll">positionRoll value</field>
+            <field type="float"  name="positionPitch">positionPitch value</field>
+            <field type="float"  name="positionYaw">positionYaw value</field>
+            <field type="float"  name="duration">duration to reach this point(x,y,z)</field>
+            <field type="uint8_t"   name="yawBehaviour">Behaviour of the yaw while traveling to this point. Using ENUM: SHIFT_NAVIGATOR_YAW_BEHAVIOUR_ENUM</field>
+            <field type="uint8_t"   name="type">Type of this point. Using ENUM: SHIFT_NAVIGATOR_POINT_TYPE_ENUM</field>
+        </message>
+        <message id="565" name="SHIFT_NAVIGATOR_STATUS">
+            <description>
+                SHIFT Navigator status (from PX4 to SHIFT)
+            </description>
+            <field type="uint16_t"   name="currentPathIndex">The current PathIndex traveling</field>
+            <field type="uint16_t"   name="currentPointIndex">The current PointIndex traveling</field>
+            <field type="uint8_t"  name="batteryRemaining">Remaining percentage of the battery</field>
+            <field type="uint8_t"  name="navigatorMode">Current mode of the navigator</field>
+            <field type="uint8_t"  name="navigatorSubMode">Current sub mode of the navigator</field>
+            <field type="uint8_t"  name="objectMode">Current mode of the object</field>
+            <field type="uint8_t"  name="detailField">Detail field</field>
+        </message>
+        <message id="570" name="SHIFT_SYSTEM_CMD">
+            <description>
+                SHIFT System cmd (from SHIFT to PX4)
+            </description>
+            <field type="uint16_t"   name="cmd1">cmd1 field</field>
+            <field type="uint16_t"   name="cmd2">cmd2 field</field>
+            <field type="uint16_t"   name="cmd3">cmd3 field</field>
+            <field type="uint16_t"   name="cmd4">cmd4 field</field>
+            <field type="uint16_t"   name="cmd5">cmd5 field</field>
+            <field type="uint16_t"   name="cmd6">cmd6 field</field>
+            <field type="uint8_t"    name="type">type field</field>
+        </message>
+        
+        
+    </messages>
+</mavlink>

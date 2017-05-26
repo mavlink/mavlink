@@ -9516,9 +9516,9 @@ static void mavlink_test_shift_navigator_point(uint8_t system_id, uint8_t compon
         packet1.positionRoll = packet_in.positionRoll;
         packet1.positionPitch = packet_in.positionPitch;
         packet1.positionYaw = packet_in.positionYaw;
-        packet1.diration = packet_in.diration;
-        packet1.pathID = packet_in.pathID;
-        packet1.pointID = packet_in.pointID;
+        packet1.duration = packet_in.duration;
+        packet1.pathIndex = packet_in.pathIndex;
+        packet1.pointIndex = packet_in.pointIndex;
         packet1.yawBehaviour = packet_in.yawBehaviour;
         packet1.type = packet_in.type;
         
@@ -9535,12 +9535,12 @@ static void mavlink_test_shift_navigator_point(uint8_t system_id, uint8_t compon
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_shift_navigator_point_pack(system_id, component_id, &msg , packet1.pathID , packet1.pointID , packet1.positionX , packet1.positionY , packet1.positionZ , packet1.positionRoll , packet1.positionPitch , packet1.positionYaw , packet1.diration , packet1.yawBehaviour , packet1.type );
+    mavlink_msg_shift_navigator_point_pack(system_id, component_id, &msg , packet1.pathIndex , packet1.pointIndex , packet1.positionX , packet1.positionY , packet1.positionZ , packet1.positionRoll , packet1.positionPitch , packet1.positionYaw , packet1.duration , packet1.yawBehaviour , packet1.type );
     mavlink_msg_shift_navigator_point_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_shift_navigator_point_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.pathID , packet1.pointID , packet1.positionX , packet1.positionY , packet1.positionZ , packet1.positionRoll , packet1.positionPitch , packet1.positionYaw , packet1.diration , packet1.yawBehaviour , packet1.type );
+    mavlink_msg_shift_navigator_point_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.pathIndex , packet1.pointIndex , packet1.positionX , packet1.positionY , packet1.positionZ , packet1.positionRoll , packet1.positionPitch , packet1.positionYaw , packet1.duration , packet1.yawBehaviour , packet1.type );
     mavlink_msg_shift_navigator_point_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -9553,7 +9553,7 @@ static void mavlink_test_shift_navigator_point(uint8_t system_id, uint8_t compon
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_shift_navigator_point_send(MAVLINK_COMM_1 , packet1.pathID , packet1.pointID , packet1.positionX , packet1.positionY , packet1.positionZ , packet1.positionRoll , packet1.positionPitch , packet1.positionYaw , packet1.diration , packet1.yawBehaviour , packet1.type );
+    mavlink_msg_shift_navigator_point_send(MAVLINK_COMM_1 , packet1.pathIndex , packet1.pointIndex , packet1.positionX , packet1.positionY , packet1.positionZ , packet1.positionRoll , packet1.positionPitch , packet1.positionYaw , packet1.duration , packet1.yawBehaviour , packet1.type );
     mavlink_msg_shift_navigator_point_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
@@ -9574,8 +9574,8 @@ static void mavlink_test_shift_navigator_status(uint8_t system_id, uint8_t compo
     };
     mavlink_shift_navigator_status_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
-        packet1.currentPathID = packet_in.currentPathID;
-        packet1.currentPointID = packet_in.currentPointID;
+        packet1.currentPathIndex = packet_in.currentPathIndex;
+        packet1.currentPointIndex = packet_in.currentPointIndex;
         packet1.batteryRemaining = packet_in.batteryRemaining;
         packet1.navigatorMode = packet_in.navigatorMode;
         packet1.navigatorSubMode = packet_in.navigatorSubMode;
@@ -9595,12 +9595,12 @@ static void mavlink_test_shift_navigator_status(uint8_t system_id, uint8_t compo
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_shift_navigator_status_pack(system_id, component_id, &msg , packet1.currentPathID , packet1.currentPointID , packet1.batteryRemaining , packet1.navigatorMode , packet1.navigatorSubMode , packet1.objectMode , packet1.detailField );
+    mavlink_msg_shift_navigator_status_pack(system_id, component_id, &msg , packet1.currentPathIndex , packet1.currentPointIndex , packet1.batteryRemaining , packet1.navigatorMode , packet1.navigatorSubMode , packet1.objectMode , packet1.detailField );
     mavlink_msg_shift_navigator_status_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_shift_navigator_status_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.currentPathID , packet1.currentPointID , packet1.batteryRemaining , packet1.navigatorMode , packet1.navigatorSubMode , packet1.objectMode , packet1.detailField );
+    mavlink_msg_shift_navigator_status_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.currentPathIndex , packet1.currentPointIndex , packet1.batteryRemaining , packet1.navigatorMode , packet1.navigatorSubMode , packet1.objectMode , packet1.detailField );
     mavlink_msg_shift_navigator_status_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -9613,7 +9613,7 @@ static void mavlink_test_shift_navigator_status(uint8_t system_id, uint8_t compo
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_shift_navigator_status_send(MAVLINK_COMM_1 , packet1.currentPathID , packet1.currentPointID , packet1.batteryRemaining , packet1.navigatorMode , packet1.navigatorSubMode , packet1.objectMode , packet1.detailField );
+    mavlink_msg_shift_navigator_status_send(MAVLINK_COMM_1 , packet1.currentPathIndex , packet1.currentPointIndex , packet1.batteryRemaining , packet1.navigatorMode , packet1.navigatorSubMode , packet1.objectMode , packet1.detailField );
     mavlink_msg_shift_navigator_status_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }

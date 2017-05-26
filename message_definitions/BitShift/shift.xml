@@ -2381,7 +2381,10 @@
             <entry value="0" name="POINT">
                 <description>The point is just a point</description>
             </entry>
-            <entry value="1" name="ARC">
+            <entry value="1" name="ARC_CW">
+                <description>The point is the center of an ARC</description>
+            </entry>
+            <entry value="2" name="ARC_CCW">
                 <description>The point is the center of an ARC</description>
             </entry>
         </enum>
@@ -4063,15 +4066,15 @@
             <description>
                 SHIFT Navigator point
             </description>
-            <field type="uint16_t"   name="pathID">The pathID to which this point belongs</field>
-            <field type="uint16_t"   name="pointID">The pointID of this point</field>
+            <field type="uint16_t"   name="pathIndex">The pathIndex to which this point belongs</field>
+            <field type="uint16_t"   name="pointIndex">The pointIndex of this point</field>
             <field type="float"  name="positionX">positionX value</field>
             <field type="float"  name="positionY">positionY value</field>
             <field type="float"  name="positionZ">positionZ value</field>
             <field type="float"  name="positionRoll">positionRoll value</field>
             <field type="float"  name="positionPitch">positionPitch value</field>
             <field type="float"  name="positionYaw">positionYaw value</field>
-            <field type="float"  name="diration">duration to reach this point(x,y,z)</field>
+            <field type="float"  name="duration">duration to reach this point(x,y,z)</field>
             <field type="uint8_t"   name="yawBehaviour">Behaviour of the yaw while traveling to this point. Using ENUM: SHIFT_NAVIGATOR_YAW_BEHAVIOUR_ENUM</field>
             <field type="uint8_t"   name="type">Type of this point. Using ENUM: SHIFT_NAVIGATOR_POINT_TYPE_ENUM</field>
         </message>
@@ -4079,8 +4082,8 @@
             <description>
                 SHIFT Navigator status (from PX4 to SHIFT)
             </description>
-            <field type="uint16_t"   name="currentPathID">The current PathID traveling</field>
-            <field type="uint16_t"   name="currentPointID">The current PointID traveling</field>
+            <field type="uint16_t"   name="currentPathIndex">The current PathIndex traveling</field>
+            <field type="uint16_t"   name="currentPointIndex">The current PointIndex traveling</field>
             <field type="uint8_t"  name="batteryRemaining">Remaining percentage of the battery</field>
             <field type="uint8_t"  name="navigatorMode">Current mode of the navigator</field>
             <field type="uint8_t"  name="navigatorSubMode">Current sub mode of the navigator</field>
