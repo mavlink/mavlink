@@ -3958,6 +3958,7 @@
       <field type="uint8_t" name="ind">index of debug variable</field>
       <field type="float" name="value">DEBUG value</field>
     </message>
+
     <!-- messages with ID 256 and above are only available in MAVLink2 -->
     <message id="256" name="SETUP_SIGNING">
       <description>Setup a MAVLink2 signing key. If called with secret_key of all zero and zero initial_timestamp will disable signing</description>
@@ -4112,6 +4113,14 @@
       <field type="uint32_t" name="bitrate" units="b/s">Bit rate in bits per second (set to -1 for auto)</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise (0-359 degrees)</field>
       <field type="char[230]" name="uri">Video stream URI</field>
+    </message>
+
+    <message id="350" name="DEBUG_ARRAY_FLOAT">
+      <description>Large debug array. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
+      <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
+      <field type="uint8_t" name="id">Unique ID used to discriminate between arrays</field>
+      <field type="char[10]" name="name">Name, for human-friendly display in QGC</field>
+      <field type="float[60]" name="data">data</field>
     </message>
   </messages>
 </mavlink>
