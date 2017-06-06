@@ -266,47 +266,50 @@
         </message>
         
         <!-- 1-206 Reserved for common MAVLink, SHIFT starts counting from 500 and up -->
-        <!-- 551 - 599 are SHIFT - PX4 commands -->
+        <!-- 551 - 599 are SHIFT - FlightController commands -->
         <message id="551" name="SHIFT_NAVIGATOR_CMD">
             <description>
-               SHIFT Navigator cmd, for controlling the navigator in the px4
+               SHIFT Navigator cmd, for controlling the navigator in the flightController
             </description>
-            <field type="uint64_t"  name="time_usec">Timestamp from the SHIFT PC</field>
-            <field type="uint32_t"  name="pathIndex">Index of the path which is affected by this command</field>
-            <field type="uint8_t"   name="cmd">The command itself. Using ENUM: SHIFT_NAVIGATOR_CMD_ENUM</field>
+            <field type="uint8_t"    name="target_system">System ID</field>
+            <field type="uint64_t"   name="time_usec">Timestamp from the SHIFT PC</field>
+            <field type="uint32_t"   name="pathIndex">Index of the path which is affected by this command</field>
+            <field type="uint8_t"    name="cmd">The command itself. Using ENUM: SHIFT_NAVIGATOR_CMD_ENUM</field>
         </message>
         <message id="560" name="SHIFT_NAVIGATOR_POINT">
             <description>
                 SHIFT Navigator point
             </description>
+            <field type="uint8_t"    name="target_system">System ID</field>
             <field type="uint16_t"   name="pathIndex">The pathIndex to which this point belongs</field>
             <field type="uint16_t"   name="pointIndex">The pointIndex of this point</field>
-            <field type="float"  name="positionX">positionX value</field>
-            <field type="float"  name="positionY">positionY value</field>
-            <field type="float"  name="positionZ">positionZ value</field>
-            <field type="float"  name="positionRoll">positionRoll value</field>
-            <field type="float"  name="positionPitch">positionPitch value</field>
-            <field type="float"  name="positionYaw">positionYaw value</field>
-            <field type="float"  name="duration">duration to reach this point(x,y,z)</field>
-            <field type="uint8_t"   name="yawBehaviour">Behaviour of the yaw while traveling to this point. Using ENUM: SHIFT_NAVIGATOR_YAW_BEHAVIOUR_ENUM</field>
-            <field type="uint8_t"   name="type">Type of this point. Using ENUM: SHIFT_NAVIGATOR_POINT_TYPE_ENUM</field>
+            <field type="float"      name="positionX">positionX value</field>
+            <field type="float"      name="positionY">positionY value</field>
+            <field type="float"      name="positionZ">positionZ value</field>
+            <field type="float"      name="positionRoll">positionRoll value</field>
+            <field type="float"      name="positionPitch">positionPitch value</field>
+            <field type="float"      name="positionYaw">positionYaw value</field>
+            <field type="float"      name="duration">duration to reach this point(x,y,z,r,p,y)</field>
+            <field type="uint8_t"    name="yawBehaviour">Behaviour of the yaw while traveling to this point. Using ENUM: SHIFT_NAVIGATOR_YAW_BEHAVIOUR_ENUM</field>
+            <field type="uint8_t"    name="type">Type of this point. Using ENUM: SHIFT_NAVIGATOR_POINT_TYPE_ENUM</field>
         </message>
-        <message id="565" name="SHIFT_NAVIGATOR_STATUS">
+        <message id="565" name="SHIFT_SYSTEM_STATUS">
             <description>
-                SHIFT Navigator status (from PX4 to SHIFT)
+                SHIFT System status (from flightController to SHIFT)
             </description>
             <field type="uint16_t"   name="currentPathIndex">The current PathIndex traveling</field>
             <field type="uint16_t"   name="currentPointIndex">The current PointIndex traveling</field>
-            <field type="uint8_t"  name="batteryRemaining">Remaining percentage of the battery</field>
-            <field type="uint8_t"  name="navigatorMode">Current mode of the navigator</field>
-            <field type="uint8_t"  name="navigatorSubMode">Current sub mode of the navigator</field>
-            <field type="uint8_t"  name="objectMode">Current mode of the object</field>
-            <field type="uint8_t"  name="detailField">Detail field</field>
+            <field type="uint8_t"    name="batteryRemaining">Remaining percentage of the battery</field>
+            <field type="uint8_t"    name="navigatorMode">Current mode of the navigator</field>
+            <field type="uint8_t"    name="navigatorSubMode">Current sub mode of the navigator</field>
+            <field type="uint8_t"    name="objectMode">Current mode of the object</field>
+            <field type="uint8_t"    name="detailField">Detail field</field>
         </message>
         <message id="570" name="SHIFT_SYSTEM_CMD">
             <description>
-                SHIFT System cmd (from SHIFT to PX4)
+                SHIFT System cmd (from SHIFT to flightController) (from SHIFT to SHIFT+W)
             </description>
+            <field type="uint8_t"    name="target_system">System ID</field>
             <field type="uint16_t"   name="cmd1">cmd1 field</field>
             <field type="uint16_t"   name="cmd2">cmd2 field</field>
             <field type="uint16_t"   name="cmd3">cmd3 field</field>
@@ -314,6 +317,14 @@
             <field type="uint16_t"   name="cmd5">cmd5 field</field>
             <field type="uint16_t"   name="cmd6">cmd6 field</field>
             <field type="uint8_t"    name="type">type field</field>
+        </message>
+        <message id="575" name="SHIFTW_SYSTEM_STATUS">
+            <description>
+                SHIFT+W System status (from SHIFT+W to SHIFT)
+            </description>
+            <field type="uint8_t"    name="status">Status</field>
+            <field type="uint8_t"    name="serialNumber">SerialNumber</field>
+            <field type="uint8_t"    name="detailField">Detail field</field>
         </message>
         
         
