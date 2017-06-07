@@ -2606,6 +2606,17 @@
       <field type="uint8_t" name="sub_mode">Not used currently.</field>
       <field type="uint16_t" name="vendor_specific_status_code">Vendor-specific status information.</field>
     </message>
+    <message id="9" name="UAVCAN_NODE_INFO">
+      <description>General information describing a particular UAVCAN node. Please refer to the definition of the UAVCAN service "uavcan.protocol.GetNodeInfo" for the background information. This message should be emitted by the system whenever a new node appears online, or an existing node reboots. Additionally, it is recommended to emit this message periorically at a low frequency. The UAVCAN specification is available at http://uavcan.org.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
+      <field type="char[80]" name="name">Node name string. For example, "sapog.px4.io".</field>
+      <field type="uint8_t" name="hw_version_major">Hardware major version number.</field>
+      <field type="uint8_t" name="hw_version_minor">Hardware minor version number.</field>
+      <field type="uint8_t[16]" name="hw_unique_id">Hardware unique 128-bit ID.</field>
+      <field type="uint8_t" name="sw_version_major">Software major version number.</field>
+      <field type="uint8_t" name="sw_version_minor">Software minor version number.</field>
+      <field type="uint32_t" name="sw_vcs_commit">Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.</field>
+    </message>
     <message id="11" name="SET_MODE">
       <description>THIS INTERFACE IS DEPRECATED. USE COMMAND_LONG with MAV_CMD_DO_SET_MODE INSTEAD. Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
       <field type="uint8_t" name="target_system">The system setting the mode</field>
