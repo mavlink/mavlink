@@ -598,6 +598,41 @@
         <description>Load neutral position and start to point to Lat,Lon,Alt</description>
       </entry>
     </enum>
+    <!-- UAVCAN node health enumeration -->
+    <enum name="UAVCAN_NODE_HEALTH">
+      <description>Generalized UAVCAN node health</description>
+      <entry value="0" name="UAVCAN_NODE_HEALTH_OK">
+        <description>The node is functioning properly.</description>
+      </entry>
+      <entry value="1" name="UAVCAN_NODE_HEALTH_WARNING">
+        <description>A critical parameter went out of range or the node has encountered a minor failure.</description>
+      </entry>
+      <entry value="2" name="UAVCAN_NODE_HEALTH_ERROR">
+        <description>The node has encountered a major failure.</description>
+      </entry>
+      <entry value="3" name="UAVCAN_NODE_HEALTH_CRITICAL">
+        <description>The node has suffered a fatal malfunction.</description>
+      </entry>
+    </enum>
+    <!-- UAVCAN node mode enumeration -->
+    <enum name="UAVCAN_NODE_MODE">
+      <description>Generalized UAVCAN node mode</description>
+      <entry value="0" name="UAVCAN_NODE_MODE_OPERATIONAL">
+        <description>The node is performing its primary functions.</description>
+      </entry>
+      <entry value="1" name="UAVCAN_NODE_MODE_INITIALIZATION">
+        <description>The node is initializing; this mode is entered immediately after startup.</description>
+      </entry>
+      <entry value="2" name="UAVCAN_NODE_MODE_MAINTENANCE">
+        <description>The node is under maintenance.</description>
+      </entry>
+      <entry value="3" name="UAVCAN_NODE_MODE_SOFTWARE_UPDATE">
+        <description>The node is in the process of updating its software.</description>
+      </entry>
+      <entry value="7" name="UAVCAN_NODE_MODE_OFFLINE">
+        <description>The node is no longer available online.</description>
+      </entry>
+    </enum>
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data.</description>
       <entry value="16" name="MAV_CMD_NAV_WAYPOINT">
@@ -2561,6 +2596,14 @@
     <message id="7" name="AUTH_KEY">
       <description>Emit an encrypted signature / key identifying this system. PLEASE NOTE: This protocol has been kept simple, so transmitting the key requires an encrypted channel for true safety.</description>
       <field type="char[32]" name="key">key</field>
+    </message>
+    <message id="8" name="UAVCAN_NODE_STATUS">
+      <description>General status information of an UAVCAN node. Please refer to the definition of the UAVCAN message "uavcan.protocol.NodeStatus" for the background information. The UAVCAN specification is available at http://uavcan.org.</description>
+      <field type="uint32_t" name="uptime_sec">The number of seconds since the start-up.</field>
+      <field type="uint8_t" name="health" enum="UAVCAN_NODE_HEALTH">Generalized node health status.</field>
+      <field type="uint8_t" name="mode" enum="UAVCAN_NODE_MODE">Generalized operating mode.</field>
+      <field type="uint8_t" name="sub_mode">Not used currently.</field>
+      <field type="uint16_t" name="vendor_specific_status_code">Vendor-specific status information.</field>
     </message>
     <message id="11" name="SET_MODE">
       <description>THIS INTERFACE IS DEPRECATED. USE COMMAND_LONG with MAV_CMD_DO_SET_MODE INSTEAD. Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
