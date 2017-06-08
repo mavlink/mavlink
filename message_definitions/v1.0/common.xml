@@ -1405,15 +1405,16 @@
         <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
         <param index="2">Camera mode (0: photo mode, 1: video mode)</param>
         <param index="3">Audio recording enabled (0: off 1: on)</param>
-        <param index="4">Reserved (all remaining params)</param>
+        <param index="4">Photo resolution ID (20 Megapixel, 10 Megapixel, etc.)</param>
+        <param index="5">Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc.)</param>
+        <param index="6">Reserved (all remaining params)</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
         <description>WIP: Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture.</description>
         <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
         <param index="2">Duration between two consecutive pictures (in seconds)</param>
         <param index="3">Number of images to capture total - 0 for unlimited capture</param>
-        <param index="4">Resolution horizontal in pixels (set to -1 for highest resolution possible)</param>
-        <param index="5">Resolution vertical in pixels (set to -1 for highest resolution possible)</param>
+        <param index="4">Reserved</param>
       </entry>
       <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE">
         <description>WIP: Stop image capture sequence</description>
@@ -1435,10 +1436,8 @@
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
         <description>WIP: Starts video capture (recording)</description>
         <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
-        <param index="2">Frames per second, set to -1 for highest framerate possible.</param>
-        <param index="3">Resolution horizontal in pixels (set to -1 for highest resolution possible)</param>
-        <param index="4">Resolution vertical in pixels (set to -1 for highest resolution possible)</param>
-        <param index="5">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise time in Hz)</param>
+        <param index="2">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)</param>
+        <param index="3">Reserved</param>
       </entry>
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE">
         <description>WIP: Stop the current video capture (recording)</description>
@@ -4015,6 +4014,8 @@
       <field type="uint8_t" name="image_quality_id">Reserved for image quality ID (Compression)</field>
       <field type="uint8_t" name="metering_mode_id">Reserved for metering mode ID (Average, Center, Spot, etc.)</field>
       <field type="uint8_t" name="flicker_mode_id">Reserved for flicker mode ID (Auto, 60Hz, 50Hz, etc.)</field>
+      <field type="uint8_t" name="photo_resolution_id">Photo resolution ID (20 Megapixel, 10 Megapixel, etc.)</field>
+      <field type="uint8_t" name="video_resolution_and_rate_id">Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc.)</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
       <description>WIP: Information about a storage medium</description>
@@ -4035,11 +4036,6 @@
       <field type="uint8_t" name="image_status">Current status of image capturing (0: not running, 1: interval capture in progress)</field>
       <field type="uint8_t" name="video_status">Current status of video capturing (0: not running, 1: capture in progress)</field>
       <field type="float" name="image_interval" units="s">Image capture interval in seconds</field>
-      <field type="float" name="video_framerate" units="Hz">Video frame rate in Hz</field>
-      <field type="uint16_t" name="image_resolution_h" units="pix">Image resolution in pixels horizontal</field>
-      <field type="uint16_t" name="image_resolution_v" units="pix">Image resolution in pixels vertical</field>
-      <field type="uint16_t" name="video_resolution_h" units="pix">Video resolution in pixels horizontal</field>
-      <field type="uint16_t" name="video_resolution_v" units="pix">Video resolution in pixels vertical</field>
       <field type="uint32_t" name="recording_time_ms" units="ms">Time in milliseconds since recording started</field>
       <field type="float" name="available_capacity" units="Mibytes">Available storage capacity in MiB</field>
     </message>
