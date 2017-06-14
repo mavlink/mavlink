@@ -276,6 +276,15 @@
             <field type="uint32_t"   name="pathIndex">Index of the path which is affected by this command</field>
             <field type="uint8_t"    name="cmd">The command itself. Using ENUM: SHIFT_NAVIGATOR_CMD_ENUM</field>
         </message>
+        <message id="555" name="SHIFT_ATT_POS">
+            <description>Motion capture attitude and position</description>
+            <field type="uint8_t"  name="target_system">System ID</field>
+            <field type="uint64_t" name="time_usec" units="us">Timestamp (micros since boot or Unix epoch)</field>
+            <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+            <field type="float" name="x" units="m">X position in meters (NED)</field>
+            <field type="float" name="y" units="m">Y position in meters (NED)</field>
+            <field type="float" name="z" units="m">Z position in meters (NED)</field>
+        </message>
         <message id="560" name="SHIFT_NAVIGATOR_POINT">
             <description>
                 SHIFT Navigator point
