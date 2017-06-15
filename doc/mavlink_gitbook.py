@@ -13,9 +13,7 @@ from bs4 import BeautifulSoup as bs
 import re
 
 xml_file_url = "https://raw.github.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml";
-#xsl_file_url= "https://raw.github.com/mavlink/mavlink/master/doc/mavlink_to_html_table_gitbook.xsl";
-xsl_file_url= "https://raw.githubusercontent.com/hamishwillee/mavlink/hhgw_gitbook_mavlink_messages/doc/mavlink_to_html_table_gitbook.xsl";
-
+xsl_file_url= "https://raw.github.com/mavlink/mavlink/master/doc/mavlink_to_html_table_gitbook.xsl";
 output_file_name = "./message-definitions.md"
 
 # Get files from published URLs
