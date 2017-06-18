@@ -4,6 +4,8 @@
 This script generates a markdown file (message-definitions.md) that can be imported into a gitbook to display the MAVLink Common message format (HTML).
 (this is a mechanism of bringing the current docs into the gitbook: http://mavlink.org/messages/common )
 
+The script runs on both Python2 and Python 3. The following libraries must be imported: lxml, requests, bs4.
+
 The file is generated using an XSLT transformation from the XML at "https://raw.github.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml". 
 """
 
