@@ -559,7 +559,7 @@ NOT the global position estimate of the sytem, but rather a RAW sensor value. Se
       <field type="float" name="hdg">Compass heading in degrees, 0..360 degrees</field>
     </message>
     <message id="34" name="SYS_STATUS">
-      <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows wether the system is currently active or not and if an emergency occured. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occured it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
+      <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows whether the system is currently active or not and if an emergency occured. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occured it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
       <field type="uint8_t" name="mode">System mode, see MAV_MODE ENUM in mavlink/include/mavlink_types.h</field>
       <field type="uint8_t" name="nav_mode">Navigation mode, see MAV_NAV_MODE ENUM</field>
       <field type="uint8_t" name="status">System status flag, see MAV_STATUS ENUM</field>
@@ -886,7 +886,7 @@ of the controller before actual flight and to assist with tuning controller para
       <field type="float" name="param4">Parameter 4, as defined by MAV_CMD enum.</field>
     </message>
     <message id="76" name="COMMAND_ACK">
-      <description>Report status of a command. Includes feedback wether the command was executed</description>
+      <description>Report status of a command. Includes feedback whether the command was executed</description>
       <field type="float" name="command">Current airspeed in m/s</field>
       <field type="float" name="result">1: Action ACCEPTED and EXECUTED, 1: Action TEMPORARY REJECTED/DENIED, 2: Action PERMANENTLY DENIED, 3: Action UNKNOWN/UNSUPPORTED, 4: Requesting CONFIRMATION</field>
     </message>
