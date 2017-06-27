@@ -2571,6 +2571,21 @@
         <description>Static fixed, typically used for base stations</description>
       </entry>
     </enum>
+    <enum name="LANDING_TARGET_TYPE">
+      <description>Type of landing target</description>
+      <entry value="0" name="LANDING_TARGET_TYPE_LIGHT_BEACON">
+        <description>Landing target signaled by light beacon (ex: IR-LOCK)</description>
+      </entry>
+      <entry value="1" name="LANDING_TARGET_TYPE_RADIO_BEACON">
+        <description>Landing target signaled by radio beacon (ex: ILS, NDB)</description>
+      </entry>
+      <entry value="2" name="LANDING_TARGET_TYPE_VISION_FIDUCIAL">
+        <description>Landing target represented by a fiducial marker (ex: ARTag)</description>
+      </entry>
+      <entry value="3" name="LANDING_TARGET_TYPE_VISION_OTHER">
+        <description>Landing target represented by a pre-defined visual shape/feature (ex: X-marker, H-marker, square)</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -3827,6 +3842,13 @@
       <field type="float" name="distance" units="m">Distance to the target from the vehicle in meters</field>
       <field type="float" name="size_x" units="rad">Size in radians of target along x-axis</field>
       <field type="float" name="size_y" units="rad">Size in radians of target along y-axis</field>
+      <extensions/>
+      <field type="float" name="x" units="m">X Position of the landing target on MAV_FRAME</field>
+      <field type="float" name="y" units="m">Y Position of the landing target on MAV_FRAME</field>
+      <field type="float" name="z" units="m">Z Position of the landing target on MAV_FRAME</field>
+      <field type="float[4]" name="q">Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">LANDING_TARGET_TYPE enum specifying the type of landing target</field>
+      <field type="uint8_t" name="position_valid">Boolean indicating known position (1) or default unkown position (0), for validation of positioning of the landing target</field>
     </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
