@@ -51,12 +51,6 @@
                 <description>Field value4 should be ignored</description>
             </entry>
         </enum>
-        <enum name="ROSFLIGHT_FC_STATUS">
-          <entry value="0x01" name="ROSFLIGHT_STATUS_ARMED"/>
-          <entry value="0x02" name="ROSFLIGHT_STATUS_IN_FAILSAFE"/>
-          <entry value="0x04" name="ROSFLIGHT_STATUS_RC_OVERRIDE"/>
-          <entry value="0x08" name="ROSFLIGHT_STATUS_OFFBOARD_CONTROL_ACTIVE"/>
-        </enum>
         <enum name="ROSFLIGHT_ERROR_CODE">
           <entry value="0x00" name="ROSFLIGHT_ERROR_NONE"/>
           <entry value="0x01" name="ROSFLIGHT_ERROR_INVALID_MIXER"/>
@@ -136,11 +130,13 @@
          <field type="float[8]" name="values"/>
        </message>
        <message id="191" name="ROSFLIGHT_STATUS">
-        <field type="uint8_t" name="status" enum="ROSFLIGHT_FC_STATUS"/>
+        <field type="uint8_t" name="armed"/>
+        <field type="uint8_t" name="failsafe"/>
+        <field type="uint8_t" name="rc_override"/>
         <field type="uint8_t" name="error_code" enum="ROSFLIGHT_ERROR_CODE"/>
         <field type="uint8_t" name="control_mode" enum="OFFBOARD_CONTROL_MODE"/>
-        <field type="uint16_t" name="num_errors"/>
-        <field type="uint16_t" name="loop_time_us"/>
+        <field type="int16_t" name="num_errors"/>
+        <field type="int16_t" name="loop_time_us"/>
       </message>
       <message id="192" name="ROSFLIGHT_VERSION">
         <field type="char[50]" name="version"/>
