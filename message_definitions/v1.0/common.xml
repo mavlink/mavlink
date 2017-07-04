@@ -2454,6 +2454,15 @@
         <description>Static fixed, typically used for base stations</description>
       </entry>
     </enum>
+    <enum name="RTK_BASELINE_COORDINATE_SYSTEM">
+      <description>RTK GPS baseline coordinate system, used for RTK corrections</description>
+      <entry value="0" name="RTK_BASELINE_COORDINATE_SYSTEM_ECEF">
+        <description>Earth-centered, Earth-fixed</description>
+      </entry>
+      <entry value="1" name="RTK_BASELINE_COORDINATE_SYSTEM_NED">
+        <description>North, East, Down</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -3491,7 +3500,7 @@
       <field type="uint8_t" name="rtk_health">GPS-specific health report for RTK data.</field>
       <field type="uint8_t" name="rtk_rate" units="Hz">Rate of baseline messages being received by GPS, in HZ</field>
       <field type="uint8_t" name="nsats">Current number of sats used for RTK calculation.</field>
-      <field type="uint8_t" name="baseline_coords_type">Coordinate system of baseline. 0 == ECEF, 1 == NED</field>
+      <field type="uint8_t" name="baseline_coords_type" enum="RTK_BASELINE_COORDINATE_SYSTEM">Coordinate system of baseline</field>
       <field type="int32_t" name="baseline_a_mm" units="mm">Current baseline in ECEF x or NED north component in mm.</field>
       <field type="int32_t" name="baseline_b_mm" units="mm">Current baseline in ECEF y or NED east component in mm.</field>
       <field type="int32_t" name="baseline_c_mm" units="mm">Current baseline in ECEF z or NED down component in mm.</field>
@@ -3507,7 +3516,7 @@
       <field type="uint8_t" name="rtk_health">GPS-specific health report for RTK data.</field>
       <field type="uint8_t" name="rtk_rate" units="Hz">Rate of baseline messages being received by GPS, in HZ</field>
       <field type="uint8_t" name="nsats">Current number of sats used for RTK calculation.</field>
-      <field type="uint8_t" name="baseline_coords_type">Coordinate system of baseline. 0 == ECEF, 1 == NED</field>
+      <field type="uint8_t" name="baseline_coords_type" enum="RTK_BASELINE_COORDINATE_SYSTEM">Coordinate system of baseline</field>
       <field type="int32_t" name="baseline_a_mm" units="mm">Current baseline in ECEF x or NED north component in mm.</field>
       <field type="int32_t" name="baseline_b_mm" units="mm">Current baseline in ECEF y or NED east component in mm.</field>
       <field type="int32_t" name="baseline_c_mm" units="mm">Current baseline in ECEF z or NED down component in mm.</field>
