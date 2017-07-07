@@ -1381,13 +1381,13 @@
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="522" name="MAV_CMD_REQUEST_CAMERA_SETTINGS">
-        <description>WIP: Request camera settings (CAMERA_SETTINGS)</description>
+        <description>WIP: Request camera settings (CAMERA_SETTINGS).</description>
         <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
         <param index="2">0: No Action 1: Request camera settings</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="523" name="MAV_CMD_SET_CAMERA_SETTINGS_1">
-        <description>WIP: Set the camera settings part 1 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change.</description>
+        <description>WIP: Set the camera settings part 1 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change. (EXPERIMENTAL: IT WILL BE REMOVED)</description>
         <param index="1">Camera ID (1 for first, 2 for second, etc.)</param>
         <param index="2">Aperture (1/value)</param>
         <param index="3">Shutter speed in seconds</param>
@@ -1397,7 +1397,7 @@
         <param index="7">White balance (color temperature in K) (0: Auto WB)</param>
       </entry>
       <entry value="524" name="MAV_CMD_SET_CAMERA_SETTINGS_2">
-        <description>WIP: Set the camera settings part 2 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change.</description>
+        <description>WIP: Set the camera settings part 2 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change. (EXPERIMENTAL: IT WILL BE REMOVED)</description>
         <param index="1">Camera ID (1 for first, 2 for second, etc.)</param>
         <param index="2">Reserved for Flicker mode (0 for Auto)</param>
         <param index="3">Reserved for metering mode ID (Average, Center, Spot, etc.)</param>
@@ -1439,11 +1439,10 @@
         <description>WIP: Set camera running mode. Use NAN for reserved values and values you don't want to change.</description>
         <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
         <param index="2">Camera mode (0: photo mode, 1: video mode)</param>
-        <param index="3">Audio recording enabled (0: off 1: on)</param>
-        <param index="4">Reserved (all remaining params)</param>
+        <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="531" name="MAV_CMD_SET_CAMERA_SETTINGS_3">
-        <description>WIP: Set the camera settings part 3 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change.</description>
+        <description>WIP: Set the camera settings part 3 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change. (EXPERIMENTAL: IT WILL BE REMOVED)</description>
         <param index="1">Camera ID (1 for first, 2 for second, etc.)</param>
         <param index="2">Photo resolution ID (4000x3000, 2560x1920, etc., -1 for maximum possible)</param>
         <param index="3">Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc., -1 for maximum possible)</param>
@@ -2586,6 +2585,24 @@
         <description>Landing target represented by a pre-defined visual shape/feature (ex: X-marker, H-marker, square)</description>
       </entry>
     </enum>
+    <enum name="CAMERA_CAP_FLAGS">
+      <description>Camera capability flags (Bitmap).</description>
+      <entry value="1" name="CAMERA_CAP_FLAGS_CAPTURE_VIDEO">
+        <description>Camera is able to record video.</description>
+      </entry>
+      <entry value="2" name="CAMERA_CAP_FLAGS_CAPTURE_PHOTO">
+        <description>Camera is able to capture photos.</description>
+      </entry>
+      <entry value="4" name="CAMERA_CAP_FLAGS_HAS_MODES">
+        <description>Camera has separate Video and Photos modes (MAV_CMD_SET_CAMERA_MODE)</description>
+      </entry>
+      <entry value="8" name="CAMERA_CAP_FLAGS_CAN_CAPTURE_PHOTO_IN_VIDEO_MODE">
+        <description>Camera can capture photos while in video mode</description>
+      </entry>
+      <entry value="16" name="CAMERA_CAP_FLAGS_CAN_CAPTURE_VIDEO_IN_PHOTO_MODE">
+        <description>Camera can capture videos while in photo mode</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -3158,6 +3175,7 @@
       <field type="uint8_t" name="result" enum="MAV_RESULT">See MAV_RESULT enum</field>
       <extensions/>
       <field type="uint8_t" name="progress">WIP: Needs to be set when MAV_RESULT is MAV_RESULT_IN_PROGRESS, values from 0 to 100 for progress percentage, 255 for unknown progress.</field>
+      <field type="uint8_t" name="device_id">WIP: Used to identify targeted device when multiple devices use same component ID (i.e. Camera, Storage, etc.)</field>
     </message>
     <message id="81" name="MANUAL_SETPOINT">
       <description>Setpoint in roll, pitch, yaw and thrust from the operator</description>
@@ -4078,33 +4096,36 @@
       <field type="uint8_t" name="camera_count">Number of cameras</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the camera model</field>
-      <field type="uint32_t" name="firmware_version">Version of the camera firmware</field>
+      <field type="uint32_t" name="firmware_version">Version of the camera firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
       <field type="float" name="focal_length" units="mm">Focal length in mm</field>
       <field type="float" name="sensor_size_h" units="mm">Image sensor size horizontal in mm</field>
       <field type="float" name="sensor_size_v" units="mm">Image sensor size vertical in mm</field>
       <field type="uint16_t" name="resolution_h" units="pix">Image resolution in pixels horizontal</field>
       <field type="uint16_t" name="resolution_v" units="pix">Image resolution in pixels vertical</field>
       <field type="uint8_t" name="lens_id">Reserved for a lens ID</field>
+      <field type="uint32_t" name="flags" enum="CAMERA_CAP_FLAGS">CAMERA_CAP_FLAGS enum flags (bitmap) describing camera capabilities.</field>
+      <field type="uint16_t" name="cam_definition_version">Camera definition version (iteration)</field>
+      <field type="uint8_t[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available).</field>
     </message>
     <message id="260" name="CAMERA_SETTINGS">
-      <description>WIP: Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS and written using MAV_CMD_SET_CAMERA_SETTINGS</description>
+      <description>WIP: Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS and written using MAV_CMD_SET_CAMERA_SETTINGS.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
       <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
-      <field type="uint8_t" name="exposure_mode">0: full auto 1: full manual 2: aperture priority 3: shutter priority</field>
-      <field type="float" name="aperture">Aperture is 1/value</field>
-      <field type="float" name="shutter_speed" units="s">Shutter speed in seconds</field>
-      <field type="float" name="iso_sensitivity">ISO sensitivity</field>
-      <field type="float" name="ev">Exposure Value</field>
-      <field type="float" name="white_balance" units="K">Color temperature in degrees Kelvin. (0: Auto WB)</field>
-      <field type="uint8_t" name="mode_id">Reserved for a camera mode ID. (0: Photo 1: Video)</field>
-      <field type="uint8_t" name="audio_recording">Audio recording enabled (0: off 1: on)</field>
-      <field type="uint8_t" name="color_mode_id">Reserved for a color mode ID (Neutral, Vivid, etc.)</field>
-      <field type="uint8_t" name="image_format_id">Reserved for image format ID (Jpeg/Raw/Jpeg+Raw)</field>
-      <field type="uint8_t" name="image_quality_id">Reserved for image quality ID (Compression)</field>
-      <field type="uint8_t" name="metering_mode_id">Reserved for metering mode ID (Average, Center, Spot, etc.)</field>
-      <field type="uint8_t" name="flicker_mode_id">Reserved for flicker mode ID (Auto, 60Hz, 50Hz, etc.)</field>
-      <field type="uint8_t" name="photo_resolution_id">Photo resolution ID (4000x3000, 2560x1920, etc.)</field>
-      <field type="uint8_t" name="video_resolution_and_rate_id">Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc.)</field>
+      <field type="uint8_t" name="exposure_mode">0: full auto 1: full manual 2: aperture priority 3: shutter priority. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="float" name="aperture">Aperture is 1/value. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="float" name="shutter_speed" units="s">Shutter speed in seconds. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="float" name="iso_sensitivity">ISO sensitivity. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="float" name="ev">Exposure Value. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="float" name="white_balance" units="K">Color temperature in degrees Kelvin. (0: Auto WB). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="uint8_t" name="mode_id">Camera mode ID (0: Photo 1: Video)</field>
+      <field type="uint8_t" name="audio_recording">Audio recording enabled (0: off 1: on). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="uint8_t" name="color_mode_id">Reserved for a color mode ID (Neutral, Vivid, etc.). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="uint8_t" name="image_format_id">Reserved for image format ID (Jpeg/Raw/Jpeg+Raw). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="uint8_t" name="image_quality_id">Reserved for image quality ID (Compression). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="uint8_t" name="metering_mode_id">Reserved for metering mode ID (Average, Center, Spot, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="uint8_t" name="flicker_mode_id">Reserved for flicker mode ID (Auto, 60Hz, 50Hz, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="uint8_t" name="photo_resolution_id">Photo resolution ID (4000x3000, 2560x1920, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="uint8_t" name="video_resolution_and_rate_id">Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
       <description>WIP: Information about a storage medium</description>
