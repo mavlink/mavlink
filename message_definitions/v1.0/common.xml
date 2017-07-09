@@ -805,7 +805,7 @@
       <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF">
         <description>Takeoff from ground using VTOL mode</description>
         <param index="1">Empty</param>
-        <param index="2">Empty</param>
+        <param index="2">Forwards transition heading: 0: use the heading towards the next waypoint, 1: use the heading on takeoff, 2: use the specified heading in parameter 4, 3: use the current heading when reaching takeoff altitude (facing the wind when weather-vaning is active).</param>
         <param index="3">Empty</param>
         <param index="4">Yaw angle in degrees. NaN for unchanged.</param>
         <param index="5">Latitude</param>
@@ -1540,6 +1540,8 @@
       <entry value="3000" name="MAV_CMD_DO_VTOL_TRANSITION">
         <description>Request VTOL transition</description>
         <param index="1">The target VTOL state, as defined by ENUM MAV_VTOL_STATE. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.</param>
+        <param index="2">Forwards transition heading: 0: use the heading towards the next waypoint, 1: ignored, 2: use the specified heading in parameter 4, 3: use the current heading when executing this command (facing the wind when weather-vaning is active).</param>
+        <param index="4">Yaw angle in degrees.</param>
       </entry>
       <entry value="4000" name="MAV_CMD_SET_GUIDED_SUBMODE_STANDARD">
         <description>This command sets the submode to standard guided when vehicle is in guided mode. The vehicle holds position and altitude and the user can input the desired velocites along all three axes.
