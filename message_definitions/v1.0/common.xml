@@ -1409,7 +1409,7 @@
         <param index="4">ISO sensitivity</param>
         <param index="5">AE mode (Auto Exposure) (0: full auto 1: full manual 2: aperture priority 3: shutter priority)</param>
         <param index="6">EV value (when in auto exposure)</param>
-        <param index="7">White balance (color temperature in K) (0: Auto WB)</param>
+        <param index="7">White balance (color temperature in K) (0: Auto WB, -1: Lock at current auto value)</param>
       </entry>
       <entry value="524" name="MAV_CMD_SET_CAMERA_SETTINGS_2">
         <description>WIP: Set the camera settings part 2 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change. (EXPERIMENTAL: IT WILL BE REMOVED)</description>
@@ -1422,13 +1422,13 @@
         <param index="7">Reserved</param>
       </entry>
       <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION">
-        <description>WIP: Request storage information (STORAGE_INFORMATION)</description>
+        <description>WIP: Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage.</description>
         <param index="1">Storage ID (0 for all, 1 for first, 2 for second, etc.)</param>
         <param index="2">0: No Action 1: Request storage information</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="526" name="MAV_CMD_STORAGE_FORMAT">
-        <description>WIP: Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent.</description>
+        <description>WIP: Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.</description>
         <param index="1">Storage ID (1 for first, 2 for second, etc.)</param>
         <param index="2">0: No action 1: Format storage</param>
         <param index="3">Reserved (all remaining params)</param>
@@ -2584,6 +2584,9 @@
       <entry value="7" name="GPS_FIX_TYPE_STATIC">
         <description>Static fixed, typically used for base stations</description>
       </entry>
+      <entry value="8" name="GPS_FIX_TYPE_PPP">
+        <description>PPP, 3D position.</description>
+      </entry>
     </enum>
     <enum name="LANDING_TARGET_TYPE">
       <description>Type of landing target</description>
@@ -2616,6 +2619,21 @@
       </entry>
       <entry value="16" name="CAMERA_CAP_FLAGS_CAN_CAPTURE_VIDEO_IN_IMAGE_MODE">
         <description>Camera can capture videos while in Photo/Image mode</description>
+      </entry>
+    </enum>
+    <enum name="PARAM_ACK">
+      <description>Result from a PARAM_EXT_SET message.</description>
+      <entry value="0" name="PARAM_ACK_ACCEPTED">
+        <description>Parameter value ACCEPTED and SET</description>
+      </entry>
+      <entry value="1" name="PARAM_ACK_VALUE_UNSUPPORTED">
+        <description>Parameter value UNKNOWN/UNSUPPORTED</description>
+      </entry>
+      <entry value="2" name="PARAM_ACK_FAILED">
+        <description>Parameter failed to set</description>
+      </entry>
+      <entry value="3" name="PARAM_ACK_IN_PROGRESS">
+        <description>Parameter value received but not yet validated or set. A subsequent PARAM_EXT_ACK will follow once operation is completed with the actual result. These are for parameters that may take longer to set. Instead of waiting for an ACK and potentially timing out, you will immediately receive this response to let you know it was received.</description>
       </entry>
     </enum>
   </enums>
@@ -4130,7 +4148,7 @@
       <field type="float" name="shutter_speed" units="s">Shutter speed in seconds. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
       <field type="float" name="iso_sensitivity">ISO sensitivity. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
       <field type="float" name="ev">Exposure Value. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="float" name="white_balance" units="K">Color temperature in degrees Kelvin. (0: Auto WB). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="float" name="white_balance" units="K">Color temperature in degrees Kelvin. (0: Auto WB, -1: Locked at auto value). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
       <field type="uint8_t" name="mode_id">Camera mode ID (0: Photo 1: Video)</field>
       <field type="uint8_t" name="audio_recording">Audio recording enabled (0: off 1: on). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
       <field type="uint8_t" name="color_mode_id">Reserved for a color mode ID (Neutral, Vivid, etc.). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
@@ -4142,7 +4160,7 @@
       <field type="uint8_t" name="video_resolution_and_rate_id">Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
-      <description>WIP: Information about a storage medium</description>
+      <description>WIP: Information about a storage medium.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
       <field type="uint8_t" name="storage_id">Storage ID (1 for first, 2 for second, etc.)</field>
       <field type="uint8_t" name="storage_count">Number of storage devices</field>
@@ -4156,9 +4174,9 @@
     <message id="262" name="CAMERA_CAPTURE_STATUS">
       <description>WIP: Information about the status of a capture</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="image_status">Current status of image capturing (0: not running, 1: interval capture in progress)</field>
-      <field type="uint8_t" name="video_status">Current status of video capturing (0: not running, 1: capture in progress)</field>
+      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="image_status">Current status of image capturing (0: idle, 1: capture in progress, 2: interval set but idle, 3: interval set and capture in progress)</field>
+      <field type="uint8_t" name="video_status">Current status of video capturing (0: idle, 1: capture in progress)</field>
       <field type="float" name="image_interval" units="s">Image capture interval in seconds</field>
       <field type="uint32_t" name="recording_time_ms" units="ms">Time in milliseconds since recording started</field>
       <field type="float" name="available_capacity" units="Mibytes">Available storage capacity in MiB</field>
@@ -4267,6 +4285,41 @@
       <field type="uint8_t" name="sw_version_major">Software major version number.</field>
       <field type="uint8_t" name="sw_version_minor">Software minor version number.</field>
       <field type="uint32_t" name="sw_vcs_commit">Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.</field>
+    </message>
+    <message id="320" name="PARAM_EXT_REQUEST_READ">
+      <description>Request to read the value of a parameter with the either the param_id string id or param_index.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="int16_t" name="param_index">Parameter index. Set to -1 to use the Parameter ID field as identifier (else param_id will be ignored)</field>
+    </message>
+    <message id="321" name="PARAM_EXT_REQUEST_LIST">
+      <description>Request all parameters of this component. After this request, all parameters are emitted.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+    </message>
+    <message id="322" name="PARAM_EXT_VALUE">
+      <description>Emit the value of a parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows them to re-request missing parameters after a loss or timeout.</description>
+      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="char[128]" name="param_value">Parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+      <field type="uint16_t" name="param_count">Total number of parameters</field>
+      <field type="uint16_t" name="param_index">Index of this parameter</field>
+    </message>
+    <message id="323" name="PARAM_EXT_SET">
+      <description>Set a parameter value. In order to deal with message loss (and retransmission of PARAM_EXT_SET), when setting a parameter value and the new value is the same as the current value, you will immediately get a PARAM_ACK_ACCEPTED response. If the current state is PARAM_ACK_IN_PROGRESS, you will accordingly receive a PARAM_ACK_IN_PROGRESS in response.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="char[128]" name="param_value">Parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+    </message>
+    <message id="324" name="PARAM_EXT_ACK">
+      <description>Response from a PARAM_EXT_SET message.</description>
+      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="char[128]" name="param_value">Parameter value (new value if PARAM_ACK_ACCEPTED, current value otherwise)</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
+      <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code: see the PARAM_ACK enum for possible codes.</field>
     </message>
   </messages>
 </mavlink>
