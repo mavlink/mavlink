@@ -59,17 +59,17 @@ rm -rf $CLIBRARY_PATH/*
 
 # generate new c headers
 echo -e "\0033[34mStarting to generate c headers\0033[0m\n"
-generate_headers ardupilotmega
-generate_headers autoquad
-generate_headers matrixpilot
-generate_headers minimal
-generate_headers pixhawk
+#generate_headers ardupilotmega
+#generate_headers autoquad
+#generate_headers matrixpilot
+#generate_headers minimal
+#generate_headers pixhawk
 generate_headers rosflight
-generate_headers slugs
-generate_headers test
-generate_headers ualberta
-generate_headers ASLUAV
-generate_headers common
+#generate_headers slugs
+#generate_headers test
+#generate_headers ualberta
+#generate_headers ASLUAV
+#generate_headers common
 mkdir -p $CLIBRARY_PATH/message_definitions
 cp message_definitions/v1.0/* $CLIBRARY_PATH/message_definitions/.
 echo -e "\0033[34mFinished generating c headers\0033[0m\n"
