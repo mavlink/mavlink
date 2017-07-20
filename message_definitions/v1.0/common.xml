@@ -1122,7 +1122,7 @@
         <param index="7">z</param>
       </entry>
       <!-- Camera Controller Mission Commands Enumeration -->
-      <!-- MAV_CMD_DO_DIGICAM_CONFIGURE should be deprecated and replaced with CAMERA_SETTINGS -->
+      <!-- MAV_CMD_DO_DIGICAM_CONFIGURE should be deprecated and replaced with PARAM_EXT_XXX messages -->
       <entry value="202" name="MAV_CMD_DO_DIGICAM_CONFIGURE">
         <description>Mission command to configure an on-board camera controller system.</description>
         <param index="1">Modes: P, TV, AV, M, Etc</param>
@@ -1391,35 +1391,13 @@
       </entry>
       <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION">
         <description>WIP: Request camera information (CAMERA_INFORMATION).</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">0: No action 1: Request camera capabilities</param>
-        <param index="3">Reserved (all remaining params)</param>
+        <param index="1">0: No action 1: Request camera capabilities</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="522" name="MAV_CMD_REQUEST_CAMERA_SETTINGS">
         <description>WIP: Request camera settings (CAMERA_SETTINGS).</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">0: No Action 1: Request camera settings</param>
-        <param index="3">Reserved (all remaining params)</param>
-      </entry>
-      <entry value="523" name="MAV_CMD_SET_CAMERA_SETTINGS_1">
-        <description>WIP: Set the camera settings part 1 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change. (EXPERIMENTAL: IT WILL BE REMOVED)</description>
-        <param index="1">Camera ID (1 for first, 2 for second, etc.)</param>
-        <param index="2">Aperture (1/value)</param>
-        <param index="3">Shutter speed in seconds</param>
-        <param index="4">ISO sensitivity</param>
-        <param index="5">AE mode (Auto Exposure) (0: full auto 1: full manual 2: aperture priority 3: shutter priority)</param>
-        <param index="6">EV value (when in auto exposure)</param>
-        <param index="7">White balance (color temperature in K) (0: Auto WB, -1: Lock at current auto value)</param>
-      </entry>
-      <entry value="524" name="MAV_CMD_SET_CAMERA_SETTINGS_2">
-        <description>WIP: Set the camera settings part 2 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change. (EXPERIMENTAL: IT WILL BE REMOVED)</description>
-        <param index="1">Camera ID (1 for first, 2 for second, etc.)</param>
-        <param index="2">Reserved for Flicker mode (0 for Auto)</param>
-        <param index="3">Reserved for metering mode ID (Average, Center, Spot, etc.)</param>
-        <param index="4">Reserved for image format ID (Jpeg/Raw/Jpeg+Raw)</param>
-        <param index="5">Reserved for image quality ID (Compression)</param>
-        <param index="6">Reserved for color mode ID (Neutral, Vivid, etc.)</param>
-        <param index="7">Reserved</param>
+        <param index="1">0: No Action 1: Request camera settings</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION">
         <description>WIP: Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage.</description>
@@ -1435,9 +1413,8 @@
       </entry>
       <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS">
         <description>WIP: Request camera capture status (CAMERA_CAPTURE_STATUS)</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">0: No Action 1: Request camera capture status</param>
-        <param index="3">Reserved (all remaining params)</param>
+        <param index="1">0: No Action 1: Request camera capture status</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="528" name="MAV_CMD_REQUEST_FLIGHT_INFORMATION">
         <description>WIP: Request flight information (FLIGHT_INFORMATION)</description>
@@ -1445,41 +1422,29 @@
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="529" name="MAV_CMD_RESET_CAMERA_SETTINGS">
-        <description>WIP: Reset all camera settings to Factory Default (CAMERA_SETTINGS)</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">0: No Action 1: Reset all settings</param>
-        <param index="3">Reserved (all remaining params)</param>
+        <description>WIP: Reset all camera settings to Factory Default</description>
+        <param index="1">0: No Action 1: Reset all settings</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="530" name="MAV_CMD_SET_CAMERA_MODE">
         <description>WIP: Set camera running mode. Use NAN for reserved values and values you don't want to change.</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">Camera mode (0: photo/image mode, 1: video mode)</param>
-        <param index="3">Reserved (all remaining params)</param>
-      </entry>
-      <entry value="531" name="MAV_CMD_SET_CAMERA_SETTINGS_3">
-        <description>WIP: Set the camera settings part 3 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change. (EXPERIMENTAL: IT WILL BE REMOVED)</description>
-        <param index="1">Camera ID (1 for first, 2 for second, etc.)</param>
-        <param index="2">Photo resolution ID (4000x3000, 2560x1920, etc., -1 for maximum possible)</param>
-        <param index="3">Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc., -1 for maximum possible)</param>
-        <param index="4">Reserved (all remaining params)</param>
+        <param index="1">Camera mode (CAM_MODE 0: photo/image mode, 1: video mode)</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
         <description>WIP: Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">Duration between two consecutive pictures (in seconds)</param>
-        <param index="3">Number of images to capture total - 0 for unlimited capture</param>
-        <param index="4">Reserved</param>
+        <param index="1">Duration between two consecutive pictures (in seconds)</param>
+        <param index="2">Number of images to capture total - 0 for unlimited capture</param>
+        <param index="3">Reserved</param>
       </entry>
       <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE">
         <description>WIP: Stop image capture sequence</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">Reserved</param>
+        <param index="1">Reserved</param>
       </entry>
       <entry value="2002" name="MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE">
         <description>WIP: Re-request a CAMERA_IMAGE_CAPTURE packet. Use NAN for reserved values.</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">Sequence number for missing CAMERA_IMAGE_CAPTURE packet</param>
-        <param index="3">Reserved (all remaining params)</param>
+        <param index="1">Sequence number for missing CAMERA_IMAGE_CAPTURE packet</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2003" name="MAV_CMD_DO_TRIGGER_CONTROL">
         <description>Enable or disable on-board camera triggering system.</description>
@@ -1489,14 +1454,12 @@
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
         <description>WIP: Starts video capture (recording). Use NAN for reserved values.</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)</param>
-        <param index="3">Reserved</param>
+        <param index="1">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)</param>
+        <param index="2">Reserved</param>
       </entry>
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE">
         <description>WIP: Stop the current video capture (recording). Use NAN for reserved values.</description>
-        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</param>
-        <param index="2">Reserved</param>
+        <param index="1">Reserved</param>
       </entry>
       <entry value="2502" name="MAV_CMD_VIDEO_START_STREAMING">
         <description>WIP: Start video streaming</description>
@@ -2634,6 +2597,15 @@
       </entry>
       <entry value="3" name="PARAM_ACK_IN_PROGRESS">
         <description>Parameter value received but not yet validated or set. A subsequent PARAM_EXT_ACK will follow once operation is completed with the actual result. These are for parameters that may take longer to set. Instead of waiting for an ACK and potentially timing out, you will immediately receive this response to let you know it was received.</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_MODE">
+      <description>Camera Modes.</description>
+      <entry value="0" name="CAMERA_MODE_IMAGE">
+        <description>Camera is in image/photo capture mode.</description>
+      </entry>
+      <entry value="1" name="CAMERA_MODE_VIDEO">
+        <description>Camera is in video capture mode.</description>
       </entry>
     </enum>
   </enums>
@@ -4124,7 +4096,6 @@
     <message id="259" name="CAMERA_INFORMATION">
       <description>WIP: Information about a camera</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
       <field type="uint8_t" name="camera_count">Number of cameras (EXPERIMENTAL: IT WILL BE REMOVED)</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the camera model</field>
@@ -4137,27 +4108,12 @@
       <field type="uint8_t" name="lens_id">Reserved for a lens ID</field>
       <field type="uint32_t" name="flags" enum="CAMERA_CAP_FLAGS">CAMERA_CAP_FLAGS enum flags (bitmap) describing camera capabilities.</field>
       <field type="uint16_t" name="cam_definition_version">Camera definition version (iteration)</field>
-      <field type="uint8_t[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available).</field>
+      <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available).</field>
     </message>
     <message id="260" name="CAMERA_SETTINGS">
-      <description>WIP: Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS and written using MAV_CMD_SET_CAMERA_SETTINGS.</description>
+      <description>WIP: Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="exposure_mode">0: full auto 1: full manual 2: aperture priority 3: shutter priority. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="float" name="aperture">Aperture is 1/value. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="float" name="shutter_speed" units="s">Shutter speed in seconds. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="float" name="iso_sensitivity">ISO sensitivity. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="float" name="ev">Exposure Value. (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="float" name="white_balance" units="K">Color temperature in degrees Kelvin. (0: Auto WB, -1: Locked at auto value). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="mode_id">Camera mode ID (0: Photo 1: Video)</field>
-      <field type="uint8_t" name="audio_recording">Audio recording enabled (0: off 1: on). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="color_mode_id">Reserved for a color mode ID (Neutral, Vivid, etc.). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="image_format_id">Reserved for image format ID (Jpeg/Raw/Jpeg+Raw). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="image_quality_id">Reserved for image quality ID (Compression). (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="metering_mode_id">Reserved for metering mode ID (Average, Center, Spot, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="flicker_mode_id">Reserved for flicker mode ID (Auto, 60Hz, 50Hz, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="photo_resolution_id">Photo resolution ID (4000x3000, 2560x1920, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
-      <field type="uint8_t" name="video_resolution_and_rate_id">Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
+      <field type="uint8_t" name="mode_id" enum="CAM_MODE">Camera mode (CAM_MODE)</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
       <description>WIP: Information about a storage medium.</description>
@@ -4174,7 +4130,6 @@
     <message id="262" name="CAMERA_CAPTURE_STATUS">
       <description>WIP: Information about the status of a capture</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
       <field type="uint8_t" name="image_status">Current status of image capturing (0: idle, 1: capture in progress, 2: interval set but idle, 3: interval set and capture in progress)</field>
       <field type="uint8_t" name="video_status">Current status of video capturing (0: idle, 1: capture in progress)</field>
       <field type="float" name="image_interval" units="s">Image capture interval in seconds</field>
@@ -4185,7 +4140,6 @@
       <description>WIP: Information about a captured image</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
       <field type="uint64_t" name="time_utc" units="us">Timestamp (microseconds since UNIX epoch) in UTC. 0 for unknown.</field>
-      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.) (EXPERIMENTAL: IT WILL BE REMOVED)</field>
       <field type="int32_t" name="lat" units="degE7">Latitude, expressed as degrees * 1E7 where image was taken</field>
       <field type="int32_t" name="lon" units="degE7">Longitude, expressed as degrees * 1E7 where capture was taken</field>
       <field type="int32_t" name="alt" units="m">Altitude in meters, expressed as * 1E3 (AMSL, not WGS84) where image was taken</field>
