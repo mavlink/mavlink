@@ -2710,14 +2710,20 @@
                 NOT the global position estimate of the system, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate. Coordinate frame is right-handed, Z-axis up (GPS frame).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
       <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">See the GPS_FIX_TYPE enum.</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84), in degrees * 1E7</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84), in degrees * 1E7</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84, EGM96 ellipsoid), in degrees * 1E7</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84, EGM96 ellipsoid), in degrees * 1E7</field>
       <field type="int32_t" name="alt" units="mm">Altitude (AMSL, NOT WGS84), in meters * 1000 (positive for up). Note that virtually all GPS modules provide the AMSL altitude in addition to the WGS84 altitude.</field>
       <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="epv">GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="vel" units="cm/s">GPS ground speed (m/s * 100). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="cog" units="cdeg">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
       <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
+      <extensions/>
+      <field type="int32_t" name="alt_ellipsoid" units="mm">Altitude (above WGS84, EGM96 ellipsoid), in meters * 1000 (positive for up).</field>
+      <field type="uint32_t" name="h_acc" units="mm">Position uncertainty in meters * 1000 (positive for up).</field>
+      <field type="uint32_t" name="v_acc" units="mm">Altitude uncertainty in meters * 1000 (positive for up).</field>
+      <field type="uint32_t" name="vel_acc" units="mm">Speed uncertainty in meters * 1000 (positive for up).</field>
+      <field type="uint32_t" name="hdg_acc" units="mm">Heading / track uncertainty in degrees * 1e5.</field>
     </message>
     <message id="25" name="GPS_STATUS">
       <description>The positioning status, as reported by GPS. This message is intended to display status information about each satellite visible to the receiver. See message GLOBAL_POSITION for the global position estimate. This message can contain information for up to 20 satellites.</description>
