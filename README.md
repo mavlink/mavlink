@@ -2,11 +2,11 @@
 
 ## MAVLink ##
 
+MAVLink -- Micro Air Vehicle Message Marshalling Library. The current protocol version is v2.
+
 *   Development Website: http://dev.ardupilot.org
 *   Source: [Mavlink Generator](https://github.com/ArduPilot/pymavlink)
 *   Discussion: [Gitter Channel](http://gitter.im/ArduPilot/pymavlink)
-
-MAVLink -- Micro Air Vehicle Message Marshalling Library.
 
 This is a library for lightweight communication between drones and/or ground control stations. It allows for defining messages within XML files, which then are converted into appropriate source code for different languages. These XML files are called dialects, most of which build on the *common* dialect provided in `common.xml`.
 
