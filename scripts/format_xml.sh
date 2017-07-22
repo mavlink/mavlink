@@ -34,7 +34,7 @@ do
 	check)
 		if ! cmp ${f} ${f}.new >/dev/null 2>&1
 		then
-			echo "$f needs formatting"
+			echo "$f needs formatting - run ./scripts/format_xml.sh $f"
 			ret=1
 		fi
 		;;
