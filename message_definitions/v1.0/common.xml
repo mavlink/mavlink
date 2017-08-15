@@ -1432,7 +1432,7 @@
       <entry value="530" name="MAV_CMD_SET_CAMERA_MODE">
         <description>Set camera running mode. Use NAN for reserved values.</description>
         <param index="1">Reserved (Set to 0)</param>
-        <param index="2">Camera mode (CAMERA_MODE 0: photo/image mode, 1: video mode)</param>
+        <param index="2">Camera mode (see CAMERA_MODE enum)</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
@@ -2601,6 +2601,9 @@
       <entry value="16" name="CAMERA_CAP_FLAGS_CAN_CAPTURE_VIDEO_IN_IMAGE_MODE">
         <description>Camera can capture videos while in Photo/Image mode</description>
       </entry>
+      <entry value="32" name="CAMERA_CAP_FLAGS_HAS_IMAGE_SURVEY_MODE">
+        <description>Camera has image survey mode (MAV_CMD_SET_CAMERA_MODE)</description>
+      </entry>
     </enum>
     <enum name="PARAM_ACK">
       <description>Result from a PARAM_EXT_SET message.</description>
@@ -2624,6 +2627,9 @@
       </entry>
       <entry value="1" name="CAMERA_MODE_VIDEO">
         <description>Camera is in video capture mode.</description>
+      </entry>
+      <entry value="2" name="CAMERA_MODE_IMAGE_SURVEY">
+        <description>Camera is in image survey capture mode. It allows for camera controller to do specific settings for surveys.</description>
       </entry>
     </enum>
   </enums>
