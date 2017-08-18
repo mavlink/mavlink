@@ -227,23 +227,24 @@ considered:
 For example:
 
 ```
-static const uint32_t accept_list[] = {
-    MAVLINK_MSG_ID_RADIO_STATUS
+static const uint32_t unsigned_messages[] = {
+	MAVLINK_MSG_ID_RADIO_STATUS
 };
-    
-static bool accept_unsigned_callback(const mavlink_status_t *status, uint32_t msgId)
+
+static bool accept_unsigned_callback(const mavlink_status_t *status, uint32_t message_id)
 {
-    if (status == mavlink_get_channel_status(MAVLINK_COMM_0)) {
-        // always accept channel 0, assumed to be secure channel. This
-        // is USB on PX4 boards
-        return true;
-    }
-    for (uint8_t i=0; i<ARRAY_SIZE(accept_list); i++) {
-        if (accept_list[i] == msgId) {
-            return true;
-        }
-    }
-    return false;
+	// Make the assumption that channel 0 is USB and should always be accessible
+	if (status == mavlink_get_channel_status(MAVLINK_COMM_0)) {
+		return true;
+	}
+
+	for (unsigned i = 0; i < sizeof(unsigned_messages) / sizeof(unsigned_messages[0]); i++) {
+		if (unsigned_messages[i] == message_id) {
+			return true;
+		}
+	}
+
+	return false;
 }
 ```
 

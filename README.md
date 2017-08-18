@@ -2,14 +2,14 @@
 
 ## MAVLink ##
 
+MAVLink -- Micro Air Vehicle Message Marshalling Library. The current protocol version is v2.
+
 *   Official Website: http://mavlink.org
 *   Source: [Mavlink Generator](https://github.com/mavlink/mavlink)
 *   Binaries (always up-to-date from master):
   * [C/C++ header-only library v1](https://github.com/mavlink/c_library_v1)
   * [C/C++ header-only library v2](https://github.com/mavlink/c_library_v2)
 *   Mailing list: [Google Groups](http://groups.google.com/group/mavlink)
-
-MAVLink -- Micro Air Vehicle Message Marshalling Library.
 
 This is a library for lightweight communication between drones and/or ground control stations. It allows for defining messages within XML files, which then are converted into appropriate source code for different languages. These XML files are called dialects, most of which build on the *common* dialect provided in `common.xml`.
 
