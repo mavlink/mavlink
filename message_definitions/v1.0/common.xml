@@ -823,7 +823,7 @@
       <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF">
         <description>Takeoff from ground using VTOL mode</description>
         <param index="1">Empty</param>
-        <param index="2">Empty</param>
+        <param index="2">Front transition heading, see VTOL_TRANSITION_HEADING enum.</param>
         <param index="3">Empty</param>
         <param index="4">Yaw angle in degrees. NaN for unchanged.</param>
         <param index="5">Latitude</param>
@@ -2587,6 +2587,24 @@
       </entry>
       <entry value="3" name="LANDING_TARGET_TYPE_VISION_OTHER">
         <description>Landing target represented by a pre-defined visual shape/feature (ex: X-marker, H-marker, square)</description>
+      </entry>
+    </enum>
+    <enum name="VTOL_TRANSITION_HEADING">
+      <description>Direction of VTOL transition</description>
+      <entry value="0" name="VTOL_TRANSITION_HEADING_VEHICLE_DEFAULT">
+        <description>Respect the heading configuration of the vehicle.</description>
+      </entry>
+      <entry value="1" name="VTOL_TRANSITION_HEADING_NEXT_WAYPOINT">
+        <description>Use the heading pointing towards the next waypoint.</description>
+      </entry>
+      <entry value="2" name="VTOL_TRANSITION_HEADING_TAKEOFF">
+        <description>Use the heading on takeoff (while sitting on the ground).</description>
+      </entry>
+      <entry value="3" name="VTOL_TRANSITION_HEADING_SPECIFIED">
+        <description>Use the specified heading in parameter 4.</description>
+      </entry>
+      <entry value="4" name="VTOL_TRANSITION_HEADING_ANY">
+        <description>Use the current heading when reaching takeoff altitude (potentially facing the wind when weather-vaning is active).</description>
       </entry>
     </enum>
     <enum name="CAMERA_CAP_FLAGS">
