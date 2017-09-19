@@ -46,9 +46,9 @@ mavgenerate.py is a header generation tool GUI written in Python. It requires Tk
 
 #### From the command line ####
 
-mavgen.py is a command-line interface for generating a language-specific MAVLink library. This is actually the backend used by `mavgenerate.py`. After the `mavlink` directory has been added to the Python path, it can be run by executing from the command line:
+mavgen.py is a command-line interface for generating a language-specific MAVLink library. This is actually the backend used by `mavgenerate.py`. After the `mavlink` directory has been added to the Python path, it can be run by executing from the command line. For example:
 
-    $ python -m pymavlink.tools.mavgen
+    $ python -m pymavlink.tools.mavgen --lang=C --wire-protocol=2.0 --output=generated/include/mavlink/v2.0 message_definitions/v1.0/common.xml
 
 ### Usage ###
 
@@ -57,13 +57,19 @@ Using the generated MAVLink dialect libraries varies depending on the language, 
 #### C ####
 To use MAVLink, include the *mavlink.h* header file in your project:
 
-    #include <mavlink.h>
+    #include <mavlink/mavlink.h>
 
-Do not include the individual message files. In some cases you will have to add the main folder to the include search path as well. To be safe, we recommend these flags:
+If headers for multiple dialects and/or versions are installed, your include path might instead look similar to the following:
 
-    $ gcc -I mavlink/include -I mavlink/include/<your message set, e.g. common>
+    #include <mavlink/v2.0/common/mavlink.h>
 
-The C MAVLink library utilizes a channels metaphor to allow for simultaneous processing of multiple MAVLink streams in the same program. It is therefore important to use the correct channel for each operation as all receiving and transmitting functions provided by MAVLink require a channel. If only one MAVLink stream exists, channel 0 should be used by using the `MAVLINK_COMM_0` constant.
+*Do not include the individual message files.* If you generate your own headers, you will have to add their output location to your C compiler's search path. For the greatest compatiblity with existing code and examples, we recommend that you specify the top-level output directory AND all generated dialects and versions:
+
+    $ gcc ... -I generated/include -I generated/include/mavlink/v2.0/common ...
+
+##### Multiple streams, a.k.a. "channels" #####
+
+The C MAVLink library utilizes a "channel" metaphor to allow for simultaneous processing of multiple, independent MAVLink streams in the same program. It is therefore important to use the correct channel for each operation as all receiving and transmitting functions provided by MAVLink require a channel. If only one MAVLink stream exists, channel 0 should be used by using the `MAVLINK_COMM_0` constant.
 
 ##### Receiving ######
 MAVLink reception is then done using `mavlink_helpers.h:mavlink_parse_char()`.
@@ -72,6 +78,8 @@ MAVLink reception is then done using `mavlink_helpers.h:mavlink_parse_char()`.
 Transmitting can be done by using the `mavlink_msg_*_pack()` function, where one is defined for every message. The packed message can then be serialized with `mavlink_helpers.h:mavlink_msg_to_send_buffer()` and then writing the resultant byte array out over the appropriate serial interface.
 
 It is possible to simplify the above by writing wrappers around the transmitting/receiving code. A multi-byte writing macro can be defined, `MAVLINK_SEND_UART_BYTES()`, or a single-byte function can be defined, `comm_send_ch()`, that wrap the low-level driver for transmitting the data. If this is done, `MAVLINK_USE_CONVENIENCE_FUNCTIONS` must be defined.
+
+#### TODO: other supported languages ####
 
 ### Scripts/Examples ###
 This MAVLink library also comes with supporting libraries and scripts for using, manipulating, and parsing MAVLink streams within the pymavlink, pymav
