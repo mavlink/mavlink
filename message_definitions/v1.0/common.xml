@@ -184,7 +184,7 @@
         <description>0b00010000 system stabilizes electronically its attitude (and optionally position). It needs however further control inputs to move around.</description>
       </entry>
       <entry value="8" name="MAV_MODE_FLAG_GUIDED_ENABLED">
-        <description>0b00001000 guided mode enabled, system flies MISSIONs / mission items.</description>
+        <description>0b00001000 guided mode enabled, system flies waypoints / mission items.</description>
       </entry>
       <entry value="4" name="MAV_MODE_FLAG_AUTO_ENABLED">
         <description>0b00000100 autonomous mode enabled, system finds its own goal positions. Guided flag can be set or not, depends on the actual implementation.</description>
@@ -263,10 +263,10 @@
         <description>System is allowed to be active, under autonomous control, manual setpoint</description>
       </entry>
       <entry value="92" name="MAV_MODE_AUTO_DISARMED">
-        <description>System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by MISSIONs)</description>
+        <description>System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by waypoints)</description>
       </entry>
       <entry value="220" name="MAV_MODE_AUTO_ARMED">
-        <description>System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by MISSIONs)</description>
+        <description>System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by waypoints)</description>
       </entry>
       <entry value="66" name="MAV_MODE_TEST_DISARMED">
         <description>UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only.</description>
@@ -651,40 +651,40 @@
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data.</description>
       <entry value="16" name="MAV_CMD_NAV_WAYPOINT">
-        <description>Navigate to MISSION.</description>
-        <param index="1">Hold time in decimal seconds. (ignored by fixed wing, time to stay at MISSION for rotary wing)</param>
-        <param index="2">Acceptance radius in meters (if the sphere with this radius is hit, the MISSION counts as reached)</param>
+        <description>Navigate to waypoint.</description>
+        <param index="1">Hold time in decimal seconds. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
+        <param index="2">Acceptance radius in meters (if the sphere with this radius is hit, the waypoint counts as reached)</param>
         <param index="3">0 to pass through the WP, if &gt; 0 radius in meters to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.</param>
-        <param index="4">Desired yaw angle at MISSION (rotary wing). NaN for unchanged.</param>
+        <param index="4">Desired yaw angle at waypoint (rotary wing). NaN for unchanged.</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
       </entry>
       <entry value="17" name="MAV_CMD_NAV_LOITER_UNLIM">
-        <description>Loiter around this MISSION an unlimited amount of time</description>
+        <description>Loiter around this waypoint an unlimited amount of time</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
-        <param index="3">Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise</param>
+        <param index="3">Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise</param>
         <param index="4">Desired yaw angle.</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
       </entry>
       <entry value="18" name="MAV_CMD_NAV_LOITER_TURNS">
-        <description>Loiter around this MISSION for X turns</description>
+        <description>Loiter around this waypoint for X turns</description>
         <param index="1">Turns</param>
         <param index="2">Empty</param>
-        <param index="3">Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise</param>
+        <param index="3">Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise</param>
         <param index="4">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
       </entry>
       <entry value="19" name="MAV_CMD_NAV_LOITER_TIME">
-        <description>Loiter around this MISSION for X seconds</description>
+        <description>Loiter around this waypoint for X seconds</description>
         <param index="1">Seconds (decimal)</param>
         <param index="2">Empty</param>
-        <param index="3">Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise</param>
+        <param index="3">Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise</param>
         <param index="4">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
@@ -744,7 +744,7 @@
         <description>Vehicle following, i.e. this waypoint represents the position of a moving vehicle</description>
         <param index="1">Following logic to use (e.g. loitering or sinusoidal following) - depends on specific autopilot implementation</param>
         <param index="2">Ground speed of vehicle to be followed</param>
-        <param index="3">Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise</param>
+        <param index="3">Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise</param>
         <param index="4">Desired yaw angle.</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
@@ -793,7 +793,7 @@
       <entry value="80" name="MAV_CMD_NAV_ROI">
         <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1">Region of intereset mode. (see MAV_ROI enum)</param>
-        <param index="2">MISSION index/ target ID. (see MAV_ROI enum)</param>
+        <param index="2">Waypoint index/ target ID. (see MAV_ROI enum)</param>
         <param index="3">ROI index (allows a vehicle to manage multiple ROI's)</param>
         <param index="4">Empty</param>
         <param index="5">x the location of the fixed ROI (see MAV_FRAME)</param>
@@ -811,8 +811,8 @@
         <param index="7">Altitude/Z of goal</param>
       </entry>
       <entry value="82" name="MAV_CMD_NAV_SPLINE_WAYPOINT">
-        <description>Navigate to MISSION using a spline path.</description>
-        <param index="1">Hold time in decimal seconds. (ignored by fixed wing, time to stay at MISSION for rotary wing)</param>
+        <description>Navigate to waypoint using a spline path.</description>
+        <param index="1">Hold time in decimal seconds. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -1117,7 +1117,7 @@
       <entry value="201" name="MAV_CMD_DO_SET_ROI">
         <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1">Region of intereset mode. (see MAV_ROI enum)</param>
-        <param index="2">MISSION index/ target ID. (see MAV_ROI enum)</param>
+        <param index="2">Waypoint index/ target ID. (see MAV_ROI enum)</param>
         <param index="3">ROI index (allows a vehicle to manage multiple ROI's)</param>
         <param index="4">Empty</param>
         <param index="5">x the location of the fixed ROI (see MAV_FRAME)</param>
@@ -1850,10 +1850,10 @@
         <description>No region of interest.</description>
       </entry>
       <entry value="1" name="MAV_ROI_WPNEXT">
-        <description>Point toward next MISSION.</description>
+        <description>Point toward next waypoint.</description>
       </entry>
       <entry value="2" name="MAV_ROI_WPINDEX">
-        <description>Point toward given MISSION.</description>
+        <description>Point toward given waypoint.</description>
       </entry>
       <entry value="3" name="MAV_ROI_LOCATION">
         <description>Point toward fixed location.</description>
@@ -2955,8 +2955,8 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
-      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the MISSION. see MAV_FRAME in mavlink_types.h</field>
-      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the MISSION. see MAV_CMD in common.xml MAVLink specs</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint. see MAV_FRAME in mavlink_types.h</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint. see MAV_CMD in common.xml MAVLink specs</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
       <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
@@ -2995,7 +2995,7 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="44" name="MISSION_COUNT">
-      <description>This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of MISSIONs.</description>
+      <description>This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of waypoints.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="count">Number of mission items in the sequence</field>
@@ -3010,11 +3010,11 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="46" name="MISSION_ITEM_REACHED">
-      <description>A certain mission item has been reached. The system will either hold this position (or circle on the orbit) or (if the autocontinue on the WP was set) continue to the next MISSION.</description>
+      <description>A certain mission item has been reached. The system will either hold this position (or circle on the orbit) or (if the autocontinue on the WP was set) continue to the next waypoint.</description>
       <field type="uint16_t" name="seq">Sequence</field>
     </message>
     <message id="47" name="MISSION_ACK">
-      <description>Ack message during MISSION handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).</description>
+      <description>Ack message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="type" enum="MAV_MISSION_RESULT">See MAV_MISSION_RESULT enum</field>
@@ -3022,7 +3022,7 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
-      <description>As local waypoints exist, the global MISSION reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
+      <description>As local waypoints exist, the global waypoint reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84), in degrees * 1E7</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84, in degrees * 1E7</field>
@@ -3059,7 +3059,7 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
     <message id="54" name="SAFETY_SET_ALLOWED_AREA">
-      <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/MISSIONs to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
+      <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/waypoints to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame, as defined by MAV_FRAME enum in mavlink_types.h. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
@@ -3094,8 +3094,8 @@
       <field type="float" name="nav_roll" units="deg">Current desired roll in degrees</field>
       <field type="float" name="nav_pitch" units="deg">Current desired pitch in degrees</field>
       <field type="int16_t" name="nav_bearing" units="deg">Current desired heading in degrees</field>
-      <field type="int16_t" name="target_bearing" units="deg">Bearing to current MISSION/target in degrees</field>
-      <field type="uint16_t" name="wp_dist" units="m">Distance to active MISSION in meters</field>
+      <field type="int16_t" name="target_bearing" units="deg">Bearing to current waypoint/target in degrees</field>
+      <field type="uint16_t" name="wp_dist" units="m">Distance to active waypoint in meters</field>
       <field type="float" name="alt_error" units="m">Current altitude error in meters</field>
       <field type="float" name="aspd_error" units="m/s">Current airspeed error in meters/second</field>
       <field type="float" name="xtrack_error" units="m">Current crosstrack error on x-y plane in meters</field>
@@ -3194,8 +3194,8 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Waypoint ID (sequence number). Starts at zero. Increases monotonically for each waypoint, no gaps in the sequence (0,1,2,3,4).</field>
-      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the MISSION. see MAV_FRAME in mavlink_types.h</field>
-      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the MISSION. see MAV_CMD in common.xml MAVLink specs</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint. see MAV_FRAME in mavlink_types.h</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint. see MAV_CMD in common.xml MAVLink specs</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
       <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
