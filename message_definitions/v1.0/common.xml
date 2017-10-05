@@ -4356,5 +4356,25 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type: see the MAV_PARAM_TYPE enum for supported data types.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code: see the PARAM_ACK enum for possible codes.</field>
     </message>
+    <message id="325" name="VISION_ESTIMATION">
+      <description>Vision based position and velocity estimation</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Class id of the estimator this estimate originated from.</field>
+      <field type="float" name="x" units="m">X Position</field>
+      <field type="float" name="y" units="m">Y Position</field>
+      <field type="float" name="z" units="m">Z Position</field>
+      <field type="float" name="q1" units="rad">Quaternion component 1, x</field>
+      <field type="float" name="q2" units="rad">Quaternion component 2, y</field>
+      <field type="float" name="q3" units="rad">Quaternion component 3, z</field>
+      <field type="float" name="q4" units="rad">Quaternion component 4, w</field>
+      <field type="float[36]" name="pose_covariance">Covariance matrix (first six entries are the first ROW, next six entries are the second row, etc.)</field>
+      <field type="float" name="vx" units="m/s">X Linear Velocity</field>
+      <field type="float" name="vy" units="m/s">Y Linear Velocity</field>
+      <field type="float" name="vz" units="m/s">Z Linear Velocity</field>
+      <field type="float" name="angular_vx" units="rad/s">X Angular Velocity</field>
+      <field type="float" name="angular_vy" units="rad/s">Y Angular Velocity</field>
+      <field type="float" name="angular_vz" units="rad/s">Z Angular Velocity</field>
+      <field type="float[36]" name="velocity_covariance">Covariance matrix (first six entries are the first ROW, next six entries are the second row, etc.)</field>
+    </message>
   </messages>
 </mavlink>
