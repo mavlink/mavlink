@@ -41,7 +41,7 @@ typedef enum NAVIGATOR_CMD
 {
    NAVIGATOR_CMD_PAUSE=1, /* Pause the navigator | */
    NAVIGATOR_CMD_START=2, /* Start the navigator | */
-   NAVIGATOR_CMD_REVERSE=3, /* Reverse start the navigator | */
+   NAVIGATOR_CMD_START_REVERSE=3, /* Reverse start the navigator | */
    NAVIGATOR_CMD_LOAD_PATH=4, /* Preload a path into the navigator | */
    NAVIGATOR_CMD_RESET_PATH=5, /* Reset the current loaded path in the navigator memory | */
    NAVIGATOR_CMD_DELETE_PATH=6, /* Delete the path from the SD storage | */
@@ -49,7 +49,11 @@ typedef enum NAVIGATOR_CMD
    NAVIGATOR_CMD_REQUEST_SHOW_HASH=8, /* Request the hash of all paths combined | */
    NAVIGATOR_CMD_START_SIM=9, /* Start the path in simulation mode - forward | */
    NAVIGATOR_CMD_START_REVERSE_SIM=10, /* Start the path in simulation mode - reverse | */
-   NAVIGATOR_CMD_ENUM_END=11, /*  | */
+   NAVIGATOR_CMD_TAKEOFF=11, /* Make the object perform a takeoff procedure | */
+   NAVIGATOR_CMD_LAND=12, /* Make the object perform a takeoff procedure | */
+   NAVIGATOR_CMD_TAKEOFF_SIM=13, /* Make the object perform a takeoff procedure - simulated | */
+   NAVIGATOR_CMD_LAND_SIM=14, /* Make the object perform a takeoff procedure - simulated | */
+   NAVIGATOR_CMD_ENUM_END=15, /*  | */
 } NAVIGATOR_CMD;
 #endif
 
@@ -79,8 +83,21 @@ typedef enum NAVIGATOR_SUBSTATE
    NAVIGATOR_SUBSTATE_RUNNING=3, /*  | */
    NAVIGATOR_SUBSTATE_RUNNING_REVERSE=4, /*  | */
    NAVIGATOR_SUBSTATE_DONE=5, /*  | */
-   NAVIGATOR_SUBSTATE_ENUM_END=6, /*  | */
+   NAVIGATOR_SUBSTATE_TAKEOFF=6, /*  | */
+   NAVIGATOR_SUBSTATE_LANDING=7, /*  | */
+   NAVIGATOR_SUBSTATE_ENUM_END=8, /*  | */
 } NAVIGATOR_SUBSTATE;
+#endif
+
+/** @brief  */
+#ifndef HAVE_ENUM_NAVIGATOR_SIMULATION_STATE
+#define HAVE_ENUM_NAVIGATOR_SIMULATION_STATE
+typedef enum NAVIGATOR_SIMULATION_STATE
+{
+   NAVIGATOR_SIMULATION_STATE_ENABLED=1, /*  | */
+   NAVIGATOR_SIMULATION_STATE_DISABLED=2, /*  | */
+   NAVIGATOR_SIMULATION_STATE_ENUM_END=3, /*  | */
+} NAVIGATOR_SIMULATION_STATE;
 #endif
 
 /** @brief  */
@@ -126,7 +143,12 @@ typedef enum NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL
    NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_PATH_EMPTY=14, /*  | */
    NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_INCONSISTENCY_IN_POINT=15, /*  | */
    NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_NO_VALID_POINT_IN_PATH=16, /*  | */
-   NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_ENUM_END=17, /*  | */
+   NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_PATHID_NOT_STARTID=17, /*  | */
+   NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_NO_LOCKED_POSITION=18, /*  | */
+   NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_ALREADY_IN_AIR=19, /*  | */
+   NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_ALREADY_LANDED=20, /*  | */
+   NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_NO_RESULT_FOR_TAKEOFF_PARAMETERS=21, /*  | */
+   NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL_ENUM_END=22, /*  | */
 } NAVIGATOR_SYSTEM_CMD_RESPONSE_DETAIL;
 #endif
 
