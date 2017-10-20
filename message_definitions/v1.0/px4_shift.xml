@@ -2,6 +2,56 @@
 <mavlink>
     <include>common.xml</include>
     <enums>
+        <enum name="SHIFT_STATUS_VALUE_TYPE">
+            <description>Values used to indicate what values are transmitted</description>
+            <entry value="1" name="SHIFT_STATUS_VALUE_BATTERY_REMAINING">
+                <description>0% = 0, 100% = 100</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_BATTERY_VOLTAGE">
+                <description>In millivolts (1 = 1 millivolt</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_BATTERY_CURRENT">
+                <description>In 10th milliamps, 1 = 10 milliamps</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_LOAD">
+                <description>Load of CPU of the mainloop, 0 tot 100%</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_PRESSURE">
+                <description>Pressure messured in millibars</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_TEMPERATURE_PRESSURE">
+                <description>Celsius</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_TEMPERATURE_INTERNAL">
+                <description>Celsius</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_MOCAP_UPDATES">
+                <description>Mocap packets received per second</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_RADIO_RSSI">
+                <description>Received Signal Strength Indication</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_RADIO_NOISE">
+                <description>Noise of radio</description>
+            </entry>
+        </enum>
+        
+        <enum name="SHIFT_ESTOP_STATUS_VALUES">
+            <description>What does the ESTOP status mean</description>
+            <entry value="0" name="SHIFT_ESTOP_STATUS_NONE">
+                <description>No ESTOP connected</description>
+            </entry>
+            <entry name="SHIFT_ESTOP_STATUS_INACTIVE">
+                <description>ESTOP not active</description>
+            </entry>
+            <entry name="SHIFT_ESTOP_STATUS_ACTIVE">
+                <description>ESTOP active</description>
+            </entry>
+            <entry name="SHIFT_ESTOP_STATUS_DISCONNECTED">
+                <description>ESTOP disconnected</description>
+            </entry>
+        </enum>
+        
         <enum name="NAVIGATOR_CMD">
             <description>Navigator command for the navigator</description>
             <entry value="1" name="NAVIGATOR_CMD_PAUSE">
@@ -371,6 +421,9 @@
             <field type="float"      name="duration">duration to reach this point(x,y,z,r,p,y)</field>
             <field type="uint8_t"    name="yawBehaviour">Behaviour of the yaw while traveling to this point. Using ENUM: SHIFT_NAVIGATOR_YAW_BEHAVIOUR_ENUM</field>
             <field type="uint8_t"    name="type">Type of this point. Using ENUM: SHIFT_NAVIGATOR_POINT_TYPE_ENUM</field>
+            <field type="float"      name="arcRoll">arcRoll value</field>
+            <field type="float"      name="arcPitch">arcPitch value</field>
+            <field type="float"      name="arcYaw">arcYaw value</field>
         </message>
         
         <message id="561" name="SHIFT_NAVIGATOR_SIM_POINT">
@@ -388,15 +441,18 @@
         
         <message id="565" name="SHIFT_SYSTEM_STATUS">
             <description>
-                SHIFT System status (from flightController to SHIFT)
+                SHIFT System status (from flightController to SHIFT) using enum SHIFT_STATUS_VALUE_TYPE for indicators
             </description>
-            <field type="uint16_t"   name="currentPathIndex">The current PathIndex traveling</field>
-            <field type="uint16_t"   name="currentPointIndex">The current PointIndex traveling</field>
-            <field type="uint8_t"    name="batteryRemaining">Remaining percentage of the battery</field>
+            <field type="uint8_t"    name="statusValueIndicators">128 =to= 128</field>
+            <field type="float"      name="statusValue1">This value represents what the mask is indicating</field>
+            <field type="float"    name="statusValue2">This value represents what the mask is indicating</field>
+            
+            <field type="uint8_t"    name="objectModeObjectStatus">Current mode and status of the object uint_4 and uint_4</field>
             <field type="uint8_t"    name="navigatorMode">Current mode of the navigator</field>
             <field type="uint8_t"    name="navigatorSubMode">Current sub mode of the navigator</field>
-            <field type="uint8_t"    name="objectMode">Current mode of the object</field>
-            <field type="uint8_t"    name="detailField">Detail field</field>
+            
+            
+            
         </message>
         <message id="570" name="SHIFT_SYSTEM_CMD">
             <description>
@@ -417,7 +473,7 @@
             </description>
             <field type="uint8_t"    name="status">Status</field>
             <field type="uint8_t"    name="serialNumber">SerialNumber</field>
-            <field type="uint8_t"    name="detailField">Detail field</field>
+            <field type="uint8_t"    name="estopStatus">Status of the E-STOP connected to the SHIFT-W Box</field>
         </message>
         
         
