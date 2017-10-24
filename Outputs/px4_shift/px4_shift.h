@@ -53,6 +53,18 @@ typedef enum SHIFT_STATUS_VALUE_TYPE
 } SHIFT_STATUS_VALUE_TYPE;
 #endif
 
+/** @brief Indicates the status of the object */
+#ifndef HAVE_ENUM_SHIFT_OBJECT_STATUS_VALUES
+#define HAVE_ENUM_SHIFT_OBJECT_STATUS_VALUES
+typedef enum SHIFT_OBJECT_STATUS_VALUES
+{
+   SHIFT_OBJECT_STATUS_IDLE=0, /* Object is in IDLE state | */
+   SHIFT_OBJECT_STATUS_MANUAL=1, /* Object is in MANUAL state | */
+   SHIFT_OBJECT_STATUS_NAVIGATOR=2, /* Object is in NAVIGATOR state | */
+   SHIFT_OBJECT_STATUS_VALUES_ENUM_END=3, /*  | */
+} SHIFT_OBJECT_STATUS_VALUES;
+#endif
+
 /** @brief What does the ESTOP status mean */
 #ifndef HAVE_ENUM_SHIFT_ESTOP_STATUS_VALUES
 #define HAVE_ENUM_SHIFT_ESTOP_STATUS_VALUES
