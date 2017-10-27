@@ -1352,6 +1352,26 @@
         <param index="6">Longitude / Y position</param>
         <param index="7">Altitude / Z position</param>
       </entry>
+      <entry value="253" name="MAV_CMD_TAKE_CONTROL">
+        <description>Request navigation control. Depending on the situation, the FCU might accept or reject it and update the COMPONENT_IN_CONTROL.</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="254" name="MAV_CMD_RELEASE_CONTROL">
+        <description>Release navigation control, effectively making the FCU become the next COMPONENT_IN_CONTROL.</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
       <entry value="300" name="MAV_CMD_MISSION_START">
         <description>start running a mission</description>
         <param index="1">first_item: the first mission item to run</param>
@@ -4396,6 +4416,11 @@
       <field type="char[128]" name="param_value">Parameter value (new value if PARAM_ACK_ACCEPTED, current value otherwise)</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type: see the MAV_PARAM_EXT_TYPE enum for supported data types.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code: see the PARAM_ACK enum for possible codes.</field>
+    </message>
+    <message id="325" name="COMPONENT_IN_CONTROL">
+      <description>Emit the id and name of the component having control, i.e. being the one allowed to navigate the drone. It can be the FCU, or an external module through MAVLink or FastRTPS.</description>
+      <field type="uint8_t" name="component_id">Component ID</field>
+      <field type="uint8_t" name="system_id">System ID</field>
     </message>
   </messages>
 </mavlink>
