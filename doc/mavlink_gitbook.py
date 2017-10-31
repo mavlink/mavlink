@@ -13,10 +13,15 @@ import lxml.etree as ET
 import requests
 from bs4 import BeautifulSoup as bs
 import re
+import os
 
 xml_file_url = "https://raw.github.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml";
 xsl_file_url= "https://raw.github.com/mavlink/mavlink/master/doc/mavlink_to_html_table_gitbook.xsl";
-output_file_name = "./message-definitions.md"
+output_dir = "./messages/"
+output_file_name = output_dir+"common.md"
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+    
 
 # Get files from published URLs
 r = requests.get(xml_file_url)
