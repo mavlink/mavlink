@@ -64,6 +64,17 @@
             <entry value="0" name="ROSFLIGHT_RANGE_SONAR"/>
             <entry value="1" name="ROSFLIGHT_RANGE_LIDAR"/>
         </enum>
+        <enum name="AUX_CMD_CHANNEL_MODE">
+            <entry value="0" name="MODE_DISABLE">
+                <description>Channel is disabled</description>
+            </entry>
+            <entry value="1" name="MODE_SERVO">
+                <description>Channel value floats should be mapped to servo postion between -1 and 1</description>
+            </entry>
+            <entry value="2" name="MODE_MOTOR">
+                <description>Channel value floats should be mapped to motor speed between 0 and 1</description>
+            </entry>
+        </enum>
     </enums>
     <messages>
         <message id="180" name="OFFBOARD_CONTROL">
@@ -149,9 +160,9 @@
         <message id="192" name="ROSFLIGHT_VERSION">
             <field type="char[50]" name="version"/>
         </message>
-        <message id="193" name="AUX_COMMAND">
-            <field type="uint8_t[14]" name="channel"/>
+        <message id="193" name="AUX_CMD">
             <field type="float[14]" name="value"/>
+            <field type="uint8_t[14]" name="channel_mode" enum="AUX_CMD_CHANNEL_MODE">
         </message>
     </messages>
 </mavlink>
