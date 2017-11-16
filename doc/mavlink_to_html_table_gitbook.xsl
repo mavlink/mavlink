@@ -3,36 +3,31 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:template match="//include">
-   <h1>MAVLink Include Files</h1>
-   <p><strong><em>Including files: </em><xsl:value-of select="." /></strong></p>
+   <p><strong>MAVLink Include Files: </strong> <a><xsl:attribute name="href"><xsl:value-of select="."/>.md.unlikely</xsl:attribute><xsl:value-of select="." /></a> </p>
 </xsl:template>
 
 <xsl:template match="//enums">
-   <h1>MAVLink Type Enumerations</h1>
+   <h2>MAVLink Type Enumerations</h2>
    <xsl:apply-templates />
 </xsl:template>
 
 <xsl:template match="//messages">
-   <h1>MAVLink Messages</h1>
+   <h2>MAVLink Messages</h2>
    <xsl:apply-templates />
 </xsl:template>
 
 <xsl:template match="//message">
-  
-  <h2>
-    <xsl:attribute name="class">mavlink_message_name</xsl:attribute>
-    <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
-    <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-  <xsl:value-of select="@name" /> (
+  <h3 class="mavlink_message_name">
+   <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
+   <xsl:value-of select="@name" /> (
    <a>
-    <xsl:attribute name="href">
-      #<xsl:value-of select="@name"/>
-    </xsl:attribute>
-   #<xsl:value-of select="@id" />
+    <xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
+    #<xsl:value-of select="@id" />
    </a>
-   )</h2>  
-  
-   <p class="description"><xsl:value-of select="description" /></p>
+  )</h3>
+   <p class="description">
+     <xsl:if test='@id > 255'><strong>(MAVLink 2) </strong></xsl:if>
+     <xsl:value-of select="description" /></p>
    <table class="sortable">
    <thead>
    <tr>
@@ -42,31 +37,48 @@
    </tr>
    </thead>
    <tbody>
-   <xsl:apply-templates select="field" />
+   <xsl:apply-templates select="field" /> 
   </tbody>
   </table>
 </xsl:template>
 
 <xsl:template match="//field">
    <tr class="mavlink_field">
-   <td class="mavlink_name" valign="top"><xsl:value-of select="@name" /></td>
+   <xsl:choose>
+     <xsl:when test="preceding-sibling::extensions">
+       <td class="mavlink_name" valign="top" style="color:blue;"><xsl:value-of select="@name" />&#160;<a href="#mav2_extension_field" title="MAVLink2 extension field">**</a></td>
+     </xsl:when>
+     <xsl:otherwise>
+       <td class="mavlink_name" valign="top"><xsl:value-of select="@name" /></td>
+     </xsl:otherwise>
+   </xsl:choose>
+  
    <td class="mavlink_type" valign="top"><xsl:value-of select="@type" /></td>
-   <td class="mavlink_comment"><xsl:value-of select="." /></td>
+   <td class="mavlink_comment"> <xsl:value-of select="." />
+     <xsl:if test='@units'>
+     (Units: <xsl:value-of select="@units" />)
+     </xsl:if>
+     <xsl:if test='@enum'>
+     (Enum: <a><xsl:attribute name="href">#ENUM_<xsl:value-of select="@enum" /></xsl:attribute><xsl:value-of select="@enum" /></a>)
+     </xsl:if>
+   </td>
    </tr>
 </xsl:template>
 
 <xsl:template match="//version">
-   <h1>MAVLink Protocol Version</h1>
-   <p>This file has protocol version: <xsl:value-of select="." />. The version numbers range from 1-255.</p>
+   <h2>MAVLink Protocol Version</h2>
+   <p>This file has protocol version: <xsl:value-of select="." />. The version numbers range from 1-255. </p>
+</xsl:template>
+
+<xsl:template match="//dialect">
+   <p>This file has protocol dialect: <xsl:value-of select="." />.</p>
 </xsl:template>
 
 <xsl:template match="//enum">
-   <h2>
-    <xsl:attribute name="name">ENUM_<xsl:value-of select="@name"/></xsl:attribute>
-    <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
-    <xsl:attribute name="class">mavlink_message_name</xsl:attribute>
-    <xsl:value-of select="@name" />
-   </h2>
+   <h3 class="mavlink_message_name">    
+     <xsl:attribute name="id">ENUM_<xsl:value-of select="@name"/></xsl:attribute>
+     <a><xsl:attribute name="href">#ENUM_<xsl:value-of select="@name"/></xsl:attribute>
+     <xsl:value-of select="@name" /></a></h3>
 
    <p class="description"><xsl:value-of select="description" /></p>
    <table class="sortable">
@@ -86,9 +98,21 @@
 <xsl:template match="//entry">
    <tr class="mavlink_field" id="{@name}">
    <td class="mavlink_type" valign="top"><xsl:value-of select="@value" /></td>
-   <td class="mavlink_name" valign="top"><xsl:value-of select="@name" /></td>
+   <td class="mavlink_name" valign="top"><a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
+   <xsl:value-of select="@name" /></a></td>
    <td class="mavlink_comment"><xsl:value-of select="description" /></td>
-   </tr>   
+   </tr>
+<xsl:if test='param'>
+   <tr>
+     <td></td>
+     <xsl:apply-templates select="param" />
+   </tr>
+   <tr>
+    <td colspan="3"><br /></td>
+   </tr>
+</xsl:if>
+   
+
 </xsl:template>
 
 <xsl:template match="//param">
