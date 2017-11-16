@@ -60,6 +60,14 @@ def fix_include_file_extension(input_html):
     input_html=input_html.replace('.xml.md.unlikely','.md')
     return input_html
     
+def strip_text_before_string(original_text,strip_text):
+    # Strip out all text before some string
+    index=original_text.find(strip_text)
+    stripped_string=original_text
+    if index !=-1 :
+        stripped_string = stripped_string[index:] 
+    return stripped_string
+    
 def inject_top_level_docs(input_html,filename):
     #Inject top level heading and other details.
     print('FILENAME: %s' % filename)
@@ -88,7 +96,9 @@ def inject_top_level_docs(input_html,filename):
 
 for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
     for file in files:
-        print file
+        print(file)
+        if not file.endswith('.xml'): #only process xml files.
+           continue
         xml_file_name = xml_message_definitions_dir_name+file
         with open(xml_file_name, 'r') as content_file:
             xml_file = content_file.read()
@@ -100,15 +110,8 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             soup=bs(str(newdom), "lxml")
             prettyHTML=soup.prettify()
 
-            # Strip out all text before "<html>" - not needed in the output
-            def slicer(my_str,sub):
-                index=my_str.find(sub)
-                if index !=-1 :
-                    return my_str[index:] 
-                else :
-                    return my_str
-                    
-            prettyHTML=slicer(prettyHTML,'<html>')
+            #Strip out text before <html> tag in XSLT output
+            prettyHTML=strip_text_before_string(prettyHTML,'<html>')
             prettyHTML = fix_content_in_tags(prettyHTML)
             
             #Inject a heading and doc-type intro (markdown format)
@@ -117,12 +120,11 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             #Replace invalid file extensions (workaround for xslt)
             prettyHTML = fix_include_file_extension(prettyHTML)
             
-            #Write output file
-            output_file_name = file[:-4]+".md"
+            #Write output markdown file
+            output_file_name = file.rsplit('.',1)[0]+".md"
             output_file_name_withdir = output_dir+output_file_name
             print("Output filename: %s" % output_file_name)
 
-    
             with open(output_file_name_withdir, 'w') as out:
                 out.write(prettyHTML )
             
