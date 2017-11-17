@@ -59,7 +59,7 @@
      (Units: <xsl:value-of select="@units" />)
      </xsl:if>
      <xsl:if test='@enum'>
-     (Enum: <a><xsl:attribute name="href">#ENUM_<xsl:value-of select="@enum" /></xsl:attribute><xsl:value-of select="@enum" /></a>)
+     (Enum: <a><xsl:attribute name="href">#<xsl:value-of select="@enum" /></xsl:attribute><xsl:value-of select="@enum" /></a>)
      </xsl:if>
    </td>
    </tr>
@@ -76,8 +76,8 @@
 
 <xsl:template match="//enum">
    <h3 class="mavlink_message_name">    
-     <xsl:attribute name="id">ENUM_<xsl:value-of select="@name"/></xsl:attribute>
-     <a><xsl:attribute name="href">#ENUM_<xsl:value-of select="@name"/></xsl:attribute>
+     <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
+     <a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
      <xsl:value-of select="@name" /></a></h3>
 
    <p class="description"><xsl:value-of select="description" /></p>
