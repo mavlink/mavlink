@@ -4068,6 +4068,35 @@
       <field type="uint8_t" name="wp_num">current waypoint number</field>
       <field type="uint16_t" name="wp_distance" units="m">distance to target (meters)</field>
     </message>
+    <message id="235" name="HIGH_LATENCY2">
+      <description>Message appropriate for high latency connections like Iridium. Includes HEARTBEAT fields, to bidirectional link establishment</description>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
+      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. defined in MAV_AUTOPILOT ENUM</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
+      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags.</field>
+      <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag, see MAV_STATE ENUM</field>
+      <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
+      <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
+      <field type="int16_t" name="roll" units="cdeg">roll (centidegrees)</field>
+      <field type="int16_t" name="pitch" units="cdeg">pitch (centidegrees)</field>
+      <field type="uint16_t" name="heading" units="cdeg">heading (centidegrees)</field>
+      <field type="int8_t" name="throttle" units="%">throttle (percentage)</field>
+      <field type="int16_t" name="heading_sp" units="cdeg">heading setpoint (centidegrees)</field>
+      <field type="int32_t" name="latitude" units="degE7">Latitude, expressed as degrees * 1E7</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude, expressed as degrees * 1E7</field>
+      <field type="int16_t" name="altitude_amsl" units="m">Altitude above mean sea level (meters)</field>
+      <field type="int16_t" name="altitude_sp" units="m">Altitude setpoint relative to the home position (meters)</field>
+      <field type="uint8_t" name="airspeed" units="m/s">airspeed (m/s)</field>
+      <field type="uint8_t" name="airspeed_sp" units="m/s">airspeed setpoint (m/s)</field>
+      <field type="uint8_t" name="groundspeed" units="m/s">groundspeed (m/s)</field>
+      <field type="int8_t" name="climb_rate" units="m/s">climb rate (m/s)</field>
+      <field type="uint8_t" name="gps_nsat">Number of satellites visible. If unknown, set to 255</field>
+      <field type="uint8_t" name="battery_remaining" units="%">Remaining battery (percentage)</field>
+      <field type="int8_t" name="temperature_air" units="degC">Air temperature (degrees C) from airspeed sensor</field>
+      <field type="uint8_t" name="failsafe">failsafe (each bit represents a failsafe where 0=ok, 1=failsafe active (bit0:RC, bit1:batt, bit2:GPS, bit3:GCS, bit4:fence)</field>
+      <field type="uint8_t" name="wp_num">current waypoint number</field>
+      <field type="uint16_t" name="wp_distance" units="m">distance to target (meters)</field>
+    </message>
     <message id="241" name="VIBRATION">
       <description>Vibration levels and accelerometer clipping</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (micros since boot or Unix epoch)</field>
