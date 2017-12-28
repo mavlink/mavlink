@@ -2,6 +2,10 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
+<p>
+Please refer to the <a href="https://mavlink.io/en/messages/common.html">official MAVLink message documentation</a> for more details.
+</p>
+
 <xsl:template match="//include">
    <h1>MAVLink Include Files</h1>
    <p><strong><em>Including files: </em><xsl:value-of select="." /></strong></p>
