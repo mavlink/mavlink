@@ -67,7 +67,7 @@
 
 <xsl:template match="//version">
    <h2>MAVLink Protocol Version</h2>
-   <p>This file has protocol version: <xsl:value-of select="." />. The version numbers range from 1-255. </p>
+   <p>The current MAVLink version is 2.<xsl:value-of select="." />. The minor version numbers (after the dot) range from 1-255. </p>
 </xsl:template>
 
 <xsl:template match="//dialect">
