@@ -37,6 +37,10 @@ $xsltproc->importStylesheet($xsl_doc);
 <h1>MAVLINK Common Message Set</h1>
 
 <p>
+The most recent MAVLink message documentation is on <a href="https://mavlink.io/en/messages/common.html">https://mavlink.io/en/messages/common.html</a>.
+</p>
+
+<p>
 These messages define the common message set, which is the reference message set implemented by most ground control stations and autopilots.
 </p>
 
