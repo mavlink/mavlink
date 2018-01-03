@@ -1383,5 +1383,12 @@
       <field type="float[3]" name="position_delta">Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)</field>
       <field type="float" name="confidence">normalised confidence value from 0 to 100</field>
     </message>
+    <!-- wheel traveled distance message -->
+    <message id="11030" name="WHEEL_DISTANCE">
+      <description>Cumulative distances traveled by each wheel in meters (forward rotations increase these values, backward - decrease).</description>
+      <field name="time_usec" type="uint64_t">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
+      <field type="uint8_t" name="count">Number of wheels reported</field>
+      <field type="float[4]" name="distance" units="m">Distance traveled by each wheel (m)</field>
+    </message>
   </messages>
 </mavlink>
