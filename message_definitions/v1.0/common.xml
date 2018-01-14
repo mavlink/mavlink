@@ -152,6 +152,9 @@
       <entry value="28" name="MAV_TYPE_PARAFOIL">
         <description>Steerable, nonrigid airfoil</description>
       </entry>
+      <entry value="29" name="MAV_TYPE_DODECAROTOR">
+        <description>Dodecarotor</description>
+      </entry>
     </enum>
     <enum name="FIRMWARE_VERSION_TYPE">
       <description>These values define the type of firmware release.  These values indicate the first version or release of this type.  For example the first alpha release would be 64, the second would be 65.</description>
@@ -1232,12 +1235,12 @@
       </entry>
       <entry value="209" name="MAV_CMD_DO_MOTOR_TEST">
         <description>Mission command to perform motor test</description>
-        <param index="1">motor sequence number (a number from 1 to max number of motors on the vehicle)</param>
+        <param index="1">motor number (a number from 1 to max number of motors on the vehicle)</param>
         <param index="2">throttle type (0=throttle percentage, 1=PWM, 2=pilot throttle channel pass-through. See MOTOR_TEST_THROTTLE_TYPE enum)</param>
         <param index="3">throttle</param>
         <param index="4">timeout (in seconds)</param>
-        <param index="5">Empty</param>
-        <param index="6">Empty</param>
+        <param index="5">motor count (number of motors to test to test in sequence, waiting for the timeout above between them; 0=1 motor, 1=1 motor, 2=2 motors...)</param>
+        <param index="6">motor test order (See MOTOR_TEST_ORDER enum)</param>
         <param index="7">Empty</param>
       </entry>
       <entry value="210" name="MAV_CMD_DO_INVERTED_FLIGHT">
@@ -1328,7 +1331,7 @@
         <param index="2">1: magnetometer calibration</param>
         <param index="3">1: ground pressure calibration</param>
         <param index="4">1: radio RC calibration, 2: RC trim calibration</param>
-        <param index="5">1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration</param>
+        <param index="5">1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration, 4: simple accelerometer calibration</param>
         <param index="6">1: APM: compass/motor interference calibration (PX4: airspeed calibration, deprecated), 2: airspeed calibration</param>
         <param index="7">1: ESC calibration, 3: barometer temperature calibration</param>
       </entry>
@@ -2530,6 +2533,18 @@
       </entry>
     </enum>
     <!-- motor test type enum -->
+    <enum name="MOTOR_TEST_ORDER">
+      <entry name="MOTOR_TEST_ORDER_DEFAULT" value="0">
+        <description>default autopilot motor test method</description>
+      </entry>
+      <entry name="MOTOR_TEST_ORDER_SEQUENCE" value="1">
+        <description>motor numbers are specified as their index in a predefined vehicle-specific sequence</description>
+      </entry>
+      <entry name="MOTOR_TEST_ORDER_BOARD" value="2">
+        <description>motor numbers are specified as the output as labeled on the board</description>
+      </entry>
+    </enum>
+    <!-- motor test throttle type enum -->
     <enum name="MOTOR_TEST_THROTTLE_TYPE">
       <entry value="0" name="MOTOR_TEST_THROTTLE_PERCENT">
         <description>throttle as a percentage from 0 ~ 100</description>
@@ -2539,6 +2554,9 @@
       </entry>
       <entry value="2" name="MOTOR_TEST_THROTTLE_PILOT">
         <description>throttle pass-through from pilot's transmitter</description>
+      </entry>
+      <entry value="3" name="MOTOR_TEST_COMPASS_CAL">
+        <description>per-motor compass calibration test</description>
       </entry>
     </enum>
     <!-- GPS_INPUT ignore flags enum -->
@@ -2742,6 +2760,15 @@
       </entry>
       <entry value="5" name="MAV_ARM_AUTH_DENIED_REASON_BAD_WEATHER">
         <description>Weather is not good to fly</description>
+      </entry>
+    </enum>
+    <enum name="RTK_BASELINE_COORDINATE_SYSTEM">
+      <description>RTK GPS baseline coordinate system, used for RTK corrections</description>
+      <entry value="0" name="RTK_BASELINE_COORDINATE_SYSTEM_ECEF">
+        <description>Earth-centered, Earth-fixed</description>
+      </entry>
+      <entry value="1" name="RTK_BASELINE_COORDINATE_SYSTEM_NED">
+        <description>North, East, Down</description>
       </entry>
     </enum>
   </enums>
@@ -3094,7 +3121,7 @@
       <description>As local waypoints exist, the global waypoint reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84), in degrees * 1E7</field>
-      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84, in degrees * 1E7</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84), in degrees * 1E7</field>
       <field type="int32_t" name="altitude" units="mm">Altitude (AMSL), in meters * 1000 (positive for up)</field>
       <extensions/>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
@@ -3344,8 +3371,8 @@
       <field type="uint8_t" name="type_mask">Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 6: reserved, bit 7: throttle, bit 8: attitude</field>
       <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float" name="body_roll_rate" units="rad/s">Body roll rate in radians per second</field>
-      <field type="float" name="body_pitch_rate" units="rad/s">Body roll rate in radians per second</field>
-      <field type="float" name="body_yaw_rate" units="rad/s">Body roll rate in radians per second</field>
+      <field type="float" name="body_pitch_rate" units="rad/s">Body pitch rate in radians per second</field>
+      <field type="float" name="body_yaw_rate" units="rad/s">Body yaw rate in radians per second</field>
       <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse trust)</field>
     </message>
     <message id="83" name="ATTITUDE_TARGET">
@@ -3401,8 +3428,8 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11</field>
       <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
-      <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame in 1e7 * meters</field>
-      <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame in 1e7 * meters</field>
+      <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame in 1e7 * degrees</field>
+      <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame in 1e7 * degrees</field>
       <field type="float" name="alt" units="m">Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT</field>
       <field type="float" name="vx" units="m/s">X velocity in NED frame in meter / s</field>
       <field type="float" name="vy" units="m/s">Y velocity in NED frame in meter / s</field>
@@ -3418,8 +3445,8 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp in milliseconds since system boot. The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11</field>
       <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
-      <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame in 1e7 * meters</field>
-      <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame in 1e7 * meters</field>
+      <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame in 1e7 * degrees</field>
+      <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame in 1e7 * degrees</field>
       <field type="float" name="alt" units="m">Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT</field>
       <field type="float" name="vx" units="m/s">X velocity in NED frame in meter / s</field>
       <field type="float" name="vy" units="m/s">Y velocity in NED frame in meter / s</field>
@@ -3449,8 +3476,8 @@
       <field type="float" name="rollspeed" units="rad/s">Body frame roll / phi angular speed (rad/s)</field>
       <field type="float" name="pitchspeed" units="rad/s">Body frame pitch / theta angular speed (rad/s)</field>
       <field type="float" name="yawspeed" units="rad/s">Body frame yaw / psi angular speed (rad/s)</field>
-      <field type="int32_t" name="lat">Latitude, expressed as * 1E7</field>
-      <field type="int32_t" name="lon">Longitude, expressed as * 1E7</field>
+      <field type="int32_t" name="lat">Latitude, expressed as degrees * 1E7</field>
+      <field type="int32_t" name="lon">Longitude, expressed as degrees * 1E7</field>
       <field type="int32_t" name="alt" units="mm">Altitude in meters, expressed as * 1000 (millimeters)</field>
       <field type="int16_t" name="vx" units="cm/s">Ground X Speed (Latitude), expressed as m/s * 100</field>
       <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude), expressed as m/s * 100</field>
@@ -3685,8 +3712,8 @@
       <field type="float" name="rollspeed" units="rad/s">Body frame roll / phi angular speed (rad/s)</field>
       <field type="float" name="pitchspeed" units="rad/s">Body frame pitch / theta angular speed (rad/s)</field>
       <field type="float" name="yawspeed" units="rad/s">Body frame yaw / psi angular speed (rad/s)</field>
-      <field type="int32_t" name="lat">Latitude, expressed as * 1E7</field>
-      <field type="int32_t" name="lon">Longitude, expressed as * 1E7</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude, expressed as degrees * 1E7</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude, expressed as degrees * 1E7</field>
       <field type="int32_t" name="alt" units="mm">Altitude in meters, expressed as * 1000 (millimeters)</field>
       <field type="int16_t" name="vx" units="cm/s">Ground X Speed (Latitude), expressed as cm/s</field>
       <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude), expressed as cm/s</field>
@@ -3770,7 +3797,7 @@
       <field type="uint16_t" name="cog" units="cdeg">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
       <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
       <field type="uint8_t" name="dgps_numch">Number of DGPS satellites</field>
-      <field type="uint32_t" name="dgps_age">Age of DGPS info</field>
+      <field type="uint32_t" name="dgps_age" units="ms">Age of DGPS info</field>
     </message>
     <message id="125" name="POWER_STATUS">
       <description>Power supply status</description>
@@ -3796,7 +3823,7 @@
       <field type="uint8_t" name="rtk_health">GPS-specific health report for RTK data.</field>
       <field type="uint8_t" name="rtk_rate" units="Hz">Rate of baseline messages being received by GPS, in HZ</field>
       <field type="uint8_t" name="nsats">Current number of sats used for RTK calculation.</field>
-      <field type="uint8_t" name="baseline_coords_type">Coordinate system of baseline. 0 == ECEF, 1 == NED</field>
+      <field type="uint8_t" name="baseline_coords_type" enum="RTK_BASELINE_COORDINATE_SYSTEM">Coordinate system of baseline</field>
       <field type="int32_t" name="baseline_a_mm" units="mm">Current baseline in ECEF x or NED north component in mm.</field>
       <field type="int32_t" name="baseline_b_mm" units="mm">Current baseline in ECEF y or NED east component in mm.</field>
       <field type="int32_t" name="baseline_c_mm" units="mm">Current baseline in ECEF z or NED down component in mm.</field>
@@ -3812,7 +3839,7 @@
       <field type="uint8_t" name="rtk_health">GPS-specific health report for RTK data.</field>
       <field type="uint8_t" name="rtk_rate" units="Hz">Rate of baseline messages being received by GPS, in HZ</field>
       <field type="uint8_t" name="nsats">Current number of sats used for RTK calculation.</field>
-      <field type="uint8_t" name="baseline_coords_type">Coordinate system of baseline. 0 == ECEF, 1 == NED</field>
+      <field type="uint8_t" name="baseline_coords_type" enum="RTK_BASELINE_COORDINATE_SYSTEM">Coordinate system of baseline</field>
       <field type="int32_t" name="baseline_a_mm" units="mm">Current baseline in ECEF x or NED north component in mm.</field>
       <field type="int32_t" name="baseline_b_mm" units="mm">Current baseline in ECEF y or NED east component in mm.</field>
       <field type="int32_t" name="baseline_c_mm" units="mm">Current baseline in ECEF z or NED down component in mm.</field>

@@ -13,6 +13,8 @@
       <entry value="4" name="ACCELCAL_VEHICLE_POS_NOSEDOWN"/>
       <entry value="5" name="ACCELCAL_VEHICLE_POS_NOSEUP"/>
       <entry value="6" name="ACCELCAL_VEHICLE_POS_BACK"/>
+      <entry value="16777215" name="ACCELCAL_VEHICLE_POS_SUCCESS"/>
+      <entry value="16777216" name="ACCELCAL_VEHICLE_POS_FAILED"/>
     </enum>
     <!-- ardupilot specific MAV_CMD_* commands -->
     <enum name="MAV_CMD">
@@ -87,6 +89,27 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
+      <entry value="42004" name="MAV_CMD_FIXED_MAG_CAL">
+        <description>Magnetometer calibration based on fixed position
+        in earth field given by inclination, declination and intensity</description>
+        <param index="1">MagDeclinationDegrees</param>
+        <param index="2">MagInclinationDegrees</param>
+        <param index="3">MagIntensityMilliGauss</param>
+        <param index="4">YawDegrees</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="42005" name="MAV_CMD_FIXED_MAG_CAL_FIELD">
+        <description>Magnetometer calibration based on fixed expected field values in milliGauss</description>
+        <param index="1">FieldX</param>
+        <param index="2">FieldY</param>
+        <param index="3">FieldZ</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
       <entry value="42424" name="MAV_CMD_DO_START_MAG_CAL">
         <description>Initiate a magnetometer calibration</description>
         <param index="1">uint8_t bitmask of magnetometers (0 means all)</param>
@@ -137,9 +160,9 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="42501" name="MAV_CMD_GIMBAL_RESET">
-        <description>Causes the gimbal to reset and boot as if it was just powered on</description>
-        <param index="1">Empty</param>
+      <entry value="42427" name="MAV_CMD_SET_FACTORY_TEST_MODE">
+        <description>Command autopilot to get into factory test/diagnostic mode</description>
+        <param index="1">0 means get out of test mode, 1 means get into test mode</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -147,9 +170,9 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="42427" name="MAV_CMD_SET_FACTORY_TEST_MODE">
-        <description>Command autopilot to get into factory test/diagnostic mode</description>
-        <param index="1">0 means get out of test mode, 1 means get into test mode</param>
+      <entry value="42501" name="MAV_CMD_GIMBAL_RESET">
+        <description>Causes the gimbal to reset and boot as if it was just powered on</description>
+        <param index="1">Empty</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -186,6 +209,16 @@
         <param index="5">Magic number</param>
         <param index="6">Magic number</param>
         <param index="7">Magic number</param>
+      </entry>
+      <entry value="42600" name="MAV_CMD_DO_WINCH">
+        <description>Command to operate winch</description>
+        <param index="1">winch number (0 for the default winch, otherwise a number from 1 to max number of winches on the vehicle)</param>
+        <param index="2">action (0=relax, 1=relative length control, 2=rate control.  See WINCH_ACTIONS enum)</param>
+        <param index="3">release length (cable distance to unwind in meters, negative numbers to wind in cable)</param>
+        <param index="4">release rate (meters/second)</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
       </entry>
     </enum>
     <!-- AP_Limits Enums -->
@@ -251,6 +284,19 @@
       </entry>
       <entry value="1" name="GRIPPER_ACTION_GRAB">
         <description>gripper grabs onto cargo</description>
+      </entry>
+    </enum>
+    <!-- winch action enum -->
+    <enum name="WINCH_ACTIONS">
+      <description>Winch actions</description>
+      <entry value="0" name="WINCH_RELAXED">
+        <description>relax winch</description>
+      </entry>
+      <entry value="1" name="WINCH_RELATIVE_LENGTH_CONTROL">
+        <description>winch unwinds or winds specified length of cable optionally using specified rate</description>
+      </entry>
+      <entry value="2" name="WINCH_RATE_CONTROL">
+        <description>winch unwinds or winds cable at specified rate in meters/seconds</description>
       </entry>
     </enum>
     <!-- Camera event types -->
@@ -848,6 +894,30 @@
         <description>SPI Device operation</description>
       </entry>
     </enum>
+    <enum name="DEEPSTALL_STAGE">
+      <description>Deepstall flight stage</description>
+      <entry value="0" name="DEEPSTALL_STAGE_FLY_TO_LANDING">
+        <description>Flying to the landing point</description>
+      </entry>
+      <entry value="1" name="DEEPSTALL_STAGE_ESTIMATE_WIND">
+        <description>Building an estimate of the wind</description>
+      </entry>
+      <entry value="2" name="DEEPSTALL_STAGE_WAIT_FOR_BREAKOUT">
+        <description>Waiting to breakout of the loiter to fly the approach</description>
+      </entry>
+      <entry value="3" name="DEEPSTALL_STAGE_FLY_TO_ARC">
+        <description>Flying to the first arc point to turn around to the landing point</description>
+      </entry>
+      <entry value="4" name="DEEPSTALL_STAGE_ARC">
+        <description>Turning around back to the deepstall landing point</description>
+      </entry>
+      <entry value="5" name="DEEPSTALL_STAGE_APPROACH">
+        <description>Approaching the landing point</description>
+      </entry>
+      <entry value="6" name="DEEPSTALL_STAGE_LAND">
+        <description>Stalling and steering towards the land point</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="150" name="SENSOR_OFFSETS">
@@ -1160,7 +1230,7 @@
       <field type="float" name="roll" units="rad">Roll angle (rad)</field>
       <field type="float" name="pitch" units="rad">Pitch angle (rad)</field>
       <field type="float" name="yaw" units="rad">Yaw angle (rad)</field>
-      <field type="float" name="altitude">Altitude (MSL)</field>
+      <field type="float" name="altitude" units="m">Altitude (MSL)</field>
       <field type="int32_t" name="lat" units="degE7">Latitude in degrees * 1E7</field>
       <field type="int32_t" name="lng" units="degE7">Longitude in degrees * 1E7</field>
       <field type="float" name="v1">test variable1</field>
@@ -1248,6 +1318,19 @@
       <field type="float" name="P">P component</field>
       <field type="float" name="I">I component</field>
       <field type="float" name="D">D component</field>
+    </message>
+    <message id="195" name="DEEPSTALL">
+      <description>Deepstall path planning</description>
+      <field type="int32_t" name="landing_lat" units="degE7">Landing latitude (deg * 1E7)</field>
+      <field type="int32_t" name="landing_lon" units="degE7">Landing longitude (deg * 1E7)</field>
+      <field type="int32_t" name="path_lat" units="degE7">Final heading start point, latitude (deg * 1E7)</field>
+      <field type="int32_t" name="path_lon" units="degE7">Final heading start point, longitude (deg * 1E7)</field>
+      <field type="int32_t" name="arc_entry_lat" units="degE7">Arc entry point, latitude (deg * 1E7)</field>
+      <field type="int32_t" name="arc_entry_lon" units="degE7">Arc entry point, longitude (deg * 1E7)</field>
+      <field type="float" name="altitude" units="m">Altitude (meters)</field>
+      <field type="float" name="expected_travel_distance" units="m">Distance the aircraft expects to travel during the deepstall</field>
+      <field type="float" name="cross_track_error" units="m">Deepstall cross track error in meters (only valid when in DEEPSTALL_STAGE_LAND)</field>
+      <field type="uint8_t" name="stage" enum="DEEPSTALL_STAGE">Deepstall stage, see enum MAV_DEEPSTALL_STAGE</field>
     </message>
     <message id="200" name="GIMBAL_REPORT">
       <description>3 axis gimbal mesuraments</description>
@@ -1382,6 +1465,13 @@
       <field type="float[3]" name="angle_delta">Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation</field>
       <field type="float[3]" name="position_delta">Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)</field>
       <field type="float" name="confidence">normalised confidence value from 0 to 100</field>
+    </message>
+    <!-- Angle of Attack and Side Slip Angle message -->
+    <message id="11020" name="AOA_SSA">
+      <description>Angle of Attack and Side Slip Angle</description>
+      <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
+      <field name="AOA" type="float">Angle of Attack (degrees)</field>
+      <field name="SSA" type="float">Side Slip Angle (degrees)</field>
     </message>
   </messages>
 </mavlink>
