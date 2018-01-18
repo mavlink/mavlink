@@ -2748,16 +2748,16 @@
       <field type="uint32_t" name="h_acc" units="mm">Position uncertainty in meters * 1000 (positive for up).</field>
       <field type="uint32_t" name="v_acc" units="mm">Altitude uncertainty in meters * 1000 (positive for up).</field>
       <field type="uint32_t" name="vel_acc" units="mm">Speed uncertainty in meters * 1000 (positive for up).</field>
-      <field type="uint32_t" name="hdg_acc" units="mm">Heading / track uncertainty in degrees * 1e5.</field>
+      <field type="uint32_t" name="hdg_acc" units="degE5">Heading / track uncertainty in degrees * 1e5.</field>
     </message>
     <message id="25" name="GPS_STATUS">
       <description>The positioning status, as reported by GPS. This message is intended to display status information about each satellite visible to the receiver. See message GLOBAL_POSITION for the global position estimate. This message can contain information for up to 20 satellites.</description>
       <field type="uint8_t" name="satellites_visible">Number of satellites visible</field>
       <field type="uint8_t[20]" name="satellite_prn">Global satellite ID</field>
       <field type="uint8_t[20]" name="satellite_used">0: Satellite not used, 1: used for localization</field>
-      <field type="uint8_t[20]" name="satellite_elevation">Elevation (0: right on top of receiver, 90: on the horizon) of satellite</field>
-      <field type="uint8_t[20]" name="satellite_azimuth">Direction of satellite, 0: 0 deg, 255: 360 deg.</field>
-      <field type="uint8_t[20]" name="satellite_snr">Signal to noise ratio of satellite</field>
+      <field type="uint8_t[20]" name="satellite_elevation" units="deg">Elevation (0: right on top of receiver, 90: on the horizon) of satellite</field>
+      <field type="uint8_t[20]" name="satellite_azimuth" units="deg">Direction of satellite, 0: 0 deg, 255: 360 deg.</field>
+      <field type="uint8_t[20]" name="satellite_snr" units="dB">Signal to noise ratio of satellite</field>
     </message>
     <message id="26" name="SCALED_IMU">
       <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should contain the scaled values to the described units</description>
@@ -3120,13 +3120,13 @@
       <field type="uint8_t" name="target_system">The target requested to send the message stream.</field>
       <field type="uint8_t" name="target_component">The target requested to send the message stream.</field>
       <field type="uint8_t" name="req_stream_id">The ID of the requested data stream</field>
-      <field type="uint16_t" name="req_message_rate">The requested message rate</field>
+      <field type="uint16_t" name="req_message_rate" units="Hz">The requested message rate</field>
       <field type="uint8_t" name="start_stop">1 to start sending, 0 to stop sending.</field>
     </message>
     <message id="67" name="DATA_STREAM">
       <description>THIS INTERFACE IS DEPRECATED. USE MESSAGE_INTERVAL INSTEAD.</description>
       <field type="uint8_t" name="stream_id">The ID of the requested data stream</field>
-      <field type="uint16_t" name="message_rate">The message rate</field>
+      <field type="uint16_t" name="message_rate" units="Hz">The message rate</field>
       <field type="uint8_t" name="on_off">1 stream is enabled, 0 stream is stopped.</field>
     </message>
     <message id="69" name="MANUAL_CONTROL">
@@ -3240,7 +3240,7 @@
     <message id="83" name="ATTITUDE_TARGET">
       <description>Reports the current commanded attitude of the vehicle as specified by the autopilot. This should match the commands sent in a SET_ATTITUDE_TARGET message if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp in milliseconds since system boot</field>
-      <field type="uint8_t" name="type_mask">Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 7: reserved, bit 8: attitude</field>
+      <field type="uint8_t" name="type_mask" display="bitmask">Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 7: reserved, bit 8: attitude</field>
       <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float" name="body_roll_rate" units="rad/s">Body roll rate in radians per second</field>
       <field type="float" name="body_pitch_rate" units="rad/s">Body pitch rate in radians per second</field>
@@ -3253,7 +3253,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
-      <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="uint16_t" name="type_mask" display="bitmask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
       <field type="float" name="x" units="m">X Position in NED frame in meters</field>
       <field type="float" name="y" units="m">Y Position in NED frame in meters</field>
       <field type="float" name="z" units="m">Z Position in NED frame in meters (note, altitude is negative in NED)</field>
@@ -3270,7 +3270,7 @@
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp in milliseconds since system boot</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
-      <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="uint16_t" name="type_mask" display="bitmask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
       <field type="float" name="x" units="m">X Position in NED frame in meters</field>
       <field type="float" name="y" units="m">Y Position in NED frame in meters</field>
       <field type="float" name="z" units="m">Z Position in NED frame in meters (note, altitude is negative in NED)</field>
@@ -3289,7 +3289,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11</field>
-      <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="uint16_t" name="type_mask" display="bitmask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
       <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame in 1e7 * degrees</field>
       <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame in 1e7 * degrees</field>
       <field type="float" name="alt" units="m">Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT</field>
@@ -3306,7 +3306,7 @@
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_GLOBAL_INT if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp in milliseconds since system boot. The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11</field>
-      <field type="uint16_t" name="type_mask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="uint16_t" name="type_mask" display="bitmask">Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
       <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame in 1e7 * degrees</field>
       <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame in 1e7 * degrees</field>
       <field type="float" name="alt" units="m">Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT</field>
@@ -3338,8 +3338,8 @@
       <field type="float" name="rollspeed" units="rad/s">Body frame roll / phi angular speed (rad/s)</field>
       <field type="float" name="pitchspeed" units="rad/s">Body frame pitch / theta angular speed (rad/s)</field>
       <field type="float" name="yawspeed" units="rad/s">Body frame yaw / psi angular speed (rad/s)</field>
-      <field type="int32_t" name="lat">Latitude, expressed as degrees * 1E7</field>
-      <field type="int32_t" name="lon">Longitude, expressed as degrees * 1E7</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude, expressed as degrees * 1E7</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude, expressed as degrees * 1E7</field>
       <field type="int32_t" name="alt" units="mm">Altitude in meters, expressed as * 1000 (millimeters)</field>
       <field type="int16_t" name="vx" units="cm/s">Ground X Speed (Latitude), expressed as m/s * 100</field>
       <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude), expressed as m/s * 100</field>
@@ -3384,7 +3384,7 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
       <field type="float[16]" name="controls">Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.</field>
       <field type="uint8_t" name="mode" enum="MAV_MODE">System mode (MAV_MODE), includes arming state.</field>
-      <field type="uint64_t" name="flags">Flags as bitfield, reserved for future use.</field>
+      <field type="uint64_t" name="flags" display="bitmask">Flags as bitfield, reserved for future use.</field>
     </message>
     <message id="100" name="OPTICAL_FLOW">
       <description>Optical flow from a flow sensor (e.g. optical mouse sensor)</description>
@@ -3449,7 +3449,7 @@
       <field type="float" name="diff_pressure" units="mbar">Differential pressure in millibar</field>
       <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
       <field type="float" name="temperature" units="degC">Temperature in degrees celsius</field>
-      <field type="uint16_t" name="fields_updated">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
+      <field type="uint16_t" name="fields_updated" display="bitmask">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
     </message>
     <message id="106" name="OPTICAL_FLOW_RAD">
       <description>Optical flow from an angular rate flow sensor (e.g. PX4FLOW or mouse sensor)</description>
@@ -3482,7 +3482,7 @@
       <field type="float" name="diff_pressure" units="mbar">Differential pressure (airspeed) in millibar</field>
       <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
       <field type="float" name="temperature" units="degC">Temperature in degrees celsius</field>
-      <field type="uint32_t" name="fields_updated">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature, bit 31: full reset of attitude/position/velocities/etc was performed in sim.</field>
+      <field type="uint32_t" name="fields_updated" display="bitmask">Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature, bit 31: full reset of attitude/position/velocities/etc was performed in sim.</field>
     </message>
     <message id="108" name="SIM_STATE">
       <description>Status of simulation environment, if used</description>
@@ -3672,7 +3672,7 @@
       <field type="uint8_t" name="device" enum="SERIAL_CONTROL_DEV">See SERIAL_CONTROL_DEV enum</field>
       <field type="uint8_t" name="flags" enum="SERIAL_CONTROL_FLAG" display="bitmask">See SERIAL_CONTROL_FLAG enum</field>
       <field type="uint16_t" name="timeout" units="ms">Timeout for reply data in milliseconds</field>
-      <field type="uint32_t" name="baudrate">Baudrate of transfer. Zero means no change.</field>
+      <field type="uint32_t" name="baudrate" units="bits/s">Baudrate of transfer. Zero means no change.</field>
       <field type="uint8_t" name="count" units="bytes">how many bytes in this transfer</field>
       <field type="uint8_t[70]" name="data">serial data</field>
     </message>
@@ -3728,7 +3728,7 @@
       <field type="uint16_t" name="height">Height of a matrix or image</field>
       <field type="uint16_t" name="packets">number of packets beeing sent (set on ACK only)</field>
       <field type="uint8_t" name="payload" units="bytes">payload size per packet (normally 253 byte, see DATA field size in message ENCAPSULATED_DATA) (set on ACK only)</field>
-      <field type="uint8_t" name="jpg_quality">JPEG quality out of [1,100]</field>
+      <field type="uint8_t" name="jpg_quality" units="%">JPEG quality out of [1,100]</field>
     </message>
     <message id="131" name="ENCAPSULATED_DATA">
       <field type="uint16_t" name="seqnr">sequence number (starting with 0 on every transmission)</field>
@@ -3738,7 +3738,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Time since system boot</field>
       <field type="uint16_t" name="min_distance" units="cm">Minimum distance the sensor can measure in centimeters</field>
       <field type="uint16_t" name="max_distance" units="cm">Maximum distance the sensor can measure in centimeters</field>
-      <field type="uint16_t" name="current_distance">Current distance reading</field>
+      <field type="uint16_t" name="current_distance" units="cm">Current distance reading</field>
       <field type="uint8_t" name="type" enum="MAV_DISTANCE_SENSOR">Type from MAV_DISTANCE_SENSOR enum.</field>
       <field type="uint8_t" name="id">Onboard ID of the sensor</field>
       <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces from MAV_SENSOR_ORIENTATION enum. downward-facing: ROTATION_PITCH_270, upward-facing: ROTATION_PITCH_90, backward-facing: ROTATION_PITCH_180, forward-facing: ROTATION_NONE, left-facing: ROTATION_YAW_90, right-facing: ROTATION_YAW_270</field>
@@ -3749,7 +3749,7 @@
       <field type="int32_t" name="lat" units="degE7">Latitude of SW corner of first grid (degrees *10^7)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude of SW corner of first grid (in degrees *10^7)</field>
       <field type="uint16_t" name="grid_spacing" units="m">Grid spacing in meters</field>
-      <field type="uint64_t" name="mask" print_format="0x%07x">Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits)</field>
+      <field type="uint64_t" name="mask" display="bitmask" print_format="0x%07x">Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits)</field>
     </message>
     <message id="134" name="TERRAIN_DATA">
       <description>Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN_REQUEST</description>
@@ -3918,7 +3918,7 @@
       <field type="float" name="pos_vert_ratio">Vertical position innovation test ratio</field>
       <field type="float" name="mag_ratio">Magnetometer innovation test ratio</field>
       <field type="float" name="hagl_ratio">Height above terrain innovation test ratio</field>
-      <field type="float" name="tas_ratio" units="Hz">True airspeed innovation test ratio</field>
+      <field type="float" name="tas_ratio">True airspeed innovation test ratio</field>
       <field type="float" name="pos_horiz_accuracy" units="m">Horizontal position 1-STD accuracy relative to the EKF local origin (m)</field>
       <field type="float" name="pos_vert_accuracy" units="m">Vertical position 1-STD accuracy relative to the EKF local origin (m)</field>
     </message>
@@ -4121,7 +4121,7 @@
       <description>Report button state change</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
       <field type="uint32_t" name="last_change_ms" units="ms">Time of last change of button state</field>
-      <field type="uint8_t" name="state">Bitmap state of buttons</field>
+      <field type="uint8_t" name="state" display="bitmask">Bitmap state of buttons</field>
     </message>
     <message id="258" name="PLAY_TUNE">
       <description>Control vehicle tone generation (buzzer)</description>
@@ -4267,7 +4267,7 @@
       <description>Obstacle distances in front of the sensor, starting from the left in increment degrees to the right</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
       <field type="uint8_t" name="sensor_type" enum="MAV_DISTANCE_SENSOR">Class id of the distance sensor type.</field>
-      <field type="uint16_t[72]" name="distances">Distance of obstacles in front of the sensor starting on the left side. A value of 0 means that the obstacle is right in front of the sensor. A value of max_distance +1 means no obstace is present. A value of UINT16_MAX for unknown/not used. In a array element, each unit corresponds to 1cm.</field>
+      <field type="uint16_t[72]" name="distances" units="cm">Distance of obstacles in front of the sensor starting on the left side. A value of 0 means that the obstacle is right in front of the sensor. A value of max_distance +1 means no obstace is present. A value of UINT16_MAX for unknown/not used. In a array element, each unit corresponds to 1cm.</field>
       <field type="uint8_t" name="increment" units="deg">Angular width in degrees of each array element.</field>
       <field type="uint16_t" name="min_distance" units="cm">Minimum distance the sensor can measure in centimeters</field>
       <field type="uint16_t" name="max_distance" units="cm">Maximum distance the sensor can measure in centimeters</field>
