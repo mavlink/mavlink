@@ -1462,18 +1462,18 @@
     <!-- camera vision based attitude and position delta message -->
     <message id="11011" name="VISION_POSITION_DELTA">
       <description>camera vision based attitude and position deltas</description>
-      <field name="time_usec" type="uint64_t">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
-      <field name="time_delta_usec" type="uint64_t">Time in microseconds since the last reported camera frame</field>
+      <field name="time_usec" type="uint64_t" units="us">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
+      <field name="time_delta_usec" type="uint64_t" units="us">Time in microseconds since the last reported camera frame</field>
       <field type="float[3]" name="angle_delta">Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation</field>
-      <field type="float[3]" name="position_delta">Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)</field>
-      <field type="float" name="confidence">normalised confidence value from 0 to 100</field>
+      <field type="float[3]" name="position_delta" units="m">Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)</field>
+      <field type="float" name="confidence" units="%">normalised confidence value from 0 to 100</field>
     </message>
     <!-- Angle of Attack and Side Slip Angle message -->
     <message id="11020" name="AOA_SSA">
       <description>Angle of Attack and Side Slip Angle</description>
-      <field type="uint64_t" name="time_usec">Timestamp (micros since boot or Unix epoch)</field>
-      <field name="AOA" type="float">Angle of Attack (degrees)</field>
-      <field name="SSA" type="float">Side Slip Angle (degrees)</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (micros since boot or Unix epoch)</field>
+      <field name="AOA" type="float" units="deg">Angle of Attack (degrees)</field>
+      <field name="SSA" type="float" units="deg">Side Slip Angle (degrees)</field>
     </message>
   </messages>
 </mavlink>
