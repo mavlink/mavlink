@@ -12,4 +12,4 @@ Key Links:
 * [Documentation/Website](https://mavlink.io/en/) (mavlink.io/en/)
 * [Discussion/Support](https://mavlink.io/en/#support) (Slack)
 * [Contributing](https://mavlink.io/en/contributing/contributing.html)
-* [License](https://mavlink.io/en/#license) - LGPLv3 - See the [COPYING](COPYING) file for more info.
+* [License](https://mavlink.io/en/#license)
