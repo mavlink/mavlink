@@ -62,6 +62,9 @@
       <entry value="18" name="MAV_AUTOPILOT_SMARTAP">
         <description>SmartAP Autopilot - http://sky-drones.com</description>
       </entry>
+      <entry value="19" name="MAV_AUTOPILOT_AIRRAILS">
+        <description>AirRails - http://uaventure.com</description>
+      </entry>
     </enum>
     <enum name="MAV_TYPE">
       <entry value="0" name="MAV_TYPE_GENERIC">
@@ -1597,6 +1600,16 @@
         <param index="5">Reserved, set to NAN</param>
         <param index="6">Reserved, set to NAN</param>
         <param index="7">Reserved, set to NAN</param>
+      </entry>
+      <entry value="2600" name="MAV_CMD_CONTROL_HIGH_LATENCY">
+        <description>Request to start/stop transmitting over the high latency telemetry</description>
+        <param index="1">Control transmittion over high latency telemetry (0: stop, 1: start)</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
       </entry>
       <entry value="2800" name="MAV_CMD_PANORAMA_CREATE">
         <description>Create a panorama at the current position</description>
@@ -4411,11 +4424,13 @@
       <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of logfiles</field>
     </message>
     <message id="265" name="MOUNT_ORIENTATION">
-      <description>WIP: Orientation of a mount</description>
+      <description>Orientation of a mount</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-      <field type="float" name="roll" units="deg">Roll in degrees</field>
-      <field type="float" name="pitch" units="deg">Pitch in degrees</field>
-      <field type="float" name="yaw" units="deg">Yaw in degrees</field>
+      <field type="float" name="roll" units="deg">Roll in global frame in degrees (set to NaN for invalid).</field>
+      <field type="float" name="pitch" units="deg">Pitch in global frame in degrees (set to NaN for invalid).</field>
+      <field type="float" name="yaw" units="deg">Yaw relative to vehicle in degrees (set to NaN for invalid).</field>
+      <extensions/>
+      <field type="float" name="yaw_absolute" units="deg">Yaw in absolute frame in degrees, North is 0 (set to NaN for invalid).</field>
     </message>
     <message id="266" name="LOGGING_DATA">
       <description>A message containing logged data (see also MAV_CMD_LOGGING_START)</description>
