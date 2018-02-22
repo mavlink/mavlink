@@ -4252,11 +4252,13 @@
       <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of logfiles</field>
     </message>
     <message id="265" name="MOUNT_ORIENTATION">
-      <description>WIP: Orientation of a mount</description>
+      <description>Orientation of a mount</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-      <field type="float" name="roll" units="deg">Roll in degrees</field>
-      <field type="float" name="pitch" units="deg">Pitch in degrees</field>
-      <field type="float" name="yaw" units="deg">Yaw in degrees</field>
+      <field type="float" name="roll" units="deg">Roll in global frame in degrees (set to NaN for invalid).</field>
+      <field type="float" name="pitch" units="deg">Pitch in global frame in degrees (set to NaN for invalid).</field>
+      <field type="float" name="yaw" units="deg">Yaw relative to vehicle in degrees (set to NaN for invalid).</field>
+      <extensions/>
+      <field type="float" name="yaw_absolute" units="deg">Yaw in absolute frame in degrees, North is 0 (set to NaN for invalid).</field>
     </message>
     <message id="266" name="LOGGING_DATA">
       <description>A message containing logged data (see also MAV_CMD_LOGGING_START)</description>
