@@ -2904,6 +2904,30 @@
         <description>Spektrum DSMX</description>
       </entry>
     </enum>
+    <enum name="MAV_TRAJECTORY_REPRESENTATION">
+      <description>Enumeration of possible waypoint/trajectory representation</description>
+      <entry value="0" name="MAV_TRAJECTORY_REPRESENTATION_WAYPOINTS">
+        <description>Array of waypoints with the following order</description>
+        <param index="1">X-coordinate of waypoint</param>
+        <param index="2">Y-coordinate of waypoint</param>
+        <param index="3">Z-coordinate of waypoint</param>
+        <param index="4">X-velocity of waypoint</param>
+        <param index="5">Y-velocity of waypoint</param>
+        <param index="6">Z-velocity of waypoint</param>
+        <param index="7">X-acceleration of waypoint</param>
+        <param index="8">Y-acceleration of waypoint</param>
+        <param index="9">Z-acceleration of waypoint</param>
+        <param index="10">Yaw</param>
+        <param index="11">Yaw-rate</param>
+      </entry>
+      <entry value="1" name="MAV_TRAJECTORY_REPRESENTATION_BEZIER">
+        <description>Array of bezier points with the following order</description>
+        <param index="1">X-coordinate of starting bezier point</param>
+        <param index="2">Y-coordinate of starting bezier point</param>
+        <param index="3">Z-coordinate of starting bezier point</param>
+        <param index="4">Bezier time horizon</param>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -4669,6 +4693,17 @@
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
       <field type="float[21]" name="pose_covariance">Pose (states: x, y, z, roll, pitch, yaw) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
       <field type="float[21]" name="twist_covariance">Twist (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
+    <message id="332" name="OBSTACLE_AVOIDANCE">
+      <description>Obstacle avoidance message with trajectory points and field of view</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch).</field>
+      <field type="uint8_t" name="type" enum="MAV_TRAJECTORY_REPRESENTATION">Waypoints, Bezier etc. see MAV_TRAJECTORY_REPRESENTATION</field>
+      <field type="float[11]" name="point_1">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
+      <field type="float[11]" name="point_2">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
+      <field type="float[11]" name="point_3">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
+      <field type="float[11]" name="point_4">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
+      <field type="float[11]" name="point_5">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
+      <field type="uint8_t[5]" name="point_valid">States if respective point is valid</field>
+      <field type="int16_t[4]" name="field_of_view">Field of View of the sensor/s being used. The first two parameters are used to indicate the direction (Azimuth: 0 - 360 degrees and elevation: -90 - 90 degrees) and the last two indicate the range (Azimuth and elevation). The range is applied symmetrically in the direction. Set first element to -1 to mark as unknown.</field>
     </message>
   </messages>
 </mavlink>
