@@ -22,16 +22,28 @@
             <entry name="SHIFT_STATUS_VALUE_TEMPERATURE_PRESSURE">
                 <description>Celsius</description>
             </entry>
-            <entry name="SHIFT_STATUS_VALUE_TEMPERATURE_INTERNAL">
-                <description>Celsius</description>
-            </entry>
             <entry name="SHIFT_STATUS_VALUE_MOCAP_UPDATES">
                 <description>Mocap packets received per second</description>
             </entry>
-            <entry name="SHIFT_STATUS_VALUE_RADIO_RSSI">
+            <entry name="SHIFT_STATUS_VALUE_VEHICLE_IN_AIR">
+                <description>Displays the in air status for the vehicle</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_RADIO_1_RSSI">
                 <description>Received Signal Strength Indication</description>
             </entry>
-            <entry name="SHIFT_STATUS_VALUE_RADIO_NOISE">
+            <entry name="SHIFT_STATUS_VALUE_RADIO_1_NOISE">
+                <description>Noise of radio</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_RADIO_2_RSSI">
+                <description>Received Signal Strength Indication</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_RADIO_2_NOISE">
+                <description>Noise of radio</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_RADIO_3_RSSI">
+                <description>Received Signal Strength Indication</description>
+            </entry>
+            <entry name="SHIFT_STATUS_VALUE_RADIO_3_NOISE">
                 <description>Noise of radio</description>
             </entry>
         </enum>
@@ -458,13 +470,10 @@
             </description>
             <field type="uint8_t"    name="statusValueIndicators">128 =to= 128</field>
             <field type="float"      name="statusValue1">This value represents what the mask is indicating</field>
-            <field type="float"    name="statusValue2">This value represents what the mask is indicating</field>
-            
+            <field type="float"      name="statusValue2">This value represents what the mask is indicating</field>
             <field type="uint8_t"    name="objectModeObjectStatus">Current mode and status of the object uint_4 and uint_4</field>
             <field type="uint8_t"    name="navigatorMode">Current mode of the navigator</field>
             <field type="uint8_t"    name="navigatorSubMode">Current sub mode of the navigator</field>
-            
-            
             
         </message>
         <message id="570" name="SHIFT_SYSTEM_CMD">
@@ -488,7 +497,14 @@
             <field type="uint8_t"    name="serialNumber">SerialNumber</field>
             <field type="uint8_t"    name="estopStatus">Status of the E-STOP connected to the SHIFT-W Box</field>
         </message>
-        
+        <message id="576" name="SHIFTW_SYSTEM_RADIO_STATUS">
+            <description>
+                SHIFT+W Radio status (from SHIFT+W to SHIFT)
+            </description>
+            <field type="uint8_t"    name="source_system">System ID</field>
+            <field type="float"      name="statusValue">This value represents the radio signal strength in dbm</field>
+        </message>
+
         
         
     </messages>
