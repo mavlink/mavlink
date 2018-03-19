@@ -2646,6 +2646,61 @@
         <description>True if the EKF has detected bad accelerometer data</description>
       </entry>
     </enum>
+    <!-- ESTIMATOR_MODE_FLAGS - these values should be bit-and with the messages flags field to know if flag has been set -->
+    <enum name="ESTIMATOR_MODE_FLAGS">
+      <description>Flags in EKF_STATUS message</description>
+      <entry value="1" name="ESTIMATOR_TILT_ALIGNMENT">
+        <description>True if the filter tilt alignment is complete</description>
+      </entry>
+      <entry value="2" name="ESTIMATOR_YAW_ALIGNMENT">
+        <description>True if the filter yaw alignment is complete</description>
+      </entry>
+      <entry value="4" name="ESTIMATOR_GPS">
+        <description>True if GPS measurements are being fused</description>
+      </entry>
+      <entry value="8" name="ESTIMATOR_OPTICAL_FLOW">
+        <description>True if optical flow measurements are being fused</description>
+      </entry>
+      <entry value="16" name="ESTIMATOR_MAGNETIC_YAW">
+        <description>True if a simple magnetic yaw heading is being fused</description>
+      </entry>
+      <entry value="32" name="ESTIMATOR_MAGNETOMETER">
+        <description>True if 3-axis magnetometer measurement are being fused</description>
+      </entry>
+      <entry value="64" name="ESTIMATOR_SYNTHETIC_MAGNETIC">
+        <description>True if synthetic magnetic declination measurements are being fused</description>
+      </entry>
+      <entry value="128" name="ESTIMATOR_VEHICLE_AIRBORNE">
+        <description>True when the vehicle is airborne</description>
+      </entry>
+      <entry value="256" name="ESTIMATOR_WIND_VELOCITY">
+        <description>True when wind velocity is being estimated</description>
+      </entry>
+      <entry value="512" name="ESTIMATOR_BARO_ALT">
+        <description>True when baro height is being fused as a primary height reference</description>
+      </entry>
+      <entry value="1024" name="ESTIMATOR_RANGE_DISTANCE">
+        <description>True when range finder height is being fused as a primary height reference</description>
+      </entry>
+      <entry value="2048" name="ESTIMATOR_GPS_ALT">
+        <description>True when GPS height is being fused as a primary height reference</description>
+      </entry>
+       <entry value="8192" name="ESTIMATOR_LOCAL_POSITION_VISION">
+        <description>True when local position data from extern_al vision is being fused</description>
+      </entry>
+      <entry value="16384" name="ESTIMATOR_YAW_VISION">
+        <description>True when yaw data from external vision measurements is being fused</description>
+      </entry>
+      <entry value="32768" name="ESTIMATOR_ALT_VISION">
+        <description>True when height data from external vision measurements is being fused</description>
+      </entry>
+      <entry value="65536" name="ESTIMATOR_SYNTHETIC_SIDESLIP">
+        <description>True when synthetic sideslip measurements are being fused</description>
+      </entry>
+      <entry value="131072" name="ESTIMATOR_MAGNETOMETER">
+        <description>True when only the magnetic field states are updated by the magnetometer</description>
+      </entry>
+    </enum>
     <!-- motor test type enum -->
     <enum name="MOTOR_TEST_ORDER">
       <entry name="MOTOR_TEST_ORDER_DEFAULT" value="0">
@@ -4189,6 +4244,7 @@
       <description>Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovaton test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovaton test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (micros since boot or Unix epoch)</field>
       <field type="uint16_t" name="flags" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Integer bitmask indicating which EKF outputs are valid. See definition for ESTIMATOR_STATUS_FLAGS.</field>
+      <field type="uint16_t" name="mode_flags" enum="ESTIMATOR_MODE_FLAGS" display="bitmask">Integer bitmask indicating which valid data of ekf is fused. See definition for ESTIMATOR_MODE_FLAGS.</field>
       <field type="float" name="vel_ratio">Velocity innovation test ratio</field>
       <field type="float" name="pos_horiz_ratio">Horizontal position innovation test ratio</field>
       <field type="float" name="pos_vert_ratio">Vertical position innovation test ratio</field>
