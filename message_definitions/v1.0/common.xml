@@ -2387,6 +2387,27 @@
         <description>Payload battery</description>
       </entry>
     </enum>
+    <enum name="MAV_BATTERY_LOW_STATE">
+      <description>Enumeration for states of low battery extent</description>
+      <entry value="0" name="MAV_BATTERY_LOW_STATE_UNDEFINED">
+        <description>Low battery state is not provided</description>
+      </entry>
+      <entry value="1" name="MAV_BATTERY_LOW_STATE_OK">
+        <description>Battery is not nearly empty, normal operation</description>
+      </entry>
+      <entry value="2" name="MAV_BATTERY_LOW_STATE_LOW">
+        <description>Battery state is low, warn and monitor close</description>
+      </entry>
+      <entry value="3" name="MAV_BATTERY_LOW_STATE_CRITICAL">
+        <description>Battry state is critical, return / abort immediately</description>
+      </entry>
+      <entry value="4" name="MAV_BATTERY_LOW_STATE_EMERGENCY">
+        <description>Battry state is too low for ordinary abortion, fastest possible emergency stop preventing damage</description>
+      </entry>
+      <entry value="5" name="MAV_BATTERY_LOW_STATE_FAILED">
+        <description>Battry failed, damage unavoidable</description>
+      </entry>
+    </enum>
     <enum name="MAV_VTOL_STATE">
       <description>Enumeration of VTOL states</description>
       <entry value="0" name="MAV_VTOL_STATE_UNDEFINED">
@@ -3962,6 +3983,7 @@
       <field type="int8_t" name="battery_remaining" units="%">Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot does not estimate the remaining battery</field>
       <extensions/>
       <field type="int32_t" name="time_remaining" units="s">Remaining battery time, in seconds (0 = 0s = 0% energy left), -1: autopilot does not provide remaining battery time estimate</field>
+      <field type="uint8_t" name="battery_low_state" enum="MAV_BATTERY_LOW_STATE">Low battery extent state, provided by autopilot for warning or futher reactions.</field>
     </message>
     <message id="148" name="AUTOPILOT_VERSION">
       <description>Version and capability of autopilot software</description>
