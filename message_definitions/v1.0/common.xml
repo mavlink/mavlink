@@ -2685,7 +2685,7 @@
       <entry value="2048" name="ESTIMATOR_GPS_ALT">
         <description>True when GPS height is being fused as a primary height reference</description>
       </entry>
-       <entry value="8192" name="ESTIMATOR_LOCAL_POSITION_VISION">
+      <entry value="8192" name="ESTIMATOR_LOCAL_POSITION_VISION">
         <description>True when local position data from extern_al vision is being fused</description>
       </entry>
       <entry value="16384" name="ESTIMATOR_YAW_VISION">
@@ -2697,7 +2697,7 @@
       <entry value="65536" name="ESTIMATOR_SYNTHETIC_SIDESLIP">
         <description>True when synthetic sideslip measurements are being fused</description>
       </entry>
-      <entry value="131072" name="ESTIMATOR_MAGNETOMETER">
+      <entry value="131072" name="ESTIMATOR_UPDATED_MAGNETOMETER">
         <description>True when only the magnetic field states are updated by the magnetometer</description>
       </entry>
     </enum>
@@ -4244,7 +4244,6 @@
       <description>Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovaton test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovaton test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (micros since boot or Unix epoch)</field>
       <field type="uint16_t" name="flags" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Integer bitmask indicating which EKF outputs are valid. See definition for ESTIMATOR_STATUS_FLAGS.</field>
-      <field type="uint16_t" name="mode_flags" enum="ESTIMATOR_MODE_FLAGS" display="bitmask">Integer bitmask indicating which valid data of ekf is fused. See definition for ESTIMATOR_MODE_FLAGS.</field>
       <field type="float" name="vel_ratio">Velocity innovation test ratio</field>
       <field type="float" name="pos_horiz_ratio">Horizontal position innovation test ratio</field>
       <field type="float" name="pos_vert_ratio">Vertical position innovation test ratio</field>
@@ -4253,6 +4252,8 @@
       <field type="float" name="tas_ratio">True airspeed innovation test ratio</field>
       <field type="float" name="pos_horiz_accuracy" units="m">Horizontal position 1-STD accuracy relative to the EKF local origin (m)</field>
       <field type="float" name="pos_vert_accuracy" units="m">Vertical position 1-STD accuracy relative to the EKF local origin (m)</field>
+      <extensions/>
+      <field type="uint32_t" name="mode_flags" enum="ESTIMATOR_MODE_FLAGS" display="bitmask">Integer bitmask indicating which valid data of ekf is fused. See definition for ESTIMATOR_MODE_FLAGS.</field>
     </message>
     <message id="231" name="WIND_COV">
       <field type="uint64_t" name="time_usec" units="us">Timestamp (micros since boot or Unix epoch)</field>
