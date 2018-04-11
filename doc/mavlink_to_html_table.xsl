@@ -8,6 +8,10 @@
 </xsl:template>
 
 <xsl:template match="//enums">
+   <h1>Official MAVLink Documentation</h1>
+   <p>
+    Please refer to the <a href="https://mavlink.io/en/messages/common.html">official MAVLink message documentation</a> for more details.
+   </p>
    <h1>MAVLink Type Enumerations</h1>
    <xsl:apply-templates />
 </xsl:template>
@@ -55,8 +59,8 @@
 </xsl:template>
 
 <xsl:template match="//version">
-   <h1>MAVLink Protocol Version</h1>
-   <p>This file has protocol version: <xsl:value-of select="." />. The version numbers range from 1-255.</p>
+   <h2>MAVLink Protocol Version</h2>
+   <p>The current MAVLink version is 2.<xsl:value-of select="." />. The minor version numbers (after the dot) range from 1-255. </p>
 </xsl:template>
 
 <xsl:template match="//enum">

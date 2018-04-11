@@ -46,6 +46,7 @@ do
 		outdir="/tmp/mavlink_${wire_protocol}_${lang}"
 		mavgen.py --lang=${lang} \
 			--wire-protocol ${wire_protocol} \
+			--strict-units \
 			--output=${outdir} ${msg_def}
 		echo PASS
 	done

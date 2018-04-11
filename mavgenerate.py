@@ -117,10 +117,21 @@ class Application(Frame):
         self.validate_button.grid(row=4, column=1,sticky=W)
 
         #----------------------------------------
+        # Create the Validate Units box
+
+        self.strict_units_value = BooleanVar()
+        self.strict_units_label = Label( self, text="Validate Units")
+        self.strict_units_label.grid(row=5, column=0)
+        self.strict_units_button = Checkbutton(self, variable=self.strict_units_value, onvalue=True, offvalue=False)
+        self.strict_units_value.set(mavgen.DEFAULT_STRICT_UNITS)
+        self.strict_units_button.config(width=10)
+        self.strict_units_button.grid(row=5, column=1,sticky=W)
+
+        #----------------------------------------
         # Create the generate button
 
         self.generate_button = Button ( self, text="Generate", command=self.generateHeaders)
-        self.generate_button.grid(row=5,column=1)
+        self.generate_button.grid(row=6,column=1)
 
     """\
     Open a file selection window to choose the XML message definition.
@@ -161,7 +172,7 @@ class Application(Frame):
                 return
 
         # Generate headers
-        opts = mavgen.Opts(self.out_value.get(), wire_protocol=self.protocol_value.get(), language=self.language_value.get(), validate=self.validate_value.get(), error_limit=error_limit);
+        opts = mavgen.Opts(self.out_value.get(), wire_protocol=self.protocol_value.get(), language=self.language_value.get(), validate=self.validate_value.get(), error_limit=error_limit, strict_units=self.strict_units_value.get());
         args = [self.xml_value.get()]
         try:
             mavgen.mavgen(opts,args)

@@ -9,13 +9,10 @@ python:
   - "3.5"
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libxml2-dev
+  - sudo apt-get install -y libxml2-dev libxml2-utils
 script:
   - ./scripts/test.sh
 
 after_success:
   - ./scripts/travis_update_generated_repos.sh
-
-before_install:
-  - git submodule update --init --recursive
 
