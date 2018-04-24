@@ -26,14 +26,8 @@ other languages are not implemented yet.
 
 ## Using the C implementation
 
-Using the C implementation of MAVLink2 is very similar to using the
-existing MAVLink1 implementation. You start by generating the MAVLink2
-headers using mavgen.py, but passing the --wire-protocol=2.0
-option. For example:
-
-```
- mavgen.py --lang C message_definitions/v1.0/ardupilotmega.xml -o generator/C/include_v2.0 --wire-protocol=2.0
-```
+For most users usage of the pre-generated C headers is recommended:
+https://github.com/mavlink/c_library_v2
 
 This will generate a set of C headers in the generator/C/include_v2.0
 directory. These headers offer the same range of APIs as was offered
@@ -114,10 +108,6 @@ some additional code. In particular you will need to add:
 * code to setup and teardown signing on a link
 * code to save and load the secret key and timestamp in persistent storage
 * a callback to allow for accepting of certain kinds of unsigned messages
-
-Example code in ArduPilot for each of these pieces if available here:
-
- https://github.com/tridge/ardupilot/blob/mavlink2-wip/libraries/GCS_MAVLink/GCS_Signing.cpp
 
 ### Handling SETUP_SIGNING
 
