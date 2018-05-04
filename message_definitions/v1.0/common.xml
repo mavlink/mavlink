@@ -1775,6 +1775,10 @@
         <param index="1">0: No Action 1: Request messages with saved Wi-Fi networks 2: Request messages with scanned Wi-Fi network info</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
+      <entry value="6002" name="MAV_CMD_GET_WIFI_STATUS">
+        <description>Requests current Wi-Fi status (See WIFI_STATUS).</description>
+        <param index="1">Reserved (all remaining params)</param>
+      </entry>
       <entry value="6003" name="MAV_CMD_GET_WIFI_NETWORKS_COUNT">
         <description>Requests number of saved/scanned Wi-Fi networks (See WIFI_NETWORKS_COUNT).</description>
         <param index="1">0: No Action 1: Requests number of saved Wi-Fi networks 2: Requests number of scanned Wi-Fi networks</param>
@@ -2955,6 +2959,18 @@
       </entry>
       <entry value="3" name="WIFI_SECURITY_TYPE_WPA2">
         <description>WPA2 (Wi-Fi Protected Access II) security</description>
+      </entry>
+    </enum>
+    <enum name="WIFI_STATE">
+      <description>State of Wi-Fi</description>
+      <entry value="0" name="WIFI_STATE_UNDEFINED">
+        <description>Undefined state</description>
+      </entry>
+      <entry value="1" name="WIFI_STATE_AP">
+        <description>Wi-Fi works in AP(Access point) mode</description>
+      </entry>
+      <entry value="2" name="WIFI_STATE_CLIENT">
+        <description>Wi-Fi works in client mode (Connected to another access point)</description>
       </entry>
     </enum>
   </enums>
@@ -4631,6 +4647,11 @@
       <field type="char[32]" name="ssid">Name of network (SSID)</field>
       <field type="uint8_t" name="security_type" enum="WIFI_SECURITY_TYPE">Security type (See WIFI_SECURITY_TYPE).</field>
       <field type="uint8_t" name="type">Type of network (0: saved 1: scanned)</field>
+    </message>
+    <message id="294" name="WIFI_STATUS">
+      <description>Status of Wi-Fi (see MAV_CMD_GET_WIFI_STATUS)</description>
+      <field type="uint8_t" name="state" enum="WIFI_STATE">Current state of Wi-Fi (See WIFI_STATE)</field>
+      <field type="char[32]" name="ssid">If state is WIFI_STATE_AP then ssid is name of vehicle access point. If state is WIFI_STATE_CLIENT then ssid is name of network to which the device is connected. Otherwise the field is undefined.</field>
     </message>
     <message id="298" name="WIFI_NETWORKS_COUNT">
       <description>Number of saved/scanned Wi-Fi networks (See MAV_CMD_GET_WIFI_NETWORKS_COUNT)</description>
