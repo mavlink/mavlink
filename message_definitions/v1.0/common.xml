@@ -4646,6 +4646,11 @@
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise (0-359 degrees)</field>
       <field type="char[230]" name="uri">Video stream URI</field>
     </message>
+    <message id="292" name="WIFI_ACK">
+      <description>Response to all WIFI_* messages, which is sent by GCS (excluding commands)</description>
+      <field type="uint16_t" name="message_id">Id of message</field>
+      <field type="uint8_t" name="result">Result: 0 - success, 1 - network already exists (on add), 2 - network is not exist (on delete or connect), 3 - already in AP (on start AP), 4 - unknown error (may be described in STATUS_TEXT)</field>
+    </message>
     <message id="293" name="WIFI_NETWORK_INFO">
       <description>Information about network (see MAV_CMD_GET_WIFI_NETWORKS_INFO)</description>
       <field type="char[32]" name="ssid">Name of network (SSID)</field>
