@@ -133,16 +133,16 @@
       <description>Sensor and DSC control loads.</description>
       <field name="sensLoad" type="uint8_t">Sensor DSC Load</field>
       <field name="ctrlLoad" type="uint8_t">Control DSC Load</field>
-      <field name="batVolt" type="uint16_t">Battery Voltage in millivolts</field>
+      <field name="batVolt" type="uint16_t" units="mV">Battery Voltage</field>
     </message>
     <message name="SENSOR_BIAS" id="172">
       <description>Accelerometer and gyro biases.</description>
-      <field name="axBias" type="float">Accelerometer X bias (m/s)</field>
-      <field name="ayBias" type="float">Accelerometer Y bias (m/s)</field>
-      <field name="azBias" type="float">Accelerometer Z bias (m/s)</field>
-      <field name="gxBias" type="float">Gyro X bias (rad/s)</field>
-      <field name="gyBias" type="float">Gyro Y bias (rad/s)</field>
-      <field name="gzBias" type="float">Gyro Z bias (rad/s)</field>
+      <field name="axBias" type="float" units="m/s">Accelerometer X bias</field>
+      <field name="ayBias" type="float" units="m/s">Accelerometer Y bias</field>
+      <field name="azBias" type="float" units="m/s">Accelerometer Z bias</field>
+      <field name="gxBias" type="float" units="rad/s">Gyro X bias</field>
+      <field name="gyBias" type="float" units="rad/s">Gyro Y bias</field>
+      <field name="gzBias" type="float" units="rad/s">Gyro Z bias</field>
     </message>
     <message name="DIAGNOSTIC" id="173">
       <description>Configurable diagnostic messages.</description>
@@ -155,7 +155,7 @@
     </message>
     <message name="SLUGS_NAVIGATION" id="176">
       <description>Data used in the navigation algorithm.</description>
-      <field name="u_m" type="float">Measured Airspeed prior to the nav filter in m/s</field>
+      <field name="u_m" type="float" units="m/s">Measured Airspeed prior to the nav filter</field>
       <field name="phi_c" type="float">Commanded Roll</field>
       <field name="theta_c" type="float">Commanded Pitch</field>
       <field name="psiDot_c" type="float">Commanded Turn rate</field>
@@ -164,7 +164,7 @@
       <field name="dist2Go" type="float">Remaining distance to Run on this leg of Navigation</field>
       <field name="fromWP" type="uint8_t">Origin WP</field>
       <field name="toWP" type="uint8_t">Destination WP</field>
-      <field name="h_c" type="uint16_t">Commanded altitude in 0.1 m</field>
+      <field name="h_c" type="uint16_t" units="dm">Commanded altitude</field>
     </message>
     <message name="DATA_LOG" id="177">
       <description>Configurable data log probes to be used inside Simulink</description>
@@ -188,19 +188,19 @@
       <field name="useSat" type="uint8_t">Used satellites in Solution  </field>
       <field name="GppGl" type="uint8_t">GPS+GLONASS satellites in Solution  </field>
       <field name="sigUsedMask" type="uint8_t">GPS and GLONASS usage mask (bit 0 GPS_used? bit_4 GLONASS_used?)</field>
-      <field name="percentUsed" type="uint8_t">Percent used GPS</field>
+      <field name="percentUsed" type="uint8_t" units="%">Percent used GPS</field>
     </message>
     <message name="MID_LVL_CMDS" id="180">
       <description>Mid Level commands sent from the GS to the autopilot. These are only sent when being operated in mid-level commands mode from the ground.</description>
       <field name="target" type="uint8_t">The system setting the commands</field>
-      <field name="hCommand" type="float">Commanded Altitude in meters</field>
-      <field name="uCommand" type="float">Commanded Airspeed in m/s</field>
-      <field name="rCommand" type="float">Commanded Turnrate in rad/s</field>
+      <field name="hCommand" type="float" units="m">Commanded Altitude</field>
+      <field name="uCommand" type="float" units="m/s">Commanded Airspeed</field>
+      <field name="rCommand" type="float" units="rad/s">Commanded Turnrate</field>
     </message>
     <message name="CTRL_SRFC_PT" id="181">
       <description>This message sets the control surfaces for selective passthrough mode.</description>
       <field name="target" type="uint8_t">The system setting the commands</field>
-      <field name="bitfieldPt" type="uint16_t">Bitfield containing the passthrough configuration, see CONTROL_SURFACE_FLAG ENUM.</field>
+      <field name="bitfieldPt" type="uint16_t" enum="CONTROL_SURFACE_FLAG" display="bitmask">Bitfield containing the passthrough configuration, see CONTROL_SURFACE_FLAG ENUM.</field>
     </message>
     <message name="SLUGS_CAMERA_ORDER" id="184">
       <description>Orders generated to the SLUGS camera mount. </description>
@@ -229,8 +229,8 @@
     <message name="SLUGS_MOBILE_LOCATION" id="186">
       <description>Transmits the last known position of the mobile GS to the UAV. Very relevant when Track Mobile is enabled</description>
       <field name="target" type="uint8_t">The system reporting the action</field>
-      <field name="latitude" type="float">Mobile Latitude</field>
-      <field name="longitude" type="float">Mobile Longitude</field>
+      <field name="latitude" type="float" units="deg">Mobile Latitude</field>
+      <field name="longitude" type="float" units="deg">Mobile Longitude</field>
     </message>
     <message name="SLUGS_CONFIGURATION_CAMERA" id="188">
       <description>Control for camara.</description>
@@ -241,8 +241,8 @@
     <message name="ISR_LOCATION" id="189">
       <description>Transmits the position of watch</description>
       <field name="target" type="uint8_t">The system reporting the action</field>
-      <field name="latitude" type="float">ISR Latitude</field>
-      <field name="longitude" type="float">ISR Longitude</field>
+      <field name="latitude" type="float" units="deg">ISR Latitude</field>
+      <field name="longitude" type="float" units="deg">ISR Longitude</field>
       <field name="height" type="float">ISR Height</field>
       <field name="option1" type="uint8_t">Option 1</field>
       <field name="option2" type="uint8_t">Option 2</field>
@@ -272,10 +272,10 @@
     <message name="UAV_STATUS" id="193">
       <description>Transmits the actual status values UAV in flight</description>
       <field name="target" type="uint8_t">The ID system reporting the action</field>
-      <field name="latitude" type="float">Latitude UAV</field>
-      <field name="longitude" type="float">Longitude UAV</field>
-      <field name="altitude" type="float">Altitude UAV</field>
-      <field name="speed" type="float">Speed UAV</field>
+      <field name="latitude" type="float" units="deg">Latitude UAV</field>
+      <field name="longitude" type="float" units="deg">Longitude UAV</field>
+      <field name="altitude" type="float" units="m">Altitude UAV</field>
+      <field name="speed" type="float" units="m/s">Speed UAV</field>
       <field name="course" type="float">Course UAV</field>
     </message>
     <message name="STATUS_GPS" id="194">
@@ -284,7 +284,7 @@
       <field name="gpsQuality" type="uint8_t">The quality indicator, 0=fix not available or invalid, 1=GPS fix, 2=C/A differential GPS, 6=Dead reckoning mode, 7=Manual input mode (fixed position), 8=Simulator mode, 9= WAAS a</field>
       <field name="msgsType" type="uint8_t"> Indicates if GN, GL or GP messages are being received</field>
       <field name="posStatus" type="uint8_t"> A = data valid, V = data invalid</field>
-      <field name="magVar" type="float">Magnetic variation, degrees </field>
+      <field name="magVar" type="float" units="deg">Magnetic variation</field>
       <field name="magDir" type="int8_t"> Magnetic variation direction E/W. Easterly variation (E) subtracts from True course and Westerly variation (W) adds to True course</field>
       <field name="modeInd" type="uint8_t"> Positioning system mode indicator. A - Autonomous;D-Differential; E-Estimated (dead reckoning) mode;M-Manual input; N-Data not valid</field>
     </message>
@@ -295,7 +295,7 @@
       <field name="solStatus" type="uint8_t">solution Status. See table 44 page 197</field>
       <field name="posType" type="uint8_t">position type. See table 43 page 196</field>
       <field name="velType" type="uint8_t">velocity type. See table 43 page 196</field>
-      <field name="posSolAge" type="float">Age of the position solution in seconds</field>
+      <field name="posSolAge" type="float" units="s">Age of the position solution</field>
       <field name="csFails" type="uint16_t">Times the CRC has failed since boot</field>
     </message>
     <message name="SENSOR_DIAG" id="196">
