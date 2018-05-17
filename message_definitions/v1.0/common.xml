@@ -1483,25 +1483,33 @@
         <param index="7">Reserved</param>
       </entry>
       <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION">
-        <description>WIP: Request storage information (STORAGE_INFORMATION)</description>
+        <wip/>
+        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+        <description>Request storage information (STORAGE_INFORMATION)</description>
         <param index="1">1: Request storage information</param>
         <param index="2">Storage ID</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="526" name="MAV_CMD_STORAGE_FORMAT">
-        <description>WIP: Format a storage medium</description>
+        <wip/>
+        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+        <description>Format a storage medium</description>
         <param index="1">1: Format storage</param>
         <param index="2">Storage ID</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS">
-        <description>WIP: Request camera capture status (CAMERA_CAPTURE_STATUS)</description>
+        <wip/>
+        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+        <description>Request camera capture status (CAMERA_CAPTURE_STATUS)</description>
         <param index="1">1: Request camera capture status</param>
         <param index="2">Camera ID</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="528" name="MAV_CMD_REQUEST_FLIGHT_INFORMATION">
-        <description>WIP: Request flight information (FLIGHT_INFORMATION)</description>
+        <wip/>
+        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+        <description>Request flight information (FLIGHT_INFORMATION)</description>
         <param index="1">1: Request flight information</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
@@ -1531,6 +1539,8 @@
         <param index="3">1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore</param>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
+        <wip/>
+        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
         <description>Starts video capture (recording)</description>
         <param index="1">Camera ID (0 for all cameras), 1 for first, 2 for second, etc.</param>
         <param index="2">Frames per second, set to -1 for highest framerate possible.</param>
@@ -1540,6 +1550,8 @@
         <param index="6">WIP: Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise time in Hz)</param>
       </entry>
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE">
+        <wip/>
+        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
         <description>Stop the current video capture (recording)</description>
         <param index="1">WIP: Camera ID</param>
         <param index="2">Reserved</param>
@@ -4126,7 +4138,7 @@
       <field type="int8_t" name="temperature_air" units="degC">Air temperature (degrees C) from airspeed sensor</field>
       <field type="uint8_t" name="failsafe">failsafe (each bit represents a failsafe where 0=ok, 1=failsafe active (bit0:RC, bit1:batt, bit2:GPS, bit3:GCS, bit4:fence)</field>
       <field type="uint8_t" name="wp_num">current waypoint number</field>
-      <field type="uint16_t" name="wp_distance" units="m">distance to target (meters)</field>
+      <field type="uint16_t" name="wp_distance" units="m">distance to target</field>
     </message>
     <message id="241" name="VIBRATION">
       <description>Vibration levels and accelerometer clipping</description>
@@ -4273,7 +4285,9 @@
       <field type="char[200]" name="tune2">tune extension (appended to tune)</field>
     </message>
     <message id="259" name="CAMERA_INFORMATION">
-      <description>WIP: Information about a camera</description>
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Information about a camera</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
       <field type="uint8_t" name="camera_id">Camera ID if there are multiple</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
@@ -4286,7 +4300,9 @@
       <field type="uint8_t" name="lense_id">Reserved for a lense ID</field>
     </message>
     <message id="260" name="CAMERA_SETTINGS">
-      <description>WIP: Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS and written using MAV_CMD_SET_CAMERA_SETTINGS</description>
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS and written using MAV_CMD_SET_CAMERA_SETTINGS</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
       <field type="uint8_t" name="camera_id">Camera ID if there are multiple</field>
       <field type="float" name="aperture">Aperture is 1/value</field>
@@ -4302,9 +4318,12 @@
       <field type="uint8_t" name="image_format_id">Reserved for image format ID</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
-      <description>WIP: Information about a storage medium</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-      <field type="uint8_t" name="storage_id">Storage ID if there are multiple</field>
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Information about a storage medium.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="storage_id">Storage ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="storage_count">Number of storage devices</field>
       <field type="uint8_t" name="status">Status of storage (0 not available, 1 unformatted, 2 formatted)</field>
       <field type="float" name="total_capacity" units="Mibytes">Total capacity in MiB</field>
       <field type="float" name="used_capacity" units="Mibytes">Used capacity in MiB</field>
@@ -4313,7 +4332,9 @@
       <field type="float" name="write_speed" units="Mibytes/s">Write speed in MiB/s</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
-      <description>WIP: Information about the status of a capture</description>
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Information about the status of a capture</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
       <field type="uint8_t" name="camera_id">Camera ID if there are multiple</field>
       <field type="uint8_t" name="image_status">Current status of image capturing (0: not running, 1: interval capture in progress)</field>
@@ -4342,11 +4363,13 @@
       <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
     </message>
     <message id="264" name="FLIGHT_INFORMATION">
-      <description>WIP: Information about flight since last arming</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-      <field type="uint64_t" name="arming_time_utc" units="us">Timestamp at arming (microseconds since UNIX epoch) in UTC, 0 for unknown</field>
-      <field type="uint64_t" name="takeoff_time_utc" units="us">Timestamp at takeoff (microseconds since UNIX epoch) in UTC, 0 for unknown</field>
-      <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of logfiles</field>
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Information about flight since last arming.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint64_t" name="arming_time_utc" units="us">Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown</field>
+      <field type="uint64_t" name="takeoff_time_utc" units="us">Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown</field>
+      <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of log files</field>
     </message>
     <message id="265" name="MOUNT_ORIENTATION">
       <description>Orientation of a mount</description>
