@@ -1016,7 +1016,7 @@
       <field type="int16_t" name="mag_ofs_x">magnetometer X offset</field>
       <field type="int16_t" name="mag_ofs_y">magnetometer Y offset</field>
       <field type="int16_t" name="mag_ofs_z">magnetometer Z offset</field>
-      <field type="float" name="mag_declination" units="rad">magnetic declination (radians)</field>
+      <field type="float" name="mag_declination" units="rad">magnetic declination</field>
       <field type="int32_t" name="raw_press">raw pressure from barometer</field>
       <field type="int32_t" name="raw_temp">raw temperature from barometer</field>
       <field type="float" name="gyro_cal_x">gyro X calibration</field>
@@ -1061,7 +1061,7 @@
       <field type="uint8_t" name="iso">ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore)</field>
       <field type="uint8_t" name="exposure_type">Exposure type enumeration from 1 to N (0 means ignore)</field>
       <field type="uint8_t" name="command_id">Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once</field>
-      <field type="uint8_t" name="engine_cut_off" units="ds">Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)</field>
+      <field type="uint8_t" name="engine_cut_off" units="ds">Main engine cut-off time before camera trigger (0 means no cut-off)</field>
       <field type="uint8_t" name="extra_param">Extra parameters enumeration (0 means ignore)</field>
       <field type="float" name="extra_value">Correspondent value to given extra_param</field>
     </message>
@@ -1092,18 +1092,18 @@
       <description>Message to control a camera mount, directional antenna, etc.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="int32_t" name="input_a">pitch(deg*100) or lat, depending on mount mode</field>
-      <field type="int32_t" name="input_b">roll(deg*100) or lon depending on mount mode</field>
-      <field type="int32_t" name="input_c">yaw(deg*100) or alt (in cm) depending on mount mode</field>
+      <field type="int32_t" name="input_a">pitch (centi-degrees) or lat (degE7), depending on mount mode</field>
+      <field type="int32_t" name="input_b">roll (centi-degrees) or lon (degE7) depending on mount mode</field>
+      <field type="int32_t" name="input_c">yaw (centi-degrees) or alt (cm) depending on mount mode</field>
       <field type="uint8_t" name="save_position">if "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING)</field>
     </message>
     <message id="158" name="MOUNT_STATUS">
       <description>Message with some status from APM to GCS about camera or antenna mount</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="int32_t" name="pointing_a" units="cdeg">pitch(deg*100)</field>
-      <field type="int32_t" name="pointing_b" units="cdeg">roll(deg*100)</field>
-      <field type="int32_t" name="pointing_c" units="cdeg">yaw(deg*100)</field>
+      <field type="int32_t" name="pointing_a" units="cdeg">pitch</field>
+      <field type="int32_t" name="pointing_b" units="cdeg">roll</field>
+      <field type="int32_t" name="pointing_c" units="cdeg">yaw</field>
     </message>
     <!-- geo-fence messages -->
     <message id="160" name="FENCE_POINT">
@@ -1126,13 +1126,13 @@
       <field type="uint8_t" name="breach_status">0 if currently inside fence, 1 if outside</field>
       <field type="uint16_t" name="breach_count">number of fence breaches</field>
       <field type="uint8_t" name="breach_type" enum="FENCE_BREACH">last breach type (see FENCE_BREACH_* enum)</field>
-      <field type="uint32_t" name="breach_time" units="ms">time of last breach in milliseconds since boot</field>
+      <field type="uint32_t" name="breach_time" units="ms">time (since boot) of last breach</field>
     </message>
     <message id="163" name="AHRS">
       <description>Status of DCM attitude estimator</description>
-      <field type="float" name="omegaIx" units="rad/s">X gyro drift estimate rad/s</field>
-      <field type="float" name="omegaIy" units="rad/s">Y gyro drift estimate rad/s</field>
-      <field type="float" name="omegaIz" units="rad/s">Z gyro drift estimate rad/s</field>
+      <field type="float" name="omegaIx" units="rad/s">X gyro drift estimate</field>
+      <field type="float" name="omegaIy" units="rad/s">Y gyro drift estimate</field>
+      <field type="float" name="omegaIz" units="rad/s">Z gyro drift estimate</field>
       <field type="float" name="accel_weight">average accel_weight</field>
       <field type="float" name="renorm_val">average renormalisation value</field>
       <field type="float" name="error_rp">average error_roll_pitch value</field>
@@ -1140,28 +1140,28 @@
     </message>
     <message id="164" name="SIMSTATE">
       <description>Status of simulation environment, if used</description>
-      <field type="float" name="roll" units="rad">Roll angle (rad)</field>
-      <field type="float" name="pitch" units="rad">Pitch angle (rad)</field>
-      <field type="float" name="yaw" units="rad">Yaw angle (rad)</field>
-      <field type="float" name="xacc" units="m/s/s">X acceleration m/s/s</field>
-      <field type="float" name="yacc" units="m/s/s">Y acceleration m/s/s</field>
-      <field type="float" name="zacc" units="m/s/s">Z acceleration m/s/s</field>
-      <field type="float" name="xgyro" units="rad/s">Angular speed around X axis rad/s</field>
-      <field type="float" name="ygyro" units="rad/s">Angular speed around Y axis rad/s</field>
-      <field type="float" name="zgyro" units="rad/s">Angular speed around Z axis rad/s</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude in degrees * 1E7</field>
-      <field type="int32_t" name="lng" units="degE7">Longitude in degrees * 1E7</field>
+      <field type="float" name="roll" units="rad">Roll angle</field>
+      <field type="float" name="pitch" units="rad">Pitch angle</field>
+      <field type="float" name="yaw" units="rad">Yaw angle</field>
+      <field type="float" name="xacc" units="m/s/s">X acceleration</field>
+      <field type="float" name="yacc" units="m/s/s">Y acceleration</field>
+      <field type="float" name="zacc" units="m/s/s">Z acceleration</field>
+      <field type="float" name="xgyro" units="rad/s">Angular speed around X axis</field>
+      <field type="float" name="ygyro" units="rad/s">Angular speed around Y axis</field>
+      <field type="float" name="zgyro" units="rad/s">Angular speed around Z axis</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude</field>
+      <field type="int32_t" name="lng" units="degE7">Longitude</field>
     </message>
     <message id="165" name="HWSTATUS">
       <description>Status of key hardware</description>
-      <field type="uint16_t" name="Vcc" units="mV">board voltage (mV)</field>
+      <field type="uint16_t" name="Vcc" units="mV">board voltage</field>
       <field type="uint8_t" name="I2Cerr">I2C error count</field>
     </message>
     <message id="166" name="RADIO">
       <description>Status generated by radio</description>
       <field type="uint8_t" name="rssi">local signal strength</field>
       <field type="uint8_t" name="remrssi">remote signal strength</field>
-      <field type="uint8_t" name="txbuf" units="%">how full the tx buffer is as a percentage</field>
+      <field type="uint8_t" name="txbuf" units="%">how full the tx buffer is</field>
       <field type="uint8_t" name="noise">background noise level</field>
       <field type="uint8_t" name="remnoise">remote background noise level</field>
       <field type="uint16_t" name="rxerrors">receive errors</field>
@@ -1170,11 +1170,11 @@
     <!-- AP_Limits status -->
     <message id="167" name="LIMITS_STATUS">
       <description>Status of AP_Limits. Sent in extended status stream when AP_Limits is enabled</description>
-      <field type="uint8_t" name="limits_state" enum="LIMITS_STATE">state of AP_Limits, (see enum LimitState, LIMITS_STATE)</field>
-      <field type="uint32_t" name="last_trigger" units="ms">time of last breach in milliseconds since boot</field>
-      <field type="uint32_t" name="last_action" units="ms">time of last recovery action in milliseconds since boot</field>
-      <field type="uint32_t" name="last_recovery" units="ms">time of last successful recovery in milliseconds since boot</field>
-      <field type="uint32_t" name="last_clear" units="ms">time of last all-clear in milliseconds since boot</field>
+      <field type="uint8_t" name="limits_state" enum="LIMITS_STATE">state of AP_Limits, (see LIMITS_STATE enum)</field>
+      <field type="uint32_t" name="last_trigger" units="ms">time (since boot) of last breach</field>
+      <field type="uint32_t" name="last_action" units="ms">time (since boot) of last recovery action</field>
+      <field type="uint32_t" name="last_recovery" units="ms">time (since boot) of last successful recovery</field>
+      <field type="uint32_t" name="last_clear" units="ms">time (since boot) of last all-clear</field>
       <field type="uint16_t" name="breach_count">number of fence breaches</field>
       <field type="uint8_t" name="mods_enabled" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE)</field>
       <field type="uint8_t" name="mods_required" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE)</field>
@@ -1182,9 +1182,9 @@
     </message>
     <message id="168" name="WIND">
       <description>Wind estimation</description>
-      <field type="float" name="direction" units="deg">wind direction that wind is coming from (degrees)</field>
-      <field type="float" name="speed" units="m/s">wind speed in ground plane (m/s)</field>
-      <field type="float" name="speed_z" units="m/s">vertical wind speed (m/s)</field>
+      <field type="float" name="direction" units="deg">wind direction that wind is coming from</field>
+      <field type="float" name="speed" units="m/s">wind speed in ground plane</field>
+      <field type="float" name="speed_z" units="m/s">vertical wind speed</field>
     </message>
     <message id="169" name="DATA16">
       <description>Data packet, size 16</description>
@@ -1212,15 +1212,15 @@
     </message>
     <message id="173" name="RANGEFINDER">
       <description>Rangefinder reporting</description>
-      <field type="float" name="distance" units="m">distance in meters</field>
+      <field type="float" name="distance" units="m">distance</field>
       <field type="float" name="voltage" units="V">raw voltage if available, zero otherwise</field>
     </message>
     <message id="174" name="AIRSPEED_AUTOCAL">
       <description>Airspeed auto-calibration</description>
-      <field type="float" name="vx" units="m/s">GPS velocity north m/s</field>
-      <field type="float" name="vy" units="m/s">GPS velocity east m/s</field>
-      <field type="float" name="vz" units="m/s">GPS velocity down m/s</field>
-      <field type="float" name="diff_pressure" units="Pa">Differential pressure pascals</field>
+      <field type="float" name="vx" units="m/s">GPS velocity north</field>
+      <field type="float" name="vy" units="m/s">GPS velocity east</field>
+      <field type="float" name="vz" units="m/s">GPS velocity down</field>
+      <field type="float" name="diff_pressure" units="Pa">Differential pressure</field>
       <field type="float" name="EAS2TAS">Estimated to true airspeed ratio</field>
       <field type="float" name="ratio">Airspeed ratio</field>
       <field type="float" name="state_x">EKF state x</field>
@@ -1237,12 +1237,12 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="idx">point index (first point is 0)</field>
       <field type="uint8_t" name="count">total number of points (for sanity checking)</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude of point in degrees * 1E7</field>
-      <field type="int32_t" name="lng" units="degE7">Longitude of point in degrees * 1E7</field>
-      <field type="int16_t" name="alt" units="m">Transit / loiter altitude in meters relative to home</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude of point</field>
+      <field type="int32_t" name="lng" units="degE7">Longitude of point</field>
+      <field type="int16_t" name="alt" units="m">Transit / loiter altitude relative to home</field>
       <!-- Path planned landings are still in the future, but we want these fields ready: -->
-      <field type="int16_t" name="break_alt" units="m">Break altitude in meters relative to home</field>
-      <field type="uint16_t" name="land_dir" units="cdeg">Heading to aim for when landing. In centi-degrees.</field>
+      <field type="int16_t" name="break_alt" units="m">Break altitude relative to home</field>
+      <field type="uint16_t" name="land_dir" units="cdeg">Heading to aim for when landing</field>
       <field type="uint8_t" name="flags" enum="RALLY_FLAGS" display="bitmask">See RALLY_FLAGS enum for definition of the bitmask.</field>
     </message>
     <message id="176" name="RALLY_FETCH_POINT">
@@ -1253,9 +1253,9 @@
     </message>
     <message id="177" name="COMPASSMOT_STATUS">
       <description>Status of compassmot calibration</description>
-      <field type="uint16_t" name="throttle" units="d%">throttle (percent*10)</field>
-      <field type="float" name="current" units="A">current (Ampere)</field>
-      <field type="uint16_t" name="interference" units="%">interference (percent)</field>
+      <field type="uint16_t" name="throttle" units="d%">throttle</field>
+      <field type="float" name="current" units="A">current</field>
+      <field type="uint16_t" name="interference" units="%">interference</field>
       <field type="float" name="CompensationX">Motor Compensation X</field>
       <field type="float" name="CompensationY">Motor Compensation Y</field>
       <field type="float" name="CompensationZ">Motor Compensation Z</field>
@@ -1263,17 +1263,17 @@
     <!-- Coming soon <message name="RALLY_LAND_POINT" id="177"> <description>A rally landing point. An aircraft loitering at a rally point may choose one of these points to land at.</description> <field name="target_system" type="uint8_t">System ID</field> <field name="target_component" type="uint8_t">Component ID</field> <field name="idx" type="uint8_t">point index (first point is 0)</field> <field name="count" type="uint8_t">total number of points (for sanity checking)</field> <field name="lat" type="int32_t">Latitude of point</field> <field name="lng" type="int32_t">Longitude of point</field> <field name="alt" type="uint16_t">Ground AGL (usually 0)</field> </message> <message name="RALLY_LAND_FETCH_POINT" id="178"> <description>Request a current rally land point from MAV</description> <field name="target_system" type="uint8_t">System ID</field> <field name="target_component" type="uint8_t">Component ID</field> <field name="idx" type="uint8_t">point index (first point is 0)</field> </message> -->
     <message id="178" name="AHRS2">
       <description>Status of secondary AHRS filter if available</description>
-      <field type="float" name="roll" units="rad">Roll angle (rad)</field>
-      <field type="float" name="pitch" units="rad">Pitch angle (rad)</field>
-      <field type="float" name="yaw" units="rad">Yaw angle (rad)</field>
+      <field type="float" name="roll" units="rad">Roll angle</field>
+      <field type="float" name="pitch" units="rad">Pitch angle</field>
+      <field type="float" name="yaw" units="rad">Yaw angle</field>
       <field type="float" name="altitude" units="m">Altitude (MSL)</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude in degrees * 1E7</field>
-      <field type="int32_t" name="lng" units="degE7">Longitude in degrees * 1E7</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude</field>
+      <field type="int32_t" name="lng" units="degE7">Longitude</field>
     </message>
     <!-- camera event message from CCB to autopilot: for image trigger events but also things like heartbeat, error, low power, full card, etc -->
     <message id="179" name="CAMERA_STATUS">
       <description>Camera Event</description>
-      <field type="uint64_t" name="time_usec" units="us">Image timestamp (microseconds since UNIX epoch, according to camera clock)</field>
+      <field type="uint64_t" name="time_usec" units="us">Image timestamp (since UNIX epoch, according to camera clock)</field>
       <field type="uint8_t" name="target_system">System ID</field>
       <!-- support multiple concurrent vehicles -->
       <field type="uint8_t" name="cam_idx">Camera ID</field>
@@ -1289,24 +1289,24 @@
     <!-- camera feedback message - can be originated from CCB (in response to a CAMERA_STATUS), or directly from the autopilot as part of a DO_DIGICAM_CONTROL-->
     <message id="180" name="CAMERA_FEEDBACK">
       <description>Camera Capture Feedback</description>
-      <field type="uint64_t" name="time_usec" units="us">Image timestamp (microseconds since UNIX epoch), as passed in by CAMERA_STATUS message (or autopilot if no CCB)</field>
+      <field type="uint64_t" name="time_usec" units="us">Image timestamp (since UNIX epoch), as passed in by CAMERA_STATUS message (or autopilot if no CCB)</field>
       <field type="uint8_t" name="target_system">System ID</field>
       <!-- support multiple concurrent vehicles -->
       <field type="uint8_t" name="cam_idx">Camera ID</field>
       <!-- component ID, to support multiple cameras -->
       <field type="uint16_t" name="img_idx">Image index</field>
       <!-- per camera image index, should be unique+sequential within a mission, preferably non-wrapping -->
-      <field type="int32_t" name="lat" units="degE7">Latitude in (deg * 1E7)</field>
-      <field type="int32_t" name="lng" units="degE7">Longitude in (deg * 1E7)</field>
-      <field type="float" name="alt_msl" units="m">Altitude Absolute (meters AMSL)</field>
-      <field type="float" name="alt_rel" units="m">Altitude Relative (meters above HOME location)</field>
-      <field type="float" name="roll" units="deg">Camera Roll angle (earth frame, degrees, +-180)</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude</field>
+      <field type="int32_t" name="lng" units="degE7">Longitude</field>
+      <field type="float" name="alt_msl" units="m">Altitude Absolute (AMSL)</field>
+      <field type="float" name="alt_rel" units="m">Altitude Relative (above HOME location)</field>
+      <field type="float" name="roll" units="deg">Camera Roll angle (earth frame, +-180)</field>
       <!-- initially only supporting fixed cameras, in future we'll need feedback messages from the gimbal so we can include that offset here -->
-      <field type="float" name="pitch" units="deg">Camera Pitch angle (earth frame, degrees, +-180)</field>
+      <field type="float" name="pitch" units="deg">Camera Pitch angle (earth frame, +-180)</field>
       <!-- initially only supporting fixed cameras, in future we'll need feedback messages from the gimbal so we can include that offset here -->
-      <field type="float" name="yaw" units="deg">Camera Yaw (earth frame, degrees, 0-360, true)</field>
+      <field type="float" name="yaw" units="deg">Camera Yaw (earth frame, 0-360, true)</field>
       <!-- initially only supporting fixed cameras, in future we'll need feedback messages from the gimbal so we can include that offset here -->
-      <field type="float" name="foc_len" units="mm">Focal Length (mm)</field>
+      <field type="float" name="foc_len" units="mm">Focal Length</field>
       <!-- per-image to support zooms. Zero means fixed focal length or unknown. Should be true mm, not scaled to 35mm film equivalent -->
       <field type="uint8_t" name="flags" enum="CAMERA_FEEDBACK_FLAGS">See CAMERA_FEEDBACK_FLAGS enum for definition of the bitmask</field>
       <!-- future proofing -->
@@ -1315,17 +1315,17 @@
     </message>
     <message id="181" name="BATTERY2">
       <description>Deprecated. Use BATTERY_STATUS instead. 2nd Battery status</description>
-      <field type="uint16_t" name="voltage" units="mV">voltage in millivolts</field>
-      <field type="int16_t" name="current_battery" units="cA">Battery current, in centiamperes (1 = 10 milliampere), -1: autopilot does not measure the current</field>
+      <field type="uint16_t" name="voltage" units="mV">voltage</field>
+      <field type="int16_t" name="current_battery" units="cA">Battery current, -1: autopilot does not measure the current</field>
     </message>
     <message id="182" name="AHRS3">
       <description>Status of third AHRS filter if available. This is for ANU research group (Ali and Sean)</description>
-      <field type="float" name="roll" units="rad">Roll angle (rad)</field>
-      <field type="float" name="pitch" units="rad">Pitch angle (rad)</field>
-      <field type="float" name="yaw" units="rad">Yaw angle (rad)</field>
+      <field type="float" name="roll" units="rad">Roll angle</field>
+      <field type="float" name="pitch" units="rad">Pitch angle</field>
+      <field type="float" name="yaw" units="rad">Yaw angle</field>
       <field type="float" name="altitude" units="m">Altitude (MSL)</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude in degrees * 1E7</field>
-      <field type="int32_t" name="lng" units="degE7">Longitude in degrees * 1E7</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude</field>
+      <field type="int32_t" name="lng" units="degE7">Longitude</field>
       <field type="float" name="v1">test variable1</field>
       <field type="float" name="v2">test variable2</field>
       <field type="float" name="v3">test variable3</field>
@@ -1411,8 +1411,8 @@
     <message id="194" name="PID_TUNING">
       <description>PID tuning information</description>
       <field type="uint8_t" name="axis" enum="PID_TUNING_AXIS">axis</field>
-      <field type="float" name="desired" units="deg/s">desired rate (degrees/s)</field>
-      <field type="float" name="achieved" units="deg/s">achieved rate (degrees/s)</field>
+      <field type="float" name="desired" units="deg/s">desired rate</field>
+      <field type="float" name="achieved" units="deg/s">achieved rate</field>
       <field type="float" name="FF">FF component</field>
       <field type="float" name="P">P component</field>
       <field type="float" name="I">I component</field>
@@ -1420,39 +1420,39 @@
     </message>
     <message id="195" name="DEEPSTALL">
       <description>Deepstall path planning</description>
-      <field type="int32_t" name="landing_lat" units="degE7">Landing latitude (deg * 1E7)</field>
-      <field type="int32_t" name="landing_lon" units="degE7">Landing longitude (deg * 1E7)</field>
-      <field type="int32_t" name="path_lat" units="degE7">Final heading start point, latitude (deg * 1E7)</field>
-      <field type="int32_t" name="path_lon" units="degE7">Final heading start point, longitude (deg * 1E7)</field>
-      <field type="int32_t" name="arc_entry_lat" units="degE7">Arc entry point, latitude (deg * 1E7)</field>
-      <field type="int32_t" name="arc_entry_lon" units="degE7">Arc entry point, longitude (deg * 1E7)</field>
-      <field type="float" name="altitude" units="m">Altitude (meters)</field>
+      <field type="int32_t" name="landing_lat" units="degE7">Landing latitude</field>
+      <field type="int32_t" name="landing_lon" units="degE7">Landing longitude</field>
+      <field type="int32_t" name="path_lat" units="degE7">Final heading start point, latitude</field>
+      <field type="int32_t" name="path_lon" units="degE7">Final heading start point, longitude</field>
+      <field type="int32_t" name="arc_entry_lat" units="degE7">Arc entry point, latitude</field>
+      <field type="int32_t" name="arc_entry_lon" units="degE7">Arc entry point, longitude</field>
+      <field type="float" name="altitude" units="m">Altitude</field>
       <field type="float" name="expected_travel_distance" units="m">Distance the aircraft expects to travel during the deepstall</field>
-      <field type="float" name="cross_track_error" units="m">Deepstall cross track error in meters (only valid when in DEEPSTALL_STAGE_LAND)</field>
+      <field type="float" name="cross_track_error" units="m">Deepstall cross track error (only valid when in DEEPSTALL_STAGE_LAND)</field>
       <field type="uint8_t" name="stage" enum="DEEPSTALL_STAGE">Deepstall stage, see enum MAV_DEEPSTALL_STAGE</field>
     </message>
     <message id="200" name="GIMBAL_REPORT">
       <description>3 axis gimbal mesuraments</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="float" name="delta_time" units="s">Time since last update (seconds)</field>
-      <field type="float" name="delta_angle_x" units="rad">Delta angle X (radians)</field>
-      <field type="float" name="delta_angle_y" units="rad">Delta angle Y (radians)</field>
-      <field type="float" name="delta_angle_z" units="rad">Delta angle X (radians)</field>
-      <field type="float" name="delta_velocity_x" units="m/s">Delta velocity X (m/s)</field>
-      <field type="float" name="delta_velocity_y" units="m/s">Delta velocity Y (m/s)</field>
-      <field type="float" name="delta_velocity_z" units="m/s">Delta velocity Z (m/s)</field>
-      <field type="float" name="joint_roll" units="rad">Joint ROLL (radians)</field>
-      <field type="float" name="joint_el" units="rad">Joint EL (radians)</field>
-      <field type="float" name="joint_az" units="rad">Joint AZ (radians)</field>
+      <field type="float" name="delta_time" units="s">Time since last update</field>
+      <field type="float" name="delta_angle_x" units="rad">Delta angle X</field>
+      <field type="float" name="delta_angle_y" units="rad">Delta angle Y</field>
+      <field type="float" name="delta_angle_z" units="rad">Delta angle X</field>
+      <field type="float" name="delta_velocity_x" units="m/s">Delta velocity X</field>
+      <field type="float" name="delta_velocity_y" units="m/s">Delta velocity Y</field>
+      <field type="float" name="delta_velocity_z" units="m/s">Delta velocity Z</field>
+      <field type="float" name="joint_roll" units="rad">Joint ROLL</field>
+      <field type="float" name="joint_el" units="rad">Joint EL</field>
+      <field type="float" name="joint_az" units="rad">Joint AZ</field>
     </message>
     <message id="201" name="GIMBAL_CONTROL">
       <description>Control message for rate gimbal</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="float" name="demanded_rate_x" units="rad/s">Demanded angular rate X (rad/s)</field>
-      <field type="float" name="demanded_rate_y" units="rad/s">Demanded angular rate Y (rad/s)</field>
-      <field type="float" name="demanded_rate_z" units="rad/s">Demanded angular rate Z (rad/s)</field>
+      <field type="float" name="demanded_rate_x" units="rad/s">Demanded angular rate X</field>
+      <field type="float" name="demanded_rate_y" units="rad/s">Demanded angular rate Y</field>
+      <field type="float" name="demanded_rate_z" units="rad/s">Demanded angular rate Z</field>
     </message>
     <message id="214" name="GIMBAL_TORQUE_CMD_REPORT">
       <description>100 Hz gimbal torque command telemetry</description>
@@ -1543,8 +1543,8 @@
     <message id="11010" name="ADAP_TUNING">
       <description>Adaptive Controller tuning information</description>
       <field type="uint8_t" name="axis" enum="PID_TUNING_AXIS">axis</field>
-      <field type="float" name="desired" units="deg/s">desired rate (degrees/s)</field>
-      <field type="float" name="achieved" units="deg/s">achieved rate (degrees/s)</field>
+      <field type="float" name="desired" units="deg/s">desired rate</field>
+      <field type="float" name="achieved" units="deg/s">achieved rate</field>
       <field type="float" name="error">error between model and vehicle</field>
       <field type="float" name="theta">theta estimated state predictor</field>
       <field type="float" name="omega">omega estimated state predictor</field>
@@ -1559,18 +1559,18 @@
     <!-- camera vision based attitude and position delta message -->
     <message id="11011" name="VISION_POSITION_DELTA">
       <description>camera vision based attitude and position deltas</description>
-      <field name="time_usec" type="uint64_t" units="us">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
-      <field name="time_delta_usec" type="uint64_t" units="us">Time in microseconds since the last reported camera frame</field>
+      <field name="time_usec" type="uint64_t" units="us">Timestamp (synced to UNIX time or since system boot)</field>
+      <field name="time_delta_usec" type="uint64_t" units="us">Time since the last reported camera frame</field>
       <field type="float[3]" name="angle_delta">Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation</field>
-      <field type="float[3]" name="position_delta" units="m">Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)</field>
+      <field type="float[3]" name="position_delta" units="m">Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)</field>
       <field type="float" name="confidence" units="%">normalised confidence value from 0 to 100</field>
     </message>
     <!-- Angle of Attack and Side Slip Angle message -->
     <message id="11020" name="AOA_SSA">
       <description>Angle of Attack and Side Slip Angle</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (micros since boot or Unix epoch)</field>
-      <field name="AOA" type="float" units="deg">Angle of Attack (degrees)</field>
-      <field name="SSA" type="float" units="deg">Side Slip Angle (degrees)</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (since boot or Unix epoch)</field>
+      <field name="AOA" type="float" units="deg">Angle of Attack</field>
+      <field name="SSA" type="float" units="deg">Side Slip Angle</field>
     </message>
     <message id="11030" name="ESC_TELEMETRY_1_TO_4">
       <description>ESC Telemetry Data for ESCs 1 to 4, matching data sent by BLHeli ESCs</description>
