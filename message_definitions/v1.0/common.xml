@@ -897,7 +897,8 @@
         <param index="7">Center point altitude (AMSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI">
-        <description>THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
+        <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
+        <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1">Region of interest mode. (see MAV_ROI enum)</param>
         <param index="2">Waypoint index/ target ID. (see MAV_ROI enum)</param>
         <param index="3">ROI index (allows a vehicle to manage multiple ROI's)</param>
@@ -1251,7 +1252,8 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="201" name="MAV_CMD_DO_SET_ROI">
-        <description>THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
+        <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
+        <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1">Region of interest mode. (see MAV_ROI enum)</param>
         <param index="2">Waypoint index/ target ID. (see MAV_ROI enum)</param>
         <param index="3">ROI index (allows a vehicle to manage multiple ROI's)</param>
@@ -1968,7 +1970,8 @@
       <!-- END of user range (31000 to 31999) -->
     </enum>
     <enum name="MAV_DATA_STREAM">
-      <description>THIS INTERFACE IS DEPRECATED AS OF JULY 2015. Please use MESSAGE_INTERVAL instead. A data stream is not a fixed set of messages, but rather a
+      <deprecated since="2015-06" replaced_by="MESSAGE_INTERVAL"/>
+      <description>A data stream is not a fixed set of messages, but rather a
      recommendation to the autopilot software. Individual autopilots may or may not obey
      the recommended messages.</description>
       <entry value="0" name="MAV_DATA_STREAM_ALL">
@@ -2000,7 +2003,8 @@
       </entry>
     </enum>
     <enum name="MAV_ROI">
-      <description>THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. The ROI (region of interest) for the vehicle. This can be
+      <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
+      <description>The ROI (region of interest) for the vehicle. This can be
                 be used by the vehicle for camera/vehicle attitude alignment (see
                 MAV_CMD_NAV_ROI).</description>
       <entry value="0" name="MAV_ROI_NONE">
@@ -2995,7 +2999,8 @@
       <field type="char[32]" name="key">key</field>
     </message>
     <message id="11" name="SET_MODE">
-      <description>THIS INTERFACE IS DEPRECATED. USE COMMAND_LONG with MAV_CMD_DO_SET_MODE INSTEAD. Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
+      <deprecated since="2015-12" replaced_by="MAV_CMD_DO_SET_MODE">Use COMMAND_LONG with MAV_CMD_DO_SET_MODE instead</deprecated>
+      <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
       <field type="uint8_t" name="target_system">The system setting the mode</field>
       <field type="uint8_t" name="base_mode" enum="MAV_MODE">The new base mode.</field>
       <field type="uint32_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
@@ -3415,7 +3420,7 @@
       <field type="uint8_t" name="rssi" units="%">Receive signal strength indicator. Values: [0-100], 255: invalid/unknown.</field>
     </message>
     <message id="66" name="REQUEST_DATA_STREAM">
-      <description>THIS INTERFACE IS DEPRECATED. USE SET_MESSAGE_INTERVAL INSTEAD.</description>
+      <deprecated since="2015-08" replaced_by="SET_MESSAGE_INTERVAL"/>
       <field type="uint8_t" name="target_system">The target requested to send the message stream.</field>
       <field type="uint8_t" name="target_component">The target requested to send the message stream.</field>
       <field type="uint8_t" name="req_stream_id">The ID of the requested data stream</field>
@@ -3423,7 +3428,7 @@
       <field type="uint8_t" name="start_stop">1 to start sending, 0 to stop sending.</field>
     </message>
     <message id="67" name="DATA_STREAM">
-      <description>THIS INTERFACE IS DEPRECATED. USE MESSAGE_INTERVAL INSTEAD.</description>
+      <deprecated since="2015-08" replaced_by="MESSAGE_INTERVAL"/>
       <field type="uint8_t" name="stream_id">The ID of the requested data stream</field>
       <field type="uint16_t" name="message_rate" units="Hz">The message rate</field>
       <field type="uint8_t" name="on_off">1 stream is enabled, 0 stream is stopped.</field>
@@ -3645,7 +3650,8 @@
       <field type="float" name="yaw" units="rad">Yaw</field>
     </message>
     <message id="90" name="HIL_STATE">
-      <description>DEPRECATED PACKET! Suffers from missing airspeed fields and singularities due to Euler angles. Please use HIL_STATE_QUATERNION instead. Sent from simulation to autopilot. This packet is useful for high throughput applications such as hardware in the loop simulations.</description>
+      <deprecated since="2013-07" replaced_by="HIL_STATE_QUATERNION">Suffers from missing airspeed fields and singularities due to Euler angles</deprecated>
+      <description>Sent from simulation to autopilot. This packet is useful for high throughput applications such as hardware in the loop simulations.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="float" name="roll" units="rad">Roll angle</field>
       <field type="float" name="pitch" units="rad">Pitch angle</field>
