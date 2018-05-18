@@ -3484,6 +3484,7 @@
     </message>
     <message id="75" name="COMMAND_INT">
       <description>Message encoding a command with parameters as scaled integers. Scaling depends on the actual command value.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the COMMAND, as defined by MAV_FRAME enum</field>
@@ -3500,6 +3501,7 @@
     </message>
     <message id="76" name="COMMAND_LONG">
       <description>Send a command with up to seven parameters to the MAV</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
       <field type="uint8_t" name="target_system">System which should execute the command</field>
       <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
       <field type="uint16_t" name="command" enum="MAV_CMD">Command ID, as defined by MAV_CMD enum.</field>
