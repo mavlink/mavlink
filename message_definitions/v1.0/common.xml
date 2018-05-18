@@ -2928,31 +2928,6 @@
         <description>Spektrum DSMX</description>
       </entry>
     </enum>
-    <enum name="MAV_TRAJECTORY_REPRESENTATION">
-      <description>WORK IN PROGRESS! DO NOT DEPLOY! Enumeration of possible waypoint/trajectory representation</description>
-      <entry value="0" name="MAV_TRAJECTORY_REPRESENTATION_WAYPOINTS">
-        <description>Array of waypoints with the following order</description>
-        <param index="1">X-coordinate of waypoint [m], set to NaN if not being used</param>
-        <param index="2">Y-coordinate of waypoint [m], set to NaN if not being used</param>
-        <param index="3">Z-coordinate of waypoint [m], set to NaN if not being used</param>
-        <param index="4">X-velocity of waypoint [m/s], set to NaN if not being used</param>
-        <param index="5">Y-velocity of waypoint [m/s], set to NaN if not being used</param>
-        <param index="6">Z-velocity of waypoint [m/s], set to NaN if not being used</param>
-        <param index="7">X-acceleration of waypoint [m/s/s], set to NaN if not being used</param>
-        <param index="8">Y-acceleration of waypoint [m/s/s], set to NaN if not being used</param>
-        <param index="9">Z-acceleration of waypoint [m/s/s], set to NaN if not being used</param>
-        <param index="10">Yaw [rad], set to NaN for unchanged</param>
-        <param index="11">Yaw-rate [rad/s], set to NaN for unchanged</param>
-      </entry>
-      <entry value="1" name="MAV_TRAJECTORY_REPRESENTATION_BEZIER">
-        <description>WORK IN PROGRESS! DO NOT DEPLOY! Array of bezier points with the following order</description>
-        <param index="1">X-coordinate of starting bezier point [m], set to NaN if not being used</param>
-        <param index="2">Y-coordinate of starting bezier point [m], set to NaN if not being used</param>
-        <param index="3">Z-coordinate of starting bezier point [m], set to NaN if not being used</param>
-        <param index="4">Bezier time horizon [s], set to NaN if velocity/acceleration should not be incorporated</param>
-        <param index="5">Yaw [rad], set to NaN for unchanged</param>
-      </entry>
-    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -4719,16 +4694,31 @@
       <field type="float[21]" name="pose_covariance">Pose (states: x, y, z, roll, pitch, yaw) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
       <field type="float[21]" name="twist_covariance">Twist (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
     </message>
-    <message id="332" name="TRAJECTORY">
-      <description>WORK IN PROGRESS! DO NOT DEPLOY! Message to describe a trajectory in the local frame. Supported trajectory types are enumerated in MAV_TRAJECTORY_REPRESENTATION</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch).</field>
-      <field type="uint8_t" name="type" enum="MAV_TRAJECTORY_REPRESENTATION">Waypoints, Bezier etc. see MAV_TRAJECTORY_REPRESENTATION</field>
-      <field type="float[11]" name="point_1">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
-      <field type="float[11]" name="point_2">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
-      <field type="float[11]" name="point_3">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
-      <field type="float[11]" name="point_4">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
-      <field type="float[11]" name="point_5">Depending on the type (see MAV_TRAJECTORY_REPRESENTATION)</field>
-      <field type="uint8_t[5]" name="point_valid">States if respective point is valid (boolean)</field>
+    <message id="332" name="TRAJECTORY_REPRESENTATION_WAYPOINTS">
+      <description>WORK IN PROGRESS! DO NOT DEPLOY! Describe a trajectory using an array of up-to 5 waypoints in the local frame.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot or since UNIX epoch).</field>
+      <field type="uint8_t" name="valid_points">Number of valid points (up-to 5 waypoints are possible)</field>
+      <field type="float[5]" name="pos_x" units="m">X-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_y" units="m">Y-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_z" units="m">Z-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_x" units="m/s">X-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_y" units="m/s">Y-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_z" units="m/s">Z-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_x" units="m/s/s">X-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_y" units="m/s/s">Y-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_z" units="m/s/s">Z-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_yaw" units="rad">Yaw angle, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_yaw" units="rad/s">Yaw rate, set to NaN if not being used</field>
+    </message>
+    <message id="333" name="TRAJECTORY_REPRESENTATION_BEZIER">
+      <description>WORK IN PROGRESS! DO NOT DEPLOY! Describe a trajectory using an array of up-to 5 bezier points in the local frame.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot or since UNIX epoch).</field>
+      <field type="uint8_t" name="valid_points">Number of valid points (up-to 5 waypoints are possible)</field>
+      <field type="float[5]" name="pos_x" units="m">X-coordinate of starting bezier point, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_y" units="m">Y-coordinate of starting bezier point, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_z" units="m">Z-coordinate of starting bezier point, set to NaN if not being used</field>
+      <field type="float[5]" name="delta" units="s">Bezier time horizon, set to NaN if velocity/acceleration should not be incorporated</field>
+      <field type="float[5]" name="pos_yaw" units="rad">Yaw, set to NaN for unchanged</field>
     </message>
   </messages>
 </mavlink>
