@@ -2,8 +2,7 @@
 
 Files:
 
-- **Doxyfile**: - Doxygen project configuration file
-- **MAVLink2.md**: MAVLink2 Documentation
+- **Doxyfile**: Doxygen project configuration file
 - **README**: This file
 - **mavlink.php**: Generates online documentation from MAVLink XML - http://mavlink.org/messages/common
   - **mavlink_to_html_table.xsl**: XSL transform used by **mavlink.php**
@@ -14,4 +13,4 @@ Files:
 
 For more information, please visit: https://mavlink.io/en/
 
-(c) 2009-2010 Lorenz Meier / PIXHAWK Team
+(c) 2009-2010 Lorenz Meier / PIXHAWK Team 
