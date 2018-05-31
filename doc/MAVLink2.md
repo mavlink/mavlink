@@ -60,7 +60,7 @@ MAVLink1 or MAVLink2 then you can use the magic field of the message,
 like this:
 
 ```
-  if (msg->magic = MAVLINK_STX_MAVLINK1) {
+  if (msg->magic == MAVLINK_STX_MAVLINK1) {
      printf("This is a MAVLink1 message\n");
   }
 ```
