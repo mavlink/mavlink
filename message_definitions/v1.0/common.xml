@@ -883,6 +883,16 @@
         <param index="6">X offset from target (m)</param>
         <param index="7">Y offset from target (m)</param>
       </entry>
+      <entry value="34" name="MAV_CMD_DO_ORBIT">
+        <description>WIP: Start orbiting on the circumference of a circle defined by the parameters. Setting any value NaN results in using defaults.</description>
+        <param index="1">Radius of the circle in meters. positive: Orbit clockwise. negative: Orbit counter-clockwise. </param>
+        <param index="2">Velocity tangential in m/s. NaN: Vehicle configuration default.</param>
+        <param index="3">Yaw behaviour of the vehicle. 0: vehicle front points to the center (default). 1: Hold last heading. 2: Leave yaw uncontrolled.</param>
+        <param index="4">Reserved (e.g. for dynamic center beacon options)</param>
+        <param index="5">Center point latitude / X coordinate. NaN: Use current vehicle position or current center if already orbiting.</param>
+        <param index="6">Center point longitude / Y coordinate.</param>
+        <param index="7">Center point altitude / Z coordinate.</param>
+      </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI">
         <description>THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1">Region of intereset mode. (see MAV_ROI enum)</param>
@@ -3217,9 +3227,9 @@
       <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
       <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
       <field type="float" name="param4">PARAM4, see MAV_CMD enum</field>
-      <field type="float" name="x">PARAM5 / local: x position, global: latitude</field>
-      <field type="float" name="y">PARAM6 / y position: global: longitude</field>
-      <field type="float" name="z">PARAM7 / z position: global: altitude (relative or absolute, depending on frame.</field>
+      <field type="float" name="x">PARAM5 / local: X coordinate, global: latitude</field>
+      <field type="float" name="y">PARAM6 / local: Y coordinate, global: longitude</field>
+      <field type="float" name="z">PARAM7 / local: Z coordinate, global: altitude (relative or absolute, depending on frame).</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type, see MAV_MISSION_TYPE</field>
     </message>
