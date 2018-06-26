@@ -15,6 +15,7 @@
             <entry value="8" name="ROSFLIGHT_CMD_REBOOT"/>
             <entry value="9" name="ROSFLIGHT_CMD_REBOOT_TO_BOOTLOADER"/>
             <entry value="10" name="ROSFLIGHT_CMD_SEND_VERSION"/>
+            <entry value="11" name="ROSFLIGHT_CMD_RESET_ORIGIN"/>
         </enum>
         <enum name="ROSFLIGHT_AUX_CMD_TYPE">
           <entry value="0" name="DISABLED"/>
@@ -37,6 +38,12 @@
             </entry>
             <entry value="3" name="MODE_ROLL_PITCH_YAWRATE_ALTITUDE">
                 <description>Command roll angle, pitch angle, yaw rate, and altitude above ground</description>
+            </entry>
+            <entry value="4" name="MODE_XVEL_YVEL_YAWRATE_ALTITUDE">
+                <description>Command body-fixed, x and y velocity, and yaw rate, and altitude above ground</description>
+            </entry>
+            <entry value="5" name="MODE_XPOS_YPOS_YAW_ALTITUDE">
+                <description>Command inertial x, y position (m) wrt origin, yaw angle wrt north, and altitude above ground</description>
             </entry>
         </enum>
         <enum name="OFFBOARD_CONTROL_IGNORE">
@@ -154,9 +161,24 @@
         <message id="192" name="ROSFLIGHT_VERSION">
             <field type="char[50]" name="version"/>
         </message>
-      <message id="193" name="ROSFLIGHT_AUX_CMD">
-        <field type="uint8_t[14]" name="type_array" enum="ROSFLIGHT_AUX_CMD_TYPE"/>
-        <field type="float[14]" name="aux_cmd_array"/>
+        <message id="193" name="ROSFLIGHT_AUX_CMD">
+            <field type="uint8_t[14]" name="type_array" enum="ROSFLIGHT_AUX_CMD_TYPE"/>
+            <field type="float[14]" name="aux_cmd_array"/>
+        </message>      
+        <message id="194" name="ROSFLIGHT_INS">
+            <field type="float" name="pos_north"/>
+            <field type="float" name="pos_east"/>
+            <field type="float" name="pos_down"/>
+            <field type="float" name="qw"/>
+            <field type="float" name="qx"/>
+            <field type="float" name="qy"/>
+            <field type="float" name="qz"/>
+            <field type="float" name="u"/>
+            <field type="float" name="v"/>
+            <field type="float" name="w"/> 
+            <field type="float" name="p"/>
+            <field type="float" name="q"/>
+            <field type="float" name="r"/>            
         </message>
     </messages>
 </mavlink>
