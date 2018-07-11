@@ -33,6 +33,15 @@
    <tr>
      <th class="mavlink_field_header">Field Name</th>
      <th class="mavlink_field_header">Type</th>
+
+     <xsl:if test='*/@units'>
+      <th class="mavlink_field_header">Units</th>
+     </xsl:if>
+     
+     <xsl:if test='*/@enum'>
+      <th class="mavlink_field_header">Values</th>
+     </xsl:if>
+
      <th class="mavlink_field_header">Description</th>
    </tr>
    </thead>
@@ -54,13 +63,19 @@
    </xsl:choose>
   
    <td class="mavlink_type" valign="top"><xsl:value-of select="@type" /></td>
+   
+   <xsl:if test='../*/@units'>
+     <td class="mavlink_units" valign="top"><xsl:value-of select="@units" /></td>
+   </xsl:if>
+   
+   <xsl:if test='../*/@enum'>
+     <td class="mavlink_value" valign="top">
+      <a><xsl:attribute name="href">#<xsl:value-of select="@enum" /></xsl:attribute><xsl:value-of select="@enum" /></a>
+     </td>
+   </xsl:if>
+     
    <td class="mavlink_comment"> <xsl:value-of select="." />
-     <xsl:if test='@units'>
-     (Units: <xsl:value-of select="@units" />)
-     </xsl:if>
-     <xsl:if test='@enum'>
-     (Enum: <a><xsl:attribute name="href">#<xsl:value-of select="@enum" /></xsl:attribute><xsl:value-of select="@enum" /></a>)
-     </xsl:if>
+
    </td>
    </tr>
 </xsl:template>
