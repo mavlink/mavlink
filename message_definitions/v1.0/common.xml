@@ -892,9 +892,9 @@
         <param index="2">Velocity tangential in m/s. NaN: Vehicle configuration default.</param>
         <param index="3">Yaw behaviour of the vehicle. 0: vehicle front points to the center (default). 1: Hold last heading. 2: Leave yaw uncontrolled.</param>
         <param index="4">Reserved (e.g. for dynamic center beacon options)</param>
-        <param index="5">Center point latitude / X coordinate. NaN: Use current vehicle position or current center if already orbiting.</param>
-        <param index="6">Center point longitude / Y coordinate.</param>
-        <param index="7">Center point altitude / Z coordinate.</param>
+        <param index="5">Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
+        <param index="6">Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
+        <param index="7">Center point altitude AMSL (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI">
         <description>THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
@@ -1288,9 +1288,9 @@
         <param index="2">stabilize roll? (1 = yes, 0 = no)</param>
         <param index="3">stabilize pitch? (1 = yes, 0 = no)</param>
         <param index="4">stabilize yaw? (1 = yes, 0 = no)</param>
-        <param index="5">roll input (0 = angle, 1 = angular rate)</param>
-        <param index="6">pitch input (0 = angle, 1 = angular rate)</param>
-        <param index="7">yaw input (0 = angle, 1 = angular rate)</param>
+        <param index="5">roll input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
+        <param index="6">pitch input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
+        <param index="7">yaw input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
       </entry>
       <entry value="205" name="MAV_CMD_DO_MOUNT_CONTROL">
         <description>Mission command to control a camera or antenna mount</description>
@@ -3520,7 +3520,7 @@
       <field type="float" name="param4">PARAM4, see MAV_CMD enum</field>
       <field type="int32_t" name="x">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
       <field type="int32_t" name="y">PARAM6 / local: y position in meters * 1e4, global: longitude in degrees * 10^7</field>
-      <field type="float" name="z">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame.</field>
+      <field type="float" name="z">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame).</field>
     </message>
     <message id="76" name="COMMAND_LONG">
       <description>Send a command with up to seven parameters to the MAV</description>
