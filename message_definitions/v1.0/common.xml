@@ -828,7 +828,7 @@
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI">
         <description>THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
-        <param index="1">Region of intereset mode. (see MAV_ROI enum)</param>
+        <param index="1">Region of interest mode. (see MAV_ROI enum)</param>
         <param index="2">Waypoint index/ target ID. (see MAV_ROI enum)</param>
         <param index="3">ROI index (allows a vehicle to manage multiple ROI's)</param>
         <param index="4">Empty</param>
@@ -878,7 +878,7 @@
       </entry>
       <!-- IDs 90 and 91 are reserved until the end of 2014,
                     as they were used in some conflicting proposals
-                    between PX4 and ardupilot and need to be kept
+                    between PX4 and ArduPilot and need to be kept
                     unused to prevent errors -->
       <entry value="92" name="MAV_CMD_NAV_GUIDED_ENABLE">
         <description>hand control over to an external controller</description>
@@ -1031,7 +1031,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="182" name="MAV_CMD_DO_REPEAT_RELAY">
-        <description>Cycle a relay on and off for a desired number of cyles with a desired period.</description>
+        <description>Cycle a relay on and off for a desired number of cycles with a desired period.</description>
         <param index="1">Relay number</param>
         <param index="2">Cycle count</param>
         <param index="3">Cycle time (seconds, decimal)</param>
@@ -1101,7 +1101,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="191" name="MAV_CMD_DO_GO_AROUND">
-        <description>Mission command to safely abort an autonmous landing.</description>
+        <description>Mission command to safely abort an autonomous landing.</description>
         <param index="1">Altitude (meters)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -1182,7 +1182,7 @@
       </entry>
       <entry value="201" name="MAV_CMD_DO_SET_ROI">
         <description>THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
-        <param index="1">Region of intereset mode. (see MAV_ROI enum)</param>
+        <param index="1">Region of interest mode. (see MAV_ROI enum)</param>
         <param index="2">Waypoint index/ target ID. (see MAV_ROI enum)</param>
         <param index="3">ROI index (allows a vehicle to manage multiple ROI's)</param>
         <param index="4">Empty</param>
@@ -1234,7 +1234,7 @@
         <param index="7">MAV_MOUNT_MODE enum value</param>
       </entry>
       <entry value="206" name="MAV_CMD_DO_SET_CAM_TRIGG_DIST">
-        <description>Mission command to set camera trigger distance for this flight. The camera is trigerred each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.</description>
+        <description>Mission command to set camera trigger distance for this flight. The camera is triggered each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.</description>
         <param index="1">Camera trigger distance (meters). 0 to stop triggering.</param>
         <param index="2">Camera shutter integration time (milliseconds). -1 or 0 to ignore</param>
         <param index="3">Trigger camera once immediately. (0 = no trigger, 1 = trigger)</param>
@@ -1591,7 +1591,7 @@
       </entry>
       <entry value="2600" name="MAV_CMD_CONTROL_HIGH_LATENCY">
         <description>Request to start/stop transmitting over the high latency telemetry</description>
-        <param index="1">Control transmittion over high latency telemetry (0: stop, 1: start)</param>
+        <param index="1">Control transmission over high latency telemetry (0: stop, 1: start)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -1611,12 +1611,12 @@
         <param index="1">The target VTOL state, as defined by ENUM MAV_VTOL_STATE. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.</param>
       </entry>
       <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST">
-        <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is resposible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
+        <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
         </description>
         <param index="1">Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle</param>
       </entry>
       <entry value="4000" name="MAV_CMD_SET_GUIDED_SUBMODE_STANDARD">
-        <description>This command sets the submode to standard guided when vehicle is in guided mode. The vehicle holds position and altitude and the user can input the desired velocites along all three axes.
+        <description>This command sets the submode to standard guided when vehicle is in guided mode. The vehicle holds position and altitude and the user can input the desired velocities along all three axes.
                   </description>
       </entry>
       <entry value="4001" name="MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE">
@@ -1714,7 +1714,7 @@
         <description>Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity.</description>
         <param index="1">Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.</param>
         <param index="2">Desired approach vector in degrees compass heading (0..360). A negative value indicates the system can define the approach vector at will.</param>
-        <param index="3">Desired ground speed at release time. This can be overriden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will.</param>
+        <param index="3">Desired ground speed at release time. This can be overridden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will.</param>
         <param index="4">Minimum altitude clearance to the release position in meters. A negative value indicates the system can define the clearance at will.</param>
         <param index="5">Latitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT</param>
         <param index="6">Longitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT</param>
@@ -1722,7 +1722,7 @@
       </entry>
       <entry value="30002" name="MAV_CMD_PAYLOAD_CONTROL_DEPLOY">
         <description>Control the payload deployment.</description>
-        <param index="1">Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deploment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests.</param>
+        <param index="1">Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deployment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests.</param>
         <param index="2">Reserved</param>
         <param index="3">Reserved</param>
         <param index="4">Reserved</param>
@@ -2018,7 +2018,7 @@
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
-      <description>result in a mavlink mission ack</description>
+      <description>result in a MAVLink mission ack</description>
       <entry value="0" name="MAV_MISSION_ACCEPTED">
         <description>mission accepted OK</description>
       </entry>
@@ -2083,7 +2083,7 @@
         <description>Indicates about a possible future error if this is not resolved within a given timeframe. Example would be a low battery warning.</description>
       </entry>
       <entry value="5" name="MAV_SEVERITY_NOTICE">
-        <description>An unusual event has occured, though not an error condition. This should be investigated for the root cause.</description>
+        <description>An unusual event has occurred, though not an error condition. This should be investigated for the root cause.</description>
       </entry>
       <entry value="6" name="MAV_SEVERITY_INFO">
         <description>Normal operational messages. Useful for logging. No action is required for these messages.</description>
@@ -2329,7 +2329,7 @@
         <description>Autopilot supports onboard compass calibration.</description>
       </entry>
       <entry value="8192" name="MAV_PROTOCOL_CAPABILITY_MAVLINK2">
-        <description>Autopilot supports mavlink version 2.</description>
+        <description>Autopilot supports MAVLink version 2.</description>
       </entry>
       <entry value="16384" name="MAV_PROTOCOL_CAPABILITY_MISSION_FENCE">
         <description>Autopilot supports mission fence protocol.</description>
@@ -2782,7 +2782,7 @@
       <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
     </message>
     <message id="1" name="SYS_STATUS">
-      <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows whether the system is currently active or not and if an emergency occured. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occured it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
+      <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows whether the system is currently active or not and if an emergency occurred. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occurred it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
       <field type="uint32_t" name="onboard_control_sensors_present" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
       <field type="uint32_t" name="onboard_control_sensors_enabled" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
       <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmask showing which onboard controllers and sensors are operational or have an error:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR</field>
@@ -2921,8 +2921,8 @@
       <description>The RAW pressure readings for the typical setup of one absolute pressure and one differential pressure sensor. The sensor values should be the raw, UNSCALED ADC values.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
       <field type="int16_t" name="press_abs">Absolute pressure (raw)</field>
-      <field type="int16_t" name="press_diff1">Differential pressure 1 (raw, 0 if nonexistant)</field>
-      <field type="int16_t" name="press_diff2">Differential pressure 2 (raw, 0 if nonexistant)</field>
+      <field type="int16_t" name="press_diff1">Differential pressure 1 (raw, 0 if nonexistent)</field>
+      <field type="int16_t" name="press_diff2">Differential pressure 2 (raw, 0 if nonexistent)</field>
       <field type="int16_t" name="temperature">Raw Temperature measurement (raw)</field>
     </message>
     <message id="29" name="SCALED_PRESSURE">
@@ -2930,7 +2930,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
       <field type="float" name="press_abs" units="hPa">Absolute pressure (hectopascal)</field>
       <field type="float" name="press_diff" units="hPa">Differential pressure 1 (hectopascal)</field>
-      <field type="int16_t" name="temperature" units="cdegC">Temperature measurement (0.01 degrees celsius)</field>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature measurement (0.01 degrees Celsius)</field>
     </message>
     <message id="30" name="ATTITUDE">
       <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right).</description>
@@ -3053,7 +3053,7 @@
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint, as defined by MAV_FRAME enum</field>
       <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint, as defined by MAV_CMD enum</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
-      <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
+      <field type="uint8_t" name="autocontinue">Autocontinue to next waypoint</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
       <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
       <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
@@ -3134,12 +3134,12 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
     </message>
     <message id="50" name="PARAM_MAP_RC">
-      <description>Bind a RC channel to a parameter. The parameter should change accoding to the RC channel value.</description>
+      <description>Bind a RC channel to a parameter. The parameter should change according to the RC channel value.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="int16_t" name="param_index">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored), send -2 to disable any existing map for this rc_channel_index.</field>
-      <field type="uint8_t" name="parameter_rc_channel_index">Index of parameter RC channel. Not equal to the RC channel id. Typically correpsonds to a potentiometer-knob on the RC.</field>
+      <field type="uint8_t" name="parameter_rc_channel_index">Index of parameter RC channel. Not equal to the RC channel id. Typically corresponds to a potentiometer-knob on the RC.</field>
       <field type="float" name="param_value0">Initial parameter value</field>
       <field type="float" name="scale">Scale, maps the RC range [-1, 1] to a parameter value</field>
       <field type="float" name="param_value_min">Minimum param value. The protocol does not define if this overwrites an onboard minimum value. (Depends on implementation)</field>
@@ -3303,7 +3303,7 @@
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint, as defined by MAV_FRAME enum</field>
       <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint, as defined by MAV_CMD enum</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
-      <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
+      <field type="uint8_t" name="autocontinue">Autocontinue to next waypoint</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
       <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
       <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
@@ -4024,7 +4024,7 @@
       <field type="uint16_t[10]" name="voltages" units="mV">Battery voltage of cells, in millivolts (1 = 1 millivolt). Cells above the valid cell count for this battery should have the UINT16_MAX value.</field>
       <field type="int16_t" name="current_battery" units="cA">Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current</field>
       <field type="int32_t" name="current_consumed" units="mAh">Consumed charge, in milliampere hours (1 = 1 mAh), -1: autopilot does not provide mAh consumption estimate</field>
-      <field type="int32_t" name="energy_consumed" units="hJ">Consumed energy, in HectoJoules (intergrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate</field>
+      <field type="int32_t" name="energy_consumed" units="hJ">Consumed energy, in HectoJoules (integrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate</field>
       <field type="int8_t" name="battery_remaining" units="%">Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot does not estimate the remaining battery</field>
       <extensions/>
       <field type="int32_t" name="time_remaining" units="s">Remaining battery time, in seconds (1 = 1s = 0% energy left), 0: autopilot does not provide remaining battery time estimate</field>
@@ -4066,7 +4066,7 @@
     </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
-      <description>Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovaton test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovaton test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.</description>
+      <description>Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovation test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovation test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (micros since boot or Unix epoch)</field>
       <field type="uint16_t" name="flags" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Integer bitmask indicating which EKF outputs are valid. See definition for ESTIMATOR_STATUS_FLAGS.</field>
       <field type="float" name="vel_ratio">Velocity innovation test ratio</field>
@@ -4090,7 +4090,7 @@
       <field type="float" name="vert_accuracy" units="m">Vertical speed 1-STD accuracy</field>
     </message>
     <message id="232" name="GPS_INPUT">
-      <description>GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the sytem.</description>
+      <description>GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the system.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (micros since boot or Unix epoch)</field>
       <field type="uint8_t" name="gps_id">ID of the GPS for multiple GPS inputs</field>
       <field type="uint16_t" name="ignore_flags" enum="GPS_INPUT_IGNORE_FLAGS" display="bitmask">Flags indicating which fields to ignore (see GPS_INPUT_IGNORE_FLAGS enum).  All other fields must be provided.</field>
@@ -4154,7 +4154,7 @@
       <field type="uint32_t" name="clipping_2">third accelerometer clipping count</field>
     </message>
     <message id="242" name="HOME_POSITION">
-      <description>This message can be requested by sending the MAV_CMD_GET_HOME_POSITION command. The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitely set by the operator before or after. The position the system will return to and land on. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.</description>
+      <description>This message can be requested by sending the MAV_CMD_GET_HOME_POSITION command. The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitly set by the operator before or after. The position the system will return to and land on. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.</description>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84), in degrees * 1E7</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84, in degrees * 1E7</field>
       <field type="int32_t" name="altitude" units="mm">Altitude (AMSL), in meters * 1000 (positive for up)</field>
@@ -4169,7 +4169,7 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since UNIX epoch or microseconds since system boot)</field>
     </message>
     <message id="243" name="SET_HOME_POSITION">
-      <description>The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitely set by the operator before or after. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.</description>
+      <description>The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitly set by the operator before or after. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.</description>
       <field type="uint8_t" name="target_system">System ID.</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84), in degrees * 1E7</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84, in degrees * 1E7</field>
