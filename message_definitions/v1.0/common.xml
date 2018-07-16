@@ -2799,8 +2799,8 @@
     </message>
     <message id="2" name="SYSTEM_TIME">
       <description>The system time is the time of the master clock, typically the computer clock of the main onboard computer.</description>
-      <field type="uint64_t" name="time_unix_usec" units="us">Timestamp of the master clock since UNIX epoch.</field>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp of the master clock since system boot time.</field>
+      <field type="uint64_t" name="time_unix_usec" units="us">Timestamp (UNIX epoch time).</field>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
     </message>
     <!-- FIXME to be removed / merged with SYSTEM_TIME -->
     <message id="4" name="PING">
@@ -3873,13 +3873,13 @@
       <field type="int16_t" name="zmag" units="mT">Z Magnetic field</field>
     </message>
     <message id="130" name="DATA_TRANSMISSION_HANDSHAKE">
-      <field type="uint8_t" name="type">Type of requested/acknowledged data (as defined in ENUM DATA_TYPES in mavlink/include/mavlink_types.h)</field>
-      <field type="uint32_t" name="size" units="bytes">total data size (set on ACK only)</field>
-      <field type="uint16_t" name="width">Width of a matrix or image</field>
-      <field type="uint16_t" name="height">Height of a matrix or image</field>
-      <field type="uint16_t" name="packets">number of packets being sent (set on ACK only)</field>
-      <field type="uint8_t" name="payload" units="bytes">payload size per packet (normally 253 byte, see DATA field size in message ENCAPSULATED_DATA) (set on ACK only)</field>
-      <field type="uint8_t" name="jpg_quality" units="%">JPEG quality out of [1,100]</field>
+      <field type="uint8_t" name="type" enum="DATA_TYPES">Type of requested/acknowledged data.</field>
+      <field type="uint32_t" name="size" units="bytes">total data size (set on ACK only).</field>
+      <field type="uint16_t" name="width">Width of a matrix or image.</field>
+      <field type="uint16_t" name="height">Height of a matrix or image.</field>
+      <field type="uint16_t" name="packets">Number of packets being sent (set on ACK only).</field>
+      <field type="uint8_t" name="payload" units="bytes">Payload size per packet (normally 253 byte, see DATA field size in message ENCAPSULATED_DATA) (set on ACK only).</field>
+      <field type="uint8_t" name="jpg_quality" units="%">JPEG quality. Values: [1-100].</field>
     </message>
     <message id="131" name="ENCAPSULATED_DATA">
       <field type="uint16_t" name="seqnr">sequence number (starting with 0 on every transmission)</field>
