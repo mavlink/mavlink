@@ -1446,7 +1446,7 @@
       <entry value="511" name="MAV_CMD_SET_MESSAGE_INTERVAL">
         <description>Set the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM</description>
         <param index="1">The MAVLink message ID</param>
-        <param index="2">The interval between two messages. Set to -1 to disable and 0 to request default rate.</param>
+        <param index="2">The interval between two messages, in microseconds. Set to -1 to disable and 0 to request default rate.</param>
       </entry>
       <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES">
         <description>Request autopilot capabilities</description>
@@ -3022,7 +3022,7 @@
       <field type="uint16_t" name="servo11_raw" units="us">Servo output 11 value</field>
       <field type="uint16_t" name="servo12_raw" units="us">Servo output 12 value</field>
       <field type="uint16_t" name="servo13_raw" units="us">Servo output 13 value</field>
-      <field type="uint16_t" name="servo14_raw" units="us">Servo output 14 values</field>
+      <field type="uint16_t" name="servo14_raw" units="us">Servo output 14 value</field>
       <field type="uint16_t" name="servo15_raw" units="us">Servo output 15 value</field>
       <field type="uint16_t" name="servo16_raw" units="us">Servo output 16 value</field>
     </message>
@@ -3978,7 +3978,7 @@
       <description>Barometer readings for 3rd barometer</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot)</field>
       <field type="float" name="press_abs" units="hPa">Absolute pressure</field>
-      <field type="float" name="press_diff" units="hPa">Differential pressure 1</field>
+      <field type="float" name="press_diff" units="hPa">Differential pressure</field>
       <field type="int16_t" name="temperature" units="cdegC">Temperature measurement</field>
     </message>
     <message id="144" name="FOLLOW_TARGET">
@@ -3987,7 +3987,7 @@
       <field type="uint8_t" name="est_capabilities">bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3)</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
-      <field type="float" name="alt" units="m">AMSL</field>
+      <field type="float" name="alt" units="m">AMSL altitude</field>
       <field type="float[3]" name="vel" units="m/s">target velocity (0,0,0) for unknown</field>
       <field type="float[3]" name="acc" units="m/s/s">linear target acceleration (0,0,0) for unknown</field>
       <field type="float[4]" name="attitude_q">(1 0 0 0 for unknown)</field>
@@ -4023,7 +4023,7 @@
       <field type="int16_t" name="temperature" units="cdegC">Temperature of the battery. INT16_MAX for unknown temperature.</field>
       <field type="uint16_t[10]" name="voltages" units="mV">Battery voltage of cells. Cells above the valid cell count for this battery should have the UINT16_MAX value.</field>
       <field type="int16_t" name="current_battery" units="cA">Battery current, -1: autopilot does not measure the current</field>
-      <field type="int32_t" name="current_consumed" units="mAh">Consumed charge, -1: autopilot does not provide mAh consumption estimate</field>
+      <field type="int32_t" name="current_consumed" units="mAh">Consumed charge, -1: autopilot does not provide consumption estimate</field>
       <field type="int32_t" name="energy_consumed" units="hJ">Consumed energy, -1: autopilot does not provide energy consumption estimate</field>
       <field type="int8_t" name="battery_remaining" units="%">Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot does not estimate the remaining battery</field>
       <extensions/>
@@ -4358,8 +4358,8 @@
       <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
       <field type="int32_t" name="lat" units="degE7">Latitude where image was taken</field>
       <field type="int32_t" name="lon" units="degE7">Longitude where capture was taken</field>
-      <field type="int32_t" name="alt" units="m">Altitude (AMSL, not WGS84) where image was taken</field>
-      <field type="int32_t" name="relative_alt" units="m">Altitude above ground</field>
+      <field type="int32_t" name="alt" units="mm">AMSL altitude where image was taken</field>
+      <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 0, 0, 0, 0)</field>
       <field type="int32_t" name="image_index">Zero based index of this image (image count since armed -1)</field>
       <field type="int8_t" name="capture_result">Boolean indicating success (1) or failure (0) while capturing this image.</field>
