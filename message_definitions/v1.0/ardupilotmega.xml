@@ -873,6 +873,7 @@
       <entry value="3" name="MAG_CAL_RUNNING_STEP_TWO"/>
       <entry value="4" name="MAG_CAL_SUCCESS"/>
       <entry value="5" name="MAG_CAL_FAILED"/>
+      <entry value="6" name="MAG_CAL_BAD_ORIENTATION"/>
     </enum>
     <enum name="MAV_REMOTE_LOG_DATA_BLOCK_COMMANDS">
       <description>Special ACK block numbers control activation of dataflash log streaming</description>
@@ -1387,6 +1388,10 @@
       <field type="float" name="offdiag_x">X off-diagonal (matrix 12 and 21)</field>
       <field type="float" name="offdiag_y">Y off-diagonal (matrix 13 and 31)</field>
       <field type="float" name="offdiag_z">Z off-diagonal (matrix 32 and 23)</field>
+      <extensions/>
+      <field type="float" name="orientation_confidence">Confidence in orientation (higher is better)</field>      
+      <field type="uint8_t" name="old_orientation">orientation before calibration </field>
+      <field type="uint8_t" name="new_orientation">orientation before calibration</field>
     </message>
     <!-- EKF status message from autopilot to GCS. -->
     <message id="193" name="EKF_STATUS_REPORT">
