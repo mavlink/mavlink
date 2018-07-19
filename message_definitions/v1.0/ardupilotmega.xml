@@ -1082,7 +1082,7 @@
       <description>Message to configure a camera mount, directional antenna, etc.</description>
       <field type="uint8_t" name="target_system">System ID.</field>
       <field type="uint8_t" name="target_component">Component ID.</field>
-      <field type="uint8_t" name="mount_mode" enum="MAV_MOUNT_MODE">Mount operating mode (see MAV_MOUNT_MODE enum).</field>
+      <field type="uint8_t" name="mount_mode" enum="MAV_MOUNT_MODE">Mount operating mode.</field>
       <field type="uint8_t" name="stab_roll">(1 = yes, 0 = no).</field>
       <field type="uint8_t" name="stab_pitch">(1 = yes, 0 = no).</field>
       <field type="uint8_t" name="stab_yaw">(1 = yes, 0 = no).</field>
@@ -1124,7 +1124,7 @@
       <description>Status of geo-fencing. Sent in extended status stream when fencing enabled.</description>
       <field type="uint8_t" name="breach_status">Breach status (0 if currently inside fence, 1 if outside).</field>
       <field type="uint16_t" name="breach_count">Number of fence breaches.</field>
-      <field type="uint8_t" name="breach_type" enum="FENCE_BREACH">Last breach type (see FENCE_BREACH_* enum).</field>
+      <field type="uint8_t" name="breach_type" enum="FENCE_BREACH">Last breach type.</field>
       <field type="uint32_t" name="breach_time" units="ms">Time (since boot) of last breach.</field>
     </message>
     <message id="163" name="AHRS">
@@ -1169,15 +1169,15 @@
     <!-- AP_Limits status -->
     <message id="167" name="LIMITS_STATUS">
       <description>Status of AP_Limits. Sent in extended status stream when AP_Limits is enabled.</description>
-      <field type="uint8_t" name="limits_state" enum="LIMITS_STATE">State of AP_Limits, (see LIMITS_STATE enum).</field>
+      <field type="uint8_t" name="limits_state" enum="LIMITS_STATE">State of AP_Limits.</field>
       <field type="uint32_t" name="last_trigger" units="ms">Time (since boot) of last breach.</field>
       <field type="uint32_t" name="last_action" units="ms">Time (since boot) of last recovery action.</field>
       <field type="uint32_t" name="last_recovery" units="ms">Time (since boot) of last successful recovery.</field>
       <field type="uint32_t" name="last_clear" units="ms">Time (since boot) of last all-clear.</field>
       <field type="uint16_t" name="breach_count">Number of fence breaches.</field>
-      <field type="uint8_t" name="mods_enabled" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE).</field>
-      <field type="uint8_t" name="mods_required" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE).</field>
-      <field type="uint8_t" name="mods_triggered" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE).</field>
+      <field type="uint8_t" name="mods_enabled" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of enabled modules.</field>
+      <field type="uint8_t" name="mods_required" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of required modules.</field>
+      <field type="uint8_t" name="mods_triggered" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of triggered modules.</field>
     </message>
     <message id="168" name="WIND">
       <description>Wind estimation.</description>
@@ -1242,7 +1242,7 @@
       <!-- Path planned landings are still in the future, but we want these fields ready: -->
       <field type="int16_t" name="break_alt" units="m">Break altitude relative to home.</field>
       <field type="uint16_t" name="land_dir" units="cdeg">Heading to aim for when landing.</field>
-      <field type="uint8_t" name="flags" enum="RALLY_FLAGS" display="bitmask">See RALLY_FLAGS enum for definition of the bitmask.</field>
+      <field type="uint8_t" name="flags" enum="RALLY_FLAGS" display="bitmask">Configuration flags.</field>
     </message>
     <message id="176" name="RALLY_FETCH_POINT">
       <description>Request a current rally point from MAV. MAV should respond with a RALLY_POINT message. MAV should not respond if the request is invalid.</description>
@@ -1279,11 +1279,11 @@
       <!-- component ID, to support multiple cameras -->
       <field type="uint16_t" name="img_idx">Image index.</field>
       <!-- per camera image index, should be unique+sequential within a mission, preferably non-wrapping -->
-      <field type="uint8_t" name="event_id" enum="CAMERA_STATUS_TYPES">See CAMERA_STATUS_TYPES enum for definition of the bitmask.</field>
-      <field type="float" name="p1">Parameter 1 (meaning depends on event, see CAMERA_STATUS_TYPES enum).</field>
-      <field type="float" name="p2">Parameter 2 (meaning depends on event, see CAMERA_STATUS_TYPES enum).</field>
-      <field type="float" name="p3">Parameter 3 (meaning depends on event, see CAMERA_STATUS_TYPES enum).</field>
-      <field type="float" name="p4">Parameter 4 (meaning depends on event, see CAMERA_STATUS_TYPES enum).</field>
+      <field type="uint8_t" name="event_id" enum="CAMERA_STATUS_TYPES">Event type.</field>
+      <field type="float" name="p1">Parameter 1 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).</field>
+      <field type="float" name="p2">Parameter 2 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).</field>
+      <field type="float" name="p3">Parameter 3 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).</field>
+      <field type="float" name="p4">Parameter 4 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).</field>
     </message>
     <!-- camera feedback message - can be originated from CCB (in response to a CAMERA_STATUS), or directly from the autopilot as part of a DO_DIGICAM_CONTROL-->
     <message id="180" name="CAMERA_FEEDBACK">
@@ -1307,7 +1307,7 @@
       <!-- initially only supporting fixed cameras, in future we'll need feedback messages from the gimbal so we can include that offset here -->
       <field type="float" name="foc_len" units="mm">Focal Length.</field>
       <!-- per-image to support zooms. Zero means fixed focal length or unknown. Should be true mm, not scaled to 35mm film equivalent -->
-      <field type="uint8_t" name="flags" enum="CAMERA_FEEDBACK_FLAGS">See CAMERA_FEEDBACK_FLAGS enum for definition of the bitmask.</field>
+      <field type="uint8_t" name="flags" enum="CAMERA_FEEDBACK_FLAGS">Feedback flags.</field>
       <!-- future proofing -->
       <extensions/>
       <field type="uint16_t" name="completed_captures">Completed image captures.</field>
@@ -1428,7 +1428,7 @@
       <field type="float" name="altitude" units="m">Altitude.</field>
       <field type="float" name="expected_travel_distance" units="m">Distance the aircraft expects to travel during the deepstall.</field>
       <field type="float" name="cross_track_error" units="m">Deepstall cross track error (only valid when in DEEPSTALL_STAGE_LAND).</field>
-      <field type="uint8_t" name="stage" enum="DEEPSTALL_STAGE">Deepstall stage, see enum MAV_DEEPSTALL_STAGE.</field>
+      <field type="uint8_t" name="stage" enum="DEEPSTALL_STAGE">Deepstall stage.</field>
     </message>
     <message id="200" name="GIMBAL_REPORT">
       <description>3 axis gimbal measurements.</description>
