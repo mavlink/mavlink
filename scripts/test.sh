@@ -68,10 +68,13 @@ then
 fi
 cd $SRC_DIR/pymavlink/generator/javascript && npm test
 
-# Test quaternions
+# Run tests
 echo $sep
 echo "QUATERNION TEST"
 echo $sep
 cd $SRC_DIR
-pymavlink/tools/quaterniontest.py
+pymavlink/tests/test_quaternion.py
+echo "ROTMAT TEST"
+echo $sep
+pymavlink/tests/test_rotmat.py
 echo PASS
