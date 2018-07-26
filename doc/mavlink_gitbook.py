@@ -80,7 +80,7 @@ def inject_top_level_docs(input_html,filename):
         insert_text+='\n\n*This is a human-readable form of the XML definition file: [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).*'
     elif filename == 'ardupilotmega.xml':
         insert_text+='\n# MAVLINK ArduPilotMega Message Set'
-        insert_text+='\n\nThese messages define the APM specific message set, which is custom to [http://ardupilot.org](http://ardupilot.org).'
+        insert_text+='\n\nThese messages define the ArduPilot specific message set, which is custom to [http://ardupilot.org](http://ardupilot.org).'
         insert_text+='\n\n*This is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).*'
         insert_text+='\n\n> **Warning** The ArduPilot MAVLink fork of [ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) may contain messages that have not yet been merged into this documentation.'
     else:
