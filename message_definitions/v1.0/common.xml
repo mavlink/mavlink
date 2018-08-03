@@ -1701,6 +1701,11 @@
         <description>Request VTOL transition</description>
         <param index="1">The target VTOL state, as defined by ENUM MAV_VTOL_STATE. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.</param>
       </entry>
+      <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST">
+        <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
+        </description>
+        <param index="1">Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle</param>
+      </entry>
       <entry value="4000" name="MAV_CMD_SET_GUIDED_SUBMODE_STANDARD">
         <description>This command sets the submode to standard guided when vehicle is in guided mode. The vehicle holds position and altitude and the user can input the desired velocites along all three axes.
                   </description>
@@ -1726,11 +1731,6 @@
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
-      </entry>
-      <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST">
-        <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
-        </description>
-        <param index="1">Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle</param>
       </entry>
       <entry value="5000" name="MAV_CMD_NAV_FENCE_RETURN_POINT">
         <description>Fence return point. There can only be one fence return point.
@@ -2840,6 +2840,15 @@
         <description>PPP, 3D position.</description>
       </entry>
     </enum>
+    <enum name="RTK_BASELINE_COORDINATE_SYSTEM">
+      <description>RTK GPS baseline coordinate system, used for RTK corrections</description>
+      <entry value="0" name="RTK_BASELINE_COORDINATE_SYSTEM_ECEF">
+        <description>Earth-centered, Earth-fixed</description>
+      </entry>
+      <entry value="1" name="RTK_BASELINE_COORDINATE_SYSTEM_NED">
+        <description>North, East, Down</description>
+      </entry>
+    </enum>
     <enum name="LANDING_TARGET_TYPE">
       <description>Type of landing target</description>
       <entry value="0" name="LANDING_TARGET_TYPE_LIGHT_BEACON">
@@ -2939,15 +2948,6 @@
       </entry>
       <entry value="5" name="MAV_ARM_AUTH_DENIED_REASON_BAD_WEATHER">
         <description>Weather is not good to fly</description>
-      </entry>
-    </enum>
-    <enum name="RTK_BASELINE_COORDINATE_SYSTEM">
-      <description>RTK GPS baseline coordinate system, used for RTK corrections</description>
-      <entry value="0" name="RTK_BASELINE_COORDINATE_SYSTEM_ECEF">
-        <description>Earth-centered, Earth-fixed</description>
-      </entry>
-      <entry value="1" name="RTK_BASELINE_COORDINATE_SYSTEM_NED">
-        <description>North, East, Down</description>
       </entry>
     </enum>
     <enum name="RC_TYPE">
