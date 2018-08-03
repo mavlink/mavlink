@@ -754,7 +754,7 @@
       <entry value="21" name="MAV_CMD_NAV_LAND">
         <description>Land at location</description>
         <param index="1">Abort Alt</param>
-        <param index="2">Empty</param>
+        <param index="2">Precision land mode. (0 = normal landing, 1 = opportunistic precision landing, 2 = required precsion landing)</param>
         <param index="3">Empty</param>
         <param index="4">Desired yaw angle. NaN for unchanged.</param>
         <param index="5">Latitude</param>
@@ -1469,36 +1469,14 @@
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION">
-        <description>WIP: Request camera information (CAMERA_INFORMATION)</description>
-        <param index="1">1: Request camera capabilities</param>
-        <param index="2">Camera ID</param>
-        <param index="3">Reserved (all remaining params)</param>
+        <description>Request camera information (CAMERA_INFORMATION).</description>
+        <param index="1">0: No action 1: Request camera capabilities</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="522" name="MAV_CMD_REQUEST_CAMERA_SETTINGS">
-        <description>WIP: Request camera settings (CAMERA_SETTINGS)</description>
-        <param index="1">1: Request camera settings</param>
-        <param index="2">Camera ID</param>
-        <param index="3">Reserved (all remaining params)</param>
-      </entry>
-      <entry value="523" name="MAV_CMD_SET_CAMERA_SETTINGS_1">
-        <description>WIP: Set the camera settings part 1 (CAMERA_SETTINGS)</description>
-        <param index="1">Camera ID</param>
-        <param index="2">Aperture (1/value)</param>
-        <param index="3">Aperture locked (0: auto, 1: locked)</param>
-        <param index="4">Shutter speed in s</param>
-        <param index="5">Shutter speed locked (0: auto, 1: locked)</param>
-        <param index="6">ISO sensitivity</param>
-        <param index="7">ISO sensitivity locked (0: auto, 1: locked)</param>
-      </entry>
-      <entry value="524" name="MAV_CMD_SET_CAMERA_SETTINGS_2">
-        <description>WIP: Set the camera settings part 2 (CAMERA_SETTINGS)</description>
-        <param index="1">Camera ID</param>
-        <param index="2">White balance locked (0: auto, 1: locked)</param>
-        <param index="3">White balance (color temperature in K)</param>
-        <param index="4">Reserved for camera mode ID</param>
-        <param index="5">Reserved for color mode ID</param>
-        <param index="6">Reserved for image format ID</param>
-        <param index="7">Reserved</param>
+        <description>Request camera settings (CAMERA_SETTINGS).</description>
+        <param index="1">0: No Action 1: Request camera settings</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION">
         <wip/>
@@ -1517,18 +1495,20 @@
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS">
-        <wip/>
-        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
         <description>Request camera capture status (CAMERA_CAPTURE_STATUS)</description>
-        <param index="1">1: Request camera capture status</param>
-        <param index="2">Camera ID</param>
-        <param index="3">Reserved (all remaining params)</param>
+        <param index="1">0: No Action 1: Request camera capture status</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="528" name="MAV_CMD_REQUEST_FLIGHT_INFORMATION">
         <wip/>
         <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
         <description>Request flight information (FLIGHT_INFORMATION)</description>
         <param index="1">1: Request flight information</param>
+        <param index="2">Reserved (all remaining params)</param>
+      </entry>
+      <entry value="529" name="MAV_CMD_RESET_CAMERA_SETTINGS">
+        <description>Reset all camera settings to Factory Default</description>
+        <param index="1">0: No Action 1: Reset all settings</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="530" name="MAV_CMD_SET_CAMERA_MODE">
@@ -1546,9 +1526,9 @@
         <param index="5">Reserved (all remaining params)</param>
       </entry>
       <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE">
-        <description>Stop image capture sequence</description>
-        <param index="1">Camera ID</param>
-        <param index="2">Reserved</param>
+        <description>Stop image capture sequence Use NAN for reserved values.</description>
+        <param index="1">Reserved (Set to 0)</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2003" name="MAV_CMD_DO_TRIGGER_CONTROL">
         <description>Enable or disable on-board camera triggering system.</description>
@@ -1557,22 +1537,15 @@
         <param index="3">1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore</param>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
-        <wip/>
-        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-        <description>Starts video capture (recording)</description>
-        <param index="1">Camera ID (0 for all cameras), 1 for first, 2 for second, etc.</param>
-        <param index="2">Frames per second, set to -1 for highest framerate possible.</param>
-        <param index="3">Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used, set to -1 for highest resolution possible.</param>
-        <param index="4">WIP: Resolution horizontal in pixels</param>
-        <param index="5">WIP: Resolution horizontal in pixels</param>
-        <param index="6">WIP: Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise time in Hz)</param>
+        <description>Starts video capture (recording). Use NAN for reserved values.</description>
+        <param index="1">Reserved (Set to 0)</param>
+        <param index="2">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)</param>
+        <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE">
-        <wip/>
-        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-        <description>Stop the current video capture (recording)</description>
-        <param index="1">WIP: Camera ID</param>
-        <param index="2">Reserved</param>
+        <description>Stop the current video capture (recording). Use NAN for reserved values.</description>
+        <param index="1">Reserved (Set to 0)</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2510" name="MAV_CMD_LOGGING_START">
         <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
@@ -1939,7 +1912,7 @@
         <description>No region of interest.</description>
       </entry>
       <entry value="1" name="MAV_ROI_WPNEXT">
-        <description>Point toward next waypoint.</description>
+        <description>Point toward next waypoint, with optional pitch/roll/yaw offset.</description>
       </entry>
       <entry value="2" name="MAV_ROI_WPINDEX">
         <description>Point toward given waypoint.</description>
@@ -2751,6 +2724,27 @@
       </entry>
       <entry value="4" name="VTOL_TRANSITION_HEADING_ANY">
         <description>Use the current heading when reaching takeoff altitude (potentially facing the wind when weather-vaning is active).</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_CAP_FLAGS">
+      <description>Camera capability flags (Bitmap).</description>
+      <entry value="1" name="CAMERA_CAP_FLAGS_CAPTURE_VIDEO">
+        <description>Camera is able to record video.</description>
+      </entry>
+      <entry value="2" name="CAMERA_CAP_FLAGS_CAPTURE_IMAGE">
+        <description>Camera is able to capture images.</description>
+      </entry>
+      <entry value="4" name="CAMERA_CAP_FLAGS_HAS_MODES">
+        <description>Camera has separate Video and Image/Photo modes (MAV_CMD_SET_CAMERA_MODE)</description>
+      </entry>
+      <entry value="8" name="CAMERA_CAP_FLAGS_CAN_CAPTURE_IMAGE_IN_VIDEO_MODE">
+        <description>Camera can capture images while in video mode</description>
+      </entry>
+      <entry value="16" name="CAMERA_CAP_FLAGS_CAN_CAPTURE_VIDEO_IN_IMAGE_MODE">
+        <description>Camera can capture videos while in Photo/Image mode</description>
+      </entry>
+      <entry value="32" name="CAMERA_CAP_FLAGS_HAS_IMAGE_SURVEY_MODE">
+        <description>Camera has image survey mode (MAV_CMD_SET_CAMERA_MODE)</description>
       </entry>
     </enum>
     <enum name="CAMERA_MODE">
@@ -4315,37 +4309,25 @@
       <field type="char[200]" name="tune2">tune extension (appended to tune)</field>
     </message>
     <message id="259" name="CAMERA_INFORMATION">
-      <wip/>
-      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Information about a camera</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="camera_id">Camera ID if there are multiple</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the camera model</field>
+      <field type="uint32_t" name="firmware_version">Version of the camera firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
       <field type="float" name="focal_length" units="mm">Focal length</field>
       <field type="float" name="sensor_size_h" units="mm">Image sensor size horizontal</field>
       <field type="float" name="sensor_size_v" units="mm">Image sensor size vertical</field>
       <field type="uint16_t" name="resolution_h" units="pix">Horizontal image resolution</field>
       <field type="uint16_t" name="resolution_v" units="pix">Vertical image resolution</field>
       <field type="uint8_t" name="lens_id">Reserved for a lens ID</field>
+      <field type="uint32_t" name="flags" enum="CAMERA_CAP_FLAGS">Bitmap of camera capability flags.</field>
+      <field type="uint16_t" name="cam_definition_version">Camera definition version (iteration)</field>
+      <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available).</field>
     </message>
     <message id="260" name="CAMERA_SETTINGS">
-      <wip/>
-      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS and written using MAV_CMD_SET_CAMERA_SETTINGS</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot)</field>
-      <field type="uint8_t" name="camera_id">Camera ID if there are multiple</field>
-      <field type="float" name="aperture">Aperture is 1/value</field>
-      <field type="uint8_t" name="aperture_locked">Aperture locked (0: auto, 1: locked)</field>
-      <field type="float" name="shutter_speed" units="s">Shutter speed</field>
-      <field type="uint8_t" name="shutter_speed_locked">Shutter speed locked (0: auto, 1: locked)</field>
-      <field type="float" name="iso_sensitivity">ISO sensitivity</field>
-      <field type="uint8_t" name="iso_sensitivity_locked">ISO sensitivity locked (0: auto, 1: locked)</field>
-      <field type="float" name="white_balance" units="K">Color temperature</field>
-      <field type="uint8_t" name="white_balance_locked">Color temperature locked (0: auto, 1: locked)</field>
-      <field type="uint8_t" name="mode_id">Reserved for a camera mode ID</field>
-      <field type="uint8_t" name="color_mode_id">Reserved for a color mode ID</field>
-      <field type="uint8_t" name="image_format_id">Reserved for image format ID</field>
+      <description>Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="mode_id" enum="CAMERA_MODE">Camera mode</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
       <wip/>
@@ -4362,21 +4344,13 @@
       <field type="float" name="write_speed" units="MiB/s">Write speed.</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Information about the status of a capture</description>
+      <description>Information about the status of a capture.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="camera_id">Camera ID if there are multiple</field>
-      <field type="uint8_t" name="image_status">Current status of image capturing (0: not running, 1: interval capture in progress)</field>
-      <field type="uint8_t" name="video_status">Current status of video capturing (0: not running, 1: capture in progress)</field>
-      <field type="float" name="image_interval" units="s">Image capture interval in seconds</field>
-      <field type="float" name="video_framerate" units="Hz">Video frame rate in Hz</field>
-      <field type="uint16_t" name="image_resolution_h" units="pix">Image resolution in pixels horizontal</field>
-      <field type="uint16_t" name="image_resolution_v" units="pix">Image resolution in pixels vertical</field>
-      <field type="uint16_t" name="video_resolution_h" units="pix">Video resolution in pixels horizontal</field>
-      <field type="uint16_t" name="video_resolution_v" units="pix">Video resolution in pixels vertical</field>
-      <field type="uint32_t" name="recording_time_ms" units="ms">Time in milliseconds since recording started</field>
-      <field type="float" name="available_capacity" units="MiB">Available storage capacity</field>
+      <field type="uint8_t" name="image_status">Current status of image capturing (0: idle, 1: capture in progress, 2: interval set but idle, 3: interval set and capture in progress)</field>
+      <field type="uint8_t" name="video_status">Current status of video capturing (0: idle, 1: capture in progress)</field>
+      <field type="float" name="image_interval" units="s">Image capture interval</field>
+      <field type="uint32_t" name="recording_time_ms" units="ms">Time since recording started</field>
+      <field type="float" name="available_capacity" units="MiB">Available storage capacity.</field>
     </message>
     <message id="263" name="CAMERA_IMAGE_CAPTURED">
       <description>Information about a captured image</description>
