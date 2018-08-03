@@ -954,6 +954,7 @@
       <entry value="21" name="PLANE_MODE_QRTL"/>
     </enum>
     <enum name="COPTER_MODE">
+      <description>A mapping of copter flight modes for custom_mode field of heartbeat.</description>
       <entry value="0" name="COPTER_MODE_STABILIZE"/>
       <entry value="1" name="COPTER_MODE_ACRO"/>
       <entry value="2" name="COPTER_MODE_ALT_HOLD"/>
@@ -1026,7 +1027,8 @@
       <field type="float" name="accel_cal_z">Accel Z calibration.</field>
     </message>
     <message id="151" name="SET_MAG_OFFSETS">
-      <description>Deprecated. Use MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS instead. Set the magnetometer offsets.</description>
+      <deprecated since="2014-07" replaced_by="MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS"/>
+      <description>Set the magnetometer offsets</description>
       <field type="uint8_t" name="target_system">System ID.</field>
       <field type="uint8_t" name="target_component">Component ID.</field>
       <field type="int16_t" name="mag_ofs_x">Magnetometer X offset.</field>
@@ -1313,7 +1315,8 @@
       <field type="uint16_t" name="completed_captures">Completed image captures.</field>
     </message>
     <message id="181" name="BATTERY2">
-      <description>Deprecated. Use BATTERY_STATUS instead. 2nd Battery status.</description>
+      <deprecated since="2017-04" replaced_by="BATTERY_STATUS"/>
+      <description>2nd Battery status</description>
       <field type="uint16_t" name="voltage" units="mV">Voltage.</field>
       <field type="int16_t" name="current_battery" units="cA">Battery current, -1: autopilot does not measure the current.</field>
     </message>
