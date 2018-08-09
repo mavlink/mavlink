@@ -17,32 +17,32 @@
 </xsl:template>
 
 <xsl:template match="//message">
-  <h3 class="mavlink_message_name">
+  <h3> <!-- mavlink_message_name -->
    <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
    <xsl:value-of select="@name" /> (
    <a>
     <xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
     #<xsl:value-of select="@id" />
    </a>
-  )</h3>
-   <p class="description">
+  )</h3> 
+   <p> <!-- description -->
      <xsl:if test='@id > 255'><strong>(MAVLink 2) </strong></xsl:if>
      <xsl:value-of select="description" /></p>
    <table class="sortable">
    <thead>
-   <tr>
-     <th class="mavlink_field_header">Field Name</th>
-     <th class="mavlink_field_header">Type</th>
+   <tr> <!-- mavlink_field_header -->
+     <th>Field Name</th>
+     <th>Type</th>
 
      <xsl:if test='*/@units'>
-      <th class="mavlink_field_header">Units</th>
+      <th>Units</th>
      </xsl:if>
      
      <xsl:if test='*/@enum'>
-      <th class="mavlink_field_header">Values</th>
+      <th>Values</th>
      </xsl:if>
 
-     <th class="mavlink_field_header">Description</th>
+     <th>Description</th>
    </tr>
    </thead>
    <tbody>
@@ -52,31 +52,29 @@
 </xsl:template>
 
 <xsl:template match="//field">
-   <tr class="mavlink_field">
+   <tr> <!-- mavlink_field -->
    <xsl:choose>
      <xsl:when test="preceding-sibling::extensions">
-       <td class="mavlink_name" valign="top" style="color:blue;"><xsl:value-of select="@name" />&#160;<a href="#mav2_extension_field" title="MAVLink2 extension field">**</a></td>
+       <td style="color:blue;"><xsl:value-of select="@name" />&#160;<a href="#mav2_extension_field" title="MAVLink2 extension field">**</a></td> <!-- mavlink_name -->
      </xsl:when>
      <xsl:otherwise>
-       <td class="mavlink_name" valign="top"><xsl:value-of select="@name" /></td>
+       <td><xsl:value-of select="@name" /></td> <!-- mavlink_name -->
      </xsl:otherwise>
    </xsl:choose>
   
-   <td class="mavlink_type" valign="top"><xsl:value-of select="@type" /></td>
+   <td><xsl:value-of select="@type" /></td> <!-- mavlink_type -->
    
    <xsl:if test='../*/@units'>
-     <td class="mavlink_units" valign="top"><xsl:value-of select="@units" /></td>
+     <td><xsl:value-of select="@units" /></td> <!-- mavlink_units -->
    </xsl:if>
    
    <xsl:if test='../*/@enum'>
-     <td class="mavlink_value" valign="top">
+     <td> 
       <a><xsl:attribute name="href">#<xsl:value-of select="@enum" /></xsl:attribute><xsl:value-of select="@enum" /></a>
-     </td>
+     </td> <!-- mavlink_value -->
    </xsl:if>
      
-   <td class="mavlink_comment"> <xsl:value-of select="." />
-
-   </td>
+   <td> <xsl:value-of select="." /> </td> <!-- mavlink_comment -->
    </tr>
 </xsl:template>
 
@@ -90,18 +88,18 @@
 </xsl:template>
 
 <xsl:template match="//enum">
-   <h3 class="mavlink_message_name">    
+   <h3> <!-- mavlink_message_name -->
      <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
      <a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
      <xsl:value-of select="@name" /></a></h3>
 
-   <p class="description"><xsl:value-of select="description" /></p>
+   <p><xsl:value-of select="description" /></p> <!-- description -->
    <table class="sortable">
    <thead>
-   <tr>
-     <th class="mavlink_field_header">Value</th>
-     <th class="mavlink_field_header">Field Name</th>
-     <th class="mavlink_field_header">Description</th>
+   <tr> <!-- mavlink_field_header -->
+     <th>Value</th>
+     <th>Field Name</th>
+     <th>Description</th>
    </tr>
    </thead>
    <tbody>
@@ -111,11 +109,11 @@
 </xsl:template>
 
 <xsl:template match="//entry">
-   <tr class="mavlink_field" id="{@name}">
-   <td class="mavlink_type" valign="top"><xsl:value-of select="@value" /></td>
-   <td class="mavlink_name" valign="top"><a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
-   <xsl:value-of select="@name" /></a></td>
-   <td class="mavlink_comment"><xsl:value-of select="description" /></td>
+   <tr id="{@name}"> <!-- mavlink_field -->
+   <td><xsl:value-of select="@value" /></td>  <!-- mavlink_type -->
+   <td><a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
+   <xsl:value-of select="@name" /></a></td> <!-- mavlink_name -->
+   <td><xsl:value-of select="description" /></td> <!-- mavlink_comment -->
    </tr>
 <xsl:if test='param'>
    <tr>
@@ -133,8 +131,8 @@
 <xsl:template match="//param">
    <tr>
    <td></td>
-   <td class="mavlink_mission_param" valign="top">Mission Param #<xsl:value-of select="@index" /></td>
-   <td class="mavlink_comment"><xsl:value-of select="." /></td>
+   <td>Mission Param #<xsl:value-of select="@index" /></td> <!-- mission_param -->
+   <td><xsl:value-of select="." /></td> <!-- mavlink_comment -->
    </tr>
 </xsl:template>
 
