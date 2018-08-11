@@ -55,7 +55,7 @@
 </xsl:template>
 
 <xsl:template match="//version">
-   <h2 style="color:red;">MAVLink Documentation</h1>
+   <h2 style="color:red;">MAVLink Documentation</h2>
    <p>
    The <a href="https://mavlink.io/en/messages/common.html">Official MAVLink message documentation</a> contains additional information, including field units and enum values.
    </p>
