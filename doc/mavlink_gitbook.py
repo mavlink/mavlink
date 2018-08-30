@@ -90,7 +90,11 @@ def inject_top_level_docs(input_html,filename):
 
     insert_text+='\n\n<span></span>\n> **Note** MAVLink 2 messages have an ID > 255 and are marked up using **(MAVLink 2)** in their description.'
     insert_text+='\n\n<span id="mav2_extension_field"></span>\n> **Note** MAVLink 2 extension fields that have been added to MAVLink 1 messages are displayed in blue.'
+    style_text='\n\n<style>\ntd {\n    vertical-align:top;\n}\n</style>'
+    insert_text+=style_text
     input_html=insert_text+'\n\n'+input_html
+    
+    
     #print(input_html)
     return input_html
     
