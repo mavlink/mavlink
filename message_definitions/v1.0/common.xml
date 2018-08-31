@@ -4225,7 +4225,7 @@
       <field type="int32_t" name="energy_consumed" units="hJ">Consumed energy, -1: autopilot does not provide energy consumption estimate</field>
       <field type="int8_t" name="battery_remaining" units="%">Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery.</field>
       <extensions/>
-      <field type="int32_t" name="time_remaining" units="s">Remaining battery time, 0: autopilot does not provide remaining battery time estimate</field>
+      <field type="int32_t" name="time_remaining" units="s">Remaining battery time, -1: autopilot does not provide remaining battery time estimate</field>
       <field type="uint8_t" name="charge_state" enum="MAV_BATTERY_CHARGE_STATE">State for extent of discharge, provided by autopilot for warning or external reactions</field>
     </message>
     <message id="148" name="AUTOPILOT_VERSION">
@@ -4773,6 +4773,12 @@
       <field type="float[5]" name="pos_z" units="m">Z-coordinate of starting bezier point, set to NaN if not being used</field>
       <field type="float[5]" name="delta" units="s">Bezier time horizon, set to NaN if velocity/acceleration should not be incorporated</field>
       <field type="float[5]" name="pos_yaw" units="rad">Yaw, set to NaN for unchanged</field>
+    </message>
+    <message id="334" name="BATTERY_INFO">
+      <description>Battery information to communicate once per power cycle.</description>
+      <field type="uint32_t" name="serial_number">Battery serial number, UINT32_MAX: battery does not have a serial number</field>
+      <field type="uint32_t" name="capacity" units="mAh">Actual capacity of the battery measured by the fuel gauge, UINT32_MAX: battery does not report actual capacity</field>
+      <field type="uint16_t" name="cycle_count">Number of charge-discharge cycles reported by the fuel gauge, UINT16_MAX: battery does not report cycle count</field>
     </message>
   </messages>
 </mavlink>
