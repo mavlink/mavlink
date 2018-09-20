@@ -4776,11 +4776,11 @@
     </message>
     <message id="350" name="DEBUG_FLOAT_ARRAY">
       <description>Large debug/prototyping array. The message uses the maximum available payload for data. The array_id and name fields are used to discriminate between messages in code and in user interfaces (respectively). Do not use in production code.</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-      <field type="uint8_t" name="array_id">Unique ID used to discriminate between arrays</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="char[10]" name="name">Name, for human-friendly display in a Ground Control Station</field>
+      <field type="uint16_t" name="array_id">Unique ID used to discriminate between arrays</field>
       <extensions/>
-      <field type="float[60]" name="data">data</field>
+      <field type="float[58]" name="data">data</field>
     </message>
   </messages>
 </mavlink>
