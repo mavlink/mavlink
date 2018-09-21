@@ -8,7 +8,8 @@ The files can be imported into a gitbook to display the messages as HTML
 
 The script runs on both Python2 and Python 3. The following libraries must be imported: lxml, requests, bs4.
 
-The file is run in mavlink/doc/ with no arguments. It writes the files to /messages/
+The file is run in mavlink/doc/ with no arguments. 
+It writes .md files to /messages/ and pseudo-html files to /messages/_html/
 """
 
 import lxml.etree as ET
@@ -22,8 +23,11 @@ xsl_file_name = "mavlink_to_html_table_gitbook.xsl"
 xml_message_definitions_dir_name = "../message_definitions/v1.0/"
 
 output_dir = "./messages/"
+output_dir_html = output_dir + "_html/"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
+if not os.path.exists(output_dir_html):
+    os.makedirs(output_dir_html)
 
 # File for index
 index_file_name = "README.md"
@@ -92,6 +96,8 @@ def inject_top_level_docs(input_html,filename):
     insert_text+='\n\n<span id="mav2_extension_field"></span>\n> **Note** MAVLink 2 extension fields that have been added to MAVLink 1 messages are displayed in blue.'
     style_text='\n\n<style>\ntd {\n    vertical-align:top;\n}\n</style>'
     insert_text+=style_text
+    insert_text+='\n\n{%% include "_html/%s.html" %%}' % filename[:-4]
+    
     input_html=insert_text+'\n\n'+input_html
     
     
@@ -120,22 +126,31 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             prettyHTML=strip_text_before_string(prettyHTML,'<html>')
             prettyHTML = fix_content_in_tags(prettyHTML)
             
-            #Inject a heading and doc-type intro (markdown format)
-            prettyHTML = inject_top_level_docs(prettyHTML,file)
-            
             #Replace invalid file extensions (workaround for xslt)
             prettyHTML = fix_include_file_extension(prettyHTML)
+                
+            #Write output html file
+            output_file_name_html = file.rsplit('.',1)[0]+".html"
+            output_file_name_html_withdir = output_dir_html+output_file_name_html
+            print("Output filename HTML: %s" % output_file_name_html)
+            with open(output_file_name_html_withdir, 'w') as out:
+                out.write(prettyHTML )
+
+            #Inject a heading and doc-type intro (markdown format)
+            markdowndext=''
+            markdowndext = inject_top_level_docs(markdowndext,file)
             
             #Write output markdown file
-            output_file_name = file.rsplit('.',1)[0]+".md"
-            output_file_name_withdir = output_dir+output_file_name
-            print("Output filename: %s" % output_file_name)
-
+            output_file_name_md = file.rsplit('.',1)[0]+".md"
+            output_file_name_withdir = output_dir+output_file_name_md
+            print("Output filename: %s" % output_file_name_md)
             with open(output_file_name_withdir, 'w') as out:
-                out.write(prettyHTML )
+                out.write(markdowndext )
+
+                
             
-            #if not file=='common.xml':
-            index_text+='\n* [%s](%s)' % (file,output_file_name)
+            # Write markdown file to index text.
+            index_text+='\n* [%s](%s)' % (file,output_file_name_md)
             
 #Write the index - Disabled for now.
 with open(index_file_name, 'w') as content_file:
