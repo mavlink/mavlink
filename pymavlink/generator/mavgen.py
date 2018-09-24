@@ -75,13 +75,12 @@ def mavgen(opts, args):
 
     # Process all XML files, validating them as necessary.
     for fname in args:
-        # if opts.validate:
-        #     print("Validating %s" % fname)
-        #     if not mavgen_validate(fname):
-        #         return False
-        # else:
-        #     print("Validation skipped for %s." % fname)
-        print("Validation skipped for %s. Tom turned this off" % fname)
+        if opts.validate:
+            print("Validating %s" % fname)
+            if not mavgen_validate(fname):
+                return False
+        else:
+            print("Validation skipped for %s." % fname)
 
         print("Parsing %s" % fname)
         xml.append(mavparse.MAVXML(fname, opts.wire_protocol))
@@ -92,13 +91,12 @@ def mavgen(opts, args):
             fname = os.path.join(os.path.dirname(x.filename), i)
 
             # Validate XML file with XSD file if possible.
-            # if opts.validate:
-            #     print("Validating %s" % fname)
-            #     if not mavgen_validate(fname):
-            #         return False
-            # else:
-            #     print("Validation skipped for %s." % fname)
-            print("Validation skipped for %s. Tom turned this off" % fname)
+            if opts.validate:
+                print("Validating %s" % fname)
+                if not mavgen_validate(fname):
+                    return False
+            else:
+                print("Validation skipped for %s." % fname)
 
             # Parsing
             print("Parsing %s" % fname)
