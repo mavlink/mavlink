@@ -2959,6 +2959,60 @@
         <description>Spektrum DSMX</description>
       </entry>
     </enum>
+    <enum name="POSITION_TARGET_TYPEMASK">
+      <description>Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration.</description>
+      <entry value="0" name="POSITION_TARGET_TYPEMASK_NONE_IGNORE">
+        <description>0b0000000000000000 Ignore none</description>
+      </entry>
+      <entry value="1" name="POSITION_TARGET_TYPEMASK_X_IGNORE">
+        <description>0b0000000000000001 Ignore position x</description>
+      </entry>
+      <entry value="2" name="POSITION_TARGET_TYPEMASK_Y_IGNORE">
+        <description>0b0000000000000010 Ignore position y</description>
+      </entry>
+      <entry value="4" name="POSITION_TARGET_TYPEMASK_Z_IGNORE">
+        <description>0b0000000000000100 Ignore position z</description>
+      </entry>
+      <entry value="7" name="POSITION_TARGET_TYPEMASK_POSITION_IGNORE">
+        <description>0b0000000000000111 Ignore position x,y,z</description>
+      </entry>
+      <entry value="8" name="POSITION_TARGET_TYPEMASK_VX_IGNORE">
+        <description>0b0000000000001000 Ignore velocity x</description>
+      </entry>
+      <entry value="16" name="POSITION_TARGET_TYPEMASK_VY_IGNORE">
+        <description>0b0000000000010000 Ignore velocity y</description>
+      </entry>
+      <entry value="32" name="POSITION_TARGET_TYPEMASK_VZ_IGNORE">
+        <description>0b0000000000100000 Ignore velocity z</description>
+      </entry>
+      <entry value="56" name="POSITION_TARGET_TYPEMASK_VELOCITY_IGNORE">
+        <description>0b0000000000111000 Ignore velocity x,y,z</description>
+      </entry>
+      <entry value="64" name="POSITION_TARGET_TYPEMASK_AX_IGNORE">
+        <description>0b0000000001000000 Ignore acceleration x</description>
+      </entry>
+      <entry value="128" name="POSITION_TARGET_TYPEMASK_AY_IGNORE">
+        <description>0b0000000010000000 Ignore acceleration y</description>
+      </entry>
+      <entry value="256" name="POSITION_TARGET_TYPEMASK_AZ_IGNORE">
+        <description>0b0000000100000000 Ignore acceleration z</description>
+      </entry>
+      <entry value="448" name="POSITION_TARGET_TYPEMASK_ACCELERATION_IGNORE">
+        <description>0b0000000111000000 Ignore acceleration x,y,z</description>
+      </entry>
+      <entry value="512" name="POSITION_TARGET_TYPEMASK_FORCE_SET">
+        <description>0b0000001000000000 Use force instead of acceleration</description>
+      </entry>
+      <entry value="1024" name="POSITION_TARGET_TYPEMASK_YAW_IGNORE">
+        <description>0b0000010000000000 Ignore yaw</description>
+      </entry>
+      <entry value="2048" name="POSITION_TARGET_TYPEMASK_YAW_RATE_IGNORE">
+        <description>0b0000100000000000 Ignore yaw rate</description>
+      </entry>
+      <entry value="65535" name="POSITION_TARGET_TYPEMASK_ALL_IGNORE">
+        <description>0b1111111111111111 Ignore all</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -3593,7 +3647,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
-      <field type="uint16_t" name="type_mask" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="float" name="x" units="m">X Position in NED frame</field>
       <field type="float" name="y" units="m">Y Position in NED frame</field>
       <field type="float" name="z" units="m">Z Position in NED frame (note, altitude is negative in NED)</field>
@@ -3610,7 +3664,7 @@
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
-      <field type="uint16_t" name="type_mask" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="float" name="x" units="m">X Position in NED frame</field>
       <field type="float" name="y" units="m">Y Position in NED frame</field>
       <field type="float" name="z" units="m">Z Position in NED frame (note, altitude is negative in NED)</field>
@@ -3629,7 +3683,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11</field>
-      <field type="uint16_t" name="type_mask" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame</field>
       <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame</field>
       <field type="float" name="alt" units="m">Altitude (AMSL) if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT</field>
@@ -3646,7 +3700,7 @@
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_GLOBAL_INT if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot). The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11</field>
-      <field type="uint16_t" name="type_mask" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame</field>
       <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame</field>
       <field type="float" name="alt" units="m">Altitude (AMSL) if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT</field>
