@@ -4472,8 +4472,6 @@
       <field type="int8_t" name="battery_remaining" units="%">Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery.</field>
       <extensions/>
       <field type="int32_t" name="time_remaining" units="s">Remaining battery time, 0: autopilot does not provide remaining battery time estimate</field>
-      <field type="int32_t" name="time_estimate_rtl" units="s">Estimated time for RTL action, 0: Already landed or autopilot does not provide RTL time estimate</field>
-      <field type="int32_t" name="time_estimate_land" units="s">Estimated time for LAND action, 0: Already landed or autopilot does not provide remaining battery time estimate</field>
       <field type="uint8_t" name="charge_state" enum="MAV_BATTERY_CHARGE_STATE">State for extent of discharge, provided by autopilot for warning or external reactions</field>
     </message>
     <message id="148" name="AUTOPILOT_VERSION">
@@ -4509,6 +4507,12 @@
       <field type="float[4]" name="q">Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of landing target</field>
       <field type="uint8_t" name="position_valid">Boolean indicating whether the position fields (x, y, z, q, type) contain valid target position information (valid: 1, invalid: 0). Default is 0 (invalid).</field>
+    </message>
+    <message id="150" name="TIME_ESTIMATE_TO_TARGET">
+      <description>Time estimates until specific targets are reached or actions performed, given the current vehicle state and position</description>
+      <field type="int32_t" name="rtl" units="s">Estimated time for RTL action given current position, 0: Already landed or autopilot does not provide RTL time estimate</field>
+      <field type="int32_t" name="land" units="s">Estimated time for LAND action given current position, 0: Already landed or autopilot does not provide remaining battery time estimate</field>
+      <field type="int32_t" name="mission_end" units="s">Estimated time for completing the current mission, 0: Mission complete or no mission active</field>
     </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
