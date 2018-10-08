@@ -33,24 +33,27 @@ pip install $user_arg -r pymavlink/requirements.txt
 cd "$SRC_DIR/pymavlink"
 python setup.py build install $user_arg
 
-msg_def="message_definitions/v1.0/common.xml"
 
 cd "$SRC_DIR"
-for wire_protocol in 1.0 2.0
+for msg_def in message_definitions/v1.0/*.xml
 do
-	for lang in Python C CS WLua Java
-	do
-		echo $sep
-		echo "GENERATING MAVLINK " \
-			"protocol:${wire_protocol} language:${lang}"
-		echo $sep
-		outdir="/tmp/mavlink_${wire_protocol}_${lang}"
-		mavgen.py --lang=${lang} \
-			--wire-protocol ${wire_protocol} \
-			--strict-units \
-			--output=${outdir} ${msg_def}
-		echo PASS
-	done
+    [ -e "$msg_def" ] || continue
+    for wire_protocol in 1.0 2.0
+    do
+	    for lang in Python C CS WLua Java
+	    do
+		    echo $sep
+		    echo "GENERATING MAVLINK " \
+			    "protocol:${wire_protocol} language:${lang}"
+		    echo $sep
+		    outdir="/tmp/mavlink_${wire_protocol}_${lang}"
+		    mavgen.py --lang=${lang} \
+			    --wire-protocol ${wire_protocol} \
+			    --strict-units \
+			    --output=${outdir} "${msg_def}"
+		    echo PASS
+	    done
+    done
 done
 
 # Avoid `spurious errors` caused by ~/.npm permission issues
