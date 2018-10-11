@@ -33,29 +33,35 @@ pip install $user_arg -r pymavlink/requirements.txt
 cd "$SRC_DIR/pymavlink"
 python setup.py build install $user_arg
 
+function generate_mavlink() {
+    echo $sep
+    echo "GENERATING MAVLINK " \
+	    "protocol:${wire_protocol} language:${lang}"
+    echo "DEFINITION : " "$msg_def"
+    echo $sep
+    outdir="/tmp/mavlink_${wire_protocol}_${lang}"
+    mavgen.py --lang="${lang}" \
+	    --wire-protocol "${wire_protocol}" \
+	    --strict-units \
+	    --output="${outdir}" "${msg_def}"
+    echo PASS
+}
 
 cd "$SRC_DIR"
 for msg_def in message_definitions/v1.0/*.xml
 do
     [ -e "$msg_def" ] || continue
-    for wire_protocol in 1.0 2.0
+    wire_protocol="1.0"
+    for lang in Python C CS WLua Java
     do
-	    for lang in Python C CS WLua Java
-	    do
-		    echo $sep
-		    echo "GENERATING MAVLINK " \
-			    "protocol:${wire_protocol} language:${lang}"
-		    echo $sep
-		    outdir="/tmp/mavlink_${wire_protocol}_${lang}"
-		    mavgen.py --lang=${lang} \
-			    --wire-protocol ${wire_protocol} \
-			    --strict-units \
-			    --output=${outdir} "${msg_def}"
-		    echo PASS
-	    done
+        generate_mavlink
+    done
+    wire_protocol="2.0"
+    for lang in Python C C++11 CS WLua Java
+    do
+        generate_mavlink
     done
 done
-
 # Avoid `spurious errors` caused by ~/.npm permission issues
 # ref: https://github.com/travis-ci/travis-ci/issues/2244
 # ref: https://github.com/npm/npm/issues/4815
