@@ -3603,6 +3603,7 @@
       <field type="float" name="flow_rate_y" units="rad/s">Flow rate about Y axis</field>
     </message>
     <message id="101" name="GLOBAL_VISION_POSITION_ESTIMATE">
+      <description>Global position/attitude estimate from a vision source.</description>
       <field type="uint64_t" name="usec" units="us">Timestamp (UNIX time or since system boot)</field>
       <field type="float" name="x" units="m">Global X position</field>
       <field type="float" name="y" units="m">Global Y position</field>
@@ -3614,6 +3615,7 @@
       <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
     </message>
     <message id="102" name="VISION_POSITION_ESTIMATE">
+      <description>Global position/attitude estimate from a vision source.</description>
       <field type="uint64_t" name="usec" units="us">Timestamp (UNIX time or time since system boot)</field>
       <field type="float" name="x" units="m">Global X position</field>
       <field type="float" name="y" units="m">Global Y position</field>
@@ -3625,6 +3627,7 @@
       <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
     </message>
     <message id="103" name="VISION_SPEED_ESTIMATE">
+      <description>Speed estimate from a vision source.</description>
       <field type="uint64_t" name="usec" units="us">Timestamp (UNIX time or time since system boot)</field>
       <field type="float" name="x" units="m/s">Global X speed</field>
       <field type="float" name="y" units="m/s">Global Y speed</field>
@@ -3633,6 +3636,7 @@
       <field type="float[9]" name="covariance">Linear velocity covariance matrix (1st three entries - 1st row, etc.)</field>
     </message>
     <message id="104" name="VICON_POSITION_ESTIMATE">
+      <description>Global position estimate from a Vicon motion system source.</description>
       <field type="uint64_t" name="usec" units="us">Timestamp (UNIX time or time since system boot)</field>
       <field type="float" name="x" units="m">Global X position</field>
       <field type="float" name="y" units="m">Global Y position</field>
@@ -3850,11 +3854,11 @@
       <field type="uint8_t" name="target_component">Component ID</field>
     </message>
     <message id="123" name="GPS_INJECT_DATA">
-      <description>data for injecting into the onboard GPS (used for DGPS)</description>
+      <description>Data for injecting into the onboard GPS (used for DGPS)</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="len" units="bytes">data length</field>
-      <field type="uint8_t[110]" name="data">raw data (110 is enough for 12 satellites of RTCMv2)</field>
+      <field type="uint8_t" name="len" units="bytes">Data length</field>
+      <field type="uint8_t[110]" name="data">Raw data (110 is enough for 12 satellites of RTCMv2)</field>
     </message>
     <message id="124" name="GPS2_RAW">
       <description>Second GPS data.</description>
@@ -3932,6 +3936,7 @@
       <field type="int16_t" name="zmag" units="mT">Z Magnetic field</field>
     </message>
     <message id="130" name="DATA_TRANSMISSION_HANDSHAKE">
+      <description>Handshake message to initiate, control and stop image streaming when using the Image Transmission Protocol: https://mavlink.io/en/protocol/image_transmission.html. </description>
       <field type="uint8_t" name="type" enum="DATA_TYPES">Type of requested/acknowledged data.</field>
       <field type="uint32_t" name="size" units="bytes">total data size (set on ACK only).</field>
       <field type="uint16_t" name="width">Width of a matrix or image.</field>
@@ -3941,10 +3946,12 @@
       <field type="uint8_t" name="jpg_quality" units="%">JPEG quality. Values: [1-100].</field>
     </message>
     <message id="131" name="ENCAPSULATED_DATA">
+      <description>Data packet for images sent using the Image Transmission Protocol: https://mavlink.io/en/protocol/image_transmission.html. </description>
       <field type="uint16_t" name="seqnr">sequence number (starting with 0 on every transmission)</field>
       <field type="uint8_t[253]" name="data">image data bytes</field>
     </message>
     <message id="132" name="DISTANCE_SENSOR">
+      <description>Distance sensor information for an onboard rangefinder.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint16_t" name="min_distance" units="cm">Minimum distance the sensor can measure</field>
       <field type="uint16_t" name="max_distance" units="cm">Maximum distance the sensor can measure</field>
@@ -4041,7 +4048,7 @@
       <field type="int16_t" name="temperature" units="cdegC">Temperature measurement</field>
     </message>
     <message id="144" name="FOLLOW_TARGET">
-      <description>current motion information from a designated system</description>
+      <description>Current motion information from a designated system</description>
       <field type="uint64_t" name="timestamp" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="est_capabilities">bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3)</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
@@ -4138,6 +4145,7 @@
       <field type="float" name="pos_vert_accuracy" units="m">Vertical position 1-STD accuracy relative to the EKF local origin</field>
     </message>
     <message id="231" name="WIND_COV">
+      <description>Wind covariance estimate from vehicle.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="float" name="wind_x" units="m/s">Wind in X (NED) direction</field>
       <field type="float" name="wind_y" units="m/s">Wind in Y (NED) direction</field>
