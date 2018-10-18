@@ -4462,5 +4462,13 @@
       <field type="float[21]" name="pose_covariance">Pose (states: x, y, z, roll, pitch, yaw) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
       <field type="float[21]" name="twist_covariance">Twist (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
     </message>
+    <message id="350" name="DEBUG_FLOAT_ARRAY">
+      <description>Large debug/prototyping array. The message uses the maximum available payload for data. The array_id and name fields are used to discriminate between messages in code and in user interfaces (respectively). Do not use in production code.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="char[10]" name="name">Name, for human-friendly display in a Ground Control Station</field>
+      <field type="uint16_t" name="array_id">Unique ID used to discriminate between arrays</field>
+      <extensions/>
+      <field type="float[58]" name="data">data</field>
+    </message>
   </messages>
 </mavlink>
