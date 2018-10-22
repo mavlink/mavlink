@@ -27,6 +27,31 @@
         <param index="7">Empty</param>
       </entry>
     </enum>
+    <enum name="GSM_LINK_TYPE">
+      <entry value="0" name="GSM_LINK_TYPE_NONE">
+        <description>no service</description>
+      </entry>
+      <entry value="1" name="GSM_LINK_TYPE_UNKNOWN">
+        <description>link type unknown</description>
+      </entry>
+      <entry value="2" name="GSM_LINK_TYPE_2G">
+        <description>2G (GSM/GRPS/EDGE) link</description>
+      </entry>
+      <entry value="3" name="GSM_LINK_TYPE_3G">
+        <description>3G link (WCDMA/HSDPA/HSPA) </description>
+      </entry>
+      <entry value="4" name="GSM_LINK_TYPE_4G">
+        <description>4G link (LTE)</description>
+      </entry>
+    </enum>
+    <enum name="GSM_MODEM_TYPE">
+      <entry value="0" name="GSM_MODEM_TYPE_UNKNOWN">
+        <description>not specified</description>
+      </entry>
+      <entry name="GSM_MODEM_TYPE_HUAWEI_E3372">
+        <description>HUAWEI LTE USB Stick E3372</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="78" name="COMMAND_INT_STAMPED">
@@ -233,6 +258,16 @@
       <field type="float" name="pwr_brd_digital_amp" units="A">Power board digital current sensor</field>
       <field type="float" name="pwr_brd_ext_amp" units="A">Power board extension current sensor</field>
       <field type="float" name="pwr_brd_aux_amp" units="A">Power board aux current sensor</field>
+    </message>
+    <message id="213" name="GSM_LINK_STATUS">
+      <description>Status of GSM modem (connected to onboard computer)</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (of OBC)</field>
+      <field type="uint8_t" name="gsm_modem_type" enum="GSM_MODEM_TYPE">GSM modem used</field>
+      <field type="uint8_t" name="gsm_link_type" enum="GSM_LINK_TYPE">GSM link type</field>
+      <field type="uint8_t" name="rssi">RSSI as reported by modem (unconverted)</field>
+      <field type="uint8_t" name="rsrp_rscp">RSRP (LTE) or RSCP (WCDMA) as reported by modem (unconverted)</field>
+      <field type="uint8_t" name="sinr_ecio">SINR (LTE) or ECIO (WCDMA) as reported by modem (unconverted)</field>
+      <field type="uint8_t" name="rsrq">RSRQ (LTE only) as reported by modem (unconverted)</field>
     </message>
   </messages>
 </mavlink>
