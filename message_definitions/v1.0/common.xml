@@ -2998,14 +2998,20 @@
         <description>Ignore yaw rate</description>
       </entry>
     </enum>
-    <enum name="OBS_AVOID_STATUS">
+    <enum name="COMPANION_STATE">
       <description>Status signal of the obstacle avoidance algorithm</description>
-      <entry value="0" name="OBS_AVOID_STATUS_HEALTHY"/>
-      <entry value="1" name="OBS_AVOID_STATUS_TIMEOUT"/>
-      <entry value="2" name="OBS_AVOID_STATUS_ABORT"/>
-      <entry value="3" name="OBS_AVOID_STATUS_NOT_READY"/>
-      <entry value="4" name="OBS_AVOID_STATUS_CAMERA_FAIL"/>
-    </enum>
+      <entry value="0" name="COMPANION_STATE_HEALTHY"/>
+      <entry value="1" name="COMPANION_STATE_TIMEOUT"/>
+      <entry value="2" name="COMPANION_STATE_ABORT"/>
+      <entry value="3" name="COMPANION_STATE_STARTING"/>
+      <entry value="4" name="COMPANION_STATE_COMPONENT_FAIL"/>
+   </enum>
+   <enum name="COMPANION_SOURCE">
+      <description>Status signal of the obstacle avoidance algorithm</description>
+      <entry value="0" name="COMPANION_SOURCE_GENERIC"/>
+      <entry value="1" name="COMPANION_SOURCE_AVOIDANCE"/>
+      <entry value="2" name="COMPANION_SOURCE_VIO"/>
+   </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -4837,10 +4843,11 @@
       <extensions/>
       <field type="float[58]" name="data">data</field>
     </message>
-    <message id="334" name="AVOIDANCE_STATUS">
+    <message id="334" name="COMPANION_STATUS">
       <description>WORK IN PROGRESS! DO NOT DEPLOY! </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot or since UNIX epoch).</field>
-      <field type="uint8_t" name="status" enum="OBS_AVOID_STATUS">Status of the avoidance algorithm on the companion computer.</field>
+      <field type="uint8_t" name="state" enum="COMPANION_STATE">Status of a component on the companion computer.</field>
+      <field type="uint8_t" name="source" enum="COMPANION_SOURCE">Source on the companion computer reporting the status.</field>
     </message>
   </messages>
 </mavlink>
