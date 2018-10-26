@@ -3006,11 +3006,11 @@
       <entry value="3" name="COMPANION_STATE_STARTING"/>
       <entry value="4" name="COMPANION_STATE_COMPONENT_FAIL"/>
    </enum>
-   <enum name="COMPANION_SOURCE">
+   <enum name="COMPANION_TYPE">
       <description>Status signal of the obstacle avoidance algorithm</description>
-      <entry value="0" name="COMPANION_SOURCE_GENERIC"/>
-      <entry value="1" name="COMPANION_SOURCE_AVOIDANCE"/>
-      <entry value="2" name="COMPANION_SOURCE_VIO"/>
+      <entry value="0" name="COMPANION_TYPE_GENERIC"/>
+      <entry value="1" name="COMPANION_TYPE_AVOIDANCE"/>
+      <entry value="2" name="COMPANION_TYPE_VIO"/>
    </enum>
   </enums>
   <messages>
@@ -4847,7 +4847,8 @@
       <description>WORK IN PROGRESS! DO NOT DEPLOY! </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot or since UNIX epoch).</field>
       <field type="uint8_t" name="state" enum="COMPANION_STATE">Status of a component on the companion computer.</field>
-      <field type="uint8_t" name="source" enum="COMPANION_SOURCE">Source on the companion computer reporting the status.</field>
+      <field type="uint8_t" name="type" enum="COMPANION_TYPE">Source on the companion computer reporting the status.</field>
+      <field type="uint16_t" name="pid">process ID of source</field>
     </message>
   </messages>
 </mavlink>
