@@ -3,9 +3,7 @@ set -e
 
 SRC_DIR=$(pwd)
 
-git submodule update --init --recursive
-
-# NOTE: we must do all testing on the installed python package, not 
+# NOTE: we must do all testing on the installed python package, not
 # on the build tree. Otherwise the testing is invalid and may not
 # indicate the code actually works
 
