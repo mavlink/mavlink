@@ -23,7 +23,7 @@ echo $sep
 cd "$SRC_DIR"
 
 user_arg="--user"
-if [ "$TRAVIS" == true ]
+if [ "$TRAVIS" == true ] || [ "$CI" == true ]
 then
 	user_arg=""
 fi
