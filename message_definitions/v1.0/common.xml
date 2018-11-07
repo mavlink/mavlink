@@ -2998,19 +2998,19 @@
         <description>Ignore yaw rate</description>
       </entry>
     </enum>
-    <enum name="COMPANION_STATE">
+    <enum name="COMPANION_PROCESS_STATE">
       <description>Status of a companion process</description>
-      <entry value="0" name="COMPANION_STATE_HEALTHY"/>
-      <entry value="1" name="COMPANION_STATE_TIMEOUT"/>
-      <entry value="2" name="COMPANION_STATE_ABORT"/>
-      <entry value="3" name="COMPANION_STATE_STARTING"/>
-      <entry value="4" name="COMPANION_STATE_COMPONENT_FAIL"/>
+      <entry value="0" name="COMPANION_PROCESS_STATE_HEALTHY"/>
+      <entry value="1" name="COMPANION_PROCESS_STATE_TIMEOUT"/>
+      <entry value="2" name="COMPANION_PROCESS_STATE_ABORT"/>
+      <entry value="3" name="COMPANION_PROCESS_STATE_STARTING"/>
+      <entry value="4" name="COMPANION_PROCESS_STATE_COMPONENT_FAIL"/>
     </enum>
-    <enum name="COMPANION_TYPE">
+    <enum name="COMPANION_PROCESS_TYPE">
       <description>Type of a companion process</description>
-      <entry value="0" name="COMPANION_TYPE_GENERIC"/>
-      <entry value="1" name="COMPANION_TYPE_AVOIDANCE"/>
-      <entry value="2" name="COMPANION_TYPE_VIO"/>
+      <entry value="0" name="COMPANION_PROCESS_TYPE_GENERIC"/>
+      <entry value="1" name="COMPANION_PROCESS_TYPE_AVOIDANCE"/>
+      <entry value="2" name="COMPANION_PROCESS_TYPE_VIO"/>
     </enum>
   </enums>
   <messages>
@@ -4843,11 +4843,11 @@
       <extensions/>
       <field type="float[58]" name="data">data</field>
     </message>
-    <message id="334" name="COMPANION_STATUS">
+    <message id="334" name="COMPANION_PROCESS_STATUS">
       <description>Message to monitor the state of processes on the companion computer </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot or since UNIX epoch).</field>
-      <field type="uint8_t" name="state" enum="COMPANION_STATE">Status of a component on the companion computer.</field>
-      <field type="uint8_t" name="type" enum="COMPANION_TYPE">Source on the companion computer reporting the status.</field>
+      <field type="uint8_t" name="state" enum="COMPANION_PROCESS_STATE">Status of a component on the companion computer.</field>
+      <field type="uint8_t" name="type" enum="COMPANION_PROCESS_TYPE">Source on the companion computer reporting the status.</field>
       <field type="uint16_t" name="pid">process ID of source</field>
     </message>
   </messages>
