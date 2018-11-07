@@ -1594,7 +1594,7 @@
       <entry value="531" name="MAV_CMD_SET_CAMERA_ZOOM">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Set camera zoom. Use NAN for reserved values.</description>
+        <description>Set camera zoom. Returns CAMERA_SETTINGS message. Use NAN for reserved values.</description>
         <param index="1">Zoom type (See SET_ZOOM_TYPE enum)</param>
         <param index="2">Zoom value</param>
         <param index="3">Reserved (all remaining params)</param>
@@ -1602,9 +1602,9 @@
       <entry value="532" name="MAV_CMD_SET_CAMERA_FOCUS">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Set camera focus. Use NAN for reserved values.</description>
-        <param index="1">Step focus up/down (-1 for focusing in, 1 for focusing out towards infinity, 0 for no action)</param>
-        <param index="2">Continuous focus up/down (-1 for focusing in, 1 for focusing out towards infinity, 0 for stop focusing)</param>
+        <description>Set camera focus. Returns CAMERA_SETTINGS message. Use NAN for reserved values.</description>
+        <param index="1">Focus type (See SET_FOCUS_TYPE enum)</param>
+        <param index="2">Focus value</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
@@ -2899,12 +2899,12 @@
       </entry>
     </enum>
     <enum name="CAMERA_CAP_FLAGS">
-      <description>Camera capability flags (Bitmap).</description>
+      <description>Camera capability flags (Bitmap)</description>
       <entry value="1" name="CAMERA_CAP_FLAGS_CAPTURE_VIDEO">
-        <description>Camera is able to record video.</description>
+        <description>Camera is able to record video</description>
       </entry>
       <entry value="2" name="CAMERA_CAP_FLAGS_CAPTURE_IMAGE">
-        <description>Camera is able to capture images.</description>
+        <description>Camera is able to capture images</description>
       </entry>
       <entry value="4" name="CAMERA_CAP_FLAGS_HAS_MODES">
         <description>Camera has separate Video and Image/Photo modes (MAV_CMD_SET_CAMERA_MODE)</description>
@@ -2926,23 +2926,35 @@
       </entry>
     </enum>
     <enum name="VIDEO_STREAM_STATUS_FLAGS">
-      <description>Stream status flags (Bitmap).</description>
+      <description>Stream status flags (Bitmap)</description>
       <entry value="1" name="VIDEO_STREAM_STATUS_FLAGS_RUNNING">
-        <description>Stream is active (running).</description>
+        <description>Stream is active (running)</description>
       </entry>
       <entry value="2" name="VIDEO_STREAM_STATUS_FLAGS_THERMAL">
-        <description>Stream is thermal imaging.</description>
+        <description>Stream is thermal imaging</description>
       </entry>
     </enum>
     <enum name="SET_ZOOM_TYPE">
-      <description>Zoom types for MAV_CMD_SET_CAMERA_ZOOM.</description>
+      <description>Zoom types for MAV_CMD_SET_CAMERA_ZOOM</description>
       <entry value="0" name="ZOOM_TYPE_STEP">
-        <description>Zoom one step increment (-1 for wide, 1 for tele).</description>
+        <description>Zoom one step increment (-1 for wide, 1 for tele)</description>
       </entry>
       <entry value="1" name="ZOOM_TYPE_CONTINUOUS">
         <description>Continuous zoom up/down until stopped (-1 for wide, 1 for tele, 0 to stop zooming)</description>
       </entry>
       <entry value="2" name="ZOOM_TYPE_RANGE">
+        <description>Zoom value as proportion of full camera range (a value between 0.0 and 1.0)</description>
+      </entry>
+    </enum>
+    <enum name="SET_FOCUS_TYPE">
+      <description>Focus types for MAV_CMD_SET_CAMERA_FOCUS</description>
+      <entry value="0" name="FOCUS_TYPE_STEP">
+        <description>Focus one step increment (-1 for focusing in, 1 for focusing out towards infinity).</description>
+      </entry>
+      <entry value="1" name="FOCUS_TYPE_CONTINUOUS">
+        <description>Continuous focus up/down until stopped (-1 for focusing in, 1 for focusing out towards infinity, 0 to stop focusing)</description>
+      </entry>
+      <entry value="2" name="FOCUS_TYPE_RANGE">
         <description>Zoom value as proportion of full camera range (a value between 0.0 and 1.0)</description>
       </entry>
     </enum>
@@ -4628,6 +4640,9 @@
       <description>Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="mode_id" enum="CAMERA_MODE">Camera mode</field>
+      <extensions/>
+      <field type="float" name="zoomLevel">Current zoom level (0.0 to 1.0)</field>
+      <field type="float" name="focusLevel">Current focus level (0.0 to 1.0)</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
       <wip/>
