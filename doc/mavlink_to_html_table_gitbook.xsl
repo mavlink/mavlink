@@ -131,7 +131,7 @@
 <xsl:template match="//param">
    <tr>
    <td></td>
-   <td>Mission Param #<xsl:value-of select="@index" /></td> <!-- mission_param -->
+   <td>Param #<xsl:value-of select="@index" /></td> <!-- mission_param -->
    <td><xsl:value-of select="." /></td> <!-- mavlink_comment -->
    </tr>
 </xsl:template>
