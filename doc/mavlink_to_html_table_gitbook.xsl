@@ -220,29 +220,7 @@
    <tr>
    <td></td>
    <td>Param #<xsl:value-of select="@index" /></td> <!-- mission_param -->
-   <td>
-       <xsl:value-of select="." />
-
-       <xsl:choose>
-         <xsl:when test="@enum">
-            <br /><strong>Possible values:</strong> <xsl:value-of select="@enum" />
-         </xsl:when>
-         <xsl:when test="@minValue or @maxValue or @increment or @units">
-           <br /><strong>Values:</strong>
-           <xsl:if test='@units'><em>units:</em> <xsl:value-of select="@minValue" />, </xsl:if>
-           <xsl:if test='@minValue'><em>min:</em><xsl:value-of select="@minValue" />, </xsl:if>
-           <xsl:if test='@maxValue'><em>max:</em><xsl:value-of select="@maxValue" />, </xsl:if>
-           <xsl:if test='@increment'><em>increment:</em><xsl:value-of select="@increment" /></xsl:if>
-         </xsl:when>
-       </xsl:choose>
-
-       <xsl:if test='@label or @decimalPlaces'><br /><strong>GCS display settings:</strong>
-           <xsl:if test='@label'><em>Label:</em> <xsl:value-of select="@label" />, </xsl:if>
-           <xsl:if test='@decimalPlaces'><em>decimalPlaces:</em> <xsl:value-of select="@decimalPlaces" /></xsl:if>
-       </xsl:if>
-
-
-   </td> <!-- mavlink_comment -->
+   <td><xsl:value-of select="." /></td> <!-- mavlink_comment -->
    </tr>
 </xsl:template>
 
