@@ -145,11 +145,12 @@
          <xsl:when test="@enum">
             <br /><strong>Possible values:</strong> <xsl:value-of select="@enum" />
          </xsl:when>
-         <xsl:when test="@minValue or @maxValue or @increment">
-           <br /><strong>Values:</strong> 
-           <xsl:if test='@minValue'><xsl:value-of select="@minValue" /> (min), </xsl:if>
-           <xsl:if test='@maxValue'><xsl:value-of select="@maxValue" /> (max), </xsl:if>
-           <xsl:if test='@increment'><xsl:value-of select="@increment" /> (increment) </xsl:if>
+         <xsl:when test="@minValue or @maxValue or @increment or @units">
+           <br /><strong>Values:</strong>
+           <xsl:if test='@units'><em>units:</em> <xsl:value-of select="@minValue" />, </xsl:if>
+           <xsl:if test='@minValue'><em>min:</em><xsl:value-of select="@minValue" />, </xsl:if>
+           <xsl:if test='@maxValue'><em>max:</em><xsl:value-of select="@maxValue" />, </xsl:if>
+           <xsl:if test='@increment'><em>increment:</em><xsl:value-of select="@increment" /></xsl:if>
          </xsl:when>
        </xsl:choose>
 
