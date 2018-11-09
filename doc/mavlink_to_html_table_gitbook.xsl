@@ -24,7 +24,9 @@
     <xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
     #<xsl:value-of select="@id" />
    </a>
-  )</h3> 
+  )</h3>
+   <xsl:apply-templates select="wip" />
+   <xsl:apply-templates select="deprecated" />
    <p> <!-- description -->
      <xsl:if test='@id > 255'><strong>(MAVLink 2) </strong></xsl:if>
      <xsl:value-of select="description" /></p>
@@ -50,6 +52,7 @@
   </tbody>
   </table>
 </xsl:template>
+
 
 <xsl:template match="//field">
    <tr> <!-- mavlink_field -->
@@ -92,7 +95,7 @@
      <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
      <a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
      <xsl:value-of select="@name" /></a></h3>
-
+   <xsl:apply-templates select="deprecated" />  
    <p><xsl:value-of select="description" /></p> <!-- description -->
    <table class="sortable">
    <thead>
@@ -111,8 +114,11 @@
 <xsl:template match="//entry">
    <tr id="{@name}"> <!-- mavlink_field -->
    <td><xsl:value-of select="@value" /></td>  <!-- mavlink_type -->
-   <td><a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
-   <xsl:value-of select="@name" /></a></td> <!-- mavlink_name -->
+   <td>
+      <a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute><xsl:value-of select="@name" /></a> 
+      <xsl:apply-templates select="deprecated" />
+      <xsl:apply-templates select="wip" />
+   </td> <!-- mavlink_name -->
    <td><xsl:value-of select="description" /></td> <!-- mavlink_comment -->
    </tr>
 <xsl:if test='param'>
@@ -135,6 +141,19 @@
    <td><xsl:value-of select="." /></td> <!-- mavlink_comment -->
    </tr>
 </xsl:template>
+
+<xsl:template match="//wip">
+  <p style="color:red"><strong>WORK IN PROGRESS:</strong> Do not use message in stable production environments (it may change).</p>
+</xsl:template>
+
+<xsl:template match="//deprecated">
+  <p style="color:red"><strong>DEPRECATED: </strong> Replaced by <xsl:value-of select="@replaced_by" /> (<xsl:value-of select="@since" />).
+  <xsl:if test='.'>
+    <xsl:value-of select="." />
+  </xsl:if>
+</p>
+</xsl:template>
+
 
 
 </xsl:stylesheet>
