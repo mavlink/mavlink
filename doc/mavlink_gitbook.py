@@ -61,6 +61,12 @@ def fix_include_file_extension(input_html):
     ## Fixes up file extension .xml.md.unlikely (easier than fixing up the XSLT to strip file extensions!)
     input_html=input_html.replace('.xml.md.unlikely','.md')
     return input_html
+
+def fix_replace_space_marker(input_html):
+    ## Above we remove hidden space. I can't seem to regexp just that type of space, so use space markers in text
+    input_html=input_html.replace('xxx_space_xxx',' ')
+    return input_html
+
     
 def strip_text_before_string(original_text,strip_text):
     # Strip out all text before some string
@@ -125,6 +131,9 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             
             #Replace invalid file extensions (workaround for xslt)
             prettyHTML = fix_include_file_extension(prettyHTML)
+
+            #Replace space markers with intentional space
+            prettyHTML = fix_replace_space_marker(prettyHTML)
             
             #Write output markdown file
             output_file_name = file.rsplit('.',1)[0]+".md"
