@@ -206,17 +206,13 @@
       </xsl:choose>
   </td>
    </xsl:if>
-
-
+      
    <xsl:if test='../*/@units'>
      <td><xsl:value-of select="@units" /></td> <!-- mavlink_units -->
    </xsl:if>
-     
-
        
    </tr>
 </xsl:template>
-
 
 
 
@@ -256,6 +252,8 @@
 
 <xsl:template match="//deprecated">
   <p style="color:red"><strong>DEPRECATED:</strong><xsl:text>xxx_space_xxx</xsl:text>Replaced by <xsl:value-of select="@replaced_by" /> (<xsl:value-of select="@since" />).
+
+
   <xsl:if test='.'>
     <xsl:value-of select="." />
   </xsl:if>
