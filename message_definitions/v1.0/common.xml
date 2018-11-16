@@ -67,6 +67,7 @@
       </entry>
     </enum>
     <enum name="MAV_TYPE">
+      <description>MAVLINK system type. All components in a system should report this type in their HEARTBEAT.</description>
       <entry value="0" name="MAV_TYPE_GENERIC">
         <description>Generic micro air vehicle.</description>
       </entry>
@@ -150,7 +151,7 @@
         <description>Onboard gimbal</description>
       </entry>
       <entry value="27" name="MAV_TYPE_ADSB">
-        <description>Onboard ADSB peripheral</description>
+        <description>ADSB system (standalone)</description>
       </entry>
       <entry value="28" name="MAV_TYPE_PARAFOIL">
         <description>Steerable, nonrigid airfoil</description>
@@ -159,13 +160,13 @@
         <description>Dodecarotor</description>
       </entry>
       <entry value="30" name="MAV_TYPE_CAMERA">
-        <description>Camera</description>
+        <description>Camera (standalone)</description>
       </entry>
       <entry value="31" name="MAV_TYPE_CHARGING_STATION">
         <description>Charging station</description>
       </entry>
       <entry value="32" name="MAV_TYPE_FLARM">
-        <description>Onboard FLARM collision avoidance system</description>
+        <description>FLARM collision avoidance system (standalone)</description>
       </entry>
     </enum>
     <enum name="FIRMWARE_VERSION_TYPE">
@@ -3053,11 +3054,56 @@
         <description>Ignore yaw rate</description>
       </entry>
     </enum>
+    <enum name="UTM_FLIGHT_STATE">
+      <description>Airborne status of UAS.</description>
+      <entry value="1" name="UTM_FLIGHT_STATE_UNKNOWN">
+        <description>The flight state can't be determined.</description>
+      </entry>
+      <entry value="2" name="UTM_FLIGHT_STATE_GROUND">
+        <description>UAS on ground.</description>
+      </entry>
+      <entry value="3" name="UTM_FLIGHT_STATE_AIRBORNE">
+        <description>UAS airborne.</description>
+      </entry>
+      <entry value="16" name="UTM_FLIGHT_STATE_EMERGENCY">
+        <description>UAS is in an emergency flight state.</description>
+      </entry>
+      <entry value="32" name="UTM_FLIGHT_STATE_NOCTRL">
+        <description>UAS has no active controls.</description>
+      </entry>
+    </enum>
+    <enum name="UTM_DATA_AVAIL_FLAGS">
+      <description>Flags for the global position report.</description>
+      <entry value="1" name="UTM_DATA_AVAIL_FLAGS_TIME_VALID">
+        <description>The field time contains valid data.</description>
+      </entry>
+      <entry value="2" name="UTM_DATA_AVAIL_FLAGS_UAS_ID_AVAILABLE">
+        <description>The field uas_id contains valid data.</description>
+      </entry>
+      <entry value="4" name="UTM_DATA_AVAIL_FLAGS_POSITION_AVAILABLE">
+        <description>The fields lat, lon and h_acc contain valid data.</description>
+      </entry>
+      <entry value="8" name="UTM_DATA_AVAIL_FLAGS_ALTITUDE_AVAILABLE">
+        <description>The fields alt and v_acc contain valid data.</description>
+      </entry>
+      <entry value="16" name="UTM_DATA_AVAIL_FLAGS_RELATIVE_ALTITUDE_AVAILABLE">
+        <description>The field relative_alt contains valid data.</description>
+      </entry>
+      <entry value="32" name="UTM_DATA_AVAIL_FLAGS_HORIZONTAL_VELO_AVAILABLE">
+        <description>The fields vx and vy contain valid data.</description>
+      </entry>
+      <entry value="64" name="UTM_DATA_AVAIL_FLAGS_VERTICAL_VELO_AVAILABLE">
+        <description>The field vz contains valid data.</description>
+      </entry>
+      <entry value="128" name="UTM_DATA_AVAIL_FLAGS_NEXT_WAYPOINT_AVAILABLE">
+        <description>The fields next_lat, next_lon and next_alt contain valid data.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
-      <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
-      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc.)</field>
+      <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot).</description>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the system (quadrotor, helicopter, etc.). Components use the same type as their associated system.</field>
       <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class.</field>
       <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
@@ -3139,7 +3185,7 @@
       <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
     </message>
     <message id="23" name="PARAM_SET">
-      <description>Set a parameter value TEMPORARILY to RAM. It will be reset to default on system reboot. Send the ACTION MAV_ACTION_STORAGE_WRITE to PERMANENTLY write the RAM contents to EEPROM. IMPORTANT: The receiving component should acknowledge the new parameter value by sending a param_value message to all communication partners. This will also ensure that multiple GCS all have an up-to-date list of all parameters. If the sending GCS did not receive a PARAM_VALUE message within its timeout time, it should re-send the PARAM_SET message.</description>
+      <description>Set a parameter value (write new value to permanent storage). IMPORTANT: The receiving component should acknowledge the new parameter value by sending a PARAM_VALUE message to all communication partners. This will also ensure that multiple GCS all have an up-to-date list of all parameters. If the sending GCS did not receive a PARAM_VALUE message within its timeout time, it should re-send the PARAM_SET message.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
@@ -4881,6 +4927,29 @@
       <field type="float[5]" name="delta" units="s">Bezier time horizon, set to NaN if velocity/acceleration should not be incorporated</field>
       <field type="float[5]" name="pos_yaw" units="rad">Yaw, set to NaN for unchanged</field>
     </message>
+    <message id="340" name="UTM_GLOBAL_POSITION">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>The global position resulting from GPS and sensor fusion.</description>
+      <field type="uint64_t" name="time" units="us">Time of applicability of position (microseconds since UNIX epoch).</field>
+      <field type="uint8_t[18]" name="uas_id">Unique UAS ID.</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (WGS84)</field>
+      <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
+      <field type="int16_t" name="vx" units="cm/s">Ground X speed (latitude, positive north)</field>
+      <field type="int16_t" name="vy" units="cm/s">Ground Y speed (longitude, positive east)</field>
+      <field type="int16_t" name="vz" units="cm/s">Ground Z speed (altitude, positive down)</field>
+      <field type="uint16_t" name="h_acc" units="mm">Horizontal position uncertainty (standard deviation)</field>
+      <field type="uint16_t" name="v_acc" units="mm">Altitude uncertainty (standard deviation)</field>
+      <field type="uint16_t" name="vel_acc" units="cm/s">Speed uncertainty (standard deviation)</field>
+      <field type="int32_t" name="next_lat" units="degE7">Next waypoint, latitude (WGS84)</field>
+      <field type="int32_t" name="next_lon" units="degE7">Next waypoint, longitude (WGS84)</field>
+      <field type="int32_t" name="next_alt" units="mm">Next waypoint, altitude (WGS84)</field>
+      <field type="uint16_t" name="update_rate">Seconds * 1E2 until next update. Set to 0 if unknown or in data driven mode.</field>
+      <field type="uint8_t" name="flight_state" enum="UTM_FLIGHT_STATE">Flight state</field>
+      <field type="uint8_t" name="flags" enum="UTM_DATA_AVAIL_FLAGS">Bitwise OR combination of the data available flags.</field>
+    </message>
     <message id="350" name="DEBUG_FLOAT_ARRAY">
       <description>Large debug/prototyping array. The message uses the maximum available payload for data. The array_id and name fields are used to discriminate between messages in code and in user interfaces (respectively). Do not use in production code.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
@@ -4888,6 +4957,17 @@
       <field type="uint16_t" name="array_id">Unique ID used to discriminate between arrays</field>
       <extensions/>
       <field type="float[58]" name="data">data</field>
+    </message>
+    <message id="360" name="ORBIT_EXECUTION_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Vehicle status report that is sent out while orbit execution is in progress (see MAV_CMD_DO_ORBIT).</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="float" name="radius" units="m">Radius of the orbit circle. Positive values orbit clockwise, negative values orbit counter-clockwise.</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the fields: x, y, z.</field>
+      <field type="int32_t" name="x">X coordinate of center point. Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
+      <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
+      <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
     </message>
   </messages>
 </mavlink>
