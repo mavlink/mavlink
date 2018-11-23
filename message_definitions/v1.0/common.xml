@@ -369,81 +369,83 @@
       </entry>
     </enum>
     <enum name="MAV_COMPONENT">
-      <description>Component ids for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.). Where possible, the appropriate ID should be used for the target/source address of each type of component. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components. New ids may be created for any component that must be separately addressed. Where possible, values for components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequentially (and gaps left in the allocation rage to allow the number of instances to be expanded).</description>
+      <description>Component ids for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.). 
+      Components must use the appropriate ID in their source address when sending messages and use the same ID to determine if they are the intended recipient of an incoming message. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components.
+      When creating new entries for this enum, values for components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequentially (and gaps left in the allocation rage to allow the number of instances to be expanded).</description>
       <entry value="0" name="MAV_COMP_ID_ALL">
         <description>Used to broadcast messages to all components of the receiving system. Components should attempt to process messages with this component ID and forward to components on any other interfaces.</description>
       </entry>
       <entry value="1" name="MAV_COMP_ID_AUTOPILOT1">
-        <description>System flight controller ("autopilot") component. Only one autopilot is expected in a particular system.</description>
+        <description>System flight controller component ("autopilot"). Only one autopilot is expected in a particular system.</description>
       </entry>
       <entry value="100" name="MAV_COMP_ID_CAMERA">
-        <description>Camera ID #1.</description>
+        <description>Camera #1.</description>
       </entry>
       <entry value="101" name="MAV_COMP_ID_CAMERA2">
-        <description>Camera ID #2.</description>
+        <description>Camera #2.</description>
       </entry>
       <entry value="102" name="MAV_COMP_ID_CAMERA3">
-        <description>Camera ID #3.</description>
+        <description>Camera #3.</description>
       </entry>
       <entry value="103" name="MAV_COMP_ID_CAMERA4">
-        <description>Camera ID #4.</description>
+        <description>Camera #4.</description>
       </entry>
       <entry value="104" name="MAV_COMP_ID_CAMERA5">
-        <description>Camera ID #5.</description>
+        <description>Camera #5.</description>
       </entry>
       <entry value="105" name="MAV_COMP_ID_CAMERA6">
-        <description>Camera ID #6.</description>
+        <description>Camera #6.</description>
       </entry>
       <entry value="140" name="MAV_COMP_ID_SERVO1">
-        <description>Servo ID #1.</description>
+        <description>Servo #1.</description>
       </entry>
       <entry value="141" name="MAV_COMP_ID_SERVO2">
-        <description>Servo ID #2.</description>
+        <description>Servo #2.</description>
       </entry>
       <entry value="142" name="MAV_COMP_ID_SERVO3">
-        <description>Servo ID #3.</description>
+        <description>Servo #3.</description>
       </entry>
       <entry value="143" name="MAV_COMP_ID_SERVO4">
-        <description>Servo ID #4.</description>
+        <description>Servo #4.</description>
       </entry>
       <entry value="144" name="MAV_COMP_ID_SERVO5">
-        <description>Servo ID #5.</description>
+        <description>Servo #5.</description>
       </entry>
       <entry value="145" name="MAV_COMP_ID_SERVO6">
-        <description>Servo ID #6.</description>
+        <description>Servo #6.</description>
       </entry>
       <entry value="146" name="MAV_COMP_ID_SERVO7">
-        <description>Servo ID #7.</description>
+        <description>Servo #7.</description>
       </entry>
       <entry value="147" name="MAV_COMP_ID_SERVO8">
-        <description>Servo ID #8.</description>
+        <description>Servo #8.</description>
       </entry>
       <entry value="148" name="MAV_COMP_ID_SERVO9">
-        <description>Servo ID #9.</description>
+        <description>Servo #9.</description>
       </entry>
       <entry value="149" name="MAV_COMP_ID_SERVO10">
-        <description>Servo ID #10.</description>
+        <description>Servo #10.</description>
       </entry>
       <entry value="150" name="MAV_COMP_ID_SERVO11">
-        <description>Servo ID #11.</description>
+        <description>Servo #11.</description>
       </entry>
       <entry value="151" name="MAV_COMP_ID_SERVO12">
-        <description>Servo ID #12.</description>
+        <description>Servo #12.</description>
       </entry>
       <entry value="152" name="MAV_COMP_ID_SERVO13">
-        <description>Servo ID #13.</description>
+        <description>Servo #13.</description>
       </entry>
       <entry value="153" name="MAV_COMP_ID_SERVO14">
-        <description>Servo ID #14.</description>
+        <description>Servo #14.</description>
       </entry>
       <entry value="154" name="MAV_COMP_ID_GIMBAL">
-        <description>Generic Gimbal ID. Use ID for specific gimbal type if one exists (e.g. MAV_COMP_ID_QX1_GIMBAL).</description>
+        <description>Gimbal component.</description>
       </entry>
       <entry value="155" name="MAV_COMP_ID_LOG">
-        <description>Logging component ID.</description>
+        <description>Logging component.</description>
       </entry>
       <entry value="156" name="MAV_COMP_ID_ADSB">
-        <description>Automatic Dependent Surveillance-Broadcast (ADS-B) component ID.</description>
+        <description>Automatic Dependent Surveillance-Broadcast (ADS-B) component.</description>
       </entry>
       <entry value="157" name="MAV_COMP_ID_OSD">
         <description>On Screen Display (OSD) devices for video links.</description>
@@ -452,23 +454,23 @@
         <description>Generic autopilot peripheral component ID. Meant for devices that do not implement the parameter microservice.</description>
       </entry>
       <entry value="159" name="MAV_COMP_ID_QX1_GIMBAL">
-        <deprecated since="2018-11" replaced_by="MAV_COMP_ID_GIMBAL">All gimbals should use MAV_COMP_ID_GIMBAL</deprecated>
+        <deprecated since="2018-11" replaced_by="MAV_COMP_ID_GIMBAL">All gimbals should use MAV_COMP_ID_GIMBAL.</deprecated>
         <description>Gimbal ID for QX1.</description>
       </entry>
       <entry value="160" name="MAV_COMP_ID_FLARM">
-        <description>ID for FLARM collision alert component.</description>
+        <description>FLARM collision alert component.</description>
       </entry>
       <entry value="180" name="MAV_COMP_ID_MAPPER">
         <description></description>
       </entry>
       <entry value="190" name="MAV_COMP_ID_MISSIONPLANNER">
-        <description>ID for a component that supports the Mission microservice.</description>
+        <description>Component that supports the Mission microservice.</description>
       </entry>
       <entry value="195" name="MAV_COMP_ID_PATHPLANNER">
-        <description></description>
+        <description>Component that finds an optimal path between points based on a certain constraint (e.g. minimum snap, shortest path, cost, etc.).</description>
       </entry>
       <entry value="196" name="MAV_COMP_ID_OBSTACLE_AVOIDANCE">
-        <description></description>
+        <description>Component that plans a collision free path between two points.</description>
       </entry>
       <entry value="197" name="MAV_COMP_ID_VISUAL_INERTIAL_ODOMETRY">
         <description></description>
@@ -489,13 +491,14 @@
         <description>GPS #2.</description>
       </entry>
       <entry value="240" name="MAV_COMP_ID_UDP_BRIDGE">
-        <description></description>
+        <description>Component to bridge MAVLink to UDP (i.e. from a UART).</description>
       </entry>
       <entry value="241" name="MAV_COMP_ID_UART_BRIDGE">
-        <description></description>
+        <description>Component to bridge to UART (i.e. from UDP).</description>
       </entry>
       <entry value="250" name="MAV_COMP_ID_SYSTEM_CONTROL">
-        <description></description>
+        <deprecated since="2018-11" replaced_by="MAV_COMP_ID_ALL">System control does not require a separate component ID.</deprecated>
+        <description>Component for handling system messages (e.g. to ARM, takeoff, etc.).</description>
       </entry>
     </enum>
     <enum name="MAV_SYS_STATUS_SENSOR">
