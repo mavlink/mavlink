@@ -1537,6 +1537,15 @@
         <param index="2">Camera mode (see CAMERA_MODE enum)</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
+      <entry value="600" name="MAV_CMD_JUMP_TAG">
+        <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
+        <param index="1">Tag.</param>
+      </entry>
+      <entry value="601" name="MAV_CMD_DO_JUMP_TAG">
+        <description>Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number.</description>
+        <param index="1">Target tag to jump to.</param>
+        <param index="2">Repeat count</param>
+      </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.</description>
         <param index="1">Reserved (Set to 0)</param>
