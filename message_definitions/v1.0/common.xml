@@ -4642,9 +4642,11 @@
       <field type="int32_t" name="value">Signed integer value</field>
     </message>
     <message id="253" name="STATUSTEXT">
-      <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
+      <description>Status text message. These messages should only be used for important status and error messages. Keep them concise to ensure they can be displayed by the recipient (and to reduce bandwidth). WARNING: Status updates consume significant bandwidth. They should be buffered and sent at a limited rate (e.g. 10 Hz).</description>
       <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
-      <field type="char[50]" name="text">Status text message, without null termination character</field>
+      <field type="char[50]" name="text">Status text message, without null termination character.</field>
+      <extensions/>
+      <field type="char[204]" name="extra_text">Additional status text, without null termination character. Append to 'text' field content for display. NOTE: Not all systems support extra_text, so consider populating 'text' with sensible stand-alone content.</field>
     </message>
     <message id="254" name="DEBUG">
       <description>Send a debug value. The index is used to discriminate between values. These values show up in the plot of QGroundControl as DEBUG N.</description>
