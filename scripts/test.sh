@@ -3,9 +3,7 @@ set -e
 
 SRC_DIR=$(pwd)
 
-git submodule update --init --recursive
-
-# NOTE: we must do all testing on the installed python package, not 
+# NOTE: we must do all testing on the installed python package, not
 # on the build tree. Otherwise the testing is invalid and may not
 # indicate the code actually works
 
@@ -25,7 +23,7 @@ echo $sep
 cd "$SRC_DIR"
 
 user_arg="--user"
-if [ "$TRAVIS" == true ]
+if [ "$TRAVIS" == true ] || [ "$CI" == true ]
 then
 	user_arg=""
 fi
