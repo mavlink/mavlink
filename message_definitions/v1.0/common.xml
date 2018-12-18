@@ -3137,6 +3137,20 @@
         <description>The fields next_lat, next_lon and next_alt contain valid data.</description>
       </entry>
     </enum>
+    <enum name="CELLULAR_NETWORK_RADIO_TYPE">
+      <description>Cellular network radio type</description>
+      <entry value="0" name="CELLULAR_NETWORK_RADIO_TYPE_NONE"/>
+      <entry value="1" name="CELLULAR_NETWORK_RADIO_TYPE_GSM"/>
+      <entry value="2" name="CELLULAR_NETWORK_RADIO_TYPE_CDMA"/>
+      <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
+      <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
+    </enum>
+    <enum name="CELLULAR_NETWORK_STATUS_FLAG">
+      <description>These flags encode the cellular network status</description>
+      <entry value="1" name="CELLULAR_NETWORK_STATUS_FLAG_ROAMING">
+        <description>Roaming is active</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -4969,6 +4983,17 @@
       <field type="float[5]" name="pos_z" units="m">Z-coordinate of starting bezier point, set to NaN if not being used</field>
       <field type="float[5]" name="delta" units="s">Bezier time horizon, set to NaN if velocity/acceleration should not be incorporated</field>
       <field type="float[5]" name="pos_yaw" units="rad">Yaw, set to NaN for unchanged</field>
+    </message>
+    <message id="334" name="CELLULAR_STATUS">
+      <wip/>
+      <description>Report current used cellular network status</description>
+      <field type="uint16_t" name="status" enum="CELLULAR_NETWORK_STATUS_FLAG" display="bitmask">Status bitmap</field>
+      <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
+      <field type="uint8_t" name="quality">Cellular network RSSI/RSRP in dBm, absolute value</field>
+      <field type="uint16_t" name="mcc">Mobile country code. If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="mnc">Mobile network code. If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="lac">Location area code. If unknown, set to: 0</field>
+      <field type="uint32_t" name="cid">Cell ID. If unknown, set to: UINT32_MAX</field>
     </message>
     <message id="340" name="UTM_GLOBAL_POSITION">
       <wip/>
