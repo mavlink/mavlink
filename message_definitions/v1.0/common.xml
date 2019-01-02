@@ -4982,7 +4982,7 @@
        <description>Cumulative distance traveled for each reported wheel.</description>
        <field type="uint64_t" name="time_usec" units="us">Timestamp (synced to UNIX time or since system boot).</field>
        <field type="uint8_t" name="count">Number of wheels reported.</field>
-       <field type="float[16]" name="distance" units="m">Distance reported by individual wheel encoders. Forward rotations increase values, reverse rotations decrease them. The distance wraps around after 100000m, so 99999 + 1m becomes 1m and -99999 - 1m becomes -1m (needed as floating point numbers have finite precision and the encoder would otherwise start to lose precision over time). Not all wheels will necessarily have wheel encoders; the mapping of encoders to wheel positions must be agreed/understood by the endpoints.</field>
+       <field type="double[16]" name="distance" units="m">Distance reported by individual wheel encoders. Forward rotations increase values, reverse rotations decrease them. Not all wheels will necessarily have wheel encoders; the mapping of encoders to wheel positions must be agreed/understood by the endpoints.</field>
      </message>
   </messages>
 </mavlink>
