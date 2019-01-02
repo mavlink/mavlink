@@ -2525,10 +2525,10 @@
         <description>Items are mission commands for main mission.</description>
       </entry>
       <entry value="1" name="MAV_MISSION_TYPE_FENCE">
-        <description>Specifies GeoFence area(s). Items are MAV_CMD_FENCE_ GeoFence items.</description>
+        <description>Specifies GeoFence area(s). Items are MAV_CMD_NAV_FENCE_ GeoFence items.</description>
       </entry>
       <entry value="2" name="MAV_MISSION_TYPE_RALLY">
-        <description>Specifies the rally points for the vehicle. Rally points are alternative RTL points. Items are MAV_CMD_RALLY_POINT rally point items.</description>
+        <description>Specifies the rally points for the vehicle. Rally points are alternative RTL points. Items are MAV_CMD_NAV_RALLY_POINT rally point items.</description>
       </entry>
       <entry value="255" name="MAV_MISSION_TYPE_ALL">
         <description>Only used in MISSION_CLEAR_ALL to clear all mission types.</description>
@@ -4265,6 +4265,10 @@
       <field type="uint8_t" name="id">Onboard ID of the sensor</field>
       <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces. downward-facing: ROTATION_PITCH_270, upward-facing: ROTATION_PITCH_90, backward-facing: ROTATION_PITCH_180, forward-facing: ROTATION_NONE, left-facing: ROTATION_YAW_90, right-facing: ROTATION_YAW_270</field>
       <field type="uint8_t" name="covariance" units="cm">Measurement covariance, 0 for unknown / invalid readings</field>
+      <extensions/>
+      <field type="float" name="horizontal_fov" units="rad">Horizontal Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
+      <field type="float" name="vertical_fov" units="rad">Vertical Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
+      <field type="float[4]" name="quaternion">Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid."</field>
     </message>
     <message id="133" name="TERRAIN_REQUEST">
       <description>Request for terrain data and terrain status</description>
