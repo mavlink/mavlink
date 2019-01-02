@@ -5011,10 +5011,10 @@
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
-       <description>Cumulative distances traveled by each wheel (forward rotations increase these values, backward - decrease).</description>
-       <field type="uint64_t" name="time_usec" units="us">Timestamp (synced to UNIX time or since system boot)</field>
-       <field type="uint8_t" name="count">Number of wheels reported</field>
-       <field type="float[16]" name="distance" units="m">Distance traveled by each wheel. The distance wraps around after 100000m, so 99999 + 1m becomes 1m and -99999 - 1m becomes -1m. This is necessary as floating point numbers have finite precision and the encoder would otherwise start to loose precision over time. The first wheel is the front left, 2nd is the front right, and then row-by-row.</field>
+       <description>Cumulative distance traveled for each reported wheel.</description>
+       <field type="uint64_t" name="time_usec" units="us">Timestamp (synced to UNIX time or since system boot).</field>
+       <field type="uint8_t" name="count">Number of wheels reported.</field>
+       <field type="float[16]" name="distance" units="m">Distance reported by individual wheel encoders. Forward rotations increase values, reverse rotations decrease them. The distance wraps around after 100000m, so 99999 + 1m becomes 1m and -99999 - 1m becomes -1m (needed as floating point numbers have finite precision and the encoder would otherwise start to lose precision over time). Not all wheels will necessarily have wheel encoders; the mapping of encoders to wheel positions must be agreed/understood by the endpoints.</field>
      </message>
   </messages>
 </mavlink>
