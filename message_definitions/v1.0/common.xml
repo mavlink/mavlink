@@ -2525,10 +2525,10 @@
         <description>Items are mission commands for main mission.</description>
       </entry>
       <entry value="1" name="MAV_MISSION_TYPE_FENCE">
-        <description>Specifies GeoFence area(s). Items are MAV_CMD_FENCE_ GeoFence items.</description>
+        <description>Specifies GeoFence area(s). Items are MAV_CMD_NAV_FENCE_ GeoFence items.</description>
       </entry>
       <entry value="2" name="MAV_MISSION_TYPE_RALLY">
-        <description>Specifies the rally points for the vehicle. Rally points are alternative RTL points. Items are MAV_CMD_RALLY_POINT rally point items.</description>
+        <description>Specifies the rally points for the vehicle. Rally points are alternative RTL points. Items are MAV_CMD_NAV_RALLY_POINT rally point items.</description>
       </entry>
       <entry value="255" name="MAV_MISSION_TYPE_ALL">
         <description>Only used in MISSION_CLEAR_ALL to clear all mission types.</description>
@@ -3368,7 +3368,7 @@
       <description>Request a partial list of mission items from the system/component. https://mavlink.io/en/services/mission.html. If start and end index are the same, just send one waypoint.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="int16_t" name="start_index">Start index, 0 by default</field>
+      <field type="int16_t" name="start_index">Start index</field>
       <field type="int16_t" name="end_index">End index, -1 by default (-1: send list to end). Else a valid index of the list</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
@@ -3377,7 +3377,7 @@
       <description>This message is sent to the MAV to write a partial list. If start index == end index, only one item will be transmitted / updated. If the start index is NOT 0 and above the current list size, this request should be REJECTED!</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="int16_t" name="start_index">Start index, 0 by default and smaller / equal to the largest index of the current onboard list.</field>
+      <field type="int16_t" name="start_index">Start index. Must be smaller / equal to the largest index of the current onboard list.</field>
       <field type="int16_t" name="end_index">End index, equal or greater than start index.</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
