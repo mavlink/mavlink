@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 	//struct sockaddr_in fromAddr;
 	uint8_t buf[BUFFER_LENGTH];
 	ssize_t recsize;
-	socklen_t fromlen;
+	socklen_t fromlen = sizeof(gcAddr);
 	int bytes_sent;
 	mavlink_message_t msg;
 	uint16_t len;
