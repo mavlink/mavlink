@@ -1619,9 +1619,9 @@
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.</description>
         <param index="1">Reserved (Set to 0)</param>
-        <param index="2">Duration between two consecutive pictures (in seconds)</param>
-        <param index="3">Number of images to capture total - 0 for unlimited capture</param>
-        <param index="4">Capture sequence (ID to prevent double captures when a command is retransmitted, 0: unused, &gt;= 1: used)</param>
+        <param index="2" label="Interval" units="s" minValue="0">Desired elapsed time between two consecutive pictures (in seconds). Minimum values depend on hardware (typically greater than 2 seconds).</param>
+        <param index="3" label="Capture Count" minValue="0">Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE</param>
+        <param index="4" label="Sequence Number" minValue="0">Capture sequence number starting from 1. This is only valid for single-capture (param3 == 1). Increment the capture ID for each capture command to prevent double captures when a command is re-transmitted. Use 0 to ignore it.</param>
         <param index="5">Reserved (all remaining params)</param>
       </entry>
       <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE">
@@ -1632,8 +1632,8 @@
       <entry value="2002" name="MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Re-request a CAMERA_IMAGE_CAPTURE packet. Use NAN for reserved values.</description>
-        <param index="1">Sequence number for missing CAMERA_IMAGE_CAPTURE packet</param>
+        <description>Re-request a CAMERA_IMAGE_CAPTURE message. Use NaN for reserved values.</description>
+        <param index="1">Sequence number for missing CAMERA_IMAGE_CAPTURE message</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2003" name="MAV_CMD_DO_TRIGGER_CONTROL">
@@ -1644,36 +1644,35 @@
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
         <description>Starts video capture (recording). Use NAN for reserved values.</description>
-        <param index="1">Reserved (Set to 0)</param>
-        <param index="2">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)</param>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams)</param>
+        <param index="2" label="Status Frequency" minValue="0" units="Hz">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE">
         <description>Stop the current video capture (recording). Use NAN for reserved values.</description>
-        <param index="1">Reserved (Set to 0)</param>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams)</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2502" name="MAV_CMD_VIDEO_START_STREAMING">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Start video streaming</description>
-        <param index="1">Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
         <param index="2">Reserved</param>
       </entry>
       <entry value="2503" name="MAV_CMD_VIDEO_STOP_STREAMING">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Stop the current video streaming</description>
-        <param index="1">Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+        <description>Stop the given video stream</description>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
         <param index="2">Reserved</param>
       </entry>
       <entry value="2504" name="MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Request video stream information (VIDEO_STREAM_INFORMATION)</description>
-        <param index="1">Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
-        <param index="2">0: No Action 1: Request video stream information</param>
-        <param index="3">Reserved (all remaining params)</param>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2510" name="MAV_CMD_LOGGING_START">
         <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
@@ -2933,6 +2932,9 @@
       <entry value="128" name="CAMERA_CAP_FLAGS_HAS_BASIC_FOCUS">
         <description>Camera has basic focus control (MAV_CMD_SET_CAMERA_FOCUS)</description>
       </entry>
+      <entry value="256" name="CAMERA_CAP_FLAGS_HAS_VIDEO_STREAM">
+        <description>Camera has video streaming capabilities (use CMD_REQUEST_VIDEO_STREAM_INFORMATION for video streaming info)</description>
+      </entry>
     </enum>
     <enum name="VIDEO_STREAM_STATUS_FLAGS">
       <description>Stream status flags (Bitmap)</description>
@@ -2941,9 +2943,6 @@
       </entry>
       <entry value="2" name="VIDEO_STREAM_STATUS_FLAGS_THERMAL">
         <description>Stream is thermal imaging</description>
-      </entry>
-      <entry value="4" name="VIDEO_STREAM_HAS_BASIC_ZOOM">
-        <description>Stream has basic zoom control (MAV_CMD_SET_CAMERA_ZOOM)</description>
       </entry>
     </enum>
     <enum name="VIDEO_STREAM_TYPE">
@@ -4803,7 +4802,7 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about video stream</description>
-      <field type="uint8_t" name="stream_id">Stream ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="stream_id">Video Stream ID (1 for first, 2 for second, etc.)</field>
       <field type="uint8_t" name="count">Number of streams available</field>
       <field type="uint8_t" name="type" enum="VIDEO_STREAM_TYPE">Type of stream</field>
       <field type="uint16_t" name="flags" enum="VIDEO_STREAM_STATUS_FLAGS">Bitmap of stream status flags</field>
@@ -4814,20 +4813,6 @@
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
       <field type="char[160]" name="uri">Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to)</field>
-    </message>
-    <message id="270" name="SET_VIDEO_STREAM_SETTINGS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message that sets video stream settings</description>
-      <field type="uint8_t" name="target_system">system ID of the target</field>
-      <field type="uint8_t" name="target_component">component ID of the target</field>
-      <field type="uint8_t" name="camera_id">Stream ID (1 for first, 2 for second, etc.)</field>
-      <field type="float" name="framerate" units="Hz">Frame rate (set to -1 for highest framerate possible)</field>
-      <field type="uint16_t" name="resolution_h" units="pix">Horizontal resolution (set to -1 for highest resolution possible)</field>
-      <field type="uint16_t" name="resolution_v" units="pix">Vertical resolution (set to -1 for highest resolution possible)</field>
-      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate (set to -1 for auto)</field>
-      <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise (0-359 degrees)</field>
-      <field type="char[160]" name="uri">Video stream URI (mostly for UDP/RTP)</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure AP SSID and Password.</description>
