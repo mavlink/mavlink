@@ -1616,6 +1616,15 @@
         <param index="2">Focus value</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
+      <entry value="600" name="MAV_CMD_JUMP_TAG">
+        <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
+        <param index="1">Tag.</param>
+      </entry>
+      <entry value="601" name="MAV_CMD_DO_JUMP_TAG">
+        <description>Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number.</description>
+        <param index="1">Target tag to jump to.</param>
+        <param index="2">Repeat count</param>
+      </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.</description>
         <param index="1">Reserved (Set to 0)</param>
@@ -2193,51 +2202,54 @@
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
-      <description>result in a MAVLink mission ack</description>
+      <description>Result of mission operation (in a MISSION_ACK message).</description>
       <entry value="0" name="MAV_MISSION_ACCEPTED">
         <description>mission accepted OK</description>
       </entry>
       <entry value="1" name="MAV_MISSION_ERROR">
-        <description>generic error / not accepting mission commands at all right now</description>
+        <description>Generic error / not accepting mission commands at all right now.</description>
       </entry>
       <entry value="2" name="MAV_MISSION_UNSUPPORTED_FRAME">
-        <description>coordinate frame is not supported</description>
+        <description>Coordinate frame is not supported.</description>
       </entry>
       <entry value="3" name="MAV_MISSION_UNSUPPORTED">
-        <description>command is not supported</description>
+        <description>Command is not supported.</description>
       </entry>
       <entry value="4" name="MAV_MISSION_NO_SPACE">
-        <description>mission item exceeds storage space</description>
+        <description>Mission item exceeds storage space.</description>
       </entry>
       <entry value="5" name="MAV_MISSION_INVALID">
-        <description>one of the parameters has an invalid value</description>
+        <description>One of the parameters has an invalid value.</description>
       </entry>
       <entry value="6" name="MAV_MISSION_INVALID_PARAM1">
-        <description>param1 has an invalid value</description>
+        <description>param1 has an invalid value.</description>
       </entry>
       <entry value="7" name="MAV_MISSION_INVALID_PARAM2">
-        <description>param2 has an invalid value</description>
+        <description>param2 has an invalid value.</description>
       </entry>
       <entry value="8" name="MAV_MISSION_INVALID_PARAM3">
-        <description>param3 has an invalid value</description>
+        <description>param3 has an invalid value.</description>
       </entry>
       <entry value="9" name="MAV_MISSION_INVALID_PARAM4">
-        <description>param4 has an invalid value</description>
+        <description>param4 has an invalid value.</description>
       </entry>
       <entry value="10" name="MAV_MISSION_INVALID_PARAM5_X">
-        <description>x/param5 has an invalid value</description>
+        <description>x / param5 has an invalid value.</description>
       </entry>
       <entry value="11" name="MAV_MISSION_INVALID_PARAM6_Y">
-        <description>y/param6 has an invalid value</description>
+        <description>y / param6 has an invalid value.</description>
       </entry>
       <entry value="12" name="MAV_MISSION_INVALID_PARAM7">
-        <description>param7 has an invalid value</description>
+        <description>z / param7 has an invalid value.</description>
       </entry>
       <entry value="13" name="MAV_MISSION_INVALID_SEQUENCE">
-        <description>received waypoint out of sequence</description>
+        <description>Mission item received out of sequence</description>
       </entry>
       <entry value="14" name="MAV_MISSION_DENIED">
-        <description>not accepting any mission commands from this communication partner</description>
+        <description>Not accepting any mission commands from this communication partner.</description>
+      </entry>
+      <entry value="15" name="MAV_MISSION_OPERATION_CANCELLED">
+        <description>Current mission operation cancelled (e.g. mission upload, mission download).</description>
       </entry>
     </enum>
     <enum name="MAV_SEVERITY">
@@ -3129,6 +3141,20 @@
       </entry>
       <entry value="128" name="UTM_DATA_AVAIL_FLAGS_NEXT_WAYPOINT_AVAILABLE">
         <description>The fields next_lat, next_lon and next_alt contain valid data.</description>
+      </entry>
+    </enum>
+    <enum name="CELLULAR_NETWORK_RADIO_TYPE">
+      <description>Cellular network radio type</description>
+      <entry value="0" name="CELLULAR_NETWORK_RADIO_TYPE_NONE"/>
+      <entry value="1" name="CELLULAR_NETWORK_RADIO_TYPE_GSM"/>
+      <entry value="2" name="CELLULAR_NETWORK_RADIO_TYPE_CDMA"/>
+      <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
+      <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
+    </enum>
+    <enum name="CELLULAR_NETWORK_STATUS_FLAG">
+      <description>These flags encode the cellular network status</description>
+      <entry value="1" name="CELLULAR_NETWORK_STATUS_FLAG_ROAMING">
+        <description>Roaming is active</description>
       </entry>
     </enum>
   </enums>
@@ -4963,6 +4989,17 @@
       <field type="float[5]" name="delta" units="s">Bezier time horizon, set to NaN if velocity/acceleration should not be incorporated</field>
       <field type="float[5]" name="pos_yaw" units="rad">Yaw, set to NaN for unchanged</field>
     </message>
+    <message id="334" name="CELLULAR_STATUS">
+      <wip/>
+      <description>Report current used cellular network status</description>
+      <field type="uint16_t" name="status" enum="CELLULAR_NETWORK_STATUS_FLAG" display="bitmask">Status bitmap</field>
+      <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
+      <field type="uint8_t" name="quality">Cellular network RSSI/RSRP in dBm, absolute value</field>
+      <field type="uint16_t" name="mcc">Mobile country code. If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="mnc">Mobile network code. If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="lac">Location area code. If unknown, set to: 0</field>
+      <field type="uint32_t" name="cid">Cell ID. If unknown, set to: UINT32_MAX</field>
+    </message>
     <message id="340" name="UTM_GLOBAL_POSITION">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
@@ -5004,6 +5041,13 @@
       <field type="int32_t" name="x">X coordinate of center point. Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
       <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
       <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
+    </message>
+    <!-- Rover specific messages -->
+    <message id="9000" name="WHEEL_DISTANCE">
+      <description>Cumulative distance traveled for each reported wheel.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (synced to UNIX time or since system boot).</field>
+      <field type="uint8_t" name="count">Number of wheels reported.</field>
+      <field type="double[16]" name="distance" units="m">Distance reported by individual wheel encoders. Forward rotations increase values, reverse rotations decrease them. Not all wheels will necessarily have wheel encoders; the mapping of encoders to wheel positions must be agreed/understood by the endpoints.</field>
     </message>
   </messages>
 </mavlink>
