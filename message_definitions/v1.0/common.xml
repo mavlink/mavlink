@@ -1597,15 +1597,15 @@
       <entry value="530" name="MAV_CMD_SET_CAMERA_MODE">
         <description>Set camera running mode. Use NaN for reserved values. GCS will send a MAV_CMD_REQUEST_VIDEO_STREAM_STATUS command after a mode change if the camera supports video streaming.</description>
         <param index="1">Reserved (Set to 0)</param>
-        <param index="2">Camera mode (see CAMERA_MODE enum)</param>
+        <param index="2" enum="CAMERA_MODE">Camera mode</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="531" name="MAV_CMD_SET_CAMERA_ZOOM">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Set camera zoom. Returns CAMERA_SETTINGS message. Use NaN for reserved values.</description>
-        <param index="1" enum="SET_ZOOM_TYPE">Zoom type</param>
-        <param index="2">Zoom value</param>
+        <param index="1" enum="CAMERA_ZOOM_TYPE">Zoom type</param>
+        <param index="2">Zoom value. The range of valid values depend on the zoom type.</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="532" name="MAV_CMD_SET_CAMERA_FOCUS">
@@ -1629,7 +1629,7 @@
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
         <param index="1">Reserved (Set to 0)</param>
         <param index="2" label="Interval" units="s" minValue="0">Desired elapsed time between two consecutive pictures (in seconds). Minimum values depend on hardware (typically greater than 2 seconds).</param>
-        <param index="3" label="Capture Count" minValue="0">Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE</param>
+        <param index="3" label="Capture Count" minValue="0">Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE.</param>
         <param index="4" label="Sequence Number" minValue="0">Capture sequence number starting from 1. This is only valid for single-capture (param3 == 1). Increment the capture ID for each capture command to prevent double captures when a command is re-transmitted. Use 0 to ignore it.</param>
         <param index="5">Reserved (all remaining params)</param>
       </entry>
@@ -2979,7 +2979,7 @@
         <description>Stream is h.264 on MPEG TS (URI gives the port number)</description>
       </entry>
     </enum>
-    <enum name="SET_ZOOM_TYPE">
+    <enum name="CAMERA_ZOOM_TYPE">
       <description>Zoom types for MAV_CMD_SET_CAMERA_ZOOM</description>
       <entry value="0" name="ZOOM_TYPE_STEP">
         <description>Zoom one step increment (-1 for wide, 1 for tele)</description>
@@ -4842,7 +4842,7 @@
       <field type="float" name="framerate" units="Hz">Frame rate</field>
       <field type="uint16_t" name="resolution_h" units="pix">Horizontal resolution</field>
       <field type="uint16_t" name="resolution_v" units="pix">Vertical resolution</field>
-      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate in bits per second</field>
+      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
       <field type="char[160]" name="uri">Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to)</field>
@@ -4856,7 +4856,7 @@
       <field type="float" name="framerate" units="Hz">Frame rate</field>
       <field type="uint16_t" name="resolution_h" units="pix">Horizontal resolution</field>
       <field type="uint16_t" name="resolution_v" units="pix">Vertical resolution</field>
-      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate in bits per second</field>
+      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
     </message>
