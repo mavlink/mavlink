@@ -2626,6 +2626,21 @@
         <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited.</description>
       </entry>
     </enum>
+    <enum name="MAV_SMART_BATTERY_FAULT">
+      <description>Smart battery supply status/fault flags (bitmask) for health indication.</description>
+      <entry value="0" name="MAV_SMART_BATTERY_FAULT_OK">
+        <description>Battery has no fault indications.</description>
+      </entry>
+      <entry value="1" name="MAV_SMART_BATTERY_FAULT_DEEP_DISCHARGE">
+        <description>Battery has deep discharged.</description>
+      </entry>
+      <entry value="2" name="MAV_SMART_BATTERY_FAULT_SPIKES">
+        <description>Voltage spikes.</description>
+      </entry>
+      <entry value="4" name="MAV_SMART_BATTERY_FAULT_SINGLE_CELL_FAIL">
+        <description>Single cell has failed.</description>
+      </entry>
+    </enum>
     <enum name="MAV_VTOL_STATE">
       <description>Enumeration of VTOL states</description>
       <entry value="0" name="MAV_VTOL_STATE_UNDEFINED">
@@ -5053,6 +5068,33 @@
       <description>Status text message (use only for important status and error messages). The full message payload can be used for status text, but we recommend that updates be kept concise. Note: The message is intended as a less restrictive replacement for STATUSTEXT.</description>
       <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
       <field type="char[254]" name="text">Status text message, without null termination character.</field>
+    </message>
+    <!-- Smart battery messages -->
+    <message id="370" name="SMART_BATTERY_INFO">
+      <wip/>
+      <description>Smart Battery information (static/infrequent update).</description>
+      <field type="uint8_t" name="id">Battery ID</field>
+      <field type="int32_t" name="capacity_full_specification" units="mAh">Capacity when full according to manufacturer, -1: field not provided.</field>
+      <field type="int32_t" name="capacity_full" units="mAh">Capacity when full (accounting for battery degradation), -1: field not provided.</field>
+      <field type="uint16_t" name="cycle_count">Charge/discharge cycle count. -1: field not provided.</field>
+      <field type="int32_t" name="serial_number">Serial number. -1: field not provided.</field>
+      <field type="char[50]" name="device_name">Static device name. Encode as manufacturer and product names separated using an underscore.</field>
+      <field type="uint16_t" name="weight" units="g">Battery weight. 0: field not provided.</field>
+      <field type="uint16_t" name="discharge_minimum_voltage" units="mV">Minimum per-cell voltage when discharging. If not supplied set to UINT16_MAX value.</field>
+      <field type="uint16_t" name="charging_minimum_voltage" units="mV">Minimum per-cell voltage when charging. If not supplied set to UINT16_MAX value.</field>
+      <field type="uint16_t" name="resting_minimum_voltage" units="mV">Minimum per-cell voltage when resting. If not supplied set to UINT16_MAX value.</field>
+    </message>
+    <message id="371" name="SMART_BATTERY_STATUS">
+      <wip/>
+      <description>Smart Battery information (dynamic).</description>
+      <field type="uint8_t" name="id">Battery ID</field>
+      <field type="int16_t" name="capacity_remaining" units="%">Remaining battery energy. Values: [0-100], -1: field not provided.</field>
+      <field type="int16_t" name="current" units="cA">Battery current (through all cells/loads). Positive if discharging, negative if charging. UINT16_MAX: field not provided.</field>
+      <field type="int16_t" name="temperature" units="cdegC">Battery temperature. -1: field not provided.</field>
+      <field type="uint8_t" default="0" name="cell_offset">The cell number of the first index in the 'voltages' array field. Using this field allows you to specify cell voltages for batteries with more than 16 cells.</field>
+      <field type="uint16_t[16]" name="voltages" units="mV">Individual cell voltages.  Batteries with more 16 cells can use the cell_offset field to specify the cell offset for the array specified in the current message . Index values above the valid cell count for this battery should have the UINT16_MAX value.</field>
+      <field type="int32_t" name="fault_bitmask" display="bitmask" enum="MAV_SMART_BATTERY_FAULT">Fault/health indications. -1: field not provided.</field>
+      <field type="int32_t" name="time_remaining" units="s">Estimated remaining battery time. -1: field not provided.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
