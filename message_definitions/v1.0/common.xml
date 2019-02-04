@@ -806,14 +806,14 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="21" name="MAV_CMD_NAV_LAND">
-        <description>Land at location</description>
-        <param index="1">Abort Alt</param>
-        <param index="2">Precision land mode. (0 = normal landing, 1 = opportunistic precision landing, 2 = required precsion landing)</param>
-        <param index="3">Empty</param>
-        <param index="4">Desired yaw angle. NaN for unchanged.</param>
-        <param index="5">Latitude</param>
-        <param index="6">Longitude</param>
-        <param index="7">Altitude (ground level)</param>
+        <description>Land at location.</description>
+        <param index="1" label="Abort Alt" units="m">Minimum target altitude if landing is aborted (0 = undefined/use system default).</param>
+        <param index="2" label="Land Mode" enum="PRECISION_LAND_MODE">Precision land mode.</param>
+        <param index="3" label="Empty">Empty.</param>
+        <param index="4" label="Yaw Angle" units="deg">Desired yaw angle. NaN for unchanged.</param>
+        <param index="5">Latitude.</param>
+        <param index="6">Longitude.</param>
+        <param index="7" units="m">Landing altitude (ground level in current frame).</param>
       </entry>
       <entry value="22" name="MAV_CMD_NAV_TAKEOFF">
         <description>Takeoff from ground / hand</description>
@@ -939,11 +939,11 @@
         <param index="7">Altitude/Z of goal</param>
       </entry>
       <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF">
-        <description>Takeoff from ground using VTOL mode</description>
+        <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading.</description>
         <param index="1">Empty</param>
-        <param index="2">Front transition heading, see VTOL_TRANSITION_HEADING enum.</param>
+        <param index="2" label="Transition Heading" enum="VTOL_TRANSITION_HEADING">Front transition heading.</param>
         <param index="3">Empty</param>
-        <param index="4">Yaw angle in degrees. NaN for unchanged.</param>
+        <param index="4" label="Yaw Angle" units="deg">Yaw angle in degrees. NaN for unchanged.</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
@@ -1562,16 +1562,12 @@
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage.</description>
         <param index="1">Storage ID (0 for all, 1 for first, 2 for second, etc.)</param>
         <param index="2">0: No Action 1: Request storage information</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="526" name="MAV_CMD_STORAGE_FORMAT">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.</description>
         <param index="1">Storage ID (1 for first, 2 for second, etc.)</param>
         <param index="2">0: No action 1: Format storage</param>
@@ -1595,23 +1591,23 @@
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="530" name="MAV_CMD_SET_CAMERA_MODE">
-        <description>Set camera running mode. Use NAN for reserved values.</description>
+        <description>Set camera running mode. Use NaN for reserved values. GCS will send a MAV_CMD_REQUEST_VIDEO_STREAM_STATUS command after a mode change if the camera supports video streaming.</description>
         <param index="1">Reserved (Set to 0)</param>
-        <param index="2">Camera mode (see CAMERA_MODE enum)</param>
+        <param index="2" enum="CAMERA_MODE">Camera mode</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="531" name="MAV_CMD_SET_CAMERA_ZOOM">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Set camera zoom. Returns CAMERA_SETTINGS message. Use NAN for reserved values.</description>
-        <param index="1" enum="SET_ZOOM_TYPE">Zoom type</param>
-        <param index="2">Zoom value</param>
+        <description>Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success). Use NaN for reserved values.</description>
+        <param index="1" enum="CAMERA_ZOOM_TYPE">Zoom type</param>
+        <param index="2">Zoom value. The range of valid values depend on the zoom type.</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="532" name="MAV_CMD_SET_CAMERA_FOCUS">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Set camera focus. Returns CAMERA_SETTINGS message. Use NAN for reserved values.</description>
+        <description>Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success). Use NaN for reserved values.</description>
         <param index="1" enum="SET_FOCUS_TYPE">Focus type</param>
         <param index="2">Focus value</param>
         <param index="3">Reserved (all remaining params)</param>
@@ -1626,23 +1622,23 @@
         <param index="2">Repeat count</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
-        <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.</description>
+        <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
         <param index="1">Reserved (Set to 0)</param>
-        <param index="2">Duration between two consecutive pictures (in seconds)</param>
-        <param index="3">Number of images to capture total - 0 for unlimited capture</param>
-        <param index="4">Capture sequence (ID to prevent double captures when a command is retransmitted, 0: unused, &gt;= 1: used)</param>
+        <param index="2" label="Interval" units="s" minValue="0">Desired elapsed time between two consecutive pictures (in seconds). Minimum values depend on hardware (typically greater than 2 seconds).</param>
+        <param index="3" label="Capture Count" minValue="0">Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE.</param>
+        <param index="4" label="Sequence Number" minValue="0">Capture sequence number starting from 1. This is only valid for single-capture (param3 == 1). Increment the capture ID for each capture command to prevent double captures when a command is re-transmitted. Use 0 to ignore it.</param>
         <param index="5">Reserved (all remaining params)</param>
       </entry>
       <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE">
-        <description>Stop image capture sequence Use NAN for reserved values.</description>
+        <description>Stop image capture sequence Use NaN for reserved values.</description>
         <param index="1">Reserved (Set to 0)</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2002" name="MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Re-request a CAMERA_IMAGE_CAPTURE packet. Use NAN for reserved values.</description>
-        <param index="1">Sequence number for missing CAMERA_IMAGE_CAPTURE packet</param>
+        <description>Re-request a CAMERA_IMAGE_CAPTURE message. Use NaN for reserved values.</description>
+        <param index="1">Sequence number for missing CAMERA_IMAGE_CAPTURE message</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2003" name="MAV_CMD_DO_TRIGGER_CONTROL">
@@ -1652,37 +1648,43 @@
         <param index="3">1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore</param>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
-        <description>Starts video capture (recording). Use NAN for reserved values.</description>
-        <param index="1">Reserved (Set to 0)</param>
-        <param index="2">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)</param>
+        <description>Starts video capture (recording). Use NaN for reserved values.</description>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams)</param>
+        <param index="2" label="Status Frequency" minValue="0" units="Hz">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE">
-        <description>Stop the current video capture (recording). Use NAN for reserved values.</description>
-        <param index="1">Reserved (Set to 0)</param>
+        <description>Stop the current video capture (recording). Use NaN for reserved values.</description>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams)</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2502" name="MAV_CMD_VIDEO_START_STREAMING">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Start video streaming</description>
-        <param index="1">Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
         <param index="2">Reserved</param>
       </entry>
       <entry value="2503" name="MAV_CMD_VIDEO_STOP_STREAMING">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Stop the current video streaming</description>
-        <param index="1">Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+        <description>Stop the given video stream</description>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
         <param index="2">Reserved</param>
       </entry>
       <entry value="2504" name="MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Request video stream information (VIDEO_STREAM_INFORMATION)</description>
-        <param index="1">Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
-        <param index="2">0: No Action 1: Request video stream information</param>
-        <param index="3">Reserved (all remaining params)</param>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+        <param index="2">Reserved (all remaining params)</param>
+      </entry>
+      <entry value="2505" name="MAV_CMD_REQUEST_VIDEO_STREAM_STATUS">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Request video stream status (VIDEO_STREAM_STATUS)</description>
+        <param index="1" label="Stream ID" minValue="0">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2510" name="MAV_CMD_LOGGING_START">
         <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
@@ -1707,12 +1709,12 @@
       <entry value="2520" name="MAV_CMD_AIRFRAME_CONFIGURATION">
         <description/>
         <param index="1">Landing gear ID (default: 0, -1 for all)</param>
-        <param index="2">Landing gear position (Down: 0, Up: 1, NAN for no change)</param>
-        <param index="3">Reserved, set to NAN</param>
-        <param index="4">Reserved, set to NAN</param>
-        <param index="5">Reserved, set to NAN</param>
-        <param index="6">Reserved, set to NAN</param>
-        <param index="7">Reserved, set to NAN</param>
+        <param index="2">Landing gear position (Down: 0, Up: 1, NaN for no change)</param>
+        <param index="3">Reserved, set to NaN</param>
+        <param index="4">Reserved, set to NaN</param>
+        <param index="5">Reserved, set to NaN</param>
+        <param index="6">Reserved, set to NaN</param>
+        <param index="7">Reserved, set to NaN</param>
       </entry>
       <entry value="2600" name="MAV_CMD_CONTROL_HIGH_LATENCY">
         <description>Request to start/stop transmitting over the high latency telemetry</description>
@@ -2601,7 +2603,7 @@
       </entry>
     </enum>
     <enum name="MAV_BATTERY_CHARGE_STATE">
-      <description>Enumeration for low battery states.</description>
+      <description>Enumeration for battery charge states.</description>
       <entry value="0" name="MAV_BATTERY_CHARGE_STATE_UNDEFINED">
         <description>Low battery state is not provided</description>
       </entry>
@@ -2622,6 +2624,9 @@
       </entry>
       <entry value="6" name="MAV_BATTERY_CHARGE_STATE_UNHEALTHY">
         <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited.</description>
+      </entry>
+      <entry value="7" name="MAV_BATTERY_CHARGE_STATE_CHARGING">
+        <description>Battery is charging.</description>
       </entry>
     </enum>
     <enum name="MAV_VTOL_STATE">
@@ -2945,6 +2950,9 @@
       <entry value="128" name="CAMERA_CAP_FLAGS_HAS_BASIC_FOCUS">
         <description>Camera has basic focus control (MAV_CMD_SET_CAMERA_FOCUS)</description>
       </entry>
+      <entry value="256" name="CAMERA_CAP_FLAGS_HAS_VIDEO_STREAM">
+        <description>Camera has video streaming capabilities (use MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION for video streaming info)</description>
+      </entry>
     </enum>
     <enum name="VIDEO_STREAM_STATUS_FLAGS">
       <description>Stream status flags (Bitmap)</description>
@@ -2953,9 +2961,6 @@
       </entry>
       <entry value="2" name="VIDEO_STREAM_STATUS_FLAGS_THERMAL">
         <description>Stream is thermal imaging</description>
-      </entry>
-      <entry value="4" name="VIDEO_STREAM_HAS_BASIC_ZOOM">
-        <description>Stream has basic zoom control (MAV_CMD_SET_CAMERA_ZOOM)</description>
       </entry>
     </enum>
     <enum name="VIDEO_STREAM_TYPE">
@@ -2973,7 +2978,7 @@
         <description>Stream is h.264 on MPEG TS (URI gives the port number)</description>
       </entry>
     </enum>
-    <enum name="SET_ZOOM_TYPE">
+    <enum name="CAMERA_ZOOM_TYPE">
       <description>Zoom types for MAV_CMD_SET_CAMERA_ZOOM</description>
       <entry value="0" name="ZOOM_TYPE_STEP">
         <description>Zoom one step increment (-1 for wide, 1 for tele)</description>
@@ -3149,6 +3154,18 @@
       <description>These flags encode the cellular network status</description>
       <entry value="1" name="CELLULAR_NETWORK_STATUS_FLAG_ROAMING">
         <description>Roaming is active</description>
+      </entry>
+    </enum>
+    <enum name="PRECISION_LAND_MODE">
+      <description>Precision land modes (used in MAV_CMD_NAV_LAND).</description>
+      <entry value="0" name="PRECISION_LAND_MODE_DISABLED">
+        <description>Normal (non-precision) landing.</description>
+      </entry>
+      <entry value="1" name="PRECISION_LAND_MODE_OPPORTUNISTIC">
+        <description>Use precision landing if beacon detected when land command accepted, otherwise land normally.</description>
+      </entry>
+      <entry value="2" name="PRECISION_LAND_MODE_REQUIRED">
+        <description>Use precision landing, searching for beacon if not found when land command accepted (land normally if beacon cannot be found).</description>
       </entry>
     </enum>
   </enums>
@@ -3361,7 +3378,7 @@
     <message id="34" name="RC_CHANNELS_SCALED">
       <description>The scaled values of the RC channels received: (-100%) -10000, (0%) 0, (100%) 10000. Channels that are inactive should be set to UINT16_MAX.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows for more than 8 servos.</field>
+      <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
       <field type="int16_t" name="chan1_scaled">RC channel 1 value scaled.</field>
       <field type="int16_t" name="chan2_scaled">RC channel 2 value scaled.</field>
       <field type="int16_t" name="chan3_scaled">RC channel 3 value scaled.</field>
@@ -3375,7 +3392,7 @@
     <message id="35" name="RC_CHANNELS_RAW">
       <description>The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows for more than 8 servos.</field>
+      <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
       <field type="uint16_t" name="chan1_raw" units="us">RC channel 1 value.</field>
       <field type="uint16_t" name="chan2_raw" units="us">RC channel 2 value.</field>
       <field type="uint16_t" name="chan3_raw" units="us">RC channel 3 value.</field>
@@ -3389,7 +3406,7 @@
     <message id="36" name="SERVO_OUTPUT_RAW">
       <description>The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.</description>
       <field type="uint32_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
-      <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos.</field>
+      <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
       <field type="uint16_t" name="servo1_raw" units="us">Servo output 1 value</field>
       <field type="uint16_t" name="servo2_raw" units="us">Servo output 2 value</field>
       <field type="uint16_t" name="servo3_raw" units="us">Servo output 3 value</field>
@@ -3916,7 +3933,7 @@
       <description>Sent from autopilot to simulation. Hardware in the loop control outputs (replacement for HIL_CONTROLS)</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="float[16]" name="controls">Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.</field>
-      <field type="uint8_t" name="mode" enum="MAV_MODE">System mode. Includes arming state.</field>
+      <field type="uint8_t" name="mode" enum="MAV_MODE_FLAG" display="bitmask">System mode. Includes arming state.</field>
       <field type="uint64_t" name="flags" display="bitmask">Flags as bitfield, reserved for future use.</field>
     </message>
     <message id="100" name="OPTICAL_FLOW">
@@ -4747,8 +4764,6 @@
       <field type="float" name="focusLevel">Current focus level (0.0 to 100.0, NaN if not known)</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about a storage medium.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="storage_id">Storage ID (1 for first, 2 for second, etc.)</field>
@@ -4829,31 +4844,31 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about video stream</description>
-      <field type="uint8_t" name="stream_id">Stream ID (1 for first, 2 for second, etc.)</field>
-      <field type="uint8_t" name="count">Number of streams available</field>
-      <field type="uint8_t" name="type" enum="VIDEO_STREAM_TYPE">Type of stream</field>
+      <field type="uint8_t" name="stream_id">Video Stream ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="count">Number of streams available.</field>
+      <field type="uint8_t" name="type" enum="VIDEO_STREAM_TYPE">Type of stream.</field>
+      <field type="uint16_t" name="flags" enum="VIDEO_STREAM_STATUS_FLAGS">Bitmap of stream status flags.</field>
+      <field type="float" name="framerate" units="Hz">Frame rate.</field>
+      <field type="uint16_t" name="resolution_h" units="pix">Horizontal resolution.</field>
+      <field type="uint16_t" name="resolution_v" units="pix">Vertical resolution.</field>
+      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate.</field>
+      <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise.</field>
+      <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view.</field>
+      <field type="char[32]" name="name">Stream name.</field>
+      <field type="char[160]" name="uri">Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to).</field>
+    </message>
+    <message id="270" name="VIDEO_STREAM_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Information about the status of a video stream.</description>
+      <field type="uint8_t" name="stream_id">Video Stream ID (1 for first, 2 for second, etc.)</field>
       <field type="uint16_t" name="flags" enum="VIDEO_STREAM_STATUS_FLAGS">Bitmap of stream status flags</field>
       <field type="float" name="framerate" units="Hz">Frame rate</field>
       <field type="uint16_t" name="resolution_h" units="pix">Horizontal resolution</field>
       <field type="uint16_t" name="resolution_v" units="pix">Vertical resolution</field>
-      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate in bits per second</field>
+      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
-      <field type="char[160]" name="uri">Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to)</field>
-    </message>
-    <message id="270" name="SET_VIDEO_STREAM_SETTINGS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message that sets video stream settings</description>
-      <field type="uint8_t" name="target_system">system ID of the target</field>
-      <field type="uint8_t" name="target_component">component ID of the target</field>
-      <field type="uint8_t" name="camera_id">Stream ID (1 for first, 2 for second, etc.)</field>
-      <field type="float" name="framerate" units="Hz">Frame rate (set to -1 for highest framerate possible)</field>
-      <field type="uint16_t" name="resolution_h" units="pix">Horizontal resolution (set to -1 for highest resolution possible)</field>
-      <field type="uint16_t" name="resolution_v" units="pix">Vertical resolution (set to -1 for highest resolution possible)</field>
-      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate (set to -1 for auto)</field>
-      <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise (0-359 degrees)</field>
-      <field type="char[160]" name="uri">Video stream URI (mostly for UDP/RTP)</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure AP SSID and Password.</description>
@@ -5036,6 +5051,11 @@
       <field type="int32_t" name="x">X coordinate of center point. Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
       <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
       <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
+    </message>
+    <message id="365" name="STATUSTEXT_LONG">
+      <description>Status text message (use only for important status and error messages). The full message payload can be used for status text, but we recommend that updates be kept concise. Note: The message is intended as a less restrictive replacement for STATUSTEXT.</description>
+      <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
+      <field type="char[254]" name="text">Status text message, without null termination character.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
