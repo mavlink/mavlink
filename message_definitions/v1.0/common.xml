@@ -1612,25 +1612,16 @@
         <param index="2">Focus value</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
-      <entry value="550" name="MAV_CMD_REQUEST_RADIO_INFORMATION">
-        <description>Request radio module information. System will respond with RADIO_INFORMATION message.</description>
-        <param index="1">0: No action 1: Request radio module settings</param>
+      <entry value="550" name="MAV_CMD_REQUEST_RADIO_SETTINGS">
+        <description>Request radio module settings. System will respond with RADIO_SETTINGS message.</description>
       </entry>
-      <entry value="551" name="MAV_CMD_REQUEST_RADIO_RF_SETTINGS">
-        <description>Request radio module RF settings. System will respond with RADIO_RF_SETTINGS message.</description>
-        <param index="1">0: No action 1: Request radio module RF settings</param>
-      </entry>
-      <entry value="552" name="MAV_CMD_SET_RADIO_RF_SETTINGS">
-        <description>Set radio module RF settings. Use NaN for unchanged values. </description>
-        <param index="1">Frequency in MHz</param>
-        <param index="2">Bandwidth in MHz</param>
-        <param index="3">Local TX power in dBm</param>
-        <param index="4">Remote TX power in dBm</param>
-        <param index="5">Wireless distance in meters </param>
-      </entry>
-      <entry value="553" name="MAV_CMD_REQUEST_RADIO_AP_SETTINGS">
-        <description>Request radio module access point settings. System will respond with RADIO_AP_SETTINGS message.</description>
-        <param index="1">0: No action 1: Request radio module access point settings</param>
+      <entry value="551" name="MAV_CMD_SET_RADIO_SETTINGS">
+        <description>Set radio module settings. Use NaN for unchanged values.</description>
+        <param index="1" label="Frequency" units="MHz">Radio module operating frequency</param>
+        <param index="2" label="Bandwidth" units="MHz">Radio module operating bandwidth</param>
+        <param index="3" label="Local TX power" units="dBm">Transmission power of local module (ground)</param>
+        <param index="4" label="Remote TX power" units="dBm">Transmission power of remote module (air)</param>
+        <param index="5" label="Wireless distance" units="m">Expected distance the wireless signal needs to travel. Used to set various internal timeouts to account for this travel time.</param>
       </entry>
       <entry value="600" name="MAV_CMD_JUMP_TAG">
         <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
@@ -4893,30 +4884,24 @@
     <message id="280" name="RADIO_INFORMATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Information about the status of radio module. This message is sent in response to MAV_CMD_REQUEST_RADIO_INFORMATION command.</description>
+      <description>Information about connection quality and throughput of radio module.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="float" name="snr" units="dB">Signal to noise ratio</field>
       <field type="float" name="rssi" units="dB">Receive signal strength indicator</field>
       <field type="uint64_t" name="tx_bytes" units="bytes">The number of transmitted bytes</field>
       <field type="uint64_t" name="rx_bytes" units="bytes">The number of received bytes</field>
-      <field type="uint32_t" name="tx_packets">The number of transmitted packets</field>
-      <field type="uint32_t" name="rx_packets">The number of received packets</field>
+      <field type="uint32_t" name="tx_packets" units="packets">The number of transmitted packets</field>
+      <field type="uint32_t" name="rx_packets" units="packets">The number of received packets</field>
     </message>
-    <message id="281" name="RADIO_RF_SETTINGS">
+    <message id="281" name="RADIO_SETTINGS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Current RF settings of radio module. This message is sent in response to MAV_CMD_REQUEST_RADIO_RF_SETTINGS command.</description>
-      <field type="float" name="frequency" units="MHz">Radio operating frequency</field>
-      <field type="float" name="bandwidth" units="MHz">Radio operating channel bandwidth</field>
-      <field type="float" name="local_tx_power" units="dB">Transmitting power of local radio module</field>
-      <field type="float" name="remote_tx_power" units="dB">Transmitting power of remote radio module</field>
+      <description>Current settings of radio module. This message is sent in response to MAV_CMD_REQUEST_RADIO_SETTINGS command.</description>
+      <field type="float" name="frequency" units="MHz">Radio module operating frequency</field>
+      <field type="float" name="bandwidth" units="MHz">Radio module operating bandwidth</field>
+      <field type="float" name="local_tx_power" units="dB">Transmission power of local module (ground)</field>
+      <field type="float" name="remote_tx_power" units="dB">Transmission power of remote module (air)</field>
       <field type="float" name="wireless_distance" units="m">Expected distance the wireless signal needs to travel. Used to set various internal timeouts to account for this travel time.</field>
-    </message>
-    <message id="282" name="RADIO_AP_SETTINGS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Current access point settings of radio module. This message is sent in response to MAV_CMD_REQUEST_RADIO_AP_SETTINGS command as well as used for configuration.</description>
-      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Leave it blank to leave it unchanged.</field>
-      <field type="char[64]" name="password">Password. Leave it blank for an open AP.</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure AP SSID and Password.</description>
