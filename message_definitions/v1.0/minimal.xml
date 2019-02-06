@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <mavlink>
-  <version>2</version>
+  <version>3</version>
   <enums>
     <enum name="MAV_AUTOPILOT">
       <description>Micro air vehicle / autopilot classes. This identifies the individual model.</description>
       <entry value="0" name="MAV_AUTOPILOT_GENERIC">
         <description>Generic autopilot, full support for everything</description>
       </entry>
-      <entry value="1" name="MAV_AUTOPILOT_PIXHAWK">
-        <description>PIXHAWK autopilot, http://pixhawk.ethz.ch</description>
+      <entry value="1" name="MAV_AUTOPILOT_RESERVED">
+        <description>Reserved for future use.</description>
       </entry>
       <entry value="2" name="MAV_AUTOPILOT_SLUGS">
         <description>SLUGS autopilot, http://slugsuav.soe.ucsc.edu</description>
       </entry>
       <entry value="3" name="MAV_AUTOPILOT_ARDUPILOTMEGA">
-        <description>ArduPilotMega / ArduCopter, http://diydrones.com</description>
+        <description>ArduPilot - Plane/Copter/Rover/Sub/Tracker, http://ardupilot.org</description>
       </entry>
       <entry value="4" name="MAV_AUTOPILOT_OPENPILOT">
         <description>OpenPilot, http://openpilot.org</description>
@@ -40,8 +40,33 @@
       <entry value="11" name="MAV_AUTOPILOT_FP">
         <description>FlexiPilot</description>
       </entry>
+      <entry value="12" name="MAV_AUTOPILOT_PX4">
+        <description>PX4 Autopilot - http://px4.io/</description>
+      </entry>
+      <entry value="13" name="MAV_AUTOPILOT_SMACCMPILOT">
+        <description>SMACCMPilot - http://smaccmpilot.org</description>
+      </entry>
+      <entry value="14" name="MAV_AUTOPILOT_AUTOQUAD">
+        <description>AutoQuad -- http://autoquad.org</description>
+      </entry>
+      <entry value="15" name="MAV_AUTOPILOT_ARMAZILA">
+        <description>Armazila -- http://armazila.com</description>
+      </entry>
+      <entry value="16" name="MAV_AUTOPILOT_AEROB">
+        <description>Aerob -- http://aerob.ru</description>
+      </entry>
+      <entry value="17" name="MAV_AUTOPILOT_ASLUAV">
+        <description>ASLUAV autopilot -- http://www.asl.ethz.ch</description>
+      </entry>
+      <entry value="18" name="MAV_AUTOPILOT_SMARTAP">
+        <description>SmartAP Autopilot - http://sky-drones.com</description>
+      </entry>
+      <entry value="19" name="MAV_AUTOPILOT_AIRRAILS">
+        <description>AirRails - http://uaventure.com</description>
+      </entry>
     </enum>
     <enum name="MAV_TYPE">
+      <description>MAVLINK system type. All components in a system should report this type in their HEARTBEAT.</description>
       <entry value="0" name="MAV_TYPE_GENERIC">
         <description>Generic micro air vehicle.</description>
       </entry>
@@ -88,16 +113,65 @@
         <description>Octorotor</description>
       </entry>
       <entry value="15" name="MAV_TYPE_TRICOPTER">
-        <description>Octorotor</description>
+        <description>Tricopter</description>
       </entry>
       <entry value="16" name="MAV_TYPE_FLAPPING_WING">
         <description>Flapping wing</description>
+      </entry>
+      <entry value="17" name="MAV_TYPE_KITE">
+        <description>Kite</description>
+      </entry>
+      <entry value="18" name="MAV_TYPE_ONBOARD_CONTROLLER">
+        <description>Onboard companion controller</description>
+      </entry>
+      <entry value="19" name="MAV_TYPE_VTOL_DUOROTOR">
+        <description>Two-rotor VTOL using control surfaces in vertical operation in addition. Tailsitter.</description>
+      </entry>
+      <entry value="20" name="MAV_TYPE_VTOL_QUADROTOR">
+        <description>Quad-rotor VTOL using a V-shaped quad config in vertical operation. Tailsitter.</description>
+      </entry>
+      <entry value="21" name="MAV_TYPE_VTOL_TILTROTOR">
+        <description>Tiltrotor VTOL</description>
+      </entry>
+      <!-- Entries up to 25 reserved for other VTOL airframes -->
+      <entry value="22" name="MAV_TYPE_VTOL_RESERVED2">
+        <description>VTOL reserved 2</description>
+      </entry>
+      <entry value="23" name="MAV_TYPE_VTOL_RESERVED3">
+        <description>VTOL reserved 3</description>
+      </entry>
+      <entry value="24" name="MAV_TYPE_VTOL_RESERVED4">
+        <description>VTOL reserved 4</description>
+      </entry>
+      <entry value="25" name="MAV_TYPE_VTOL_RESERVED5">
+        <description>VTOL reserved 5</description>
+      </entry>
+      <entry value="26" name="MAV_TYPE_GIMBAL">
+        <description>Gimbal (standalone)</description>
+      </entry>
+      <entry value="27" name="MAV_TYPE_ADSB">
+        <description>ADSB system (standalone)</description>
+      </entry>
+      <entry value="28" name="MAV_TYPE_PARAFOIL">
+        <description>Steerable, nonrigid airfoil</description>
+      </entry>
+      <entry value="29" name="MAV_TYPE_DODECAROTOR">
+        <description>Dodecarotor</description>
+      </entry>
+      <entry value="30" name="MAV_TYPE_CAMERA">
+        <description>Camera (standalone)</description>
+      </entry>
+      <entry value="31" name="MAV_TYPE_CHARGING_STATION">
+        <description>Charging station</description>
+      </entry>
+      <entry value="32" name="MAV_TYPE_FLARM">
+        <description>FLARM collision avoidance system (standalone)</description>
       </entry>
     </enum>
     <enum name="MAV_MODE_FLAG">
       <description>These flags encode the MAV mode.</description>
       <entry value="128" name="MAV_MODE_FLAG_SAFETY_ARMED">
-        <description>0b10000000 MAV safety set to armed. Motors are enabled / running / can start. Ready to fly.</description>
+        <description>0b10000000 MAV safety set to armed. Motors are enabled / running / can start. Ready to fly. Additional note: this flag is to be ignore when sent in the command MAV_CMD_DO_SET_MODE and MAV_CMD_COMPONENT_ARM_DISARM shall be used instead. The flag can still be used to report the armed state.</description>
       </entry>
       <entry value="64" name="MAV_MODE_FLAG_MANUAL_INPUT_ENABLED">
         <description>0b01000000 remote control input is enabled.</description>
@@ -173,17 +247,150 @@
       <entry name="MAV_STATE_POWEROFF">
         <description>System just initialized its power-down sequence, will shut down now.</description>
       </entry>
+      <entry name="MAV_STATE_FLIGHT_TERMINATION">
+        <description>System is terminating itself.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_COMPONENT">
+      <description>Component ids (values) for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.). 
+      Components must use the appropriate ID in their source address when sending messages. Components can also use IDs to determine if they are the intended recipient of an incoming message. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components.
+      When creating new entries, components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequential values. An appropriate number of values should be left free after these components to allow the number of instances to be expanded.</description>
+      <entry value="0" name="MAV_COMP_ID_ALL">
+        <description>Used to broadcast messages to all components of the receiving system. Components should attempt to process messages with this component ID and forward to components on any other interfaces.</description>
+      </entry>
+      <entry value="1" name="MAV_COMP_ID_AUTOPILOT1">
+        <description>System flight controller component ("autopilot"). Only one autopilot is expected in a particular system.</description>
+      </entry>
+      <entry value="100" name="MAV_COMP_ID_CAMERA">
+        <description>Camera #1.</description>
+      </entry>
+      <entry value="101" name="MAV_COMP_ID_CAMERA2">
+        <description>Camera #2.</description>
+      </entry>
+      <entry value="102" name="MAV_COMP_ID_CAMERA3">
+        <description>Camera #3.</description>
+      </entry>
+      <entry value="103" name="MAV_COMP_ID_CAMERA4">
+        <description>Camera #4.</description>
+      </entry>
+      <entry value="104" name="MAV_COMP_ID_CAMERA5">
+        <description>Camera #5.</description>
+      </entry>
+      <entry value="105" name="MAV_COMP_ID_CAMERA6">
+        <description>Camera #6.</description>
+      </entry>
+      <entry value="140" name="MAV_COMP_ID_SERVO1">
+        <description>Servo #1.</description>
+      </entry>
+      <entry value="141" name="MAV_COMP_ID_SERVO2">
+        <description>Servo #2.</description>
+      </entry>
+      <entry value="142" name="MAV_COMP_ID_SERVO3">
+        <description>Servo #3.</description>
+      </entry>
+      <entry value="143" name="MAV_COMP_ID_SERVO4">
+        <description>Servo #4.</description>
+      </entry>
+      <entry value="144" name="MAV_COMP_ID_SERVO5">
+        <description>Servo #5.</description>
+      </entry>
+      <entry value="145" name="MAV_COMP_ID_SERVO6">
+        <description>Servo #6.</description>
+      </entry>
+      <entry value="146" name="MAV_COMP_ID_SERVO7">
+        <description>Servo #7.</description>
+      </entry>
+      <entry value="147" name="MAV_COMP_ID_SERVO8">
+        <description>Servo #8.</description>
+      </entry>
+      <entry value="148" name="MAV_COMP_ID_SERVO9">
+        <description>Servo #9.</description>
+      </entry>
+      <entry value="149" name="MAV_COMP_ID_SERVO10">
+        <description>Servo #10.</description>
+      </entry>
+      <entry value="150" name="MAV_COMP_ID_SERVO11">
+        <description>Servo #11.</description>
+      </entry>
+      <entry value="151" name="MAV_COMP_ID_SERVO12">
+        <description>Servo #12.</description>
+      </entry>
+      <entry value="152" name="MAV_COMP_ID_SERVO13">
+        <description>Servo #13.</description>
+      </entry>
+      <entry value="153" name="MAV_COMP_ID_SERVO14">
+        <description>Servo #14.</description>
+      </entry>
+      <entry value="154" name="MAV_COMP_ID_GIMBAL">
+        <description>Gimbal component.</description>
+      </entry>
+      <entry value="155" name="MAV_COMP_ID_LOG">
+        <description>Logging component.</description>
+      </entry>
+      <entry value="156" name="MAV_COMP_ID_ADSB">
+        <description>Automatic Dependent Surveillance-Broadcast (ADS-B) component.</description>
+      </entry>
+      <entry value="157" name="MAV_COMP_ID_OSD">
+        <description>On Screen Display (OSD) devices for video links.</description>
+      </entry>
+      <entry value="158" name="MAV_COMP_ID_PERIPHERAL">
+        <description>Generic autopilot peripheral component ID. Meant for devices that do not implement the parameter microservice.</description>
+      </entry>
+      <entry value="159" name="MAV_COMP_ID_QX1_GIMBAL">
+        <deprecated since="2018-11" replaced_by="MAV_COMP_ID_GIMBAL">All gimbals should use MAV_COMP_ID_GIMBAL.</deprecated>
+        <description>Gimbal ID for QX1.</description>
+      </entry>
+      <entry value="160" name="MAV_COMP_ID_FLARM">
+        <description>FLARM collision alert component.</description>
+      </entry>
+      <entry value="190" name="MAV_COMP_ID_MISSIONPLANNER">
+        <description>Component that supports the Mission microservice.</description>
+      </entry>
+      <entry value="195" name="MAV_COMP_ID_PATHPLANNER">
+        <description>Component that finds an optimal path between points based on a certain constraint (e.g. minimum snap, shortest path, cost, etc.).</description>
+      </entry>
+      <entry value="196" name="MAV_COMP_ID_OBSTACLE_AVOIDANCE">
+        <description>Component that plans a collision free path between two points.</description>
+      </entry>
+      <entry value="197" name="MAV_COMP_ID_VISUAL_INERTIAL_ODOMETRY">
+        <description>Component that provides position estimates using VIO techniques.</description>
+      </entry>
+      <entry value="200" name="MAV_COMP_ID_IMU">
+        <description>Inertial Measurement Unit (IMU) #1.</description>
+      </entry>
+      <entry value="201" name="MAV_COMP_ID_IMU_2">
+        <description>Inertial Measurement Unit (IMU) #2.</description>
+      </entry>
+      <entry value="202" name="MAV_COMP_ID_IMU_3">
+        <description>Inertial Measurement Unit (IMU) #3.</description>
+      </entry>
+      <entry value="220" name="MAV_COMP_ID_GPS">
+        <description>GPS #1.</description>
+      </entry>
+      <entry value="221" name="MAV_COMP_ID_GPS2">
+        <description>GPS #2.</description>
+      </entry>
+      <entry value="240" name="MAV_COMP_ID_UDP_BRIDGE">
+        <description>Component to bridge MAVLink to UDP (i.e. from a UART).</description>
+      </entry>
+      <entry value="241" name="MAV_COMP_ID_UART_BRIDGE">
+        <description>Component to bridge to UART (i.e. from UDP).</description>
+      </entry>
+      <entry value="250" name="MAV_COMP_ID_SYSTEM_CONTROL">
+        <deprecated since="2018-11" replaced_by="MAV_COMP_ID_ALL">System control does not require a separate component ID.</deprecated>
+        <description>Component for handling system messages (e.g. to ARM, takeoff, etc.).</description>
+      </entry>
     </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
-      <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
-      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
-      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. defined in MAV_AUTOPILOT ENUM</field>
-      <field type="uint8_t" name="base_mode">System mode bitfield, see MAV_MODE_FLAGS ENUM in mavlink/include/mavlink_types.h</field>
-      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags.</field>
-      <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag, see MAV_STATE ENUM</field>
-      <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version</field>
+      <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot).</description>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the system (quadrotor, helicopter, etc.). Components use the same type as their associated system.</field>
+      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class.</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
+      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag.</field>
+      <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
     </message>
   </messages>
 </mavlink>

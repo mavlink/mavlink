@@ -22,8 +22,10 @@ xsl_file_name = "mavlink_to_html_table_gitbook.xsl"
 xml_message_definitions_dir_name = "../message_definitions/v1.0/"
 
 output_dir = "./messages/"
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+output_dir_html=output_dir+"_html/"
+if not os.path.exists(output_dir_html):
+    os.makedirs(output_dir_html)
+
 
 # File for index
 index_file_name = "README.md"
@@ -43,7 +45,7 @@ index_text+='\n\n## Vendor Specific Extensions (Dialects) {#dialects}'
 index_text+='\n\nMAVLink protocol-specific and vendor-specific messages (dialects) are stored in separate XML files. These often include the [common](../messages/common.md) message definition, extending it with needed vendor or protocol specific messages.'
 index_text+='\n\n> **Note** While a dialect can include any other message definition, care should be taken when including a definition file that includes another file (only a single level of nesting is tested).'
 index_text+='\n\n<span></span>\n> **Note** Vendor forks of MAVLink may contain messages that are not yet merged, and hence will not appear in this documentation.'
-index_text+='\n\nThe human-readable forms of the vendor XML files are linked below:'
+index_text+='\n\nThe human-readable forms of all the XML files are linked below:'
 
 #Fix up the BeautifulSoup output so to fix build-link errors in the generated gitbook.
 ## BS puts each tag/content in its own line. Gitbook generates anchors using the spaces/newlines. 
@@ -61,6 +63,12 @@ def fix_include_file_extension(input_html):
     ## Fixes up file extension .xml.md.unlikely (easier than fixing up the XSLT to strip file extensions!)
     input_html=input_html.replace('.xml.md.unlikely','.md')
     return input_html
+
+def fix_replace_space_marker(input_html):
+    ## Above we remove hidden space. I can't seem to regexp just that type of space, so use space markers in text
+    input_html=input_html.replace('xxx_space_xxx',' ')
+    return input_html
+
     
 def strip_text_before_string(original_text,strip_text):
     # Strip out all text before some string
@@ -80,7 +88,7 @@ def inject_top_level_docs(input_html,filename):
         insert_text+='\n\n*This is a human-readable form of the XML definition file: [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).*'
     elif filename == 'ardupilotmega.xml':
         insert_text+='\n# MAVLINK ArduPilotMega Message Set'
-        insert_text+='\n\nThese messages define the APM specific message set, which is custom to [http://ardupilot.org](http://ardupilot.org).'
+        insert_text+='\n\nThese messages define the ArduPilot specific message set, which is custom to [http://ardupilot.org](http://ardupilot.org).'
         insert_text+='\n\n*This is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).*'
         insert_text+='\n\n> **Warning** The ArduPilot MAVLink fork of [ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) may contain messages that have not yet been merged into this documentation.'
     else:
@@ -90,7 +98,13 @@ def inject_top_level_docs(input_html,filename):
 
     insert_text+='\n\n<span></span>\n> **Note** MAVLink 2 messages have an ID > 255 and are marked up using **(MAVLink 2)** in their description.'
     insert_text+='\n\n<span id="mav2_extension_field"></span>\n> **Note** MAVLink 2 extension fields that have been added to MAVLink 1 messages are displayed in blue.'
+    style_text='\n\n<style>\ntd {\n    vertical-align:top;\n}\n</style>'
+    insert_text+=style_text
+    # Include HTML in generated content
+    insert_text+='\n\n{%% include "_html/%s.html" %%}' % filename[:-4]
     input_html=insert_text+'\n\n'+input_html
+    
+    
     #print(input_html)
     return input_html
     
@@ -116,22 +130,38 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             prettyHTML=strip_text_before_string(prettyHTML,'<html>')
             prettyHTML = fix_content_in_tags(prettyHTML)
             
-            #Inject a heading and doc-type intro (markdown format)
-            prettyHTML = inject_top_level_docs(prettyHTML,file)
-            
             #Replace invalid file extensions (workaround for xslt)
             prettyHTML = fix_include_file_extension(prettyHTML)
-            
-            #Write output markdown file
-            output_file_name = file.rsplit('.',1)[0]+".md"
-            output_file_name_withdir = output_dir+output_file_name
-            print("Output filename: %s" % output_file_name)
 
-            with open(output_file_name_withdir, 'w') as out:
-                out.write(prettyHTML )
+            #Replace space markers with intentional space
+            prettyHTML = fix_replace_space_marker(prettyHTML)
             
-            if not file=='common.xml':
-                index_text+='\n* [%s](%s)' % (file,output_file_name)
+            #Write output html file
+            output_file_name_html = file.rsplit('.',1)[0]+".html"
+
+            output_file_name_html_withdir = output_dir_html+output_file_name_html
+            print("Output filename (html): %s" % output_file_name_html)
+
+            with open(output_file_name_html_withdir, 'w') as out:
+                out.write(prettyHTML)
+
+
+            #Write output markdown file
+            output_file_name_md = file.rsplit('.',1)[0]+".md"
+
+            markdown_text=''
+            #Inject a heading and doc-type intro (markdown format)
+            markdown_text = inject_top_level_docs(markdown_text,file)
+
+            output_file_name_md_withdir = output_dir+output_file_name_md
+            print("Output filename (md): %s" % output_file_name_md)
+
+            with open(output_file_name_md_withdir, 'w') as out:
+                out.write(markdown_text)
+
+            
+            #if not file=='common.xml':
+            index_text+='\n* [%s](%s)' % (file,output_file_name_md)
             
 #Write the index - Disabled for now.
 with open(index_file_name, 'w') as content_file:

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- ASLUAV Mavlink Message Definition File -->
-<!-- Used for the ASLUAV fixed-wing autopilot (www.asl.ethz.ch), which implements extensions to the Pixhawk (www.pixhawk.org) autopilot -->
+<!-- Used for the ASLUAV fixed-wing autopilot (www.asl.ethz.ch), which implements extensions to the Pixhawk (https://docs.px4.io/en/flight_controller/pixhawk.html) autopilot -->
 <mavlink>
   <include>common.xml</include>
   <enums>
@@ -27,8 +27,67 @@
         <param index="7">Empty</param>
       </entry>
     </enum>
+    <enum name="GSM_LINK_TYPE">
+      <entry value="0" name="GSM_LINK_TYPE_NONE">
+        <description>no service</description>
+      </entry>
+      <entry value="1" name="GSM_LINK_TYPE_UNKNOWN">
+        <description>link type unknown</description>
+      </entry>
+      <entry value="2" name="GSM_LINK_TYPE_2G">
+        <description>2G (GSM/GRPS/EDGE) link</description>
+      </entry>
+      <entry value="3" name="GSM_LINK_TYPE_3G">
+        <description>3G link (WCDMA/HSDPA/HSPA) </description>
+      </entry>
+      <entry value="4" name="GSM_LINK_TYPE_4G">
+        <description>4G link (LTE)</description>
+      </entry>
+    </enum>
+    <enum name="GSM_MODEM_TYPE">
+      <entry value="0" name="GSM_MODEM_TYPE_UNKNOWN">
+        <description>not specified</description>
+      </entry>
+      <entry name="GSM_MODEM_TYPE_HUAWEI_E3372">
+        <description>HUAWEI LTE USB Stick E3372</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
+    <message id="78" name="COMMAND_INT_STAMPED">
+      <description>Message encoding a command with parameters as scaled integers and additional metadata. Scaling depends on the actual command value.</description>
+      <field type="uint32_t" name="utc_time">UTC time, seconds elapsed since 01.01.1970</field>
+      <field type="uint64_t" name="vehicle_timestamp">Microseconds elapsed since vehicle boot</field>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the COMMAND, as defined by MAV_FRAME enum</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the mission item, as defined by MAV_CMD enum</field>
+      <field type="uint8_t" name="current">false:0, true:1</field>
+      <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
+      <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
+      <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
+      <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
+      <field type="float" name="param4">PARAM4, see MAV_CMD enum</field>
+      <field type="int32_t" name="x">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
+      <field type="int32_t" name="y">PARAM6 / local: y position in meters * 1e4, global: longitude in degrees * 10^7</field>
+      <field type="float" name="z">PARAM7 / z position: global: altitude in meters (MSL, WGS84, AGL or relative to home - depending on frame).</field>
+    </message>
+    <message id="79" name="COMMAND_LONG_STAMPED">
+      <description>Send a command with up to seven parameters to the MAV and additional metadata</description>
+      <field type="uint32_t" name="utc_time">UTC time, seconds elapsed since 01.01.1970</field>
+      <field type="uint64_t" name="vehicle_timestamp">Microseconds elapsed since vehicle boot</field>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">Command ID, as defined by MAV_CMD enum.</field>
+      <field type="uint8_t" name="confirmation">0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)</field>
+      <field type="float" name="param1">Parameter 1, as defined by MAV_CMD enum.</field>
+      <field type="float" name="param2">Parameter 2, as defined by MAV_CMD enum.</field>
+      <field type="float" name="param3">Parameter 3, as defined by MAV_CMD enum.</field>
+      <field type="float" name="param4">Parameter 4, as defined by MAV_CMD enum.</field>
+      <field type="float" name="param5">Parameter 5, as defined by MAV_CMD enum.</field>
+      <field type="float" name="param6">Parameter 6, as defined by MAV_CMD enum.</field>
+      <field type="float" name="param7">Parameter 7, as defined by MAV_CMD enum.</field>
+    </message>
     <message id="201" name="SENS_POWER">
       <description>Voltage and current sensor data</description>
       <field type="float" name="adc121_vspb_volt" units="V"> Power board voltage sensor reading</field>
@@ -125,6 +184,7 @@
     </message>
     <message id="208" name="SENS_ATMOS">
       <description>Atmospheric sensors (temperature, humidity, ...) </description>
+      <field type="uint64_t" name="timestamp" units="us">Time since system boot</field>
       <field type="float" name="TempAmbient" units="degC"> Ambient temperature</field>
       <field type="float" name="Humidity" units="%"> Relative humidity</field>
     </message>
@@ -199,6 +259,16 @@
       <field type="float" name="pwr_brd_digital_amp" units="A">Power board digital current sensor</field>
       <field type="float" name="pwr_brd_ext_amp" units="A">Power board extension current sensor</field>
       <field type="float" name="pwr_brd_aux_amp" units="A">Power board aux current sensor</field>
+    </message>
+    <message id="213" name="GSM_LINK_STATUS">
+      <description>Status of GSM modem (connected to onboard computer)</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (of OBC)</field>
+      <field type="uint8_t" name="gsm_modem_type" enum="GSM_MODEM_TYPE">GSM modem used</field>
+      <field type="uint8_t" name="gsm_link_type" enum="GSM_LINK_TYPE">GSM link type</field>
+      <field type="uint8_t" name="rssi">RSSI as reported by modem (unconverted)</field>
+      <field type="uint8_t" name="rsrp_rscp">RSRP (LTE) or RSCP (WCDMA) as reported by modem (unconverted)</field>
+      <field type="uint8_t" name="sinr_ecio">SINR (LTE) or ECIO (WCDMA) as reported by modem (unconverted)</field>
+      <field type="uint8_t" name="rsrq">RSRQ (LTE only) as reported by modem (unconverted)</field>
     </message>
   </messages>
 </mavlink>
