@@ -369,7 +369,7 @@
       </entry>
     </enum>
     <enum name="MAV_COMPONENT">
-      <description>Component ids (values) for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.). 
+      <description>Component ids (values) for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.).
       Components must use the appropriate ID in their source address when sending messages. Components can also use IDs to determine if they are the intended recipient of an incoming message. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components.
       When creating new entries, components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequential values. An appropriate number of values should be left free after these components to allow the number of instances to be expanded.</description>
       <entry value="0" name="MAV_COMP_ID_ALL">
@@ -983,14 +983,14 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="94" name="MAV_CMD_NAV_PAYLOAD_PLACE">
-        <description>Descend and place payload.  Vehicle descends until it detects a hanging payload has reached the ground, the gripper is opened to release the payload</description>
-        <param index="1">Maximum distance to descend (meters)</param>
+        <description>Descend and place payload. Vehicle moves to specified location, descends until it detects a hanging payload has reached the ground, and then releases the payload. If ground is not detected before the reaching the maximum descent value (param1), the command will complete without releasing the payload.</description>
+        <param index="1" label="Max Descent" minValue="0" units="m">Maximum distance to descend.</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5">Latitude (deg * 1E7)</param>
-        <param index="6">Longitude (deg * 1E7)</param>
-        <param index="7">Altitude (meters)</param>
+        <param index="5">Latitude</param>
+        <param index="6">Longitude</param>
+        <param index="7">Altitude</param>
       </entry>
       <entry value="95" name="MAV_CMD_NAV_LAST">
         <description>NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumeration</description>
@@ -2603,7 +2603,7 @@
       </entry>
     </enum>
     <enum name="MAV_BATTERY_CHARGE_STATE">
-      <description>Enumeration for low battery states.</description>
+      <description>Enumeration for battery charge states.</description>
       <entry value="0" name="MAV_BATTERY_CHARGE_STATE_UNDEFINED">
         <description>Low battery state is not provided</description>
       </entry>
@@ -2624,6 +2624,9 @@
       </entry>
       <entry value="6" name="MAV_BATTERY_CHARGE_STATE_UNHEALTHY">
         <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited.</description>
+      </entry>
+      <entry value="7" name="MAV_BATTERY_CHARGE_STATE_CHARGING">
+        <description>Battery is charging.</description>
       </entry>
     </enum>
     <enum name="MAV_SMART_BATTERY_FAULT">
@@ -3590,7 +3593,7 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
-      <field type="float[9]" name="covariance">Attitude covariance</field>
+      <field type="float[9]" name="covariance">Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="62" name="NAV_CONTROLLER_OUTPUT">
       <description>The state of the fixed wing navigation and position controller.</description>
@@ -3614,7 +3617,7 @@
       <field type="float" name="vx" units="m/s">Ground X Speed (Latitude)</field>
       <field type="float" name="vy" units="m/s">Ground Y Speed (Longitude)</field>
       <field type="float" name="vz" units="m/s">Ground Z Speed (Altitude)</field>
-      <field type="float[36]" name="covariance">Covariance matrix (first six entries are the first ROW, next six entries are the second row, etc.)</field>
+      <field type="float[36]" name="covariance">Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="64" name="LOCAL_POSITION_NED_COV">
       <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
@@ -3629,7 +3632,7 @@
       <field type="float" name="ax" units="m/s/s">X Acceleration</field>
       <field type="float" name="ay" units="m/s/s">Y Acceleration</field>
       <field type="float" name="az" units="m/s/s">Z Acceleration</field>
-      <field type="float[45]" name="covariance">Covariance matrix upper right triangular (first nine entries are the first ROW, next eight entries are the second row, etc.)</field>
+      <field type="float[45]" name="covariance">Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="65" name="RC_CHANNELS">
       <description>The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.  A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
@@ -3969,7 +3972,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
+      <field type="float[21]" name="covariance">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x_global, y_global, z_global, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="102" name="VISION_POSITION_ESTIMATE">
       <description>Global position/attitude estimate from a vision source.</description>
@@ -3981,7 +3984,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
+      <field type="float[21]" name="covariance">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="103" name="VISION_SPEED_ESTIMATE">
       <description>Speed estimate from a vision source.</description>
@@ -3990,7 +3993,7 @@
       <field type="float" name="y" units="m/s">Global Y speed</field>
       <field type="float" name="z" units="m/s">Global Z speed</field>
       <extensions/>
-      <field type="float[9]" name="covariance">Linear velocity covariance matrix (1st three entries - 1st row, etc.)</field>
+      <field type="float[9]" name="covariance">Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="104" name="VICON_POSITION_ESTIMATE">
       <description>Global position estimate from a Vicon motion system source.</description>
@@ -4002,7 +4005,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
+      <field type="float[21]" name="covariance">Row-major representation of 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="105" name="HIGHRES_IMU">
       <description>The IMU readings in SI units in NED body frame</description>
@@ -4316,7 +4319,7 @@
       <field type="uint8_t" name="type" enum="MAV_DISTANCE_SENSOR">Type of distance sensor.</field>
       <field type="uint8_t" name="id">Onboard ID of the sensor</field>
       <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces. downward-facing: ROTATION_PITCH_270, upward-facing: ROTATION_PITCH_90, backward-facing: ROTATION_PITCH_180, forward-facing: ROTATION_NONE, left-facing: ROTATION_YAW_90, right-facing: ROTATION_YAW_270</field>
-      <field type="uint8_t" name="covariance" units="cm">Measurement covariance, 0 for unknown / invalid readings</field>
+      <field type="uint8_t" name="covariance" units="cm">Measurement covariance. 0 for unknown / invalid readings</field>
       <extensions/>
       <field type="float" name="horizontal_fov" units="rad">Horizontal Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
       <field type="float" name="vertical_fov" units="rad">Vertical Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
@@ -4367,7 +4370,7 @@
       <field type="float" name="y" units="m">Y position (NED)</field>
       <field type="float" name="z" units="m">Z position (NED)</field>
       <extensions/>
-      <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
+      <field type="float[21]" name="covariance">Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="139" name="SET_ACTUATOR_CONTROL_TARGET">
       <description>Set the vehicle attitude and body angular rates.</description>
@@ -4975,8 +4978,8 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
-      <field type="float[21]" name="pose_covariance">Pose (states: x, y, z, roll, pitch, yaw) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
-      <field type="float[21]" name="twist_covariance">Twist (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
+      <field type="float[21]" name="pose_covariance">Row-major representation of a 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="velocity_covariance">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="332" name="TRAJECTORY_REPRESENTATION_WAYPOINTS">
       <wip/>
