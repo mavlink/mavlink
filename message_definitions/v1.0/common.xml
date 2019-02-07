@@ -5098,14 +5098,14 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Smart Battery information (dynamic). Use for updates from: smart battery to flight stack, flight stack to GCS. Use instead of BATTERY_STATUS for smart batteries.</description>
-      <field type="uint8_t" name="id">Battery ID</field>
+      <field type="uint16_t" name="id">Battery ID</field>
       <field type="int16_t" name="capacity_remaining" units="%">Remaining battery energy. Values: [0-100], -1: field not provided.</field>
       <field type="int16_t" name="current" units="cA">Battery current (through all cells/loads). Positive if discharging, negative if charging. UINT16_MAX: field not provided.</field>
       <field type="int16_t" name="temperature" units="cdegC">Battery temperature. -1: field not provided.</field>
-      <field type="uint8_t" default="0" name="cell_offset">The cell number of the first index in the 'voltages' array field. Using this field allows you to specify cell voltages for batteries with more than 16 cells.</field>
-      <field type="uint16_t[16]" name="voltages" units="mV">Individual cell voltages. Batteries with more 16 cells can use the cell_offset field to specify the cell offset for the array specified in the current message . Index values above the valid cell count for this battery should have the UINT16_MAX value.</field>
       <field type="int32_t" name="fault_bitmask" display="bitmask" enum="MAV_SMART_BATTERY_FAULT">Fault/health indications.</field>
       <field type="int32_t" name="time_remaining" units="s">Estimated remaining battery time. -1: field not provided.</field>
+      <field type="uint16_t" default="0" name="cell_offset">The cell number of the first index in the 'voltages' array field. Using this field allows you to specify cell voltages for batteries with more than 16 cells.</field>
+      <field type="uint16_t[16]" name="voltages" units="mV">Individual cell voltages. Batteries with more 16 cells can use the cell_offset field to specify the cell offset for the array specified in the current message . Index values above the valid cell count for this battery should have the UINT16_MAX value.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
