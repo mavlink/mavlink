@@ -37,15 +37,21 @@ with open(xsl_file_name, 'r') as content_file:
 xslt = ET.fromstring(xsl_file)
 
 #initialise text for index file. 
-index_text='<!-- THIS FILE IS AUTO-GENERATED (DO NOT UPDATE GITBOOK): https://github.com/mavlink/mavlink/blob/master/doc/mavlink_gitbook.py -->'
-index_text+='\n# Message Definitions'
-index_text+='\n\nMAVLink messages are defined in XML files in the [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/) folder. The messages that are common to all systems are defined in [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml) (only messages contained in this file are considered standard messages).'
-index_text+='\n\nThe common messages are provided as human-readable tables in: [Common](../messages/common.md).'
-index_text+='\n\n## Vendor Specific Extensions (Dialects) {#dialects}'
-index_text+='\n\nMAVLink protocol-specific and vendor-specific messages (dialects) are stored in separate XML files. These often include the [common](../messages/common.md) message definition, extending it with needed vendor or protocol specific messages.'
-index_text+='\n\n> **Note** While a dialect can include any other message definition, care should be taken when including a definition file that includes another file (only a single level of nesting is tested).'
-index_text+='\n\n<span></span>\n> **Note** Vendor forks of MAVLink may contain messages that are not yet merged, and hence will not appear in this documentation.'
-index_text+='\n\nThe human-readable forms of all the XML files are linked below:'
+index_text="""<!-- THIS FILE IS AUTO-GENERATED (DO NOT UPDATE GITBOOK): https://github.com/mavlink/mavlink/blob/master/doc/mavlink_gitbook.py -->
+# Dialects {#dialects}
+
+MAVLink *dialects* are XML files that define *protocol-* and *vendor-specific* messages, enums and commands.
+
+Dialects may *include* other MAVLink XML files.
+A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the *MAVLink standard definitions*), extending it with vendor or protocol specific messages.
+While a dialect can include any other message definition, only only a single level of nesting is supported ([at time of writing](https://github.com/ArduPilot/pymavlink/pull/248)).
+
+> **Note** Vendor forks of MAVLink may contain dialect messages that are not yet merged, and hence will not appear in this documentation.
+
+The dialect files are stored alongside in separate XML files in [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/).
+
+The human-readable forms of the XML dialect files are linked below:
+"""
 
 #Fix up the BeautifulSoup output so to fix build-link errors in the generated gitbook.
 ## BS puts each tag/content in its own line. Gitbook generates anchors using the spaces/newlines. 
@@ -83,32 +89,52 @@ def inject_top_level_docs(input_html,filename):
     print('FILENAME: %s' % filename)
     insert_text='<!-- THIS FILE IS AUTO-GENERATED: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_gitbook.py -->'
     if filename == 'common.xml':
-        insert_text+='\n# MAVLINK Common Message Set'
-        insert_text+='\n\nThese messages define the common message set, which is the reference message set implemented by most ground control stations and autopilots.'
-        insert_text+='\n\n*This is a human-readable form of the XML definition file: [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).*'
+        insert_text+="""
+# MAVLINK Common Message Set
+
+The MAVLink *common* message set is defined in [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).
+It contains the *standard* definitions that are managed by the MAVLink project.
+
+The definitions cover functionality that is considered useful to most ground control stations and autopilots.
+MAVLink-compatible systems are expected to use these definitions where possible (if an appropriate message exists) rather than rolling out variants in their own [dialects](../messages/README.md).
+
+This topic is a human-readable form of [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).
+"""
     elif filename == 'ardupilotmega.xml':
-        insert_text+='\n# MAVLINK ArduPilotMega Message Set'
-        insert_text+='\n\nThese messages define the ArduPilot specific message set, which is custom to [http://ardupilot.org](http://ardupilot.org).'
-        insert_text+='\n\n*This is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).*'
-        insert_text+='\n\n> **Warning** The ArduPilot MAVLink fork of [ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) may contain messages that have not yet been merged into this documentation.'
+        insert_text+="""
+# Dialect: ArduPilotMega
+
+These messages define the ArduPilot specific message set, which is custom to [http://ardupilot.org](http://ardupilot.org).
+
+This topic is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).
+
+> **Warning** The ArduPilot MAVLink fork of [ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) may contain messages that have not yet been merged into this documentation.
+"""
     else:
-        insert_text+='\n# MAVLINK Message Set: %s' % filename
+        insert_text+='\n# Dialect: %s' % filename.rsplit('.',1)[0]
         insert_text+='\n\n*This is a human-readable form of the XML definition file: [%s](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/%s).*' % (filename, filename)
+    insert_text+="""
 
+<span></span>
+> **Note** MAVLink 2 messages have an ID > 255 and are marked up using **(MAVLink 2)** in their description.
 
-    insert_text+='\n\n<span></span>\n> **Note** MAVLink 2 messages have an ID > 255 and are marked up using **(MAVLink 2)** in their description.'
-    insert_text+='\n\n<span id="mav2_extension_field"></span>\n> **Note** MAVLink 2 extension fields that have been added to MAVLink 1 messages are displayed in blue.'
-    style_text='\n\n<style>\ntd {\n    vertical-align:top;\n}\n</style>'
-    insert_text+=style_text
+<span id="mav2_extension_field"></span>
+> **Note** MAVLink 2 extension fields that have been added to MAVLink 1 messages are displayed in blue.
+
+<style>
+td {
+    vertical-align:top;
+}
+</style>
+"""
     # Include HTML in generated content
     insert_text+='\n\n{%% include "_html/%s.html" %%}' % filename[:-4]
     input_html=insert_text+'\n\n'+input_html
     
-    
     #print(input_html)
     return input_html
     
-    
+dialect_files = set()    
 
 for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
     for file in files:
@@ -147,26 +173,28 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
 
 
             #Write output markdown file
-            output_file_name_md = file.rsplit('.',1)[0]+".md"
+            output_file_name_prefix = file.rsplit('.',1)[0]
 
             markdown_text=''
             #Inject a heading and doc-type intro (markdown format)
             markdown_text = inject_top_level_docs(markdown_text,file)
 
-            output_file_name_md_withdir = output_dir+output_file_name_md
-            print("Output filename (md): %s" % output_file_name_md)
+            output_file_name_md_withdir = output_dir+output_file_name_prefix+'.md'
+            print("Output filename (md): %s" % output_file_name_md_withdir)
 
             with open(output_file_name_md_withdir, 'w') as out:
                 out.write(markdown_text)
 
+            # Create sortable list of output file names
+            if not file=='common.xml':
+                dialect_files.add(output_file_name_prefix)
             
-            #if not file=='common.xml':
-            index_text+='\n* [%s](%s)' % (file,output_file_name_md)
+for the_file in sorted(dialect_files):
+    index_text+='\n* [%s.xml](%s.md)' % (the_file,the_file)
             
-#Write the index - Disabled for now.
+#Write the index
 with open(index_file_name, 'w') as content_file:
     content_file.write(index_text)
-
 
 print("COMPLETED")
 
