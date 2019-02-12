@@ -1618,6 +1618,8 @@
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="551" name="MAV_CMD_SET_RADIO_SETTINGS">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Set radio module settings. Use NaN for unchanged values.</description>
         <param index="1" label="Frequency" units="MHz">Radio module operating frequency</param>
         <param index="2" label="Bandwidth" units="MHz">Radio module operating bandwidth</param>
@@ -4117,8 +4119,8 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot)</field>
       <field type="uint64_t" name="tx_bytes" units="bytes">The number of transmitted bytes</field>
       <field type="uint64_t" name="rx_bytes" units="bytes">The number of received bytes</field>
-      <field type="uint32_t" name="tx_packets">The number of transmitted packets</field>
-      <field type="uint32_t" name="rx_packets">The number of received packets</field>
+      <field type="uint32_t" name="tx_packets">The number of transmitted radio packets</field>
+      <field type="uint32_t" name="rx_packets">The number of received radio packets</field>
     </message>
     <message id="110" name="FILE_TRANSFER_PROTOCOL">
       <description>File transfer message</description>
@@ -4913,7 +4915,7 @@
     <message id="281" name="RADIO_SETTINGS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Current settings of radio module. This message is sent in response to MAV_CMD_REQUEST_RADIO_SETTINGS command.</description>
+      <description>Current settings of radio module. This message is sent in response to MAV_CMD_REQUEST_MESSAGE command.</description>
       <field type="float" name="frequency" units="MHz">Radio module operating frequency</field>
       <field type="float" name="bandwidth" units="MHz">Radio module operating bandwidth</field>
       <field type="float" name="local_tx_power" units="dBm">Transmission power of local module (ground)</field>
