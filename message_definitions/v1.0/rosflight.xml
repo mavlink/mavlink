@@ -222,38 +222,8 @@
 	    <field type="uint32_t" name="reset_count"/>
 	    <field type="uint32_t" name="doRearm"/>
 	</message>
-	<message id="199" name="ROSFLIHT_GNSS_PVT">
-		<!-- Only for determining which packets where calculated at the same time.
-		     Use the various time and date fields to get GPS time. -->
-		<field type="uint32_t" name="time_of_week"/> 
-		<!-- All times are UTC -->
-		<field type="uint16_t" name="year"/>
-		<field type="uint8_t" name="month"/>
-		<field type="uint8_t" name="day"/>
-		<field type="uint8_t" name="hour"/>
-		<field type="uint8_t" name="min"/>
-		<field type="uint8_t" name="sec"/>
-		<field type="int32_t" name="nano"/> <!-- may be negative -->
-		<field type="uint32_t" name="t_acc"/> <!-- estimated time accuracy, ns -->
-		<field type="uint8_t" name="fix_type" enum="UBLOX_FIX_TYPE"/>
-		<field type="uint8_t" name="num_satellites"/>
-		<field type="int8_t" name="lon"/> <!-- deg *10^-5 -->
-		<field type="int8_t" name="lat"/> <!-- deg *10^-5 -->
-		<field type="int32_t" name="height"/> <!-- mm above ellipsoid -->
-		<field type="int32_t" name="height_msl"/> <!-- mm above mean sea level -->
-		<field type="uint32_t" name="h_acc"/> <!-- mm horizontal accuracy estimate -->
-		<field type="uint32_t" name="v_acc"/> <!-- mm vertical accuracy estimate -->
-		<field type="int32_t" name="vel_n"/> <!-- mm/s -->
-		<field type="int32_t" name="vel_e"/> <!-- mm/s -->
-		<field type="int32_t" name="vel_d"/> <!-- mm/s -->
-		<field type="int32_t" name="ground_speed"/> <!-- mm/s -->
-		<field type="int32_t" name="heading_motion"/> <!-- heading of motion, deg*10^-5 -->
-		<field type="uint32_t" name="speed_acc"/> <!-- speed accuracy estimate -->
-		<field type="uint32_t" name="heading_acc"/> <!-- heading accuracy estimate, deg*10^-5 -->
-		<field type="uint16_t" name="p_dop"/> <!-- positional dilution of precision, *.01 -->
-	</message>
-	<message id="200" name="ROSFLIGHT_GNSS_POS_ECEF">
-		<!-- Only for determining which packets where calculated at the same time.
+	<message id="199" name="ROSFLIGHT_GNSS_POS_ECEF">
+		<!-- time_of_week is only for determining which packets where calculated at the same time.
 		     Use the various time and date fields to get GPS time. -->
 		<field type="uint16_t" name="time_of_week"/>
 		<field type="int32_t" name="ecef_x"/> <!-- cm -->
@@ -261,13 +231,57 @@
 		<field type="int32_t" name="ecef_z"/> <!-- cm -->
 		<field type="uint32_t" name="p_acc"/> <!-- cm -->
 	</message>
-	<message id="201" name="ROSFLIGHT_GNSS_VEL_ECEF">
-		<!-- Only for determining which packets where calculated at the same time.
+	<message id="200" name="ROSFLIGHT_GNSS_VEL_ECEF">
+		<!-- time_of_week is only for determining which packets where calculated at the same time.
 		     Use the various time and date fields to get GPS time. -->
 		<field type="uint16_t" name="time_of_week"/>
 		<field type="int32_t" name="ecef_v_x"/> <!-- cm/s -->
 		<field type="int32_t" name="ecef_v_y"/> <!-- cm/s -->
 		<field type="int32_t" name="ecef_v_z"/> <!-- cm/s -->
+		<field type="uint32_t" name="s_acc"/> <!-- cm/s -->
+	</message>
+	<message id="201" name="ROSFLIGHT_GNSS">
+		<field type="uint64_t" name="fix_type"/><!-- this uses the ros fix type, as defined in sensor_msgs/NavSatStatus.msg -->
+		<field type="uint64_t" name="time"/> <!--unix time, in seconds -->
+		<field type="uint64_t" name="nanos"/>
+		<field type="int32_t" name="lat"/> <!-- deg*10^-7 -->
+		<field type="int32_t" name="lon"/> <!-- deg*10^-7 -->
+		<field type="int32_t" name="height"/> <!-- mm -->
+		<field type="int32_t" name="vel_n"/> <!-- mm/s -->
+		<field type="int32_t" name="vel_e"/> <!-- mm/s -->
+		<field type="int32_t" name="vel_d"/> <!-- mm/s -->
+		<field type="uint32_t" name="h_acc"/> <!-- mm -->
+		<field type="uint32_t" name="v_acc"/> <!-- mm -->
+	</message>
+	<message id="202" name="ROSFLIGHT_GNSS_RAW">
+		<!-- time_of_week is only for determining which packets where calculated at the same time.
+		     Use the various time and date fields to get GPS time. -->
+		<field type="uint64_t" name="time_of_week"/>
+		<field type="uint16_t" name="year"/>
+		<field type="uint8_t" name="month"/>
+		<field type="uint8_t" name="day"/>
+		<field type="uint8_t" name="hour"/>
+		<field type="uint8_t" name="min"/>
+		<field type="uint8_t" name="sec"/>
+		<field type="uint8_t" name="valid"/>
+		<field type="uint32_t" name="t_acc"/> <!-- ns -->
+		<field type="int32_t" name="nano"/> <!-- ns -->
+		<field type="uint8_t" name="fix_type" enum="UBLOX_FIX_TYPE"/>
+		<field type="uint8_t" name="num_sat"/>
+		<field type="int32_t" name="lon"/> <!-- deg *10^-7 -->
+		<field type="int32_t" name="lat"/> <!-- deg *10^-7 -->
+		<field type="int32_t" name="height"/> <!-- mm above elipsoid -->
+		<field type="int32_t" name="height_msl"/> <!-- mm above mean sea level -->
+		<field type="uint32_t" name="h_acc"/> <!-- mm -->
+		<field type="uint32_t" name="v_acc"/> <!-- mm -->
+		<field type="int32_t" name="vel_n"/> <!-- mm/s -->
+		<field type="int32_t" name="vel_e"/> <!-- mm/s -->
+		<field type="int32_t" name="vel_d"/> <!-- mm/s -->
+		<field type="int32_t" name="g_speed"/> <!-- mm/s -->
+		<field type="int32_t" name="head_mot"/> <!--deg *10^-5 -->
+		<field type="uint32_t" name="s_acc"/> <!--mm/s-->
+		<field type="uint32_t" name="head_acc"/> <!-- deg * 10^-5 -->
+		<field type="uint16_t" name="p_dop"/> <!-- *.01 -->
 	</message>
     </messages>
 </mavlink>
