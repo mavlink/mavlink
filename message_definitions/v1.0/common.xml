@@ -3267,6 +3267,22 @@
       <description>Emit an encrypted signature / key identifying this system. PLEASE NOTE: This protocol has been kept simple, so transmitting the key requires an encrypted channel for true safety.</description>
       <field type="char[32]" name="key">key</field>
     </message>
+    <message id="8" name="LINK_NODE_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Status generated in each node in the communication chain and injected into MAVLink stream.</description>
+      <field type="uint64_t" name="timestamp" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="tx_buf" units="%">Remaining free transmit buffer space</field>
+      <field type="uint8_t" name="rx_buf" units="%">Remaining free receive buffer space</field>
+      <field type="uint32_t" name="tx_rate">Transmit rate in bytes/s</field>
+      <field type="uint32_t" name="rx_rate">Receive rate in bytes/s</field>
+      <field type="uint16_t" name="rx_parse_err">Number of bytes that could not be parsed correctly</field>
+      <field type="uint16_t" name="tx_overflows">Transmit buffer overflows. This number wraps around as it reaches UINT16_MAX</field>
+      <field type="uint16_t" name="rx_overflows">Receive buffer overflows. This number wraps around as it reaches UINT16_MAX</field>
+      <field type="uint32_t" name="messages_sent">Messages sent</field>
+      <field type="uint32_t" name="messages_received">Messages received (estimated from counting seq)</field>
+      <field type="uint32_t" name="messages_lost">Messages lost (estimated from counting seq)</field>
+    </message>
     <message id="11" name="SET_MODE">
       <deprecated since="2015-12" replaced_by="MAV_CMD_DO_SET_MODE">Use COMMAND_LONG with MAV_CMD_DO_SET_MODE instead</deprecated>
       <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
