@@ -53,7 +53,7 @@
         <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
         <param index="1" label="altitude" units="m">Altitude.</param>
         <param index="2" label="descent speed" units="m/s">Descent speed.</param>
-        <param index="3" label="wiggle Time" units="s">Wiggle Time.</param>
+        <param index="3" label="wiggle time" units="s">Wiggle time.</param>
         <param index="4">Empty.</param>
         <param index="5">Empty.</param>
         <param index="6">Empty.</param>
@@ -133,7 +133,7 @@
       </entry>
       <entry value="42424" name="MAV_CMD_DO_START_MAG_CAL">
         <description>Initiate a magnetometer calibration.</description>
-        <param index="1" label="bitmask" increment="1">uint8_t bitmask of magnetometers (0 means all).</param>
+        <param index="1" label="bitmask" minValue="0" maxValue="255" increment="1">Bitmask of magnetometers to calibrate (0 means all).</param>
         <param index="2" label="retry on failure" minValue="0" maxValue="1" increment="1">Automatically retry on failure (0=no retry, 1=retry).</param>
         <param index="3" label="autosave" minValue="0" maxValue="1" increment="1">Save without user input (0=require input, 1=autosave).</param>
         <param index="4" label="delay" units="s">Delay.</param>
@@ -142,8 +142,8 @@
         <param index="7">Empty.</param>
       </entry>
       <entry value="42425" name="MAV_CMD_DO_ACCEPT_MAG_CAL">
-        <description>Initiate a magnetometer calibration.</description>
-        <param index="1" label="bitmask" increment="1">uint8_t bitmask of magnetometers (0 means all).</param>
+        <description>Accept a magnetometer calibration.</description>
+        <param index="1" label="bitmask" minValue="0" maxValue="255" increment="1">Bitmask of magnetometers that calibration is accepted (0 means all).</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -153,7 +153,7 @@
       </entry>
       <entry value="42426" name="MAV_CMD_DO_CANCEL_MAG_CAL">
         <description>Cancel a running magnetometer calibration.</description>
-        <param index="1" label="bitmask" increment="1">uint8_t bitmask of magnetometers (0 means all).</param>
+        <param index="1" label="bitmask" minValue="0" maxValue="255" increment="1">Bitmask of magnetometers to cancel a running calibration (0 means all).</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -183,7 +183,7 @@
       </entry>
       <entry value="42427" name="MAV_CMD_SET_FACTORY_TEST_MODE">
         <description>Command autopilot to get into factory test/diagnostic mode.</description>
-        <param index="1" label="test mode" minValue="0" maxValue="1" increment="1">0 means get out of test mode, 1 means get into test mode.</param>
+        <param index="1" label="test mode" minValue="0" maxValue="1" increment="1">0: activate test mode, 1: exit test mode.</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -204,7 +204,7 @@
       <entry value="42502" name="MAV_CMD_GIMBAL_AXIS_CALIBRATION_STATUS">
         <description>Reports progress and success or failure of gimbal axis calibration procedure.</description>
         <param index="1" label="axis" enum="GIMBAL_AXIS">Gimbal axis we're reporting calibration progress for.</param>
-        <param index="2" label="progress" units="%">Current calibration progress for this axis.</param>
+        <param index="2" label="progress" units="%" minValue="0" maxValue="100" >Current calibration progress for this axis.</param>
         <param index="3" label="status" enum="GIMBAL_AXIS_CALIBRATION_STATUS">Status of the calibration.</param>
         <param index="4">Empty.</param>
         <param index="5">Empty.</param>
