@@ -5113,10 +5113,14 @@
       <field type="uint16_t[16]" name="voltages" units="mV">Individual cell voltages. Batteries with more 16 cells can use the cell_offset field to specify the cell offset for the array specified in the current message . Index values above the valid cell count for this battery should have the UINT16_MAX value.</field>
     </message>
     <message id="380" name="TIME_ESTIMATE_TO_TARGET">
-      <description>Time estimates until specific targets are reached or actions performed, given the current vehicle state and position</description>
-      <field type="int32_t" name="rtl" units="s">Estimated time for RTL action given current vehicle position, 0: Already landed or autopilot does not provide RTL time estimate</field>
-      <field type="int32_t" name="land" units="s">Estimated time for LAND action given current vehicle position, 0: Already landed or autopilot does not provide LAND time estimate</field>
-      <field type="int32_t" name="mission_end" units="s">Estimated time for completing the current mission, 0: Mission complete or no mission active</field>
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Time/duration estimates for various events and actions given the current vehicle state and position.</description>
+      <field type="int32_t" name="rtl" units="s">Estimated time duration for RTL given current vehicle position. The estimate reflects whatever type of RTL is curently configured. -1 means already landed or no time estimate available.</field>
+      <field type="int32_t" name="land" units="s">Estimated time duration for LAND action given current vehicle position. -1 means already landed or no time estimate available.</field>
+      <field type="int32_t" name="mission_nex_item" units="s">Estimated time duration for reaching/completing the currently active mission item. -1 means no time estimate available.</field>
+      <field type="int32_t" name="mission_end" units="s">Estimated time duration for completing the current mission. -1 means no mission active and/or no estimate available.</field>
+      <field type="int32_t" name="non_mission_action" units="s">Estimated time duration for completing the current action that is not a mission (i.e. Go To, Orbit, takeoff, land, etc.). -1 means no action active and/or no estimate available.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
