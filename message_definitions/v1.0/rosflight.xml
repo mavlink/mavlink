@@ -225,7 +225,7 @@
 	<message id="199" name="ROSFLIGHT_GNSS_POS_ECEF">
 		<!-- time_of_week is only for determining which packets where calculated at the same time.
 		     Use the various time and date fields to get GPS time. -->
-		<field type="uint16_t" name="time_of_week"/>
+		<field type="uint32_t" name="time_of_week"/>
 		<field type="int32_t" name="ecef_x"/> <!-- cm -->
 		<field type="int32_t" name="ecef_y"/> <!-- cm -->
 		<field type="int32_t" name="ecef_z"/> <!-- cm -->
@@ -234,14 +234,14 @@
 	<message id="200" name="ROSFLIGHT_GNSS_VEL_ECEF">
 		<!-- time_of_week is only for determining which packets where calculated at the same time.
 		     Use the various time and date fields to get GPS time. -->
-		<field type="uint16_t" name="time_of_week"/>
+		<field type="uint32_t" name="time_of_week"/>
 		<field type="int32_t" name="ecef_v_x"/> <!-- cm/s -->
 		<field type="int32_t" name="ecef_v_y"/> <!-- cm/s -->
 		<field type="int32_t" name="ecef_v_z"/> <!-- cm/s -->
 		<field type="uint32_t" name="s_acc"/> <!-- cm/s -->
 	</message>
 	<message id="201" name="ROSFLIGHT_GNSS">
-		<field type="uint64_t" name="fix_type"/><!-- this uses the ros fix type, as defined in sensor_msgs/NavSatStatus.msg -->
+		<field type="uint64_t" name="fix_type" enum="UBLOX_FIX_TYPE"/><!-- This uses the UBX fix definition -->
 		<field type="uint64_t" name="time"/> <!--unix time, in seconds -->
 		<field type="uint64_t" name="nanos"/>
 		<field type="int32_t" name="lat"/> <!-- deg*10^-7 -->
@@ -252,11 +252,12 @@
 		<field type="int32_t" name="vel_d"/> <!-- mm/s -->
 		<field type="uint32_t" name="h_acc"/> <!-- mm -->
 		<field type="uint32_t" name="v_acc"/> <!-- mm -->
+		<field type="uint64_t" name="rosflight_timestamp"/> <!-- microseconds -->
 	</message>
 	<message id="202" name="ROSFLIGHT_GNSS_RAW">
 		<!-- time_of_week is only for determining which packets where calculated at the same time.
 		     Use the various time and date fields to get GPS time. -->
-		<field type="uint64_t" name="time_of_week"/>
+		<field type="uint32_t" name="time_of_week"/>
 		<field type="uint16_t" name="year"/>
 		<field type="uint8_t" name="month"/>
 		<field type="uint8_t" name="day"/>
@@ -282,6 +283,7 @@
 		<field type="uint32_t" name="s_acc"/> <!--mm/s-->
 		<field type="uint32_t" name="head_acc"/> <!-- deg * 10^-5 -->
 		<field type="uint16_t" name="p_dop"/> <!-- *.01 -->
+		<field type="uint64_t" name="rosflight_timestamp"/> <!-- microseconds -->
 	</message>
     </messages>
 </mavlink>
