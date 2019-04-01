@@ -16,21 +16,6 @@ cd "$SRC_DIR"
 # ./scripts/format_xml.sh -c
 echo PASS
 
-# install
-echo $sep
-echo "PYMAVLINK INSTALL"
-echo $sep
-cd "$SRC_DIR"
-
-user_arg="--user"
-if [ "$TRAVIS" = true ] || [ "$CI" = true ]
-then
-	user_arg=""
-fi
-pip install $user_arg -r pymavlink/requirements.txt
-cd "$SRC_DIR/pymavlink"
-python setup.py build install $user_arg
-
 generate_mavlink() {
     echo $sep
     echo "GENERATING MAVLINK " \
@@ -38,7 +23,7 @@ generate_mavlink() {
     echo "DEFINITION : " "$msg_def"
     echo $sep
     outdir="/tmp/mavlink_${wire_protocol}_${lang}"
-    mavgen.py --lang="${lang}" \
+    pymavlink/tools/mavgen.py --lang="${lang}" \
 	    --wire-protocol "${wire_protocol}" \
 	    --strict-units \
 	    --output="${outdir}" "${msg_def}"
