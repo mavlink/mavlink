@@ -3681,6 +3681,7 @@
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
       <field type="float[21]" name="covariance">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x_global, y_global, z_global, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="102" name="VISION_POSITION_ESTIMATE">
       <description>Global position/attitude estimate from a vision source.</description>
@@ -3693,6 +3694,7 @@
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
       <field type="float[21]" name="covariance">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="103" name="VISION_SPEED_ESTIMATE">
       <description>Speed estimate from a vision source.</description>
@@ -3702,6 +3704,7 @@
       <field type="float" name="z" units="m/s">Global Z speed</field>
       <extensions/>
       <field type="float[9]" name="covariance">Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="104" name="VICON_POSITION_ESTIMATE">
       <description>Global position estimate from a Vicon motion system source.</description>
@@ -4584,6 +4587,8 @@
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
       <field type="float[21]" name="pose_covariance">Row-major representation of a 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="float[21]" name="velocity_covariance">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <extensions/>
+      <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="350" name="DEBUG_FLOAT_ARRAY">
       <description>Large debug/prototyping array. The message uses the maximum available payload for data. The array_id and name fields are used to discriminate between messages in code and in user interfaces (respectively). Do not use in production code.</description>
