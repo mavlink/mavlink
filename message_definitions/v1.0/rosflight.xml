@@ -222,26 +222,11 @@
 	    <field type="uint32_t" name="reset_count"/>
 	    <field type="uint32_t" name="doRearm"/>
 	</message>
-	<message id="199" name="ROSFLIGHT_GNSS_POS_ECEF">
+	<message id="199" name="ROSFLIGHT_GNSS">
 		<!-- time_of_week is only for determining which packets where calculated at the same time.
-		     Use the various time and date fields to get GPS time. -->
+		     Use the time and nanos field to get GPS time. -->
 		<field type="uint32_t" name="time_of_week"/>
-		<field type="int32_t" name="ecef_x"/> <!-- cm -->
-		<field type="int32_t" name="ecef_y"/> <!-- cm -->
-		<field type="int32_t" name="ecef_z"/> <!-- cm -->
-		<field type="uint32_t" name="p_acc"/> <!-- cm -->
-	</message>
-	<message id="200" name="ROSFLIGHT_GNSS_VEL_ECEF">
-		<!-- time_of_week is only for determining which packets where calculated at the same time.
-		     Use the various time and date fields to get GPS time. -->
-		<field type="uint32_t" name="time_of_week"/>
-		<field type="int32_t" name="ecef_v_x"/> <!-- cm/s -->
-		<field type="int32_t" name="ecef_v_y"/> <!-- cm/s -->
-		<field type="int32_t" name="ecef_v_z"/> <!-- cm/s -->
-		<field type="uint32_t" name="s_acc"/> <!-- cm/s -->
-	</message>
-	<message id="201" name="ROSFLIGHT_GNSS">
-		<field type="uint64_t" name="fix_type" enum="UBLOX_FIX_TYPE"/><!-- This uses the UBX fix definition -->
+		<field type="uint8_t" name="fix_type" enum="UBLOX_FIX_TYPE"/><!-- This uses the UBX fix definition -->
 		<field type="uint64_t" name="time"/> <!--unix time, in seconds -->
 		<field type="uint64_t" name="nanos"/>
 		<field type="int32_t" name="lat"/> <!-- deg*10^-7 -->
@@ -252,9 +237,17 @@
 		<field type="int32_t" name="vel_d"/> <!-- mm/s -->
 		<field type="uint32_t" name="h_acc"/> <!-- mm -->
 		<field type="uint32_t" name="v_acc"/> <!-- mm -->
+		<field type="int32_t" name="ecef_x"/> <!-- cm -->
+		<field type="int32_t" name="ecef_y"/> <!-- cm -->
+		<field type="int32_t" name="ecef_z"/> <!-- cm -->
+		<field type="uint32_t" name="p_acc"/> <!-- cm -->
+		<field type="int32_t" name="ecef_v_x"/> <!-- cm/s -->
+		<field type="int32_t" name="ecef_v_y"/> <!-- cm/s -->
+		<field type="int32_t" name="ecef_v_z"/> <!-- cm/s -->
+		<field type="uint32_t" name="s_acc"/> <!-- cm/s -->
 		<field type="uint64_t" name="rosflight_timestamp"/> <!-- microseconds -->
 	</message>
-	<message id="202" name="ROSFLIGHT_GNSS_RAW">
+	<message id="200" name="ROSFLIGHT_GNSS_RAW">
 		<!-- time_of_week is only for determining which packets where calculated at the same time.
 		     Use the various time and date fields to get GPS time. -->
 		<field type="uint32_t" name="time_of_week"/>
