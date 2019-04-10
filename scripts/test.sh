@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 SRC_DIR=$(pwd)
@@ -23,7 +23,7 @@ echo $sep
 cd "$SRC_DIR"
 
 user_arg="--user"
-if [ "$TRAVIS" == true ] || [ "$CI" == true ]
+if [ "$TRAVIS" = true ] || [ "$CI" = true ]
 then
 	user_arg=""
 fi
@@ -31,7 +31,7 @@ pip install $user_arg -r pymavlink/requirements.txt
 cd "$SRC_DIR/pymavlink"
 python setup.py build install $user_arg
 
-function generate_mavlink() {
+generate_mavlink() {
     echo $sep
     echo "GENERATING MAVLINK " \
 	    "protocol:${wire_protocol} language:${lang}"
