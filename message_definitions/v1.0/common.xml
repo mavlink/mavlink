@@ -4614,6 +4614,17 @@
       <extensions/>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
+    <message id="335" name="ISBD_LINK_STATUS">
+      <description>Status of the Iridium SBD link</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint64_t" name="last_heartbeat" units="us">Timestamp of the last successful sbd session</field>
+      <field type="uint16_t" name="failed_sessions">Number of failed sbd sessions</field>
+      <field type="uint16_t" name="successful_sessions">Number of successful sbd sessions</field>
+      <field type="uint8_t" name="signal_quality">Signal quality</field>
+      <field type="uint8_t" name="ring_pending">Ring call pending</field>
+      <field type="uint8_t" name="tx_session_pending">Transmission session pending</field>
+      <field type="uint8_t" name="rx_session_pending">Receiving session pending</field>
+    </message>
     <message id="350" name="DEBUG_FLOAT_ARRAY">
       <description>Large debug/prototyping array. The message uses the maximum available payload for data. The array_id and name fields are used to discriminate between messages in code and in user interfaces (respectively). Do not use in production code.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
