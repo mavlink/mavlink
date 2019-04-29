@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 SRC_DIR=$(pwd)
@@ -16,29 +16,14 @@ cd "$SRC_DIR"
 ./scripts/format_xml.sh -c
 echo PASS
 
-# install
-echo $sep
-echo "PYMAVLINK INSTALL"
-echo $sep
-cd "$SRC_DIR"
-
-user_arg="--user"
-if [ "$TRAVIS" == true ] || [ "$CI" == true ]
-then
-	user_arg=""
-fi
-pip install $user_arg -r pymavlink/requirements.txt
-cd "$SRC_DIR/pymavlink"
-python setup.py build install $user_arg
-
-function generate_mavlink() {
+generate_mavlink() {
     echo $sep
     echo "GENERATING MAVLINK " \
 	    "protocol:${wire_protocol} language:${lang}"
     echo "DEFINITION : " "$msg_def"
     echo $sep
     outdir="/tmp/mavlink_${wire_protocol}_${lang}"
-    mavgen.py --lang="${lang}" \
+    pymavlink/tools/mavgen.py --lang="${lang}" \
 	    --wire-protocol "${wire_protocol}" \
 	    --strict-units \
 	    --output="${outdir}" "${msg_def}"
@@ -76,13 +61,3 @@ then
 fi
 cd "$SRC_DIR/pymavlink/generator/javascript" && npm test
 
-# Run tests
-echo $sep
-echo "QUATERNION TEST"
-echo $sep
-cd "$SRC_DIR"
-pymavlink/tests/test_quaternion.py
-echo "ROTMAT TEST"
-echo $sep
-pymavlink/tests/test_rotmat.py
-echo PASS
