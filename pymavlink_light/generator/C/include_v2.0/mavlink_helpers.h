@@ -684,6 +684,28 @@ MAVLINK_HELPER uint8_t mavlink_max_message_length(const mavlink_message_t* msg)
     return msg_entry ? msg_entry->max_msg_len : 0;
 }
 
+/*
+  return the target system
+*/
+MAVLINK_HELPER uint8_t mavlink_get_target_system(const mavlink_message_t* msg)
+{
+    if (msg->msg_entry && (msg->msg_entry->flags & MAV_MSG_ENTRY_FLAG_HAVE_TARGET_SYSTEM)) {
+        return (uint8_t)_MAV_PAYLOAD(msg)[msg->msg_entry->target_system_ofs];
+    }
+    return 0;
+}
+
+/*
+  return the target component
+*/
+MAVLINK_HELPER uint8_t mavlink_get_target_component(const mavlink_message_t* msg)
+{
+    if (msg->msg_entry && (msg->msg_entry->flags & MAV_MSG_ENTRY_FLAG_HAVE_TARGET_COMPONENT)) {
+        return (uint8_t)_MAV_PAYLOAD(msg)[msg->msg_entry->target_component_ofs];
+    }
+    return 0;
+}
+
 /**
  * This is an optimized variant of the mavlink parser with caller supplied
  * parsing buffers. It is useful when you want to create a MAVLink parser in
@@ -850,6 +872,7 @@ MAVLINK_HELPER uint8_t mavlink_parse_nextchar(mavlink_message_t* msg, mavlink_st
 
     case MAVLINK_PARSE_STATE_GOT_PAYLOAD: {
         const mavlink_msg_entry_t* msg_entry = mavlink_get_msg_entry(msg->msgid);
+        msg->msg_entry = msg_entry;
         uint8_t crc_extra = msg_entry ? msg_entry->crc_extra : 0;
         mavlink_update_checksum(msg, crc_extra);
         if (c != (msg->checksum & 0xFF)) {
