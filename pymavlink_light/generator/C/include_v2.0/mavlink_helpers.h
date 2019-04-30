@@ -18,6 +18,7 @@ namespace mavlink {
 
 //FUNCTIONS WHICH THE USER MIGHT MODIFY
 
+#ifdef MAVLINK_USE_CHAN_FUNCTIONS
 /*
  * Internal function to give access to the channel status for each channel
  */
@@ -49,6 +50,7 @@ MAVLINK_HELPER mavlink_message_t* mavlink_get_channel_buffer(uint8_t chan)
     return &m_mavlink_buffer[chan];
 }
 #endif // MAVLINK_GET_CHANNEL_BUFFER
+#endif
 
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 // To make MAVLink work on your MCU, define comm_send_ch() if you wish
@@ -85,6 +87,15 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char* buf, 
 //MISCELANEOUS
 
 /**
+ * @brief Reset the status.
+ */
+MAVLINK_HELPER void mavlink_reset_status(mavlink_status_t* status)
+{
+    status->parse_state = MAVLINK_PARSE_STATE_IDLE;
+}
+
+#ifdef MAVLINK_USE_CHAN_FUNCTIONS
+/**
  * @brief Reset the status of a channel.
  */
 MAVLINK_HELPER void mavlink_reset_channel_status(uint8_t chan)
@@ -120,6 +131,7 @@ MAVLINK_HELPER unsigned int mavlink_get_proto_version(uint8_t chan)
         return 2;
     }
 }
+#endif
 
 /**
  * @brief create a signature block for a packet
@@ -398,6 +410,7 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_buffer(mavlink_message_t* msg, 
     return msg->len + header_len + 2 + signature_len;
 }
 
+#ifdef MAVLINK_USE_CHAN_FUNCTIONS
 /**
  * @brief Finalize a MAVLink message with channel assignment
  */
@@ -416,6 +429,7 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t
 {
     return mavlink_finalize_message_chan(msg, system_id, component_id, MAVLINK_COMM_0, min_length, length, crc_extra);
 }
+#endif
 
 static inline void _mav_parse_error(mavlink_status_t* status)
 {
@@ -964,6 +978,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
     return status->msg_received;
 }
 
+#ifdef MAVLINK_USE_CHAN_FUNCTIONS
 /**
  * This is a convenience function which handles the complete MAVLink parsing.
  * the function will parse one byte at a time and return the complete packet once
@@ -1076,6 +1091,7 @@ MAVLINK_HELPER uint8_t mavlink_parse_char(uint8_t chan, uint8_t c, mavlink_messa
     }
     return msg_received;
 }
+#endif
 
 // BITFIELD
 

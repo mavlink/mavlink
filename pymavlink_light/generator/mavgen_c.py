@@ -293,6 +293,7 @@ ${{array_fields:    mav_array_memcpy(packet->${name}, ${name}, sizeof(${type})*$
                                           MAVLINK_MSG_ID_${name}, MAVLINK_MSG_ID_${name}_MIN_LEN, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
 }
 
+#ifdef MAVLINK_USE_CHAN_FUNCTIONS
 /**
  * @brief Pack a ${name_lower} message
  * @param system_id ID of this system
@@ -386,6 +387,8 @@ static inline uint16_t mavlink_msg_${name_lower}_encode_chan(uint8_t system_id, 
 {
     return mavlink_msg_${name_lower}_pack_chan(system_id, component_id, chan, msg,${{arg_fields: ${name_lower}->${name},}});
 }
+
+#endif
 
 /**
  * @brief Send a ${name_lower} message
