@@ -255,6 +255,45 @@ ${{array_fields:#define MAVLINK_MSG_${msg_name}_FIELD_${name_upper}_LEN ${array_
 #endif
 
 /**
+ * @brief Pack a ${name_lower} message into a transmit buffer
+ * @param mav_txbuf The transmit buffer
+ * @param mav_status The parsing status buffer
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ *
+${{arg_fields: * @param ${name} ${units} ${description}
+}}
+ * @return length of the complete message in bytes in the transmit buffer
+ */
+static inline uint16_t mavlink_msg_${name_lower}_pack_txbuf(char* mav_txbuf, mavlink_status_t* mav_status, uint8_t system_id, uint8_t component_id,
+                                  ${{arg_fields: ${array_const}${type} ${array_prefix}${name},}})
+{
+    uint8_t header_len;
+    if (mav_status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) {
+        header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN+1;
+    } else {
+        header_len = MAVLINK_CORE_HEADER_LEN+1;
+    }
+
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    char* buf = (char*)(&mav_txbuf[header_len]);
+${{scalar_fields:    _mav_put_${type}(buf, ${wire_offset}, ${putname});
+}}
+${{array_fields:    _mav_put_${type}_array(buf, ${wire_offset}, ${name}, ${array_length});
+}}
+#else
+    mavlink_${name_lower}_t* packet = (mavlink_${name_lower}_t*)(&mav_txbuf[header_len]);
+${{scalar_fields:    packet->${name} = ${putname};
+}}
+${{array_fields:    mav_array_memcpy(packet->${name}, ${name}, sizeof(${type})*${array_length});
+}}
+#endif
+
+    return mavlink_finalize_message_txbuf(mav_txbuf, mav_status, system_id, component_id,
+                                          MAVLINK_MSG_ID_${name}, MAVLINK_MSG_ID_${name}_MIN_LEN, MAVLINK_MSG_ID_${name}_LEN, MAVLINK_MSG_ID_${name}_CRC);
+}
+
+/**
  * @brief Pack a ${name_lower} message
  * @param system_id ID of this system
  * @param component_id ID of this component (e.g. 200 for IMU)

@@ -254,6 +254,76 @@ MAVLINK_HELPER uint8_t _mav_trim_payload(const char* payload, uint8_t length)
 }
 
 /**
+ * @brief Finalize a MAVLink message into a transmit buffer
+ *
+ * This function calculates the checksum and sets length and aircraft id correctly.
+ * It assumes that the payload are already correctly set in the transmit buffer.
+ *
+ */
+MAVLINK_HELPER uint16_t mavlink_finalize_message_txbuf(char* txbuf, mavlink_status_t* status, uint8_t system_id, uint8_t component_id,
+                                uint32_t msgid, uint8_t min_length, uint8_t length, uint8_t crc_extra)
+{
+    uint8_t signature[MAVLINK_SIGNATURE_BLOCK_LEN];
+    uint8_t header_len, signature_len;
+    bool mavlink1 = (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) != 0;
+    bool signing = (!mavlink1) && status->signing && (status->signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING);
+
+    const char* payload_ptr; //pointer to payload
+
+    // form the header as a byte array for the crc
+    if (mavlink1) {
+        payload_ptr = &txbuf[MAVLINK_CORE_HEADER_MAVLINK1_LEN+1];
+        length = min_length;
+        header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN+1;
+        txbuf[0] = MAVLINK_STX_MAVLINK1;
+        txbuf[1] = length;
+        txbuf[2] = status->current_tx_seq;
+        txbuf[3] = system_id;
+        txbuf[4] = component_id;
+        txbuf[5] = msgid & 0xFF;
+        signature_len = 0;
+    } else {
+        payload_ptr = &txbuf[MAVLINK_CORE_HEADER_LEN+1];
+        length = _mav_trim_payload(payload_ptr, length); //the payload is already in the txbuf, so we can do this
+        uint8_t incompat_flags = 0;
+        if (signing) { incompat_flags |= MAVLINK_IFLAG_SIGNED; }
+        header_len = MAVLINK_CORE_HEADER_LEN+1;
+        txbuf[0] = MAVLINK_STX;
+        txbuf[1] = length;
+        txbuf[2] = incompat_flags;
+        txbuf[3] = 0;
+        txbuf[4] = status->current_tx_seq;
+        txbuf[5] = system_id;
+        txbuf[6] = component_id;
+        txbuf[7] = msgid & 0xFF;
+        txbuf[8] = (msgid >> 8) & 0xFF;
+        txbuf[9] = (msgid >> 16) & 0xFF;
+    }
+    status->current_tx_seq++;
+
+    uint16_t checksum = crc_calculate((uint8_t*)(&txbuf[1]), header_len-1);
+    crc_accumulate_buffer(&checksum, payload_ptr, length);
+    crc_accumulate(crc_extra, &checksum);
+
+    uint8_t* ck = (uint8_t*)payload_ptr + (uint16_t)length;
+    ck[0] = (uint8_t)(checksum & 0xFF);
+    ck[1] = (uint8_t)(checksum >> 8);
+
+    if (signing) {
+        signature_len = mavlink_sign_packet(status->signing,
+                            signature,
+                            (const uint8_t*)txbuf, header_len,
+                            (const uint8_t*)payload_ptr, length,
+                            (const uint8_t*)payload_ptr+(uint16_t)length);
+    }
+    if (signature_len > 0) {
+        memcpy(&ck[2], signature, signature_len);
+    }
+
+    return length + header_len + 2 + signature_len;
+}
+
+/**
  * @brief Finalize a MAVLink message
  *
  * This function calculates the checksum and sets length and aircraft id correctly.
