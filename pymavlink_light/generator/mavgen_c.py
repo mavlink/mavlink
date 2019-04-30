@@ -16,6 +16,48 @@ from . import mavparse, mavtemplate
 
 t = mavtemplate.MAVTemplate()
 
+def generate_msg_entries_h(directory, xml):
+    '''generate msg entries header per XML file'''
+    f = open(os.path.join(directory, "message_entries.h"), mode='w')
+    t.write(f, '''
+/** @file
+ *  @brief MAVLink message entries generated from ${basename}.xml
+ *  @see http://mavlink.org
+ */
+#pragma once
+#ifndef MAVLINK_MSG_ENTRIES_H
+#define MAVLINK_MSG_ENTRIES_H
+
+/**
+ * The values of msg_entry_t for all messages in the dialect.
+ */
+${message_entry_defines_array}
+/**
+ * If only relatively few MAVLink messages are used, efficiency can
+ * be much improved, both memory and computational time wise, by
+ * commenting out all those which are not used, and to write in code
+ *
+ * #define MAVLINK_MESSAGE_CRCS  MAVLINK_MESSAGE_ENTRIES 
+ *
+ * Alternatively, the above defines can be used to define one's own
+ * MAVLINK_MESSAGE_CRCS. It is then MOST important to keep the sequence
+ * since otherwise the default binary search will fail. E.g.:
+ * 
+ * #include "mavlink/v2.0/thedialect/message_entries.h"
+ * #define MAVLINK_MESSAGE_CRCS { MAVLINK_MSG_PARAM_REQUEST_READ_ENTRY,\\
+ *                                MAVLINK_MSG_PARAM_REQUEST_LIST_ENTRY,\\
+ *                                MAVLINK_MSG_PARAM_SET_ENTRY,\\
+ *                                MAVLINK_MSG_COMMAND_LONG_ENTRY,\\
+ *                                MAVLINK_MSG_AUTOPILOT_VERSION_REQUEST_ENTRY }
+ */ 
+#define MAVLINK_MESSAGE_ENTRIES {\\
+${message_entries_array}
+}
+
+#endif // MAVLINK_MSG_ENTRIES_H
+''', xml)
+    f.close()
+
 def generate_version_h(directory, xml):
     '''generate version.h'''
     f = open(os.path.join(directory, "version.h"), mode='w')
@@ -584,6 +626,8 @@ def generate_one(basename, xml):
 
     # and message CRCs array
     xml.message_crcs_array = ''
+    xml.message_entry_defines_array = ''
+    xml.message_entries_array = ''
     if xml.command_24bit:
         # we sort with primary key msgid
         for msgid in sorted(xml.message_crcs.keys()):
@@ -594,6 +638,16 @@ def generate_one(basename, xml):
                                                                       xml.message_flags[msgid],
                                                                       xml.message_target_system_ofs[msgid],
                                                                       xml.message_target_component_ofs[msgid])
+            xml.message_entry_defines_array += '#define MAVLINK_MSG_%s_ENTRY {%u, %u, %u, %u, %u, %u, %u}\n' % (xml.message_names[msgid],
+                                                                      msgid,
+                                                                      xml.message_crcs[msgid],
+                                                                      xml.message_min_lengths[msgid],
+                                                                      xml.message_lengths[msgid],
+                                                                      xml.message_flags[msgid],
+                                                                      xml.message_target_system_ofs[msgid],
+                                                                      xml.message_target_component_ofs[msgid])
+            xml.message_entries_array += '    MAVLINK_MSG_%s_ENTRY,\\\n' % xml.message_names[msgid]
+        xml.message_entries_array = xml.message_entries_array[:-1]
     else:
         for msgid in range(256):
             crc = xml.message_crcs.get(msgid, 0)
@@ -699,7 +753,7 @@ def generate_one(basename, xml):
     for m in xml.message:
         generate_message_h(directory, m)
     generate_testsuite_h(directory, xml)
-
+    generate_msg_entries_h(directory, xml)
 
 def generate(basename, xml_list):
     '''generate complete MAVLink C implemenation'''
