@@ -5102,15 +5102,15 @@
       <field type="uint32_t" name="cid">Cell ID. If unknown, set to: UINT32_MAX</field>
     </message>
     <message id="335" name="ISBD_LINK_STATUS">
-      <description>Status of the Iridium SBD link</description>
-      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
-      <field type="uint64_t" name="last_heartbeat" units="us">Timestamp of the last successful sbd session</field>
-      <field type="uint16_t" name="failed_sessions">Number of failed sbd sessions</field>
-      <field type="uint16_t" name="successful_sessions">Number of successful sbd sessions</field>
-      <field type="uint8_t" name="signal_quality">Signal quality</field>
-      <field type="uint8_t" name="ring_pending">Ring call pending</field>
-      <field type="uint8_t" name="tx_session_pending">Transmission session pending</field>
-      <field type="uint8_t" name="rx_session_pending">Receiving session pending</field>
+      <description>Status of the Iridium SBD link.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="uint64_t" name="last_heartbeat" units="us">Timestamp of the last successful sbd session. The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="uint16_t" name="failed_sessions">Number of failed SBD sessions.</field>
+      <field type="uint16_t" name="successful_sessions">Number of successful SBD sessions.</field>
+      <field type="uint8_t" name="signal_quality">Signal quality equal to the number of bars displayed on the ISU signal strength indicator. Range is 0 to 5, where 0 indicates no signal and 5 indicates maximum signal strength.</field>
+      <field type="uint8_t" name="ring_pending">1: Ring call pending, 0: No call pending.</field>
+      <field type="uint8_t" name="tx_session_pending">1: Transmission session pending, 0: No transmission session pending.</field>
+      <field type="uint8_t" name="rx_session_pending">1: Receiving session pending, 0: No receiving session pending.</field>
     </message>
     <message id="340" name="UTM_GLOBAL_POSITION">
       <wip/>
