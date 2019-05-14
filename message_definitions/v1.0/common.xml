@@ -3621,6 +3621,14 @@
       <field type="float" name="p2y" units="m">y position 2 / Longitude 2</field>
       <field type="float" name="p2z" units="m">z position 2 / Altitude 2</field>
     </message>
+    <message id="52" name="MISSION_CHANGED">
+      <description>A broadcast message to notify any ground station or SDK if a mission, geofence or safe points have changed on the vehicle.</description>
+      <field type="int16_t" name="start_index">Start index for partial mission change (-1 for all items).</field>
+      <field type="int16_t" name="end_index">End index of a partial mission change (-1 for all items, or to end if start_index is set).</field>
+      <field type="uint8_t" name="origin_sysid">Sysid of the author of the new mission.</field>
+      <field type="uint8_t" name="origin_compid">Compid of the author of the new mission.</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+    </message>
     <message id="55" name="SAFETY_ALLOWED_AREA">
       <description>Read out the safety zone the MAV currently assumes.</description>
       <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
