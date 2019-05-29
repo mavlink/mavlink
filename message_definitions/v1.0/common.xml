@@ -4627,6 +4627,12 @@
       <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
       <field type="char[254]" name="text">Status text message, without null termination character.</field>
     </message>
+    <message id="375" name="ACTUATOR_OUTPUT_STATUS">
+      <description>The raw values of the actuator outputs.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot).</field>
+      <field type="uint32_t" name="active" display="bitmask">Active outputs</field>
+      <field type="float[32]" name="actuator">Servo / motor output array values. Zero values indicate unused channels.</field>
+    </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
       <description>Cumulative distance traveled for each reported wheel.</description>
