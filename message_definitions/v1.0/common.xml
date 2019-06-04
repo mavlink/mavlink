@@ -1566,7 +1566,7 @@
         <param index="2" label="Index ID" minValue="0" increment="1">Index id (if appropriate). The use of this parameter (if any), must be defined in the requested message.</param>
       </entry>
       <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" hasLocation="false" isDestination="false">
-        <description>Request MAVLink protocol version compatibility</description>
+        <description>Request MAVLink protocol version compatibility. Systems should ACK request and then broadcast the PROTOCOL_VERSION message.</description>
         <param index="1" label="Protocol">1: Request supported protocol versions by all nodes on the network</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
@@ -4962,9 +4962,7 @@
       <field type="char[64]" name="password">Password. Leave it blank for an open AP.</field>
     </message>
     <message id="300" name="PROTOCOL_VERSION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Version and capability of protocol version. This message is the response to REQUEST_PROTOCOL_VERSION and is used as part of the handshaking to establish which MAVLink version should be used on the network. Every node should respond to REQUEST_PROTOCOL_VERSION to enable the handshaking. Library implementers should consider adding this into the default decoding state machine to allow the protocol core to respond directly.</description>
+      <description>Version and capability of protocol version. This message is the response to MAV_CMD_REQUEST_PROTOCOL_VERSION and is used as part of the handshaking to establish which MAVLink version should be used on the network. Every node should respond to MAV_CMD_REQUEST_PROTOCOL_VERSION to enable the handshaking. Library implementers should consider adding this into the default decoding state machine to allow the protocol core to respond directly.</description>
       <field type="uint16_t" name="version">Currently active MAVLink version number * 100: v1.0 is 100, v2.0 is 200, etc.</field>
       <field type="uint16_t" name="min_version">Minimum MAVLink version supported</field>
       <field type="uint16_t" name="max_version">Maximum MAVLink version supported (set to the same value as version by default)</field>
