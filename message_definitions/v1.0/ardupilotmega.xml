@@ -998,8 +998,126 @@
       <entry value="10" name="TRACKER_MODE_AUTO"/>
       <entry value="16" name="TRACKER_MODE_INITIALIZING"/>
     </enum>
+    <enum name="COMPANION_BASIC_STATUS_TYPE">
+      <description>Basic status messages types published by the companion computer. Each field is of type uint8_t.</description>
+      <entry value="00" name="COMPANION_STS_EMPTY"/>
+      <!-- Data: Dummy -->
+      <entry value="01" name="COMPANION_STS_VERSION"/>
+      <!-- Data: Version -->
+      <entry value="10" name="COMPANION_STS_CONNECTION_APM"/>
+      <!-- Data: Red/Yello/Green status and link quality in % -->
+      <entry value="11" name="COMPANION_STS_CONNECTION_INET"/>
+      <!-- Data: Red/Yello/Green status and Ping time in centi-seconds -->
+      <entry value="12" name="COMPANION_STS_CONNECTION_VPN"/>
+      <!-- Data: Red/Yello/Green status and Ping time in centi-seconds -->
+      <entry value="13" name="COMPANION_STS_CONNECTION_UNUSED_"/>
+      <!-- Data: Red/Yello/Green status and Ping time in centi-seconds -->
+      <entry value="20" name="COMPANION_STS_ROSNODE_GEOTAG"/>
+      <!-- Data: Red/Yello/Green status and processing phase-->
+      <entry value="21" name="COMPANION_STS_ROSNODE_WWW"/>
+      <!-- Data: Red/Yello/Green status -->
+      <entry value="22" name="COMPANION_STS_ROSNODE_LOGS"/>
+      <!-- Data: Red/Yello/Green status -->
+      <entry value="30" name="COMPANION_STS_ROSROUTER_NUM_USERS"/>
+      <!-- Data: Num_Users of OxFF - unknown -->
+      <entry value="31" name="COMPANION_STS_ROSROUTER_CMD_ID"/>
+      <!-- Data: ID or 0xFF - unknown -->
+      <entry value="40" name="COMPANION_STS_SYSTEM_CPU"/>
+      <!-- Data: CPU load  [%] -->
+      <entry value="41" name="COMPANION_STS_SYSTEM_RAM_MB"/>
+      <!-- Data: RAM load  [%] -->
+      <entry value="42" name="COMPANION_STS_SYSTEM_FREE_DISK"/>
+      <!-- Data: Disk load [%] -->
+      <entry value="201" name="COMPANION_STS_DICT_SIZE"/>
+      <!-- Data: Size or 0xFF - unknown -->
+      <entry value="210" name="COMPANION_STS_FW_UPDATE"/>
+      <!-- Data: Red/Yellow/Green status -->
+      <entry value="255" name="COMPANION_STS_LAST"/>
+      <!-- Data: Dummy -->
+    </enum>
+    <enum name="COMPANION_BASIC_STATUS_VALUE">
+      <description>Basic status values published by the companion computer. Each field is of type uint8_t.</description>
+      <entry value="0x00" name="COMPANION_STS_VAL_RANGE_MIN"/>
+      <entry value="0xEF" name="COMPANION_STS_VAL_RANGE_TOP"/>
+      <entry value="0xF0" name="COMPANION_STS_VAL_GREEN_GENERIC"/>
+      <entry value="0xF1" name="COMPANION_STS_VAL_GREEN_READY"/>
+      <entry value="0xF2" name="COMPANION_STS_VAL_GREEN_RUNNING"/>
+      <entry value="0xF3" name="COMPANION_STS_VAL_GREEN_FINISHED"/>
+      <entry value="0xF4" name="COMPANION_STS_VAL_GREEN_RESERVED0"/>
+      <entry value="0xF5" name="COMPANION_STS_VAL_YELLOW_GENERIC"/>
+      <entry value="0xF6" name="COMPANION_STS_VAL_YELLOW_INIT"/>
+      <entry value="0xF7" name="COMPANION_STS_VAL_YELLOW_WAITING"/>
+      <entry value="0xF8" name="COMPANION_STS_VAL_YELLOW_RESERVED0"/>
+      <entry value="0xF9" name="COMPANION_STS_VAL_YELLOW_RESERVED1"/>
+      <entry value="0xFA" name="COMPANION_STS_VAL_RED_GENERIC"/>
+      <entry value="0xFB" name="COMPANION_STS_VAL_RED_TIMEOUT"/>
+      <entry value="0xFC" name="COMPANION_STS_VAL_RED_EXCEEDED_MAX_ERROR"/>
+      <entry value="0xFD" name="COMPANION_STS_VAL_RED_RESERVED0"/>
+      <entry value="0xFE" name="COMPANION_STS_VAL_RED_RESERVED1"/>
+      <entry value="0xFF" name="COMPANION_STS_VAL_RED_UNKNOWN"/>
+      <!-- supported services bitmask -->
+    </enum>
+    <enum name="COMPANION_SERVICE_TYPE">
+      <description>Service requests supported by the companion computer (batch 0). Limited to 64 requests.</description>
+      <entry value="00" name="COMPANION_SRV0_HELLO"/>
+      <entry value="01" name="COMAPNION_SRV0_GET_SERVICE_ABBREVIATON"/>
+      <entry value="02" name="COMAPNION_SRV0_GET_SERVICE_DESCRIPTION"/>
+      <entry value="10" name="COMPANION_SRV0_DUMP_LOGS2SD_ALL"/>
+      <entry value="11" name="COMPANION_SRV0_DUMP_LOGS2SD_GEOTAG"/>
+      <entry value="12" name="COMPANION_SRV0_DUMP_LOGS2SD_TELEM"/>
+      <entry value="13" name="COMPANION_SRV0_DUMP_LOGS2SD_EXT_STATUS"/>
+      <entry value="14" name="COMPANION_SRV0_DUMP_LOGS2SD_DEBUG"/>
+      <entry value="20" name="COMPANION_SRV0_DIAGNOSTICS_PING_IP"/>
+      <entry value="21" name="COMPANION_SRV0_DIAGNOSTICS_GET_IP"/>
+      <entry value="22" name="COMPANION_SRV0_DIAGNOSTICS_GET_VPN_NET_ID"/>
+      <entry value="23" name="COMPANION_SRV0_DIAGNOSTICS_SET_SERIAL_BAUD"/>
+      <entry value="24" name="COMPANION_SRV0_DIAGNOSTICS_GET_SERIAL_BAUD"/>
+      <entry value="25" name="COMPANION_SRV0_DIAGNOSTICS_GET_ERROR_COUNT"/>
+      <entry value="30" name="COMPANION_SRV0_FW_UPDATE_CHECK"/>
+      <entry value="31" name="COMPANION_SRV0_FW_UPDATE_GET"/>
+      <entry value="32" name="COMPANION_SRV0_FW_UPDATE_RUN"/>
+      <entry value="33" name="COMPANION_SRV0_FW_RESTORE"/>
+      <entry value="40" name="COMPANION_SRV0_SYSTEM_REBOOT"/>
+      <entry value="41" name="COMPANION_SRV0_SYSTEM_SHUTDOWN"/>
+      <entry value="42" name="COMPANION_SRV0_SYSTEM_REMOUNT_CAMERA_SD"/>
+      <entry value="50" name="COMPANION_SRV0_RESERVED0"/>
+      <entry value="51" name="COMPANION_SRV0_RESERVED1"/>
+      <entry value="60" name="COMPANION_SRV0_CELLULAR_LINK_ADD_IP_PORT"/>
+      <entry value="61" name="COMPANION_SRV0_CELLULAR_LINK_LIST_BY_ID"/>
+      <entry value="62" name="COMPANION_SRV0_CELLULAR_LINK_CHECK_BY_ID"/>
+      <entry value="63" name="COMPANION_SRV0_CELLULAR_LINK_REMOVE_BY_ID"/>
+      <entry value="64" name="COMPANION_SRV0_MAX_LIMIT_UINT64"/>
+    </enum>
   </enums>
   <messages>
+    <message id="11800" name="COMPANION_STATUS_REPORT">
+      <description>Broadcast status of the Companion Computer</description>
+      <field type="uint64_t" name="provided_services">Bitmask of provided services</field>
+      <field type="uint8_t[16]" name="type_arr" enum="COMPANION_BASIC_STATUS_TYPE">Custom status types for companion computer status reports</field>
+      <field type="uint8_t[16]" name="value_arr" enum="COMPANION_BASIC_STATUS_VALUE">Custom status contents for companion computer status reports</field>
+    </message>
+    <message id="11801" name="COMPANION_SERVICE_REQUEST">
+      <description>Send a command with up to 8 bytes of parameters to the MAV</description>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+      <field type="uint8_t" name="service" enum="COMPANION_SERVICE_TYPE">Type of service to be provided.</field>
+      <field type="int32_t" name="param1">Parameter 1 (for the specific service).</field>
+      <field type="int32_t" name="param2">Parameter 2 (for the specific service).</field>
+    </message>
+    <message id="11802" name="COMPANION_SERVICE_RESPONSE_GENERIC">
+      <description>Send response with type and status of service that was done</description>
+      <field type="uint8_t" name="service" enum="COMPANION_SERVICE_TYPE">Type of service that was done.</field>
+      <field type="uint8_t" name="status" enum="COMPANION_BASIC_STATUS_VALUE">Result status of service that was done.</field>
+      <field type="int32_t" name="param1">Parameter 1 (for the specific service).</field>
+      <field type="int32_t" name="param2">Parameter 2 (for the specific service).</field>
+      <field type="int32_t" name="param3">Parameter 3 (for the specific service).</field>
+      <field type="int32_t" name="param4">Parameter 4 (for the specific service).</field>
+    </message>
+    <message id="11803" name="COMPANION_SERVICE_RESPONSE_TEXT">
+      <description>Send response with text status of service being done</description>
+      <field type="uint8_t" name="service" enum="COMPANION_SERVICE_TYPE">Type of service that is being done.</field>
+      <field type="char[50]" name="text">Status text message, without null termination character</field>
+    </message>
     <message id="150" name="SENSOR_OFFSETS">
       <description>Offsets and calibrations values for hardware sensors. This makes it easier to debug the calibration process.</description>
       <field type="int16_t" name="mag_ofs_x">Magnetometer X offset.</field>
