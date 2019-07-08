@@ -983,7 +983,8 @@
     </enum>
     <!-- Camera Mount mode Enumeration -->
     <enum name="MAV_MOUNT_MODE">
-      <description>Enumeration of possible mount operation modes</description>
+      <deprecated since="2019-07" replaced_by="MAV_GIMBAL_MODE"/>
+      <description>Enumeration of possible mount operation modes (deprecated, replaced by MAV_GIMBAL_MODE)</description>
       <entry value="0" name="MAV_MOUNT_MODE_RETRACT">
         <description>Load and keep safe position (Roll,Pitch,Yaw) from permant memory and stop stabilization</description>
       </entry>
@@ -1001,6 +1002,21 @@
       </entry>
       <entry value="5" name="MAV_MOUNT_MODE_SYSID_TARGET">
         <description>Gimbal tracks system with specified system ID</description>
+      </entry>
+    </enum>
+    <enum name="MAV_GIMBAL_MODE">
+      <description>Enumeration of possible gimbal operation modes</description>
+      <entry value="0" name="MAV_GIMBAL_MODE_RETRACT">
+        <description>Retracted safe position</description>
+      </entry>
+      <entry value="1" name="MAV_GIMBAL_MODE_DEFAULT">
+        <description>Neutral (default) position.</description>
+      </entry>
+      <entry value="2" name="MAV_GIMBAL_MODE_FOLLOW">
+        <description>Use Follow mode (this mode should follows the heading of the vehicle with some dampening).</description>
+      </entry>
+      <entry value="3" name="MAV_GIMBAL_MODE_LOCK">
+        <description>Use Lock mode (this mode should lock to heading ignoring the vehicle heading as much as possible).</description>
       </entry>
     </enum>
     <!-- UAVCAN node health enumeration -->
@@ -1633,6 +1649,7 @@
       </entry>
       <!-- this one is messed up! altitude should be param 7, not param4 -->
       <entry value="205" name="MAV_CMD_DO_MOUNT_CONTROL" hasLocation="false" isDestination="false">
+        <deprecated since="2019-07" replaced_by="MAV_CMD_DO_GIMBAL_ATTITUDE">This message is ambiguous and inconsistent and therefore replaced by MAV_CMD_DO_GIMBAL_ATTITUDE and MAV_CMD_DO_SET_ROI_*.</deprecated>
         <description>Mission command to control a camera or antenna mount</description>
         <param index="1">pitch depending on mount mode (degrees or degrees/second depending on pitch input).</param>
         <param index="2">roll depending on mount mode (degrees or degrees/second depending on roll input).</param>
@@ -1714,6 +1731,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="220" name="MAV_CMD_DO_MOUNT_CONTROL_QUAT" hasLocation="false" isDestination="false">
+        <deprecated since="2019-07" replaced_by="MAV_CMD_DO_GIMBAL_ATTITUDE"/>
         <description>Mission command to control a camera or antenna mount, using a quaternion as reference.</description>
         <param index="1" label="Q1">quaternion param q1, w (1 in null-rotation)</param>
         <param index="2" label="Q2">quaternion param q2, x (0 in null-rotation)</param>
@@ -1965,6 +1983,16 @@
         <description>Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number.</description>
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
+      </entry>
+      <entry value="1000" name="MAV_CMD_DO_GIMBAL_ATTITUDE" hasLocation="false" isDestination="false">
+        <description>Setpoint to be sent to autopilot to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset.</description>
+        <param index="1">Pitch/tilt angle relative to world horizon (+90 to -90 degrees, negative is to tilt down, positive to tilt up).</param>
+        <param index="2">Yaw/pan angle (-180 to 180 degrees, positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
+        <param index="3">Pitch/tilt angular rate (degrees/second, positive to point up).</param>
+        <param index="4">Yaw/pan angular rate (degrees/second, positive to pan to the right).</param>
+        <param index="5" enum="MAV_GIMBAL_MODE">Gimbal mode.</param>
+        <param index="6">Reserved.</param>
+        <param index="7">Reserved.</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
