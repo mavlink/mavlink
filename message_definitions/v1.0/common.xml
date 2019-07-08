@@ -1985,7 +1985,7 @@
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
       </entry>
       <entry value="1000" name="MAV_CMD_DO_GIMBAL_ATTITUDE" hasLocation="false" isDestination="false">
-        <description>Setpoint to be sent to autopilot to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset.</description>
+        <description>Setpoint to be sent to autopilot to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: this command is only used between ground station and autopilot or as part of missions but never directly to a gimbal. To communicate with a gimbal the messages GIMBAL_CONTROL_* are to be used.</description>
         <param index="1">Pitch/tilt angle relative to world horizon (+90 to -90 degrees, negative is to tilt down, positive to tilt up).</param>
         <param index="2">Yaw/pan angle (-180 to 180 degrees, positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
         <param index="3">Pitch/tilt angular rate (degrees/second, positive to point up).</param>
@@ -5868,6 +5868,34 @@
       <field type="uint32_t" name="bitrate" units="bits/s">Bit rate</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
+    </message>
+    <message id="280" name="GIMBAL_CONTROL_ATTITUDE">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Message to control a gimbal's attitude. This message is to be sent by the autopilot to the gimbal component. Angles and rates can be set to NaN according to use case.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="mode" enum="MAV_GIMBAL_MODE">Gimbal mode.</field>
+      <field type="float" name="roll" units="rad">Roll in global frame, positive is tilt to the right (set to NaN for not set).</field>
+      <field type="float" name="pitch" units="rad">Pitch in global frame, positive is tilting up (set to NaN for not set).</field>
+      <field type="float" name="yaw_relative" units="rad">Yaw relative to vehicle, required for MAV_GIMBAL_MODE_FOLLOW (set to NaN for not set).</field>
+      <field type="float" name="yaw_absolute" units="rad">Yaw absolute, 0 is North, -pi to pi, positive to the right, required for MAV_GIMBAL_MODE_LOCK mode (set to NaN for not set).</field>
+      <field type="float" name="rollspeed" units="rad/s">Roll angular speed (NaN for not set).</field>
+      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed (NaN for not set).</field>
+      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed (NaN for not set).</field>
+    </message>
+    <message id="281" name="GIMBAL_CONTROL_LOCATION">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Message to control a gimbal to point to a GPS point or local position. This can be used for a GPS position if x, y, z are set to NaN or a local position if lat, lon, alt are set to 0. This message is to be sent by the autopilot to the gimbal component.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude where gimbal should point to</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude where gimbal should point to</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (MSL) where gimbal should point to</field>
+      <field type="float" name="x" units="m">Local X position of this position in the local coordinate frame</field>
+      <field type="float" name="y" units="m">Local Y position of this position in the local coordinate frame</field>
+      <field type="float" name="z" units="m">Local Z position of this position in the local coordinate frame</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure AP SSID and Password.</description>
