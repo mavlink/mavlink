@@ -1532,17 +1532,17 @@
         <param index="1" label="First Item" minValue="0" increment="1">first_item: the first mission item to run</param>
         <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
       </entry>
-      <entry value="350" name="MAV_CMD_MISSION_CHECKSUM" hasLocation="false" isDestination="false">
+      <entry value="350" name="MAV_CMD_MISSION_UID" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Calculate mission checksum and put in beginning of mission to easily test mission synchronisation</description>
-        <param index="1" label="Checksum bytes 1 and 2"> </param>
-        <param index="2" label="Checksum bytes 3 and 4"> </param>
-        <param index="3" label="Checksum bytes 5 and 6"> </param>
-        <param index="4" label="Checksum bytes 7 and 8"> </param>
-        <param index="5" label="Checksum bytes 9 and 10"> </param>
-        <param index="6" label="Checksum bytes 11 and 12"> </param>
-        <param index="7" label="Checksum bytes 13 and 14"> </param>
+        <description>Unique mission ID to be put in beginning of a mission to easily test mission synchronisation.</description>
+        <param index="1" label="First 4 bytes of the unique mission ID"> </param>
+        <param index="2" label="Last 4 bytes of the unique mission ID"> </param>
+        <param index="3">Reserved</param>
+        <param index="4">Reserved</param>
+        <param index="5">Reserved</param>
+        <param index="6">Reserved</param>
+        <param index="7">Empty</param>
       </entry>
       <entry value="400" name="MAV_CMD_COMPONENT_ARM_DISARM" hasLocation="false" isDestination="false">
         <description>Arms / Disarms a component</description>
@@ -2567,6 +2567,9 @@
       </entry>
       <entry value="65536" name="MAV_PROTOCOL_CAPABILITY_FLIGHT_INFORMATION">
         <description>Autopilot supports the flight information protocol.</description>
+      </entry>
+      <entry value="131072‬" name="MAV_PROTOCOL_CAPABILITY_MISSION_UID">
+        <description>Autopilot supports unique mission ID in the mission.</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_TYPE">
@@ -3646,6 +3649,14 @@
       <field type="uint8_t" name="origin_sysid">System ID of the author of the new mission.</field>
       <field type="uint8_t" name="origin_compid" enum="MAV_COMPONENT">Compnent ID of the author of the new mission.</field>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+    </message>
+    <message id="53" name="MISSION_UID">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Unique mission ID for the current mission. The UID is set in a mission with MAV_CMD_MISSION_UID. When requesting the MISSION_UID with MAV_CMD_REQUEST_MESSAGE then use mission_type as param 2 of that message.</description>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+      <field type="float" name="uid_1">First 4 bytes of the unique mission ID</field>
+      <field type="float" name="uid_2">Last 4 bytes of the unique mission ID</field>
     </message>
     <message id="54" name="SAFETY_SET_ALLOWED_AREA">
       <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/waypoints to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
