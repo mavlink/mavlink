@@ -984,7 +984,7 @@
     <!-- Camera Mount mode Enumeration -->
     <enum name="MAV_MOUNT_MODE">
       <deprecated since="2019-07" replaced_by="MAV_GIMBAL_MODE"/>
-      <description>Enumeration of possible mount operation modes (deprecated, replaced by MAV_GIMBAL_MODE)</description>
+      <description>Enumeration of possible mount operation modes</description>
       <entry value="0" name="MAV_MOUNT_MODE_RETRACT">
         <description>Load and keep safe position (Roll,Pitch,Yaw) from permant memory and stop stabilization</description>
       </entry>
@@ -1007,16 +1007,16 @@
     <enum name="MAV_GIMBAL_MODE">
       <description>Enumeration of possible gimbal operation modes</description>
       <entry value="0" name="MAV_GIMBAL_MODE_RETRACT">
-        <description>Retracted safe position</description>
+        <description>Set to retracted safe position</description>
       </entry>
       <entry value="1" name="MAV_GIMBAL_MODE_DEFAULT">
-        <description>Neutral (default) position.</description>
+        <description>Set to neutral (default) position</description>
       </entry>
       <entry value="2" name="MAV_GIMBAL_MODE_FOLLOW">
-        <description>Use Follow mode (this mode should follows the heading of the vehicle with some dampening).</description>
+        <description>Use Heading Follow mode (this follows the heading of the vehicle with some smoothing)</description>
       </entry>
       <entry value="3" name="MAV_GIMBAL_MODE_LOCK">
-        <description>Use Lock mode (this mode should lock to heading ignoring the vehicle heading as much as possible).</description>
+        <description>Use Lock mode (this mode locks to a certain direction ignoring the vehicle heading as much as possible)</description>
       </entry>
     </enum>
     <!-- UAVCAN node health enumeration -->
@@ -1649,7 +1649,7 @@
       </entry>
       <!-- this one is messed up! altitude should be param 7, not param4 -->
       <entry value="205" name="MAV_CMD_DO_MOUNT_CONTROL" hasLocation="false" isDestination="false">
-        <deprecated since="2019-07" replaced_by="MAV_CMD_DO_GIMBAL_ATTITUDE">This message is ambiguous and inconsistent and therefore replaced by MAV_CMD_DO_GIMBAL_ATTITUDE and MAV_CMD_DO_SET_ROI_*.</deprecated>
+        <deprecated since="2019-07" replaced_by="MAV_CMD_DO_GIMBAL_ATTITUDE">This message is ambiguous and inconsistent. It has been replaced by MAV_CMD_DO_GIMBAL_ATTITUDE and MAV_CMD_DO_SET_ROI_*.</deprecated>
         <description>Mission command to control a camera or antenna mount</description>
         <param index="1">pitch depending on mount mode (degrees or degrees/second depending on pitch input).</param>
         <param index="2">roll depending on mount mode (degrees or degrees/second depending on roll input).</param>
@@ -1985,14 +1985,14 @@
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
       </entry>
       <entry value="1000" name="MAV_CMD_DO_GIMBAL_ATTITUDE" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Setpoint to be sent to autopilot to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: this command is only used between ground station and autopilot or as part of missions but never directly to a gimbal. To communicate with a gimbal the messages GIMBAL_CONTROL_* are to be used.</description>
-        <param index="1">Pitch/tilt angle relative to world horizon (+90 to -90 degrees, negative is to tilt down, positive to tilt up).</param>
-        <param index="2">Yaw/pan angle (-180 to 180 degrees, positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
-        <param index="3">Pitch/tilt angular rate (degrees/second, positive to point up).</param>
-        <param index="4">Yaw/pan angular rate (degrees/second, positive to pan to the right).</param>
+        <param index="1" units="rad" minValue="-1.57" maxValue="1.57">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
+        <param index="2" units="rad" minValue="-3.14" maxValue="3.14">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
+        <param index="3" units="rad/s">Pitch/tilt angular rate (positive to point up).</param>
+        <param index="4" units="rad/s">Yaw/pan angular rate (positive to pan to the right).</param>
         <param index="5" enum="MAV_GIMBAL_MODE">Gimbal mode.</param>
-        <param index="6">Reserved.</param>
-        <param index="7">Reserved.</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
@@ -5876,13 +5876,13 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="mode" enum="MAV_GIMBAL_MODE">Gimbal mode.</field>
-      <field type="float" name="roll" units="rad">Roll in global frame, positive is tilt to the right (set to NaN for not set).</field>
-      <field type="float" name="pitch" units="rad">Pitch in global frame, positive is tilting up (set to NaN for not set).</field>
-      <field type="float" name="yaw_relative" units="rad">Yaw relative to vehicle, required for MAV_GIMBAL_MODE_FOLLOW (set to NaN for not set).</field>
-      <field type="float" name="yaw_absolute" units="rad">Yaw absolute, 0 is North, -pi to pi, positive to the right, required for MAV_GIMBAL_MODE_LOCK mode (set to NaN for not set).</field>
-      <field type="float" name="rollspeed" units="rad/s">Roll angular speed (NaN for not set).</field>
-      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed (NaN for not set).</field>
-      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed (NaN for not set).</field>
+      <field type="float" name="roll" units="rad">Roll in global frame, positive is tilt to the right (NaN to be ignored).</field>
+      <field type="float" name="pitch" units="rad">Pitch in global frame, positive is tilting up (NaN to be ignored).</field>
+      <field type="float" name="yaw_relative" units="rad">Yaw relative to vehicle, -pi to pi, positive to the right, required for MAV_GIMBAL_MODE_FOLLOW (NaN to be ignored).</field>
+      <field type="float" name="yaw_absolute" units="rad">Yaw absolute, 0 is North, -pi to pi, positive to the right, required for MAV_GIMBAL_MODE_LOCK mode (NaN to be ignored).</field>
+      <field type="float" name="rollspeed" units="rad/s">Roll angular speed (NaN to be ignored).</field>
+      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed (NaN to be ignored).</field>
+      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed (NaN to be ignored).</field>
     </message>
     <message id="281" name="GIMBAL_CONTROL_LOCATION">
       <wip/>
