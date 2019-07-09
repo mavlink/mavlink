@@ -77,6 +77,14 @@
             <entry value="0" name="ROSFLIGHT_RANGE_SONAR"/>
             <entry value="1" name="ROSFLIGHT_RANGE_LIDAR"/>
         </enum>
+	<enum name="UBLOX_FIX_TYPE">
+		<entry value="0" name="NO_FIX"/>
+		<entry value="1" name="DEAD_RECKONING_ONLY"/>
+		<entry value="2" name="FIX_2D"/>
+		<entry value="3" name="FIX_3D"/>
+		<entry value="4" name="GNSS_AND_DEAD_RECKONING"/>
+		<entry value="5" name="TIME_ONLY"/>
+	</enum>
     </enums>
     <messages>
         <message id="180" name="OFFBOARD_CONTROL">
@@ -187,32 +195,67 @@
             <field type="float" name="qy">Quaternion y value</field>
             <field type="float" name="qz">Quaternion z value</field>
         </message>        
-        <message id="196" name="ROSFLIGHT_GPS_ECEF">
-            <field type="float" name="pos_ecef_x"/>
-            <field type="float" name="pos_ecef_y"/>
-            <field type="float" name="pos_ecef_z"/>
-            <field type="float" name="vel_ecef_x"/>
-            <field type="float" name="vel_ecef_y"/>
-            <field type="float" name="vel_ecef_z"/>
-        </message>
-        <message id="197" name="ROSFLIGHT_GPS">
-            <field type="double" name="latitude"/>
-            <field type="double" name="longitude"/>
-            <field type="float" name="altitude"/>
-            <field type="float" name="velN"/>
-            <field type="float" name="velE"/>
-            <field type="float" name="velD"/>
-            <field type="uint8_t" name="fix_type"/>
-            <field type="uint32_t" name="tow_ms"/>
-            <field type="float" name="hacc"/>
-            <field type="float" name="vacc"/>
-            <field type="float" name="sacc"/>
-        </message>
-	<message id="198" name="ROSFLIGHT_HARD_ERROR">
+	<message id="196" name="ROSFLIGHT_HARD_ERROR">
 	    <field type="uint32_t" name="error_code"/>
 	    <field type="uint32_t" name="pc"/>
 	    <field type="uint32_t" name="reset_count"/>
 	    <field type="uint32_t" name="doRearm"/>
+	</message>
+	<message id="197" name="ROSFLIGHT_GNSS">
+		<!-- time_of_week is only for determining which packets where calculated at the same time.
+		     Use the time and nanos field to get GPS time. -->
+		<field type="uint32_t" name="time_of_week"/>
+		<field type="uint8_t" name="fix_type" enum="UBLOX_FIX_TYPE"/><!-- This uses the UBX fix definition -->
+		<field type="uint64_t" name="time"/> <!--unix time, in seconds -->
+		<field type="uint64_t" name="nanos"/>
+		<field type="int32_t" name="lat"/> <!-- deg*10^-7 -->
+		<field type="int32_t" name="lon"/> <!-- deg*10^-7 -->
+		<field type="int32_t" name="height"/> <!-- mm -->
+		<field type="int32_t" name="vel_n"/> <!-- mm/s -->
+		<field type="int32_t" name="vel_e"/> <!-- mm/s -->
+		<field type="int32_t" name="vel_d"/> <!-- mm/s -->
+		<field type="uint32_t" name="h_acc"/> <!-- mm -->
+		<field type="uint32_t" name="v_acc"/> <!-- mm -->
+		<field type="int32_t" name="ecef_x"/> <!-- cm -->
+		<field type="int32_t" name="ecef_y"/> <!-- cm -->
+		<field type="int32_t" name="ecef_z"/> <!-- cm -->
+		<field type="uint32_t" name="p_acc"/> <!-- cm -->
+		<field type="int32_t" name="ecef_v_x"/> <!-- cm/s -->
+		<field type="int32_t" name="ecef_v_y"/> <!-- cm/s -->
+		<field type="int32_t" name="ecef_v_z"/> <!-- cm/s -->
+		<field type="uint32_t" name="s_acc"/> <!-- cm/s -->
+		<field type="uint64_t" name="rosflight_timestamp"/> <!-- microseconds -->
+	</message>
+	<message id="198" name="ROSFLIGHT_GNSS_RAW">
+		<!-- time_of_week is only for determining which packets where calculated at the same time.
+		     Use the various time and date fields to get GPS time. -->
+		<field type="uint32_t" name="time_of_week"/>
+		<field type="uint16_t" name="year"/>
+		<field type="uint8_t" name="month"/>
+		<field type="uint8_t" name="day"/>
+		<field type="uint8_t" name="hour"/>
+		<field type="uint8_t" name="min"/>
+		<field type="uint8_t" name="sec"/>
+		<field type="uint8_t" name="valid"/>
+		<field type="uint32_t" name="t_acc"/> <!-- ns -->
+		<field type="int32_t" name="nano"/> <!-- ns -->
+		<field type="uint8_t" name="fix_type" enum="UBLOX_FIX_TYPE"/>
+		<field type="uint8_t" name="num_sat"/>
+		<field type="int32_t" name="lon"/> <!-- deg *10^-7 -->
+		<field type="int32_t" name="lat"/> <!-- deg *10^-7 -->
+		<field type="int32_t" name="height"/> <!-- mm above elipsoid -->
+		<field type="int32_t" name="height_msl"/> <!-- mm above mean sea level -->
+		<field type="uint32_t" name="h_acc"/> <!-- mm -->
+		<field type="uint32_t" name="v_acc"/> <!-- mm -->
+		<field type="int32_t" name="vel_n"/> <!-- mm/s -->
+		<field type="int32_t" name="vel_e"/> <!-- mm/s -->
+		<field type="int32_t" name="vel_d"/> <!-- mm/s -->
+		<field type="int32_t" name="g_speed"/> <!-- mm/s -->
+		<field type="int32_t" name="head_mot"/> <!--deg *10^-5 -->
+		<field type="uint32_t" name="s_acc"/> <!--mm/s-->
+		<field type="uint32_t" name="head_acc"/> <!-- deg * 10^-5 -->
+		<field type="uint16_t" name="p_dop"/> <!-- *.01 -->
+		<field type="uint64_t" name="rosflight_timestamp"/> <!-- microseconds -->
 	</message>
     </messages>
 </mavlink>
