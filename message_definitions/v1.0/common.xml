@@ -1645,13 +1645,6 @@
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
       </entry>
-      <entry value="700" name="MAV_CMD_REQUEST_COMPONENT_INFORMATION" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Request component information (COMPONENT_INFORMATION). For camera components use CAMERA_INFORMATION, and for autopilots use AUTOPILOT_VERSION.</description>
-        <param index="1" label="Capabilities" minValue="0" maxValue="1" increment="1">0: No action 1: Request component information</param>
-        <param index="2">Reserved (all remaining params)</param>
-      </entry>      
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
         <param index="1">Reserved (Set to 0)</param>
@@ -3231,6 +3224,9 @@
       <entry value="2" name="PARACHUTE_RELEASE">
         <description>Release parachute.</description>
       </entry>
+    </enum>
+    <enum name="COMPONENT_CAP_FLAGS">
+      <description>Component capability flags (Bitmap)</description>
     </enum>
   </enums>
   <messages>
@@ -5232,7 +5228,7 @@
       <field type="uint32_t" name="capability_flags" enum="COMPONENT_CAP_FLAGS">Bitmap of component capability flags.</field>
       <field type="uint16_t" name="component_definition_version">Component definition version (iteration)</field>
       <field type="char[140]" name="component_definition_uri">Component definition URI (if any, otherwise only basic functions will be available).</field>
-    </message>    
+    </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
       <description>Cumulative distance traveled for each reported wheel.</description>
