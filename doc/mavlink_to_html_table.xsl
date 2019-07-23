@@ -8,10 +8,6 @@
 </xsl:template>
 
 <xsl:template match="//enums">
-   <h1>Official MAVLink Documentation</h1>
-   <p>
-    Please refer to the <a href="https://mavlink.io/en/messages/common.html">official MAVLink message documentation</a> for more details.
-   </p>
    <h1>MAVLink Type Enumerations</h1>
    <xsl:apply-templates />
 </xsl:template>
@@ -59,6 +55,11 @@
 </xsl:template>
 
 <xsl:template match="//version">
+   <h2 style="color:red;">MAVLink Documentation</h2>
+   <p>
+   The <a href="https://mavlink.io/en/messages/common.html">Official MAVLink message documentation</a> contains additional information, including field units and enum values.
+   </p>
+   
    <h2>MAVLink Protocol Version</h2>
    <p>The current MAVLink version is 2.<xsl:value-of select="." />. The minor version numbers (after the dot) range from 1-255. </p>
 </xsl:template>
@@ -75,7 +76,7 @@
    <table class="sortable">
    <thead>
    <tr>
-     <th class="mavlink_field_header">CMD ID</th>
+     <th class="mavlink_field_header">Value</th>
      <th class="mavlink_field_header">Field Name</th>
      <th class="mavlink_field_header">Description</th>
    </tr>

@@ -21,14 +21,15 @@ Released under GNU GPL version 3 or later
 
 """
 import os
-import re
+import re   
+import sys
 
 # Python 2.x and 3.x compatibility
-try:
+if sys.version_info[0] == 3:
     from tkinter import *
     import tkinter.filedialog
     import tkinter.messagebox
-except ImportError as ex:
+else:
     # Must be using Python 2.x, import and rename
     from Tkinter import *
     import tkFileDialog
@@ -38,6 +39,7 @@ except ImportError as ex:
     del tkFileDialog
     tkinter.messagebox = tkMessageBox
     del tkMessageBox
+    
 
 from pymavlink.generator import mavgen
 from pymavlink.generator import mavparse

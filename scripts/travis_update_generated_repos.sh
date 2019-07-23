@@ -3,7 +3,7 @@
 # Do only build for Python 2.7
 # as we only want to deploy for one
 # unique generator.
-PYTHONVER=`python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'`
+PYTHONVER=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
 
 if [[ $PYTHONVER != "2.7"* ]]
 then
@@ -28,7 +28,7 @@ git remote rename origin upstream
 git config --global user.email "bot@pixhawk.org"
 git config --global user.name "PX4BuildBot"
 git config --global credential.helper "store --file=$HOME/.git-credentials"
-echo "https://${GH_TOKEN}:@github.com" > $HOME/.git-credentials
+echo "https://${GH_TOKEN}:@github.com" > "$HOME"/.git-credentials
 
 # Build C library
 GEN_START_PATH=$PWD
@@ -38,7 +38,7 @@ git clone https://github.com/mavlink/c_library_v2.git
 cd ../../..
 ./scripts/update_c_library.sh 2
 # v1.0 legacy
-cd $GEN_START_PATH
+cd "$GEN_START_PATH"
 mkdir -p include/mavlink/v1.0
 cd include/mavlink/v1.0
 git clone https://github.com/mavlink/c_library_v1.git

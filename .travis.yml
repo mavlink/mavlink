@@ -5,11 +5,24 @@ env:
 language: python
 python:
   - "2.7"
-  - "3.3"
   - "3.5"
+  - "3.6"
+
+cache: pip
+
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
+
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libxml2-dev libxml2-utils
+
+install:
+  - pip install -U future lxml
+
 script:
   - ./scripts/test.sh
 
