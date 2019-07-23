@@ -1988,11 +1988,13 @@
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Setpoint to be sent to autopilot to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: this command is only used between ground station and autopilot or as part of missions but never directly to a gimbal. To communicate with a gimbal the messages GIMBAL_CONTROL_* are to be used.</description>
-        <param index="1" units="rad" minValue="-1.57" maxValue="1.57">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
-        <param index="2" units="rad" minValue="-3.14" maxValue="3.14">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
-        <param index="3" units="rad/s">Pitch/tilt angular rate (positive to point up).</param>
-        <param index="4" units="rad/s">Yaw/pan angular rate (positive to pan to the right).</param>
-        <param index="5" enum="MAV_GIMBAL_MODE">Gimbal mode.</param>
+        <param index="1" units="rad">Roll angle relative to world horizon (positive to turn to the right).</param>
+        <param index="2" units="rad">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
+        <param index="3" units="rad">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
+        <param index="4" units="rad/s">Roll angular rate (positive to turn to the right).</param>
+        <param index="5" units="rad/s">Pitch/tilt angular rate (positive to point up).</param>
+        <param index="6" units="rad/s">Yaw/pan angular rate (positive to pan to the right).</param>
+        <param index="7" enum="MAV_GIMBAL_MODE">Gimbal mode.</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
