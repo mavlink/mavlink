@@ -5829,6 +5829,7 @@
       <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of log files</field>
     </message>
     <message id="265" name="MOUNT_ORIENTATION">
+      <deprecated since="2019-07" replaced_by="GIMBAL_CONTROL_STATUS_ATTITUDE">This message is being replaced by GIMBAL_CONTROL_STATUS_ATTITUDE.</deprecated>
       <description>Orientation of a mount</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="float" name="roll" units="deg">Roll in global frame (set to NaN for invalid).</field>
@@ -5897,7 +5898,7 @@
       <description>Message to control a gimbal's attitude. This message is to be sent by the autopilot to the gimbal component. Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="unit16_t" name="flags" enum="MAV_GIMBAL_CONTROL_FLAGS" display="bitmask">Gimbal control flags.</field>
+      <field type="uint16_t" name="flags" enum="MAV_GIMBAL_CONTROL_FLAGS" display="bitmask">Gimbal control flags.</field>
       <field type="float" name="roll" units="rad">Roll angle, relative to vehicle frame if MAV_GIMBAL_CONTROL_FLAG_ROLL_LOCK is not set, in absolute world frame if MAV_GIMBAL_CONTROL_FLAG_ROLL_LOCK is set, positive is banking to the right, NaN to be ignored.</field>
       <field type="float" name="pitch" units="rad">Pitch angle, relative to vehicle frame if MAV_GIMBAL_CONTROL_FLAG_PITCH_LOCK is not set, in absolute world frame if MAV_GIMBAL_CONTROL_FLAG_PITCH_LOCK is set, positive tilting up, NaN to be ignored.</field>
       <field type="float" name="yaw" units="rad">Yaw angle, relative to vehicle frame if MAV_GIMBAL_CONTROL_FLAG_YAW_LOCK is not set, in absolute world frame if MAV_GIMBAL_CONTROL_FLAG_YAW_LOCK is set, positive is paning to the right, NaN to be ignored.</field>
@@ -5917,6 +5918,16 @@
       <field type="float" name="x" units="m">Local X position of this position in the local coordinate frame NED</field>
       <field type="float" name="y" units="m">Local Y position of this position in the local coordinate frame NED</field>
       <field type="float" name="z" units="m">Local Z position of this position in the local coordinate frame NED</field>
+    </message>
+    <message id="282" name="GIMBAL_CONTROL_STATUS_ATTITUDE">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Message reporting the status of a gimbal. This message can be broadcasted by a gimbal component. The angles encoded in the quaternion are in the global frame (roll: positive is tilt to the right, pitch: positive is tilting up, yaw is turn to the right).</description>
+      <field type="uint16_t" name="flags" enum="MAV_GIMBAL_CONTROL_FLAGS">Current gimbal control flags</field>
+      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation)</field>
+      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (NaN if unknown)</field>
+      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (NaN if unknown)</field>
+      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (NaN if unknown)</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure AP SSID and Password.</description>
