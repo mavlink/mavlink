@@ -5214,6 +5214,19 @@
       <field type="int32_t" name="mission_end" units="s">Estimated time for completing the current mission. -1 means no mission active and/or no estimate available.</field>
       <field type="int32_t" name="commanded_action" units="s">Estimated time for completing the current commanded action (i.e. Go To, Takeoff, Land, etc.). -1 means no action active and/or no estimate available.</field>
     </message>
+    <message id="390" name="COMPONENT_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Hardware status sent by a component</description>
+      <field type="uint8_t" name="cpu_usage">CPU usage on the component in percent (100 - idle)</field>
+      <field type="int8_t" name="temperature" units="celsius">Temperature on the component</field>
+      <field type="uint32_t" name="memory_free" units="megabytes">Amount of free memory on the component system</field>
+      <field type="uint32_t" name="memory_total" units="megabytes">Total amount of memory on the component system</field>
+      <field type="uint32_t" name="storage_free" units="megabytes">Amount of free storage space on the component system</field>
+      <field type="uint32_t" name="storage_total" units="megabytes">Total amount of storage space on the component system</field>
+      <field type="uint32_t" name="network_send" units="kilobytes/s">Network traffic from the component system</field>
+      <field type="uint32_t" name="network_receive" units="kilobytes/s">Network traffic to the component system</field>
+    </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
       <description>Cumulative distance traveled for each reported wheel.</description>
