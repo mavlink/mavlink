@@ -894,7 +894,7 @@
         <param index="7">Altitude</param>
       </entry>
       <entry value="32" name="MAV_CMD_DO_FOLLOW" hasLocation="false" isDestination="false">
-        <description>Being following a target</description>
+        <description>Begin following a target</description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">System ID (of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode.</param>
         <param index="2">RESERVED</param>
         <param index="3">RESERVED</param>
@@ -4569,6 +4569,14 @@
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of landing target</field>
       <field type="uint8_t" name="position_valid">Boolean indicating whether the position fields (x, y, z, q, type) contain valid target position information (valid: 1, invalid: 0). Default is 0 (invalid).</field>
     </message>
+    <!-- imported from ardupilotmega.xml (2019) -->
+    <message id="162" name="FENCE_STATUS">
+      <description>Status of geo-fencing. Sent in extended status stream when fencing enabled.</description>
+      <field type="uint8_t" name="breach_status">Breach status (0 if currently inside fence, 1 if outside).</field>
+      <field type="uint16_t" name="breach_count">Number of fence breaches.</field>
+      <field type="uint8_t" name="breach_type" enum="FENCE_BREACH">Last breach type.</field>
+      <field type="uint32_t" name="breach_time" units="ms">Time (since boot) of last breach.</field>
+    </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
       <description>Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovation test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovation test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.</description>
@@ -4838,7 +4846,7 @@
       <field type="uint16_t" name="resolution_h" units="pix">Horizontal image resolution</field>
       <field type="uint16_t" name="resolution_v" units="pix">Vertical image resolution</field>
       <field type="uint8_t" name="lens_id">Reserved for a lens ID</field>
-      <field type="uint32_t" name="flags" enum="CAMERA_CAP_FLAGS">Bitmap of camera capability flags.</field>
+      <field type="uint32_t" name="flags" enum="CAMERA_CAP_FLAGS" display="bitmask">Bitmap of camera capability flags.</field>
       <field type="uint16_t" name="cam_definition_version">Camera definition version (iteration)</field>
       <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available).</field>
     </message>
@@ -5078,6 +5086,7 @@
       <field type="float[5]" name="acc_z" units="m/s/s">Z-acceleration of waypoint, set to NaN if not being used</field>
       <field type="float[5]" name="pos_yaw" units="rad">Yaw angle, set to NaN if not being used</field>
       <field type="float[5]" name="vel_yaw" units="rad/s">Yaw rate, set to NaN if not being used</field>
+      <field type="uint16_t[5]" name="command" enum="MAV_CMD">Scheduled action for each waypoint, UINT16_MAX if not being used.</field>
     </message>
     <message id="333" name="TRAJECTORY_REPRESENTATION_BEZIER">
       <wip/>
