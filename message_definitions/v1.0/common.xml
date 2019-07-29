@@ -1004,6 +1004,27 @@
         <description>Gimbal tracks system with specified system ID</description>
       </entry>
     </enum>
+    <enum name="GIMBAL_CAP_FLAGS">
+      <description>Gimbal capability flags (Bitmap)</description>
+      <entry value="1" name="GIMBAL_CAP_FLAGS_HAS_RETRACT">
+        <description>Gimbal supports a retracted position</description>
+      </entry>
+      <entry value="2" name="GIMBAL_CAP_FLAGS_HAS_NEUTRAL">
+        <description>Gimbal supports a neutral, not-stabilized position</description>
+      </entry>
+      <entry value="4" name="GIMBAL_CAP_FLAGS_HAS_YAW_FOLLOW">
+        <description>Gimbal supports to follow a yaw angle relative to the vehicle</description>
+      </entry>
+      <entry value="8" name="GIMBAL_CAP_FLAGS_HAS_YAW_LOCK">
+        <description>Gimbal supports locking to an absolute heading</description>
+      </entry>
+      <entry value="16" name="GIMBAL_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL">
+        <description>Gimbal supports to point to a local position</description>
+      </entry>
+      <entry value="32" name="GIMBAL_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
+        <description>Gimbal supports to point to a global GPS position</description>
+      </entry>
+    </enum>
     <enum name="MAV_GIMBAL_MODE">
       <description>Enumeration of possible gimbal operation modes</description>
       <entry value="0" name="MAV_GIMBAL_MODE_RETRACT">
@@ -5890,7 +5911,15 @@
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
     </message>
-    <message id="280" name="GIMBAL_CONTROL_ATTITUDE">
+    <message id="280" name="GIMBAL_INFORMATION">
+      <description>Information about a gimbal</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t[32]" name="vendor_name">Name of the gimbal vendor</field>
+      <field type="uint8_t[32]" name="model_name">Name of the gimbal model</field>
+      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_CAP_FLAGS">Bitmap of gimbal capability flags.</field>
+    </message>
+    <message id="281" name="GIMBAL_CONTROL_ATTITUDE">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Message to control a gimbal's attitude. This message is to be sent by the autopilot to the gimbal component. Angles and rates can be set to NaN according to use case.</description>
@@ -5904,7 +5933,7 @@
       <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is tilting up, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is panning to the right, NaN to be ignored.</field>
     </message>
-    <message id="281" name="GIMBAL_CONTROL_LOCATION_GLOBAL">
+    <message id="282" name="GIMBAL_CONTROL_LOCATION_GLOBAL">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Message to control a gimbal to point to a GPS point. This message is to be sent by the autopilot to the gimbal component.</description>
@@ -5914,7 +5943,7 @@
       <field type="int32_t" name="lon" units="degE7">Longitude where gimbal should point to</field>
       <field type="int32_t" name="alt" units="mm">Altitude (MSL) where gimbal should point to</field>
     </message>
-    <message id="282" name="GIMBAL_CONTROL_LOCATION_LOCAL">
+    <message id="283" name="GIMBAL_CONTROL_LOCATION_LOCAL">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Message to control a gimbal to point to a local position. This message is to be sent by the autopilot to the gimbal component.</description>
@@ -5924,7 +5953,7 @@
       <field type="float" name="y" units="m">Y position of location in the local coordinate frame NED</field>
       <field type="float" name="z" units="m">Z position of location in the local coordinate frame NED</field>
     </message>
-    <message id="283" name="GIMBAL_CONTROL_STATUS_ATTITUDE">
+    <message id="284" name="GIMBAL_CONTROL_STATUS_ATTITUDE">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Message reporting the status of a gimbal. This message can be broadcasted by a gimbal component. The angles encoded in the quaternion are in the global frame (roll: positive is tilt to the right, pitch: positive is tilting up, yaw is turn to the right).</description>
