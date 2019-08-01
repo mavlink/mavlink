@@ -67,9 +67,9 @@
       </entry>
     </enum>
     <enum name="MAV_TYPE">
-      <description>MAVLINK system type. All components in a system should report this type in their HEARTBEAT.</description>
+      <description>MAVLINK component type reported in HEARTBEAT message. Flight controllers must report the type of the vehicle on which they are mounted (e.g. MAV_TYPE_OCTOROTOR). All other components must report a value appropriate for their type (e.g. a camera must use MAV_TYPE_CAMERA).</description>
       <entry value="0" name="MAV_TYPE_GENERIC">
-        <description>Generic micro air vehicle.</description>
+        <description>Generic micro air vehicle</description>
       </entry>
       <entry value="1" name="MAV_TYPE_FIXED_WING">
         <description>Fixed wing aircraft.</description>
@@ -148,10 +148,10 @@
         <description>VTOL reserved 5</description>
       </entry>
       <entry value="26" name="MAV_TYPE_GIMBAL">
-        <description>Gimbal (standalone)</description>
+        <description>Gimbal</description>
       </entry>
       <entry value="27" name="MAV_TYPE_ADSB">
-        <description>ADSB system (standalone)</description>
+        <description>ADSB system</description>
       </entry>
       <entry value="28" name="MAV_TYPE_PARAFOIL">
         <description>Steerable, nonrigid airfoil</description>
@@ -160,13 +160,16 @@
         <description>Dodecarotor</description>
       </entry>
       <entry value="30" name="MAV_TYPE_CAMERA">
-        <description>Camera (standalone)</description>
+        <description>Camera</description>
       </entry>
       <entry value="31" name="MAV_TYPE_CHARGING_STATION">
         <description>Charging station</description>
       </entry>
       <entry value="32" name="MAV_TYPE_FLARM">
-        <description>FLARM collision avoidance system (standalone)</description>
+        <description>FLARM collision avoidance system</description>
+      </entry>
+      <entry value="33" name="SERVO">
+        <description>Servo</description>
       </entry>
     </enum>
     <enum name="FIRMWARE_VERSION_TYPE">
@@ -3230,7 +3233,7 @@
   <messages>
     <message id="0" name="HEARTBEAT">
       <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html</description>
-      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the system (quadrotor, helicopter, etc.). Components use the same type as their associated system.</field>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.).</field>
       <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class.</field>
       <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
