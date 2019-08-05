@@ -666,6 +666,11 @@
         <description/>
       </entry>
     </enum>
+    <enum name="MAV_TUNNEL_PAYLOAD_TYPE">
+      <entry value="0" name="MAV_TUNNEL_PAYLOAD_TYPE_UNKNOWN">
+        <description>Encoding of payload unknwon.</description>
+      </entry>
+    </enum>
     <!-- fenced mode enums -->
     <enum name="FENCE_ACTION">
       <entry value="0" name="FENCE_ACTION_NONE">
@@ -5213,6 +5218,13 @@
       <field type="int32_t" name="mission_next_item" units="s">Estimated time for reaching/completing the currently active mission item. -1 means no time estimate available.</field>
       <field type="int32_t" name="mission_end" units="s">Estimated time for completing the current mission. -1 means no mission active and/or no estimate available.</field>
       <field type="int32_t" name="commanded_action" units="s">Estimated time for completing the current commanded action (i.e. Go To, Takeoff, Land, etc.). -1 means no action active and/or no estimate available.</field>
+    </message>
+    <message id="701" name="TUNNEL">
+      <description>Message for transporting "arbitrary" variable-length data from one component to another (broadcast is not forbidden, but discouraged). The encoding of the data is usually extension specific, i.e. determined by the source, and is usually not documented as part of the mavlink specification.</description>
+      <field type="uint8_t" name="target_system">System ID (can be 0 for broadcast, but this is discouraged)</field>
+      <field type="uint8_t" name="target_component">Component ID (can be 0 for broadcast, but this is discouraged)</field>
+      <field type="uint16_t" name="payload_type" enum="MAV_TUNNEL_PAYLOAD_TYPE">A code that identifies the content of the payload (0 for unknown, which is the default). If this code is less than 32768, it is a 'registered' payload type and the corresponding code should be added to the MAV_TUNNEL_PAYLOAD_TYPE enum, and the entry possibly to https://github.com/mavlink/mavlink/tunnel-message-payload-types.xml. Software creators can register blocks of types as needed. Codes greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.</field>
+      <field type="uint8_t[128]" name="payload">Variable length payload. The payload length is defined by the remaining message length when subtracting the header and other fields. The entire content of this block is opaque unless you understand the encoding specified by payload_type.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
