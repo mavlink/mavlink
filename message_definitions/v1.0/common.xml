@@ -3231,7 +3231,7 @@
     <message id="0" name="HEARTBEAT">
       <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html</description>
       <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the system (quadrotor, helicopter, etc.). Components use the same type as their associated system.</field>
-      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class.</field>
+      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.</field>
       <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
       <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag.</field>
@@ -4663,7 +4663,7 @@
       <description>Message appropriate for high latency connections like Iridium (version 2)</description>
       <field type="uint32_t" name="timestamp" units="ms">Timestamp (milliseconds since boot or Unix epoch)</field>
       <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc.)</field>
-      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class.</field>
+      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.</field>
       <field type="uint16_t" name="custom_mode" display="bitmask">A bitfield for use for autopilot-specific flags (2 byte version).</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude</field>
