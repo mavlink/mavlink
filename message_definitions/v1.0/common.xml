@@ -983,7 +983,7 @@
     </enum>
     <!-- Camera Mount mode Enumeration -->
     <enum name="MAV_MOUNT_MODE">
-      <deprecated since="2019-07" replaced_by="MAV_GIMBAL_MODE"/>
+      <deprecated since="2019-07" replaced_by="GIMBAL_MODE"/>
       <description>Enumeration of possible mount operation modes</description>
       <entry value="0" name="MAV_MOUNT_MODE_RETRACT">
         <description>Load and keep safe position (Roll,Pitch,Yaw) from permant memory and stop stabilization</description>
@@ -1025,36 +1025,36 @@
         <description>Gimbal supports to point to a global GPS position</description>
       </entry>
     </enum>
-    <enum name="MAV_GIMBAL_MODE">
+    <enum name="GIMBAL_MODE">
       <description>Enumeration of possible gimbal operation modes</description>
-      <entry value="0" name="MAV_GIMBAL_MODE_RETRACT">
+      <entry value="0" name="GIMBAL_MODE_RETRACT">
         <description>Set to retracted safe position (no stabilization)</description>
       </entry>
-      <entry value="1" name="MAV_GIMBAL_MODE_NEUTRAL">
+      <entry value="1" name="GIMBAL_MODE_NEUTRAL">
         <description>Set to neutral position (horizontal, forward looking, with stabilization)</description>
       </entry>
-      <entry value="2" name="MAV_GIMBAL_MODE_YAW_FOLLOW">
+      <entry value="2" name="GIMBAL_MODE_YAW_FOLLOW">
         <description>Normal gimbal operation: stabilizing and following yaw relative to vehicle.</description>
       </entry>
-      <entry value="3" name="MAV_GIMBAL_MODE_YAW_LOCK">
+      <entry value="3" name="GIMBAL_MODE_YAW_LOCK">
         <description>Normal gimbal operation: stabilizing and locking yaw to absolute heading.</description>
       </entry>
     </enum>
-    <enum name="MAV_GIMBAL_CONTROL_CAP_FLAGS">
+    <enum name="GIMBAL_CONTROL_FLAGS">
       <description>Flags for gimbal operation.</description>
-      <entry value="1" name="MAV_GIMBAL_CONTROL_CAP_FLAG_RETRACT">
+      <entry value="1" name="GIMBAL_CONTROL_FLAGS_RETRACT">
         <description>Set to retracted safe position (no stabilization), takes presedence over all other flags.</description>
       </entry>
-      <entry value="2" name="MAV_GIMBAL_CONTROL_CAP_FLAG_NEUTRAL">
+      <entry value="2" name="GIMBAL_CONTROL_FLAGS_NEUTRAL">
         <description>Set to neutral position (horizontal, forward looking, with stabiliziation), takes presedence over all other flags except RETRACT.</description>
       </entry>
-      <entry value="4" name="MAV_GIMBAL_CONTROL_CAP_FLAG_ROLL_LOCK">
+      <entry value="4" name="GIMBAL_CONTROL_FLAGS_ROLL_LOCK">
         <description>Lock roll angle to absolute angle relative to horizon (not relative to drone). This is generally the default with a stabilizing gimbal.</description>
       </entry>
-      <entry value="8" name="MAV_GIMBAL_CONTROL_CAP_FLAG_PITCH_LOCK">
+      <entry value="8" name="GIMBAL_CONTROL_FLAGS_PITCH_LOCK">
         <description>Lock pitch angle to absolute angle relative to horizon (not relative to drone). This is generally the default.</description>
       </entry>
-      <entry value="16" name="MAV_GIMBAL_CONTROL_CAP_FLAG_YAW_LOCK">
+      <entry value="16" name="GIMBAL_CONTROL_FLAGS_YAW_LOCK">
         <description>Lock yaw angle to absolute angle relative to North (not relative to drone). If this flag is set, the quaternion is in the Earth frame with the x-axis pointing North (yaw absolute). If this flag is not set, the quaternion frame is in the Earth frame rotated so that the x-axis is pointing forward (yaw relative to vehicle).</description>
       </entry>
     </enum>
@@ -2027,7 +2027,7 @@
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Setpoint to be sent to autopilot to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: this command is only used between ground station and autopilot or as part of missions but never directly to a gimbal. To communicate with a gimbal the messages GIMBAL_CONTROL_* are to be used.</description>
-        <param index="1" label="Gimbal mode" enum="MAV_GIMBAL_MODE">Gimbal mode.</param>
+        <param index="1" label="Gimbal mode" enum="GIMBAL_MODE">Gimbal mode.</param>
         <param index="2" label="Roll angle" units="deg" minValue="-180" maxValue="180">Roll angle relative to world horizon (positive to turn to the right).</param>
         <param index="3" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
         <param index="4" label="Yaw angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
@@ -5925,8 +5925,8 @@
       <description>Message to control a gimbal's attitude. This message is to be sent by the autopilot to the gimbal component. Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint16_t" name="flags" enum="MAV_GIMBAL_CONTROL_CAP_FLAGS" display="bitmask">Gimbal control flags.</field>
-      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag MAV_GIMBAL_CONTROL_CAP_FLAG_YAW_LOCK is set)</field>
+      <field type="uint16_t" name="flags" enum="GIMBAL_CONTROL_FLAGS" display="bitmask">Gimbal control flags.</field>
+      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_CONTROL_FLAGS_YAW_LOCK is set)</field>
       <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is banking to the right, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is tilting up, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is panning to the right, NaN to be ignored.</field>
@@ -5955,8 +5955,8 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Message reporting the status of a gimbal. This message can be broadcasted by a gimbal component. The angles encoded in the quaternion are in the global frame (roll: positive is tilt to the right, pitch: positive is tilting up, yaw is turn to the right).</description>
-      <field type="uint16_t" name="flags" enum="MAV_GIMBAL_CONTROL_CAP_FLAGS">Current gimbal control flags</field>
-      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag MAV_GIMBAL_CONTROL_CAP_FLAG_YAW_LOCK is set)</field>
+      <field type="uint16_t" name="flags" enum="GIMBAL_CONTROL_FLAGS">Current gimbal control flags</field>
+      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_CONTROL_FLAGS_YAW_LOCK is set)</field>
       <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (NaN if unknown)</field>
       <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (NaN if unknown)</field>
       <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (NaN if unknown)</field>
