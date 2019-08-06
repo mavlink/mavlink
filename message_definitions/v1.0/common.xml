@@ -5214,19 +5214,20 @@
       <field type="int32_t" name="mission_end" units="s">Estimated time for completing the current mission. -1 means no mission active and/or no estimate available.</field>
       <field type="int32_t" name="commanded_action" units="s">Estimated time for completing the current commanded action (i.e. Go To, Takeoff, Land, etc.). -1 means no action active and/or no estimate available.</field>
     </message>
-    <message id="390" name="COMPONENT_STATUS">
+    <message id="390" name="COMPANION_SYSTEM_STATUS">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Hardware status sent by a component</description>
       <field type="uint8_t" name="cpu_usage">CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
       <field type="int8_t" name="temperature" units="degC">Temperature. A value of INT8_MAX implies the field is unused.</field>
-      <field type="uint32_t" name="ram_free" units="MiB">Amount of free RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t" name="ram_usage" units="MiB">Amount of used RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t" name="ram_total" units="MiB">Total amount of RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t" name="storage_free" units="MiB">Amount of free storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t" name="storage_total" units="MiB">Total amount of storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t" name="network_send_rate" units="KiB/s">Network traffic from the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t" name="network_receive_rate" units="KiB/s">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint32_t" name="time_usec" units="us">Message timestamp in sender timebase.</field>
+      <field type="uint32_t" name="uptime" units="ms">Time since system boot.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
