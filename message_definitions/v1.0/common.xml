@@ -1033,6 +1033,12 @@
       <entry value="256" name="GIMBAL_CAP_FLAGS_HAS_ANGULAR_VELOCITY_RELATIVE_TO_FOCAL_LENGTH">
         <description>Gimbal supports turning at angular velocities relative to the focal length (the more zoomed in, the slower the movement)</description>
       </entry>
+      <entry value="512" name="GIMBAL_CAP_FLAGS_SUPPORTS_NUDGING">
+        <description>Gimbal supports nudging when pointing to a location or tracking</description>
+      </entry>
+      <entry value="1024" name="GIMBAL_CAP_FLAGS_SUPPORTS_OVERRIDE">
+        <description>Gimbal supports overriding when pointing to a location or tracking</description>
+      </entry>
     </enum>
     <enum name="GIMBAL_MODE">
       <description>Enumeration of possible gimbal operation modes</description>
@@ -1068,6 +1074,12 @@
       </entry>
       <entry value="32" name="GIMBAL_CONTROL_FLAGS_ANGULAR_VELOCITY_RELATIVE_TO_FOCAL_LENGTH">
         <description>Scale angular velocity relative to focal length. This means the gimbal should move slower if it is zoomed in.</description>
+      </entry>
+      <entry value="64" name="GIMBAL_CONTROL_FLAGS_NUDGE">
+        <description>Interpret attitude control on top of pointing to a location or tracking. If this flag is set, the quaternion is relative to the existing tracking angle.</description>
+      </entry>
+      <entry value="128" name="GIMBAL_CONTROL_FLAGS_OVERRIDE">
+        <description>Completely override pointing to a location or tracking. If this flag is set, the quaternion is (as usual) according to GIMBAL_CONTROL_FLAGS_YAW_LOCK.</description>
       </entry>
     </enum>
     <!-- UAVCAN node health enumeration -->
