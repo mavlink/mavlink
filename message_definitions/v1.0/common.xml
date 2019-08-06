@@ -1024,6 +1024,12 @@
       <entry value="32" name="GIMBAL_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
         <description>Gimbal supports to point to a global latitude, longitude, altitude position</description>
       </entry>
+      <entry value="64" name="GIMBAL_CAP_FLAGS_HAS_TRACKING_POINT">
+        <description>Gimbal supports tracking of a point on the camera</description>
+      </entry>
+      <entry value="128" name="GIMBAL_CAP_FLAGS_HAS_TRACKING_RECTANGLE">
+        <description>Gimbal supports tracking of a point on the camera</description>
+      </entry>
     </enum>
     <enum name="GIMBAL_MODE">
       <description>Enumeration of possible gimbal operation modes</description>
@@ -2034,6 +2040,24 @@
         <param index="5" label="Roll angle" units="deg" minValue="-180" maxValue="180">Roll angle relative to world horizon (positive to turn to the right).</param>
         <param index="6" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
         <param index="7" label="Yaw angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
+      </entry>
+      <entry value="1001" name="MAV_CMD_DO_GIMBAL_TRACK_POINT" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>If the gimbal supports visual tracking (GIMBAL_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking.</description>
+        <param index="1" label="Point 1 x" minValue="0" maxValue="1">Point to track.</param>
+        <param index="2" label="Point 1 y" minValue="0" maxValue="1">Roll angular rate (positive to turn to the right).</param>
+        <param index="3" label="Point 2 x" minValue="0" maxValue="1">Pitch/tilt angular rate (positive to point up).</param>
+        <param index="4" label="Point 2 y" minValue="0" maxValue="1">Yaw/pan angular rate (positive to pan to the right).</param>
+      </entry>
+      <entry value="1002" name="MAV_CMD_DO_GIMBAL_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>If the gimbal supports visual tracking (GIMBAL_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking.</description>
+        <param index="1" label="Top left corner x" minValue="0" maxValue="1">Top left corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
+        <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
+        <param index="3" label="Bottom right corner x" minValue="0" maxValue="1">Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
+        <param index="4" label="Bottom right corner y" minValue="0" maxValue="1">Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
