@@ -1022,7 +1022,7 @@
         <description>Gimbal supports to point to a local position</description>
       </entry>
       <entry value="32" name="GIMBAL_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
-        <description>Gimbal supports to point to a global GPS position</description>
+        <description>Gimbal supports to point to a global latitude, longitude, altitude position</description>
       </entry>
     </enum>
     <enum name="GIMBAL_MODE">
@@ -2028,12 +2028,12 @@
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Setpoint to be sent to autopilot to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: this command is only used between ground station and autopilot or as part of missions but never directly to a gimbal. To communicate with a gimbal the messages GIMBAL_CONTROL_* are to be used.</description>
         <param index="1" label="Gimbal mode" enum="GIMBAL_MODE">Gimbal mode.</param>
-        <param index="2" label="Roll angle" units="deg" minValue="-180" maxValue="180">Roll angle relative to world horizon (positive to turn to the right).</param>
-        <param index="3" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
-        <param index="4" label="Yaw angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
-        <param index="5" label="Roll angular rate" units="deg/s">Roll angular rate (positive to turn to the right).</param>
-        <param index="6" label="Pitch angular rate" units="deg/s">Pitch/tilt angular rate (positive to point up).</param>
-        <param index="7" label="Yaw angular rate" units="deg/s">Yaw/pan angular rate (positive to pan to the right).</param>
+        <param index="2" label="Roll angular rate" units="deg/s">Roll angular rate (positive to turn to the right).</param>
+        <param index="3" label="Pitch angular rate" units="deg/s">Pitch/tilt angular rate (positive to point up).</param>
+        <param index="4" label="Yaw angular rate" units="deg/s">Yaw/pan angular rate (positive to pan to the right).</param>
+        <param index="5" label="Roll angle" units="deg" minValue="-180" maxValue="180">Roll angle relative to world horizon (positive to turn to the right).</param>
+        <param index="6" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
+        <param index="7" label="Yaw angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
@@ -5917,7 +5917,7 @@
       <field type="uint8_t[32]" name="vendor_name">Name of the gimbal vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the gimbal model</field>
       <field type="uint32_t" name="firmware_version">Version of the gimbal firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
-      <field type="uint32_t" name="flags" enum="GIMBAL_CAP_FLAGS">Bitmap of gimbal capability flags.</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
     </message>
     <message id="281" name="GIMBAL_CONTROL_ATTITUDE">
       <wip/>
