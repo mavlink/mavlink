@@ -3227,8 +3227,8 @@
     </enum>
     <enum name="COMPONENT_CAP_FLAGS">
       <description>Component capability flags (Bitmap)</description>
-      <entry value="0" name="DUMMY">
-        <description>Dummy to make generator happy.</description>
+      <entry value="0" name="COMPONENT_CAP_FLAGS_NONE">
+        <description>No flags set.</description>
       </entry>
     </enum>
   </enums>
@@ -5219,10 +5219,10 @@
       <field type="int32_t" name="mission_end" units="s">Estimated time for completing the current mission. -1 means no mission active and/or no estimate available.</field>
       <field type="int32_t" name="commanded_action" units="s">Estimated time for completing the current commanded action (i.e. Go To, Takeoff, Land, etc.). -1 means no action active and/or no estimate available.</field>
     </message>
-    <message id="700" name="COMPONENT_INFORMATION">
+    <message id="385" name="COMPONENT_INFORMATION">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Information about a component. For camera components use CAMERA_INFORMATION, and for autopilots use AUTOPILOT_VERSION.</description>
+      <description>Information about a component. For camera components instead use CAMERA_INFORMATION, and for autopilots use AUTOPILOT_VERSION.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the component vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the component model</field>
@@ -5230,7 +5230,7 @@
       <field type="uint32_t" name="hardware_version">Version of the component hardware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
       <field type="uint32_t" name="capability_flags" enum="COMPONENT_CAP_FLAGS">Bitmap of component capability flags.</field>
       <field type="uint16_t" name="component_definition_version">Component definition version (iteration)</field>
-      <field type="char[140]" name="component_definition_uri">Component definition URI (if any, otherwise only basic functions will be available).</field>
+      <field type="char[140]" name="component_definition_uri">Component definition URI (if any, otherwise only basic functions will be available). The XML format is not yet specified and work in progress. </field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
