@@ -134,7 +134,7 @@
    <table class="sortable">
    <thead>
    <tr> <!-- mavlink_field_header -->
-      <th>Param</th>
+      <th>Param (:Label)</th>
       <th>Description</th>
 
       <xsl:if test='*/@enum or */@minValue or */@maxValue or */@increment'>
@@ -182,10 +182,12 @@
 
 <xsl:template match="//param" mode="params">
     <tr>
-        <td><xsl:value-of select="@index" /> </td> <!-- mission_param -->
+        <td><xsl:value-of select="@index" /> 
+        <xsl:if test='@label'>: <xsl:value-of select="@label" /></xsl:if>
+        </td> <!-- mission_param -->
 
         <td><xsl:value-of select="." />
-         <xsl:if test='@label or @decimalPlaces'><br /><strong>GCS display settings:</strong>
+         <xsl:if test='@decimalPlaces'><br /><strong>GCS display settings:</strong>
             <xsl:if test='@label'><em>Label:</em> <xsl:value-of select="@label" />, </xsl:if>
             <xsl:if test='@decimalPlaces'><em>decimalPlaces:</em> <xsl:value-of select="@decimalPlaces" /></xsl:if>
          </xsl:if>
