@@ -5699,6 +5699,7 @@
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Hardware status sent by a component</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="uint8_t" name="cpu_usage">CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
       <field type="int8_t" name="temperature" units="degC">Temperature. A value of INT8_MAX implies the field is unused.</field>
       <field type="uint32_t" name="ram_usage" units="MiB">Amount of used RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
@@ -5707,7 +5708,6 @@
       <field type="uint32_t" name="storage_total" units="MiB">Total amount of storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t" name="network_send_rate" units="KiB/s">Network traffic from the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t" name="network_receive_rate" units="KiB/s">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t" name="time_usec" units="us">Message timestamp in sender timebase.</field>
       <field type="uint32_t" name="uptime" units="ms">Time since system boot.</field>
     </message>
     <!-- Rover specific messages -->
