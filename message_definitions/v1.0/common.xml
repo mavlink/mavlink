@@ -5702,11 +5702,13 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="uint32_t" name="uptime" units="ms">Time since system boot.</field>
       <field type="uint8_t" name="type">Type of the onboard computer: 0: Mission computer primary, 1: Mission computer backup 1, 2: Mission computer backup 2, 3: Compute node, 4-5: Compute spares, 6-9: Payload computers.</field>
-      <field type="uint8_t[8]" name="cpu_usage">CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
-      <field type="uint8_t[2]" name="gpu_usage">GPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[8]" name="cpu_cores">CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[10]" name="cpu_combined">Combined CPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[4]" name="gpu_cores">GPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[10]" name="gpu_combined">Combined GPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
       <field type="int8_t" name="temperature_board" units="degC">Temperature of the board. A value of INT8_MAX implies the field is unused.</field>
       <field type="int8_t[8]" name="temperature_core" units="degC">Temperature of the CPU core. A value of INT8_MAX implies the field is unused.</field>
-      <field type="int16_t[4]" name="fan_speed" units="RPM">Fan speeds. A value of INT16_MAX implies the field is unused.</field>
+      <field type="int16_t[4]" name="fan_speed" units="rpm">Fan speeds. A value of INT16_MAX implies the field is unused.</field>
       <field type="uint32_t" name="ram_usage" units="MiB">Amount of used RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t" name="ram_total" units="MiB">Total amount of RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[4]" name="storage_type">Storage type: 0: HDD, 1: SSD, 2: EMMC, 3: SD card (non-removable), 4: SD card (removable). A value of UINT32_MAX implies the field is unused.</field>
