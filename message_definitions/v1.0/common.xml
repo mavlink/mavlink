@@ -67,9 +67,9 @@
       </entry>
     </enum>
     <enum name="MAV_TYPE">
-      <description>MAVLINK system type. All components in a system should report this type in their HEARTBEAT.</description>
+      <description>MAVLINK component type reported in HEARTBEAT message. Flight controllers must report the type of the vehicle on which they are mounted (e.g. MAV_TYPE_OCTOROTOR). All other components must report a value appropriate for their type (e.g. a camera must use MAV_TYPE_CAMERA).</description>
       <entry value="0" name="MAV_TYPE_GENERIC">
-        <description>Generic micro air vehicle.</description>
+        <description>Generic micro air vehicle</description>
       </entry>
       <entry value="1" name="MAV_TYPE_FIXED_WING">
         <description>Fixed wing aircraft.</description>
@@ -148,10 +148,10 @@
         <description>VTOL reserved 5</description>
       </entry>
       <entry value="26" name="MAV_TYPE_GIMBAL">
-        <description>Gimbal (standalone)</description>
+        <description>Gimbal</description>
       </entry>
       <entry value="27" name="MAV_TYPE_ADSB">
-        <description>ADSB system (standalone)</description>
+        <description>ADSB system</description>
       </entry>
       <entry value="28" name="MAV_TYPE_PARAFOIL">
         <description>Steerable, nonrigid airfoil</description>
@@ -160,13 +160,16 @@
         <description>Dodecarotor</description>
       </entry>
       <entry value="30" name="MAV_TYPE_CAMERA">
-        <description>Camera (standalone)</description>
+        <description>Camera</description>
       </entry>
       <entry value="31" name="MAV_TYPE_CHARGING_STATION">
         <description>Charging station</description>
       </entry>
       <entry value="32" name="MAV_TYPE_FLARM">
-        <description>FLARM collision avoidance system (standalone)</description>
+        <description>FLARM collision avoidance system</description>
+      </entry>
+      <entry value="33" name="SERVO">
+        <description>Servo</description>
       </entry>
     </enum>
     <enum name="FIRMWARE_VERSION_TYPE">
@@ -3708,7 +3711,7 @@
   <messages>
     <message id="0" name="HEARTBEAT">
       <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html</description>
-      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the system (quadrotor, helicopter, etc.). Components use the same type as their associated system.</field>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.). This should be used in preference to component id for identifying the component type.</field>
       <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.</field>
       <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
@@ -3851,12 +3854,12 @@
       <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis</field>
       <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis</field>
       <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis</field>
-      <field type="int16_t" name="xmag" units="mT">X Magnetic field</field>
-      <field type="int16_t" name="ymag" units="mT">Y Magnetic field</field>
-      <field type="int16_t" name="zmag" units="mT">Z Magnetic field</field>
+      <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
+      <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
+      <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
     </message>
     <message id="27" name="RAW_IMU">
-      <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should always contain the true raw values without any scaling to allow data capture and system debugging.</description>
+      <description>The RAW IMU readings for a 9DOF sensor, which is identified by the id (default IMU1). This message should always contain the true raw values without any scaling to allow data capture and system debugging.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="int16_t" name="xacc">X acceleration (raw)</field>
       <field type="int16_t" name="yacc">Y acceleration (raw)</field>
@@ -3867,6 +3870,8 @@
       <field type="int16_t" name="xmag">X Magnetic field (raw)</field>
       <field type="int16_t" name="ymag">Y Magnetic field (raw)</field>
       <field type="int16_t" name="zmag">Z Magnetic field (raw)</field>
+      <extensions/>
+      <field type="uint8_t" name="id">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
     </message>
     <message id="28" name="RAW_PRESSURE">
       <description>The RAW pressure readings for the typical setup of one absolute pressure and one differential pressure sensor. The sensor values should be the raw, UNSCALED ADC values.</description>
@@ -4504,8 +4509,8 @@
       <field type="uint8_t" name="sensor_id">Sensor ID</field>
       <field type="int16_t" name="flow_x" units="dpix">Flow in x-sensor direction</field>
       <field type="int16_t" name="flow_y" units="dpix">Flow in y-sensor direction</field>
-      <field type="float" name="flow_comp_m_x" units="m">Flow in x-sensor direction, angular-speed compensated</field>
-      <field type="float" name="flow_comp_m_y" units="m">Flow in y-sensor direction, angular-speed compensated</field>
+      <field type="float" name="flow_comp_m_x" units="m/s">Flow in x-sensor direction, angular-speed compensated</field>
+      <field type="float" name="flow_comp_m_y" units="m/s">Flow in y-sensor direction, angular-speed compensated</field>
       <field type="uint8_t" name="quality">Optical flow quality / confidence. 0: bad, 255: maximum quality</field>
       <field type="float" name="ground_distance" units="m">Ground distance. Positive value: distance known. Negative value: Unknown distance</field>
       <extensions/>
@@ -4577,6 +4582,8 @@
       <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
       <field type="float" name="temperature" units="degC">Temperature</field>
       <field type="uint16_t" name="fields_updated" display="bitmask">Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
+      <extensions/>
+      <field type="uint8_t" name="id">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
     </message>
     <message id="106" name="OPTICAL_FLOW_RAD">
       <description>Optical flow from an angular rate flow sensor (e.g. PX4FLOW or mouse sensor)</description>
@@ -4722,9 +4729,9 @@
       <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis</field>
       <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis</field>
       <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis</field>
-      <field type="int16_t" name="xmag" units="mT">X Magnetic field</field>
-      <field type="int16_t" name="ymag" units="mT">Y Magnetic field</field>
-      <field type="int16_t" name="zmag" units="mT">Z Magnetic field</field>
+      <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
+      <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
+      <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
     </message>
     <message id="117" name="LOG_REQUEST_LIST">
       <description>Request a list of available logs. On some systems calling this may stop on-board logging until LOG_REQUEST_END is called.</description>
@@ -4844,9 +4851,9 @@
       <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis</field>
       <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis</field>
       <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis</field>
-      <field type="int16_t" name="xmag" units="mT">X Magnetic field</field>
-      <field type="int16_t" name="ymag" units="mT">Y Magnetic field</field>
-      <field type="int16_t" name="zmag" units="mT">Z Magnetic field</field>
+      <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
+      <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
+      <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
     </message>
     <message id="130" name="DATA_TRANSMISSION_HANDSHAKE">
       <description>Handshake message to initiate, control and stop image streaming when using the Image Transmission Protocol: https://mavlink.io/en/services/image_transmission.html.</description>
@@ -5695,7 +5702,7 @@
     <message id="385" name="TUNNEL">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Message for transporting "arbitrary" variable-length data from one component to another (broadcast is not forbidden, but discouraged). The encoding of the data is usually extension specific, i.e. determined by the source, and is usually not documented as part of the mavlink specification.</description>
+      <description>Message for transporting "arbitrary" variable-length data from one component to another (broadcast is not forbidden, but discouraged). The encoding of the data is usually extension specific, i.e. determined by the source, and is usually not documented as part of the MAVLink specification.</description>
       <field type="uint8_t" name="target_system">System ID (can be 0 for broadcast, but this is discouraged)</field>
       <field type="uint8_t" name="target_component">Component ID (can be 0 for broadcast, but this is discouraged)</field>
       <field type="uint16_t" name="payload_type" enum="MAV_TUNNEL_PAYLOAD_TYPE">A code that identifies the content of the payload (0 for unknown, which is the default). If this code is less than 32768, it is a 'registered' payload type and the corresponding code should be added to the MAV_TUNNEL_PAYLOAD_TYPE enum, and the entry possibly to https://github.com/mavlink/mavlink/tunnel-message-payload-types.xml. Software creators can register blocks of types as needed. Codes greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.</field>
