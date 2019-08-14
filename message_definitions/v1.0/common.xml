@@ -881,10 +881,10 @@
         <description>Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-up (x: east, y: noth, z: up).</description>
       </entry>
       <entry value="20" name="MAV_FRAME_LOCAL_FRD">
-        <description>Odometry reference coordinate frame of data given by an external estimator, Z-down, but not aligned with NED</description>
+        <description>Odometry reference coordinate frame of data given by an external estimator, Z-down, not aligned with North</description>
       </entry>
       <entry value="21" name="MAV_FRAME_LOCAL_FLU">
-        <description>Odometry reference coordinate frame of data given by an external estimator, Z-up, but not aligned with NED</description>
+        <description>Odometry reference coordinate frame of data given by an external estimator, Z-up, not aligned with North</description>
       </entry>
     </enum>
     <enum name="MAVLINK_DATA_STREAM_TYPE">
@@ -2836,6 +2836,9 @@
       </entry>
       <entry value="7" name="MAV_ESTIMATOR_TYPE_AUTOPILOT">
         <description>Estimator on autopilot.</description>
+      </entry>
+      <entry value="7" name="MAV_ESTIMATOR_TYPE_LIDAR">
+        <description>Estimator based on lidar sensor input.</description>
       </entry>
     </enum>
     <enum name="MAV_BATTERY_TYPE">
@@ -5551,7 +5554,6 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="uint8_t" name="frame_id" enum="MAV_FRAME">Coordinate frame of reference for the pose data.</field>
       <field type="uint8_t" name="child_frame_id" enum="MAV_FRAME">Coordinate frame of reference for the velocity in free space (twist) data.</field>
-      <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Type of estimator that is providing the odometry.</field>
       <field type="float" name="x" units="m">X Position</field>
       <field type="float" name="y" units="m">Y Position</field>
       <field type="float" name="z" units="m">Z Position</field>
@@ -5566,6 +5568,7 @@
       <field type="float[21]" name="velocity_covariance">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <extensions/>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
+      <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Type of estimator that is providing the odometry.</field>\
     </message>
     <message id="332" name="TRAJECTORY_REPRESENTATION_WAYPOINTS">
       <wip/>
