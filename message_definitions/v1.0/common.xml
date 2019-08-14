@@ -857,22 +857,34 @@
         <description>Body fixed frame of reference, Z-up (x: forward, y: left, z: up).</description>
       </entry>
       <entry value="14" name="MAV_FRAME_MOCAP_NED">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_ESTIM_FRD"/>
         <description>Odometry local coordinate frame of data given by a motion capture system, Z-down (x: north, y: east, z: down).</description>
       </entry>
       <entry value="15" name="MAV_FRAME_MOCAP_ENU">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_ESTIM_FLU"/>
         <description>Odometry local coordinate frame of data given by a motion capture system, Z-up (x: east, y: north, z: up).</description>
       </entry>
       <entry value="16" name="MAV_FRAME_VISION_NED">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_ESTIM_FRD"/>
         <description>Odometry local coordinate frame of data given by a vision estimation system, Z-down (x: north, y: east, z: down).</description>
       </entry>
       <entry value="17" name="MAV_FRAME_VISION_ENU">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_ESTIM_FLU"/>
         <description>Odometry local coordinate frame of data given by a vision estimation system, Z-up (x: east, y: north, z: up).</description>
       </entry>
       <entry value="18" name="MAV_FRAME_ESTIM_NED">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_ESTIM_FRD"/>
         <description>Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-down (x: north, y: east, z: down).</description>
       </entry>
       <entry value="19" name="MAV_FRAME_ESTIM_ENU">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_ESTIM_FLU"/>
         <description>Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-up (x: east, y: noth, z: up).</description>
+      </entry>
+      <entry value="20" name="MAV_FRAME_ESTIM_FRD">
+        <description>Odometry reference coordinate frame of data given by an external estimator, Z-down, but not aligned with NED</description>
+      </entry>
+      <entry value="21" name="MAV_FRAME_ESTIM_FLU">
+        <description>Odometry reference coordinate frame of data given by an external estimator, Z-up, but not aligned with NED</description>
       </entry>
     </enum>
     <enum name="MAVLINK_DATA_STREAM_TYPE">
@@ -2818,6 +2830,12 @@
       </entry>
       <entry value="5" name="MAV_ESTIMATOR_TYPE_GPS_INS">
         <description>Estimator integrating GPS and inertial sensing.</description>
+      </entry>
+      <entry value="6" name="MAV_ESTIMATOR_TYPE_MOCAP">
+        <description>Estimate from external motion capturing system.</description>
+      </entry>
+      <entry value="7" name="MAV_ESTIMATOR_TYPE_AUTOPILOT">
+        <description>Estimator on autopilot.</description>
       </entry>
     </enum>
     <enum name="MAV_BATTERY_TYPE">
@@ -5533,6 +5551,7 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="uint8_t" name="frame_id" enum="MAV_FRAME">Coordinate frame of reference for the pose data.</field>
       <field type="uint8_t" name="child_frame_id" enum="MAV_FRAME">Coordinate frame of reference for the velocity in free space (twist) data.</field>
+      <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Type of estimator that is providing the odometry.</field>
       <field type="float" name="x" units="m">X Position</field>
       <field type="float" name="y" units="m">Y Position</field>
       <field type="float" name="z" units="m">Z Position</field>
