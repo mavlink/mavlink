@@ -5702,6 +5702,31 @@
       <field type="uint16_t" name="payload_type" enum="MAV_TUNNEL_PAYLOAD_TYPE">A code that identifies the content of the payload (0 for unknown, which is the default). If this code is less than 32768, it is a 'registered' payload type and the corresponding code should be added to the MAV_TUNNEL_PAYLOAD_TYPE enum, and the entry possibly to https://github.com/mavlink/mavlink/tunnel-message-payload-types.xml. Software creators can register blocks of types as needed. Codes greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.</field>
       <field type="uint8_t[128]" name="payload">Variable length payload. The payload length is defined by the remaining message length when subtracting the header and other fields. The entire content of this block is opaque unless you understand the encoding specified by payload_type.</field>
     </message>
+    <message id="390" name="ONBOARD_COMPUTER_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Hardware status sent by an onboard computer.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="uint32_t" name="uptime" units="ms">Time since system boot.</field>
+      <field type="uint8_t" name="type">Type of the onboard computer: 0: Mission computer primary, 1: Mission computer backup 1, 2: Mission computer backup 2, 3: Compute node, 4-5: Compute spares, 6-9: Payload computers.</field>
+      <field type="uint8_t[8]" name="cpu_cores">CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[10]" name="cpu_combined">Combined CPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[4]" name="gpu_cores">GPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[10]" name="gpu_combined">Combined GPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
+      <field type="int8_t" name="temperature_board" units="degC">Temperature of the board. A value of INT8_MAX implies the field is unused.</field>
+      <field type="int8_t[8]" name="temperature_core" units="degC">Temperature of the CPU core. A value of INT8_MAX implies the field is unused.</field>
+      <field type="int16_t[4]" name="fan_speed" units="rpm">Fan speeds. A value of INT16_MAX implies the field is unused.</field>
+      <field type="uint32_t" name="ram_usage" units="MiB">Amount of used RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t" name="ram_total" units="MiB">Total amount of RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[4]" name="storage_type">Storage type: 0: HDD, 1: SSD, 2: EMMC, 3: SD card (non-removable), 4: SD card (removable). A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[4]" name="storage_usage" units="MiB">Amount of used storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[4]" name="storage_total" units="MiB">Total amount of storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_type">Link type: 0-9: UART, 10-19: Wired network, 20-29: Wifi, 30-39: Point-to-point proprietary, 40-49: Mesh proprietary</field>
+      <field type="uint32_t[6]" name="link_tx_rate" units="KiB/s">Network traffic from the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_tx_max" units="KiB/s">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_rx_max" units="KiB/s">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
+    </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
       <description>Cumulative distance traveled for each reported wheel.</description>
