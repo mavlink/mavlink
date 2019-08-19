@@ -794,9 +794,11 @@
         <description>Offset to the current local frame. Anything expressed in this frame should be added to the current local frame position.</description>
       </entry>
       <entry value="8" name="MAV_FRAME_BODY_NED">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_BODY_FRD"/>
         <description>Setpoint in body NED frame. This makes sense if all position control is externalized - e.g. useful to command 2 m/s^2 acceleration to the right.</description>
       </entry>
       <entry value="9" name="MAV_FRAME_BODY_OFFSET_NED">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_BODY_FRD"/>
         <description>Offset in body NED frame. This makes sense if adding setpoints to the current flight path, to avoid an obstacle - e.g. useful to command 2 m/s^2 acceleration to the east.</description>
       </entry>
       <entry value="10" name="MAV_FRAME_GLOBAL_TERRAIN_ALT">
@@ -812,22 +814,34 @@
         <description>Body fixed frame of reference, Z-up (x: forward, y: left, z: up).</description>
       </entry>
       <entry value="14" name="MAV_FRAME_MOCAP_NED">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FRD"/>
         <description>Odometry local coordinate frame of data given by a motion capture system, Z-down (x: north, y: east, z: down).</description>
       </entry>
       <entry value="15" name="MAV_FRAME_MOCAP_ENU">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FLU"/>
         <description>Odometry local coordinate frame of data given by a motion capture system, Z-up (x: east, y: north, z: up).</description>
       </entry>
       <entry value="16" name="MAV_FRAME_VISION_NED">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FRD"/>
         <description>Odometry local coordinate frame of data given by a vision estimation system, Z-down (x: north, y: east, z: down).</description>
       </entry>
       <entry value="17" name="MAV_FRAME_VISION_ENU">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FLU"/>
         <description>Odometry local coordinate frame of data given by a vision estimation system, Z-up (x: east, y: north, z: up).</description>
       </entry>
       <entry value="18" name="MAV_FRAME_ESTIM_NED">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FRD"/>
         <description>Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-down (x: north, y: east, z: down).</description>
       </entry>
       <entry value="19" name="MAV_FRAME_ESTIM_ENU">
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FLU"/>
         <description>Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-up (x: east, y: noth, z: up).</description>
+      </entry>
+      <entry value="20" name="MAV_FRAME_LOCAL_FRD">
+        <description>Forward, Right, Down coordinate frame. This is a local frame with Z-down and arbitrary F/R alignment (i.e. not aligned with NED/earth frame).</description>
+      </entry>
+      <entry value="21" name="MAV_FRAME_LOCAL_FLU">
+        <description>Forward, Left, Up coordinate frame. This is a local frame with Z-up and arbitrary F/L alignment (i.e. not aligned with ENU/earth frame).</description>
       </entry>
     </enum>
     <enum name="MAVLINK_DATA_STREAM_TYPE">
@@ -2639,6 +2653,9 @@
     </enum>
     <enum name="MAV_ESTIMATOR_TYPE">
       <description>Enumeration of estimator types</description>
+      <entry value="0" name="MAV_ESTIMATOR_TYPE_UNKNOWN">
+        <description>Unknown type of the estimator.</description>
+      </entry>
       <entry value="1" name="MAV_ESTIMATOR_TYPE_NAIVE">
         <description>This is a naive estimator without any real covariance feedback.</description>
       </entry>
@@ -2653,6 +2670,15 @@
       </entry>
       <entry value="5" name="MAV_ESTIMATOR_TYPE_GPS_INS">
         <description>Estimator integrating GPS and inertial sensing.</description>
+      </entry>
+      <entry value="6" name="MAV_ESTIMATOR_TYPE_MOCAP">
+        <description>Estimate from external motion capturing system.</description>
+      </entry>
+      <entry value="7" name="MAV_ESTIMATOR_TYPE_LIDAR">
+        <description>Estimator based on lidar sensor input.</description>
+      </entry>
+      <entry value="8" name="MAV_ESTIMATOR_TYPE_AUTOPILOT">
+        <description>Estimator on autopilot.</description>
       </entry>
     </enum>
     <enum name="MAV_BATTERY_TYPE">
@@ -4855,6 +4881,7 @@
       <field type="float[21]" name="velocity_covariance">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <extensions/>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
+      <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Type of estimator that is providing the odometry.</field>
     </message>
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
