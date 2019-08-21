@@ -3523,7 +3523,7 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
     <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
-      <description>As local waypoints exist, the global waypoint reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
+      <description>Sets the GPS co-ordinates of the vehicle local origin (0,0,0) position. Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed. This enables transform between the local coordinate frame and the global (GPS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
@@ -3532,7 +3532,7 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
     </message>
     <message id="49" name="GPS_GLOBAL_ORIGIN">
-      <description>Once the MAV sets a new GPS-Local correspondence, this message announces the origin (0,0,0) position</description>
+      <description>Publishes the GPS co-ordinates of the vehicle local origin (0,0,0) position. Emitted whenever a new GPS-Local position mapping is requested or set - e.g. following SET_GPS_GLOBAL_ORIGIN message.</description>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
       <field type="int32_t" name="altitude" units="mm">Altitude (MSL). Positive for up.</field>
