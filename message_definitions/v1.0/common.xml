@@ -168,7 +168,7 @@
       <entry value="32" name="MAV_TYPE_FLARM">
         <description>FLARM collision avoidance system</description>
       </entry>
-      <entry value="33" name="SERVO">
+      <entry value="33" name="MAV_TYPE_SERVO">
         <description>Servo</description>
       </entry>
     </enum>
@@ -667,7 +667,7 @@
         <description>Servo #14.</description>
       </entry>
       <entry value="154" name="MAV_COMP_ID_GIMBAL">
-        <description>Gimbal component.</description>
+        <description>Gimbal #1.</description>
       </entry>
       <entry value="155" name="MAV_COMP_ID_LOG">
         <description>Logging component.</description>
@@ -687,6 +687,21 @@
       </entry>
       <entry value="160" name="MAV_COMP_ID_FLARM">
         <description>FLARM collision alert component.</description>
+      </entry>
+      <entry value="171" name="MAV_COMP_ID_GIMBAL2">
+        <description>Gimbal #2.</description>
+      </entry>
+      <entry value="172" name="MAV_COMP_ID_GIMBAL3">
+        <description>Gimbal #3.</description>
+      </entry>
+      <entry value="173" name="MAV_COMP_ID_GIMBAL4">
+        <description>Gimbal #4</description>
+      </entry>
+      <entry value="174" name="MAV_COMP_ID_GIMBAL5">
+        <description>Gimbal #5.</description>
+      </entry>
+      <entry value="175" name="MAV_COMP_ID_GIMBAL6">
+        <description>Gimbal #6.</description>
       </entry>
       <entry value="190" name="MAV_COMP_ID_MISSIONPLANNER">
         <description>Component that can generate/supply a mission flight plan (e.g. GCS or developer API).</description>
@@ -3877,6 +3892,8 @@
       <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
       <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
       <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
+      <extensions/>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
     <message id="27" name="RAW_IMU">
       <description>The RAW IMU readings for a 9DOF sensor, which is identified by the id (default IMU1). This message should always contain the true raw values without any scaling to allow data capture and system debugging.</description>
@@ -3892,6 +3909,7 @@
       <field type="int16_t" name="zmag">Z Magnetic field (raw)</field>
       <extensions/>
       <field type="uint8_t" name="id">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
     <message id="28" name="RAW_PRESSURE">
       <description>The RAW pressure readings for the typical setup of one absolute pressure and one differential pressure sensor. The sensor values should be the raw, UNSCALED ADC values.</description>
@@ -4752,6 +4770,8 @@
       <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
       <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
       <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
+      <extensions/>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
     <message id="117" name="LOG_REQUEST_LIST">
       <description>Request a list of available logs. On some systems calling this may stop on-board logging until LOG_REQUEST_END is called.</description>
@@ -4874,6 +4894,8 @@
       <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
       <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
       <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
+      <extensions/>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
     <message id="130" name="DATA_TRANSMISSION_HANDSHAKE">
       <description>Handshake message to initiate, control and stop image streaming when using the Image Transmission Protocol: https://mavlink.io/en/services/image_transmission.html.</description>
@@ -5276,8 +5298,8 @@
       <field type="uint8_t" name="target_network">Network ID (0 for broadcast)</field>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast)</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast)</field>
-      <field type="uint16_t" name="message_type">A code that identifies the software component that understands this message (analogous to USB device classes or mime type strings).  If this code is less than 32768, it is considered a 'registered' protocol extension and the corresponding entry should be added to https://github.com/mavlink/mavlink/extension-message-ids.xml.  Software creators can register blocks of message IDs as needed (useful for GCS specific metadata, etc...). Message_types greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.</field>
-      <field type="uint8_t[249]" name="payload">Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields.  The entire content of this block is opaque unless you understand any the encoding message_type.  The particular encoding used can be extension specific and might not always be documented as part of the mavlink specification.</field>
+      <field type="uint16_t" name="message_type">A code that identifies the software component that understands this message (analogous to USB device classes or mime type strings). If this code is less than 32768, it is considered a 'registered' protocol extension and the corresponding entry should be added to https://github.com/mavlink/mavlink/extension-message-ids.xml. Software creators can register blocks of message IDs as needed (useful for GCS specific metadata, etc...). Message_types greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.</field>
+      <field type="uint8_t[249]" name="payload">Variable length payload. The length must be encoded in the payload as part of the message_type protocol, e.g. by including the length as payload data, or by terminating the payload data with a non-zero marker. This is required in order to reconstruct zero-terminated payloads that are (or otherwise would be) trimmed by MAVLink 2 empty-byte truncation. The entire content of the payload block is opaque unless you understand the encoding message_type. The particular encoding used can be extension specific and might not always be documented as part of the MAVLink specification.</field>
     </message>
     <message id="249" name="MEMORY_VECT">
       <description>Send raw controller memory. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
@@ -5353,7 +5375,7 @@
       <field type="uint8_t" name="lens_id">Reserved for a lens ID</field>
       <field type="uint32_t" name="flags" enum="CAMERA_CAP_FLAGS" display="bitmask">Bitmap of camera capability flags.</field>
       <field type="uint16_t" name="cam_definition_version">Camera definition version (iteration)</field>
-      <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available).</field>
+      <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available). HTTP- (http://) and MAVLink FTP- (mavlinkftp://) formatted URIs are allowed (and both must be supported by any GCS that implements the Camera Protocol).</field>
     </message>
     <message id="260" name="CAMERA_SETTINGS">
       <description>Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS.</description>
@@ -5546,13 +5568,14 @@
       <description>Obstacle distances in front of the sensor, starting from the left in increment degrees to the right</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="uint8_t" name="sensor_type" enum="MAV_DISTANCE_SENSOR">Class id of the distance sensor type.</field>
-      <field type="uint16_t[72]" name="distances" units="cm">Distance of obstacles around the vehicle with index 0 corresponding to local forward + angle_offset. A value of 0 is valid and means that the obstacle is practically touching the sensor. A value of max_distance +1 means no obstacle is present. A value of UINT16_MAX for unknown/not used. In a array element, one unit corresponds to 1cm.</field>
+      <field type="uint16_t[72]" name="distances" units="cm">Distance of obstacles around the vehicle with index 0 corresponding to North + angle_offset, unless otherwise specified in the frame. A value of 0 is valid and means that the obstacle is practically touching the sensor. A value of max_distance +1 means no obstacle is present. A value of UINT16_MAX for unknown/not used. In a array element, one unit corresponds to 1cm.</field>
       <field type="uint8_t" name="increment" units="deg">Angular width in degrees of each array element. Increment direction is clockwise. This field is ignored if increment_f is non-zero.</field>
       <field type="uint16_t" name="min_distance" units="cm">Minimum distance the sensor can measure.</field>
       <field type="uint16_t" name="max_distance" units="cm">Maximum distance the sensor can measure.</field>
       <extensions/>
       <field type="float" name="increment_f" units="deg">Angular width in degrees of each array element as a float. If non-zero then this value is used instead of the uint8_t increment field. Positive is clockwise direction, negative is counter-clockwise.</field>
       <field type="float" name="angle_offset" units="deg">Relative angle offset of the 0-index element in the distances array. Value of 0 corresponds to forward. Positive is clockwise direction, negative is counter-clockwise.</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame of reference for the yaw rotation and offset of the sensor data. Defaults to MAV_FRAME_GLOBAL, which is North aligned. For body-mounted sensors use MAV_FRAME_BODY_FRD, which is vehicle front aligned.</field>
     </message>
     <message id="331" name="ODOMETRY">
       <description>Odometry message to communicate odometry information with an external interface. Fits ROS REP 147 standard for aerial vehicles (http://www.ros.org/reps/rep-0147.html).</description>
@@ -5727,7 +5750,8 @@
       <field type="uint8_t" name="target_system">System ID (can be 0 for broadcast, but this is discouraged)</field>
       <field type="uint8_t" name="target_component">Component ID (can be 0 for broadcast, but this is discouraged)</field>
       <field type="uint16_t" name="payload_type" enum="MAV_TUNNEL_PAYLOAD_TYPE">A code that identifies the content of the payload (0 for unknown, which is the default). If this code is less than 32768, it is a 'registered' payload type and the corresponding code should be added to the MAV_TUNNEL_PAYLOAD_TYPE enum, and the entry possibly to https://github.com/mavlink/mavlink/tunnel-message-payload-types.xml. Software creators can register blocks of types as needed. Codes greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.</field>
-      <field type="uint8_t[128]" name="payload">Variable length payload. The payload length is defined by the remaining message length when subtracting the header and other fields. The entire content of this block is opaque unless you understand the encoding specified by payload_type.</field>
+      <field type="uint8_t" name="payload_length">Length of the data transported in payload</field>
+      <field type="uint8_t[128]" name="payload">Variable length payload. The payload length is defined by payload_length. The entire content of this block is opaque unless you understand the encoding specified by payload_type.</field>
     </message>
     <message id="390" name="ONBOARD_COMPUTER_STATUS">
       <wip/>
