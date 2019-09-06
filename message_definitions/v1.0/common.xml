@@ -956,6 +956,16 @@
         <description>Breached fence boundary</description>
       </entry>
     </enum>
+    <enum name="FENCE_MITIGATE">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Actions being taken to mitigate/prevent fence breach</description>
+      <entry value="0" name="FENCE_MITIGATE_NONE">
+        <description>No actions being taken</description>
+      </entry>
+      <entry value="1" name="FENCE_MITIGATE_VEL_LIMIT">
+        <description>Velocity limiting active to prevent breach</description>
+      </entry>
+    </enum>
     <!-- Camera Mount mode Enumeration -->
     <enum name="MAV_MOUNT_MODE">
       <description>Enumeration of possible mount operation modes</description>
@@ -5103,6 +5113,8 @@
       <field type="uint16_t" name="breach_count">Number of fence breaches.</field>
       <field type="uint8_t" name="breach_type" enum="FENCE_BREACH">Last breach type.</field>
       <field type="uint32_t" name="breach_time" units="ms">Time (since boot) of last breach.</field>
+      <extensions/>
+      <field type="uint8_t" name="breach_mitigation" enum="FENCE_MITIGATE">Active action to prevent fence breach</field>
     </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
