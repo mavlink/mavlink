@@ -3473,26 +3473,26 @@
         <description>The location of the remote pilot is a fixed location.</description>
       </entry>
     </enum>
-    <enum name="REGULATOR_STATUS_FLAG">
-      <entry value="1" name="REGULATOR_STATUS_HEALTHY">
-        <description>The regulator channel is operating normally.</description>
+    <enum name="VOLTAGE_REGULATOR_STATUS_FLAG">
+      <entry value="1" name="VOLTAGE_REGULATOR_STATUS_HEALTHY">
+        <description>The regulator is operating normally.</description>
       </entry>
-      <entry value="2" name="REGULATOR_STATUS_OC">
-        <description>The regulator channel is in an over-current condition.</description>
+      <entry value="2" name="VOLTAGE_REGULATOR_STATUS_OC">
+        <description>The regulator is in an over-current condition.</description>
       </entry>
-      <entry value="4" name="REGULATOR_STATUS_UV">
-        <description>The regulator channel is in an under-voltage condition.</description>
+      <entry value="4" name="VOLTAGE_REGULATOR_STATUS_UV">
+        <description>The regulator is in an under-voltage condition.</description>
       </entry>
-      <entry value="8" name="REGULATOR_STATUS_OV">
-        <description>The regulator channel is in an over-voltage condition.</description>
+      <entry value="8" name="VOLTAGE_REGULATOR_STATUS_OV">
+        <description>The regulator is in an over-voltage condition.</description>
       </entry>
     </enum>
-    <enum name="TEMPERATURE_FLAG">
-      <entry value="1" name="TEMPERATURE_OT">
-        <description>The temperature channel is in an over-temperature condition.</description>
+    <enum name="TEMPERATURE_STATUS_FLAG">
+      <entry value="1" name="TEMPERATURE_STATUS_OT">
+        <description>The thermometer is in an over-temperature condition.</description>
       </entry>
-      <entry value="2" name="TEMPERATURE_UT">
-        <description>The temperature channel is in an under-temperature condition.</description>
+      <entry value="2" name="TEMPERATURE_STATUS_UT">
+        <description>The thermometer is in an under-temperature condition.</description>
       </entry>
     </enum>
   </enums>
@@ -5492,30 +5492,30 @@
       <field type="uint16_t" name="payload_type" enum="MAV_TUNNEL_PAYLOAD_TYPE">A code that identifies the content of the payload (0 for unknown, which is the default). If this code is less than 32768, it is a 'registered' payload type and the corresponding code should be added to the MAV_TUNNEL_PAYLOAD_TYPE enum, and the entry possibly to https://github.com/mavlink/mavlink/tunnel-message-payload-types.xml. Software creators can register blocks of types as needed. Codes greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.</field>
       <field type="uint8_t[128]" name="payload">Variable length payload. The payload length is defined by the remaining message length when subtracting the header and other fields. The entire content of this block is opaque unless you understand the encoding specified by payload_type.</field>
     </message>
-    <message id="5008" name="REGULATOR_STATUS">
+    <message id="5008" name="VOLTAGE_REGULATOR_STATUS">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Status from a power regulator.</description>
+      <description>Status from a voltage regulator.</description>
       <field type="uint8_t" name="channel">ID number for the regulator channel.</field>
       <field type="char[16]" name="name">Descriptive name for the regulator channel; terminated by NULL if length less than 16 human-readable chars, and without if length is exactly 16.</field>
-      <field type="uint16_t" name="v_nom">Nominal voltage of the regulator channel, in mV.  If unknown, set to 65535.</field>
-      <field type="uint16_t" name="v_act">Measured voltage of the regulator channel, in mV.  If unmeasured, set to 65535.</field>
-      <field type="uint16_t" name="v_max">Maximum permissible voltage, in mV.  Set to 65535 for no limit.</field>
-      <field type="uint16_t" name="v_min">Minimum permissible voltage, in mV.  Set to 65535 for no limit.</field>
-      <field type="uint16_t" name="i_act">Measured current of the regulator channel, in mA.  If unmeasured, set to 65535.</field>
-      <field type="uint16_t" name="i_max">Maximum permissible current, in mA.  Set to 65535 for no limit.</field>
-      <field type="uint16_t" name="flags">Bitmap of regulator status flags.</field>
+      <field type="uint16_t" name="v_nom" units="mV">Nominal voltage of the regulator channel.  If unknown, set to UINT16_MAX.</field>
+      <field type="uint16_t" name="v_act" units="mV">Measured voltage of the regulator channel.  If unmeasured, set to UINT16_MAX.</field>
+      <field type="uint16_t" name="v_max" units="mV">Maximum permissible voltage.  Set to UINT16_MAX for no limit.</field>
+      <field type="uint16_t" name="v_min" units="mV">Minimum permissible voltage.  Set to UINT16_MAX for no limit.</field>
+      <field type="uint16_t" name="i_act" units="mA">Measured current of the regulator channel.  If unmeasured, set to UINT16_MAX.</field>
+      <field type="uint16_t" name="i_max" units="mA">Maximum permissible current.  Set to UINT16_MAX for no limit.</field>
+      <field type="uint16_t" name="flags" enum="VOLTAGE_REGULATOR_STATUS_FLAGS" display="bitmask">Bitmap of regulator status flags.</field>
     </message>
-    <message id="5009" name="TEMPERATURE">
+    <message id="5009" name="TEMPERATURE_STATUS">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Status from a generic device which measures temperature.</description>
+      <description>Status from a device which measures temperature.</description>
       <field type="uint8_t" name="channel">ID number of the thermometer channel.</field>
       <field type="char[16]" name="name">Descriptive name for the thermometer channel; terminated by NULL if length less than 16 human-readable chars, and without if length is exactly 16.</field>
-      <field type="uint16_t" name="t_act">Measured temperature from the thermometer channel, in Kelvin.</field>
-      <field type="uint16_t" name="t_max">Maximum permissible temperature for this channel, in Kelvin.  Set to 65535 for no limit.</field>
-      <field type="uint16_t" name="t_min">Minimum permissible temperature for this channel, in Kelvin.  Set to 65535 for no limit (or zero probably also works in most practical applications).</field>
-      <field type="uint8_t" name="flags">Bitmap of temperature status flags.</field>
+      <field type="uint16_t" name="t_act" units="Kelvin">Measured temperature from the thermometer channel.</field>
+      <field type="uint16_t" name="t_max" units="Kelvin">Maximum permissible temperature for this channel.  Set to UINT16_MAX for no limit.</field>
+      <field type="uint16_t" name="t_min" units="Kelvin">Minimum permissible temperature for this channel.  Set to UINT16_MAX for no limit (or zero probably also works in most practical applications).</field>
+      <field type="uint8_t" name="flags" enum="TEMPERATURE_STATUS_FLAGS" display="bitmask">Bitmap of temperature status flags.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
