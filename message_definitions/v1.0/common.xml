@@ -983,7 +983,7 @@
     </enum>
     <!-- Camera Mount mode Enumeration -->
     <enum name="MAV_MOUNT_MODE">
-      <deprecated since="2019-07" replaced_by="GIMBAL_MODE"/>
+      <deprecated since="2019-07" replaced_by="GIMBAL_CONTROLLER_MODE"/>
       <description>Enumeration of possible mount operation modes</description>
       <entry value="0" name="MAV_MOUNT_MODE_RETRACT">
         <description>Load and keep safe position (Roll,Pitch,Yaw) from permant memory and stop stabilization</description>
@@ -1005,7 +1005,7 @@
       </entry>
     </enum>
     <enum name="GIMBAL_CAP_FLAGS">
-      <description>Gimbal capability flags (Bitmap)</description>
+      <description>Gimbal low level capability flags (Bitmap)</description>
       <entry value="1" name="GIMBAL_CAP_FLAGS_HAS_RETRACT">
         <description>Gimbal supports a retracted position</description>
       </entry>
@@ -1018,54 +1018,84 @@
       <entry value="8" name="GIMBAL_CAP_FLAGS_HAS_YAW_LOCK">
         <description>Gimbal supports locking to an absolute heading</description>
       </entry>
-      <entry value="16" name="GIMBAL_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL">
-        <description>Gimbal supports to point to a local position</description>
-      </entry>
-      <entry value="32" name="GIMBAL_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
-        <description>Gimbal supports to point to a global latitude, longitude, altitude position</description>
-      </entry>
-      <entry value="64" name="GIMBAL_CAP_FLAGS_HAS_TRACKING_POINT">
-        <description>Gimbal supports tracking of a point on the camera</description>
-      </entry>
-      <entry value="128" name="GIMBAL_CAP_FLAGS_HAS_TRACKING_RECTANGLE">
-        <description>Gimbal supports tracking of a point on the camera</description>
-      </entry>
-      <entry value="256" name="GIMBAL_CAP_FLAGS_HAS_ANGULAR_VELOCITY_RELATIVE_TO_FOCAL_LENGTH">
-        <description>Gimbal supports turning at angular velocities relative to the focal length (the more zoomed in, the slower the movement)</description>
-      </entry>
-      <entry value="512" name="GIMBAL_CAP_FLAGS_SUPPORTS_NUDGING">
-        <description>Gimbal supports nudging when pointing to a location or tracking</description>
-      </entry>
-      <entry value="1024" name="GIMBAL_CAP_FLAGS_SUPPORTS_OVERRIDE">
-        <description>Gimbal supports overriding when pointing to a location or tracking</description>
-      </entry>
-      <entry value="2048" name="GIMBAL_CAP_FLAGS_SUPPORTS_INFINITE_YAW">
+      <entry value="16" name="GIMBAL_CAP_FLAGS_SUPPORTS_INFINITE_YAW">
         <description>Gimbal supports yawing infinetely (e.g. using slip disk).</description>
       </entry>
-      <entry value="4096" name="GIMBAL_CAP_FLAGS_SUPPORTS_FOCAL_LENGTH_SCALE">
+    </enum>
+    <enum name="GIMBAL_CONTROLLER_CAP_FLAGS">
+      <description>Gimbal high level capability flags (Bitmap)</description>
+      <entry value="1" name="GIMBAL_CONTROLLER_CAP_FLAGS_HAS_RETRACT">
+        <description>Gimbal supports a retracted position</description>
+      </entry>
+      <entry value="2" name="GIMBAL_CONTROLLER_CAP_FLAGS_HAS_NEUTRAL">
+        <description>Gimbal supports a horizontal, forward looking position, stabilized</description>
+      </entry>
+      <entry value="4" name="GIMBAL_CONTROLLER_CAP_FLAGS_HAS_YAW_FOLLOW">
+        <description>Gimbal supports to follow a yaw angle relative to the vehicle</description>
+      </entry>
+      <entry value="8" name="GIMBAL_CONTROLLER_CAP_FLAGS_HAS_YAW_LOCK">
+        <description>Gimbal supports locking to an absolute heading</description>
+      </entry>
+      <entry value="16" name="GIMBAL_CONTROLLER_CAP_FLAGS_SUPPORTS_INFINITE_YAW">
+        <description>Gimbal supports yawing infinetely (e.g. using slip disk).</description>
+      </entry>
+      <entry value="32" name="GIMBAL_CONTROLLER_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL">
+        <description>Gimbal supports to point to a local position</description>
+      </entry>
+      <entry value="64" name="GIMBAL_CONTROLLER_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
+        <description>Gimbal supports to point to a global latitude, longitude, altitude position</description>
+      </entry>
+      <entry value="128" name="GIMBAL_CONTROLLER_CAP_FLAGS_HAS_TRACKING_POINT">
+        <description>Gimbal supports tracking of a point on the camera</description>
+      </entry>
+      <entry value="256" name="GIMBAL_CONTROLLER_CAP_FLAGS_HAS_TRACKING_RECTANGLE">
+        <description>Gimbal supports tracking of a point on the camera</description>
+      </entry>
+      <entry value="512" name="GIMBAL_CONTROLLER_CAP_FLAGS_SUPPORTS_FOCAL_LENGTH_SCALE">
         <description>Gimbal supports pitching and yawing at an angular velocity scaled by focal length (the more zoomed in, the slower the movement).</description>
+      </entry>
+      <entry value="1024" name="GIMBAL_CONTROLLER_CAP_FLAGS_SUPPORTS_NUDGING">
+        <description>Gimbal supports nudging when pointing to a location or tracking</description>
+      </entry>
+      <entry value="2048" name="GIMBAL_CONTROLLER_CAP_FLAGS_SUPPORTS_OVERRIDE">
+        <description>Gimbal supports overriding when pointing to a location or tracking</description>
       </entry>
     </enum>
     <enum name="GIMBAL_MODE">
-      <description>Enumeration of possible gimbal operation modes</description>
-      <entry value="0" name="GIMBAL_MODE_NONE">
-        <description>Give up control over gimbal and let GIMBAL_CONTROL_ATTITUDE takeover again (can e.g. be used after a mission is finished)</description>
-      </entry>
-      <entry value="1" name="GIMBAL_MODE_RETRACT">
+      <description>Enumeration of possible low level gimbal operation modes (used between gimbal controller and gimbal)</description>
+      <entry value="0" name="GIMBAL_MODE_RETRACT">
         <description>Set to retracted safe position (no stabilization)</description>
       </entry>
-      <entry value="2" name="GIMBAL_MODE_NEUTRAL">
+      <entry value="1" name="GIMBAL_MODE_NEUTRAL">
         <description>Set to neutral position (horizontal, forward looking, with stabilization)</description>
       </entry>
-      <entry value="3" name="GIMBAL_MODE_YAW_FOLLOW">
+      <entry value="2" name="GIMBAL_MODE_YAW_FOLLOW">
         <description>Normal gimbal operation: stabilizing and following yaw relative to vehicle.</description>
       </entry>
-      <entry value="4" name="GIMBAL_MODE_YAW_LOCK">
+      <entry value="3" name="GIMBAL_MODE_YAW_LOCK">
         <description>Normal gimbal operation: stabilizing and locking yaw to absolute heading.</description>
       </entry>
     </enum>
-    <enum name="GIMBAL_CONTROL_FLAGS">
-      <description>Flags for gimbal operation.</description>
+    <enum name="GIMBAL_CONTROLLER_MODE">
+      <description>Enumeration of high level possible gimbal operation modes</description>
+      <entry value="0" name="GIMBAL_CONTROLLER_MODE_NONE">
+        <description>Give up control over gimbal and let GIMBAL_CONTROL_ATTITUDE takeover again (can e.g. be used after a mission is finished)</description>
+      </entry>
+      <entry value="1" name="GIMBAL_CONTROLLER_MODE_RETRACT">
+        <description>Set to retracted safe position (no stabilization)</description>
+      </entry>
+      <entry value="2" name="GIMBAL_CONTROLLER_MODE_NEUTRAL">
+        <description>Set to neutral position (horizontal, forward looking, with stabilization)</description>
+      </entry>
+      <entry value="3" name="GIMBAL_CONTROLLER_MODE_YAW_FOLLOW">
+        <description>Normal gimbal operation: stabilizing and following yaw relative to vehicle.</description>
+      </entry>
+      <entry value="4" name="GIMBAL_CONTROLLER_MODE_YAW_LOCK">
+        <description>Normal gimbal operation: stabilizing and locking yaw to absolute heading.</description>
+      </entry>
+    </enum>
+    <enum name="GIMBAL_CONTROLLER_FLAGS">
+      <description>Flags for gimbal high level operation.</description>
       <entry value="1" name="GIMBAL_CONTROL_FLAGS_RETRACT">
         <description>Set to retracted safe position (no stabilization), takes presedence over all other flags.</description>
       </entry>
@@ -1090,13 +1120,7 @@
       <entry value="128" name="GIMBAL_CONTROL_FLAGS_OVERRIDE">
         <description>Completely override pointing to a location or tracking. If this flag is set, the quaternion is (as usual) according to GIMBAL_CONTROL_FLAGS_YAW_LOCK.</description>
       </entry>
-      <entry value="256" name="GIMBAL_CONTROL_FLAGS_SOURCE_RC">
-        <description>Set if the input source for the gimbal attitude control is RC.</description>
-      </entry>
-      <entry value="512" name="GIMBAL_CONTROL_FLAGS_SOURCE_GCS">
-        <description>Set if the input source for the gimbal attitude control is a GCS.</description>
-      </entry>
-      <entry value="1024" name="GIMBAL_CONTROL_FLAGS_SCALE_BY_FOCAL_LENGTH">
+      <entry value="256" name="GIMBAL_CONTROL_FLAGS_SCALE_BY_FOCAL_LENGTH">
         <description>Set if the angular velocity control should be scaled by focal length (the more zoomed in the slower). This requires GIMBAL_CAP_FLAGS_SUPPORTS_FOCAL_LENGTH_SCALE.</description>
       </entry>
     </enum>
@@ -2068,19 +2092,18 @@
       <entry value="1000" name="MAV_CMD_DO_GIMBAL_ATTITUDE" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Setpoint to be sent to a gimbal to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: this command is only used between ground station and autopilot or as part of missions but never directly to a gimbal. To communicate with a gimbal the messages GIMBAL_CONTROL_* are to be used.</description>
-        <param index="1" label="Gimbal mode" enum="GIMBAL_MODE">Gimbal mode.</param>
-        <param index="2" label="Roll angular rate" units="deg/s">Roll angular rate (positive to turn to the right).</param>
-        <param index="3" label="Pitch angular rate" units="deg/s">Pitch/tilt angular rate (positive to point up).</param>
-        <param index="4" label="Yaw angular rate" units="deg/s">Yaw/pan angular rate (positive to pan to the right).</param>
-        <param index="5" label="Roll angle" units="deg" minValue="-180" maxValue="180">Roll angle relative to world horizon (positive to turn to the right).</param>
-        <param index="6" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
-        <param index="7" label="Yaw angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
+        <description>High level setpoint to be sent to a gimbal controller to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: this command is only used between ground station and autopilot or as part of missions but never directly to a gimbal. To communicate with a gimbal the messages GIMBAL_CONTROL_* are to be used.</description>
+        <param index="1" label="Tilt angular rate" units="deg/s">Tilt/pitch angular rate (positive to point up).</param>
+        <param index="2" label="Pan angular rate" units="deg/s">Pan/yaw angular rate (positive to pan to the right).</param>
+        <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
+        <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
+        <param index="5" label="Gimbal mode" enum="GIMBAL_CONTROLLER_MODE">Gimbal controller mode.</param>
+        <param index="6" label="Gimbal ID">Component ID of gimbal to address, 0 for all gimbal components. (Send command multiple times for more than one but not all gimbals.)</param>
       </entry>
       <entry value="1001" name="MAV_CMD_DO_GIMBAL_TRACK_POINT" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>If the gimbal supports visual tracking (GIMBAL_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking.</description>
+        <description>If the gimbal controller supports visual tracking (GIMBAL_CONTROLLER_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking.</description>
         <param index="1" label="Point 1 x" minValue="0" maxValue="1">Point to track.</param>
         <param index="2" label="Point 1 y" minValue="0" maxValue="1">Roll angular rate (positive to turn to the right).</param>
         <param index="3" label="Point 2 x" minValue="0" maxValue="1">Pitch/tilt angular rate (positive to point up).</param>
@@ -2089,7 +2112,7 @@
       <entry value="1002" name="MAV_CMD_DO_GIMBAL_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>If the gimbal supports visual tracking (GIMBAL_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking.</description>
+        <description>If the gimbal supports visual tracking (GIMBAL_CONTROLLER_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking.</description>
         <param index="1" label="Top left corner x" minValue="0" maxValue="1">Top left corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="3" label="Bottom right corner x" minValue="0" maxValue="1">Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
@@ -5971,8 +5994,18 @@
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
     </message>
-    <message id="280" name="GIMBAL_INFORMATION">
-      <description>Information about a gimbal</description>
+    <message id="280" name="GIMBAL_CONTROLLER_INFORMATION">
+      <description>Information about a high level gimbal controller</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_CONTROLLER_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
+      <field type="uint8_t" name="gimbal_component">Gimbal component ID that this gimbal controller is responsible for.</field>
+      <field type="float" name="pitch_max" units="rad">Maximum pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="pitch_min" units="rad">Minimum pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="yaw_max" units="rad">Maximum yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="yaw_min" units="rad">Minimum yaw angle (positive: to the right, negative: to the left)</field>
+    </message>
+    <message id="281" name="GIMBAL_INFORMATION">
+      <description>Information about a low level gimbal</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the gimbal vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the gimbal model</field>
@@ -5983,43 +6016,35 @@
       <field type="float" name="yaw_max" units="rad">Maximum yaw angle (positive: to the right, negative: to the left)</field>
       <field type="float" name="yaw_min" units="rad">Minimum yaw angle (positive: to the right, negative: to the left)</field>
     </message>
-    <message id="281" name="GIMBAL_CONTROL_ATTITUDE">
+    <message id="282" name="GIMBAL_CONTROLLER_SET_ATTITUDE">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message to control a gimbal's attitude. This message is to be sent to the gimbal component. Angles and rates can be set to NaN according to use case.</description>
+      <description>High level message to control a gimbal's attitude. This message is to be sent to the gimbal controller (e.g. from a ground stationi). Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint16_t" name="flags" enum="GIMBAL_CONTROL_FLAGS" display="bitmask">Gimbal control flags.</field>
+      <field type="uint16_t" name="mode" enum="GIMBAL_CONTROLLER_MODE">High level gimbal controller mode.</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_CONTROL_FLAGS_YAW_LOCK is set)</field>
       <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is banking to the right, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is tilting up, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is panning to the right, NaN to be ignored.</field>
     </message>
-    <message id="282" name="GIMBAL_CONTROL_LOCATION_GLOBAL">
+    <message id="283" name="GIMBAL_SET_ATTITUDE">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message to control a gimbal to point to a GPS point. This message is to be sent to the gimbal component.</description>
+      <description>Low level message to control a gimbal's attitude. This message is to be sent from the gimbal controller to the gimbal component. Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude where gimbal should point to</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude where gimbal should point to</field>
-      <field type="int32_t" name="alt" units="mm">Altitude (MSL) where gimbal should point to</field>
+      <field type="uint16_t" name="mode" enum="GIMBAL_MODE">Low level gimbal mode.</field>
+      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_CONTROL_FLAGS_YAW_LOCK is set)</field>
+      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is banking to the right, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is tilting up, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is panning to the right, NaN to be ignored.</field>
     </message>
-    <message id="283" name="GIMBAL_CONTROL_LOCATION_LOCAL">
+    <message id="284" name="GIMBAL_ATTITUDE_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message to control a gimbal to point to a local position. This message is to be sent to the gimbal component.</description>
-      <field type="uint8_t" name="target_system">System ID</field>
-      <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="float" name="x" units="m">X position of location in the local coordinate frame NED</field>
-      <field type="float" name="y" units="m">Y position of location in the local coordinate frame NED</field>
-      <field type="float" name="z" units="m">Z position of location in the local coordinate frame NED</field>
-    </message>
-    <message id="284" name="GIMBAL_CONTROL_STATUS_ATTITUDE">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message reporting the status of a gimbal. This message can be broadcasted by a gimbal component. The angles encoded in the quaternion are in the global frame (roll: positive is tilt to the right, pitch: positive is tilting up, yaw is turn to the right).</description>
-      <field type="uint16_t" name="flags" enum="GIMBAL_CONTROL_FLAGS">Current gimbal control flags</field>
+      <description>Message reporting the status of a gimbal. This message should be broadcasted by a gimbal component. The angles encoded in the quaternion are in the global frame (roll: positive is tilt to the right, pitch: positive is tilting up, yaw is turn to the right).</description>
+      <field type="uint16_t" name="mode" enum="GIMBAL_MODE">Current gimbal mode</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_CONTROL_FLAGS_YAW_LOCK is set)</field>
       <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (NaN if unknown)</field>
       <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (NaN if unknown)</field>
