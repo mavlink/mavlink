@@ -3558,7 +3558,7 @@
         <description>Manufacturer Serial Number (ANSI/CTA-2063 format).</description>
       </entry>
       <entry value="2" name="MAV_ODID_ID_TYPE_CAA_REGISTRATION_ID">
-        <description>CAA (Civil Aviation Authority) registered ID. Format: [ICAO Country Code].[CAA Assigned ID]</description>
+        <description>CAA (Civil Aviation Authority) registered ID. Format: [ICAO Country Code].[CAA Assigned ID].</description>
       </entry>
       <entry value="3" name="MAV_ODID_ID_TYPE_UTM_ASSIGNED_UUID">
         <description>UTM (Unmanned Traffic Management) assigned UUID (RFC4122).</description>
@@ -3779,13 +3779,18 @@
     </enum>
     <enum name="MAV_ODID_LOCATION_SRC">
       <entry value="0" name="MAV_ODID_LOCATION_SRC_TAKEOFF">
-        <description>The location of the remote pilot is the same as the take-off location.</description>
+        <description>The location of the operator is the same as the take-off location.</description>
       </entry>
       <entry value="1" name="MAV_ODID_LOCATION_SRC_LIVE_GNSS">
-        <description>The location of the remote pilot is based on live GNSS data.</description>
+        <description>The location of the operator is based on live GNSS data.</description>
       </entry>
       <entry value="2" name="MAV_ODID_LOCATION_SRC_FIXED">
-        <description>The location of the remote pilot is a fixed location.</description>
+        <description>The location of the operator is a fixed location.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_OPERATOR_ID_TYPE">
+      <entry value="0" name="MAV_ODID_OPERATOR_ID_TYPE_CAA">
+        <description>CAA (Civil Aviation Authority) registered operator ID.</description>
       </entry>
     </enum>
   </enums>
@@ -5836,7 +5841,7 @@
     <message id="12900" name="OPEN_DRONE_ID_BASIC_ID">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Basic ID message.</description>
+      <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c</description>
       <field type="uint8_t" name="id_type" enum="MAV_ODID_ID_TYPE">Indicates the format for the uas_id field of this message.</field>
       <field type="uint8_t" name="ua_type" enum="MAV_ODID_UA_TYPE">Indicates the type of UA (Unmanned Aircraft).</field>
       <field type="uint8_t[20]" name="uas_id">UAS (Unmanned Aircraft System) ID following the format specified by id_type. Shall be filled with nulls in the unused portion of the field.</field>
@@ -5870,24 +5875,31 @@
       <field type="uint8_t" name="data_page">Allowed range is 0 - 15.</field>
       <field type="uint8_t[23]" name="authentication_data">Opaque authentication data. Sixteen pages are supported for a total of 16 * 23 = 368 bytes. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
-    <message id="12903" name="OPEN_DRONE_ID_SELFID">
+    <message id="12903" name="OPEN_DRONE_ID_SELF_ID">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Self-ID message. The Self-ID Message is an opportunity for the Remote Pilot to (optionally) declare their identity and purpose of the flight. This message can provide additional information that could reduce the threat profile of a UA flying in a particular area or manner.</description>
+      <description>Data for filling the OpenDroneID Self ID message. The Self ID Message is an opportunity for the operator to (optionally) declare their identity and purpose of the flight. This message can provide additional information that could reduce the threat profile of a UA (Unmanned Aircraft) flying in a particular area or manner.</description>
       <field type="uint8_t" name="description_type" enum="MAV_ODID_DESC_TYPE">Indicates the type of the description field.</field>
       <field type="char[23]" name="description">Text description or numeric value expressed as ASCII characters. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
     <message id="12904" name="OPEN_DRONE_ID_SYSTEM">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the remote pilot location and possible aircraft group information.</description>
-      <field type="uint8_t" name="flags" enum="MAV_ODID_LOCATION_SRC">Specifies the location source for the remote pilot location.</field>
-      <field type="int32_t" name="remote_pilot_latitude" units="degE7">Latitude of the remote pilot. If unknown: 0 deg (both Lat/Lon).</field>
-      <field type="int32_t" name="remote_pilot_longitude" units="degE7">Longitude of the remote pilot. If unknown: 0 deg (both Lat/Lon).</field>
+      <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the operator location and possible aircraft group information.</description>
+      <field type="uint8_t" name="flags" enum="MAV_ODID_LOCATION_SRC">Specifies the location source for the operator location.</field>
+      <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 deg (both Lat/Lon).</field>
+      <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 deg (both Lat/Lon).</field>
       <field type="uint16_t" name="area_count">Number of aircraft in the area, group or formation (default 1).</field>
       <field type="uint16_t" name="area_radius" units="m">Radius of the cylindrical area of the group or formation (default 0).</field>
       <field type="float" name="area_ceiling" units="m">Area Operations Ceiling relative to WGS84. If unknown: -1000 m.</field>
       <field type="float" name="area_floor" units="m">Area Operations Floor relative to WGS84. If unknown: -1000 m.</field>
+    </message>
+    <message id="12905" name="OPEN_DRONE_ID_OPERATOR_ID">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Data for filling the OpenDroneID Operator ID message, which contains the CAA (Civil Aviation Authority) issued operator ID.</description>
+      <field type="uint8_t" name="operator_id_type" enum="MAV_ODID_OPERATOR_ID_TYPE">Indicates the type of the operator_id field.</field>
+      <field type="char[20]" name="operator_id">Text description or numeric value expressed as ASCII characters. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
   </messages>
 </mavlink>
