@@ -5839,22 +5839,22 @@
       <description>Data for filling the OpenDroneID Basic ID message.</description>
       <field type="uint8_t" name="id_type" enum="MAV_ODID_ID_TYPE">Indicates the format for the uas_id field of this message.</field>
       <field type="uint8_t" name="ua_type" enum="MAV_ODID_UA_TYPE">Indicates the type of UA (Unmanned Aircraft).</field>
-      <field type="uint8_t[20]" name="uas_id">UAS ID following the format specified by id_type. Shall be filled with nulls in the unused portion of the field.</field>
+      <field type="uint8_t[20]" name="uas_id">UAS (Unmanned Aircraft System) ID following the format specified by id_type. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
     <message id="12901" name="OPEN_DRONE_ID_LOCATION">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Location message. The float data types are 32-bit IEEE 754. The Location message provides the location, altitude, direction and speed of the aircraft.</description>
       <field type="uint8_t" name="status" enum="MAV_ODID_STATUS">Indicates whether the Unmanned Aircraft is on the ground or in the air.</field>
-      <field type="uint16_t" name="direction" units="cdeg">Direction over ground (not heading, but direction of movement) in degrees * 100: 0.0 - 359.99 degrees.</field>
-      <field type="uint16_t" name="speed_horizontal" units="cm/s">Ground speed.</field>
-      <field type="int16_t" name="speed_vertical" units="cm/s">The vertical speed. Up is positive.</field>
-      <field type="int32_t" name="latitude" units="degE7">Current latitude of the UA.</field>
-      <field type="int32_t" name="longitude" units="degE7">Current longitude of the UA.</field>
-      <field type="float" name="altitude_barometric" units="m">The altitude calculated from the barometric pressue. Reference is against 29.92inHg or 1013.2mb.</field>
-      <field type="float" name="altitude_geodetic" units="m">The geodetic altitude as defined by WGS84.</field>
+      <field type="uint16_t" name="direction" units="cdeg">Direction over ground (not heading, but direction of movement) in degrees * 100: 0.0 - 359.99 degrees. If unknown: 361.00 degrees.</field>
+      <field type="uint16_t" name="speed_horizontal" units="cm/s">Ground speed. Positive only. If unknown: 255.00 m/s. If speed is larger than 254.25 m/s, use 254.25 m/s.</field>
+      <field type="int16_t" name="speed_vertical" units="cm/s">The vertical speed. Up is positive. If unknown: 63.00 m/s. If speed is larger than 62.00 m/s, use 62.00 m/s.</field>
+      <field type="int32_t" name="latitude" units="degE7">Current latitude of the UA (Unmanned Aircraft). If unknown: 0 deg (both Lat/Lon).</field>
+      <field type="int32_t" name="longitude" units="degE7">Current longitude of the UA (Unmanned Aircraft). If unknown: 0 deg (both Lat/Lon).</field>
+      <field type="float" name="altitude_barometric" units="m">The altitude calculated from the barometric pressue. Reference is against 29.92inHg or 1013.2mb. If unknown: -1000 m.</field>
+      <field type="float" name="altitude_geodetic" units="m">The geodetic altitude as defined by WGS84. If unknown: -1000 m.</field>
       <field type="uint8_t" name="height_reference" enum="MAV_ODID_HEIGHT_REF">Indicates the reference point for the height field.</field>
-      <field type="float" name="height" units="m">The current height of the UA above the take-off location or the ground as indicated by height_reference.</field>
+      <field type="float" name="height" units="m">The current height of the UA (Unmanned Aircraft) above the take-off location or the ground as indicated by height_reference. If unknown: -1000 m.</field>
       <field type="uint8_t" name="horizontal_accuracy" enum="MAV_ODID_HOR_ACC">The accuracy of the horizontal position.</field>
       <field type="uint8_t" name="vertical_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the vertical position.</field>
       <field type="uint8_t" name="barometer_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the barometric altitude.</field>
@@ -5882,12 +5882,12 @@
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the remote pilot location and possible aircraft group information.</description>
       <field type="uint8_t" name="flags" enum="MAV_ODID_LOCATION_SRC">Specifies the location source for the remote pilot location.</field>
-      <field type="int32_t" name="remote_pilot_latitude" units="degE7">Latitude of the remote pilot.</field>
-      <field type="int32_t" name="remote_pilot_longitude" units="degE7">Longitude of the remote pilot.</field>
-      <field type="uint16_t" name="group_count">Number of aircraft in group or formation (default 0).</field>
-      <field type="uint16_t" name="group_radius" units="m">Radius of cylindrical area of group or formation (default 0).</field>
-      <field type="float" name="group_ceiling" units="m">Group Operations Ceiling relative to WGS84.</field>
-      <field type="float" name="group_floor" units="m">Group Operations Floor relative to WGS84.</field>
+      <field type="int32_t" name="remote_pilot_latitude" units="degE7">Latitude of the remote pilot. If unknown: 0 deg (both Lat/Lon).</field>
+      <field type="int32_t" name="remote_pilot_longitude" units="degE7">Longitude of the remote pilot. If unknown: 0 deg (both Lat/Lon).</field>
+      <field type="uint16_t" name="area_count">Number of aircraft in the area, group or formation (default 1).</field>
+      <field type="uint16_t" name="area_radius" units="m">Radius of the cylindrical area of the group or formation (default 0).</field>
+      <field type="float" name="area_ceiling" units="m">Area Operations Ceiling relative to WGS84. If unknown: -1000 m.</field>
+      <field type="float" name="area_floor" units="m">Area Operations Floor relative to WGS84. If unknown: -1000 m.</field>
     </message>
   </messages>
 </mavlink>
