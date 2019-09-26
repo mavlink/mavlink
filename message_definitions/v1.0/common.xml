@@ -3768,8 +3768,17 @@
       <entry value="0" name="MAV_ODID_AUTH_TYPE_NONE">
         <description>No authentication type is specified.</description>
       </entry>
-      <entry value="1" name="MAV_ODID_AUTH_TYPE_MPUID">
-        <description>Manufacturer Programmed Unique ID.</description>
+      <entry value="1" name="MAV_ODID_AUTH_TYPE_UAS_ID_SIGNATURE">
+        <description>Signature for the UAS (Unmanned Aircraft System) ID.</description>
+      </entry>
+      <entry value="2" name="MAV_ODID_AUTH_TYPE_OPERATOR_ID_SIGNATURE">
+        <description>Signature for the Operator ID.</description>
+      </entry>
+      <entry value="3" name="MAV_ODID_AUTH_TYPE_MESSAGE_SET_SIGNATURE">
+        <description>Signature for the entire message set.</description>
+      </entry>
+      <entry value="4" name="MAV_ODID_AUTH_TYPE_NETWORK_REMOTE_ID">
+        <description>Authentication is provided by Network Remote ID.</description>
       </entry>
     </enum>
     <enum name="MAV_ODID_DESC_TYPE">
@@ -5870,10 +5879,13 @@
     <message id="12902" name="OPEN_DRONE_ID_AUTHENTICATION">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System) sending the message.</description>
+      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 4, PageCount,Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
       <field type="uint8_t" name="authentication_type" enum="MAV_ODID_AUTH_TYPE">Indicates the type of authentication.</field>
-      <field type="uint8_t" name="data_page">Allowed range is 0 - 15.</field>
-      <field type="uint8_t[23]" name="authentication_data">Opaque authentication data. Sixteen pages are supported for a total of 16 * 23 = 368 bytes. Shall be filled with nulls in the unused portion of the field.</field>
+      <field type="uint8_t" name="data_page">Allowed range is 0 - 4.</field>
+      <field type="uint8_t" name="page_count">This field is only present for page 0. Allowed range is 0 - 5.</field>
+      <field type="uint8_t" name="length" units="bytes">This field is only present for page 0. Total bytes of authentication_data from all data pages. Allowed range is 0 - 109 (17 + 23*4).</field>
+      <field type="uint32_t" name="timestamp" units="s">This field is only present for page 0. 32 bit Unix Timestamp in seconds since 00:00:00 01/01/2019.</field>
+      <field type="uint8_t[23]" name="authentication_data">Opaque authentication data. For page 0, the size is only 17 bytes. For other pages, the size is 23 bytes. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
     <message id="12903" name="OPEN_DRONE_ID_SELF_ID">
       <wip/>
