@@ -138,15 +138,6 @@ endmacro()
 
 # build
 set(mavgen -m pymavlink.tools.mavgen)
-set(v0.9Definitions
-    ardupilotmega.xml
-    common.xml
-    minimal.xml
-    slugs.xml
-    test.xml
-    ualberta.xml
-    )
-generateMavlink("0.9" "${v0.9Definitions}")
 set(v1.0Definitions
     ASLUAV.xml
     ardupilotmega.xml
@@ -165,7 +156,7 @@ generateMavlink("1.0" "${v1.0Definitions}")
 # testing
 if (BUILD_TEST)
     if (UNIX) 
-        include_directories(${CMAKE_BINARY_DIR}/include/v0.9/common)
+        include_directories(${CMAKE_BINARY_DIR}/include/v1.0/common)
         # TODO fix udp example
         #add_executable(mavlink_udp examples/linux/mavlink_udp.c)
     endif()
