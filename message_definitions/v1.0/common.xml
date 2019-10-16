@@ -3431,6 +3431,18 @@
       <entry value="2048" name="POSITION_TARGET_TYPEMASK_YAW_RATE_IGNORE">
         <description>Ignore yaw rate</description>
       </entry>
+      <entry value="4096" name="POSITION_TARGET_TYPEMASK_TAKEOFF_SETPOINT">
+        <description>Position setpoint is a target setpoint.</description>
+      </entry>
+      <entry value="8192" name="POSITION_TARGET_TYPEMASK_LAND_SETPOINT">
+        <description>Position setpoint is a land setpoint.</description>
+      </entry>
+      <entry value="12288" name="POSITION_TARGET_TYPEMASK_LOITER_SETPOINT">
+        <description>Position setpoint is a loiter setpoint.</description>
+      </entry>
+      <entry value="16384" name="POSITION_TARGET_TYPEMASK_IDLE_SETPOINT">
+        <description>Position setpoint is an idle setpoint.</description>
+      </entry>
     </enum>
     <enum name="UTM_FLIGHT_STATE">
       <description>Airborne status of UAS.</description>
@@ -4467,7 +4479,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
-      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle. May also indicate the type of a setpoint - e.g. takeoff, landing, etc.</field>
       <field type="float" name="x" units="m">X Position in NED frame</field>
       <field type="float" name="y" units="m">Y Position in NED frame</field>
       <field type="float" name="z" units="m">Z Position in NED frame (note, altitude is negative in NED)</field>
@@ -4484,7 +4496,7 @@
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
-      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle. May also indicate the type of a setpoint - e.g. takeoff, landing, etc.</field>
       <field type="float" name="x" units="m">X Position in NED frame</field>
       <field type="float" name="y" units="m">Y Position in NED frame</field>
       <field type="float" name="z" units="m">Z Position in NED frame (note, altitude is negative in NED)</field>
@@ -4503,7 +4515,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11</field>
-      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle. May also indicate the type of a setpoint - e.g. takeoff, landing, etc.</field>
       <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame</field>
       <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame</field>
       <field type="float" name="alt" units="m">Altitude (MSL, Relative to home, or AGL - depending on frame)</field>
@@ -4520,7 +4532,7 @@
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_GLOBAL_INT if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot). The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.</field>
       <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11</field>
-      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle. May also indicate the type of a setpoint - e.g. takeoff, landing, etc.</field>
       <field type="int32_t" name="lat_int" units="degE7">X Position in WGS84 frame</field>
       <field type="int32_t" name="lon_int" units="degE7">Y Position in WGS84 frame</field>
       <field type="float" name="alt" units="m">Altitude (MSL, AGL or relative to home altitude, depending on frame)</field>
