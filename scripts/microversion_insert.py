@@ -21,23 +21,125 @@ common_updated = os.path.join(os.path.dirname(__file__), 'common_updated.xml')
 service_file = os.path.join(os.path.dirname(__file__), 'service.csv')
 
 
-services_list=set()
-elements_with_services=dict()
+services_list=dict()
 with open(service_file, 'r') as file:
     line = True
     cnt = 1
     while line:
         line = file.readline().strip()
         linedata=line.split(',')
+        if len(linedata)<3:
+            continue
         try:
-            element_service=linedata[2]
-            element_name=linedata[0]
-            if element_service:
-                services_list.add(element_service)
-                elements_with_services[element_name]=element_service
+            element_type=linedata[0]
+            element_name=linedata[1]
+            for i in range(2,len(linedata)):
+                #each iteration is a service with some versions
+                if len(linedata[i].strip())==0:
+                    continue
+                print('service(%s): %s' % (i-1,linedata[i]))
+                split_versions=linedata[i].split('_v_',1)
+                service=split_versions[0].strip()
+                print(service)
+                if len(split_versions)==1: #just the service
+                    versions=["1",]
+                else:
+                    versions=split_versions[-1].split('_')
+                print('vers:%s' % versions)
+
+
+
+                if not service in services_list: #new service
+                    #print("SL1: %s" % services_list)
+                    aservice=dict() # name, version object, with multiple version items
+                    aservice['name']=service
+                    aservice['versions']=dict() #object to hold y version items
+                    for eachversion in versions:
+                        aversion=dict() #id, types.
+                        aversion['id']=eachversion
+                        definition_set=set()
+                        definition_set.add(element_name)
+                        aversion[element_type]=definition_set
+                        aservice['versions'][eachversion]=aversion
+                    services_list[service]=aservice
+                    #print("SL1: %s" % services_list)
+                else: #service is in list.
+                    #print('Element: name(%s) type(%s)' % (element_name,element_type))
+                    #print('Versions: (%s) ' % (versions))
+                    #print("SIL")
+                    the_servicedict=services_list[service]
+                    the_versions_dict=the_servicedict['versions']
+                    #print("the_versions_dict: %s" % the_versions_dict)
+                    for eachversion in versions:
+                        #print("eachversion: %s" % eachversion)
+                        if eachversion in the_versions_dict:
+                            aversion=the_versions_dict[eachversion]
+                        else:
+                            aversion=dict()
+                            aversion['id']=eachversion
+                        #print("aversion: %s" % aversion)                     
+                        if element_type in aversion: 
+                            definition_set=aversion[element_type]
+                        else:
+                            definition_set=set()
+                        definition_set.add(element_name)
+                        aversion[element_type]=definition_set                
+
+
+                print('SL: %s' % services_list)
+                     
+                #print(len(versions)) 
+                
         except:
             pass
 
+for service_key, service_value in services_list.items():
+    service_text='<service name="%s">\n' % service_key
+    for versionkey, version_value in service_value['versions'].items():
+        service_text+='  <version id="%s">\n' % versionkey
+        #version_text='<version id="%s">\n</version>\n' % versionkey
+        #print(version_text)
+        #print('version_value: %s' % version_value)
+        for deftypekey, deftype_value in version_value.items():
+            if deftypekey=='id':
+                continue
+            #print('DEFVAL: %s' % deftype_value)       
+            #print('DEFKey: %s' % deftypekey)
+            for an_element in deftype_value:
+                service_text += '    <%s>%s<%s>\n' % (deftypekey,an_element,deftypekey)
+                #print(element_text)
+        service_text+='  </version>\n'
+    
+    service_text+='</service>\n'
+
+    print(service_text)
+
+# Open common.xml and update it with 
+with open(common_updated, 'w') as file:
+    file.write(service_text)
+
+
+"""
+<services>
+  ...
+  <service name=”params” id=”n”>
+    <description>Optional description of service</description>
+    <url>Optional URL for service docs. Either points to current version or parent doc.</url>
+    <version=”1” url=”http://docs_for_version_if_exist”>
+     <message>MESSAGE1</message>
+    </version>
+    <version=”2”>
+     <message>MESSAGE1</message>
+     <message>MESSAGE2</message>
+     <enum>ENUM1</enum>
+     <command>MAV_CMD_...</command>
+    </version>
+  </service>
+  ...
+</services>
+"""
+
+"""
 # Open common.xml and update it with 
 with open(common_file, 'r') as file:
     data = file.read()
@@ -66,7 +168,7 @@ with open(common_updated, 'w') as file:
 print("COMPLETED")
 
 """
-
+"""
 with open(service_file, 'w') as file:
     file.write(service_data)
 

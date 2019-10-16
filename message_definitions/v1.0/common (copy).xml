@@ -3,53 +3,9 @@
   <version>3</version>
   <dialect>0</dialect>
   <services>
-    <service name="mission" id="1">
-      <description>Optional description of service</description>
-      <url>http://docs/mavlink/mission/</url>
-       <version id="1" url="http://docs/mavlink/mission/v1">
-         <message>MISSION_ITEM</message>
-         <message>MISSION_REQUEST</message>
-         <message>MISSION_SET_CURRENT</message>
-         <message>MISSION_CURRENT</message>
-         <message>MISSION_REQUEST_LIST</message>
-         <message>MISSION_ITEM</message>
-         <message>MISSION_COUNT</message>
-         <message>MISSION_CLEAR_ALL</message>
-         <message>MISSION_ITEM_REACHED</message>
-         <message>MISSION_ACK</message>
-         <message>MISSION_ITEM_INT</message>
-         <enum>MAV_FRAME</enum>
-         <enum>MAV_MISSION_RESULT</enum>
-         <enum>MAV_MISSION_TYPE</enum>
-         <enum>MAV_CMD</enum>
-       </version>
-       <version id="2" url="http://docs/mavlink/mission/v2">
-         <message>MISSION_ITEM</message>
-         <message>MISSION_REQUEST</message>
-         <message>MISSION_ACK</message>
-         <message>MISSION_ITEM_INT</message>
-         <enum>MAV_FRAME</enum>
-         <enum>MAV_MISSION_RESULT</enum>
-         <enum>MAV_CMD</enum>
-       </version>
-    </service>
-    <service name="param" id="2">
-      <description>Optional description of service</description>
-      <url>http://docs/mavlink/mission/</url>
-       <version id="1" url="http://docs/mavlink/mission/v1">
-         <message>MISSION_ITEM</message>
-         <message>MISSION_REQUEST</message>
-         <message>MISSION_SET_CURRENT</message>
-         <message>MISSION_CURRENT</message>
-         <message>MISSION_ACK</message>
-         <message>MISSION_ITEM_INT</message>
-         <enum>MAV_MISSION_TYPE</enum>
-         <enum>MAV_CMD</enum>
-       </version>
-    </service>
+    <service name="params" version="1"></service>
+    <service name="mission" version="1"></service>
   </services>
-
-
   <enums>
     <enum name="MAV_AUTOPILOT">
       <description>Micro air vehicle / autopilot classes. This identifies the individual model.</description>
@@ -879,7 +835,7 @@
         <description>0x8000000 Satellite Communication </description>
       </entry>
     </enum>
-    <enum name="MAV_FRAME">
+    <enum name="MAV_FRAME" service="mission">
       <entry value="0" name="MAV_FRAME_GLOBAL">
         <description>Global (WGS84) coordinate frame + MSL altitude. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL).</description>
       </entry>
@@ -2541,7 +2497,7 @@
         <description>WIP: Command being executed</description>
       </entry>
     </enum>
-    <enum name="MAV_MISSION_RESULT">
+    <enum name="MAV_MISSION_RESULT" service="mission">
       <description>Result of mission operation (in a MISSION_ACK message).</description>
       <entry value="0" name="MAV_MISSION_ACCEPTED">
         <description>mission accepted OK</description>
@@ -2877,7 +2833,7 @@
         <description>Autopilot supports the flight information protocol.</description>
       </entry>
     </enum>
-    <enum name="MAV_MISSION_TYPE">
+    <enum name="MAV_MISSION_TYPE" service="mission">
       <description>Type of mission items being requested/sent in mission protocol.</description>
       <entry value="0" name="MAV_MISSION_TYPE_MISSION">
         <description>Items are mission commands for main mission.</description>
@@ -4146,7 +4102,7 @@
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
-    <message id="39" name="MISSION_ITEM">
+    <message id="39" name="MISSION_ITEM" service="mission">
       <description>Message encoding a mission item. This message is emitted to announce
                 the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). See also https://mavlink.io/en/services/mission.html.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -4166,7 +4122,7 @@
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
-    <message id="40" name="MISSION_REQUEST">
+    <message id="40" name="MISSION_REQUEST" service="mission">
       <description>Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM message. https://mavlink.io/en/services/mission.html</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -4174,24 +4130,24 @@
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
-    <message id="41" name="MISSION_SET_CURRENT">
+    <message id="41" name="MISSION_SET_CURRENT" service="mission">
       <description>Set the mission item with sequence number seq as current item. This means that the MAV will continue to this mission item on the shortest path (not following the mission items in-between).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
     </message>
-    <message id="42" name="MISSION_CURRENT">
+    <message id="42" name="MISSION_CURRENT" service="mission">
       <description>Message that announces the sequence number of the current active mission item. The MAV will fly towards this mission item.</description>
       <field type="uint16_t" name="seq">Sequence</field>
     </message>
-    <message id="43" name="MISSION_REQUEST_LIST">
+    <message id="43" name="MISSION_REQUEST_LIST" service="mission">
       <description>Request the overall list of mission items from the system/component.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
-    <message id="44" name="MISSION_COUNT">
+    <message id="44" name="MISSION_COUNT" service="mission">
       <description>This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of waypoints.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -4199,18 +4155,18 @@
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
-    <message id="45" name="MISSION_CLEAR_ALL">
+    <message id="45" name="MISSION_CLEAR_ALL" service="mission">
       <description>Delete all mission items at once.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
-    <message id="46" name="MISSION_ITEM_REACHED">
+    <message id="46" name="MISSION_ITEM_REACHED" service="mission">
       <description>A certain mission item has been reached. The system will either hold this position (or circle on the orbit) or (if the autocontinue on the WP was set) continue to the next waypoint.</description>
       <field type="uint16_t" name="seq">Sequence</field>
     </message>
-    <message id="47" name="MISSION_ACK">
+    <message id="47" name="MISSION_ACK" service="mission">
       <description>Acknowledgment message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -4408,7 +4364,7 @@
       <field type="uint16_t" name="chan17_raw" units="us">RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
       <field type="uint16_t" name="chan18_raw" units="us">RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
     </message>
-    <message id="73" name="MISSION_ITEM_INT">
+    <message id="73" name="MISSION_ITEM_INT" service="mission">
       <description>Message encoding a mission item. This message is emitted to announce
                 the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). See also https://mavlink.io/en/services/mission.html.</description>
       <field type="uint8_t" name="target_system">System ID</field>
