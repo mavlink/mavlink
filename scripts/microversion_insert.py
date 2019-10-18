@@ -12,7 +12,7 @@ You will need
 from bs4 import BeautifulSoup
 #import re
 import os
-
+import sys
 
 common_file='../message_definitions/v1.0/common.xml'
 common_file = os.path.join(os.path.dirname(__file__), common_file)
@@ -37,19 +37,19 @@ with open(service_file, 'r') as file:
                 #each iteration is a service with some versions
                 if len(linedata[i].strip())==0:
                     continue
-                print('service(%s): %s' % (i-1,linedata[i]))
+                #print('service(%s): %s' % (i-1,linedata[i]))
                 split_versions=linedata[i].split('_v_',1)
                 service=split_versions[0].strip()
-                print(service)
+                #print(service)
                 if len(split_versions)==1: #just the service
                     versions=["1",]
                 else:
                     versions=split_versions[-1].split('_')
-                print('vers:%s' % versions)
-
+                print('service(%s): %s' % (i-1,service))
 
 
                 if not service in services_list: #new service
+                    #print("TSRVNOT: %s" % service)
                     #print("SL1: %s" % services_list)
                     aservice=dict() # name, version object, with multiple version items
                     aservice['name']=service
@@ -64,9 +64,9 @@ with open(service_file, 'r') as file:
                     services_list[service]=aservice
                     #print("SL1: %s" % services_list)
                 else: #service is in list.
+                    #print("TSRV IS DEFN: %s" % service)
                     #print('Element: name(%s) type(%s)' % (element_name,element_type))
                     #print('Versions: (%s) ' % (versions))
-                    #print("SIL")
                     the_servicedict=services_list[service]
                     the_versions_dict=the_servicedict['versions']
                     #print("the_versions_dict: %s" % the_versions_dict)
@@ -83,20 +83,35 @@ with open(service_file, 'r') as file:
                         else:
                             definition_set=set()
                         definition_set.add(element_name)
-                        aversion[element_type]=definition_set                
+                        aversion[element_type]=definition_set  
+                        #print("aversion_pop: %s" % aversion)
+                    the_servicedict['versions'][eachversion]=aversion
+
+                    #print('X: %s' % services_list[service]['versions'])
 
 
-                print('SL: %s' % services_list)
+
+                #print('SL: %s' % services_list)
                      
                 #print(len(versions)) 
                 
-        except:
+        except Exception as e:
+            #print('EXP')
+            #print(repr(e))
             pass
+print('SL: %s' % services_list)
 
+service_id=1
+service_url='insert_url'
+service_description='insert_description'
+service_text='<services>\n'
 for service_key, service_value in services_list.items():
-    service_text='<service name="%s">\n' % service_key
+    service_text+='  <service id="%s" name="%s">\n' % (service_id, service_key)
+    service_id+=1
+    #service_text+='    <description>%s</description>\n' % service_description
+    #service_text+='    <url>%s</url>\n' % service_url
     for versionkey, version_value in service_value['versions'].items():
-        service_text+='  <version id="%s">\n' % versionkey
+        service_text+='    <version id="%s">\n' % versionkey
         #version_text='<version id="%s">\n</version>\n' % versionkey
         #print(version_text)
         #print('version_value: %s' % version_value)
@@ -106,17 +121,24 @@ for service_key, service_value in services_list.items():
             #print('DEFVAL: %s' % deftype_value)       
             #print('DEFKey: %s' % deftypekey)
             for an_element in deftype_value:
-                service_text += '    <%s>%s<%s>\n' % (deftypekey,an_element,deftypekey)
+                service_text += '      <%s>%s</%s>\n' % (deftypekey,an_element,deftypekey)
                 #print(element_text)
-        service_text+='  </version>\n'
+        service_text+='    </version>\n'
     
-    service_text+='</service>\n'
+    service_text+='  </service>\n'
+service_text+='</services>\n'
+print(service_text)
 
-    print(service_text)
 
-# Open common.xml and update it with 
+# Open common.xml, create update, and spit it out into common_updated
+with open(common_file, 'r') as file:
+    common_text= file.read()
+
+output=common_text.replace('</dialect>','</dialect>\n%s' % service_text)
+
+
 with open(common_updated, 'w') as file:
-    file.write(service_text)
+    file.write(output)
 
 
 """
