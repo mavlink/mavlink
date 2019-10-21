@@ -3,99 +3,252 @@
   <version>3</version>
   <dialect>0</dialect>
 <services>
-  <service id="1" name="connection">
+  <service id="1" name="gimbal">
     <version id="1">
-      <message>HEARTBEAT</message>
-      <enum>MAV_STATE</enum>
-      <enum>MAV_TYPE</enum>
-      <enum>MAV_AUTOPILOT</enum>
-      <enum>MAV_MODE_FLAG</enum>
+      <message>MOUNT_ORIENTATION</message>
+      <command>MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN</command>
+      <command>MAV_CMD_DO_MOUNT_CONTROL_QUAT</command>
+      <command>MAV_CMD_DO_MOUNT_CONTROL</command>
+      <command>MAV_CMD_DO_MOUNT_CONFIGURE</command>
+      <enum>MAV_MOUNT_MODE</enum>
     </version>
   </service>
   <service id="2" name="camera">
     <version id="1">
-      <command>MAV_CMD_REQUEST_VIDEO_STREAM_STATUS</command>
-      <command>MAV_CMD_VIDEO_START_CAPTURE</command>
-      <command>MAV_CMD_SET_CAMERA_MODE</command>
-      <command>MAV_CMD_SET_CAMERA_ZOOM</command>
-      <command>MAV_CMD_REQUEST_CAMERA_SETTINGS</command>
-      <command>MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION</command>
-      <command>MAV_CMD_VIDEO_STOP_STREAMING</command>
-      <command>MAV_CMD_VIDEO_STOP_CAPTURE</command>
-      <command>MAV_CMD_REQUEST_CAMERA_INFORMATION</command>
-      <command>MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS</command>
-      <command>MAV_CMD_REQUEST_STORAGE_INFORMATION</command>
-      <command>MAV_CMD_IMAGE_START_CAPTURE</command>
-      <command>MAV_CMD_IMAGE_STOP_CAPTURE</command>
-      <command>MAV_CMD_SET_CAMERA_FOCUS</command>
-      <command>MAV_CMD_STORAGE_FORMAT</command>
-      <command>MAV_CMD_VIDEO_START_STREAMING</command>
+      <message>CAMERA_CAPTURE_STATUS</message>
+      <message>CAMERA_SETTINGS</message>
+      <message>VIDEO_STREAM_INFORMATION</message>
       <message>CAMERA_INFORMATION</message>
+      <message>VIDEO_STREAM_STATUS</message>
       <message>STORAGE_INFORMATION</message>
       <message>CAMERA_IMAGE_CAPTURED</message>
-      <message>VIDEO_STREAM_STATUS</message>
-      <message>CAMERA_SETTINGS</message>
-      <message>CAMERA_CAPTURE_STATUS</message>
-      <message>VIDEO_STREAM_INFORMATION</message>
-      <enum>CAMERA_MODE</enum>
+      <command>MAV_CMD_VIDEO_START_CAPTURE</command>
+      <command>MAV_CMD_REQUEST_VIDEO_STREAM_STATUS</command>
+      <command>MAV_CMD_VIDEO_STOP_CAPTURE</command>
+      <command>MAV_CMD_REQUEST_CAMERA_INFORMATION</command>
+      <command>MAV_CMD_IMAGE_STOP_CAPTURE</command>
+      <command>MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS</command>
+      <command>MAV_CMD_SET_CAMERA_MODE</command>
+      <command>MAV_CMD_SET_CAMERA_FOCUS</command>
+      <command>MAV_CMD_VIDEO_START_STREAMING</command>
+      <command>MAV_CMD_VIDEO_STOP_STREAMING</command>
+      <command>MAV_CMD_SET_CAMERA_ZOOM</command>
+      <command>MAV_CMD_REQUEST_STORAGE_INFORMATION</command>
+      <command>MAV_CMD_REQUEST_CAMERA_SETTINGS</command>
+      <command>MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION</command>
+      <command>MAV_CMD_IMAGE_START_CAPTURE</command>
+      <command>MAV_CMD_STORAGE_FORMAT</command>
       <enum>VIDEO_STREAM_TYPE</enum>
+      <enum>CAMERA_MODE</enum>
       <enum>VIDEO_STREAM_STATUS_FLAGS</enum>
     </version>
   </service>
-  <service id="3" name="command">
+  <service id="3" name="uavcan_node">
     <version id="1">
-      <message>COMMAND_ACK</message>
-      <message>COMMAND_LONG</message>
-      <message>COMMAND_INT</message>
+      <command>MAV_CMD_UAVCAN_GET_NODE_INFO</command>
+      <command>MAV_CMD_PREFLIGHT_UAVCAN</command>
+      <message>UAVCAN_NODE_INFO</message>
+      <message>UAVCAN_NODE_STATUS</message>
+      <enum>UAVCAN_NODE_HEALTH</enum>
+      <enum>UAVCAN_NODE_MODE</enum>
     </version>
   </service>
-  <service id="4" name="mission_partial">
+  <service id="4" name="mission">
     <version id="1">
-      <message>MISSION_WRITE_PARTIAL_LIST</message>
-      <message>MISSION_REQUEST_INT</message>
+      <command>MAV_CMD_DO_SET_MISSION_CURRENT</command>
+      <command>MAV_CMD_MISSION_START</command>
       <message>MISSION_ITEM</message>
-      <message>MISSION_REQUEST_PARTIAL_LIST</message>
-      <message>MISSION_ACK</message>
-      <message>MISSION_ITEM_INT</message>
-    </version>
-  </service>
-  <service id="5" name="param_ext">
-    <version id="1">
-      <message>PARAM_EXT_SET</message>
-      <message>PARAM_EXT_ACK</message>
-      <message>PARAM_EXT_VALUE</message>
-      <message>PARAM_EXT_REQUEST_LIST</message>
-      <message>PARAM_EXT_REQUEST_READ</message>
-      <enum>PARAM_ACK</enum>
-      <enum>MAV_PARAM_EXT_TYPE</enum>
-    </version>
-  </service>
-  <service id="6" name="mission">
-    <version id="1">
-      <message>STATUSTEXT</message>
-      <message>MISSION_SET_CURRENT</message>
-      <message>MISSION_CURRENT</message>
-      <message>MISSION_REQUEST_INT</message>
-      <message>MISSION_COUNT</message>
-      <message>MISSION_ITEM</message>
-      <message>MISSION_REQUEST</message>
-      <message>MISSION_CLEAR_ALL</message>
       <message>MISSION_REQUEST_LIST</message>
-      <message>MISSION_ACK</message>
+      <message>STATUSTEXT</message>
+      <message>MISSION_CLEAR_ALL</message>
       <message>MISSION_ITEM_REACHED</message>
+      <message>MISSION_COUNT</message>
+      <message>MISSION_SET_CURRENT</message>
+      <message>MISSION_ACK</message>
+      <message>MISSION_REQUEST</message>
+      <message>MISSION_REQUEST_INT</message>
+      <message>MISSION_CURRENT</message>
       <message>MISSION_ITEM_INT</message>
+      <enum>MAV_CMD</enum>
       <enum>MAV_MISSION_TYPE</enum>
       <enum>MAV_MISSION_RESULT</enum>
       <enum>MAV_FRAME</enum>
+    </version>
+  </service>
+  <service id="5" name="image_transmission">
+    <version id="1">
+      <message>ENCAPSULATED_DATA</message>
+      <message>DATA_TRANSMISSION_HANDSHAKE</message>
+      <enum>MAVLINK_DATA_STREAM_TYPE</enum>
+    </version>
+  </service>
+  <service id="6" name="mission_wip">
+    <version id="1">
+      <message>MISSION_CHANGED</message>
+    </version>
+  </service>
+  <service id="7" name="question_camera">
+    <version id="1">
+      <message>CAMERA_TRIGGER</message>
+      <command>MAV_CMD_RESET_CAMERA_SETTINGS</command>
+      <command>MAV_CMD_DO_SET_CAM_TRIGG_DIST</command>
+      <command>MAV_CMD_DO_CONTROL_VIDEO</command>
+      <command>MAV_CMD_DO_SET_CAM_TRIGG_INTERVAL</command>
+      <command>MAV_CMD_DO_DIGICAM_CONFIGURE</command>
+      <command>MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE</command>
+      <command>MAV_CMD_DO_DIGICAM_CONTROL</command>
+      <command>MAV_CMD_DO_TRIGGER_CONTROL</command>
+    </version>
+  </service>
+  <service id="8" name="command">
+    <version id="1">
+      <message>COMMAND_LONG</message>
+      <message>COMMAND_ACK</message>
+      <message>COMMAND_INT</message>
       <enum>MAV_CMD</enum>
     </version>
   </service>
-  <service id="7" name="param">
+  <service id="9" name="question_landing_target">
     <version id="1">
+      <enum>MAV_FRAME</enum>
+    </version>
+  </service>
+  <service id="10" name="question_smart_battery">
+    <version id="1">
+      <command>MAV_CMD_REQUEST_MESSAGE</command>
+    </version>
+  </service>
+  <service id="11" name="ping">
+    <version id="1">
+      <message>PING</message>
+    </version>
+  </service>
+  <service id="12" name="landing_target">
+    <version id="1">
+      <message>LANDING_TARGET</message>
+      <enum>LANDING_TARGET_TYPE</enum>
+    </version>
+  </service>
+  <service id="13" name="mission_partial">
+    <version id="1">
+      <message>MISSION_ITEM</message>
+      <message>MISSION_REQUEST_PARTIAL_LIST</message>
+      <message>MISSION_ACK</message>
+      <message>MISSION_WRITE_PARTIAL_LIST</message>
+      <message>MISSION_REQUEST_INT</message>
+      <message>MISSION_ITEM_INT</message>
+    </version>
+  </service>
+  <service id="14" name="question_fence">
+    <version id="1">
+      <enum>FENCE_MITIGATE</enum>
+      <enum>FENCE_ACTION</enum>
+      <enum>FENCE_BREACH</enum>
+    </version>
+  </service>
+  <service id="15" name="connection">
+    <version id="1">
+      <message>HEARTBEAT</message>
+      <enum>MAV_TYPE</enum>
+      <enum>MAV_AUTOPILOT</enum>
+      <enum>MAV_STATE</enum>
+      <enum>MAV_MODE_FLAG</enum>
+    </version>
+  </service>
+  <service id="16" name="arm_authorization">
+    <version id="1">
+      <command>MAV_CMD_ARM_AUTHORIZATION_REQUEST</command>
+      <command>MAV_CMD_COMPONENT_ARM_DISARM</command>
+    </version>
+  </service>
+  <service id="17" name="question_v1_ofstreaming_with_interval">
+    <version id="1">
+      <enum>MAV_DATA_STREAM</enum>
+    </version>
+  </service>
+  <service id="18" name="odroid">
+    <version id="1">
+      <message>OPEN_DRONE_ID_LOCATION</message>
+      <message>OPEN_DRONE_ID_OPERATOR_ID</message>
+      <message>OPEN_DRONE_ID_BASIC_ID</message>
+      <message>OPEN_DRONE_ID_AUTHENTICATION</message>
+      <message>OPEN_DRONE_ID_SELF_ID</message>
+      <message>OPEN_DRONE_ID_MESSAGE_PACK</message>
+      <message>OPEN_DRONE_ID_SYSTEM</message>
+      <enum>MAV_ODID_SPEED_ACC</enum>
+      <enum>MAV_ODID_HOR_ACC</enum>
+      <enum>MAV_ODID_UA_TYPE</enum>
+      <enum>MAV_ODID_AUTH_TYPE</enum>
+      <enum>MAV_ODID_STATUS</enum>
+      <enum>MAV_ODID_DESC_TYPE</enum>
+      <enum>MAV_ODID_ID_TYPE</enum>
+      <enum>MAV_ODID_HEIGHT_REF</enum>
+      <enum>MAV_ODID_OPERATOR_ID_TYPE</enum>
+      <enum>MAV_ODID_LOCATION_SRC</enum>
+      <enum>MAV_ODID_TIME_ACC</enum>
+      <enum>MAV_ODID_VER_ACC</enum>
+    </version>
+  </service>
+  <service id="19" name="arm_authorisation">
+    <version id="1">
+      <enum>MAV_ARM_AUTH_DENIED_REASON</enum>
+    </version>
+  </service>
+  <service id="20" name="question_path_planning">
+    <version id="1">
+      <command>MAV_CMD_NAV_PATHPLANNING</command>
+      <enum>MAV_CMD</enum>
+    </version>
+  </service>
+  <service id="21" name="param_ext">
+    <version id="1">
+      <message>PARAM_EXT_ACK</message>
+      <message>PARAM_EXT_VALUE</message>
+      <message>PARAM_EXT_SET</message>
+      <message>PARAM_EXT_REQUEST_READ</message>
+      <message>PARAM_EXT_REQUEST_LIST</message>
+      <enum>MAV_PARAM_EXT_TYPE</enum>
+      <enum>PARAM_ACK</enum>
+    </version>
+  </service>
+  <service id="22" name="path_planning">
+    <version id="1">
+      <message>TRAJECTORY_REPRESENTATION_WAYPOINTS</message>
+      <message>TRAJECTORY_REPRESENTATION_BEZIER</message>
+    </version>
+  </service>
+  <service id="23" name="question_collision">
+    <version id="1">
+      <message>COLLISION</message>
+      <enum>MAV_COLLISION_SRC</enum>
+      <enum>MAV_COLLISION_THREAT_LEVEL</enum>
+      <enum>MAV_COLLISION_ACTION</enum>
+    </version>
+  </service>
+  <service id="24" name="mav_ftp">
+    <version id="1">
+      <message>FILE_TRANSFER_PROTOCOL</message>
+    </version>
+  </service>
+  <service id="25" name="tunnel">
+    <version id="1">
+      <message>TUNNEL</message>
+      <enum>MAV_TUNNEL_PAYLOAD_TYPE</enum>
+    </version>
+  </service>
+  <service id="26" name="smart_battery">
+    <version id="1">
+      <message>SMART_BATTERY_STATUS</message>
+      <message>SMART_BATTERY_INFO</message>
+      <enum>MAV_SMART_BATTERY_FAULT</enum>
+    </version>
+  </service>
+  <service id="27" name="param">
+    <version id="1">
+      <message>PARAM_VALUE</message>
+      <message>PARAM_REQUEST_READ</message>
       <message>PARAM_REQUEST_LIST</message>
       <message>PARAM_SET</message>
-      <message>PARAM_REQUEST_READ</message>
-      <message>PARAM_VALUE</message>
       <enum>MAV_PARAM_TYPE</enum>
     </version>
   </service>
