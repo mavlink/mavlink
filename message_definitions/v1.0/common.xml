@@ -2475,22 +2475,22 @@
     <enum name="MAV_RESULT">
       <description>Result from a MAVLink command (MAV_CMD)</description>
       <entry value="0" name="MAV_RESULT_ACCEPTED">
-        <description>Command is supported and was executed.</description>
+        <description>Command is valid (is supported and has valid parameters), and was executed.</description>
       </entry>
       <entry value="1" name="MAV_RESULT_TEMPORARILY_REJECTED">
-        <description>Command is supported, but could not be executed at this time. This usually indicates that a state machine is busy. Retrying later may work.</description>
+        <description>Command is valid, but cannot be executed at this time. This usually indicates that the system is not ready to process the command (i.e. a state machine is busy). Retrying later may work.</description>
       </entry>
       <entry value="2" name="MAV_RESULT_DENIED">
-        <description>Command is supported but cannot be executed as specified (e.g. uses invalid parameter values). Retrying later will not work.</description>
+        <description>Command is invalid (is supported but has invalid parameters). Retrying same command and parameters will not work.</description>
       </entry>
       <entry value="3" name="MAV_RESULT_UNSUPPORTED">
         <description>Command is not supported (unknown).</description>
       </entry>
       <entry value="4" name="MAV_RESULT_FAILED">
-        <description>Command is supported but execution failed. This may indicate an environmental issue - e.g. attempting to write a file when out of memory. Retrying later may work.</description>
+        <description>Command is valid, but execution failed. This may indicate an environmental issue that must be fixed before retrying the command (e.g. attempting to write a file when out of memory).</description>
       </entry>
       <entry value="5" name="MAV_RESULT_IN_PROGRESS">
-        <description>WIP: Command is supported and is being executed.</description>
+        <description>WIP: Command is valid and is being executed.</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
