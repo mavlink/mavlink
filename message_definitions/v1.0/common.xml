@@ -5416,12 +5416,13 @@
       <field type="uint8_t" name="state" display="bitmask">Bitmap for state of buttons.</field>
     </message>
     <message id="258" name="PLAY_TUNE">
-      <description>Control vehicle tone generation (buzzer)</description>
+      <description>Control vehicle tone generation (buzzer). Default format is QBasic 1.1 Play Format: https://www.qbasic.net/en/reference/qb11/Statement/PLAY-006.htm. </description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="char[30]" name="tune">tune in board specific format</field>
+      <field type="char[30]" name="tune">Tune in format specified in the field: format</field>
       <extensions/>
-      <field type="char[200]" name="tune2">tune extension (appended to tune)</field>
+      <field type="char[200]" name="tune2">Tune extension (appended to tune field)</field>
+      <field type="uint8_t" name="format">Tune format. 0 (default) indicates QBasic 1.1 Play Format.</field>
     </message>
     <message id="259" name="CAMERA_INFORMATION">
       <description>Information about a camera</description>
