@@ -2,10 +2,11 @@
 <mavlink>
   <include>common.xml</include>
   <version>3</version>
+  <dialect>0</dialect>
   <enums>
     <enum name="AUTOQUAD_MAVLINK_DEFS_VERSION">
       <description>Track current version of these definitions (can be used by checking value of AUTOQUAD_MAVLINK_DEFS_VERSION_ENUM_END). Append a new entry for each published change.</description>
-      <entry name="AQ_MAVLINK_DEFS_VERSION_1"/>
+      <entry value="0" name="AQ_MAVLINK_DEFS_VERSION_1"/>
     </enum>
     <enum name="AUTOQUAD_NAV_STATUS">
       <description>Available operating modes/statuses for AutoQuad flight controller. 
@@ -15,64 +16,84 @@
         <description>System is initializing</description>
       </entry>
       <!-- active modes -->
-      <entry value="0x00000001" name="AQ_NAV_STATUS_STANDBY">
+      <!-- Values are increasing as powers of 2 -->
+      <!-- 2^0 -->
+      <entry value="1" name="AQ_NAV_STATUS_STANDBY">
         <description>System is *armed* and standing by, with no throttle input and no autonomous mode</description>
       </entry>
-      <entry value="0x00000002" name="AQ_NAV_STATUS_MANUAL">
+      <!-- 2^1 -->
+      <entry value="2" name="AQ_NAV_STATUS_MANUAL">
         <description>Flying (throttle input detected), assumed under manual control unless other mode bits are set</description>
       </entry>
-      <entry value="0x00000004" name="AQ_NAV_STATUS_ALTHOLD">
+      <!-- 2^2 -->
+      <entry value="4" name="AQ_NAV_STATUS_ALTHOLD">
         <description>Altitude hold engaged</description>
       </entry>
-      <entry value="0x00000008" name="AQ_NAV_STATUS_POSHOLD">
+      <!-- 2^3 -->
+      <entry value="8" name="AQ_NAV_STATUS_POSHOLD">
         <description>Position hold engaged</description>
       </entry>
-      <entry value="0x00000010" name="AQ_NAV_STATUS_GUIDED">
+      <!-- 2^4 -->
+      <entry value="16" name="AQ_NAV_STATUS_GUIDED">
         <description>Externally-guided (eg. GCS) navigation mode</description>
       </entry>
-      <entry value="0x00000020" name="AQ_NAV_STATUS_MISSION">
+      <!-- 2^5 -->
+      <entry value="32" name="AQ_NAV_STATUS_MISSION">
         <description>Autonomous mission execution mode</description>
       </entry>
       <!-- pre-flight -->
-      <entry value="0x00000100" name="AQ_NAV_STATUS_READY">
+      <!-- 2^8 -->
+      <entry value="256" name="AQ_NAV_STATUS_READY">
         <description>Ready but *not armed*</description>
       </entry>
-      <entry value="0x00000200" name="AQ_NAV_STATUS_CALIBRATING">
+      <!-- 2^9 -->
+      <entry value="512" name="AQ_NAV_STATUS_CALIBRATING">
         <description>Calibration mode active</description>
       </entry>
       <!-- alerts -->
-      <entry value="0x00001000" name="AQ_NAV_STATUS_NO_RC">
+      <!-- 2^12 -->
+      <entry value="4096" name="AQ_NAV_STATUS_NO_RC">
         <description>No valid control input (eg. no radio link)</description>
       </entry>
-      <entry value="0x00002000" name="AQ_NAV_STATUS_FUEL_LOW">
+      <!-- 2^13 -->
+      <entry value="8192" name="AQ_NAV_STATUS_FUEL_LOW">
         <description>Battery is low (stage 1 warning)</description>
       </entry>
-      <entry value="0x00004000" name="AQ_NAV_STATUS_FUEL_CRITICAL">
+      <!-- 2^14 -->
+      <entry value="16384" name="AQ_NAV_STATUS_FUEL_CRITICAL">
         <description>Battery is depleted (stage 2 warning)</description>
       </entry>
       <!-- high side feature/modifier/constraint bits (0x8000 0000 = bit 32) -->
-      <entry value="0x01000000" name="AQ_NAV_STATUS_DVH">
+      <!-- 2^24 -->
+      <entry value="16777216" name="AQ_NAV_STATUS_DVH">
         <description>Dynamic Velocity Hold is active (PH with proportional manual direction override)</description>
       </entry>
-      <entry value="0x02000000" name="AQ_NAV_STATUS_DAO">
+      <!-- 2^25 -->
+      <entry value="33554432" name="AQ_NAV_STATUS_DAO">
         <description>Dynamic Altitude Override is active (AH with proportional manual adjustment)</description>
       </entry>
-      <entry value="0x04000000" name="AQ_NAV_STATUS_CEILING_REACHED">
+      <!-- 2^26 -->
+      <entry value="67108864" name="AQ_NAV_STATUS_CEILING_REACHED">
         <description>Craft is at ceiling altitude</description>
       </entry>
-      <entry value="0x08000000" name="AQ_NAV_STATUS_CEILING">
+      <!-- 2^27 -->
+      <entry value="134217728" name="AQ_NAV_STATUS_CEILING">
         <description>Ceiling altitude is set</description>
       </entry>
-      <entry value="0x10000000" name="AQ_NAV_STATUS_HF_DYNAMIC">
+      <!-- 2^28 -->
+      <entry value="268435456" name="AQ_NAV_STATUS_HF_DYNAMIC">
         <description>Heading-Free dynamic mode active</description>
       </entry>
-      <entry value="0x20000000" name="AQ_NAV_STATUS_HF_LOCKED">
+      <!-- 2^29 -->
+      <entry value="536870912" name="AQ_NAV_STATUS_HF_LOCKED">
         <description>Heading-Free locked mode active</description>
       </entry>
-      <entry value="0x40000000" name="AQ_NAV_STATUS_RTH">
+      <!-- 2^30 -->
+      <entry value="1073741824" name="AQ_NAV_STATUS_RTH">
         <description>Automatic Return to Home is active</description>
       </entry>
-      <entry value="0x80000000" name="AQ_NAV_STATUS_FAILSAFE">
+      <!-- 2^31 -->
+      <entry value="2147483648" name="AQ_NAV_STATUS_FAILSAFE">
         <description>System is in failsafe recovery mode</description>
       </entry>
     </enum>
@@ -111,7 +132,7 @@
     </enum>
     <!-- extend MAV_DATA_STREAM -->
     <enum name="MAV_DATA_STREAM">
-      <entry name="MAV_DATA_STREAM_PROPULSION">
+      <entry value="0" name="MAV_DATA_STREAM_PROPULSION">
         <description>Motor/ESC telemetry data.</description>
       </entry>
     </enum>

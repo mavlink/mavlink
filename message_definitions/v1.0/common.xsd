@@ -1,0 +1,115 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="mavlink">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="xs:string" name="include" maxOccurs="unbounded" minOccurs="0" />
+        <xs:element type="xs:byte" name="version" />
+        <xs:element type="xs:byte" name="dialect" />
+        <xs:element name="enums">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="enum" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="deprecated" minOccurs="0">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="since" use="required" />
+                            <xs:attribute type="xs:string" name="replaced_by" use="required" />
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:string" name="description" minOccurs="0">
+                    </xs:element>
+                    <xs:element name="entry" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType mixed="true">
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="wip" minOccurs="0" />
+                          <xs:element name="deprecated" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attribute type="xs:string" name="since" use="required" />
+                                  <xs:attribute type="xs:string" name="replaced_by" use="required" />
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element type="xs:string" name="description" minOccurs="0">
+                          </xs:element>
+                          <xs:element name="param" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attribute type="xs:byte" name="index" use="optional" />
+                                  <xs:attribute type="xs:string" name="label" use="optional" />
+                                  <xs:attribute type="xs:string" name="units" use="optional" />
+                                  <xs:attribute type="xs:byte" name="minValue" use="optional" />
+                                  <xs:attribute type="xs:string" name="enum" use="optional" />
+                                  <xs:attribute type="xs:short" name="increment" use="optional" />
+                                  <xs:attribute type="xs:int" name="maxValue" use="optional" />
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:unsignedInt" name="value" use="required" />
+                        <xs:attribute type="xs:string" name="name" use="required" />
+                        <xs:attribute type="xs:boolean" name="hasLocation" use="optional" />
+                        <xs:attribute type="xs:boolean" name="isDestination" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="name" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="messages">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="message" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="wip" minOccurs="0" />
+                    <xs:element name="deprecated" minOccurs="0">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="since" use="required" />
+                            <xs:attribute type="xs:string" name="replaced_by" use="required" />
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:string" name="description" />
+                    <xs:element name="field" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="type" use="required" />
+                            <xs:attribute type="xs:string" name="name" use="required" />
+                            <xs:attribute type="xs:string" name="enum" use="optional" />
+                            <xs:attribute type="xs:string" name="display" use="optional" />
+                            <xs:attribute type="xs:string" name="print_format" use="optional" />
+                            <xs:attribute type="xs:string" name="units" use="optional" />
+                            <xs:attribute type="xs:byte" name="default" use="optional" />
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:unsignedShort" name="id" use="required" />
+                  <xs:attribute type="xs:string" name="name" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
