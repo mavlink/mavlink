@@ -2487,10 +2487,10 @@
         <description>Command is not supported (unknown).</description>
       </entry>
       <entry value="4" name="MAV_RESULT_FAILED">
-        <description>Command is valid, but execution failed. This may indicate an environmental issue that must be fixed before retrying the command (e.g. attempting to write a file when out of memory).</description>
+        <description>Command is valid, but execution failed. The cause of the problem must be fixed before retrying the command. This typically indicates an environmental issue (e.g. attempting to write a file when out of memory).</description>
       </entry>
       <entry value="5" name="MAV_RESULT_IN_PROGRESS">
-        <description>Command is valid and is being executed. This may be followed by more progress updates (in COMMAND_ACK) and must terminate with a final result (e.g. MAV_RESULT_ACCEPTED). There is no need to retry the command, but if done during execution, it will return the same result.</description>
+        <description>Command is valid and is being executed. This will be followed by further progress updates, i.e. the component may send further COMMAND_ACK messages with result MAV_RESULT_IN_PROGRESS (at a rate decided by the implementation), and must terminate by sending a COMMAND_ACK message with final result of the operation. The COMMAND_ACK.progress field can be used to indicate the progress of the operation. There is no need for the sender to retry the command, but if done during execution, the component will return MAV_RESULT_IN_PROGRESS with an updated progress.</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
