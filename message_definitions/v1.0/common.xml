@@ -3802,6 +3802,15 @@
         <description>CAA (Civil Aviation Authority) registered operator ID.</description>
       </entry>
     </enum>
+    <enum name="TUNE_FORMAT">
+      <description>Tune formats (used for vehicle buzzer/tone generation).</description>
+      <entry value="0" name="TUNE_FORMAT_QBASIC1_1">
+        <description>Format is QBasic 1.1 Play: https://www.qbasic.net/en/reference/qb11/Statement/PLAY-006.htm.</description>
+      </entry>
+      <entry value="1" name="TUNE_FORMAT_MML_MODERN">
+        <description>Format is Modern Music Markup Language (MML): https://en.wikipedia.org/wiki/Music_Macro_Language#Modern_MML.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -4006,6 +4015,8 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
+      <extensions/>
+      <field type="float[4]" name="repr_offset_q">Rotation offset by which the attitude quaternion and angular speed vector should be rotated for user display (quaternion with [w, x, y, z] order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if field not supported). This field is intended for systems in which the reference attitude may change during flight. For example, tailsitters VTOLs rotate their reference attitude by 90 degrees between hover mode and fixed wing mode, thus repr_offset_q is equal to [1, 0, 0, 0] in hover mode and equal to [0.7071, 0, 0.7071, 0] in fixed wing mode.</field>
     </message>
     <message id="32" name="LOCAL_POSITION_NED">
       <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
@@ -5416,7 +5427,8 @@
       <field type="uint8_t" name="state" display="bitmask">Bitmap for state of buttons.</field>
     </message>
     <message id="258" name="PLAY_TUNE">
-      <description>Control vehicle tone generation (buzzer)</description>
+      <deprecated since="2019-10" replaced_by="PLAY_TUNE_V2">New version explicitly defines format. More interoperable.</deprecated>
+      <description>Control vehicle tone generation (buzzer).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[30]" name="tune">tune in board specific format</field>
@@ -5839,6 +5851,19 @@
       <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_tx_max" units="KiB/s">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_rx_max" units="KiB/s">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
+    </message>
+    <message id="400" name="PLAY_TUNE_V2">
+      <description>Play vehicle tone/tune (buzzer). Default format is QBasic 1.1. Supersedes message PLAY_TUNE.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="format" enum="TUNE_FORMAT">Tune format</field>
+      <field type="char[252]" name="tune">Tune definition</field>
+    </message>
+    <message id="401" name="SUPPORTED_TUNES">
+      <description>Tune formats supported by vehicle. This should be emitted as response to MAV_CMD_REQUEST_MESSAGE.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t[200]" name="format" enum="TUNE_FORMAT">Array of supported tune formats</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
