@@ -2478,7 +2478,7 @@
         <description>Command is valid (is supported and has valid parameters), and was executed.</description>
       </entry>
       <entry value="1" name="MAV_RESULT_TEMPORARILY_REJECTED">
-        <description>Command is valid, but cannot be executed at this time. This usually indicates that the system is not ready to process the command (i.e. a state machine is busy). Retrying later may work.</description>
+        <description>Command is valid, but cannot be executed at this time. This is used to indicate a problem that should be fixed just by waiting (e.g. a state machine is busy, can't arm because have not got GPS lock, etc.). Retrying later should work.</description>
       </entry>
       <entry value="2" name="MAV_RESULT_DENIED">
         <description>Command is invalid (is supported but has invalid parameters). Retrying same command and parameters will not work.</description>
@@ -2487,7 +2487,7 @@
         <description>Command is not supported (unknown).</description>
       </entry>
       <entry value="4" name="MAV_RESULT_FAILED">
-        <description>Command is valid, but execution failed. The cause of the problem must be fixed before retrying the command. This typically indicates an environmental issue (e.g. attempting to write a file when out of memory).</description>
+        <description>Command is valid, but execution has failed. This is used to indicate any non-temporary or unexpected problem, i.e. any problem that must be fixed before the command can succeed/be retried. For example, attempting to write a file when out of memory, attempting to arm when sensors are not calibrated, etc.</description>
       </entry>
       <entry value="5" name="MAV_RESULT_IN_PROGRESS">
         <description>Command is valid and is being executed. This will be followed by further progress updates, i.e. the component may send further COMMAND_ACK messages with result MAV_RESULT_IN_PROGRESS (at a rate decided by the implementation), and must terminate by sending a COMMAND_ACK message with final result of the operation. The COMMAND_ACK.progress field can be used to indicate the progress of the operation. There is no need for the sender to retry the command, but if done during execution, the component will return MAV_RESULT_IN_PROGRESS with an updated progress.</description>
