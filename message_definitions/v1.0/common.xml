@@ -2475,24 +2475,24 @@
       </entry>
     </enum>
     <enum name="MAV_RESULT">
-      <description>result from a mavlink command</description>
+      <description>Result from a MAVLink command (MAV_CMD)</description>
       <entry value="0" name="MAV_RESULT_ACCEPTED">
-        <description>Command ACCEPTED and EXECUTED</description>
+        <description>Command is valid (is supported and has valid parameters), and was executed.</description>
       </entry>
       <entry value="1" name="MAV_RESULT_TEMPORARILY_REJECTED">
-        <description>Command TEMPORARY REJECTED/DENIED</description>
+        <description>Command is valid, but cannot be executed at this time. This is used to indicate a problem that should be fixed just by waiting (e.g. a state machine is busy, can't arm because have not got GPS lock, etc.). Retrying later should work.</description>
       </entry>
       <entry value="2" name="MAV_RESULT_DENIED">
-        <description>Command PERMANENTLY DENIED</description>
+        <description>Command is invalid (is supported but has invalid parameters). Retrying same command and parameters will not work.</description>
       </entry>
       <entry value="3" name="MAV_RESULT_UNSUPPORTED">
-        <description>Command UNKNOWN/UNSUPPORTED</description>
+        <description>Command is not supported (unknown).</description>
       </entry>
       <entry value="4" name="MAV_RESULT_FAILED">
-        <description>Command executed, but failed</description>
+        <description>Command is valid, but execution has failed. This is used to indicate any non-temporary or unexpected problem, i.e. any problem that must be fixed before the command can succeed/be retried. For example, attempting to write a file when out of memory, attempting to arm when sensors are not calibrated, etc.</description>
       </entry>
       <entry value="5" name="MAV_RESULT_IN_PROGRESS">
-        <description>WIP: Command being executed</description>
+        <description>Command is valid and is being executed. This will be followed by further progress updates, i.e. the component may send further COMMAND_ACK messages with result MAV_RESULT_IN_PROGRESS (at a rate decided by the implementation), and must terminate by sending a COMMAND_ACK message with final result of the operation. The COMMAND_ACK.progress field can be used to indicate the progress of the operation. There is no need for the sender to retry the command, but if done during execution, the component will return MAV_RESULT_IN_PROGRESS with an updated progress.</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
@@ -3804,6 +3804,15 @@
         <description>CAA (Civil Aviation Authority) registered operator ID.</description>
       </entry>
     </enum>
+    <enum name="TUNE_FORMAT">
+      <description>Tune formats (used for vehicle buzzer/tone generation).</description>
+      <entry value="1" name="TUNE_FORMAT_QBASIC1_1">
+        <description>Format is QBasic 1.1 Play: https://www.qbasic.net/en/reference/qb11/Statement/PLAY-006.htm.</description>
+      </entry>
+      <entry value="2" name="TUNE_FORMAT_MML_MODERN">
+        <description>Format is Modern Music Markup Language (MML): https://en.wikipedia.org/wiki/Music_Macro_Language#Modern_MML.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
@@ -4008,6 +4017,8 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
+      <extensions/>
+      <field type="float[4]" name="repr_offset_q">Rotation offset by which the attitude quaternion and angular speed vector should be rotated for user display (quaternion with [w, x, y, z] order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if field not supported). This field is intended for systems in which the reference attitude may change during flight. For example, tailsitters VTOLs rotate their reference attitude by 90 degrees between hover mode and fixed wing mode, thus repr_offset_q is equal to [1, 0, 0, 0] in hover mode and equal to [0.7071, 0, 0.7071, 0] in fixed wing mode.</field>
     </message>
     <message id="32" name="LOCAL_POSITION_NED">
       <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
@@ -4061,7 +4072,7 @@
       <field type="uint8_t" name="rssi">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.</field>
     </message>
     <message id="36" name="SERVO_OUTPUT_RAW">
-      <description>The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.</description>
+      <description>Superseded by ACTUATOR_OUTPUT_STATUS. The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.</description>
       <field type="uint32_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
       <field type="uint16_t" name="servo1_raw" units="us">Servo output 1 value</field>
@@ -5418,7 +5429,8 @@
       <field type="uint8_t" name="state" display="bitmask">Bitmap for state of buttons.</field>
     </message>
     <message id="258" name="PLAY_TUNE">
-      <description>Control vehicle tone generation (buzzer)</description>
+      <deprecated since="2019-10" replaced_by="PLAY_TUNE_V2">New version explicitly defines format. More interoperable.</deprecated>
+      <description>Control vehicle tone generation (buzzer).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[30]" name="tune">tune in board specific format</field>
@@ -5792,7 +5804,7 @@
       <field type="uint16_t[16]" name="voltages" units="mV">Individual cell voltages. Batteries with more 16 cells can use the cell_offset field to specify the cell offset for the array specified in the current message . Index values above the valid cell count for this battery should have the UINT16_MAX value.</field>
     </message>
     <message id="375" name="ACTUATOR_OUTPUT_STATUS">
-      <description>The raw values of the actuator outputs.</description>
+      <description>The raw values of the actuator outputs (e.g. on Pixhawk, from MAIN, AUX ports). This message supersedes SERVO_OUTPUT_RAW.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot).</field>
       <field type="uint32_t" name="active" display="bitmask">Active outputs</field>
       <field type="float[32]" name="actuator">Servo / motor output array values. Zero values indicate unused channels.</field>
@@ -5841,6 +5853,23 @@
       <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_tx_max" units="KiB/s">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_rx_max" units="KiB/s">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
+    </message>
+    <message id="400" name="PLAY_TUNE_V2">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Play vehicle tone/tune (buzzer). Supersedes message PLAY_TUNE.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="format" enum="TUNE_FORMAT">Tune format</field>
+      <field type="char[252]" name="tune">Tune definition as a NULL-terminated string.</field>
+    </message>
+    <message id="401" name="SUPPORTED_TUNES">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Tune formats supported by vehicle. This should be emitted as response to MAV_CMD_REQUEST_MESSAGE.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="format" enum="TUNE_FORMAT" display="bitmask">Bitfield of supported tune formats.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
