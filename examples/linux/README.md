@@ -18,4 +18,4 @@ To run, type:
 ./mavlink_udp
 ```
 
-If you run *QGroundControl* on the same machine, a MAV should pop up.
+If you run *QGroundControl* on the same machine, checkout received message in MAVLink Inspector widget.
