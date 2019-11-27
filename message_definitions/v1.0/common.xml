@@ -962,10 +962,13 @@
     <enum name="FENCE_MITIGATE">
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Actions being taken to mitigate/prevent fence breach</description>
-      <entry value="0" name="FENCE_MITIGATE_NONE">
+      <entry value="0" name="FENCE_MITIGATE_UNKNOWN">
+        <description>Unknown</description>
+      </entry>
+      <entry value="1" name="FENCE_MITIGATE_NONE">
         <description>No actions being taken</description>
       </entry>
-      <entry value="1" name="FENCE_MITIGATE_VEL_LIMIT">
+      <entry value="2" name="FENCE_MITIGATE_VEL_LIMIT">
         <description>Velocity limiting active to prevent breach</description>
       </entry>
     </enum>
@@ -1036,6 +1039,24 @@
       </entry>
       <entry value="3" name="STORAGE_STATUS_NOT_SUPPORTED">
         <description>Camera does not supply storage status information. Capacity information in STORAGE_INFORMATION fields will be ignored.</description>
+      </entry>
+    </enum>
+    <enum name="ORBIT_YAW_BEHAVIOUR">
+      <description>Yaw behaviour during orbit flight.</description>
+      <entry value="0" name="ORBIT_YAW_BEHAVIOUR_HOLD_FRONT_TO_CIRCLE_CENTER">
+        <description>Vehicle front points to the center (default).</description>
+      </entry>
+      <entry value="1" name="ORBIT_YAW_BEHAVIOUR_HOLD_INITIAL_HEADING">
+        <description>Vehicle front holds heading when message received.</description>
+      </entry>
+      <entry value="2" name="ORBIT_YAW_BEHAVIOUR_UNCONTROLLED">
+        <description>Yaw uncontrolled.</description>
+      </entry>
+      <entry value="3" name="ORBIT_YAW_BEHAVIOUR_HOLD_FRONT_TANGENT_TO_CIRCLE">
+        <description>Vehicle front follows flight path (tangential to circle).</description>
+      </entry>
+      <entry value="4" name="ORBIT_YAW_BEHAVIOUR_RC_CONTROLLED">
+        <description>Yaw controlled by RC input.</description>
       </entry>
     </enum>
     <!-- The MAV_CMD enum entries describe either: -->
@@ -1190,7 +1211,7 @@
         <description>Start orbiting on the circumference of a circle defined by the parameters. Setting any value NaN results in using defaults.</description>
         <param index="1" label="Radius" units="m">Radius of the circle. positive: Orbit clockwise. negative: Orbit counter-clockwise.</param>
         <param index="2" label="Velocity" units="m/s">Tangential Velocity. NaN: Vehicle configuration default.</param>
-        <param index="3" label="Yaw Behavior" minValue="0" maxValue="2" increment="1">Yaw behavior of the vehicle. 0: vehicle front points to the center (default). 1: Hold last heading. 2: Leave yaw uncontrolled.</param>
+        <param index="3" label="Yaw Behavior" enum="ORBIT_YAW_BEHAVIOUR">Yaw behavior of the vehicle.</param>
         <param index="4">Reserved (e.g. for dynamic center beacon options)</param>
         <param index="5">Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
         <param index="6">Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
