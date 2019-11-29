@@ -3834,6 +3834,15 @@
         <description>Format is Modern Music Markup Language (MML): https://en.wikipedia.org/wiki/Music_Macro_Language#Modern_MML.</description>
       </entry>
     </enum>
+    <enum name="COMPONENT_CAP_FLAGS">
+      <description>Component capability flags (Bitmap)</description>
+      <entry value="1" name="COMPONENT_CAP_FLAGS_PARAM">
+        <description>Component has parameters, and supports the parameter protocol (PARAM messages).</description>
+      </entry>
+      <entry value="2" name="COMPONENT_CAP_FLAGS_PARAM_EXT">
+        <description>Component has parameters, and supports the extended parameter protocol (PARAM_EXT messages).</description>
+      </entry>
+    </enum>
     <!-- AIS related enums-->
     <enum name="AIS_TYPE">
       <description>Type of AIS vessel, enum duplicated from AIS standard, https://gpsd.gitlab.io/gpsd/AIVDM.html</description>
@@ -6074,6 +6083,19 @@
       <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_tx_max" units="KiB/s">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_rx_max" units="KiB/s">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
+    </message>
+    <message id="395" name="COMPONENT_INFORMATION">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Information about a component. For camera components instead use CAMERA_INFORMATION, and for autopilots use AUTOPILOT_VERSION. Components including GCSes should consider supporting requests of this message via MAV_CMD_REQUEST_MESSAGE.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t[32]" name="vendor_name">Name of the component vendor</field>
+      <field type="uint8_t[32]" name="model_name">Name of the component model</field>
+      <field type="uint32_t" name="firmware_version">Version of the component firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
+      <field type="uint32_t" name="hardware_version">Version of the component hardware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
+      <field type="uint32_t" name="capability_flags" enum="COMPONENT_CAP_FLAGS">Bitmap of component capability flags.</field>
+      <field type="uint16_t" name="component_definition_version">Component definition version (iteration)</field>
+      <field type="char[140]" name="component_definition_uri">Component definition URI (if any, otherwise only basic functions will be available). The XML format is not yet specified and work in progress. </field>
     </message>
     <message id="400" name="PLAY_TUNE_V2">
       <wip/>
