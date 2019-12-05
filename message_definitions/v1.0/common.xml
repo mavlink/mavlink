@@ -4010,36 +4010,6 @@
       <entry value="2048" name="AIS_FLAGS_VALID_CALLSIGN"/>
       <entry value="4096" name="AIS_FLAGS_VALID_NAME"/>
     </enum>
-    <enum name="MAV_LED_COLOR">
-      <description>Defines the color of an RGB LED.</description>
-      <entry value="0" name="OFF">
-        <description>Do not use the defined color, but the raw RGB values instead.</description>
-      </entry>
-      <entry value="1" name="RED">
-        <description>Set the LED to red.</description>
-      </entry>
-      <entry value="2" name="GREEN">
-        <description>Set the LED to green.</description>
-      </entry>
-      <entry value="3" name="BLUE">
-        <description>Set the LED to blue.</description>
-      </entry>
-      <entry value="4" name="YELLOW">
-        <description>Set the LED to yellow.</description>
-      </entry>
-      <entry value="5" name="PURPLE">
-        <description>Set the LED to purple.</description>
-      </entry>
-      <entry value="6" name="AMBER">
-        <description>Set the LED to amber.</description>
-      </entry>
-      <entry value="7" name="CYAN">
-        <description>Set the LED to cyan.</description>
-      </entry>
-      <entry value="8" name="WHITE">
-        <description>Set the LED to white.</description>
-      </entry>
-    </enum>
     <enum name="MAV_LED_MODE">
       <description>Defines the mode of operation of an RGB LED.</description>
       <entry value="0" name="OFF">
@@ -6155,10 +6125,9 @@
       <field type="uint8_t[32]" name="G">G values for the selected LEDs</field>
       <field type="uint8_t[32]" name="B">B values for the selected LEDs</field>
       <field type="uint8_t[32]" name="W">W values for the selected LEDs. Ignored if LED system does not support W values.</field>
-      <field type="uint8_t" name="color" enum="MAV_LED_COLOR">Color of the LEDs. Overrides RGB values.</field>
+      <field type="uint8_t" name="color_all">Color all LEDs to R, G, B field 0th index values (ignore other RGB array values). 1: Enable, 0: Disable (use array values).</field>
       <field type="uint8_t" name="mode" enum="MAV_LED_MODE">Mode of LED operation.</field>
       <field type="uint8_t" name="num_blinks">How many times to blink (number of on-off cycles if mode is one of MAV_LED_MODE::BLINK_*). Set to 0 for infinite.</field>
-      <field type="uint8_t" name="priority">Priority. Higher-priority events will override lower-priority events.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
