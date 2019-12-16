@@ -1314,7 +1314,7 @@
       </entry>
       <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true">
         <description>Takeoff from ground / hand</description>
-        <param index="1" label="Pitch">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
+        <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4" label="Yaw">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
@@ -1347,10 +1347,10 @@
         <param index="1" label="Following" increment="1">Following logic to use (e.g. loitering or sinusoidal following) - depends on specific autopilot implementation</param>
         <param index="2" label="Ground Speed">Ground speed of vehicle to be followed</param>
         <param index="3" label="Radius" units="m">Radius around waypoint. If positive loiter clockwise, else counter-clockwise</param>
-        <param index="4" label="Yaw">Desired yaw angle.</param>
-        <param index="5">Latitude</param>
-        <param index="6">Longitude</param>
-        <param index="7">Altitude</param>
+        <param index="4" label="Yaw" units="rad">Desired yaw angle.</param>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
       <entry value="30" name="MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT" hasLocation="false" isDestination="true">
         <description>Continue on the current course and climb/descend to specified altitude.  When the altitude is reached continue to the next command (i.e., don't proceed to the next command until the desired altitude is reached.</description>
@@ -1420,7 +1420,7 @@
         <param index="1" label="Local Ctrl" minValue="0" maxValue="2" increment="1">0: Disable local obstacle avoidance / local path planning (without resetting map), 1: Enable local path planning, 2: Enable and reset local path planning</param>
         <param index="2" label="Global Ctrl" minValue="0" maxValue="3" increment="1">0: Disable full path planning (without resetting map), 1: Enable, 2: Enable and reset map/occupancy grid, 3: Enable and reset planned route, but not occupancy grid</param>
         <param index="3">Empty</param>
-        <param index="4" label="Yaw" units="deg" minValue="0" maxValue="360">Yaw angle at goal</param>
+        <param index="4" label="Yaw" units="deg">Yaw angle at goal</param>
         <param index="5">Latitude/X of goal</param>
         <param index="6">Longitude/Y of goal</param>
         <param index="7">Altitude/Z of goal</param>
@@ -1510,7 +1510,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="113" name="MAV_CMD_CONDITION_CHANGE_ALT" hasLocation="false" isDestination="true">
-        <description>Ascend/descend at rate.  Delay mission state machine until desired altitude reached.</description>
+        <description>Ascend/descend to target altitude at specified rate. Delay mission state machine until desired altitude reached.</description>
         <param index="1" label="Rate" units="m/s">Descent / Ascend rate.</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -1531,7 +1531,7 @@
       </entry>
       <entry value="115" name="MAV_CMD_CONDITION_YAW" hasLocation="false" isDestination="false">
         <description>Reach a certain target angle.</description>
-        <param index="1" label="Angle" units="deg" minValue="0" maxValue="360">target angle, 0 is north</param>
+        <param index="1" label="Angle" units="deg">target angle, 0 is north</param>
         <param index="2" label="Angular Speed" units="deg/s">angular speed</param>
         <param index="3" label="Direction" minValue="-1" maxValue="1" increment="2">direction: -1: counter clockwise, 1: clockwise</param>
         <param index="4" label="Relative" minValue="0" maxValue="1" increment="1">0: absolute angle, 1: relative offset</param>
@@ -1694,10 +1694,10 @@
         <param index="1" label="Speed" units="m/s" minValue="-1">Ground speed, less than 0 (-1) for default</param>
         <param index="2" label="Bitmask" enum="MAV_DO_REPOSITION_FLAGS">Bitmask of option flags.</param>
         <param index="3">Reserved</param>
-        <param index="4" label="Yaw">Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)</param>
-        <param index="5">Latitude</param>
-        <param index="6">Longitude</param>
-        <param index="7">Altitude (meters)</param>
+        <param index="4" label="Yaw" units="deg">Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)</param>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
       <entry value="193" name="MAV_CMD_DO_PAUSE_CONTINUE" hasLocation="false" isDestination="false">
         <description>If in a GPS controlled position mode, hold the current position or continue.</description>
@@ -2066,12 +2066,12 @@
       </entry>
       <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" hasLocation="false" isDestination="false">
         <description>Request MAVLink protocol version compatibility</description>
-        <param index="1" label="Protocol">1: Request supported protocol versions by all nodes on the network</param>
+        <param index="1" label="Protocol" minValue="0" maxValue="1" increment="1">1: Request supported protocol versions by all nodes on the network</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES" hasLocation="false" isDestination="false">
         <description>Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message</description>
-        <param index="1" label="Version">1: Request autopilot version</param>
+        <param index="1" label="Version" minValue="0" maxValue="1" increment="1">1: Request autopilot version</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION" hasLocation="false" isDestination="false">
@@ -2301,7 +2301,7 @@
       <entry value="4001" name="MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE" hasLocation="true" isDestination="false">
         <description>This command sets submode circle when vehicle is in guided mode. Vehicle flies along a circle facing the center of the circle. The user can input the velocity along the circle and change the radius. If no input is given the vehicle will hold position.
                   </description>
-        <param index="1" label="Radius">Radius of desired circle in CIRCLE_MODE</param>
+        <param index="1" label="Radius" units="m">Radius of desired circle in CIRCLE_MODE</param>
         <param index="2">User defined</param>
         <param index="3">User defined</param>
         <param index="4">User defined</param>
