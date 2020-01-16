@@ -1130,6 +1130,33 @@
         <description>Completely override pointing to a location or tracking. If this flag is set, the quaternion is (as usual) according to GIMBAL_MANAGER_FLAGS_YAW_LOCK.</description>
       </entry>
     </enum>
+    <enum name="GIMBAL_DEVICE_ERROR_FLAGS">
+      <description>Gimbal device (low level) error flags (bitmap, 0 means no error)</description>
+      <entry value="1" name="GIMBAL_DEVICE_ERROR_FLAGS_AT_ROLL_LIMIT">
+        <description>Gimbal device is limited by hardware roll limit.</description>
+      </entry>
+      <entry value="2" name="GIMBAL_DEVICE_ERROR_FLAGS_AT_PITCH_LIMIT">
+        <description>Gimbal device is limited by hardware pitch limit.</description>
+      </entry>
+      <entry value="4" name="GIMBAL_DEVICE_ERROR_FLAGS_AT_YAW_LIMIT">
+        <description>Gimbal device is limited by hardware yaw limit.</description>
+      </entry>
+      <entry value="8" name="GIMBAL_DEVICE_ERROR_FLAGS_ENCODER_ERROR">
+        <description>There is an error with the gimbal encoders.</description>
+      </entry>
+      <entry value="16" name="GIMBAL_DEVICE_ERROR_FLAGS_POWER_ERROR">
+        <description>There is an error with the gimbal power source.</description>
+      </entry>
+      <entry value="32" name="GIMBAL_DEVICE_ERROR_FLAGS_MOTOR_ERROR">
+        <description>There is an error with the gimbal motor's.</description>
+      </entry>
+      <entry value="64" name="GIMBAL_DEVICE_ERROR_FLAGS_SOFTWARE_ERROR">
+        <description>There is an error with the gimbal's software.</description>
+      </entry>
+      <entry value="128" name="GIMBAL_DEVICE_ERROR_FLAGS_COMMS_ERROR">
+        <description>There is an error with the gimbal's communication.</description>
+      </entry>
+    </enum>
     <!-- UAVCAN node health enumeration -->
     <enum name="UAVCAN_NODE_HEALTH">
       <description>Generalized UAVCAN node health</description>
@@ -6071,6 +6098,7 @@
       <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (NaN if unknown)</field>
       <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (NaN if unknown)</field>
       <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (NaN if unknown)</field>
+      <field type="uint32" name="failure_flags" display="bitmask" enum="GIMBAL_DEVICE_ERROR_FLAGS">Failure flags (0 for no failure)</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure AP SSID and Password.</description>
