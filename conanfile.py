@@ -21,6 +21,7 @@ def get_version():
     version = str(major) + '.' + str(minor) + '.' + str(patch)
     return version
 
+
 class MavlinkConan(ConanFile):
     name = "mavlink"
     version = get_version()
@@ -29,6 +30,10 @@ class MavlinkConan(ConanFile):
     description = "micro air vehicle communication protocol"
     topics = ("mavlink", "communication")
     exports_sources = "*"
+    options = {"msg_definitions": ["ardupilotmega", "ASLUAV", "autoquad", "common", "icarous", "matrixpilot",
+                                    "minimal", "paparazzi", "python_array_test", "slugs", "standard", "test",
+                                   "ualberta", "uAvionix"]}
+    default_options = ("msg_definitions = ardupilotmega")
     settings = "os", "compiler", "build_type", "arch"
 
     def source(self):
@@ -36,7 +41,9 @@ class MavlinkConan(ConanFile):
             self.run("git clone https://github.com/ardupilot/pymavlink.git")
 
     def build(self):
-        self.run("python -m pymavlink.tools.mavgen --lang=C++11 --wire-protocol=2.0 --output=build message_definitions/v1.0/ardupilotmega.xml")
+        cmd = "python -m pymavlink.tools.mavgen --lang=C++11 --wire-protocol=2.0 --output=build message_definitions/v1.0/"\
+              + str(self.options.msg_definitions) + ".xml"
+        self.run(cmd)
 
     def package(self):
         self.copy("*.h*", dst="include", keep_path=True)
