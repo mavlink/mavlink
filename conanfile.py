@@ -1,19 +1,39 @@
 from conans import ConanFile
+import os
+import re
 
-__version__ = "1.0.0"
+
+def get_version():
+    patch = 0
+    minor = 0
+    major = 1
+    try:
+        with open("CMakeLists.txt", "r") as cmake_file:
+            for line in cmake_file:
+                if 'set(PROJECT_VERSION_PATCH' in line:
+                    patch = re.search(r'\d+', line)[0]
+                if 'set(PROJECT_VERSION_MINOR' in line:
+                    minor = re.search(r'\d+', line)[0]
+                if 'set(PROJECT_VERSION_MAJOR' in line:
+                    major = re.search(r'\d+', line)[0]
+    except:
+        pass
+    version = str(major) + '.' + str(minor) + '.' + str(patch)
+    return version
 
 class MavlinkConan(ConanFile):
     name = "mavlink"
-    version = __version__
+    version = get_version()
     license = "Tevel"
     author = "Gal gal@tevel-tech.com"
     description = "micro air vehicle communication protocol"
     topics = ("mavlink", "communication")
-    settings = "os", "compiler", "build_type", "arch"
     exports_sources = "*"
+    settings = "os", "compiler", "build_type", "arch"
 
     def source(self):
-        self.run("git clone https://github.com/ardupilot/pymavlink.git")
+        if not os.path.isdir('./pymavlink'):
+            self.run("git clone https://github.com/ardupilot/pymavlink.git")
 
     def build(self):
         self.run("python -m pymavlink.tools.mavgen --lang=C++11 --wire-protocol=2.0 --output=build message_definitions/v1.0/ardupilotmega.xml")
