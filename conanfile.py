@@ -49,4 +49,4 @@ class MavlinkConan(ConanFile):
         self.copy("*.h*", dst="include", keep_path=True)
 
     def package_info(self):
-        self.cpp_info.libs = ["mavlink"]
+        self.cpp_info.name = "mavlink"
