@@ -17,7 +17,14 @@ def get_version():
                 if 'set(PROJECT_VERSION_MAJOR' in line:
                     major = re.search(r'\d+', line)[0]
     except:
-        pass
+        with open("../export_source/CMakeLists.txt", "r") as cmake_file:
+            for line in cmake_file:
+                if 'set(PROJECT_VERSION_PATCH' in line:
+                    patch = re.search(r'\d+', line)[0]
+                if 'set(PROJECT_VERSION_MINOR' in line:
+                    minor = re.search(r'\d+', line)[0]
+                if 'set(PROJECT_VERSION_MAJOR' in line:
+                    major = re.search(r'\d+', line)[0]
     version = str(major) + '.' + str(minor) + '.' + str(patch)
     return version
 
