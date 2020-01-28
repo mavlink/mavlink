@@ -4,28 +4,23 @@ import re
 
 
 def get_version():
-    patch = 0
+    patch = 9
     minor = 0
     major = 1
-    try:
-        with open("CMakeLists.txt", "r") as cmake_file:
-            for line in cmake_file:
-                if 'set(PROJECT_VERSION_PATCH' in line:
-                    patch = re.search(r'\d+', line)[0]
-                if 'set(PROJECT_VERSION_MINOR' in line:
-                    minor = re.search(r'\d+', line)[0]
-                if 'set(PROJECT_VERSION_MAJOR' in line:
-                    major = re.search(r'\d+', line)[0]
-    except:
-        with open("../export_source/CMakeLists.txt", "r") as cmake_file:
-            for line in cmake_file:
-                if 'set(PROJECT_VERSION_PATCH' in line:
-                    patch = re.search(r'\d+', line)[0]
-                if 'set(PROJECT_VERSION_MINOR' in line:
-                    minor = re.search(r'\d+', line)[0]
-                if 'set(PROJECT_VERSION_MAJOR' in line:
-                    major = re.search(r'\d+', line)[0]
-    version = str(major) + '.' + str(minor) + '.' + str(patch)
+    cmake_file = "CMakeLists.txt"
+    if not os.path.exists(cmake_file):
+        cmake_file = "../export_source/CMakeLists.txt"
+        if not os.path.exists(cmake_file):
+            return str(str(major) + '.' + str(minor) + '.' + str(patch))
+    with open(cmake_file, "r") as cmake_file:
+        for line in cmake_file:
+            if 'set(PROJECT_VERSION_PATCH' in line:
+                patch = re.search(r'\d+', line)[0]
+            if 'set(PROJECT_VERSION_MINOR' in line:
+                minor = re.search(r'\d+', line)[0]
+            if 'set(PROJECT_VERSION_MAJOR' in line:
+                major = re.search(r'\d+', line)[0]
+    return str(str(major) + '.' + str(minor) + '.' + str(patch))
     return version
 
 
