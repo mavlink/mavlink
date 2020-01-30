@@ -27,7 +27,7 @@ def get_version():
 class MavlinkConan(ConanFile):
     name = "mavlink"
     version = get_version()
-    license = "Tevel"
+    license = "MIT"
     author = "Gal gal@tevel-tech.com"
     description = "micro air vehicle communication protocol"
     topics = ("mavlink", "communication")
