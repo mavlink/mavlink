@@ -1079,7 +1079,7 @@
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2" label="Accept Radius" units="m" minValue="0">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
         <param index="3" label="Pass Radius" units="m">0 to pass through the WP, if &gt; 0 radius to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.</param>
-        <param index="4" label="Yaw" units="deg">Desired yaw angle at waypoint (rotary wing). NaN for unchanged.</param>
+        <param index="4" label="Yaw" units="deg">Desired yaw angle at waypoint (rotary wing). NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
@@ -1089,7 +1089,7 @@
         <param index="1">Empty</param>
         <param index="2">Empty</param>
         <param index="3" label="Radius" units="m">Radius around waypoint. If positive loiter clockwise, else counter-clockwise</param>
-        <param index="4" label="Yaw">Desired yaw angle. NaN for unchanged.</param>
+        <param index="4" label="Yaw">Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
@@ -1099,7 +1099,7 @@
         <param index="1" label="Turns" minValue="0">Number of turns.</param>
         <param index="2">Empty</param>
         <param index="3" label="Radius" units="m">Radius around waypoint. If positive loiter clockwise, else counter-clockwise</param>
-        <param index="4">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle. NaN for unchanged.</param>
+        <param index="4">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
@@ -1109,7 +1109,7 @@
         <param index="1" label="Time" units="s" minValue="0">Loiter time.</param>
         <param index="2">Empty</param>
         <param index="3" label="Radius" units="m">Radius around waypoint. If positive loiter clockwise, else counter-clockwise.</param>
-        <param index="4">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle.  NaN for unchanged.</param>
+        <param index="4">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle.  NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
@@ -1129,7 +1129,7 @@
         <param index="1" label="Abort Alt" units="m">Minimum target altitude if landing is aborted (0 = undefined/use system default).</param>
         <param index="2" label="Land Mode" enum="PRECISION_LAND_MODE">Precision land mode.</param>
         <param index="3">Empty.</param>
-        <param index="4" label="Yaw Angle" units="deg">Desired yaw angle. NaN for unchanged.</param>
+        <param index="4" label="Yaw Angle" units="deg">Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5">Latitude.</param>
         <param index="6">Longitude.</param>
         <param index="7" units="m">Landing altitude (ground level in current frame).</param>
@@ -1139,7 +1139,7 @@
         <param index="1" label="Pitch">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
-        <param index="4" label="Yaw">Yaw angle (if magnetometer present), ignored without magnetometer. NaN for unchanged.</param>
+        <param index="4" label="Yaw">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
@@ -1262,7 +1262,7 @@
         <param index="1">Empty</param>
         <param index="2" label="Transition Heading" enum="VTOL_TRANSITION_HEADING">Front transition heading.</param>
         <param index="3">Empty</param>
-        <param index="4" label="Yaw Angle" units="deg">Yaw angle. NaN for unchanged.</param>
+        <param index="4" label="Yaw Angle" units="deg">Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude</param>
@@ -1272,7 +1272,7 @@
         <param index="1">Empty</param>
         <param index="2">Empty</param>
         <param index="3" label="Altitude">Approach altitude (with the same reference as the Altitude field). NaN if unspecified.</param>
-        <param index="4" label="Yaw" units="deg">Yaw angle. NaN for unchanged.</param>
+        <param index="4" label="Yaw" units="deg">Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude (ground level)</param>
@@ -1516,7 +1516,7 @@
         <param index="1" label="Speed" units="m/s" minValue="-1">Ground speed, less than 0 (-1) for default</param>
         <param index="2" label="Bitmask" enum="MAV_DO_REPOSITION_FLAGS">Bitmask of option flags.</param>
         <param index="3">Reserved</param>
-        <param index="4" label="Yaw">Yaw heading, NaN for unchanged. For planes indicates loiter direction (0: clockwise, 1: counter clockwise)</param>
+        <param index="4" label="Yaw">Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)</param>
         <param index="5">Latitude</param>
         <param index="6">Longitude</param>
         <param index="7">Altitude (meters)</param>
