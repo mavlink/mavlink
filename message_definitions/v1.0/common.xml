@@ -1717,8 +1717,8 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="195" name="MAV_CMD_DO_SET_ROI_LOCATION" hasLocation="true" isDestination="false">
-        <description>Sets the region of interest (ROI) to a location. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal. A gimbal is not to react to this message.</description>
-        <param index="1" label="Gimbal ID">Component ID of gimbal to address, 0 for all gimbal components. (Send command multiple times for more than one but not all gimbals.)</param>
+        <description>Sets the region of interest (ROI) to a location. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal is not to react to this message.</description>
+        <param index="1" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -1727,8 +1727,8 @@
         <param index="7">Altitude (meters)</param>
       </entry>
       <entry value="196" name="MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET" hasLocation="false" isDestination="false">
-        <description>Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal. A gimbal is not to react to this message.</description>
-        <param index="1" label="Gimbal ID">Component ID of gimbal to address, 0 for all gimbal components. (Send command multiple times for more than one but not all gimbals.)</param>
+        <description>Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message.</description>
+        <param index="1" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -1737,8 +1737,8 @@
         <param index="7" label="Yaw Offset">yaw offset from next waypoint, positive panning to the right</param>
       </entry>
       <entry value="197" name="MAV_CMD_DO_SET_ROI_NONE" hasLocation="false" isDestination="false">
-        <description>Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal. A gimbal is not to react to this message. After this command the gimbal manager should go back to manual input if available, and otherwise assume a neutral position.</description>
-        <param index="1" label="Gimbal ID">Component ID of gimbal to address, 0 for all gimbal components. (Send command multiple times for more than one but not all gimbals.)</param>
+        <description>Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message. After this command the gimbal manager should go back to manual input if available, and otherwise assume a neutral position.</description>
+        <param index="1" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -2149,7 +2149,7 @@
         <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
         <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
         <param index="5" label="Gimbal manager flags" enum="GIMBAL_MANAGER_FLAGS">Gimbal manager flags to use.</param>
-        <param index="7" label="Gimbal ID">Component ID of gimbal to address, 0 for all gimbal components. (Send command multiple times for more than one but not all gimbals.)</param>
+        <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
       </entry>
       <entry value="1001" name="MAV_CMD_DO_GIMBAL_MANAGER_TRACK_POINT" hasLocation="false" isDestination="false">
         <wip/>
@@ -2157,7 +2157,7 @@
         <description>If the gimbal manager supports visual tracking (GIMBAL_MANAGER_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking. Such a tracking gimbal manager would usually be an integrated camera/gimbal, or alternatively a companion computer connected to a camera.</description>
         <param index="1" label="Point x" minValue="0" maxValue="1">Point to track x value.</param>
         <param index="2" label="Point y" minValue="0" maxValue="1">Point to track y value.</param>
-        <param index="7" label="Gimbal ID">Component ID of gimbal to address, 0 for all gimbal components. (Send command multiple times for more than one but not all gimbals.)</param>
+        <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
       </entry>
       <entry value="1002" name="MAV_CMD_DO_GIMBAL_MANAGER_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
         <wip/>
@@ -2167,7 +2167,7 @@
         <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="3" label="Bottom right corner x" minValue="0" maxValue="1">Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="4" label="Bottom right corner y" minValue="0" maxValue="1">Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
-        <param index="7" label="Gimbal ID">Component ID of gimbal to address, 0 for all gimbal components. (Send command multiple times for more than one but not all gimbals.)</param>
+        <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
