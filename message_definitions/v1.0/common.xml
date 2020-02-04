@@ -6049,7 +6049,7 @@
     <message id="280" name="GIMBAL_MANAGER_INFORMATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Information about a high level gimbal manager</description>
+      <description>Information about a high level gimbal manager. This message should be requested by a ground station using MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="cap_flags" enum="GIMBAL_MANAGER_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
       <field type="uint8_t" name="gimbal_component">Gimbal component ID that this gimbal manager is responsible for.</field>
@@ -6063,7 +6063,7 @@
     <message id="281" name="GIMBAL_MANAGER_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Current status about a high level gimbal manager</description>
+      <description>Current status about a high level gimbal manager. This message should be broadcast at a low regular rate (e.g. 5Hz).</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags currently applied.</field>
     </message>
@@ -6083,7 +6083,7 @@
     <message id="283" name="GIMBAL_DEVICE_INFORMATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Information about a low level gimbal</description>
+      <description>Information about a low level gimbal. This message should be requested by the gimbal manager or a ground station using MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the gimbal vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the gimbal model</field>
@@ -6112,7 +6112,7 @@
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal component. The angles encoded in the quaternion are in the global frame (roll: positive is tilt to the right, pitch: positive is tilting up, yaw is turn to the right).</description>
+      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal component. The angles encoded in the quaternion are in the global frame (roll: positive is tilt to the right, pitch: positive is tilting up, yaw is turn to the right). This message should be broadcast at a low regular rate (e.g. 10Hz).</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Current gimbal flags set.</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set)</field>
