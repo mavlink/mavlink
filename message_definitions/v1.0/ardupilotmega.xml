@@ -246,6 +246,16 @@
         <param index="1" label="battery mask">Bitmask of batteries to reset. Least significant bit is for the first battery.</param>
         <param index="2" label="percentage" minValue="0" maxValue="100" increment="1">Battery percentage remaining to set.</param>
       </entry>
+      <entry value="42700" name="MAV_CMD_DEBUG_TRAP">
+        <description>Issue a trap signal to the autopilot process, presumably to enter the debugger.</description>
+        <param index="1">Magic number - set to 32451 to actually trap.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
     </enum>
     <!-- AP_Limits Enums -->
     <enum name="LIMITS_STATE">
@@ -1498,21 +1508,24 @@
     </message>
     <!-- 219 to 224 RESERVED for more GOPRO-->
     <message id="225" name="EFI_STATUS">
-      <description>EFI Status Output</description>
-      <field type="uint8_t" name="health">EFI Health status</field>
-      <field type="float" name="ecu_index">ECU Index</field>
+      <description>EFI status output</description>
+      <field type="uint8_t" name="health">EFI health status</field>
+      <field type="float" name="ecu_index">ECU index</field>
       <field type="float" name="rpm">RPM</field>
-      <field type="float" name="fuel_consumed" units="g">Fuel Consumed (grams)</field>
-      <field type="float" name="fuel_flow" units="g/min">Fuel Flow Rate (g/min)</field>
-      <field type="float" name="engine_load" units="%">Engine Load (%)</field>
-      <field type="float" name="throttle_position" units="%">Throttle Position (%)</field>
-      <field type="float" name="spark_dwell_time" units="ms">Spark Dwell Time (ms)</field>
-      <field type="float" name="barometric_pressure" units="kPa">Barometric Pressure (kPa)</field>
-      <field type="float" name="intake_manifold_pressure" units="kPa">Intake Manifold Pressure (kPa)(</field>
-      <field type="float" name="intake_manifold_temperature" units="degC">Intake Manifold Temperature (degC)</field>
-      <field type="float" name="cylinder_head_temperature" units="degC">cylinder_head_temperature (degC)</field>
-      <field type="float" name="ignition_timing" units="deg">Ignition timing for cylinder i (Crank Angle degrees)</field>
-      <field type="float" name="injection_time" units="ms">Injection time for injector i (ms)</field>
+      <field type="float" name="fuel_consumed" units="g">Fuel consumed</field>
+      <field type="float" name="fuel_flow" units="g/min">Fuel flow rate</field>
+      <field type="float" name="engine_load" units="%">Engine load</field>
+      <field type="float" name="throttle_position" units="%">Throttle position</field>
+      <field type="float" name="spark_dwell_time" units="ms">Spark dwell time</field>
+      <field type="float" name="barometric_pressure" units="kPa">Barometric pressure</field>
+      <field type="float" name="intake_manifold_pressure" units="kPa">Intake manifold pressure(</field>
+      <field type="float" name="intake_manifold_temperature" units="degC">Intake manifold temperature</field>
+      <field type="float" name="cylinder_head_temperature" units="degC">Cylinder head temperature</field>
+      <field type="float" name="ignition_timing" units="deg">Ignition timing (Crank angle degrees)</field>
+      <field type="float" name="injection_time" units="ms">Injection time</field>
+      <field type="float" name="exhaust_gas_temperature" units="degC">Exhaust gas temperature</field>
+      <field type="float" name="throttle_out" units="%">Output throttle</field>
+      <field type="float" name="pt_compensation">Pressure/temperature compensation</field>
     </message>
     <message id="226" name="RPM">
       <description>RPM sensor output.</description>
