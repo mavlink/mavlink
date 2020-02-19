@@ -3513,6 +3513,12 @@
       <entry value="2048" name="POSITION_TARGET_TYPEMASK_YAW_RATE_IGNORE">
         <description>Ignore yaw rate</description>
       </entry>
+      <entry value="4096" name="POSITION_TARGET_TYPEMASK_ROLL_IGNORE">
+        <description>Ignore roll</description>
+      </entry>
+      <entry value="8192" name="POSITION_TARGET_TYPEMASK_PITCH_IGNORE">
+        <description>Ignore pitch</description>
+      </entry>
     </enum>
     <enum name="UTM_FLIGHT_STATE">
       <description>Airborne status of UAS.</description>
@@ -4758,6 +4764,10 @@
       <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
       <field type="float" name="yaw" units="rad">yaw setpoint</field>
       <field type="float" name="yaw_rate" units="rad/s">yaw rate setpoint</field>
+      <extensions/>
+      <field type="float" name="roll" units="rad">roll setpoint</field>
+      <field type="float" name="pitch" units="rad">pitch setpoint</field>
+      <field type="uint8_t" name="hold_altitude">If hold_altitude set to true and vz set to 0, the altitude will be locked to current altitude. Otherwise normal velocity control will be applied in the D-direction.</field>
     </message>
     <message id="85" name="POSITION_TARGET_LOCAL_NED">
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED if the vehicle is being controlled this way.</description>
