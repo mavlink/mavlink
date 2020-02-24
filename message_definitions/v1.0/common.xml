@@ -15,7 +15,7 @@
         <description>SLUGS autopilot, http://slugsuav.soe.ucsc.edu</description>
       </entry>
       <entry value="3" name="MAV_AUTOPILOT_ARDUPILOTMEGA">
-        <description>ArduPilot - Plane/Copter/Rover/Sub/Tracker, http://ardupilot.org</description>
+        <description>ArduPilot - Plane/Copter/Rover/Sub/Tracker, https://ardupilot.org</description>
       </entry>
       <entry value="4" name="MAV_AUTOPILOT_OPENPILOT">
         <description>OpenPilot, http://openpilot.org</description>
@@ -835,6 +835,9 @@
       </entry>
       <entry value="268435456" name="MAV_SYS_STATUS_PREARM_CHECK">
         <description>0x10000000 pre-arm check status. Always healthy when armed</description>
+      </entry>
+      <entry value="536870912" name="MAV_SYS_STATUS_OBSTACLE_AVOIDANCE">
+        <description>0x20000000 Avoidance/collision prevention</description>
       </entry>
     </enum>
     <enum name="MAV_FRAME">
@@ -4203,6 +4206,7 @@
       <field type="uint32_t" name="v_acc" units="mm">Altitude uncertainty. Positive for up.</field>
       <field type="uint32_t" name="vel_acc" units="mm">Speed uncertainty. Positive for up.</field>
       <field type="uint32_t" name="hdg_acc" units="degE5">Heading / track uncertainty</field>
+      <field type="uint16_t" name="yaw" units="cdeg">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use 65535 if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
     </message>
     <message id="25" name="GPS_STATUS">
       <description>The positioning status, as reported by GPS. This message is intended to display status information about each satellite visible to the receiver. See message GLOBAL_POSITION for the global position estimate. This message can contain information for up to 20 satellites.</description>
@@ -5169,6 +5173,8 @@
       <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
       <field type="uint8_t" name="dgps_numch">Number of DGPS satellites</field>
       <field type="uint32_t" name="dgps_age" units="ms">Age of DGPS info</field>
+      <extensions/>
+      <field type="uint16_t" name="yaw" units="cdeg">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use 65535 if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
     </message>
     <message id="125" name="POWER_STATUS">
       <description>Power supply status</description>
