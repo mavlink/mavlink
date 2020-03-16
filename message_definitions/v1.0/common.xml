@@ -6263,9 +6263,7 @@
       <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Type of estimator that is providing the odometry.</field>
     </message>
     <message id="332" name="TRAJECTORY_REPRESENTATION_WAYPOINTS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Describe a trajectory using an array of up-to 5 waypoints in the local frame.</description>
+      <description>Describe a trajectory using an array of up-to 5 waypoints in the local frame (MAV_FRAME_LOCAL_NED).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="uint8_t" name="valid_points">Number of valid points (up-to 5 waypoints are possible)</field>
       <field type="float[5]" name="pos_x" units="m">X-coordinate of waypoint, set to NaN if not being used</field>
@@ -6282,16 +6280,14 @@
       <field type="uint16_t[5]" name="command" enum="MAV_CMD">Scheduled action for each waypoint, UINT16_MAX if not being used.</field>
     </message>
     <message id="333" name="TRAJECTORY_REPRESENTATION_BEZIER">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Describe a trajectory using an array of up-to 5 bezier points in the local frame.</description>
+      <description>Describe a trajectory using an array of up-to 5 bezier control points in the local frame (MAV_FRAME_LOCAL_NED).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
-      <field type="uint8_t" name="valid_points">Number of valid points (up-to 5 waypoints are possible)</field>
-      <field type="float[5]" name="pos_x" units="m">X-coordinate of starting bezier point, set to NaN if not being used</field>
-      <field type="float[5]" name="pos_y" units="m">Y-coordinate of starting bezier point, set to NaN if not being used</field>
-      <field type="float[5]" name="pos_z" units="m">Z-coordinate of starting bezier point, set to NaN if not being used</field>
-      <field type="float[5]" name="delta" units="s">Bezier time horizon, set to NaN if velocity/acceleration should not be incorporated</field>
-      <field type="float[5]" name="pos_yaw" units="rad">Yaw, set to NaN for unchanged</field>
+      <field type="uint8_t" name="valid_points">Number of valid control points (up-to 5 points are possible)</field>
+      <field type="float[5]" name="pos_x" units="m">X-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="pos_y" units="m">Y-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="pos_z" units="m">Z-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="delta" units="s">Bezier time horizon. Set to NaN if velocity/acceleration should not be incorporated</field>
+      <field type="float[5]" name="pos_yaw" units="rad">Yaw. Set to NaN for unchanged</field>
     </message>
     <message id="334" name="CELLULAR_STATUS">
       <wip/>
