@@ -3857,13 +3857,13 @@
       <entry value="1" name="MAV_ODID_UA_TYPE_AEROPLANE">
         <description>Aeroplane/Airplane. Fixed wing.</description>
       </entry>
-      <entry value="2" name="MAV_ODID_UA_TYPE_ROTORCRAFT">
-        <description>Rotorcraft (including Multirotor).</description>
+      <entry value="2" name="MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR">
+        <description>Helicopter or multirotor.</description>
       </entry>
       <entry value="3" name="MAV_ODID_UA_TYPE_GYROPLANE">
         <description>Gyroplane.</description>
       </entry>
-      <entry value="4" name="MAV_ODID_UA_TYPE_VTOL">
+      <entry value="4" name="MAV_ODID_UA_TYPE_HYBRID_LIFT">
         <description>VTOL (Vertical Take-Off and Landing). Fixed wing aircraft that can take off vertically.</description>
       </entry>
       <entry value="5" name="MAV_ODID_UA_TYPE_ORNITHOPTER">
@@ -3885,7 +3885,7 @@
         <description>Airship. E.g. a blimp.</description>
       </entry>
       <entry value="11" name="MAV_ODID_UA_TYPE_FREE_FALL_PARACHUTE">
-        <description>Free Fall/Parachute.</description>
+        <description>Free Fall/Parachute (unpowered).</description>
       </entry>
       <entry value="12" name="MAV_ODID_UA_TYPE_ROCKET">
         <description>Rocket.</description>
@@ -6473,7 +6473,7 @@
     <message id="12900" name="OPEN_DRONE_ID_BASIC_ID">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c</description>
+      <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. See also the ASTM Remote ID standard at https://www.astm.org/Standards/F3411.htm. The usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
       <field type="uint8_t" name="id_type" enum="MAV_ODID_ID_TYPE">Indicates the format for the uas_id field of this message.</field>
       <field type="uint8_t" name="ua_type" enum="MAV_ODID_UA_TYPE">Indicates the type of UA (Unmanned Aircraft).</field>
       <field type="uint8_t[20]" name="uas_id">UAS (Unmanned Aircraft System) ID following the format specified by id_type. Shall be filled with nulls in the unused portion of the field.</field>
