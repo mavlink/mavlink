@@ -1821,7 +1821,7 @@
         <param index="1" label="Distance" units="m" minValue="0">Camera trigger distance. 0 to stop triggering.</param>
         <param index="2" label="Shutter" units="ms" minValue="-1" increment="1">Camera shutter integration time. -1 or 0 to ignore</param>
         <param index="3" label="Trigger" minValue="0" maxValue="1" increment="1">Trigger camera once immediately. (0 = no trigger, 1 = trigger)</param>
-        <param index="4" label="Sequence Number" minValue="1" increment="1">Capture sequence number starting from 1 (use 0 to ignore it). This is to: (1) Identify this command and prevent double captures when the command is re-transmitted (2) Correlate CAMERA_IMAGE_CAPTURED events (and underlying photos taken) with this command (see CAMERA_IMAGE_CAPTURED::sequence). Note; all CAMERA_IMAGE_CAPTURED corresponding with this command will share this sequence number</param>
+        <param index="4" label="Sequence Number" minValue="0" increment="1">Capture sequence number starting from 1  (0 indicates sequence number is not supported/used). This is to: (1) Identify this command and prevent double captures when the command is re-transmitted (2) Correlate CAMERA_IMAGE_CAPTURED events (and underlying photos taken) with this command (see CAMERA_IMAGE_CAPTURED::sequence). Note; all CAMERA_IMAGE_CAPTURED corresponding with this command will share this sequence number</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
@@ -2175,7 +2175,7 @@
         <param index="1">Reserved (Set to 0)</param>
         <param index="2" label="Interval" units="s" minValue="0">Desired elapsed time between two consecutive pictures (in seconds). Minimum values depend on hardware (typically greater than 2 seconds).</param>
         <param index="3" label="Capture Count" minValue="0" increment="1">Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE.</param>
-        <param index="4" label="Sequence Number" minValue="1" increment="1">Capture sequence number starting from 1 (use 0 to ignore it). This is to: (1) Identify this command and prevent double captures when the command is re-transmitted (2) Correlate CAMERA_IMAGE_CAPTURED events (and underlying photos taken) with this command (see CAMERA_IMAGE_CAPTURED::sequence). Note; all CAMERA_IMAGE_CAPTURED corresponding with this command will share this sequence number</param>
+        <param index="4" label="Sequence Number" minValue="0" increment="1">Capture sequence number starting from 1  (0 indicates sequence number is not supported/used). This is to: (1) Identify this command and prevent double captures when the command is re-transmitted (2) Correlate CAMERA_IMAGE_CAPTURED events (and underlying photos taken) with this command (see CAMERA_IMAGE_CAPTURED::sequence). Note; all CAMERA_IMAGE_CAPTURED corresponding with this command will share this sequence number</param>
         <param index="5">Reserved (all remaining params)</param>
       </entry>
       <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE" hasLocation="false" isDestination="false">
@@ -2186,8 +2186,8 @@
       <entry value="2002" name="MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Re-request a CAMERA_IMAGE_CAPTURE message. Use NaN for reserved values.</description>
-        <param index="1" label="Number" minValue="0" increment="1">Sequence number for missing CAMERA_IMAGE_CAPTURE messages</param>
+        <description>Re-request all CAMERA_IMAGE_CAPTURED messages that have the specified sequence number. Use NaN for reserved values.</description>
+        <param index="1" label="Sequence Number" minValue="0" increment="1">Sequence number for missing CAMERA_IMAGE_CAPTURED messages</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="2003" name="MAV_CMD_DO_TRIGGER_CONTROL" hasLocation="false" isDestination="false">
@@ -5972,7 +5972,7 @@
       <field type="int32_t" name="image_index">Zero based index of this image (image count since armed -1)</field>
       <field type="int8_t" name="capture_result">Boolean indicating success (1) or failure (0) while capturing this image.</field>
       <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
-      <field type="int32_t" name="sequence">If non-zero, sequence number of the MAV_CMD_IMAGE_START_CAPTURE or MAV_CMD_DO_SET_CAM_TRIGG_DIST command this image is a response to.</field>
+      <field type="int32_t" name="sequence">Sequence number of the MAV_CMD_IMAGE_START_CAPTURE or MAV_CMD_DO_SET_CAM_TRIGG_DIST command this image is a response to. 0 if the sequence number is not known or supported.</field>
     </message>
     <message id="264" name="FLIGHT_INFORMATION">
       <wip/>
