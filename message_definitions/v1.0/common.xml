@@ -6485,27 +6485,27 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Location message. The float data types are 32-bit IEEE 754. The Location message provides the location, altitude, direction and speed of the aircraft.</description>
-      <field type="uint8_t" name="status" enum="MAV_ODID_STATUS">Indicates whether the Unmanned Aircraft is on the ground or in the air.</field>
-      <field type="uint16_t" name="direction" units="cdeg">Direction over ground (not heading, but direction of movement) in degrees * 100: 0.0 - 359.99 degrees. If unknown: 361.00 degrees.</field>
-      <field type="uint16_t" name="speed_horizontal" units="cm/s">Ground speed. Positive only. If unknown: 255.00 m/s. If speed is larger than 254.25 m/s, use 254.25 m/s.</field>
-      <field type="int16_t" name="speed_vertical" units="cm/s">The vertical speed. Up is positive. If unknown: 63.00 m/s. If speed is larger than 62.00 m/s, use 62.00 m/s.</field>
-      <field type="int32_t" name="latitude" units="degE7">Current latitude of the UA (Unmanned Aircraft). If unknown: 0 deg (both Lat/Lon).</field>
-      <field type="int32_t" name="longitude" units="degE7">Current longitude of the UA (Unmanned Aircraft). If unknown: 0 deg (both Lat/Lon).</field>
+      <field type="uint8_t" name="status" enum="MAV_ODID_STATUS">Indicates whether the unmanned aircraft is on the ground or in the air.</field>
+      <field type="uint16_t" name="direction" units="cdeg">Direction over ground (not heading, but direction of movement) measured clockwise from true North: 0 - 35999 centi-degrees. If unknown: 36100 centi-degrees.</field>
+      <field type="uint16_t" name="speed_horizontal" units="cm/s">Ground speed. Positive only. If unknown: 25500 cm/s. If speed is larger than 25425 cm/s, use 25425 cm/s.</field>
+      <field type="int16_t" name="speed_vertical" units="cm/s">The vertical speed. Up is positive. If unknown: 6300 cm/s. If speed is larger than 6200 cm/s, use 6200 cm/s. If lower than -6200 cm/s, use -6200 cm/s.</field>
+      <field type="int32_t" name="latitude" units="degE7">Current latitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).</field>
+      <field type="int32_t" name="longitude" units="degE7">Current longitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).</field>
       <field type="float" name="altitude_barometric" units="m">The altitude calculated from the barometric pressue. Reference is against 29.92inHg or 1013.2mb. If unknown: -1000 m.</field>
       <field type="float" name="altitude_geodetic" units="m">The geodetic altitude as defined by WGS84. If unknown: -1000 m.</field>
       <field type="uint8_t" name="height_reference" enum="MAV_ODID_HEIGHT_REF">Indicates the reference point for the height field.</field>
-      <field type="float" name="height" units="m">The current height of the UA (Unmanned Aircraft) above the take-off location or the ground as indicated by height_reference. If unknown: -1000 m.</field>
+      <field type="float" name="height" units="m">The current height of the unmanned aircraft above the take-off location or the ground as indicated by height_reference. If unknown: -1000 m.</field>
       <field type="uint8_t" name="horizontal_accuracy" enum="MAV_ODID_HOR_ACC">The accuracy of the horizontal position.</field>
       <field type="uint8_t" name="vertical_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the vertical position.</field>
       <field type="uint8_t" name="barometer_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the barometric altitude.</field>
       <field type="uint8_t" name="speed_accuracy" enum="MAV_ODID_SPEED_ACC">The accuracy of the horizontal and vertical speed.</field>
-      <field type="float" name="timestamp" units="s">Seconds after the full hour. Typically the GPS outputs a time of week value in milliseconds. That value can be easily converted for this field using ((float) (time_week_ms % (60*60*1000))) / 1000.</field>
+      <field type="float" name="timestamp" units="s">Seconds after the full hour with reference to UTC time. Typically the GPS outputs a time-of-week value in milliseconds. First convert that to UTC and then convert for this field using ((float) (time_week_ms % (60*60*1000))) / 1000.</field>
       <field type="uint8_t" name="timestamp_accuracy" enum="MAV_ODID_TIME_ACC">The accuracy of the timestamps.</field>
     </message>
     <message id="12902" name="OPEN_DRONE_ID_AUTHENTICATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 4, PageCount,Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
+      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 4, PageCount, Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
       <field type="uint8_t" name="authentication_type" enum="MAV_ODID_AUTH_TYPE">Indicates the type of authentication.</field>
       <field type="uint8_t" name="data_page">Allowed range is 0 - 4.</field>
       <field type="uint8_t" name="page_count">This field is only present for page 0. Allowed range is 0 - 5.</field>
@@ -6525,8 +6525,8 @@
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the operator location and possible aircraft group information.</description>
       <field type="uint8_t" name="flags" enum="MAV_ODID_LOCATION_SRC">Specifies the location source for the operator location.</field>
-      <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 deg (both Lat/Lon).</field>
-      <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 deg (both Lat/Lon).</field>
+      <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
+      <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="uint16_t" name="area_count">Number of aircraft in the area, group or formation (default 1).</field>
       <field type="uint16_t" name="area_radius" units="m">Radius of the cylindrical area of the group or formation (default 0).</field>
       <field type="float" name="area_ceiling" units="m">Area Operations Ceiling relative to WGS84. If unknown: -1000 m.</field>
