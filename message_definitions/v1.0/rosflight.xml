@@ -16,6 +16,7 @@
             <entry value="9" name="ROSFLIGHT_CMD_REBOOT_TO_BOOTLOADER"/>
             <entry value="10" name="ROSFLIGHT_CMD_SEND_VERSION"/>
             <entry value="11" name="ROSFLIGHT_CMD_RESET_ORIGIN"/>
+            <entry value="12" name="ROSFLIGHT_CMD_SEND_ALL_CONFIG_INFOS"/>
         </enum>
         <enum name="ROSFLIGHT_AUX_CMD_TYPE">
           <entry value="0" name="DISABLED"/>
@@ -111,6 +112,7 @@
             <field type="float" name="zmag">Magnetic field along Z axis</field>
         </message>
         <message id="183" name="SMALL_BARO">
+		<!-- TODO -->
             <field type="float" name="altitude">Calculated Altitude (m)</field>
             <field type="float" name="pressure">Measured Differential Pressure (Pa)</field>
             <field type="float" name="temperature">Measured Temperature (K)</field>
@@ -261,6 +263,33 @@
 	<message id="199" name="ROSFLIGHT_BATTERY_STATUS">
 		<field type="float" name="battery_voltage"/> <!-- V -->
 		<field type="float" name="battery_current"/> <!-- A -->
+	</message>
+	<!-- request the current configuration for a device. The firmware returns a ROSFLIGHT_CONFIG message -->
+	<message id="200" name="ROSFLIGHT_CONFIG_REQUEST">
+		<field type="uint8_t" name="device"/>
+	</message>
+	<!-- Used for both setting a value from rosflight_io, and sending the current value from the firmware -->
+	<message id="201" name="ROSFLIGHT_CONFIG">
+		<field type="uint8_t" name="device"/>
+		<field type="uint8_t" name="config"/>
+	</message>
+	<message id="202" name="ROSFLIGHT_DEVICE_INFO">
+		<field type="uint8_t" name="device"/>
+		<field type="uint8_t" name="max_value"/>
+		<!-- By convention, the minimum value and the default are 0 -->
+		<field type="uint8_t[20]" name="name"/>
+		<field type="uint8_t" name="num_devices"/>
+	</message>
+	<message id="203" name="ROSFLIGHT_CONFIG_INFO">
+		<field type="uint8_t" name="device"/>
+		<field type="uint8_t" name="config"/>
+		<field type="uint8_t[20]" name="name"/>
+	</message>
+	<message id="204" name="ROSFLIGHT_CONFIG_STATUS">
+		<field type="uint8_t" name="device"/>
+		<field type="uint8_t" name="success"/> <!-- boolean -->
+		<field type="uint8_t" name="reboot_required"/> <!-- boolean -->
+		<field type="uint8_t[50]" name="error_message"/>
 	</message>
     </messages>
 </mavlink>
