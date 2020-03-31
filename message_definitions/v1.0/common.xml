@@ -190,7 +190,7 @@
         <description>official stable release</description>
       </entry>
     </enum>
-    <enum name="HL_FAILURE_FLAG">
+    <enum name="HL_FAILURE_FLAG" bitmask="true">
       <description>Flags to report failure cases over the high latency telemtry.</description>
       <entry value="1" name="HL_FAILURE_FLAG_GPS">
         <description>GPS failure.</description>
@@ -235,7 +235,7 @@
         <description>Mission failure.</description>
       </entry>
     </enum>
-    <enum name="MAV_MODE_FLAG">
+    <enum name="MAV_MODE_FLAG" bitmask="true">
       <description>These flags encode the MAV mode.</description>
       <entry value="128" name="MAV_MODE_FLAG_SAFETY_ARMED">
         <description>0b10000000 MAV safety set to armed. Motors are enabled / running / can start. Ready to fly. Additional note: this flag is to be ignore when sent in the command MAV_CMD_DO_SET_MODE and MAV_CMD_COMPONENT_ARM_DISARM shall be used instead. The flag can still be used to report the armed state.</description>
@@ -262,7 +262,7 @@
         <description>0b00000001 Reserved for future use.</description>
       </entry>
     </enum>
-    <enum name="MAV_MODE_FLAG_DECODE_POSITION">
+    <enum name="MAV_MODE_FLAG_DECODE_POSITION" bitmask="true">
       <description>These values encode the bit positions of the decode position. These values can be used to read the value of a flag bit by combining the base_mode variable with AND with the flag position value. The result will be either 0 or 1, depending on if the flag is set or not.</description>
       <entry value="128" name="MAV_MODE_FLAG_DECODE_POSITION_SAFETY">
         <description>First bit:  10000000</description>
@@ -747,7 +747,7 @@
         <description>Component for handling system messages (e.g. to ARM, takeoff, etc.).</description>
       </entry>
     </enum>
-    <enum name="MAV_SYS_STATUS_SENSOR">
+    <enum name="MAV_SYS_STATUS_SENSOR" bitmask="true">
       <description>These encode the sensors whose status is sent as part of the SYS_STATUS message.</description>
       <entry value="1" name="MAV_SYS_STATUS_SENSOR_3D_GYRO">
         <description>0x01 3D gyro</description>
@@ -1004,7 +1004,7 @@
         <description>Gimbal tracks system with specified system ID</description>
       </entry>
     </enum>
-    <enum name="GIMBAL_DEVICE_CAP_FLAGS">
+    <enum name="GIMBAL_DEVICE_CAP_FLAGS" bitmask="true">
       <description>Gimbal device (low level) capability flags (bitmap)</description>
       <entry value="1" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT">
         <description>Gimbal device supports a retracted position</description>
@@ -1043,7 +1043,7 @@
         <description>Gimbal device supports yawing/panning infinetely (e.g. using slip disk).</description>
       </entry>
     </enum>
-    <enum name="GIMBAL_MANAGER_CAP_FLAGS">
+    <enum name="GIMBAL_MANAGER_CAP_FLAGS" bitmask="true">
       <description>Gimbal manager high level capability flags (bitmap). The first 16 bits are identical to the GIMBAL_DEVICE_CAP_FLAGS which are identical with GIMBAL_DEVICE_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
       <entry value="1" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_RETRACT">
         <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT.</description>
@@ -1103,7 +1103,7 @@
         <description>Gimbal manager supports overriding when pointing to a location or tracking.</description>
       </entry>
     </enum>
-    <enum name="GIMBAL_DEVICE_FLAGS">
+    <enum name="GIMBAL_DEVICE_FLAGS" bitmask="true">
       <description>Flags for gimbal device (lower level) operation.</description>
       <entry value="1" name="GIMBAL_DEVICE_FLAGS_RETRACT">
         <description>Set to retracted safe position (no stabilization), takes presedence over all other flags.</description>
@@ -1121,7 +1121,7 @@
         <description>Lock yaw angle to absolute angle relative to North (not relative to drone). If this flag is set, the quaternion is in the Earth frame with the x-axis pointing North (yaw absolute). If this flag is not set, the quaternion frame is in the Earth frame rotated so that the x-axis is pointing forward (yaw relative to vehicle).</description>
       </entry>
     </enum>
-    <enum name="GIMBAL_MANAGER_FLAGS">
+    <enum name="GIMBAL_MANAGER_FLAGS" bitmask="true">
       <description>Flags for high level gimbal manager operation The first 16 bytes are identical to the GIMBAL_DEVICE_FLAGS.</description>
       <entry value="1" name="GIMBAL_MANAGER_FLAGS_RETRACT">
         <description>Based on GIMBAL_DEVICE_FLAGS_RETRACT</description>
@@ -1147,8 +1147,11 @@
       <entry value="4194304" name="GIMBAL_MANAGER_FLAGS_OVERRIDE">
         <description>Completely override pointing to a location or tracking. If this flag is set, the quaternion is (as usual) according to GIMBAL_MANAGER_FLAGS_YAW_LOCK.</description>
       </entry>
+      <entry value="8388608" name="GIMBAL_MANAGER_FLAGS_NONE">
+        <description>This flag can be set to give up control previously set using MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE. This flag must not be combined with other flags.</description>
+      </entry>
     </enum>
-    <enum name="GIMBAL_DEVICE_ERROR_FLAGS">
+    <enum name="GIMBAL_DEVICE_ERROR_FLAGS" bitmask="true">
       <description>Gimbal device (low level) error flags (bitmap, 0 means no error)</description>
       <entry value="1" name="GIMBAL_DEVICE_ERROR_FLAGS_AT_ROLL_LIMIT">
         <description>Gimbal device is limited by hardware roll limit.</description>
@@ -2824,7 +2827,7 @@
         <description>Useful non-operational messages that can assist in debugging. These should not occur during normal operation.</description>
       </entry>
     </enum>
-    <enum name="MAV_POWER_STATUS">
+    <enum name="MAV_POWER_STATUS" bitmask="true">
       <description>Power supply status flags (bitmask)</description>
       <entry value="1" name="MAV_POWER_STATUS_BRICK_VALID">
         <description>main brick power supply valid</description>
@@ -2893,7 +2896,7 @@
         <description>SERIAL9</description>
       </entry>
     </enum>
-    <enum name="SERIAL_CONTROL_FLAG">
+    <enum name="SERIAL_CONTROL_FLAG" bitmask="true">
       <description>SERIAL_CONTROL flags (bitmask)</description>
       <entry value="1" name="SERIAL_CONTROL_FLAG_REPLY">
         <description>Set if this is a reply</description>
@@ -3058,7 +3061,7 @@
         <description>Custom orientation</description>
       </entry>
     </enum>
-    <enum name="MAV_PROTOCOL_CAPABILITY">
+    <enum name="MAV_PROTOCOL_CAPABILITY" bitmask="true">
       <description>Bitmask of (optional) autopilot capabilities (64 bit). If a bit is set, the autopilot supports this capability.</description>
       <entry value="1" name="MAV_PROTOCOL_CAPABILITY_MISSION_FLOAT">
         <description>Autopilot supports MISSION float message type.</description>
@@ -3220,7 +3223,7 @@
         <description>Battery is charging.</description>
       </entry>
     </enum>
-    <enum name="MAV_SMART_BATTERY_FAULT">
+    <enum name="MAV_SMART_BATTERY_FAULT" bitmask="true">
       <description>Smart battery supply status/fault flags (bitmask) for health indication.</description>
       <entry value="1" name="MAV_SMART_BATTERY_FAULT_DEEP_DISCHARGE">
         <description>Battery has deep discharged.</description>
@@ -3309,7 +3312,7 @@
       <entry value="18" name="ADSB_EMITTER_TYPE_SERVICE_SURFACE"/>
       <entry value="19" name="ADSB_EMITTER_TYPE_POINT_OBSTACLE"/>
     </enum>
-    <enum name="ADSB_FLAGS">
+    <enum name="ADSB_FLAGS" bitmask="true">
       <description>These flags indicate status such as data validity of each data source. Set = data valid</description>
       <entry value="1" name="ADSB_FLAGS_VALID_COORDS"/>
       <entry value="2" name="ADSB_FLAGS_VALID_ALTITUDE"/>
@@ -3322,14 +3325,14 @@
       <entry value="256" name="ADSB_FLAGS_BARO_VALID"/>
       <entry value="32768" name="ADSB_FLAGS_SOURCE_UAT"/>
     </enum>
-    <enum name="MAV_DO_REPOSITION_FLAGS">
+    <enum name="MAV_DO_REPOSITION_FLAGS" bitmask="true">
       <description>Bitmap of options for the MAV_CMD_DO_REPOSITION</description>
       <entry value="1" name="MAV_DO_REPOSITION_FLAGS_CHANGE_MODE">
         <description>The aircraft should immediately transition into guided. This should not be set for follow me applications</description>
       </entry>
     </enum>
     <!-- ESTIMATOR_STATUS_FLAGS - these values should be bit-and with the messages flags field to know if flag has been set -->
-    <enum name="ESTIMATOR_STATUS_FLAGS">
+    <enum name="ESTIMATOR_STATUS_FLAGS" bitmask="true">
       <description>Flags in EKF_STATUS message</description>
       <entry value="1" name="ESTIMATOR_ATTITUDE">
         <description>True if the attitude estimate is good</description>
@@ -3396,7 +3399,7 @@
       </entry>
     </enum>
     <!-- GPS_INPUT ignore flags enum -->
-    <enum name="GPS_INPUT_IGNORE_FLAGS">
+    <enum name="GPS_INPUT_IGNORE_FLAGS" bitmask="true">
       <entry value="1" name="GPS_INPUT_IGNORE_FLAG_ALT">
         <description>ignore altitude field</description>
       </entry>
@@ -3539,7 +3542,7 @@
         <description>Use the current heading when reaching takeoff altitude (potentially facing the wind when weather-vaning is active).</description>
       </entry>
     </enum>
-    <enum name="CAMERA_CAP_FLAGS">
+    <enum name="CAMERA_CAP_FLAGS" bitmask="true">
       <description>Camera capability flags (Bitmap)</description>
       <entry value="1" name="CAMERA_CAP_FLAGS_CAPTURE_VIDEO">
         <description>Camera is able to record video</description>
@@ -3569,7 +3572,7 @@
         <description>Camera has video streaming capabilities (use MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION for video streaming info)</description>
       </entry>
     </enum>
-    <enum name="VIDEO_STREAM_STATUS_FLAGS">
+    <enum name="VIDEO_STREAM_STATUS_FLAGS" bitmask="true">
       <description>Stream status flags (Bitmap)</description>
       <entry value="1" name="VIDEO_STREAM_STATUS_FLAGS_RUNNING">
         <description>Stream is active (running)</description>
@@ -3679,7 +3682,7 @@
         <description>Spektrum DSMX</description>
       </entry>
     </enum>
-    <enum name="POSITION_TARGET_TYPEMASK">
+    <enum name="POSITION_TARGET_TYPEMASK" bitmask="true">
       <description>Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 9 is set the floats afx afy afz should be interpreted as force instead of acceleration.</description>
       <entry value="1" name="POSITION_TARGET_TYPEMASK_X_IGNORE">
         <description>Ignore position x</description>
@@ -3736,7 +3739,7 @@
         <description>UAS has no active controls.</description>
       </entry>
     </enum>
-    <enum name="UTM_DATA_AVAIL_FLAGS">
+    <enum name="UTM_DATA_AVAIL_FLAGS" bitmask="true">
       <description>Flags for the global position report.</description>
       <entry value="1" name="UTM_DATA_AVAIL_FLAGS_TIME_VALID">
         <description>The field time contains valid data.</description>
@@ -3771,7 +3774,7 @@
       <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
       <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
     </enum>
-    <enum name="CELLULAR_NETWORK_STATUS_FLAG">
+    <enum name="CELLULAR_NETWORK_STATUS_FLAG" bitmask="true">
       <description>These flags encode the cellular network status</description>
       <entry value="1" name="CELLULAR_NETWORK_STATUS_FLAG_ROAMING">
         <description>Roaming is active</description>
@@ -4097,7 +4100,7 @@
         <description>Format is Modern Music Markup Language (MML): https://en.wikipedia.org/wiki/Music_Macro_Language#Modern_MML.</description>
       </entry>
     </enum>
-    <enum name="COMPONENT_CAP_FLAGS">
+    <enum name="COMPONENT_CAP_FLAGS" bitmask="true">
       <description>Component capability flags (Bitmap)</description>
       <entry value="1" name="COMPONENT_CAP_FLAGS_PARAM">
         <description>Component has parameters, and supports the parameter protocol (PARAM messages).</description>
@@ -4251,7 +4254,7 @@
         <description>Not available (default).</description>
       </entry>
     </enum>
-    <enum name="AIS_FLAGS">
+    <enum name="AIS_FLAGS" bitmask="true">
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>These flags are used in the AIS_VESSEL.fields bitmask to indicate validity of data in the other message fields. When set, the data is valid.</description>
       <entry value="1" name="AIS_FLAGS_POSITION_ACCURACY">
@@ -6483,27 +6486,27 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Location message. The float data types are 32-bit IEEE 754. The Location message provides the location, altitude, direction and speed of the aircraft.</description>
-      <field type="uint8_t" name="status" enum="MAV_ODID_STATUS">Indicates whether the Unmanned Aircraft is on the ground or in the air.</field>
-      <field type="uint16_t" name="direction" units="cdeg">Direction over ground (not heading, but direction of movement) in degrees * 100: 0.0 - 359.99 degrees. If unknown: 361.00 degrees.</field>
-      <field type="uint16_t" name="speed_horizontal" units="cm/s">Ground speed. Positive only. If unknown: 255.00 m/s. If speed is larger than 254.25 m/s, use 254.25 m/s.</field>
-      <field type="int16_t" name="speed_vertical" units="cm/s">The vertical speed. Up is positive. If unknown: 63.00 m/s. If speed is larger than 62.00 m/s, use 62.00 m/s.</field>
-      <field type="int32_t" name="latitude" units="degE7">Current latitude of the UA (Unmanned Aircraft). If unknown: 0 deg (both Lat/Lon).</field>
-      <field type="int32_t" name="longitude" units="degE7">Current longitude of the UA (Unmanned Aircraft). If unknown: 0 deg (both Lat/Lon).</field>
+      <field type="uint8_t" name="status" enum="MAV_ODID_STATUS">Indicates whether the unmanned aircraft is on the ground or in the air.</field>
+      <field type="uint16_t" name="direction" units="cdeg">Direction over ground (not heading, but direction of movement) measured clockwise from true North: 0 - 35999 centi-degrees. If unknown: 36100 centi-degrees.</field>
+      <field type="uint16_t" name="speed_horizontal" units="cm/s">Ground speed. Positive only. If unknown: 25500 cm/s. If speed is larger than 25425 cm/s, use 25425 cm/s.</field>
+      <field type="int16_t" name="speed_vertical" units="cm/s">The vertical speed. Up is positive. If unknown: 6300 cm/s. If speed is larger than 6200 cm/s, use 6200 cm/s. If lower than -6200 cm/s, use -6200 cm/s.</field>
+      <field type="int32_t" name="latitude" units="degE7">Current latitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).</field>
+      <field type="int32_t" name="longitude" units="degE7">Current longitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).</field>
       <field type="float" name="altitude_barometric" units="m">The altitude calculated from the barometric pressue. Reference is against 29.92inHg or 1013.2mb. If unknown: -1000 m.</field>
       <field type="float" name="altitude_geodetic" units="m">The geodetic altitude as defined by WGS84. If unknown: -1000 m.</field>
       <field type="uint8_t" name="height_reference" enum="MAV_ODID_HEIGHT_REF">Indicates the reference point for the height field.</field>
-      <field type="float" name="height" units="m">The current height of the UA (Unmanned Aircraft) above the take-off location or the ground as indicated by height_reference. If unknown: -1000 m.</field>
+      <field type="float" name="height" units="m">The current height of the unmanned aircraft above the take-off location or the ground as indicated by height_reference. If unknown: -1000 m.</field>
       <field type="uint8_t" name="horizontal_accuracy" enum="MAV_ODID_HOR_ACC">The accuracy of the horizontal position.</field>
       <field type="uint8_t" name="vertical_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the vertical position.</field>
       <field type="uint8_t" name="barometer_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the barometric altitude.</field>
       <field type="uint8_t" name="speed_accuracy" enum="MAV_ODID_SPEED_ACC">The accuracy of the horizontal and vertical speed.</field>
-      <field type="float" name="timestamp" units="s">Seconds after the full hour. Typically the GPS outputs a time of week value in milliseconds. That value can be easily converted for this field using ((float) (time_week_ms % (60*60*1000))) / 1000.</field>
+      <field type="float" name="timestamp" units="s">Seconds after the full hour with reference to UTC time. Typically the GPS outputs a time-of-week value in milliseconds. First convert that to UTC and then convert for this field using ((float) (time_week_ms % (60*60*1000))) / 1000.</field>
       <field type="uint8_t" name="timestamp_accuracy" enum="MAV_ODID_TIME_ACC">The accuracy of the timestamps.</field>
     </message>
     <message id="12902" name="OPEN_DRONE_ID_AUTHENTICATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 4, PageCount,Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
+      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 4, PageCount, Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
       <field type="uint8_t" name="authentication_type" enum="MAV_ODID_AUTH_TYPE">Indicates the type of authentication.</field>
       <field type="uint8_t" name="data_page">Allowed range is 0 - 4.</field>
       <field type="uint8_t" name="page_count">This field is only present for page 0. Allowed range is 0 - 5.</field>
@@ -6523,8 +6526,8 @@
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the operator location and possible aircraft group information.</description>
       <field type="uint8_t" name="flags" enum="MAV_ODID_LOCATION_SRC">Specifies the location source for the operator location.</field>
-      <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 deg (both Lat/Lon).</field>
-      <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 deg (both Lat/Lon).</field>
+      <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
+      <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="uint16_t" name="area_count">Number of aircraft in the area, group or formation (default 1).</field>
       <field type="uint16_t" name="area_radius" units="m">Radius of the cylindrical area of the group or formation (default 0).</field>
       <field type="float" name="area_ceiling" units="m">Area Operations Ceiling relative to WGS84. If unknown: -1000 m.</field>
