@@ -1,7 +1,7 @@
 project (mavlink)
 
 if (NOT DEFINED MAVLINK_SOURCE_DIR)
-    set(MAVLINK_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+    set(MAVLINK_SOURCE_DIR ${PROJECT_SOURCE_DIR})
 endif ()
 
 # settings
