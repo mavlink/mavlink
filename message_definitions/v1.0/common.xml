@@ -2039,6 +2039,14 @@
         <param index="6">Reserved</param>
         <param index="7">Reserved</param>
       </entry>
+      <entry value="420" name="MAV_CMD_INJECT_FAILURE">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Inject artificial failure for testing purposes. Note that autopilots should implement an additional protection before accepting this command such as a specific param setting.</description>
+        <param index="1" name="Failure unit" enum="FAILURE_UNIT">The unit which is affected by the failure.</param>
+        <param index="2" name="Failure type" enum="FAILURE_TYPE">The type how the failure manifests itself.</param>
+        <param index="3" name="Instance">Instance affected by failure (0 to signal all).</param>
+      </entry>
       <entry value="500" name="MAV_CMD_START_RX_PAIR" hasLocation="false" isDestination="false">
         <description>Starts receiver pairing.</description>
         <param index="1" label="Spektrum">0:Spektrum.</param>
@@ -4284,6 +4292,52 @@
       </entry>
       <entry value="2048" name="AIS_FLAGS_VALID_CALLSIGN"/>
       <entry value="4096" name="AIS_FLAGS_VALID_NAME"/>
+    </enum>
+    <enum name="FAILURE_UNIT" bitmask="true">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>List of possible units where failures can be injected.</description>
+      <entry value="0" name="FAILURE_UNIT_SENSOR_GYRO"/>
+      <entry value="1" name="FAILURE_UNIT_SENSOR_ACCEL"/>
+      <entry value="2" name="FAILURE_UNIT_SENSOR_MAG"/>
+      <entry value="3" name="FAILURE_UNIT_SENSOR_BARO"/>
+      <entry value="4" name="FAILURE_UNIT_SENSOR_GPS"/>
+      <entry value="5" name="FAILURE_UNIT_SENSOR_OPTICAL_FLOW"/>
+      <entry value="6" name="FAILURE_UNIT_SENSOR_VIO"/>
+      <entry value="7" name="FAILURE_UNIT_SENSOR_DISTANCE_SENSOR"/>
+      <entry value="100" name="FAILURE_UNIT_SYSTEM_BATTERY"/>
+      <entry value="101" name="FAILURE_UNIT_SYSTEM_MOTOR"/>
+      <entry value="102" name="FAILURE_UNIT_SYSTEM_SERVO"/>
+      <entry value="103" name="FAILURE_UNIT_SYSTEM_AVOIDANCE"/>
+      <entry value="104" name="FAILURE_UNIT_SYSTEM_RC_SIGNAL"/>
+      <entry value="105" name="FAILURE_UNIT_SYSTEM_MAVLINK_SIGNAL"/>
+    </enum>
+    <enum name="FAILURE_TYPE" bitmask="true">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>List of possible failure type to inject.</description>
+      <entry value="0" name="FAILURE_TYPE_OK">
+        <description>No failure injected, used to reset a previous failure.</description>
+      </entry>
+      <entry value="1" name="FAILURE_TYPE_OFF">
+        <description>Sets unit off, so completely non-responsive.</description>
+      </entry>
+      <entry value="2" name="FAILURE_TYPE_STUCK">
+        <description>Unit is stuck e.g. keeps reporting the same value.</description>
+      </entry>
+      <entry value="3" name="FAILURE_TYPE_GARBAGE">
+        <description>Unit is reporting complete garbage.</description>
+      </entry>
+      <entry value="4" name="FAILURE_TYPE_WRONG">
+        <description>Unit is consistently wrong.</description>
+      </entry>
+      <entry value="5" name="FAILURE_TYPE_SLOW">
+        <description>Unit is slow, so e.g. reporting at slower than expected rate.</description>
+      </entry>
+      <entry value="6" name="FAILURE_TYPE_DELAYED">
+        <description>Data of unit is delayed in time.</description>
+      </entry>
+      <entry value="7" name="FAILURE_TYPE_INTERMITTENT">
+        <description>Unit is sometimes working, sometimes not.</description>
+      </entry>
     </enum>
   </enums>
   <messages>
