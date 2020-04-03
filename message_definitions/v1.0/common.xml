@@ -1279,7 +1279,7 @@
         <param index="1" label="Turns" minValue="0">Number of turns.</param>
         <param index="2">Empty</param>
         <param index="3" label="Radius" units="m">Radius around waypoint. If positive loiter clockwise, else counter-clockwise</param>
-        <param index="4">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
+        <param index="4" label="Xtrack Location">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
@@ -1289,7 +1289,7 @@
         <param index="1" label="Time" units="s" minValue="0">Loiter time.</param>
         <param index="2">Empty</param>
         <param index="3" label="Radius" units="m">Radius around waypoint. If positive loiter clockwise, else counter-clockwise.</param>
-        <param index="4">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle.  NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
+        <param index="4" label="Xtrack Location">Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle.  NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
@@ -1402,9 +1402,9 @@
         <param index="2" label="Velocity" units="m/s">Tangential Velocity. NaN: Vehicle configuration default.</param>
         <param index="3" label="Yaw Behavior" enum="ORBIT_YAW_BEHAVIOUR">Yaw behavior of the vehicle.</param>
         <param index="4">Reserved (e.g. for dynamic center beacon options)</param>
-        <param index="5">Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
-        <param index="6">Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
-        <param index="7">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
+        <param index="5" label="Latitude/X">Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
+        <param index="6" label="Longitude/Y">Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
+        <param index="7" label="Altitude/Z">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.</param>
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false">
         <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
@@ -1423,9 +1423,9 @@
         <param index="2" label="Global Ctrl" minValue="0" maxValue="3" increment="1">0: Disable full path planning (without resetting map), 1: Enable, 2: Enable and reset map/occupancy grid, 3: Enable and reset planned route, but not occupancy grid</param>
         <param index="3">Empty</param>
         <param index="4" label="Yaw" units="deg">Yaw angle at goal</param>
-        <param index="5">Latitude/X of goal</param>
-        <param index="6">Longitude/Y of goal</param>
-        <param index="7">Altitude/Z of goal</param>
+        <param index="5" label="Latitude/X">Latitude/X of goal</param>
+        <param index="6" label="Longitude/Y">Longitude/Y of goal</param>
+        <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
       </entry>
       <entry value="82" name="MAV_CMD_NAV_SPLINE_WAYPOINT" hasLocation="true" isDestination="true">
         <description>Navigate to waypoint using a spline path.</description>
@@ -1433,9 +1433,9 @@
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5">Latitude/X of goal</param>
-        <param index="6">Longitude/Y of goal</param>
-        <param index="7">Altitude/Z of goal</param>
+        <param index="5" label="Latitude/X">Latitude/X of goal</param>
+        <param index="6" label="Longitude/Y">Longitude/Y of goal</param>
+        <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
       </entry>
       <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF" hasLocation="true" isDestination="true">
         <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading.</description>
@@ -1805,20 +1805,20 @@
         <param index="2" label="Stabilize Roll" minValue="0" maxValue="1" increment="1">stabilize roll? (1 = yes, 0 = no)</param>
         <param index="3" label="Stabilize Pitch" minValue="0" maxValue="1" increment="1">stabilize pitch? (1 = yes, 0 = no)</param>
         <param index="4" label="Stabilize Yaw" minValue="0" maxValue="1" increment="1">stabilize yaw? (1 = yes, 0 = no)</param>
-        <param index="5">roll input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
-        <param index="6">pitch input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
-        <param index="7">yaw input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
+        <param index="5" label="Roll Input Mode">roll input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
+        <param index="6" label="Pitch Input Mode">pitch input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
+        <param index="7" label="Yaw Input Mode">yaw input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
       </entry>
       <!-- this one is messed up! altitude should be param 7, not param4 -->
       <entry value="205" name="MAV_CMD_DO_MOUNT_CONTROL" hasLocation="false" isDestination="false">
         <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE">This message is ambiguous and inconsistent. It has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE and MAV_CMD_DO_SET_ROI_*. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
         <description>Mission command to control a camera or antenna mount</description>
-        <param index="1">pitch depending on mount mode (degrees or degrees/second depending on pitch input).</param>
-        <param index="2">roll depending on mount mode (degrees or degrees/second depending on roll input).</param>
-        <param index="3">yaw depending on mount mode (degrees or degrees/second depending on yaw input).</param>
+        <param index="1" label="Pitch Mode">pitch depending on mount mode (degrees or degrees/second depending on pitch input).</param>
+        <param index="2" label="Roll Mode">roll depending on mount mode (degrees or degrees/second depending on roll input).</param>
+        <param index="3" label="Yaw Mode">yaw depending on mount mode (degrees or degrees/second depending on yaw input).</param>
         <param index="4" label="Altitude" units="m">altitude depending on mount mode.</param>
-        <param index="5">latitude, set if appropriate mount mode.</param>
-        <param index="6">longitude, set if appropriate mount mode.</param>
+        <param index="5" label="Latitude">latitude, set if appropriate mount mode.</param>
+        <param index="6" label="Longitude">longitude, set if appropriate mount mode.</param>
         <param index="7" label="Mode" enum="MAV_MOUNT_MODE">Mount mode.</param>
       </entry>
       <entry value="206" name="MAV_CMD_DO_SET_CAM_TRIGG_DIST" hasLocation="false" isDestination="false">
@@ -2011,9 +2011,9 @@
         <param index="2" label="Position" enum="MAV_GOTO">MAV_GOTO_HOLD_AT_CURRENT_POSITION: hold at current position, MAV_GOTO_HOLD_AT_SPECIFIED_POSITION: hold at specified position.</param>
         <param index="3" label="Frame" enum="MAV_FRAME">Coordinate frame of hold point.</param>
         <param index="4" label="Yaw" units="deg">Desired yaw angle.</param>
-        <param index="5" label="Latitude">Latitude/X position.</param>
-        <param index="6" label="Longitude">Longitude/Y position.</param>
-        <param index="7" label="Altitude">Altitude/Z position.</param>
+        <param index="5" label="Latitude/X">Latitude/X position.</param>
+        <param index="6" label="Longitude/Y">Longitude/Y position.</param>
+        <param index="7" label="Altitude/Z">Altitude/Z position.</param>
       </entry>
       <entry value="300" name="MAV_CMD_MISSION_START" hasLocation="false" isDestination="false">
         <description>start running a mission</description>
@@ -2068,10 +2068,10 @@
         <description>Request the target system(s) emit a single instance of a specified message (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).</description>
         <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID of the requested message.</param>
         <param index="2" label="Index ID" minValue="0" increment="1">Index id (if appropriate). The use of this parameter (if any), must be defined in the requested message.</param>
-        <param index="3">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
-        <param index="4">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
-        <param index="5">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
-        <param index="6">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="3" label="Req Param 1">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="4" label="Req Param 2">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="5" label="Req Param 3">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="6" label="Req Param 4">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
         <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address for requested message (if message has target address fields). 0: Flight-stack default, 1: address of requestor, 2: broadcast.</param>
       </entry>
       <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" hasLocation="false" isDestination="false">
@@ -2338,8 +2338,8 @@
         <param index="2">User defined</param>
         <param index="3">User defined</param>
         <param index="4">User defined</param>
-        <param index="5">Unscaled target latitude of center of circle in CIRCLE_MODE</param>
-        <param index="6">Unscaled target longitude of center of circle in CIRCLE_MODE</param>
+        <param index="5" label="Latitude" units="deg">Unscaled target latitude of center of circle in CIRCLE_MODE</param>
+        <param index="6" label="Longitude" units="deg">Unscaled target longitude of center of circle in CIRCLE_MODE</param>
       </entry>
       <entry value="4501" name="MAV_CMD_CONDITION_GATE" hasLocation="true" isDestination="true">
         <wip/>
