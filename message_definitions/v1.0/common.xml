@@ -2156,8 +2156,8 @@
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>High level setpoint to be sent to a gimbal manager to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: a gimbal is never to react to this command but only the gimbal manager.</description>
-        <param index="1" label="Tilt angular rate" units="deg/s">Tilt/pitch angular rate (positive to point up).</param>
-        <param index="2" label="Pan angular rate" units="deg/s">Pan/yaw angular rate (positive to pan to the right).</param>
+        <param index="1" label="Tilt angular velocity" units="deg/s">Tilt/pitch angular velocity (positive to point up).</param>
+        <param index="2" label="Pan angular velocity" units="deg/s">Pan/yaw angular velocity (positive to pan to the right).</param>
         <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
         <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
         <param index="5" label="Gimbal manager flags" enum="GIMBAL_MANAGER_FLAGS">Gimbal manager flags to use.</param>
@@ -6109,7 +6109,7 @@
       <description>Information about a high level gimbal manager. This message should be requested by a ground station using MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="cap_flags" enum="GIMBAL_MANAGER_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
-      <field type="uint8_t" name="gimbal_component">Gimbal component ID that this gimbal manager is responsible for.</field>
+      <field type="uint8_t" name="gimbal_device_id">Gimbal device ID that this gimbal manager is responsible for.</field>
       <field type="float" name="tilt_max" units="rad">Maximum tilt/pitch angle (positive: up, negative: down)</field>
       <field type="float" name="tilt_min" units="rad">Minimum tilt/pitch angle (positive: up, negative: down)</field>
       <field type="float" name="tilt_rate_max" units="rad/s">Maximum tilt/pitch angular rate (positive: up, negative: down)</field>
@@ -6123,6 +6123,7 @@
       <description>Current status about a high level gimbal manager. This message should be broadcast at a low regular rate (e.g. 5Hz).</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags currently applied.</field>
+      <field type="uint8_t" name="gimbal_device_id">Gimbal device ID that this gimbal manager is responsible for.</field>
     </message>
     <message id="282" name="GIMBAL_MANAGER_SET_ATTITUDE">
       <wip/>
@@ -6131,6 +6132,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_MANAGER_FLAGS_YAW_LOCK is set)</field>
       <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is banking to the right, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is tilting up, NaN to be ignored.</field>
