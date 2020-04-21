@@ -6674,6 +6674,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. See also the ASTM Remote ID standard at https://www.astm.org/Standards/F3411.htm. The usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.htm. </field>
       <field type="uint8_t" name="id_type" enum="MAV_ODID_ID_TYPE">Indicates the format for the uas_id field of this message.</field>
       <field type="uint8_t" name="ua_type" enum="MAV_ODID_UA_TYPE">Indicates the type of UA (Unmanned Aircraft).</field>
       <field type="uint8_t[20]" name="uas_id">UAS (Unmanned Aircraft System) ID following the format specified by id_type. Shall be filled with nulls in the unused portion of the field.</field>
@@ -6682,6 +6685,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Location message. The float data types are 32-bit IEEE 754. The Location message provides the location, altitude, direction and speed of the aircraft.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.htm. </field>
       <field type="uint8_t" name="status" enum="MAV_ODID_STATUS">Indicates whether the unmanned aircraft is on the ground or in the air.</field>
       <field type="uint16_t" name="direction" units="cdeg">Direction over ground (not heading, but direction of movement) measured clockwise from true North: 0 - 35999 centi-degrees. If unknown: 36100 centi-degrees.</field>
       <field type="uint16_t" name="speed_horizontal" units="cm/s">Ground speed. Positive only. If unknown: 25500 cm/s. If speed is larger than 25425 cm/s, use 25425 cm/s.</field>
@@ -6703,6 +6709,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 4, PageCount, Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.htm. </field>
       <field type="uint8_t" name="authentication_type" enum="MAV_ODID_AUTH_TYPE">Indicates the type of authentication.</field>
       <field type="uint8_t" name="data_page">Allowed range is 0 - 4.</field>
       <field type="uint8_t" name="page_count">This field is only present for page 0. Allowed range is 0 - 5.</field>
@@ -6714,6 +6723,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Self ID message. The Self ID Message is an opportunity for the operator to (optionally) declare their identity and purpose of the flight. This message can provide additional information that could reduce the threat profile of a UA (Unmanned Aircraft) flying in a particular area or manner.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.htm. </field>
       <field type="uint8_t" name="description_type" enum="MAV_ODID_DESC_TYPE">Indicates the type of the description field.</field>
       <field type="char[23]" name="description">Text description or numeric value expressed as ASCII characters. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
@@ -6721,6 +6733,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the operator location and possible aircraft group information.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.htm. </field>
       <field type="uint8_t" name="flags" enum="MAV_ODID_LOCATION_SRC">Specifies the location source for the operator location.</field>
       <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
@@ -6733,6 +6748,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Operator ID message, which contains the CAA (Civil Aviation Authority) issued operator ID.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.htm. </field>
       <field type="uint8_t" name="operator_id_type" enum="MAV_ODID_OPERATOR_ID_TYPE">Indicates the type of the operator_id field.</field>
       <field type="char[20]" name="operator_id">Text description or numeric value expressed as ASCII characters. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
@@ -6741,7 +6759,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>An OpenDroneID message pack is a container for multiple encoded OpenDroneID messages (i.e. not in the format given for the above messages descriptions but after encoding into the compressed OpenDroneID byte format). Used e.g. when transmitting on Bluetooth 5.0 Long Range/Extended Advertising or on WiFi Neighbor Aware Networking.</description>
-      <field type="uint8_t" name="single_message_size" units="bytes">This field must currently always be equal to 25 bytes, since all encoded OpenDroneID messages are specificed to have this length.</field>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t" name="single_message_size" units="bytes">This field must currently always be equal to 25 (bytes), since all encoded OpenDroneID messages are specificed to have this length.</field>
       <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 10.</field>
       <field type="uint8_t[250]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
