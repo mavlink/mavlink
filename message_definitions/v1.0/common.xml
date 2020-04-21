@@ -1246,6 +1246,33 @@
         <description>Yaw controlled by RC input.</description>
       </entry>
     </enum>
+    <enum name="WIFI_CONFIG_AP_RESPONSE">
+      <description>Possible responses from a WIFI_CONFIG_AP message.</description>
+      <entry value="0" name="WIFI_CONFIG_AP_RESPONSE_ACCEPTED">
+        <description>Changes accepted.</description>
+      </entry>
+      <entry value="1" name="WIFI_CONFIG_AP_RESPONSE_REJECTED">
+        <description>Changes rejected.</description>
+      </entry>
+      <entry value="2" name="WIFI_CONFIG_AP_RESPONSE_MODE_ERROR">
+        <description>Invalid Mode.</description>
+      </entry>
+      <entry value="3" name="WIFI_CONFIG_AP_RESPONSE_SSID_ERROR">
+        <description>Invalid SSID.</description>
+      </entry>
+      <entry value="4" name="WIFI_CONFIG_AP_RESPONSE_PASSWORD_ERROR">
+        <description>Invalid Password.</description>
+      </entry>
+    </enum>
+    <enum name="WIFI_CONFIG_AP_MODE">
+      <description>WiFi Mode.</description>
+      <entry value="0" name="WIFI_CONFIG_AP_MODE_AP">
+        <description>WiFi configured as an access point.</description>
+      </entry>
+      <entry value="1" name="WIFI_CONFIG_AP_MODE_STATION">
+        <description>WiFi configured as a station connected to an existing local WiFi network.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM and MISSION_ITEM_INT messages) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -2279,6 +2306,16 @@
       <entry value="2600" name="MAV_CMD_CONTROL_HIGH_LATENCY" hasLocation="false" isDestination="false">
         <description>Request to start/stop transmitting over the high latency telemetry</description>
         <param index="1" label="Enable" minValue="0" maxValue="1" increment="1">Control transmission over high latency telemetry (0: stop, 1: start)</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="2620" name="MAV_CMD_REQUEST_WIFI_CONFIG" hasLocation="false" isDestination="false">
+        <description>Request WiFi configuration (WIFI_CONFIG_AP)</description>
+        <param index="1">Empty</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -6200,6 +6237,9 @@
       <description>Configure AP SSID and Password.</description>
       <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Leave it blank to leave it unchanged.</field>
       <field type="char[64]" name="password">Password. Leave it blank for an open AP.</field>
+      <extensions/>
+      <field type="int8_t" name="mode" enum="WIFI_CONFIG_AP_MODE">WiFi Mode.</field>
+      <field type="int8_t" name="response" enum="WIFI_CONFIG_AP_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="300" name="PROTOCOL_VERSION">
       <wip/>
