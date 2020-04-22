@@ -78,13 +78,11 @@
             <entry value="0" name="ROSFLIGHT_RANGE_SONAR"/>
             <entry value="1" name="ROSFLIGHT_RANGE_LIDAR"/>
         </enum>
-	<enum name="UBLOX_FIX_TYPE">
-		<entry value="0" name="NO_FIX"/>
-		<entry value="1" name="DEAD_RECKONING_ONLY"/>
-		<entry value="2" name="FIX_2D"/>
-		<entry value="3" name="FIX_3D"/>
-		<entry value="4" name="GNSS_AND_DEAD_RECKONING"/>
-		<entry value="5" name="TIME_ONLY"/>
+	<enum name="GNSS_FIX_TYPE">
+		<entry value="0" name="GNSS_FIX_NO_FIX"/>
+		<entry value="1" name="GNSS_FIX_FIX"/>
+		<entry value="2" name="GNSS_FIX_RTK_FLOAT"/>
+		<entry value="3" name="GNSS_FIX_RTK_FIXED"/>
 	</enum>
     </enums>
     <messages>
@@ -208,7 +206,7 @@
 		<!-- time_of_week is only for determining which packets where calculated at the same time.
 		     Use the time and nanos field to get GPS time. -->
 		<field type="uint32_t" name="time_of_week"/>
-		<field type="uint8_t" name="fix_type" enum="UBLOX_FIX_TYPE"/><!-- This uses the UBX fix definition -->
+		<field type="uint8_t" name="fix_type" enum="GNSS_FIX_TYPE"/>
 		<field type="uint64_t" name="time"/> <!--unix time, in seconds -->
 		<field type="uint64_t" name="nanos"/>
 		<field type="int32_t" name="lat"/> <!-- deg*10^-7 -->
