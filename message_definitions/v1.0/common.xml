@@ -426,7 +426,7 @@
       <entry value="39" name="MAV_COMP_ID_USER15">
         <description>Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.</description>
       </entry>
-      <entry value="40" name="MAV_COMP_ID_USE16">
+      <entry value="40" name="MAV_COMP_ID_USER16">
         <description>Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.</description>
       </entry>
       <entry value="41" name="MAV_COMP_ID_USER17">
@@ -845,7 +845,7 @@
         <description>Global (WGS84) coordinate frame + MSL altitude. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL).</description>
       </entry>
       <entry value="1" name="MAV_FRAME_LOCAL_NED">
-        <description>Local coordinate frame, Z-down (x: north, y: east, z: down).</description>
+        <description>Local coordinate frame, Z-down (x: North, y: East, z: Down).</description>
       </entry>
       <entry value="2" name="MAV_FRAME_MISSION">
         <description>NOT a coordinate frame, indicates a mission command.</description>
@@ -854,7 +854,7 @@
         <description>Global (WGS84) coordinate frame + altitude relative to the home position. First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at the altitude of the home location.</description>
       </entry>
       <entry value="4" name="MAV_FRAME_LOCAL_ENU">
-        <description>Local coordinate frame, Z-up (x: east, y: north, z: up).</description>
+        <description>Local coordinate frame, Z-up (x: East, y: North, z: Up).</description>
       </entry>
       <entry value="5" name="MAV_FRAME_GLOBAL_INT">
         <description>Global (WGS84) coordinate frame (scaled) + MSL altitude. First value / x: latitude in degrees*1.0e-7, second value / y: longitude in degrees*1.0e-7, third value / z: positive altitude over mean sea level (MSL).</description>
@@ -879,35 +879,37 @@
       <entry value="11" name="MAV_FRAME_GLOBAL_TERRAIN_ALT_INT">
         <description>Global (WGS84) coordinate frame (scaled) with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
       </entry>
-      <entry value="12" name="MAV_FRAME_BODY_FRD">
-        <description>Body fixed frame of reference, Z-down (x: forward, y: right, z: down).</description>
+      <entry value="12" name="MAV_FRAME_RESERVED_12">
+        <deprecated since="2019-04" replaced_by="MAV_FRAME_BODY_OFFSET_NED"/>
+        <description>MAV_FRAME_BODY_FRD - Body fixed frame of reference, Z-down (x: Forward, y: Right, z: Down).</description>
       </entry>
-      <entry value="13" name="MAV_FRAME_BODY_FLU">
-        <description>Body fixed frame of reference, Z-up (x: forward, y: left, z: up).</description>
+      <entry value="13" name="MAV_FRAME_RESERVED_13">
+        <deprecated since="2019-04" replaced_by=""/>
+        <description>MAV_FRAME_BODY_FLU - Body fixed frame of reference, Z-up (x: Forward, y: Left, z: Up).</description>
       </entry>
-      <entry value="14" name="MAV_FRAME_MOCAP_NED">
-        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FRD"/>
-        <description>Odometry local coordinate frame of data given by a motion capture system, Z-down (x: north, y: east, z: down).</description>
+      <entry value="14" name="MAV_FRAME_RESERVED_14">
+        <deprecated since="2019-04" replaced_by="MAV_FRAME_LOCAL_FRD"/>
+        <description>MAV_FRAME_MOCAP_NED - Odometry local coordinate frame of data given by a motion capture system, Z-down (x: North, y: East, z: Down).</description>
       </entry>
-      <entry value="15" name="MAV_FRAME_MOCAP_ENU">
-        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FLU"/>
-        <description>Odometry local coordinate frame of data given by a motion capture system, Z-up (x: east, y: north, z: up).</description>
+      <entry value="15" name="MAV_FRAME_RESERVED_15">
+        <deprecated since="2019-04" replaced_by="MAV_FRAME_LOCAL_FLU"/>
+        <description>MAV_FRAME_MOCAP_ENU - Odometry local coordinate frame of data given by a motion capture system, Z-up (x: East, y: North, z: Up).</description>
       </entry>
-      <entry value="16" name="MAV_FRAME_VISION_NED">
-        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FRD"/>
-        <description>Odometry local coordinate frame of data given by a vision estimation system, Z-down (x: north, y: east, z: down).</description>
+      <entry value="16" name="MAV_FRAME_RESERVED_16">
+        <deprecated since="2019-04" replaced_by="MAV_FRAME_LOCAL_FRD"/>
+        <description>MAV_FRAME_VISION_NED - Odometry local coordinate frame of data given by a vision estimation system, Z-down (x: North, y: East, z: Down).</description>
       </entry>
-      <entry value="17" name="MAV_FRAME_VISION_ENU">
-        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FLU"/>
-        <description>Odometry local coordinate frame of data given by a vision estimation system, Z-up (x: east, y: north, z: up).</description>
+      <entry value="17" name="MAV_FRAME_RESERVED_17">
+        <deprecated since="2019-04" replaced_by="MAV_FRAME_LOCAL_FLU"/>
+        <description>MAV_FRAME_VISION_ENU - Odometry local coordinate frame of data given by a vision estimation system, Z-up (x: East, y: North, z: Up).</description>
       </entry>
-      <entry value="18" name="MAV_FRAME_ESTIM_NED">
-        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FRD"/>
-        <description>Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-down (x: north, y: east, z: down).</description>
+      <entry value="18" name="MAV_FRAME_RESERVED_18">
+        <deprecated since="2019-04" replaced_by="MAV_FRAME_LOCAL_FRD"/>
+        <description>MAV_FRAME_ESTIM_NED - Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-down (x: North, y: East, z: Down).</description>
       </entry>
-      <entry value="19" name="MAV_FRAME_ESTIM_ENU">
-        <deprecated since="2019-08" replaced_by="MAV_FRAME_LOCAL_FLU"/>
-        <description>Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-up (x: east, y: noth, z: up).</description>
+      <entry value="19" name="MAV_FRAME_RESERVED_19">
+        <deprecated since="2019-04" replaced_by="MAV_FRAME_LOCAL_FLU"/>
+        <description>MAV_FRAME_ESTIM_ENU - Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-up (x: East, y: North, z: Up).</description>
       </entry>
       <entry value="20" name="MAV_FRAME_LOCAL_FRD">
         <description>Forward, Right, Down coordinate frame. This is a local frame with Z-down and arbitrary F/R alignment (i.e. not aligned with NED/earth frame).</description>
@@ -3064,6 +3066,9 @@
       </entry>
       <entry value="40" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_315">
         <description>Roll: 90, Pitch: 315</description>
+      </entry>
+      <entry value="41" name="MAV_SENSOR_ROTATION_ROLL_270_YAW_180">
+        <description>Roll: 270, Yaw: 180</description>
       </entry>
       <entry value="100" name="MAV_SENSOR_ROTATION_CUSTOM">
         <description>Custom orientation</description>
