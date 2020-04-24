@@ -6451,14 +6451,14 @@
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Telemetry of power generation system. Alternator or mechanical generator.</description>
       <field type="uint64_t" name="status">Status message</field>
-      <field type="uint16_t" name="generator_speed" units="rpm">Speed of electrical generator or alternator. Set to 0 if non rotating generator such as fuel cell.</field>
-      <field type="float" name="battery_current" units="A">Current into/out of battery. Positive for out. Negative for in.</field>
-      <field type="float" name="load_current" units="A">Current going to the UAV.</field>
+      <field type="uint16_t" name="generator_speed" units="rpm">Speed of electrical generator or alternator. 0: field not provided.</field>
+      <field type="float" name="battery_current" units="A">Current into/out of battery. Positive for out. Negative for in. 0: field not provided.</field>
+      <field type="float" name="load_current" units="A">Current going to the UAV. If battery current not available this is the DC current from the generator. Positive for out. Negative for in.</field>
       <field type="float" name="power_generated" units="W">The power being generated.</field>
       <field type="uint16_t" name="bus_voltage" units="mV">Voltage of the bus seen at the generator.</field>
       <field type="int16_t" name="rectifier_temperature" units="degC">The temperature of the rectifier or power converter.</field>
-      <field type="float" name="bat_current_setpoint" units="A">The target battery current. Positive for out. Negative for in.</field>
-      <field type="int16_t" name="generator_temperature" units="degC">The temperature of the mechanical motor, fuel cell core or generator.</field>
+      <field type="float" name="bat_current_setpoint" units="A">The target battery current. Positive for out. Negative for in. -10000: field not provided</field>
+      <field type="int16_t" name="generator_temperature" units="degC">The temperature of the mechanical motor, fuel cell core or generator. UINT16_MAX: field not provided.</field>
     </message>
     <message id="375" name="ACTUATOR_OUTPUT_STATUS">
       <description>The raw values of the actuator outputs (e.g. on Pixhawk, from MAIN, AUX ports). This message supersedes SERVO_OUTPUT_RAW.</description>
