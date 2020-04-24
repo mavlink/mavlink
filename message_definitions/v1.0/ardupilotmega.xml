@@ -39,6 +39,16 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
+      <entry value="215" name="MAV_CMD_DO_SET_RESUME_REPEAT_DIST">
+        <description>Set the distance to be repeated on mission resume</description>
+        <param index="1" label="Distance" units="m">Distance.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
       <entry value="83" name="MAV_CMD_NAV_ALTITUDE_WAIT">
         <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
         <param index="1">Altitude (m).</param>
@@ -107,6 +117,16 @@
         <param index="2">FieldY.</param>
         <param index="3">FieldZ.</param>
         <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
+      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW">
+        <description>Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM field tables in the vehicle, given only the known yaw of the vehicle. If Latitude and longitude are both zero then use the current vehicle location.</description>
+        <param index="1" label="Yaw" units="deg">Yaw of vehicle in earth frame.</param>
+        <param index="2" label="CompassMask">CompassMask, 0 for all.</param>
+        <param index="3" label="Latitude" units="deg">Latitude.</param>
+        <param index="4" label="Longitude" units="deg">Longitude.</param>
         <param index="5">Empty.</param>
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
@@ -230,6 +250,33 @@
         <param index="5">Magic number - set to 290876 to actually flash</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
+      </entry>
+      <entry value="42651" name="MAV_CMD_BATTERY_RESET" hasLocation="false" isDestination="false">
+        <description>Reset battery capacity for batteries that accumulate consumed battery via integration.</description>
+        <param index="1" label="battery mask">Bitmask of batteries to reset. Least significant bit is for the first battery.</param>
+        <param index="2" label="percentage" minValue="0" maxValue="100" increment="1">Battery percentage remaining to set.</param>
+      </entry>
+      <entry value="42700" name="MAV_CMD_DEBUG_TRAP">
+        <description>Issue a trap signal to the autopilot process, presumably to enter the debugger.</description>
+        <param index="1">Magic number - set to 32451 to actually trap.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
+      <entry value="42701" name="MAV_CMD_SCRIPTING">
+        <description>Control onboard scripting.</description>
+        <param index="1" enum="SCRIPTING_CMD">Scripting command to execute</param>
+      </entry>
+    </enum>
+    <enum name="SCRIPTING_CMD">
+      <entry value="0" name="SCRIPTING_CMD_REPL_START">
+        <description>Start a REPL session.</description>
+      </entry>
+      <entry value="1" name="SCRIPTING_CMD_REPL_STOP">
+        <description>End a REPL session.</description>
       </entry>
     </enum>
     <!-- AP_Limits Enums -->
@@ -845,6 +892,9 @@
       <entry value="512" name="EKF_PRED_POS_HORIZ_ABS">
         <description>Set if EKF's predicted horizontal position (absolute) estimate is good.</description>
       </entry>
+      <entry value="1024" name="EKF_UNINITIALIZED">
+        <description>Set if EKF has never been healthy.</description>
+      </entry>
     </enum>
     <enum name="PID_TUNING_AXIS">
       <entry value="1" name="PID_TUNING_ROLL"/>
@@ -862,6 +912,7 @@
       <entry value="4" name="MAG_CAL_SUCCESS"/>
       <entry value="5" name="MAG_CAL_FAILED"/>
       <entry value="6" name="MAG_CAL_BAD_ORIENTATION"/>
+      <entry value="7" name="MAG_CAL_BAD_RADIUS"/>
     </enum>
     <enum name="MAV_REMOTE_LOG_DATA_BLOCK_COMMANDS">
       <description>Special ACK block numbers control activation of dataflash log streaming.</description>
@@ -932,6 +983,7 @@
       <entry value="10" name="PLANE_MODE_AUTO"/>
       <entry value="11" name="PLANE_MODE_RTL"/>
       <entry value="12" name="PLANE_MODE_LOITER"/>
+      <entry value="13" name="PLANE_MODE_TAKEOFF"/>
       <entry value="14" name="PLANE_MODE_AVOID_ADSB"/>
       <entry value="15" name="PLANE_MODE_GUIDED"/>
       <entry value="16" name="PLANE_MODE_INITIALIZING"/>
@@ -1376,11 +1428,12 @@
       <field type="float" name="orientation_confidence">Confidence in orientation (higher is better).</field>
       <field type="uint8_t" name="old_orientation" enum="MAV_SENSOR_ORIENTATION">orientation before calibration.</field>
       <field type="uint8_t" name="new_orientation" enum="MAV_SENSOR_ORIENTATION">orientation after calibration.</field>
+      <field type="float" name="scale_factor">field radius correction factor</field>
     </message>
     <!-- EKF status message from autopilot to GCS. -->
     <message id="193" name="EKF_STATUS_REPORT">
       <description>EKF Status message including flags and variances.</description>
-      <field type="uint16_t" name="flags" enum="EKF_STATUS_FLAGS">Flags.</field>
+      <field type="uint16_t" name="flags" enum="EKF_STATUS_FLAGS" display="bitmask">Flags.</field>
       <!-- supported flags see EKF_STATUS_FLAGS enum -->
       <field type="float" name="velocity_variance">Velocity variance.</field>
       <!-- below 0.5 is good, 0.5~0.79 is warning, 0.8 or higher is bad -->
@@ -1479,6 +1532,26 @@
       <field type="uint8_t" name="status" enum="GOPRO_REQUEST_STATUS">Status.</field>
     </message>
     <!-- 219 to 224 RESERVED for more GOPRO-->
+    <message id="225" name="EFI_STATUS">
+      <description>EFI status output</description>
+      <field type="uint8_t" name="health">EFI health status</field>
+      <field type="float" name="ecu_index">ECU index</field>
+      <field type="float" name="rpm">RPM</field>
+      <field type="float" name="fuel_consumed" units="g">Fuel consumed</field>
+      <field type="float" name="fuel_flow" units="g/min">Fuel flow rate</field>
+      <field type="float" name="engine_load" units="%">Engine load</field>
+      <field type="float" name="throttle_position" units="%">Throttle position</field>
+      <field type="float" name="spark_dwell_time" units="ms">Spark dwell time</field>
+      <field type="float" name="barometric_pressure" units="kPa">Barometric pressure</field>
+      <field type="float" name="intake_manifold_pressure" units="kPa">Intake manifold pressure(</field>
+      <field type="float" name="intake_manifold_temperature" units="degC">Intake manifold temperature</field>
+      <field type="float" name="cylinder_head_temperature" units="degC">Cylinder head temperature</field>
+      <field type="float" name="ignition_timing" units="deg">Ignition timing (Crank angle degrees)</field>
+      <field type="float" name="injection_time" units="ms">Injection time</field>
+      <field type="float" name="exhaust_gas_temperature" units="degC">Exhaust gas temperature</field>
+      <field type="float" name="throttle_out" units="%">Output throttle</field>
+      <field type="float" name="pt_compensation">Pressure/temperature compensation</field>
+    </message>
     <message id="226" name="RPM">
       <description>RPM sensor output.</description>
       <field type="float" name="rpm1">RPM Sensor1.</field>

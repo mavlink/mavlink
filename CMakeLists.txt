@@ -1,7 +1,7 @@
 project (mavlink)
 
 if (NOT DEFINED MAVLINK_SOURCE_DIR)
-    set(MAVLINK_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+    set(MAVLINK_SOURCE_DIR ${PROJECT_SOURCE_DIR})
 endif ()
 
 # settings
@@ -124,7 +124,7 @@ install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} C
 macro(generateMavlink version definitions)
     foreach(definition ${definitions})
         set(targetName ${definition}-v${version})
-        set(definitionAbsPath ${MAVLINK_SOURCE_DIR}/message_definitions/v${version}/${definition})
+        set(definitionAbsPath ${MAVLINK_SOURCE_DIR}/message_definitions/v1.0/${definition})
         message(STATUS "processing: ${definitionAbsPath}")
         add_custom_command( 
             OUTPUT ${targetName}-stamp
@@ -138,15 +138,6 @@ endmacro()
 
 # build
 set(mavgen -m pymavlink.tools.mavgen)
-set(v0.9Definitions
-    ardupilotmega.xml
-    common.xml
-    minimal.xml
-    slugs.xml
-    test.xml
-    ualberta.xml
-    )
-generateMavlink("0.9" "${v0.9Definitions}")
 set(v1.0Definitions
     ASLUAV.xml
     ardupilotmega.xml
@@ -161,11 +152,12 @@ set(v1.0Definitions
     ualberta.xml
     )
 generateMavlink("1.0" "${v1.0Definitions}")
+generateMavlink("2.0" "${v1.0Definitions}")
 
 # testing
 if (BUILD_TEST)
     if (UNIX) 
-        include_directories(${CMAKE_BINARY_DIR}/include/v0.9/common)
+        include_directories(${CMAKE_BINARY_DIR}/include/v1.0/common)
         # TODO fix udp example
         #add_executable(mavlink_udp examples/linux/mavlink_udp.c)
     endif()
