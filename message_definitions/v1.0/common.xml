@@ -2076,7 +2076,7 @@
       </entry>
       <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
-        <description>Request MAVLink protocol version compatibility</description>
+        <description>Request MAVLink protocol version compatibility. All receivers should ACK the command and then emit their capabilities in an PROTOCOL_VERSION message</description>
         <param index="1" label="Protocol">1: Request supported protocol versions by all nodes on the network</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
@@ -2216,8 +2216,8 @@
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Re-request a CAMERA_IMAGE_CAPTURE message.</description>
-        <param index="1" label="Number" minValue="0" increment="1">Sequence number for missing CAMERA_IMAGE_CAPTURE message</param>
+        <description>Re-request a CAMERA_IMAGE_CAPTURED message.</description>
+        <param index="1" label="Number" minValue="0" increment="1">Sequence number for missing CAMERA_IMAGE_CAPTURED message</param>
         <param index="2" reserved="True" default="NaN"/>
         <param index="3" reserved="True" default="NaN"/>
         <param index="4" reserved="True" default="NaN"/>
@@ -6031,7 +6031,7 @@
       <field type="float" name="focusLevel">Current focus level (0.0 to 100.0, NaN if not known)</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
-      <description>Information about a storage medium. This message is sent in response to a request with MAV_CMD_REQUEST_MESSAGE and whenever the status of the storage changes (STORAGE_STATUS).</description>
+      <description>Information about a storage medium. This message is sent in response to a request with MAV_CMD_REQUEST_MESSAGE and whenever the status of the storage changes (STORAGE_STATUS). Use MAV_CMD_REQUEST_MESSAGE.param2 to indicate the index/id of requested storage: 0 for all, 1 for first, 2 for second, etc.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="storage_id">Storage ID (1 for first, 2 for second, etc.)</field>
       <field type="uint8_t" name="storage_count">Number of storage devices</field>
@@ -6052,7 +6052,7 @@
       <field type="float" name="available_capacity" units="MiB">Available storage capacity.</field>
     </message>
     <message id="263" name="CAMERA_IMAGE_CAPTURED">
-      <description>Information about a captured image</description>
+      <description>Information about a captured image. This is emitted every time a message is captured. It may be re-requested using MAV_CMD_REQUEST_MESSAGE, using param2 to indicate the sequence number for the missing image.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="time_utc" units="us">Timestamp (time since UNIX epoch) in UTC. 0 for unknown.</field>
       <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
@@ -6111,7 +6111,7 @@
     <message id="269" name="VIDEO_STREAM_INFORMATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Information about video stream</description>
+      <description>Information about video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE, where param2 indicates the video stream id: 0 for all streams, 1 for first, 2 for second, etc.</description>
       <field type="uint8_t" name="stream_id">Video Stream ID (1 for first, 2 for second, etc.)</field>
       <field type="uint8_t" name="count">Number of streams available.</field>
       <field type="uint8_t" name="type" enum="VIDEO_STREAM_TYPE">Type of stream.</field>
@@ -6128,7 +6128,7 @@
     <message id="270" name="VIDEO_STREAM_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Information about the status of a video stream.</description>
+      <description>Information about the status of a video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint8_t" name="stream_id">Video Stream ID (1 for first, 2 for second, etc.)</field>
       <field type="uint16_t" name="flags" enum="VIDEO_STREAM_STATUS_FLAGS">Bitmap of stream status flags</field>
       <field type="float" name="framerate" units="Hz">Frame rate</field>
