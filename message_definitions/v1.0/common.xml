@@ -3257,6 +3257,65 @@
         <description>Under-temperature fault.</description>
       </entry>
     </enum>
+    <enum name="GENERATOR_STATUS_FLAG" bitmask="true">
+      <description>Flags to report status/failure case for a power generator (used in GENERATOR_STATUS).</description>
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <entry value="1" name="GENERATOR_STATUS_FLAG_OFF">
+        <description>Generator is off.</description>
+      </entry>
+      <entry value="2" name="GENERATOR_STATUS_FLAG_READY">
+        <description>Generator is ready to start generating power.</description>
+      </entry>
+      <entry value="4" name="GENERATOR_STATUS_FLAG_GENERATING">
+        <description>Generator is generating power.</description>
+      </entry>
+      <entry value="8" name="GENERATOR_STATUS_FLAG_CHARGING">
+        <description>Generator is charging the batteries (generating enough power to charge and provide the load).</description>
+      </entry>
+      <entry value="16" name="GENERATOR_STATUS_FLAG_REDUCED_POWER">
+        <description>Generator is providing the maximum output.</description>
+      </entry>
+      <entry value="32" name="GENERATOR_STATUS_FLAG_MAXPOWER">
+        <description>Generator is operating at a reduced maximum power.</description>
+      </entry>
+      <entry value="64" name="GENERATOR_STATUS_FLAG_OVERTEMP_WARNING">
+        <description>Generator is near the maximum operating temperature, cooling is insufficient (may be running at reduced power).</description>
+      </entry>
+      <entry value="128" name="GENERATOR_STATUS_FLAG_OVERTEMP_FAULT">
+        <description>Generator hit the maximum operating temperature and shutdown.</description>
+      </entry>
+      <entry value="256" name="GENERATOR_STATUS_FLAG_RECTIFIER_OVERTEMP_WARNING">
+        <description>Power electronics are near the maximum operating temperature, cooling is insufficient (may be running at reduced power).</description>
+      </entry>
+      <entry value="512" name="GENERATOR_STATUS_FLAG_RECTIFIER_OVERTEMP_WARNING">
+        <description>Power electronics hit the maximum operating temperature and shutdown.</description>
+      </entry>
+      <entry value="1024" name="GENERATOR_STATUS_FLAG_RECTIFIER_FAULT">
+        <description>Power electronics experienced an error.</description>
+      </entry>
+      <entry value="2048" name="GENERATOR_STATUS_FLAG_POWERSOURCE_FAULT">
+        <description>The power source providing the generator failed e.g. mechanical generator stopped, tether is no longer providing power, solar cell is in shade, hydrogen reaction no longer happening.</description>
+      </entry>
+      <entry value="4096" name="GENERATOR_STATUS_FLAG_COMMUNICATION_ERROR">
+        <description>Generator controller having communication problems.</description>
+      </entry>
+      <entry value="8192" name="GENERATOR_STATUS_FLAG_COOLING_ERROR">
+        <description>Power electronic or generator cooling system error.</description>
+      </entry>
+      <entry value="16384" name="GENERATOR_STATUS_FLAG_POWER_RAIL_FAULT">
+        <description>Generator controller power rail experienced a fault.</description>
+      </entry>
+      <entry value="32768" name="GENERATOR_STATUS_FLAG_OVERCURRENT_FAULT">
+        <description>Generator controller exceeded the overcurrent threshold and shutdown to prevent damage.</description>
+      </entry>
+      <entry value="65536" name="GENERATOR_STATUS_FLAG_BATTERY_OVERCHARGE_CURRENT_FAULT">
+        <description>Generator controller detected a high current going into the batteries and shutdown to prevent battery damage.</description>
+      </entry>
+      <entry value="131072" name="GENERATOR_STATUS_FLAG_OVERVOLTAGE_FAULT">
+        <description>Generator controller exceeded it's overvoltage threshold and shutdown to prevent it exceeding the voltage rating.</description>
+      </entry>
+    </enum>
     <enum name="MAV_VTOL_STATE">
       <description>Enumeration of VTOL states</description>
       <entry value="0" name="MAV_VTOL_STATE_UNDEFINED">
@@ -6450,12 +6509,12 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Telemetry of power generation system. Alternator or mechanical generator.</description>
-      <field type="uint64_t" name="status">Status message</field>
+      <field type="uint64_t" name="status" display="bitmask" enum="GENERATOR_STATUS_FLAG">Status message</field>
       <field type="uint16_t" name="generator_speed" units="rpm">Speed of electrical generator or alternator. 0: field not provided.</field>
       <field type="float" name="battery_current" units="A">Current into/out of battery. Positive for out. Negative for in. 0: field not provided.</field>
       <field type="float" name="load_current" units="A">Current going to the UAV. If battery current not available this is the DC current from the generator. Positive for out. Negative for in.</field>
       <field type="float" name="power_generated" units="W">The power being generated.</field>
-      <field type="uint16_t" name="bus_voltage" units="mV">Voltage of the bus seen at the generator.</field>
+      <field type="float" name="bus_voltage" units="V">Voltage of the bus seen at the generator.</field>
       <field type="int16_t" name="rectifier_temperature" units="degC">The temperature of the rectifier or power converter.</field>
       <field type="float" name="bat_current_setpoint" units="A">The target battery current. Positive for out. Negative for in. -10000: field not provided</field>
       <field type="int16_t" name="generator_temperature" units="degC">The temperature of the mechanical motor, fuel cell core or generator. UINT16_MAX: field not provided.</field>
