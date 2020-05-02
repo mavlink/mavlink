@@ -1250,28 +1250,34 @@
     </enum>
     <enum name="WIFI_CONFIG_AP_RESPONSE">
       <description>Possible responses from a WIFI_CONFIG_AP message.</description>
-      <entry value="0" name="WIFI_CONFIG_AP_RESPONSE_ACCEPTED">
+      <entry value="0" name="WIFI_CONFIG_AP_RESPONSE_UNDEFINED">
+        <description>Undefined response. Likely an indicative of a system that doesn't support this request.</description>
+      </entry>
+      <entry value="1" name="WIFI_CONFIG_AP_RESPONSE_ACCEPTED">
         <description>Changes accepted.</description>
       </entry>
-      <entry value="1" name="WIFI_CONFIG_AP_RESPONSE_REJECTED">
+      <entry value="2" name="WIFI_CONFIG_AP_RESPONSE_REJECTED">
         <description>Changes rejected.</description>
       </entry>
-      <entry value="2" name="WIFI_CONFIG_AP_RESPONSE_MODE_ERROR">
+      <entry value="3" name="WIFI_CONFIG_AP_RESPONSE_MODE_ERROR">
         <description>Invalid Mode.</description>
       </entry>
-      <entry value="3" name="WIFI_CONFIG_AP_RESPONSE_SSID_ERROR">
+      <entry value="4" name="WIFI_CONFIG_AP_RESPONSE_SSID_ERROR">
         <description>Invalid SSID.</description>
       </entry>
-      <entry value="4" name="WIFI_CONFIG_AP_RESPONSE_PASSWORD_ERROR">
+      <entry value="5" name="WIFI_CONFIG_AP_RESPONSE_PASSWORD_ERROR">
         <description>Invalid Password.</description>
       </entry>
     </enum>
     <enum name="WIFI_CONFIG_AP_MODE">
       <description>WiFi Mode.</description>
-      <entry value="0" name="WIFI_CONFIG_AP_MODE_AP">
+      <entry value="0" name="WIFI_CONFIG_AP_MODE_UNDEFINED">
+        <description>WiFi mode is undefined.</description>
+      </entry>
+      <entry value="1" name="WIFI_CONFIG_AP_MODE_AP">
         <description>WiFi configured as an access point.</description>
       </entry>
-      <entry value="1" name="WIFI_CONFIG_AP_MODE_STATION">
+      <entry value="2" name="WIFI_CONFIG_AP_MODE_STATION">
         <description>WiFi configured as a station connected to an existing local WiFi network.</description>
       </entry>
     </enum>
@@ -2331,16 +2337,6 @@
       <entry value="2600" name="MAV_CMD_CONTROL_HIGH_LATENCY" hasLocation="false" isDestination="false">
         <description>Request to start/stop transmitting over the high latency telemetry</description>
         <param index="1" label="Enable" minValue="0" maxValue="1" increment="1">Control transmission over high latency telemetry (0: stop, 1: start)</param>
-        <param index="2">Empty</param>
-        <param index="3">Empty</param>
-        <param index="4">Empty</param>
-        <param index="5">Empty</param>
-        <param index="6">Empty</param>
-        <param index="7">Empty</param>
-      </entry>
-      <entry value="2620" name="MAV_CMD_REQUEST_WIFI_CONFIG" hasLocation="false" isDestination="false">
-        <description>Request WiFi configuration (WIFI_CONFIG_AP)</description>
-        <param index="1">Empty</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -6260,8 +6256,8 @@
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure AP SSID and Password.</description>
-      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Leave it blank to leave it unchanged.</field>
-      <field type="char[64]" name="password">Password. Leave it blank for an open AP.</field>
+      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>
+      <field type="char[64]" name="password">Password. Blank for an open AP. MD5 hash when message is sent back as a response.</field>
       <extensions/>
       <field type="int8_t" name="mode" enum="WIFI_CONFIG_AP_MODE">WiFi Mode.</field>
       <field type="int8_t" name="response" enum="WIFI_CONFIG_AP_RESPONSE">Message acceptance response (sent back to GS).</field>
