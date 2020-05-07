@@ -1248,6 +1248,39 @@
         <description>Yaw controlled by RC input.</description>
       </entry>
     </enum>
+    <enum name="WIFI_CONFIG_AP_RESPONSE">
+      <description>Possible responses from a WIFI_CONFIG_AP message.</description>
+      <entry value="0" name="WIFI_CONFIG_AP_RESPONSE_UNDEFINED">
+        <description>Undefined response. Likely an indicative of a system that doesn't support this request.</description>
+      </entry>
+      <entry value="1" name="WIFI_CONFIG_AP_RESPONSE_ACCEPTED">
+        <description>Changes accepted.</description>
+      </entry>
+      <entry value="2" name="WIFI_CONFIG_AP_RESPONSE_REJECTED">
+        <description>Changes rejected.</description>
+      </entry>
+      <entry value="3" name="WIFI_CONFIG_AP_RESPONSE_MODE_ERROR">
+        <description>Invalid Mode.</description>
+      </entry>
+      <entry value="4" name="WIFI_CONFIG_AP_RESPONSE_SSID_ERROR">
+        <description>Invalid SSID.</description>
+      </entry>
+      <entry value="5" name="WIFI_CONFIG_AP_RESPONSE_PASSWORD_ERROR">
+        <description>Invalid Password.</description>
+      </entry>
+    </enum>
+    <enum name="WIFI_CONFIG_AP_MODE">
+      <description>WiFi Mode.</description>
+      <entry value="0" name="WIFI_CONFIG_AP_MODE_UNDEFINED">
+        <description>WiFi mode is undefined.</description>
+      </entry>
+      <entry value="1" name="WIFI_CONFIG_AP_MODE_AP">
+        <description>WiFi configured as an access point.</description>
+      </entry>
+      <entry value="2" name="WIFI_CONFIG_AP_MODE_STATION">
+        <description>WiFi configured as a station connected to an existing local WiFi network.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM and MISSION_ITEM_INT messages) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -6222,9 +6255,12 @@
       <field type="float" name="feed_forward_angular_velocity_z" units="rad/s">Feed forward Z component of angular velocity, positive is yawing to the right, NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
-      <description>Configure AP SSID and Password.</description>
-      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Leave it blank to leave it unchanged.</field>
-      <field type="char[64]" name="password">Password. Leave it blank for an open AP.</field>
+      <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
+      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>
+      <field type="char[64]" name="password">Password. Blank for an open AP. MD5 hash when message is sent back as a response.</field>
+      <extensions/>
+      <field type="int8_t" name="mode" enum="WIFI_CONFIG_AP_MODE">WiFi Mode.</field>
+      <field type="int8_t" name="response" enum="WIFI_CONFIG_AP_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="300" name="PROTOCOL_VERSION">
       <wip/>
