@@ -17,6 +17,14 @@
       <entry value="16777215" name="ACCELCAL_VEHICLE_POS_SUCCESS"/>
       <entry value="16777216" name="ACCELCAL_VEHICLE_POS_FAILED"/>
     </enum>
+    <enum name="HEADING_TYPE">
+      <entry value="0" name="HEADING_TYPE_COURSE_OVER_GROUND"/>
+      <entry value="1" name="HEADING_TYPE_HEADING"/>
+    </enum>
+    <enum name="SPEED_TYPE">
+      <entry value="0" name="SPEED_TYPE_AIRSPEED"/>
+      <entry value="1" name="SPEED_TYPE_GROUNDSPEED"/>
+    </enum>
     <!-- ardupilot specific MAV_CMD_* commands -->
     <enum name="MAV_CMD">
       <entry value="211" name="MAV_CMD_DO_GRIPPER" hasLocation="false" isDestination="false">
@@ -277,6 +285,36 @@
       </entry>
       <entry value="1" name="SCRIPTING_CMD_REPL_STOP">
         <description>End a REPL session.</description>
+      </entry>
+      <entry value="43000" name="MAV_CMD_GUIDED_CHANGE_SPEED">
+        <description>Change flight speed at a given rate. This slews the vehicle at a controllable rate between it's previous speed and the new one. (affects GUIDED only. Outside GUIDED, aircraft ignores these commands. Designed for onboard companion-computer command-and-control, not normally operator/GCS control.)</description>
+        <param index="1" label="speed type" enum="SPEED_TYPE">Airspeed or groundspeed.</param>
+        <param index="2" label="speed target" units="m/s">Target Speed</param>
+        <param index="3" label="speed rate-of-change" units="m/s/s">Acceleration rate, 0 to take effect instantly</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="43001" name="MAV_CMD_GUIDED_CHANGE_ALTITUDE">
+        <description>Change target altitude at a given rate. This slews the vehicle at a controllable rate between it's previous altitude and the new one. (affects GUIDED only. Outside GUIDED, aircraft ignores these commands. Designed for onboard companion-computer command-and-control, not normally operator/GCS control.)</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3" label="alt rate-of-change" units="m/s/s" minValue="0">Rate of change, toward new altitude. 0 for maximum rate change. Positive numbers only, as negative numbers will not converge on the new target alt.</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7" label="target alt" units="m">Target Altitude</param>
+      </entry>
+      <entry value="43002" name="MAV_CMD_GUIDED_CHANGE_HEADING">
+        <description>Change to target heading at a given rate, overriding previous heading/s. This slews the vehicle at a controllable rate between it's previous heading and the new one. (affects GUIDED only. Exiting GUIDED returns aircraft to normal behaviour defined elsewhere. Designed for onboard companion-computer command-and-control, not normally operator/GCS control.)</description>
+        <param index="1" label="heading type" enum="HEADING_TYPE">course-over-ground or raw vehicle heading.</param>
+        <param index="2" label="heading target" units="deg" minValue="0" maxValue="359.99">Target heading.</param>
+        <param index="3" label="heading rate-of-change" units="m/s/s">Maximum centripetal accelearation, ie rate of change,  toward new heading.</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
       </entry>
     </enum>
     <!-- AP_Limits Enums -->
