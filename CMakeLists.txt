@@ -83,8 +83,21 @@ if (WITH_BUILD_STATIC)
 endif()
 
 # find libraries with cmake modules
-find_package(PythonInterp)
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+  option(USE_PYTHON3 "Use python3 to build MAVLink" OFF)
+else()
+  option(USE_PYTHON3 "Use python3 to build MAVLink" ON)
+endif()
 
+if(USE_PYTHON3)
+  find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+  set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
+  set(PYTHON_SITELIB ${Python3_SITELIB})  
+else()
+  find_package(PythonInterp)
+  set(PYTHON_SITELIB ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages)
+endif()
+  
 # enable languages
 if (WITH_TESTS)
     enable_language(C)
@@ -168,7 +181,7 @@ install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAM
 install(DIRECTORY ${CMAKE_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
 install(DIRECTORY ${MAVLINK_SOURCE_DIR}/share/${PROJECT_NAME} DESTINATION share COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
 if (UNIX)
-    install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages COMPONENT Dev)
+    install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION ${PYTHON_SITELIB} COMPONENT Dev)
 else ()
     install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION "share/pyshared" COMPONENT Dev)
 endif ()
