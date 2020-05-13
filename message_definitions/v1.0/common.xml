@@ -1248,6 +1248,39 @@
         <description>Yaw controlled by RC input.</description>
       </entry>
     </enum>
+    <enum name="WIFI_CONFIG_AP_RESPONSE">
+      <description>Possible responses from a WIFI_CONFIG_AP message.</description>
+      <entry value="0" name="WIFI_CONFIG_AP_RESPONSE_UNDEFINED">
+        <description>Undefined response. Likely an indicative of a system that doesn't support this request.</description>
+      </entry>
+      <entry value="1" name="WIFI_CONFIG_AP_RESPONSE_ACCEPTED">
+        <description>Changes accepted.</description>
+      </entry>
+      <entry value="2" name="WIFI_CONFIG_AP_RESPONSE_REJECTED">
+        <description>Changes rejected.</description>
+      </entry>
+      <entry value="3" name="WIFI_CONFIG_AP_RESPONSE_MODE_ERROR">
+        <description>Invalid Mode.</description>
+      </entry>
+      <entry value="4" name="WIFI_CONFIG_AP_RESPONSE_SSID_ERROR">
+        <description>Invalid SSID.</description>
+      </entry>
+      <entry value="5" name="WIFI_CONFIG_AP_RESPONSE_PASSWORD_ERROR">
+        <description>Invalid Password.</description>
+      </entry>
+    </enum>
+    <enum name="WIFI_CONFIG_AP_MODE">
+      <description>WiFi Mode.</description>
+      <entry value="0" name="WIFI_CONFIG_AP_MODE_UNDEFINED">
+        <description>WiFi mode is undefined.</description>
+      </entry>
+      <entry value="1" name="WIFI_CONFIG_AP_MODE_AP">
+        <description>WiFi configured as an access point.</description>
+      </entry>
+      <entry value="2" name="WIFI_CONFIG_AP_MODE_STATION">
+        <description>WiFi configured as a station connected to an existing local WiFi network.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM and MISSION_ITEM_INT messages) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -6061,7 +6094,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the camera model</field>
-      <field type="uint32_t" name="firmware_version">Version of the camera firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
+      <field type="uint32_t" name="firmware_version">Version of the camera firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
       <field type="float" name="focal_length" units="mm">Focal length</field>
       <field type="float" name="sensor_size_h" units="mm">Image sensor size horizontal</field>
       <field type="float" name="sensor_size_v" units="mm">Image sensor size vertical</field>
@@ -6230,7 +6263,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the gimbal vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the gimbal model</field>
-      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
+      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
       <field type="uint16_t" name="cap_flags" enum="GIMBAL_DEVICE_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
       <field type="float" name="tilt_max" units="rad">Maximum tilt/pitch angle (positive: up, negative: down)</field>
       <field type="float" name="tilt_min" units="rad">Minimum tilt/pitch angle (positive: up, negative: down)</field>
@@ -6279,9 +6312,12 @@
       <field type="float" name="feed_forward_angular_velocity_z" units="rad/s">Feed forward Z component of angular velocity, positive is yawing to the right, NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
-      <description>Configure AP SSID and Password.</description>
-      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Leave it blank to leave it unchanged.</field>
-      <field type="char[64]" name="password">Password. Leave it blank for an open AP.</field>
+      <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
+      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>
+      <field type="char[64]" name="password">Password. Blank for an open AP. MD5 hash when message is sent back as a response.</field>
+      <extensions/>
+      <field type="int8_t" name="mode" enum="WIFI_CONFIG_AP_MODE">WiFi Mode.</field>
+      <field type="int8_t" name="response" enum="WIFI_CONFIG_AP_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="300" name="PROTOCOL_VERSION">
       <wip/>
@@ -6605,8 +6641,8 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the component vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the component model</field>
-      <field type="uint32_t" name="firmware_version">Version of the component firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
-      <field type="uint32_t" name="hardware_version">Version of the component hardware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
+      <field type="uint32_t" name="firmware_version">Version of the component firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
+      <field type="uint32_t" name="hardware_version">Version of the component hardware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
       <field type="uint32_t" name="capability_flags" enum="COMPONENT_CAP_FLAGS">Bitmap of component capability flags.</field>
       <field type="uint16_t" name="component_definition_version">Component definition version (iteration)</field>
       <field type="char[140]" name="component_definition_uri">Component definition URI (if any, otherwise only basic functions will be available). The XML format is not yet specified and work in progress. </field>
