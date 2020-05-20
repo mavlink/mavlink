@@ -2037,6 +2037,17 @@
         <param index="6">Reserved, send 0</param>
         <param index="7">WIP: ID (e.g. camera ID -1 for all IDs)</param>
       </entry>
+      <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
+        <wip/>
+        <description>Request the upgrade of system components. The command is to be used to start, cancel or restart a specific upgrade process that is controlled by a component of the system that has the authority and the capability of upgrading other components, or even itself (ex: an onboard computer). For a progress update, COMMAND_ACK should be continuously sent with MAV_RESULT_IN_PROGRESS result and the progress percentage. Any restart or cancelation action should be followed by a COMMAND_ACK with a MAV_RESULT_ACCEPTED or MAV_RESULT_FAILED result, depending on how the command was processed. Same applies to a successful or unsuccessful upgrade process.</description>
+        <param index="1" label="Component ID" enum="MAV_COMPONENT">Target component identifier to which the upgrade is aimed for. If set to 0, the command is directed to all components.</param>
+        <param index="2" label="Action" minValue="0" maxValue="2" increment="1">0: Start component upgrade, 1: Cancel component upgrade, 2: Restart component upgrade.</param>
+        <param index="3" label="Reboot" minValue="0" maxValue="1" increment="1">0: Do not reboot component after the action is executed, 1: Reboot component after the action is executed.</param>
+        <param index="4">Reserved</param>
+        <param index="5">Reserved</param>
+        <param index="6">Reserved</param>
+        <param index="7">WIP: upgrade progress report rate (can be used for more granular control).</param>
+      </entry>
       <entry value="252" name="MAV_CMD_OVERRIDE_GOTO" hasLocation="true" isDestination="true">
         <description>Override current mission with command to pause mission, pause mission and move to position, continue/resume mission. When param 1 indicates that the mission is paused (MAV_GOTO_DO_HOLD), param 2 defines whether it holds in place or moves to another position.</description>
         <param index="1" label="Continue" enum="MAV_GOTO">MAV_GOTO_DO_HOLD: pause mission and either hold or move to specified position (depending on param2), MAV_GOTO_DO_CONTINUE: resume mission.</param>
