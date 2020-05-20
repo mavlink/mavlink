@@ -879,9 +879,8 @@
       <entry value="11" name="MAV_FRAME_GLOBAL_TERRAIN_ALT_INT">
         <description>Global (WGS84) coordinate frame (scaled) with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
       </entry>
-      <entry value="12" name="MAV_FRAME_RESERVED_12">
-        <deprecated since="2019-04" replaced_by="MAV_FRAME_BODY_OFFSET_NED"/>
-        <description>MAV_FRAME_BODY_FRD - Body fixed frame of reference, Z-down (x: Forward, y: Right, z: Down).</description>
+      <entry value="12" name="MAV_FRAME_BODY_FRD">
+        <description>Body fixed frame of reference, Z-down (x: Forward, y: Right, z: Down).</description>
       </entry>
       <entry value="13" name="MAV_FRAME_RESERVED_13">
         <deprecated since="2019-04" replaced_by=""/>
@@ -1348,7 +1347,7 @@
         <param index="7" label="Altitude" units="m">Landing altitude (ground level in current frame).</param>
       </entry>
       <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true">
-        <description>Takeoff from ground / hand</description>
+        <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
         <param index="1" label="Pitch">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -1471,7 +1470,7 @@
         <param index="7">Altitude/Z of goal</param>
       </entry>
       <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF" hasLocation="true" isDestination="true">
-        <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading.</description>
+        <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading. The command should be ignored by vehicles that dont support both VTOL and fixed-wing flight (multicopters, boats,etc.).</description>
         <param index="1">Empty</param>
         <param index="2" label="Transition Heading" enum="VTOL_TRANSITION_HEADING">Front transition heading.</param>
         <param index="3">Empty</param>
@@ -1619,7 +1618,7 @@
         <param index="1" label="Use Current" minValue="0" maxValue="1" increment="1">Use current (1=use current location, 0=use specified location)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
-        <param index="4">Empty</param>
+        <param index="4" label="Yaw" units="deg">Yaw angle. NaN to use default heading</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
@@ -2100,7 +2099,7 @@
       <entry value="512" name="MAV_CMD_REQUEST_MESSAGE" hasLocation="false" isDestination="false">
         <description>Request the target system(s) emit a single instance of a specified message (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).</description>
         <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID of the requested message.</param>
-        <param index="2" label="Index ID" minValue="0" increment="1">Index id (if appropriate). The use of this parameter (if any), must be defined in the requested message.</param>
+        <param index="2">Use for index ID, if required. Otherwise, the use of this parameter (if any) must be defined in the requested message. By default assumed not used (0).</param>
         <param index="3">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
         <param index="4">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
         <param index="5">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
@@ -5040,7 +5039,7 @@
     </message>
     <message id="74" name="VFR_HUD">
       <description>Metrics typically displayed on a HUD for fixed wing aircraft.</description>
-      <field type="float" name="airspeed" units="m/s">Current indicated airspeed (IAS).</field>
+      <field type="float" name="airspeed" units="m/s">Vehicle speed in form appropriate for vehicle type. For standard aircraft this is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either of which can be used by a pilot to estimate stall speed.</field>
       <field type="float" name="groundspeed" units="m/s">Current ground speed.</field>
       <field type="int16_t" name="heading" units="deg">Current heading in compass units (0-360, 0=north).</field>
       <field type="uint16_t" name="throttle" units="%">Current throttle setting (0 to 100).</field>
