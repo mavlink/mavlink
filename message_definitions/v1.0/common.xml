@@ -879,9 +879,8 @@
       <entry value="11" name="MAV_FRAME_GLOBAL_TERRAIN_ALT_INT">
         <description>Global (WGS84) coordinate frame (scaled) with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
       </entry>
-      <entry value="12" name="MAV_FRAME_RESERVED_12">
-        <deprecated since="2019-04" replaced_by="MAV_FRAME_BODY_OFFSET_NED"/>
-        <description>MAV_FRAME_BODY_FRD - Body fixed frame of reference, Z-down (x: Forward, y: Right, z: Down).</description>
+      <entry value="12" name="MAV_FRAME_BODY_FRD">
+        <description>Body fixed frame of reference, Z-down (x: Forward, y: Right, z: Down).</description>
       </entry>
       <entry value="13" name="MAV_FRAME_RESERVED_13">
         <deprecated since="2019-04" replaced_by=""/>
@@ -1348,7 +1347,7 @@
         <param index="7" label="Altitude" units="m">Landing altitude (ground level in current frame).</param>
       </entry>
       <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true">
-        <description>Takeoff from ground / hand</description>
+        <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
         <param index="1" label="Pitch">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -1471,7 +1470,7 @@
         <param index="7">Altitude/Z of goal</param>
       </entry>
       <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF" hasLocation="true" isDestination="true">
-        <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading.</description>
+        <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading. The command should be ignored by vehicles that dont support both VTOL and fixed-wing flight (multicopters, boats,etc.).</description>
         <param index="1">Empty</param>
         <param index="2" label="Transition Heading" enum="VTOL_TRANSITION_HEADING">Front transition heading.</param>
         <param index="3">Empty</param>
@@ -1619,7 +1618,7 @@
         <param index="1" label="Use Current" minValue="0" maxValue="1" increment="1">Use current (1=use current location, 0=use specified location)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
-        <param index="4">Empty</param>
+        <param index="4" label="Yaw" units="deg">Yaw angle. NaN to use default heading</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
@@ -1833,6 +1832,7 @@
       </entry>
       <!-- Camera Mount Mission Commands Enumeration -->
       <entry value="204" name="MAV_CMD_DO_MOUNT_CONFIGURE" hasLocation="false" isDestination="false">
+        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE">This message has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
         <description>Mission command to configure a camera or antenna mount</description>
         <param index="1" label="Mode" enum="MAV_MOUNT_MODE">Mount operation mode</param>
         <param index="2" label="Stabilize Roll" minValue="0" maxValue="1" increment="1">stabilize roll? (1 = yes, 0 = no)</param>
@@ -2100,7 +2100,7 @@
       <entry value="512" name="MAV_CMD_REQUEST_MESSAGE" hasLocation="false" isDestination="false">
         <description>Request the target system(s) emit a single instance of a specified message (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).</description>
         <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID of the requested message.</param>
-        <param index="2" label="Index ID" minValue="0" increment="1">Index id (if appropriate). The use of this parameter (if any), must be defined in the requested message.</param>
+        <param index="2">Use for index ID, if required. Otherwise, the use of this parameter (if any) must be defined in the requested message. By default assumed not used (0).</param>
         <param index="3">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
         <param index="4">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
         <param index="5">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
@@ -3311,6 +3311,63 @@
       </entry>
       <entry value="32" name="MAV_SMART_BATTERY_FAULT_UNDER_TEMPERATURE">
         <description>Under-temperature fault.</description>
+      </entry>
+    </enum>
+    <enum name="GENERATOR_STATUS_FLAG" bitmask="true">
+      <description>Flags to report status/failure cases for a power generator (used in GENERATOR_STATUS). Note that FAULTS are conditions that cause the generator to fail. Warnings are conditions that require attention before the next use (they indicate the system is not operating properly).</description>
+      <entry value="1" name="GENERATOR_STATUS_FLAG_OFF">
+        <description>Generator is off.</description>
+      </entry>
+      <entry value="2" name="GENERATOR_STATUS_FLAG_READY">
+        <description>Generator is ready to start generating power.</description>
+      </entry>
+      <entry value="4" name="GENERATOR_STATUS_FLAG_GENERATING">
+        <description>Generator is generating power.</description>
+      </entry>
+      <entry value="8" name="GENERATOR_STATUS_FLAG_CHARGING">
+        <description>Generator is charging the batteries (generating enough power to charge and provide the load).</description>
+      </entry>
+      <entry value="16" name="GENERATOR_STATUS_FLAG_REDUCED_POWER">
+        <description>Generator is operating at a reduced maximum power.</description>
+      </entry>
+      <entry value="32" name="GENERATOR_STATUS_FLAG_MAXPOWER">
+        <description>Generator is providing the maximum output.</description>
+      </entry>
+      <entry value="64" name="GENERATOR_STATUS_FLAG_OVERTEMP_WARNING">
+        <description>Generator is near the maximum operating temperature, cooling is insufficient.</description>
+      </entry>
+      <entry value="128" name="GENERATOR_STATUS_FLAG_OVERTEMP_FAULT">
+        <description>Generator hit the maximum operating temperature and shutdown.</description>
+      </entry>
+      <entry value="256" name="GENERATOR_STATUS_FLAG_ELECTRONICS_OVERTEMP_WARNING">
+        <description>Power electronics are near the maximum operating temperature, cooling is insufficient.</description>
+      </entry>
+      <entry value="512" name="GENERATOR_STATUS_FLAG_ELECTRONICS_OVERTEMP_FAULT">
+        <description>Power electronics hit the maximum operating temperature and shutdown.</description>
+      </entry>
+      <entry value="1024" name="GENERATOR_STATUS_FLAG_ELECTRONICS_FAULT">
+        <description>Power electronics experienced a fault and shutdown.</description>
+      </entry>
+      <entry value="2048" name="GENERATOR_STATUS_FLAG_POWERSOURCE_FAULT">
+        <description>The power source supplying the generator failed e.g. mechanical generator stopped, tether is no longer providing power, solar cell is in shade, hydrogen reaction no longer happening.</description>
+      </entry>
+      <entry value="4096" name="GENERATOR_STATUS_FLAG_COMMUNICATION_WARNING">
+        <description>Generator controller having communication problems.</description>
+      </entry>
+      <entry value="8192" name="GENERATOR_STATUS_FLAG_COOLING_WARNING">
+        <description>Power electronic or generator cooling system error.</description>
+      </entry>
+      <entry value="16384" name="GENERATOR_STATUS_FLAG_POWER_RAIL_FAULT">
+        <description>Generator controller power rail experienced a fault.</description>
+      </entry>
+      <entry value="32768" name="GENERATOR_STATUS_FLAG_OVERCURRENT_FAULT">
+        <description>Generator controller exceeded the overcurrent threshold and shutdown to prevent damage.</description>
+      </entry>
+      <entry value="65536" name="GENERATOR_STATUS_FLAG_BATTERY_OVERCHARGE_CURRENT_FAULT">
+        <description>Generator controller detected a high current going into the batteries and shutdown to prevent battery damage.</description>
+      </entry>
+      <entry value="131072" name="GENERATOR_STATUS_FLAG_OVERVOLTAGE_FAULT">
+        <description>Generator controller exceeded it's overvoltage threshold and shutdown to prevent it exceeding the voltage rating.</description>
       </entry>
     </enum>
     <enum name="MAV_VTOL_STATE">
@@ -4983,7 +5040,7 @@
     </message>
     <message id="74" name="VFR_HUD">
       <description>Metrics typically displayed on a HUD for fixed wing aircraft.</description>
-      <field type="float" name="airspeed" units="m/s">Current indicated airspeed (IAS).</field>
+      <field type="float" name="airspeed" units="m/s">Vehicle speed in form appropriate for vehicle type. For standard aircraft this is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either of which can be used by a pilot to estimate stall speed.</field>
       <field type="float" name="groundspeed" units="m/s">Current ground speed.</field>
       <field type="int16_t" name="heading" units="deg">Current heading in compass units (0-360, 0=north).</field>
       <field type="uint16_t" name="throttle" units="%">Current throttle setting (0 to 100).</field>
@@ -6037,7 +6094,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the camera model</field>
-      <field type="uint32_t" name="firmware_version">Version of the camera firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
+      <field type="uint32_t" name="firmware_version">Version of the camera firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
       <field type="float" name="focal_length" units="mm">Focal length</field>
       <field type="float" name="sensor_size_h" units="mm">Image sensor size horizontal</field>
       <field type="float" name="sensor_size_v" units="mm">Image sensor size vertical</field>
@@ -6206,7 +6263,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the gimbal vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the gimbal model</field>
-      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
+      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
       <field type="uint16_t" name="cap_flags" enum="GIMBAL_DEVICE_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
       <field type="float" name="tilt_max" units="rad">Maximum tilt/pitch angle (positive: up, negative: down)</field>
       <field type="float" name="tilt_min" units="rad">Minimum tilt/pitch angle (positive: up, negative: down)</field>
@@ -6512,6 +6569,20 @@
       <field type="uint16_t" default="0" name="cell_offset">The cell number of the first index in the 'voltages' array field. Using this field allows you to specify cell voltages for batteries with more than 16 cells.</field>
       <field type="uint16_t[16]" name="voltages" units="mV">Individual cell voltages. Batteries with more 16 cells can use the cell_offset field to specify the cell offset for the array specified in the current message . Index values above the valid cell count for this battery should have the UINT16_MAX value.</field>
     </message>
+    <message id="373" name="GENERATOR_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Telemetry of power generation system. Alternator or mechanical generator.</description>
+      <field type="uint64_t" name="status" display="bitmask" enum="GENERATOR_STATUS_FLAG">Status flags.</field>
+      <field type="uint16_t" name="generator_speed" units="rpm">Speed of electrical generator or alternator. UINT16_MAX: field not provided.</field>
+      <field type="float" name="battery_current" units="A">Current into/out of battery. Positive for out. Negative for in. NaN: field not provided.</field>
+      <field type="float" name="load_current" units="A">Current going to the UAV. If battery current not available this is the DC current from the generator. Positive for out. Negative for in. NaN: field not provided</field>
+      <field type="float" name="power_generated" units="W">The power being generated. NaN: field not provided</field>
+      <field type="float" name="bus_voltage" units="V">Voltage of the bus seen at the generator, or battery bus if battery bus is controlled by generator and at a different voltage to main bus.</field>
+      <field type="int16_t" name="rectifier_temperature" units="degC">The temperature of the rectifier or power converter. INT16_MAX: field not provided.</field>
+      <field type="float" name="bat_current_setpoint" units="A">The target battery current. Positive for out. Negative for in. NaN: field not provided</field>
+      <field type="int16_t" name="generator_temperature" units="degC">The temperature of the mechanical motor, fuel cell core or generator. INT16_MAX: field not provided.</field>
+    </message>
     <message id="375" name="ACTUATOR_OUTPUT_STATUS">
       <description>The raw values of the actuator outputs (e.g. on Pixhawk, from MAIN, AUX ports). This message supersedes SERVO_OUTPUT_RAW.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot).</field>
@@ -6570,8 +6641,8 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the component vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the component model</field>
-      <field type="uint32_t" name="firmware_version">Version of the component firmware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
-      <field type="uint32_t" name="hardware_version">Version of the component hardware (v &lt;&lt; 24 &amp; 0xff = Dev, v &lt;&lt; 16 &amp; 0xff = Patch, v &lt;&lt; 8 &amp; 0xff = Minor, v &amp; 0xff = Major)</field>
+      <field type="uint32_t" name="firmware_version">Version of the component firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
+      <field type="uint32_t" name="hardware_version">Version of the component hardware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
       <field type="uint32_t" name="capability_flags" enum="COMPONENT_CAP_FLAGS">Bitmap of component capability flags.</field>
       <field type="uint16_t" name="component_definition_version">Component definition version (iteration)</field>
       <field type="char[140]" name="component_definition_uri">Component definition URI (if any, otherwise only basic functions will be available). The XML format is not yet specified and work in progress. </field>
