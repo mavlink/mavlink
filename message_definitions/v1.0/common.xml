@@ -4066,6 +4066,9 @@
       <entry value="2" name="MAV_ODID_STATUS_AIRBORNE">
         <description>The UA is in the air.</description>
       </entry>
+      <entry value="3" name="MAV_ODID_STATUS_EMERGENCY">
+        <description>The UA is having an emergency.</description>
+      </entry>
     </enum>
     <enum name="MAV_ODID_HEIGHT_REF">
       <entry value="0" name="MAV_ODID_HEIGHT_REF_OVER_TAKEOFF">
@@ -4228,15 +4231,63 @@
         <description>Free-form text description of the purpose of the flight.</description>
       </entry>
     </enum>
-    <enum name="MAV_ODID_LOCATION_SRC">
-      <entry value="0" name="MAV_ODID_LOCATION_SRC_TAKEOFF">
+    <enum name="MAV_ODID_OPERATOR_LOCATION_TYPE">
+      <entry value="0" name="MAV_ODID_OPERATOR_LOCATION_TYPE_TAKEOFF">
         <description>The location of the operator is the same as the take-off location.</description>
       </entry>
-      <entry value="1" name="MAV_ODID_LOCATION_SRC_LIVE_GNSS">
+      <entry value="1" name="MAV_ODID_OPERATOR_LOCATION_TYPE_LIVE_GNSS">
         <description>The location of the operator is based on live GNSS data.</description>
       </entry>
-      <entry value="2" name="MAV_ODID_LOCATION_SRC_FIXED">
+      <entry value="2" name="MAV_ODID_OPERATOR_LOCATION_TYPE_FIXED">
         <description>The location of the operator is a fixed location.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_CLASSIFICATION_TYPE">
+      <entry value="0" name="MAV_ODID_CLASSIFICATION_TYPE_UNDECLARED">
+        <description>The classification type for the UA is undeclared.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_CLASSIFICATION_TYPE_EU">
+        <description>The classification type for the UA follows EU (European Union) specifications.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_CATEGORY_EU">
+      <entry value="0" name="MAV_ODID_CATEGORY_EU_UNDECLARED">
+        <description>The category for the UA, according to the EU specification, is undeclared.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_CATEGORY_EU_OPEN">
+        <description>The category for the UA, according to the EU specification, is the Open category.</description>
+      </entry>
+      <entry value="2" name="MAV_ODID_CATEGORY_EU_SPECIFIC">
+        <description>The category for the UA, according to the EU specification, is the Specific category.</description>
+      </entry>
+      <entry value="3" name="MAV_ODID_CATEGORY_EU_CERTIFIED">
+        <description>The category for the UA, according to the EU specification, is the Certified category.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_CLASS_EU">
+      <entry value="0" name="MAV_ODID_CLASS_EU_UNDECLARED">
+        <description>The class for the UA, according to the EU specification, is undeclared.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_CLASS_EU_CLASS_0">
+        <description>The class for the UA, according to the EU specification, is Class 0.</description>
+      </entry>
+      <entry value="2" name="MAV_ODID_CLASS_EU_CLASS_1">
+        <description>The class for the UA, according to the EU specification, is Class 1.</description>
+      </entry>
+      <entry value="3" name="MAV_ODID_CLASS_EU_CLASS_2">
+        <description>The class for the UA, according to the EU specification, is Class 2.</description>
+      </entry>
+      <entry value="4" name="MAV_ODID_CLASS_EU_CLASS_3">
+        <description>The class for the UA, according to the EU specification, is Class 3.</description>
+      </entry>
+      <entry value="5" name="MAV_ODID_CLASS_EU_CLASS_4">
+        <description>The class for the UA, according to the EU specification, is Class 4.</description>
+      </entry>
+      <entry value="6" name="MAV_ODID_CLASS_EU_CLASS_5">
+        <description>The class for the UA, according to the EU specification, is Class 5.</description>
+      </entry>
+      <entry value="7" name="MAV_ODID_CLASS_EU_CLASS_6">
+        <description>The class for the UA, according to the EU specification, is Class 6.</description>
       </entry>
     </enum>
     <enum name="MAV_ODID_OPERATOR_ID_TYPE">
@@ -6707,7 +6758,7 @@
     <message id="12900" name="OPEN_DRONE_ID_BASIC_ID">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. See also the ASTM Remote ID standard at https://www.astm.org/Standards/F3411.htm. The usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
+      <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. These messages are compatible with the ASTM Remote ID standard at https://www.astm.org/Standards/F3411.htm and the ASD-STAN Direct Remote ID standard. The usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
@@ -6770,13 +6821,16 @@
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
-      <field type="uint8_t" name="flags" enum="MAV_ODID_LOCATION_SRC">Specifies the location source for the operator location.</field>
+      <field type="uint8_t" name="operator_location_type" enum="MAV_ODID_OPERATOR_LOCATION_TYPE">Specifies the operator location type.</field>
+      <field type="uint8_t" name="classification_type" enum="MAV_ODID_CLASSIFICATION_TYPE">Specifies the classification type of the UA.</field>
       <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="uint16_t" name="area_count">Number of aircraft in the area, group or formation (default 1).</field>
       <field type="uint16_t" name="area_radius" units="m">Radius of the cylindrical area of the group or formation (default 0).</field>
       <field type="float" name="area_ceiling" units="m">Area Operations Ceiling relative to WGS84. If unknown: -1000 m.</field>
       <field type="float" name="area_floor" units="m">Area Operations Floor relative to WGS84. If unknown: -1000 m.</field>
+      <field type="uint8_t" name="category_eu" enum="MAV_ODID_CATEGORY_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the category of the UA.</field>
+      <field type="uint8_t" name="class_eu" enum="MAV_ODID_CLASS_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the class of the UA.</field>
     </message>
     <message id="12905" name="OPEN_DRONE_ID_OPERATOR_ID">
       <wip/>
