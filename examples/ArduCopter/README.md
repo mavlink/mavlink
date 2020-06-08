@@ -31,6 +31,7 @@ For more information regarding how to install, build, and run the ArduCopter SIT
 
 The expected output will be:
 ```
+...
 Time boot: XXXXXX
 Latitude:  XXXXXX
 Longitude: XXXXXX
@@ -38,4 +39,13 @@ Relative altitude: XXXXXX
 vx: XXXXXX
 vy: XXXXXX
 vz: XXXXXX
+...
+Time boot: XXXXXX
+Latitude:  XXXXXX
+Longitude: XXXXXX
+Relative altitude: XXXXXX
+vx: XXXXXX
+vy: XXXXXX
+vz: XXXXXX
+...
 ```
