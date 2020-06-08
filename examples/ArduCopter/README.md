@@ -1,17 +1,15 @@
 # MAVLink - ArduCopter SITL Example
 
-# First Time Setup
-1. In /mavlink/ directory, create a include folder.
-'''
+## First Time Setup
+1. In ***/mavlink/*** directory, create a *include* folder.
+```
 mkdir include
-'''
+```
 
-2. In /include/ directory, clone the MAVLink C/C++ library v2 (or v1) from the links below.
-https://github.com/mavlink/c_library_v1
-https://github.com/mavlink/c_library_v2
+2. In ***/mavlink/include/*** directory, clone the MAVLink C / C++ library [v2](https://github.com/mavlink/c_library_v2) (or [v1](https://github.com/mavlink/c_library_v1)).
 
-# Running the example
-1. Open a terminal and browse to the /mavlink/examples/ArduCopter/ directory.
+## Running the example
+1. Open a terminal and browse to the ***/mavlink/examples/ArduCopter/*** directory.
 
 2. Enter the command (to compile with GCC):
 ```
@@ -24,10 +22,20 @@ gcc -std=c99 -I ../../include/common -o mavlink_copter mavlink_copter.c
 ./mavlink_copter
 ```
 
-4. Install and run the ArduCopter SITL (usually use the command):
-'''
+4. Run the ArduCopter SITL (usually use this command):
+```
 sim_vehicle.py --map --console
-'''
+```
 
-For more information regarding ArduCopter SITL, see the link below:
-https://ardupilot.org/dev/docs/sitl-simulator-software-in-the-loop.html
+For more information regarding how to install, build, and run the ArduCopter SITL, please see [the link](https://ardupilot.org/dev/docs/sitl-simulator-software-in-the-loop.html).
+
+The expected output will be:
+```
+Time boot: XXXXXX
+Latitude:  XXXXXX
+Longitude: XXXXXX
+Relative altitude: XXXXXX
+vx: XXXXXX
+vy: XXXXXX
+vz: XXXXXX
+```
