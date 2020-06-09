@@ -2167,8 +2167,8 @@
       <entry value="526" name="MAV_CMD_STORAGE_FORMAT" hasLocation="false" isDestination="false">
         <description>Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
-        <param index="2" label="Format" minValue="0" maxValue="1" increment="1">0: No action 1: Format storage</param>
-        <param index="3" label="Reset Image Count" minValue="0" maxValue="1" increment="1">0: No action 1: Reset Image Count</param>
+        <param index="2" label="Format" minValue="0" maxValue="1" increment="1">Format storage (and reset image log). 0: No action 1: Format storage</param>
+        <param index="3" label="Reset Image Log (without formatting storage medium). This will reset CAMERA_CAPTURE_STATUS.image_count and CAMERA_IMAGE_CAPTURED.image_index." minValue="0" maxValue="1" increment="1">0: No action 1: Reset Image Count</param>
         <param index="4">Reserved (all remaining params)</param>
       </entry>
       <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS" hasLocation="false" isDestination="false">
@@ -4449,6 +4449,7 @@
       <entry value="5" name="FAILURE_UNIT_SENSOR_OPTICAL_FLOW"/>
       <entry value="6" name="FAILURE_UNIT_SENSOR_VIO"/>
       <entry value="7" name="FAILURE_UNIT_SENSOR_DISTANCE_SENSOR"/>
+      <entry value="8" name="FAILURE_UNIT_SENSOR_AIRSPEED"/>
       <entry value="100" name="FAILURE_UNIT_SYSTEM_BATTERY"/>
       <entry value="101" name="FAILURE_UNIT_SYSTEM_MOTOR"/>
       <entry value="102" name="FAILURE_UNIT_SYSTEM_SERVO"/>
@@ -6163,7 +6164,7 @@
       <field type="uint32_t" name="recording_time_ms" units="ms">Time since recording started</field>
       <field type="float" name="available_capacity" units="MiB">Available storage capacity.</field>
       <extensions/>
-      <field type="int32_t" name="image_count">Total number of images.</field>
+      <field type="int32_t" name="image_count">Total number of images captured ('forever', or until reset using MAV_CMD_STORAGE_FORMAT).</field>
     </message>
     <message id="263" name="CAMERA_IMAGE_CAPTURED">
       <description>Information about a captured image. This is emitted every time a message is captured. It may be re-requested using MAV_CMD_REQUEST_MESSAGE, using param2 to indicate the sequence number for the missing image.</description>
@@ -6175,7 +6176,7 @@
       <field type="int32_t" name="alt" units="mm">Altitude (MSL) where image was taken</field>
       <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 0, 0, 0, 0)</field>
-      <field type="int32_t" name="image_index">Zero based index of this image (image count -1)</field>
+      <field type="int32_t" name="image_index">Zero based index of this image (i.e. a new image will have index CAMERA_CAPTURE_STATUS.image count -1)</field>
       <field type="int8_t" name="capture_result">Boolean indicating success (1) or failure (0) while capturing this image.</field>
       <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
     </message>
