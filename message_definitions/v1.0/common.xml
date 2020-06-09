@@ -2055,9 +2055,9 @@
       </entry>
       <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
         <wip/>
-        <description>Request a target system to start, cancel, or restart upgrade of one (or all) of its components. For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller. The system doing the upgrade will report progress using the normal command protocol sequence (COMMAND_ACK regularly sent with result=MAV_RESULT_IN_PROGRESS, followed by a final result of MAV_RESULT_ACCEPTED or MAV_RESULT_FAILED). The operation can be cancelled, in which case the updating system would send COMMAND_ACK with MAV_RESULT_ACCEPTED. The operation can be restarted, in which case the updating system should respond with progress updates (as though it had a new message).</description>
+        <description>Request a target system to start or cancel upgrade of one (or all) of its components. For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller. The system doing the upgrade will report progress using the normal command protocol sequence (COMMAND_ACK regularly sent with result=MAV_RESULT_IN_PROGRESS, followed by a final result of MAV_RESULT_ACCEPTED or MAV_RESULT_FAILED or MAV_RESULT_CANCELLED). The operation can be cancelled, in which case the updating system would send COMMAND_ACK with MAV_RESULT_CANCELLED. To restart the operation it must first be cancelled.</description>
         <param index="1" label="Component ID" enum="MAV_COMPONENT">Component id of the component to be upgraded. If set to 0, all components should be upgraded.</param>
-        <param index="2" label="Action" minValue="0" maxValue="2" increment="1">0: Start component upgrade, 1: Cancel component upgrade, 2: Restart component upgrade.</param>
+        <param index="2" label="Action" minValue="0" maxValue="2" increment="1">0: Start component upgrade, 1: Cancel component upgrade.</param>
         <param index="3" label="Reboot" minValue="0" maxValue="1" increment="1">0: Do not reboot component after the action is executed, 1: Reboot component after the action is executed.</param>
         <param index="4">Reserved</param>
         <param index="5">Reserved</param>
@@ -2840,6 +2840,9 @@
       </entry>
       <entry value="5" name="MAV_RESULT_IN_PROGRESS">
         <description>Command is valid and is being executed. This will be followed by further progress updates, i.e. the component may send further COMMAND_ACK messages with result MAV_RESULT_IN_PROGRESS (at a rate decided by the implementation), and must terminate by sending a COMMAND_ACK message with final result of the operation. The COMMAND_ACK.progress field can be used to indicate the progress of the operation. There is no need for the sender to retry the command, but if done during execution, the component will return MAV_RESULT_IN_PROGRESS with an updated progress.</description>
+      </entry>
+      <entry value="6" name="MAV_RESULT_CANCELLED">
+        <description>An ongoing operation has been cancelled. This is sent following MAV_RESULT_IN_PROGRESS to complete the sequence.</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
