@@ -171,6 +171,9 @@
       <entry value="33" name="MAV_TYPE_SERVO">
         <description>Servo</description>
       </entry>
+      <entry value="34" name="MAV_TYPE_ODID">
+        <description>Open Drone ID. See https://mavlink.io/en/services/opendroneid.html.</description>
+      </entry>
     </enum>
     <enum name="FIRMWARE_VERSION_TYPE">
       <description>These values define the type of firmware release.  These values indicate the first version or release of this type.  For example the first alpha release would be 64, the second would be 65.</description>
@@ -732,6 +735,15 @@
       </entry>
       <entry value="221" name="MAV_COMP_ID_GPS2">
         <description>GPS #2.</description>
+      </entry>
+      <entry value="236" name="MAV_COMP_ID_ODID_TXRX_1">
+        <description>Open Drone ID transmitter/receiver (Bluetooth/WiFi/Internet).</description>
+      </entry>
+      <entry value="237" name="MAV_COMP_ID_ODID_TXRX_2">
+        <description>Open Drone ID transmitter/receiver (Bluetooth/WiFi/Internet).</description>
+      </entry>
+      <entry value="238" name="MAV_COMP_ID_ODID_TXRX_3">
+        <description>Open Drone ID transmitter/receiver (Bluetooth/WiFi/Internet).</description>
       </entry>
       <entry value="240" name="MAV_COMP_ID_UDP_BRIDGE">
         <description>Component to bridge MAVLink to UDP (i.e. from a UART).</description>
@@ -2155,8 +2167,8 @@
       <entry value="526" name="MAV_CMD_STORAGE_FORMAT" hasLocation="false" isDestination="false">
         <description>Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
-        <param index="2" label="Format" minValue="0" maxValue="1" increment="1">0: No action 1: Format storage</param>
-        <param index="3" label="Reset Image Count" minValue="0" maxValue="1" increment="1">0: No action 1: Reset Image Count</param>
+        <param index="2" label="Format" minValue="0" maxValue="1" increment="1">Format storage (and reset image log). 0: No action 1: Format storage</param>
+        <param index="3" label="Reset Image Log (without formatting storage medium). This will reset CAMERA_CAPTURE_STATUS.image_count and CAMERA_IMAGE_CAPTURED.image_index." minValue="0" maxValue="1" increment="1">0: No action 1: Reset Image Count</param>
         <param index="4">Reserved (all remaining params)</param>
       </entry>
       <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS" hasLocation="false" isDestination="false">
@@ -4150,49 +4162,49 @@
         <description>The timestamp accuracy is unknown.</description>
       </entry>
       <entry value="1" name="MAV_ODID_TIME_ACC_0_1_SECOND">
-        <description>The timestamp accuracy is smaller than 0.1 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 0.1 second.</description>
       </entry>
       <entry value="2" name="MAV_ODID_TIME_ACC_0_2_SECOND">
-        <description>The timestamp accuracy is smaller than 0.2 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 0.2 second.</description>
       </entry>
       <entry value="3" name="MAV_ODID_TIME_ACC_0_3_SECOND">
-        <description>The timestamp accuracy is smaller than 0.3 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 0.3 second.</description>
       </entry>
       <entry value="4" name="MAV_ODID_TIME_ACC_0_4_SECOND">
-        <description>The timestamp accuracy is smaller than 0.4 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 0.4 second.</description>
       </entry>
       <entry value="5" name="MAV_ODID_TIME_ACC_0_5_SECOND">
-        <description>The timestamp accuracy is smaller than 0.5 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 0.5 second.</description>
       </entry>
       <entry value="6" name="MAV_ODID_TIME_ACC_0_6_SECOND">
-        <description>The timestamp accuracy is smaller than 0.6 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 0.6 second.</description>
       </entry>
       <entry value="7" name="MAV_ODID_TIME_ACC_0_7_SECOND">
-        <description>The timestamp accuracy is smaller than 0.7 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 0.7 second.</description>
       </entry>
       <entry value="8" name="MAV_ODID_TIME_ACC_0_8_SECOND">
-        <description>The timestamp accuracy is smaller than 0.8 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 0.8 second.</description>
       </entry>
       <entry value="9" name="MAV_ODID_TIME_ACC_0_9_SECOND">
-        <description>The timestamp accuracy is smaller than 0.9 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 0.9 second.</description>
       </entry>
       <entry value="10" name="MAV_ODID_TIME_ACC_1_0_SECOND">
-        <description>The timestamp accuracy is smaller than 1.0 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 1.0 second.</description>
       </entry>
       <entry value="11" name="MAV_ODID_TIME_ACC_1_1_SECOND">
-        <description>The timestamp accuracy is smaller than 1.1 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 1.1 second.</description>
       </entry>
       <entry value="12" name="MAV_ODID_TIME_ACC_1_2_SECOND">
-        <description>The timestamp accuracy is smaller than 1.2 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 1.2 second.</description>
       </entry>
       <entry value="13" name="MAV_ODID_TIME_ACC_1_3_SECOND">
-        <description>The timestamp accuracy is smaller than 1.3 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 1.3 second.</description>
       </entry>
       <entry value="14" name="MAV_ODID_TIME_ACC_1_4_SECOND">
-        <description>The timestamp accuracy is smaller than 1.4 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 1.4 second.</description>
       </entry>
       <entry value="15" name="MAV_ODID_TIME_ACC_1_5_SECOND">
-        <description>The timestamp accuracy is smaller than 1.5 second.</description>
+        <description>The timestamp accuracy is smaller than or equal to 1.5 second.</description>
       </entry>
     </enum>
     <enum name="MAV_ODID_AUTH_TYPE">
@@ -4438,6 +4450,7 @@
       <entry value="5" name="FAILURE_UNIT_SENSOR_OPTICAL_FLOW"/>
       <entry value="6" name="FAILURE_UNIT_SENSOR_VIO"/>
       <entry value="7" name="FAILURE_UNIT_SENSOR_DISTANCE_SENSOR"/>
+      <entry value="8" name="FAILURE_UNIT_SENSOR_AIRSPEED"/>
       <entry value="100" name="FAILURE_UNIT_SYSTEM_BATTERY"/>
       <entry value="101" name="FAILURE_UNIT_SYSTEM_MOTOR"/>
       <entry value="102" name="FAILURE_UNIT_SYSTEM_SERVO"/>
@@ -6154,7 +6167,7 @@
       <field type="uint32_t" name="recording_time_ms" units="ms">Time since recording started</field>
       <field type="float" name="available_capacity" units="MiB">Available storage capacity.</field>
       <extensions/>
-      <field type="int32_t" name="image_count">Total number of images.</field>
+      <field type="int32_t" name="image_count">Total number of images captured ('forever', or until reset using MAV_CMD_STORAGE_FORMAT).</field>
     </message>
     <message id="263" name="CAMERA_IMAGE_CAPTURED">
       <description>Information about a captured image. This is emitted every time a message is captured. It may be re-requested using MAV_CMD_REQUEST_MESSAGE, using param2 to indicate the sequence number for the missing image.</description>
@@ -6166,7 +6179,7 @@
       <field type="int32_t" name="alt" units="mm">Altitude (MSL) where image was taken</field>
       <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 0, 0, 0, 0)</field>
-      <field type="int32_t" name="image_index">Zero based index of this image (image count -1)</field>
+      <field type="int32_t" name="image_index">Zero based index of this image (i.e. a new image will have index CAMERA_CAPTURE_STATUS.image count -1)</field>
       <field type="int8_t" name="capture_result">Boolean indicating success (1) or failure (0) while capturing this image.</field>
       <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
     </message>
@@ -6697,6 +6710,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. See also the ASTM Remote ID standard at https://www.astm.org/Standards/F3411.htm. The usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="id_type" enum="MAV_ODID_ID_TYPE">Indicates the format for the uas_id field of this message.</field>
       <field type="uint8_t" name="ua_type" enum="MAV_ODID_UA_TYPE">Indicates the type of UA (Unmanned Aircraft).</field>
       <field type="uint8_t[20]" name="uas_id">UAS (Unmanned Aircraft System) ID following the format specified by id_type. Shall be filled with nulls in the unused portion of the field.</field>
@@ -6705,6 +6721,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Location message. The float data types are 32-bit IEEE 754. The Location message provides the location, altitude, direction and speed of the aircraft.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="status" enum="MAV_ODID_STATUS">Indicates whether the unmanned aircraft is on the ground or in the air.</field>
       <field type="uint16_t" name="direction" units="cdeg">Direction over ground (not heading, but direction of movement) measured clockwise from true North: 0 - 35999 centi-degrees. If unknown: 36100 centi-degrees.</field>
       <field type="uint16_t" name="speed_horizontal" units="cm/s">Ground speed. Positive only. If unknown: 25500 cm/s. If speed is larger than 25425 cm/s, use 25425 cm/s.</field>
@@ -6726,6 +6745,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 4, PageCount, Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="authentication_type" enum="MAV_ODID_AUTH_TYPE">Indicates the type of authentication.</field>
       <field type="uint8_t" name="data_page">Allowed range is 0 - 4.</field>
       <field type="uint8_t" name="page_count">This field is only present for page 0. Allowed range is 0 - 5.</field>
@@ -6737,6 +6759,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Self ID message. The Self ID Message is an opportunity for the operator to (optionally) declare their identity and purpose of the flight. This message can provide additional information that could reduce the threat profile of a UA (Unmanned Aircraft) flying in a particular area or manner.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="description_type" enum="MAV_ODID_DESC_TYPE">Indicates the type of the description field.</field>
       <field type="char[23]" name="description">Text description or numeric value expressed as ASCII characters. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
@@ -6744,6 +6769,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the operator location and possible aircraft group information.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="flags" enum="MAV_ODID_LOCATION_SRC">Specifies the location source for the operator location.</field>
       <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
@@ -6756,6 +6784,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Operator ID message, which contains the CAA (Civil Aviation Authority) issued operator ID.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="operator_id_type" enum="MAV_ODID_OPERATOR_ID_TYPE">Indicates the type of the operator_id field.</field>
       <field type="char[20]" name="operator_id">Text description or numeric value expressed as ASCII characters. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
@@ -6764,7 +6795,9 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>An OpenDroneID message pack is a container for multiple encoded OpenDroneID messages (i.e. not in the format given for the above messages descriptions but after encoding into the compressed OpenDroneID byte format). Used e.g. when transmitting on Bluetooth 5.0 Long Range/Extended Advertising or on WiFi Neighbor Aware Networking.</description>
-      <field type="uint8_t" name="single_message_size" units="bytes">This field must currently always be equal to 25 bytes, since all encoded OpenDroneID messages are specificed to have this length.</field>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t" name="single_message_size" units="bytes">This field must currently always be equal to 25 (bytes), since all encoded OpenDroneID messages are specificed to have this length.</field>
       <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 10.</field>
       <field type="uint8_t[250]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
