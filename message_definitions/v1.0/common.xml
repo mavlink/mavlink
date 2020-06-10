@@ -6342,6 +6342,8 @@
       <field type="float" name="vz" units="m/s">Z Speed in NED (North, East, Down).</field>
       <field type="uint32_t" name="v_estimated_delay_us" units="us">Estimated delay of the speed data.</field>
       <field type="float" name="feed_forward_angular_velocity_z" units="rad/s">Feed forward Z component of angular velocity, positive is yawing to the right, NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
+      <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Bitmap indicating which EKF outputs are valid.</field>
+      <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
