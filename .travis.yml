@@ -1,3 +1,6 @@
+os: linux
+dist: focal
+
 env:
   global:
   - secure: Od2ZYUhrfms2EKvWZ+fhiy2aUMKO5v8km9gvRpLs3fQx/Wo23oQwVVx1lNE/bIZ9Uea596d/Y5VnSkZ4r7HRhwyyMw7F2M+5wbW+RIfHN05XaDma3H9ulF94mWQiMrbT9yFur3AeKb+Wwavl6U0bH7/DsFcXLq/z+1GaRNH/Bnc=
@@ -7,14 +10,10 @@ python:
   - "2.7"
   - "3.5"
   - "3.6"
+  - "3.7"
+  - "3.8"
 
 cache: pip
-
-matrix:
-  include:
-    - python: 3.7
-      dist: xenial
-      sudo: true
 
 before_install:
   - sudo apt-get -qq update
@@ -28,4 +27,3 @@ script:
 
 after_success:
   - ./scripts/travis_update_generated_repos.sh
-
