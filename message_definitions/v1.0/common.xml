@@ -1295,6 +1295,15 @@
         <description>WiFi disabled.</description>
       </entry>
     </enum>
+    <enum name="COMP_METADATA_TYPE">
+      <description>Possible values for COMPONENT_INFORMATION.comp_metadata_type.</description>
+      <entry value="0" name="COMP_METADATA_TYPE_VERSION">
+        <description>Version information which also includes information on other optional supported COMP_METADATA_TYPE's. Must be supported. Only downloadable from vehicle.</description>
+      </entry>
+      <entry value="1" name="COMP_METADATA_TYPE_PARAMETER">
+        <description>Parameter meta data.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM and MISSION_ITEM_INT messages) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -6672,13 +6681,11 @@
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Information about a component. For camera components instead use CAMERA_INFORMATION, and for autopilots use AUTOPILOT_VERSION. Components including GCSes should consider supporting requests of this message via MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t[32]" name="vendor_name">Name of the component vendor</field>
-      <field type="uint8_t[32]" name="model_name">Name of the component model</field>
-      <field type="uint32_t" name="firmware_version">Version of the component firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
-      <field type="uint32_t" name="hardware_version">Version of the component hardware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
-      <field type="uint32_t" name="capability_flags" enum="COMPONENT_CAP_FLAGS">Bitmap of component capability flags.</field>
-      <field type="uint16_t" name="component_definition_version">Component definition version (iteration)</field>
-      <field type="char[140]" name="component_definition_uri">Component definition URI (if any, otherwise only basic functions will be available). The XML format is not yet specified and work in progress. </field>
+      <field type="uint32_t" name="metadata_type" enum="COMP_METADATA_TYPE">The type of metadata being requested.</field>
+      <field type="uint32_t" name="metadata_uid">Unique uid for this metadata which a gcs can use for created cached metadata and understanding whether it's cache it up to date or whether it needs to download new data.</field>
+      <field type="char[70]" name="metadata_uri">Component definition URI. If prefix mavlinkftp:// file is downloaded from vehicle over mavlink ftp protocol. If prefix http[s]:// file is downloaded over internet. Files are json format. They can end in .gz to indicate file is in gzip format.</field>
+      <field type="uint32_t" name="translation_uid">Unique uid for the translation file associated with the metadata.</field>
+      <field type="char[70]" name="translation_uri">The translations for strings within the metadata file. If null the either do not exist or may be included in the metadata file itself. The translations specified here supercede any which may be in the metadata file itself. The uri format is the same as component_metadata_uri . Files are in Json Translation spec format. Empty string indicates no tranlsation file.</field>
     </message>
     <message id="400" name="PLAY_TUNE_V2">
       <wip/>
