@@ -39,6 +39,16 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
+      <entry value="215" name="MAV_CMD_DO_SET_RESUME_REPEAT_DIST">
+        <description>Set the distance to be repeated on mission resume</description>
+        <param index="1" label="Distance" units="m">Distance.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
       <entry value="83" name="MAV_CMD_NAV_ALTITUDE_WAIT">
         <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
         <param index="1">Altitude (m).</param>
@@ -255,6 +265,18 @@
         <param index="5">Empty.</param>
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
+      </entry>
+      <entry value="42701" name="MAV_CMD_SCRIPTING">
+        <description>Control onboard scripting.</description>
+        <param index="1" enum="SCRIPTING_CMD">Scripting command to execute</param>
+      </entry>
+    </enum>
+    <enum name="SCRIPTING_CMD">
+      <entry value="0" name="SCRIPTING_CMD_REPL_START">
+        <description>Start a REPL session.</description>
+      </entry>
+      <entry value="1" name="SCRIPTING_CMD_REPL_STOP">
+        <description>End a REPL session.</description>
       </entry>
     </enum>
     <!-- AP_Limits Enums -->
@@ -870,6 +892,9 @@
       <entry value="512" name="EKF_PRED_POS_HORIZ_ABS">
         <description>Set if EKF's predicted horizontal position (absolute) estimate is good.</description>
       </entry>
+      <entry value="1024" name="EKF_UNINITIALIZED">
+        <description>Set if EKF has never been healthy.</description>
+      </entry>
     </enum>
     <enum name="PID_TUNING_AXIS">
       <entry value="1" name="PID_TUNING_ROLL"/>
@@ -1408,7 +1433,7 @@
     <!-- EKF status message from autopilot to GCS. -->
     <message id="193" name="EKF_STATUS_REPORT">
       <description>EKF Status message including flags and variances.</description>
-      <field type="uint16_t" name="flags" enum="EKF_STATUS_FLAGS">Flags.</field>
+      <field type="uint16_t" name="flags" enum="EKF_STATUS_FLAGS" display="bitmask">Flags.</field>
       <!-- supported flags see EKF_STATUS_FLAGS enum -->
       <field type="float" name="velocity_variance">Velocity variance.</field>
       <!-- below 0.5 is good, 0.5~0.79 is warning, 0.8 or higher is bad -->
