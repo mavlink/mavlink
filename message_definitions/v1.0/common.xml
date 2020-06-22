@@ -471,8 +471,8 @@
         <param index="7" label="Altitude" units="m">Landing altitude (ground level in current frame).</param>
       </entry>
       <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true">
-        <description>Takeoff from ground / hand</description>
-        <param index="1" label="Pitch">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
+        <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
+        <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4" label="Yaw" units="deg">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
@@ -656,7 +656,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="113" name="MAV_CMD_CONDITION_CHANGE_ALT" hasLocation="false" isDestination="true">
-        <description>Ascend/descend at rate.  Delay mission state machine until desired altitude reached.</description>
+        <description>Ascend/descend to target altitude at specified rate. Delay mission state machine until desired altitude reached.</description>
         <param index="1" label="Rate" units="m/s">Descent / Ascend rate.</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -677,7 +677,7 @@
       </entry>
       <entry value="115" name="MAV_CMD_CONDITION_YAW" hasLocation="false" isDestination="false">
         <description>Reach a certain target angle.</description>
-        <param index="1" label="Angle" units="deg" minValue="0" maxValue="360">target angle, 0 is north</param>
+        <param index="1" label="Angle" units="deg">target angle, 0 is north</param>
         <param index="2" label="Angular Speed" units="deg/s">angular speed</param>
         <param index="3" label="Direction" minValue="-1" maxValue="1" increment="2">direction: -1: counter clockwise, 1: clockwise</param>
         <param index="4" label="Relative" minValue="0" maxValue="1" increment="1">0: absolute angle, 1: relative offset</param>
@@ -1411,7 +1411,7 @@
       <entry value="4001" name="MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE" hasLocation="true" isDestination="false">
         <description>This command sets submode circle when vehicle is in guided mode. Vehicle flies along a circle facing the center of the circle. The user can input the velocity along the circle and change the radius. If no input is given the vehicle will hold position.
                   </description>
-        <param index="1" label="Radius">Radius of desired circle in CIRCLE_MODE</param>
+        <param index="1" label="Radius" units="m">Radius of desired circle in CIRCLE_MODE</param>
         <param index="2">User defined</param>
         <param index="3">User defined</param>
         <param index="4">User defined</param>
