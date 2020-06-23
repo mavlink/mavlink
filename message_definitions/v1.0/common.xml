@@ -4961,6 +4961,36 @@
       <field type="uint8_t" name="wp_num">current waypoint number</field>
       <field type="uint16_t" name="wp_distance" units="m">distance to target</field>
     </message>
+    <message id="235" name="HIGH_LATENCY2">
+      <description>Message appropriate for high latency connections like Iridium (version 2)</description>
+      <field type="uint32_t" name="timestamp" units="ms">Timestamp (milliseconds since boot or Unix epoch)</field>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc.)</field>
+      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.</field>
+      <field type="uint16_t" name="custom_mode" display="bitmask">A bitfield for use for autopilot-specific flags (2 byte version).</field>
+      <field type="int32_t" name="latitude" units="degE7">Latitude</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude</field>
+      <field type="int16_t" name="altitude" units="m">Altitude above mean sea level</field>
+      <field type="int16_t" name="target_altitude" units="m">Altitude setpoint</field>
+      <field type="uint8_t" name="heading" units="deg/2">Heading</field>
+      <field type="uint8_t" name="target_heading" units="deg/2">Heading setpoint</field>
+      <field type="uint16_t" name="target_distance" units="dam">Distance to target waypoint or position</field>
+      <field type="uint8_t" name="throttle" units="%">Throttle</field>
+      <field type="uint8_t" name="airspeed" units="m/s*5">Airspeed</field>
+      <field type="uint8_t" name="airspeed_sp" units="m/s*5">Airspeed setpoint</field>
+      <field type="uint8_t" name="groundspeed" units="m/s*5">Groundspeed</field>
+      <field type="uint8_t" name="windspeed" units="m/s*5">Windspeed</field>
+      <field type="uint8_t" name="wind_heading" units="deg/2">Wind heading</field>
+      <field type="uint8_t" name="eph" units="dm">Maximum error horizontal position since last message</field>
+      <field type="uint8_t" name="epv" units="dm">Maximum error vertical position since last message</field>
+      <field type="int8_t" name="temperature_air" units="degC">Air temperature from airspeed sensor</field>
+      <field type="int8_t" name="climb_rate" units="dm/s">Maximum climb rate magnitude since last message</field>
+      <field type="int8_t" name="battery" units="%">Battery level (-1 if field not provided).</field>
+      <field type="uint16_t" name="wp_num">Current waypoint number</field>
+      <field type="uint16_t" name="failure_flags" enum="HL_FAILURE_FLAG" display="bitmask">Bitmap of failure flags.</field>
+      <field type="int8_t" name="custom0">Field for custom payload.</field>
+      <field type="int8_t" name="custom1">Field for custom payload.</field>
+      <field type="int8_t" name="custom2">Field for custom payload.</field>
+    </message>
     <message id="241" name="VIBRATION">
       <description>Vibration levels and accelerometer clipping</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
