@@ -513,8 +513,8 @@
       <entry value="67" name="MAV_COMP_ID_USER43">
         <description>Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.</description>
       </entry>
-      <entry value="68" name="MAV_COMP_ID_USER44">
-        <description>Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.</description>
+      <entry value="68" name="MAV_COMP_ID_TELEMETRY_RADIO">
+        <description>Telemetry radio (e.g. SiK radio, or other component that emits RADIO_STATUS messages).</description>
       </entry>
       <entry value="69" name="MAV_COMP_ID_USER45">
         <description>Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.</description>
@@ -1295,6 +1295,15 @@
         <description>WiFi disabled.</description>
       </entry>
     </enum>
+    <enum name="COMP_METADATA_TYPE">
+      <description>Possible values for COMPONENT_INFORMATION.comp_metadata_type.</description>
+      <entry value="0" name="COMP_METADATA_TYPE_VERSION">
+        <description>Version information which also includes information on other optional supported COMP_METADATA_TYPE's. Must be supported. Only downloadable from vehicle.</description>
+      </entry>
+      <entry value="1" name="COMP_METADATA_TYPE_PARAMETER">
+        <description>Parameter meta data.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM and MISSION_ITEM_INT messages) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -1363,7 +1372,7 @@
       </entry>
       <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true">
         <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
-        <param index="1" label="Pitch">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
+        <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4" label="Yaw" units="deg">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
@@ -1559,7 +1568,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="113" name="MAV_CMD_CONDITION_CHANGE_ALT" hasLocation="false" isDestination="true">
-        <description>Ascend/descend at rate.  Delay mission state machine until desired altitude reached.</description>
+        <description>Ascend/descend to target altitude at specified rate. Delay mission state machine until desired altitude reached.</description>
         <param index="1" label="Rate" units="m/s">Descent / Ascend rate.</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -1580,7 +1589,7 @@
       </entry>
       <entry value="115" name="MAV_CMD_CONDITION_YAW" hasLocation="false" isDestination="false">
         <description>Reach a certain target angle.</description>
-        <param index="1" label="Angle" units="deg" minValue="0" maxValue="360">target angle, 0 is north</param>
+        <param index="1" label="Angle" units="deg">target angle, 0 is north</param>
         <param index="2" label="Angular Speed" units="deg/s">angular speed</param>
         <param index="3" label="Direction" minValue="-1" maxValue="1" increment="2">direction: -1: counter clockwise, 1: clockwise</param>
         <param index="4" label="Relative" minValue="0" maxValue="1" increment="1">0: absolute angle, 1: relative offset</param>
@@ -2136,13 +2145,13 @@
       <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request MAVLink protocol version compatibility. All receivers should ACK the command and then emit their capabilities in an PROTOCOL_VERSION message</description>
-        <param index="1" label="Protocol">1: Request supported protocol versions by all nodes on the network</param>
+        <param index="1" label="Protocol" minValue="0" maxValue="1" increment="1">1: Request supported protocol versions by all nodes on the network</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message</description>
-        <param index="1" label="Version">1: Request autopilot version</param>
+        <param index="1" label="Version" minValue="0" maxValue="1" increment="1">1: Request autopilot version</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION" hasLocation="false" isDestination="false">
@@ -2168,7 +2177,7 @@
         <description>Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
         <param index="2" label="Format" minValue="0" maxValue="1" increment="1">Format storage (and reset image log). 0: No action 1: Format storage</param>
-        <param index="3" label="Reset Image Log (without formatting storage medium). This will reset CAMERA_CAPTURE_STATUS.image_count and CAMERA_IMAGE_CAPTURED.image_index." minValue="0" maxValue="1" increment="1">0: No action 1: Reset Image Count</param>
+        <param index="3" label="Reset Image Log" minValue="0" maxValue="1" increment="1">Reset Image Log (without formatting storage medium). This will reset CAMERA_CAPTURE_STATUS.image_count and CAMERA_IMAGE_CAPTURED.image_index. 0: No action 1: Reset Image Log</param>
         <param index="4">Reserved (all remaining params)</param>
       </entry>
       <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS" hasLocation="false" isDestination="false">
@@ -2394,7 +2403,7 @@
       <entry value="4001" name="MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE" hasLocation="true" isDestination="false">
         <description>This command sets submode circle when vehicle is in guided mode. Vehicle flies along a circle facing the center of the circle. The user can input the velocity along the circle and change the radius. If no input is given the vehicle will hold position.
                   </description>
-        <param index="1" label="Radius">Radius of desired circle in CIRCLE_MODE</param>
+        <param index="1" label="Radius" units="m">Radius of desired circle in CIRCLE_MODE</param>
         <param index="2">User defined</param>
         <param index="3">User defined</param>
         <param index="4">User defined</param>
@@ -4066,6 +4075,9 @@
       <entry value="2" name="MAV_ODID_STATUS_AIRBORNE">
         <description>The UA is in the air.</description>
       </entry>
+      <entry value="3" name="MAV_ODID_STATUS_EMERGENCY">
+        <description>The UA is having an emergency.</description>
+      </entry>
     </enum>
     <enum name="MAV_ODID_HEIGHT_REF">
       <entry value="0" name="MAV_ODID_HEIGHT_REF_OVER_TAKEOFF">
@@ -4228,15 +4240,63 @@
         <description>Free-form text description of the purpose of the flight.</description>
       </entry>
     </enum>
-    <enum name="MAV_ODID_LOCATION_SRC">
-      <entry value="0" name="MAV_ODID_LOCATION_SRC_TAKEOFF">
+    <enum name="MAV_ODID_OPERATOR_LOCATION_TYPE">
+      <entry value="0" name="MAV_ODID_OPERATOR_LOCATION_TYPE_TAKEOFF">
         <description>The location of the operator is the same as the take-off location.</description>
       </entry>
-      <entry value="1" name="MAV_ODID_LOCATION_SRC_LIVE_GNSS">
+      <entry value="1" name="MAV_ODID_OPERATOR_LOCATION_TYPE_LIVE_GNSS">
         <description>The location of the operator is based on live GNSS data.</description>
       </entry>
-      <entry value="2" name="MAV_ODID_LOCATION_SRC_FIXED">
+      <entry value="2" name="MAV_ODID_OPERATOR_LOCATION_TYPE_FIXED">
         <description>The location of the operator is a fixed location.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_CLASSIFICATION_TYPE">
+      <entry value="0" name="MAV_ODID_CLASSIFICATION_TYPE_UNDECLARED">
+        <description>The classification type for the UA is undeclared.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_CLASSIFICATION_TYPE_EU">
+        <description>The classification type for the UA follows EU (European Union) specifications.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_CATEGORY_EU">
+      <entry value="0" name="MAV_ODID_CATEGORY_EU_UNDECLARED">
+        <description>The category for the UA, according to the EU specification, is undeclared.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_CATEGORY_EU_OPEN">
+        <description>The category for the UA, according to the EU specification, is the Open category.</description>
+      </entry>
+      <entry value="2" name="MAV_ODID_CATEGORY_EU_SPECIFIC">
+        <description>The category for the UA, according to the EU specification, is the Specific category.</description>
+      </entry>
+      <entry value="3" name="MAV_ODID_CATEGORY_EU_CERTIFIED">
+        <description>The category for the UA, according to the EU specification, is the Certified category.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_CLASS_EU">
+      <entry value="0" name="MAV_ODID_CLASS_EU_UNDECLARED">
+        <description>The class for the UA, according to the EU specification, is undeclared.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_CLASS_EU_CLASS_0">
+        <description>The class for the UA, according to the EU specification, is Class 0.</description>
+      </entry>
+      <entry value="2" name="MAV_ODID_CLASS_EU_CLASS_1">
+        <description>The class for the UA, according to the EU specification, is Class 1.</description>
+      </entry>
+      <entry value="3" name="MAV_ODID_CLASS_EU_CLASS_2">
+        <description>The class for the UA, according to the EU specification, is Class 2.</description>
+      </entry>
+      <entry value="4" name="MAV_ODID_CLASS_EU_CLASS_3">
+        <description>The class for the UA, according to the EU specification, is Class 3.</description>
+      </entry>
+      <entry value="5" name="MAV_ODID_CLASS_EU_CLASS_4">
+        <description>The class for the UA, according to the EU specification, is Class 4.</description>
+      </entry>
+      <entry value="6" name="MAV_ODID_CLASS_EU_CLASS_5">
+        <description>The class for the UA, according to the EU specification, is Class 5.</description>
+      </entry>
+      <entry value="7" name="MAV_ODID_CLASS_EU_CLASS_6">
+        <description>The class for the UA, according to the EU specification, is Class 6.</description>
       </entry>
     </enum>
     <enum name="MAV_ODID_OPERATOR_ID_TYPE">
@@ -5676,6 +5736,7 @@
       <field type="float" name="horizontal_fov" units="rad">Horizontal Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
       <field type="float" name="vertical_fov" units="rad">Vertical Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
       <field type="float[4]" name="quaternion">Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid."</field>
+      <field type="uint8_t" name="signal_quality" units="%">Signal quality of the sensor. Specific to each sensor type, representing the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. 0 = unknown/unset signal quality, 1 = invalid signal, 100 = perfect signal.</field>
     </message>
     <message id="133" name="TERRAIN_REQUEST">
       <description>Request for terrain data and terrain status</description>
@@ -6669,13 +6730,11 @@
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Information about a component. For camera components instead use CAMERA_INFORMATION, and for autopilots use AUTOPILOT_VERSION. Components including GCSes should consider supporting requests of this message via MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t[32]" name="vendor_name">Name of the component vendor</field>
-      <field type="uint8_t[32]" name="model_name">Name of the component model</field>
-      <field type="uint32_t" name="firmware_version">Version of the component firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
-      <field type="uint32_t" name="hardware_version">Version of the component hardware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
-      <field type="uint32_t" name="capability_flags" enum="COMPONENT_CAP_FLAGS">Bitmap of component capability flags.</field>
-      <field type="uint16_t" name="component_definition_version">Component definition version (iteration)</field>
-      <field type="char[140]" name="component_definition_uri">Component definition URI (if any, otherwise only basic functions will be available). The XML format is not yet specified and work in progress. </field>
+      <field type="uint32_t" name="metadata_type" enum="COMP_METADATA_TYPE">The type of metadata being requested.</field>
+      <field type="uint32_t" name="metadata_uid">Unique uid for this metadata which a gcs can use for created cached metadata and understanding whether it's cache it up to date or whether it needs to download new data.</field>
+      <field type="char[70]" name="metadata_uri">Component definition URI. If prefix mavlinkftp:// file is downloaded from vehicle over mavlink ftp protocol. If prefix http[s]:// file is downloaded over internet. Files are json format. They can end in .gz to indicate file is in gzip format.</field>
+      <field type="uint32_t" name="translation_uid">Unique uid for the translation file associated with the metadata.</field>
+      <field type="char[70]" name="translation_uri">The translations for strings within the metadata file. If null the either do not exist or may be included in the metadata file itself. The translations specified here supercede any which may be in the metadata file itself. The uri format is the same as component_metadata_uri . Files are in Json Translation spec format. Empty string indicates no tranlsation file.</field>
     </message>
     <message id="400" name="PLAY_TUNE_V2">
       <wip/>
@@ -6704,7 +6763,7 @@
     <message id="12900" name="OPEN_DRONE_ID_BASIC_ID">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. See also the ASTM Remote ID standard at https://www.astm.org/Standards/F3411.htm. The usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
+      <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. These messages are compatible with the ASTM Remote ID standard at https://www.astm.org/Standards/F3411.htm and the ASD-STAN Direct Remote ID standard. The usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
@@ -6767,13 +6826,16 @@
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
-      <field type="uint8_t" name="flags" enum="MAV_ODID_LOCATION_SRC">Specifies the location source for the operator location.</field>
+      <field type="uint8_t" name="operator_location_type" enum="MAV_ODID_OPERATOR_LOCATION_TYPE">Specifies the operator location type.</field>
+      <field type="uint8_t" name="classification_type" enum="MAV_ODID_CLASSIFICATION_TYPE">Specifies the classification type of the UA.</field>
       <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="uint16_t" name="area_count">Number of aircraft in the area, group or formation (default 1).</field>
       <field type="uint16_t" name="area_radius" units="m">Radius of the cylindrical area of the group or formation (default 0).</field>
       <field type="float" name="area_ceiling" units="m">Area Operations Ceiling relative to WGS84. If unknown: -1000 m.</field>
       <field type="float" name="area_floor" units="m">Area Operations Floor relative to WGS84. If unknown: -1000 m.</field>
+      <field type="uint8_t" name="category_eu" enum="MAV_ODID_CATEGORY_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the category of the UA.</field>
+      <field type="uint8_t" name="class_eu" enum="MAV_ODID_CLASS_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the class of the UA.</field>
     </message>
     <message id="12905" name="OPEN_DRONE_ID_OPERATOR_ID">
       <wip/>
