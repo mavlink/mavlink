@@ -44,7 +44,7 @@ MAVLink *dialects* are XML files that define *protocol-* and *vendor-specific* m
 
 Dialects may *include* other MAVLink XML files.
 A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the *MAVLink standard definitions*), extending it with vendor or protocol specific messages.
-While a dialect can include any other message definition, only only a single level of nesting is supported ([at time of writing](https://github.com/ArduPilot/pymavlink/pull/248)).
+While a dialect can include any other message definition, only a single level of nesting is supported ([at time of writing](https://github.com/ArduPilot/pymavlink/pull/248)).
 
 > **Note** Vendor forks of MAVLink may contain dialect messages that are not yet merged, and hence will not appear in this documentation.
 
