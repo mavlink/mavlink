@@ -2848,7 +2848,10 @@
         <description>Command is valid, but execution has failed. This is used to indicate any non-temporary or unexpected problem, i.e. any problem that must be fixed before the command can succeed/be retried. For example, attempting to write a file when out of memory, attempting to arm when sensors are not calibrated, etc.</description>
       </entry>
       <entry value="5" name="MAV_RESULT_IN_PROGRESS">
-        <description>Command is valid and is being executed. This will be followed by further progress updates, i.e. the component may send further COMMAND_ACK messages with result MAV_RESULT_IN_PROGRESS (at a rate decided by the implementation), and must terminate by sending a COMMAND_ACK message with final result of the operation. The COMMAND_ACK.progress field can be used to indicate the progress of the operation. There is no need for the sender to retry the command, but if done during execution, the component will return MAV_RESULT_IN_PROGRESS with an updated progress.</description>
+        <description>Command is valid and is being executed. This will be followed by further progress updates, i.e. the component may send further COMMAND_ACK messages with result MAV_RESULT_IN_PROGRESS (at a rate decided by the implementation), and must terminate by sending a COMMAND_ACK message with final result of the operation. The COMMAND_ACK.progress field can be used to indicate the progress of the operation.</description>
+      </entry>
+      <entry value="6" name="MAV_RESULT_CANCELLED">
+        <description>Command has been cancelled (as a result of receiving a COMMAND_CANCEL message).</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
@@ -5177,6 +5180,14 @@
       <field type="int32_t" name="result_param2">WIP: Additional parameter of the result, example: which parameter of MAV_CMD_NAV_WAYPOINT caused it to be denied.</field>
       <field type="uint8_t" name="target_system">WIP: System which requested the command to be executed</field>
       <field type="uint8_t" name="target_component">WIP: Component which requested the command to be executed</field>
+    </message>
+    <message id="80" name="COMMAND_CANCEL">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Cancel a long running command. The target system should respond with a COMMAND_ACK to the original command with result=MAV_RESULT_CANCELLED if the long running process was cancelled. If it has already completed, the cancel action can be ignored. The cancel action can be retried until some sort of acknowledgement to the original command has been received. The command microservice is documented at https://mavlink.io/en/services/command.html</description>
+      <field type="uint8_t" name="target_system">System executing long running command. Should not be broadcast (0).</field>
+      <field type="uint8_t" name="target_component">Component executing long running command.</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">Command ID (of command to cancel).</field>
     </message>
     <message id="81" name="MANUAL_SETPOINT">
       <description>Setpoint in roll, pitch, yaw and thrust from the operator</description>
