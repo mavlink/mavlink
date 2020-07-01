@@ -2235,14 +2235,14 @@
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
       </entry>
-      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE" hasLocation="false" isDestination="false">
+      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>High level setpoint to be sent to a gimbal manager to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: a gimbal is never to react to this command but only the gimbal manager.</description>
-        <param index="1" label="Tilt angular velocity" units="deg/s">Tilt/pitch angular velocity (positive to point up).</param>
-        <param index="2" label="Pan angular velocity" units="deg/s">Pan/yaw angular velocity (positive to pan to the right).</param>
-        <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
-        <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
+        <param index="1" label="Tilt rate" units="deg/s">Tilt/pitch rate (positive to tilt up).</param>
+        <param index="2" label="Pan rate" units="deg/s">Pan/yaw rate (positive to pan to the right).</param>
+        <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Tilt/pitch angle (positive to tilt up, relative to vehicle for PAN mode, relative to world horizon for HOLD mode).</param>
+        <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Pan/yaw angle (positive to pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode).</param>
         <param index="5" label="Gimbal manager flags" enum="GIMBAL_MANAGER_FLAGS">Gimbal manager flags to use.</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
       </entry>
@@ -6429,6 +6429,19 @@
       <field type="float" name="feed_forward_angular_velocity_z" units="rad/s">Feed forward Z component of angular velocity, positive is yawing to the right, NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
       <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Bitmap indicating which estimator outputs are valid.</field>
       <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
+    </message>
+    <message id="287" name="GIMBAL_MANAGER_SET_TILTPAN">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>High level message to control a gimbal's tilt and pan angles. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</field>
+      <field type="float" name="tilt" units="rad">Tilt/pitch angle (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="pan" units="rad">Pan/yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="tilt_rate" units="rad/s">Tilt/pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="pan_rate" units="rad/s">Pan/yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
