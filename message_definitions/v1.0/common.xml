@@ -1151,17 +1151,35 @@
       <entry value="16" name="GIMBAL_MANAGER_FLAGS_YAW_LOCK">
         <description>Based on GIMBAL_DEVICE_FLAGS_YAW_LOCK</description>
       </entry>
-      <entry value="1048576" name="GIMBAL_MANAGER_FLAGS_ANGULAR_VELOCITY_RELATIVE_TO_FOCAL_LENGTH">
+      <entry value="65536" name="GIMBAL_MANAGER_FLAGS_ANGULAR_VELOCITY_RELATIVE_TO_FOCAL_LENGTH">
         <description>Scale angular velocity relative to focal length. This means the gimbal moves slower if it is zoomed in.</description>
       </entry>
-      <entry value="2097152" name="GIMBAL_MANAGER_FLAGS_NUDGE">
-        <description>Interpret attitude control on top of pointing to a location or tracking. If this flag is set, the quaternion is relative to the existing tracking angle.</description>
+      <entry value="131072" name="GIMBAL_MANAGER_FLAGS_NUDGE">
+          <description>Interpret control request as nudging. Nudging means that the control request should be calculated as an additional relative offset to the control input. When setting nuding, one of the intents needs to be sent with it. Nudging should be given up by sending a message with both NUDGE and CONTROL unset.</description>
       </entry>
-      <entry value="4194304" name="GIMBAL_MANAGER_FLAGS_OVERRIDE">
-        <description>Completely override pointing to a location or tracking. If this flag is set, the quaternion is (as usual) according to GIMBAL_MANAGER_FLAGS_YAW_LOCK.</description>
+      <entry value="262144" name="GIMBAL_MANAGER_FLAGS_CONTROL">
+        <description>Interpret as full control request. If this flag is set, the source wants to fully control the gimbal. When setting control, one of the intents needs to be sent with it. Control should be given up by sending a message with both NUDGE and CONTROL unset.</description>
       </entry>
-      <entry value="8388608" name="GIMBAL_MANAGER_FLAGS_NONE">
-        <description>This flag can be set to give up control previously set using MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE. This flag must not be combined with other flags.</description>
+      <entry value="524288" name="GIMBAL_MANAGER_FLAGS_INTENT_PILOT">
+        <description>Intent to nudge or control the gimbal as pilot (e.g. from RC)</description>
+      </entry>
+      <entry value="1048576" name="GIMBAL_MANAGER_FLAGS_INTENT_GIMBAL_OPERATOR">
+        <description>Intent to nudge or control the gimbal as gimbal operator (e.g. from an additional camera operator tablet)</description>
+      </entry>
+      <entry value="2097152" name="GIMBAL_MANAGER_FLAGS_INTENT_SMARTSHOT">
+        <description>Intent to control the gimbal for a smartshot (e.g. from a companion computer performing a smart shot)</description>
+      </entry>
+      <entry value="4194304" name="GIMBAL_MANAGER_FLAGS_INTENT_MISSION">
+        <description>Intent to control the gimbal for a mission (e.g. from the autopilot's mission)</description>
+      </entry>
+      <entry value="8388608" name="GIMBAL_MANAGER_FLAGS_INTENT_TEST">
+        <description>Intent to nudge or control the gimbal for testing purposes.</description>
+      </entry>
+      <entry value="16777216" name="GIMBAL_MANAGER_FLAGS_INTENT_CUSTOM1">
+        <description>Custom intent 1.</description>
+      </entry>
+      <entry value="16777216" name="GIMBAL_MANAGER_FLAGS_INTENT_CUSTOM2">
+        <description>Custom intent 2.</description>
       </entry>
     </enum>
     <enum name="GIMBAL_DEVICE_ERROR_FLAGS" bitmask="true">
