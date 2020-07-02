@@ -2356,6 +2356,7 @@
         <description>If the gimbal manager supports visual tracking (GIMBAL_MANAGER_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking. Such a tracking gimbal manager would usually be an integrated camera/gimbal, or alternatively a companion computer connected to a camera.</description>
         <param index="1" label="Point x" minValue="0" maxValue="1">Point to track x value.</param>
         <param index="2" label="Point y" minValue="0" maxValue="1">Point to track y value.</param>
+        <param index="6" label="Action" minValue="0" maxValue="2">0: status only (GIMBAL_MANAGER_TRACK_STATUS), 1: focus only, 2: focus and track</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
       </entry>
       <entry value="1002" name="MAV_CMD_DO_GIMBAL_MANAGER_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
@@ -2366,6 +2367,7 @@
         <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="3" label="Bottom right corner x" minValue="0" maxValue="1">Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="4" label="Bottom right corner y" minValue="0" maxValue="1">Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
+        <param index="6" label="Action" minValue="0" maxValue="2">0: information only, 1: focus only, 2: focus and track</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
@@ -6621,6 +6623,23 @@
       <field type="float" name="pan" units="rad">Pan/yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
       <field type="float" name="tilt_rate" units="rad/s">Tilt/pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="pan_rate" units="rad/s">Pan/yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
+    </message>
+    <message id="288" name="GIMBAL_MANAGER_TRACK_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Status of a tracked object, sent at a constant rate while tracking or when requested using MAV_CMD_DO_GIMBAL_MANAGER_TRACK_POINT, or MAV_CMD_DO_GIMBAL_MANAGER_TRACK_RECTANGLE.</description>
+      <field type="int32_t" name="lat" units="degE7">Latitude of tracked object</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude of tracked object</field>
+      <field type="float" name="alt" units="m">Altitude of tracked object(AMSL, WGS84)</field>
+      <field type="float" name="h_acc" units="m">Horizontal accuracy, NAN if unknown</field>
+      <field type="float" name="v_acc" units="m">Vertical accuracy, NAN if unknown</field>
+      <field type="float" name="vel_n" units="m/s">North velocity of tracked object, NAN if unknown</field>
+      <field type="float" name="vel_e" units="m/s">East velocity of tracked object, NAN if unknown</field>
+      <field type="float" name="vel_d" units="m/s">Down velocity of tracked object, NAN if unknown</field>
+      <field type="float" name="vel_acc" units="m/s">Distance between gimbal and tracked object, NAN if unknown</field>
+      <field type="float" name="dist" units="m">Distance between gimbal and tracked object, NAN if unknown</field>
+      <field type="float" name="hdg" units="rad">Heading in radians, NAN if unknown</field>
+      <field type="float" name="hdg_acc" units="rad">Accuracy of heading, NAN if unknown</field>
     </message>
     <message id="290" name="ESC_INFO">
       <wip/>
