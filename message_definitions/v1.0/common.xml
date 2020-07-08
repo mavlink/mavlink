@@ -1939,7 +1939,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="208" name="MAV_CMD_DO_PARACHUTE" hasLocation="false" isDestination="false">
-        <description>Mission command to trigger a parachute</description>
+        <description>Mission item/command to release a parachute or enable/disable auto release.</description>
         <param index="1" label="Action" enum="PARACHUTE_ACTION">Action</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -2104,10 +2104,10 @@
       </entry>
       <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
         <wip/>
-        <description>Request a target system to start, cancel, or restart upgrade of one (or all) of its components. For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller. The system doing the upgrade will report progress using the normal command protocol sequence (COMMAND_ACK regularly sent with result=MAV_RESULT_IN_PROGRESS, followed by a final result of MAV_RESULT_ACCEPTED or MAV_RESULT_FAILED). The operation can be cancelled, in which case the updating system would send COMMAND_ACK with MAV_RESULT_ACCEPTED. The operation can be restarted, in which case the updating system should respond with progress updates (as though it had a new message).</description>
+        <description>Request a target system to start an upgrade of one (or all) of its components. For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller. The system doing the upgrade will report progress using the normal command protocol sequence for a long running operation. Command protocol information: https://mavlink.io/en/services/command.html.</description>
         <param index="1" label="Component ID" enum="MAV_COMPONENT">Component id of the component to be upgraded. If set to 0, all components should be upgraded.</param>
-        <param index="2" label="Action" minValue="0" maxValue="2" increment="1">0: Start component upgrade, 1: Cancel component upgrade, 2: Restart component upgrade.</param>
-        <param index="3" label="Reboot" minValue="0" maxValue="1" increment="1">0: Do not reboot component after the action is executed, 1: Reboot component after the action is executed.</param>
+        <param index="2" label="Reboot" minValue="0" maxValue="1" increment="1">0: Do not reboot component after the action is executed, 1: Reboot component after the action is executed.</param>
+        <param index="3">Reserved</param>
         <param index="4">Reserved</param>
         <param index="5">Reserved</param>
         <param index="6">Reserved</param>
@@ -2275,14 +2275,14 @@
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
       </entry>
-      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE" hasLocation="false" isDestination="false">
+      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>High level setpoint to be sent to a gimbal manager to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: a gimbal is never to react to this command but only the gimbal manager.</description>
-        <param index="1" label="Tilt angular velocity" units="deg/s">Tilt/pitch angular velocity (positive to point up).</param>
-        <param index="2" label="Pan angular velocity" units="deg/s">Pan/yaw angular velocity (positive to pan to the right).</param>
-        <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle relative to world horizon (negative is to tilt down, positive to tilt up).</param>
-        <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Yaw/pan angle (positive is pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode) </param>
+        <param index="1" label="Tilt rate" units="deg/s">Tilt/pitch rate (positive to tilt up).</param>
+        <param index="2" label="Pan rate" units="deg/s">Pan/yaw rate (positive to pan to the right).</param>
+        <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Tilt/pitch angle (positive to tilt up, relative to vehicle for PAN mode, relative to world horizon for HOLD mode).</param>
+        <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Pan/yaw angle (positive to pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode).</param>
         <param index="5" label="Gimbal manager flags" enum="GIMBAL_MANAGER_FLAGS">Gimbal manager flags to use.</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
       </entry>
@@ -3393,61 +3393,70 @@
         <description>Under-temperature fault.</description>
       </entry>
     </enum>
-    <enum name="GENERATOR_STATUS_FLAG" bitmask="true">
+    <enum name="MAV_GENERATOR_STATUS_FLAG" bitmask="true">
       <description>Flags to report status/failure cases for a power generator (used in GENERATOR_STATUS). Note that FAULTS are conditions that cause the generator to fail. Warnings are conditions that require attention before the next use (they indicate the system is not operating properly).</description>
-      <entry value="1" name="GENERATOR_STATUS_FLAG_OFF">
+      <entry value="1" name="MAV_GENERATOR_STATUS_FLAG_OFF">
         <description>Generator is off.</description>
       </entry>
-      <entry value="2" name="GENERATOR_STATUS_FLAG_READY">
+      <entry value="2" name="MAV_GENERATOR_STATUS_FLAG_READY">
         <description>Generator is ready to start generating power.</description>
       </entry>
-      <entry value="4" name="GENERATOR_STATUS_FLAG_GENERATING">
+      <entry value="4" name="MAV_GENERATOR_STATUS_FLAG_GENERATING">
         <description>Generator is generating power.</description>
       </entry>
-      <entry value="8" name="GENERATOR_STATUS_FLAG_CHARGING">
+      <entry value="8" name="MAV_GENERATOR_STATUS_FLAG_CHARGING">
         <description>Generator is charging the batteries (generating enough power to charge and provide the load).</description>
       </entry>
-      <entry value="16" name="GENERATOR_STATUS_FLAG_REDUCED_POWER">
+      <entry value="16" name="MAV_GENERATOR_STATUS_FLAG_REDUCED_POWER">
         <description>Generator is operating at a reduced maximum power.</description>
       </entry>
-      <entry value="32" name="GENERATOR_STATUS_FLAG_MAXPOWER">
+      <entry value="32" name="MAV_GENERATOR_STATUS_FLAG_MAXPOWER">
         <description>Generator is providing the maximum output.</description>
       </entry>
-      <entry value="64" name="GENERATOR_STATUS_FLAG_OVERTEMP_WARNING">
+      <entry value="64" name="MAV_GENERATOR_STATUS_FLAG_OVERTEMP_WARNING">
         <description>Generator is near the maximum operating temperature, cooling is insufficient.</description>
       </entry>
-      <entry value="128" name="GENERATOR_STATUS_FLAG_OVERTEMP_FAULT">
+      <entry value="128" name="MAV_GENERATOR_STATUS_FLAG_OVERTEMP_FAULT">
         <description>Generator hit the maximum operating temperature and shutdown.</description>
       </entry>
-      <entry value="256" name="GENERATOR_STATUS_FLAG_ELECTRONICS_OVERTEMP_WARNING">
+      <entry value="256" name="MAV_GENERATOR_STATUS_FLAG_ELECTRONICS_OVERTEMP_WARNING">
         <description>Power electronics are near the maximum operating temperature, cooling is insufficient.</description>
       </entry>
-      <entry value="512" name="GENERATOR_STATUS_FLAG_ELECTRONICS_OVERTEMP_FAULT">
+      <entry value="512" name="MAV_GENERATOR_STATUS_FLAG_ELECTRONICS_OVERTEMP_FAULT">
         <description>Power electronics hit the maximum operating temperature and shutdown.</description>
       </entry>
-      <entry value="1024" name="GENERATOR_STATUS_FLAG_ELECTRONICS_FAULT">
+      <entry value="1024" name="MAV_GENERATOR_STATUS_FLAG_ELECTRONICS_FAULT">
         <description>Power electronics experienced a fault and shutdown.</description>
       </entry>
-      <entry value="2048" name="GENERATOR_STATUS_FLAG_POWERSOURCE_FAULT">
+      <entry value="2048" name="MAV_GENERATOR_STATUS_FLAG_POWERSOURCE_FAULT">
         <description>The power source supplying the generator failed e.g. mechanical generator stopped, tether is no longer providing power, solar cell is in shade, hydrogen reaction no longer happening.</description>
       </entry>
-      <entry value="4096" name="GENERATOR_STATUS_FLAG_COMMUNICATION_WARNING">
+      <entry value="4096" name="MAV_GENERATOR_STATUS_FLAG_COMMUNICATION_WARNING">
         <description>Generator controller having communication problems.</description>
       </entry>
-      <entry value="8192" name="GENERATOR_STATUS_FLAG_COOLING_WARNING">
+      <entry value="8192" name="MAV_GENERATOR_STATUS_FLAG_COOLING_WARNING">
         <description>Power electronic or generator cooling system error.</description>
       </entry>
-      <entry value="16384" name="GENERATOR_STATUS_FLAG_POWER_RAIL_FAULT">
+      <entry value="16384" name="MAV_GENERATOR_STATUS_FLAG_POWER_RAIL_FAULT">
         <description>Generator controller power rail experienced a fault.</description>
       </entry>
-      <entry value="32768" name="GENERATOR_STATUS_FLAG_OVERCURRENT_FAULT">
+      <entry value="32768" name="MAV_GENERATOR_STATUS_FLAG_OVERCURRENT_FAULT">
         <description>Generator controller exceeded the overcurrent threshold and shutdown to prevent damage.</description>
       </entry>
-      <entry value="65536" name="GENERATOR_STATUS_FLAG_BATTERY_OVERCHARGE_CURRENT_FAULT">
+      <entry value="65536" name="MAV_GENERATOR_STATUS_FLAG_BATTERY_OVERCHARGE_CURRENT_FAULT">
         <description>Generator controller detected a high current going into the batteries and shutdown to prevent battery damage.</description>
       </entry>
-      <entry value="131072" name="GENERATOR_STATUS_FLAG_OVERVOLTAGE_FAULT">
+      <entry value="131072" name="MAV_GENERATOR_STATUS_FLAG_OVERVOLTAGE_FAULT">
         <description>Generator controller exceeded it's overvoltage threshold and shutdown to prevent it exceeding the voltage rating.</description>
+      </entry>
+      <entry value="262144" name="MAV_GENERATOR_STATUS_FLAG_BATTERY_UNDERVOLT_FAULT">
+        <description>Batteries are under voltage (generator will not start).</description>
+      </entry>
+      <entry value="524288" name="MAV_GENERATOR_STATUS_FLAG_START_INHIBITED">
+        <description>Generator start is inhibited by e.g. a safety switch.</description>
+      </entry>
+      <entry value="1048576" name="MAV_GENERATOR_STATUS_FLAG_MAINTENANCE_REQUIRED">
+        <description>Generator requires maintenance.</description>
       </entry>
     </enum>
     <enum name="MAV_VTOL_STATE">
@@ -4000,14 +4009,15 @@
     </enum>
     <!-- parachute action enum -->
     <enum name="PARACHUTE_ACTION">
+      <description>Parachute actions. Trigger release and enable/disable auto-release.</description>
       <entry value="0" name="PARACHUTE_DISABLE">
-        <description>Disable parachute release.</description>
+        <description>Disable auto-release of parachute (i.e. release triggered by crash detectors).</description>
       </entry>
       <entry value="1" name="PARACHUTE_ENABLE">
-        <description>Enable parachute release.</description>
+        <description>Enable auto-release of parachute.</description>
       </entry>
       <entry value="2" name="PARACHUTE_RELEASE">
-        <description>Release parachute.</description>
+        <description>Release parachute and kill motors.</description>
       </entry>
     </enum>
     <enum name="MAV_TUNNEL_PAYLOAD_TYPE">
@@ -6460,6 +6470,19 @@
       <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Bitmap indicating which estimator outputs are valid.</field>
       <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
     </message>
+    <message id="287" name="GIMBAL_MANAGER_SET_TILTPAN">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>High level message to control a gimbal's tilt and pan angles. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</field>
+      <field type="float" name="tilt" units="rad">Tilt/pitch angle (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="pan" units="rad">Pan/yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="tilt_rate" units="rad/s">Tilt/pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="pan_rate" units="rad/s">Pan/yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
+    </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
       <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>
@@ -6722,7 +6745,7 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Telemetry of power generation system. Alternator or mechanical generator.</description>
-      <field type="uint64_t" name="status" display="bitmask" enum="GENERATOR_STATUS_FLAG">Status flags.</field>
+      <field type="uint64_t" name="status" display="bitmask" enum="MAV_GENERATOR_STATUS_FLAG">Status flags.</field>
       <field type="uint16_t" name="generator_speed" units="rpm">Speed of electrical generator or alternator. UINT16_MAX: field not provided.</field>
       <field type="float" name="battery_current" units="A">Current into/out of battery. Positive for out. Negative for in. NaN: field not provided.</field>
       <field type="float" name="load_current" units="A">Current going to the UAV. If battery current not available this is the DC current from the generator. Positive for out. Negative for in. NaN: field not provided</field>
