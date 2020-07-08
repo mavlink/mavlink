@@ -1281,21 +1281,18 @@
       </entry>
     </enum>
     <enum name="CELLULAR_CONFIG_RESPONSE">
-      <description>Possible responses from a WIFI_CONFIG_AP message.</description>
-      <entry value="0" name="CELLULAR_CONFIG_RESPONSE_UNDEFINED">
-        <description>Undefined response. Likely an indicative of a system that doesn't support this request.</description>
-      </entry>
-      <entry value="1" name="CELLULAR_CONFIG_RESPONSE_ACCEPTED">
+      <description>Possible responses from a CELLULAR_CONFIG message.</description>
+      <entry value="0" name="CELLULAR_CONFIG_RESPONSE_ACCEPTED">
         <description>Changes accepted.</description>
       </entry>
-      <entry value="2" name="CELLULAR_CONFIG_RESPONSE_REJECTED">
-        <description>Changes rejected.</description>
-      </entry>
-      <entry value="3" name="CELLULAR_CONFIG_RESPONSE_APN_ERROR">
+      <entry value="1" name="CELLULAR_CONFIG_RESPONSE_APN_ERROR">
         <description>Invalid APN.</description>
       </entry>
-      <entry value="4" name="CELLULAR_CONFIG_RESPONSE_PIN_ERROR">
-        <description>Invalid Password.</description>
+      <entry value="2" name="CELLULAR_CONFIG_RESPONSE_PIN_ERROR">
+        <description>Invalid PIN.</description>
+      </entry>
+      <entry value="3" name="CELLULAR_CONFIG_RESPONSE_REJECTED">
+        <description>Changes rejected.</description>
       </entry>
     </enum>
     <enum name="WIFI_CONFIG_AP_MODE">
@@ -6643,14 +6640,13 @@
     </message>
     <message id="336" name="CELLULAR_CONFIG">
       <description>Configure Cellular Modems. This message is re-emitted as an acknowledgement by the modem. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
-      <field type="uint8_t" name="enable_pin">Enable / disable PIN on the SIM card.</field>
-      <field type="char[32]" name="pin">PIN sent to the simcard. Black when PIN is disabled. MD5 hash when message is sent back as a response.</field>
-      <extensions/>
-      <field type="char[32]" name="apn">Name of the cellular APN. Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>
+      <field type="uint8_t" name="enable_pin">Enable / disable PIN on the SIM card. 0: Unchange setttings 1: PIN disabled, 2: PIN enabled.</field>
+      <field type="char[32]" name="pin">PIN sent to the simcard. Blank when PIN is disabled. MD5 hash when message is sent back as a response.</field>
+      <field type="char[32]" name="apn">Name of the cellular APN. Blank to leave it unchanged when setting. Current APN when sent back as a response.</field>
       <field type="char[32]" name="puk">Required Puk code in case the user failed to authenticate 3 times with the PIN.</field>
-      <field type="uint8_t" name="Roaming">Configure whether roaming is allowed.</field>
-      <field type="uint16_t" name="band">Black list bands.</field>
-      <field type="int8_t" name="response" enum="CELLULAR_CONFIG_RESPONSE">Message acceptance response (sent back to GS).</field>
+      <field type="uint8_t" name="roaming">Configure whether roaming is allowed, 0: Unchange setttings 1: roaming disabled, 2: roaming enabled.</field>
+      <field type="uint16_t" name="block_band_list">Black list of bands to prohibit modem from using certain bands.</field>
+      <field type="uint8_t" name="response" enum="CELLULAR_CONFIG_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="339" name="RAW_RPM">
       <wip/>
