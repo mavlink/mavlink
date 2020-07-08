@@ -3951,11 +3951,11 @@
     </enum>
     <enum name="CELLULAR_STATUS_FLAG">
       <description>These flags encode the cellular network status</description>
-      <entry value="0" name="CELLULAR_STATUS_FLAG_FAILED">
-        <description>Modem is unusable</description>
-      </entry>
-      <entry value="1" name="CELLULAR_STATUS_FLAG_UNKNOWN">
+      <entry value="0" name="CELLULAR_STATUS_FLAG_UNKNOWN">
         <description>State unknown or not reportable.</description>
+      </entry>
+      <entry value="1" name="CELLULAR_STATUS_FLAG_FAILED">
+        <description>Modem is unusable</description>
       </entry>
       <entry value="2" name="CELLULAR_STATUS_FLAG_INITIALIZING">
         <description>Modem is being initialized</description>
@@ -6656,9 +6656,9 @@
       <wip/>
       <description>Report current used cellular network status</description>
       <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
-      <field type="uint8_t" name="failure_status" enum="CELLULAR_NETWORK_FAILED_REASON">Failure status when status in in CELLUAR_STATUS_FAILED</field>
+      <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLUAR_STATUS_FAILED</field>
       <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
-      <field type="uint8_t" name="quality">Signal Quality in percent</field>
+      <field type="uint8_t" name="quality">Signal Quality in percent. If unknown, set to : UINT8_MAX</field>
       <field type="uint16_t" name="mcc">Mobile country code. If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="mnc">Mobile network code. If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="lac">Location area code. If unknown, set to: 0</field>
