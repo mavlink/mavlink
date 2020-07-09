@@ -1226,6 +1226,56 @@
         <description>The node is no longer available online.</description>
       </entry>
     </enum>
+    <enum name="ESC_CONNECTION_TYPE">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Indicates the ESC connection type.</description>
+      <entry value="0" name="ESC_CONNECTION_TYPE_PPM">
+        <description>Traditional PPM ESC.</description>
+      </entry>
+      <entry value="1" name="ESC_CONNECTION_TYPE_SERIAL">
+        <description>Serial Bus connected ESC.</description>
+      </entry>
+      <entry value="2" name="ESC_CONNECTION_TYPE_ONESHOT">
+        <description>One Shot PPM ESC.</description>
+      </entry>
+      <entry value="3" name="ESC_CONNECTION_TYPE_I2C">
+        <description>I2C ESC.</description>
+      </entry>
+      <entry value="4" name="ESC_CONNECTION_TYPE_CAN">
+        <description>CAN-Bus ESC.</description>
+      </entry>
+      <entry value="5" name="ESC_CONNECTION_TYPE_DSHOT">
+        <description>DShot ESC.</description>
+      </entry>
+    </enum>
+    <enum name="ESC_FAILURE_FLAGS" bitmask="true">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Flags to report ESC failures.</description>
+      <entry value="0" name="ESC_FAILURE_NONE">
+        <description>No ESC failure.</description>
+      </entry>
+      <entry value="1" name="ESC_FAILURE_OVER_CURRENT">
+        <description>Over current failure.</description>
+      </entry>
+      <entry value="2" name="ESC_FAILURE_OVER_VOLTAGE">
+        <description>Over voltage failure.</description>
+      </entry>
+      <entry value="4" name="ESC_FAILURE_OVER_TEMPERATURE">
+        <description>Over temperature failure.</description>
+      </entry>
+      <entry value="8" name="ESC_FAILURE_OVER_RPM">
+        <description>Over RPM failure.</description>
+      </entry>
+      <entry value="16" name="ESC_FAILURE_INCONSISTENT_CMD">
+        <description>Inconsistent command failure i.e. out of bounds.</description>
+      </entry>
+      <entry value="32" name="ESC_FAILURE_MOTOR_STUCK">
+        <description>Motor stuck failure.</description>
+      </entry>
+      <entry value="64" name="ESC_FAILURE_GENERIC">
+        <description>Generic ESC failure.</description>
+      </entry>
+    </enum>
     <enum name="STORAGE_STATUS">
       <description>Flags to indicate the status of camera storage.</description>
       <entry value="0" name="STORAGE_STATUS_EMPTY">
@@ -6520,6 +6570,30 @@
       <field type="float" name="pan" units="rad">Pan/yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
       <field type="float" name="tilt_rate" units="rad/s">Tilt/pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="pan_rate" units="rad/s">Pan/yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
+    </message>
+    <message id="290" name="ESC_INFO">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>ESC information for lower rate streaming. Recommended streaming rate 1Hz. See ESC_STATUS for higher-rate ESC data.</description>
+      <field type="uint8_t" name="index">Index of the first ESC in this message. minValue = 0, maxValue = 60, increment = 4.</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="uint16_t" name="counter">Counter of data packets received.</field>
+      <field type="uint8_t" name="count">Total number of ESCs in all messages of this type. Message fields with an index higher than this should be ignored because they contain invalid data.</field>
+      <field type="uint8_t" name="connection_type" enum="ESC_CONNECTION_TYPE">Connection type protocol for all ESC.</field>
+      <field type="uint8_t" name="info" display="bitmask">Information regarding online/offline status of each ESC.</field>
+      <field type="uint16_t[4]" name="failure_flags" enum="ESC_FAILURE_FLAGS" display="bitmask">Bitmap of ESC failure flags.</field>
+      <field type="uint32_t[4]" name="error_count">Number of reported errors by each ESC since boot.</field>
+      <field type="uint8_t[4]" name="temperature" units="degC">Temperature measured by each ESC. UINT8_MAX if data not supplied by ESC.</field>
+    </message>
+    <message id="291" name="ESC_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>ESC information for higher rate streaming. Recommended streaming rate is ~10 Hz. Information that changes more slowly is sent in ESC_INFO. It should typically only be streamed on high-bandwidth links (i.e. to a companion computer).</description>
+      <field type="uint8_t" name="index">Index of the first ESC in this message. minValue = 0, maxValue = 60, increment = 4.</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="int32_t[4]" name="rpm" units="rpm">Reported motor RPM from each ESC (negative for reverse rotation).</field>
+      <field type="float[4]" name="voltage" units="V">Voltage measured from each ESC.</field>
+      <field type="float[4]" name="current" units="A">Current measured from each ESC.</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
