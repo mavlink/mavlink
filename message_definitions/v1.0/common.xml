@@ -6639,12 +6639,14 @@
       <field type="uint8_t" name="rx_session_pending">1: Receiving session pending, 0: No receiving session pending.</field>
     </message>
     <message id="336" name="CELLULAR_CONFIG">
-      <description>Configure Cellular Modems. This message is re-emitted as an acknowledgement by the modem. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Configure cellular modems. This message is re-emitted as an acknowledgement by the modem. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint8_t" name="enable_pin">Enable / disable PIN on the SIM card. 0: Unchange setttings 1: PIN disabled, 2: PIN enabled.</field>
       <field type="char[32]" name="pin">PIN sent to the simcard. Blank when PIN is disabled. Empty when message is sent back as a response.</field>
       <field type="char[32]" name="apn">Name of the cellular APN. Blank to leave it unchanged when setting. Current APN when sent back as a response.</field>
-      <field type="char[32]" name="puk">Required Puk code in case the user failed to authenticate 3 times with the PIN.</field>
-      <field type="uint8_t" name="roaming">Configure whether roaming is allowed, 0: Unchange setttings 1: roaming disabled, 2: roaming enabled.</field>
+      <field type="char[32]" name="puk">Required PUK code in case the user failed to authenticate 3 times with the PIN.</field>
+      <field type="uint8_t" name="roaming">Configure whether roaming is allowed, 0: settings not changed, 1: roaming disabled, 2: roaming enabled.</field>
       <field type="uint8_t" name="response" enum="CELLULAR_CONFIG_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="339" name="RAW_RPM">
