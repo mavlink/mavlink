@@ -1280,6 +1280,21 @@
         <description>Invalid Password.</description>
       </entry>
     </enum>
+    <enum name="CELLULAR_CONFIG_RESPONSE">
+      <description>Possible responses from a CELLULAR_CONFIG message.</description>
+      <entry value="0" name="CELLULAR_CONFIG_RESPONSE_ACCEPTED">
+        <description>Changes accepted.</description>
+      </entry>
+      <entry value="1" name="CELLULAR_CONFIG_RESPONSE_APN_ERROR">
+        <description>Invalid APN.</description>
+      </entry>
+      <entry value="2" name="CELLULAR_CONFIG_RESPONSE_PIN_ERROR">
+        <description>Invalid PIN.</description>
+      </entry>
+      <entry value="3" name="CELLULAR_CONFIG_RESPONSE_REJECTED">
+        <description>Changes rejected.</description>
+      </entry>
+    </enum>
     <enum name="WIFI_CONFIG_AP_MODE">
       <description>WiFi Mode.</description>
       <entry value="0" name="WIFI_CONFIG_AP_MODE_UNDEFINED">
@@ -3961,10 +3976,61 @@
       <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
       <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
     </enum>
-    <enum name="CELLULAR_NETWORK_STATUS_FLAG" bitmask="true">
+    <enum name="CELLULAR_STATUS_FLAG">
       <description>These flags encode the cellular network status</description>
-      <entry value="1" name="CELLULAR_NETWORK_STATUS_FLAG_ROAMING">
-        <description>Roaming is active</description>
+      <entry value="0" name="CELLULAR_STATUS_FLAG_UNKNOWN">
+        <description>State unknown or not reportable.</description>
+      </entry>
+      <entry value="1" name="CELLULAR_STATUS_FLAG_FAILED">
+        <description>Modem is unusable</description>
+      </entry>
+      <entry value="2" name="CELLULAR_STATUS_FLAG_INITIALIZING">
+        <description>Modem is being initialized</description>
+      </entry>
+      <entry value="3" name="CELLULAR_STATUS_FLAG_LOCKED">
+        <description>Modem is locked</description>
+      </entry>
+      <entry value="4" name="CELLULAR_STATUS_FLAG_DISABLED">
+        <description>Modem is not enabled and is powered down</description>
+      </entry>
+      <entry value="5" name="CELLULAR_STATUS_FLAG_DISABLING">
+        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_DISABLED state</description>
+      </entry>
+      <entry value="6" name="CELLULAR_STATUS_FLAG_ENABLING">
+        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_ENABLED state</description>
+      </entry>
+      <entry value="7" name="CELLULAR_STATUS_FLAG_ENABLED">
+        <description>Modem is enabled and powered on but not registered with a network provider and not available for data connections</description>
+      </entry>
+      <entry value="8" name="CELLULAR_STATUS_FLAG_SEARCHING">
+        <description>Modem is searching for a network provider to register</description>
+      </entry>
+      <entry value="9" name="CELLULAR_STATUS_FLAG_REGISTERED">
+        <description>Modem is registered with a network provider, and data connections and messaging may be available for use</description>
+      </entry>
+      <entry value="10" name="CELLULAR_STATUS_FLAG_DISCONNECTING">
+        <description>Modem is disconnecting and deactivating the last active packet data bearer. This state will not be entered if more than one packet data bearer is active and one of the active bearers is deactivated</description>
+      </entry>
+      <entry value="11" name="CELLULAR_STATUS_FLAG_CONNECTING">
+        <description>Modem is activating and connecting the first packet data bearer. Subsequent bearer activations when another bearer is already active do not cause this state to be entered</description>
+      </entry>
+      <entry value="12" name="CELLULAR_STATUS_FLAG_CONNECTED">
+        <description>One or more packet data bearers is active and connected</description>
+      </entry>
+    </enum>
+    <enum name="CELLULAR_NETWORK_FAILED_REASON">
+      <description>These flags are used to diagnose the failure state of CELLULAR_STATUS</description>
+      <entry value="0" name="CELLULAR_NETWORK_FAILED_REASON_NONE">
+        <description>No error</description>
+      </entry>
+      <entry value="1" name="CELLULAR_NETWORK_FAILED_REASON_UNKNOWN">
+        <description>Error state is unknown</description>
+      </entry>
+      <entry value="2" name="CELLULAR_NETWORK_FAILED_REASON_SIM_MISSING">
+        <description>SIM is required for the modem but missing</description>
+      </entry>
+      <entry value="3" name="CELLULAR_NETWORK_FAILED_REASON_SIM_ERROR">
+        <description>SIM is available, but not usuable for connection</description>
       </entry>
     </enum>
     <enum name="PRECISION_LAND_MODE">
@@ -6616,13 +6682,13 @@
     <message id="334" name="CELLULAR_STATUS">
       <wip/>
       <description>Report current used cellular network status</description>
-      <field type="uint16_t" name="status" enum="CELLULAR_NETWORK_STATUS_FLAG" display="bitmask">Status bitmap</field>
+      <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
+      <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLUAR_STATUS_FAILED</field>
       <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
-      <field type="uint8_t" name="quality">Cellular network RSSI/RSRP in dBm, absolute value</field>
-      <field type="uint16_t" name="mcc">Mobile country code. If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="mnc">Mobile network code. If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="lac">Location area code. If unknown, set to: 0</field>
-      <field type="uint32_t" name="cid">Cell ID. If unknown, set to: UINT32_MAX</field>
+      <field type="uint8_t" name="quality">Signal quality in percent. If unknown, set to UINT8_MAX</field>
+      <field type="uint16_t" name="mcc">Mobile country code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="mnc">Mobile network code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="lac">Location area code. If unknown, set to 0</field>
     </message>
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
@@ -6634,6 +6700,17 @@
       <field type="uint8_t" name="ring_pending">1: Ring call pending, 0: No call pending.</field>
       <field type="uint8_t" name="tx_session_pending">1: Transmission session pending, 0: No transmission session pending.</field>
       <field type="uint8_t" name="rx_session_pending">1: Receiving session pending, 0: No receiving session pending.</field>
+    </message>
+    <message id="336" name="CELLULAR_CONFIG">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Configure cellular modems. This message is re-emitted as an acknowledgement by the modem. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE.</description>
+      <field type="uint8_t" name="enable_pin">Enable / disable PIN on the SIM card. 0: Unchange setttings 1: PIN disabled, 2: PIN enabled.</field>
+      <field type="char[32]" name="pin">PIN sent to the simcard. Blank when PIN is disabled. Empty when message is sent back as a response.</field>
+      <field type="char[32]" name="apn">Name of the cellular APN. Blank to leave it unchanged when setting. Current APN when sent back as a response.</field>
+      <field type="char[32]" name="puk">Required PUK code in case the user failed to authenticate 3 times with the PIN.</field>
+      <field type="uint8_t" name="roaming">Configure whether roaming is allowed, 0: settings not changed, 1: roaming disabled, 2: roaming enabled.</field>
+      <field type="uint8_t" name="response" enum="CELLULAR_CONFIG_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="339" name="RAW_RPM">
       <wip/>
