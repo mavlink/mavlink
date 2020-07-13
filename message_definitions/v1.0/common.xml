@@ -1226,6 +1226,56 @@
         <description>The node is no longer available online.</description>
       </entry>
     </enum>
+    <enum name="ESC_CONNECTION_TYPE">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Indicates the ESC connection type.</description>
+      <entry value="0" name="ESC_CONNECTION_TYPE_PPM">
+        <description>Traditional PPM ESC.</description>
+      </entry>
+      <entry value="1" name="ESC_CONNECTION_TYPE_SERIAL">
+        <description>Serial Bus connected ESC.</description>
+      </entry>
+      <entry value="2" name="ESC_CONNECTION_TYPE_ONESHOT">
+        <description>One Shot PPM ESC.</description>
+      </entry>
+      <entry value="3" name="ESC_CONNECTION_TYPE_I2C">
+        <description>I2C ESC.</description>
+      </entry>
+      <entry value="4" name="ESC_CONNECTION_TYPE_CAN">
+        <description>CAN-Bus ESC.</description>
+      </entry>
+      <entry value="5" name="ESC_CONNECTION_TYPE_DSHOT">
+        <description>DShot ESC.</description>
+      </entry>
+    </enum>
+    <enum name="ESC_FAILURE_FLAGS" bitmask="true">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Flags to report ESC failures.</description>
+      <entry value="0" name="ESC_FAILURE_NONE">
+        <description>No ESC failure.</description>
+      </entry>
+      <entry value="1" name="ESC_FAILURE_OVER_CURRENT">
+        <description>Over current failure.</description>
+      </entry>
+      <entry value="2" name="ESC_FAILURE_OVER_VOLTAGE">
+        <description>Over voltage failure.</description>
+      </entry>
+      <entry value="4" name="ESC_FAILURE_OVER_TEMPERATURE">
+        <description>Over temperature failure.</description>
+      </entry>
+      <entry value="8" name="ESC_FAILURE_OVER_RPM">
+        <description>Over RPM failure.</description>
+      </entry>
+      <entry value="16" name="ESC_FAILURE_INCONSISTENT_CMD">
+        <description>Inconsistent command failure i.e. out of bounds.</description>
+      </entry>
+      <entry value="32" name="ESC_FAILURE_MOTOR_STUCK">
+        <description>Motor stuck failure.</description>
+      </entry>
+      <entry value="64" name="ESC_FAILURE_GENERIC">
+        <description>Generic ESC failure.</description>
+      </entry>
+    </enum>
     <enum name="STORAGE_STATUS">
       <description>Flags to indicate the status of camera storage.</description>
       <entry value="0" name="STORAGE_STATUS_EMPTY">
@@ -1278,6 +1328,21 @@
       </entry>
       <entry value="5" name="WIFI_CONFIG_AP_RESPONSE_PASSWORD_ERROR">
         <description>Invalid Password.</description>
+      </entry>
+    </enum>
+    <enum name="CELLULAR_CONFIG_RESPONSE">
+      <description>Possible responses from a CELLULAR_CONFIG message.</description>
+      <entry value="0" name="CELLULAR_CONFIG_RESPONSE_ACCEPTED">
+        <description>Changes accepted.</description>
+      </entry>
+      <entry value="1" name="CELLULAR_CONFIG_RESPONSE_APN_ERROR">
+        <description>Invalid APN.</description>
+      </entry>
+      <entry value="2" name="CELLULAR_CONFIG_RESPONSE_PIN_ERROR">
+        <description>Invalid PIN.</description>
+      </entry>
+      <entry value="3" name="CELLULAR_CONFIG_RESPONSE_REJECTED">
+        <description>Changes rejected.</description>
       </entry>
     </enum>
     <enum name="WIFI_CONFIG_AP_MODE">
@@ -1716,6 +1781,18 @@
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
+      </entry>
+      <entry value="187" name="MAV_CMD_DO_SET_ACTUATOR" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Sets actuators (e.g. servos) to a desired value. The actuator numbers are mapped to specific outputs (e.g. on any MAIN or AUX PWM or UAVCAN) using a flight-stack specific mechanism (i.e. a parameter).</description>
+        <param index="1" label="Actuator 1" minValue="-1" maxValue="1">Actuator 1 value, scaled from [-1 to 1]. NaN to ignore.</param>
+        <param index="2" label="Actuator 2" minValue="-1" maxValue="1">Actuator 2 value, scaled from [-1 to 1]. NaN to ignore.</param>
+        <param index="3" label="Actuator 3" minValue="-1" maxValue="1">Actuator 3 value, scaled from [-1 to 1]. NaN to ignore.</param>
+        <param index="4" label="Actuator 4" minValue="-1" maxValue="1">Actuator 4 value, scaled from [-1 to 1]. NaN to ignore.</param>
+        <param index="5" label="Actuator 5" minValue="-1" maxValue="1">Actuator 5 value, scaled from [-1 to 1]. NaN to ignore.</param>
+        <param index="6" label="Actuator 6" minValue="-1" maxValue="1">Actuator 6 value, scaled from [-1 to 1]. NaN to ignore.</param>
+        <param index="7" label="Index" minValue="0" increment="1">Index of actuator set (i.e if set to 1, Actuator 1 becomes Actuator 7)</param>
       </entry>
       <entry value="189" name="MAV_CMD_DO_LAND_START" hasLocation="true" isDestination="false">
         <description>Mission command to perform a landing. This is used as a marker in a mission to tell the autopilot where a sequence of mission items that represents a landing starts. It may also be sent via a COMMAND_LONG to trigger a landing, in which case the nearest (geographically) landing sequence in the mission will be used. The Latitude/Longitude is optional, and may be set to 0 if not needed. If specified then it will be used to help find the closest landing sequence.</description>
@@ -3949,10 +4026,61 @@
       <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
       <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
     </enum>
-    <enum name="CELLULAR_NETWORK_STATUS_FLAG" bitmask="true">
+    <enum name="CELLULAR_STATUS_FLAG">
       <description>These flags encode the cellular network status</description>
-      <entry value="1" name="CELLULAR_NETWORK_STATUS_FLAG_ROAMING">
-        <description>Roaming is active</description>
+      <entry value="0" name="CELLULAR_STATUS_FLAG_UNKNOWN">
+        <description>State unknown or not reportable.</description>
+      </entry>
+      <entry value="1" name="CELLULAR_STATUS_FLAG_FAILED">
+        <description>Modem is unusable</description>
+      </entry>
+      <entry value="2" name="CELLULAR_STATUS_FLAG_INITIALIZING">
+        <description>Modem is being initialized</description>
+      </entry>
+      <entry value="3" name="CELLULAR_STATUS_FLAG_LOCKED">
+        <description>Modem is locked</description>
+      </entry>
+      <entry value="4" name="CELLULAR_STATUS_FLAG_DISABLED">
+        <description>Modem is not enabled and is powered down</description>
+      </entry>
+      <entry value="5" name="CELLULAR_STATUS_FLAG_DISABLING">
+        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_DISABLED state</description>
+      </entry>
+      <entry value="6" name="CELLULAR_STATUS_FLAG_ENABLING">
+        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_ENABLED state</description>
+      </entry>
+      <entry value="7" name="CELLULAR_STATUS_FLAG_ENABLED">
+        <description>Modem is enabled and powered on but not registered with a network provider and not available for data connections</description>
+      </entry>
+      <entry value="8" name="CELLULAR_STATUS_FLAG_SEARCHING">
+        <description>Modem is searching for a network provider to register</description>
+      </entry>
+      <entry value="9" name="CELLULAR_STATUS_FLAG_REGISTERED">
+        <description>Modem is registered with a network provider, and data connections and messaging may be available for use</description>
+      </entry>
+      <entry value="10" name="CELLULAR_STATUS_FLAG_DISCONNECTING">
+        <description>Modem is disconnecting and deactivating the last active packet data bearer. This state will not be entered if more than one packet data bearer is active and one of the active bearers is deactivated</description>
+      </entry>
+      <entry value="11" name="CELLULAR_STATUS_FLAG_CONNECTING">
+        <description>Modem is activating and connecting the first packet data bearer. Subsequent bearer activations when another bearer is already active do not cause this state to be entered</description>
+      </entry>
+      <entry value="12" name="CELLULAR_STATUS_FLAG_CONNECTED">
+        <description>One or more packet data bearers is active and connected</description>
+      </entry>
+    </enum>
+    <enum name="CELLULAR_NETWORK_FAILED_REASON">
+      <description>These flags are used to diagnose the failure state of CELLULAR_STATUS</description>
+      <entry value="0" name="CELLULAR_NETWORK_FAILED_REASON_NONE">
+        <description>No error</description>
+      </entry>
+      <entry value="1" name="CELLULAR_NETWORK_FAILED_REASON_UNKNOWN">
+        <description>Error state is unknown</description>
+      </entry>
+      <entry value="2" name="CELLULAR_NETWORK_FAILED_REASON_SIM_MISSING">
+        <description>SIM is required for the modem but missing</description>
+      </entry>
+      <entry value="3" name="CELLULAR_NETWORK_FAILED_REASON_SIM_ERROR">
+        <description>SIM is available, but not usuable for connection</description>
       </entry>
     </enum>
     <enum name="PRECISION_LAND_MODE">
@@ -6444,6 +6572,30 @@
       <field type="float" name="tilt_rate" units="rad/s">Tilt/pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="pan_rate" units="rad/s">Pan/yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
     </message>
+    <message id="290" name="ESC_INFO">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>ESC information for lower rate streaming. Recommended streaming rate 1Hz. See ESC_STATUS for higher-rate ESC data.</description>
+      <field type="uint8_t" name="index">Index of the first ESC in this message. minValue = 0, maxValue = 60, increment = 4.</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="uint16_t" name="counter">Counter of data packets received.</field>
+      <field type="uint8_t" name="count">Total number of ESCs in all messages of this type. Message fields with an index higher than this should be ignored because they contain invalid data.</field>
+      <field type="uint8_t" name="connection_type" enum="ESC_CONNECTION_TYPE">Connection type protocol for all ESC.</field>
+      <field type="uint8_t" name="info" display="bitmask">Information regarding online/offline status of each ESC.</field>
+      <field type="uint16_t[4]" name="failure_flags" enum="ESC_FAILURE_FLAGS" display="bitmask">Bitmap of ESC failure flags.</field>
+      <field type="uint32_t[4]" name="error_count">Number of reported errors by each ESC since boot.</field>
+      <field type="uint8_t[4]" name="temperature" units="degC">Temperature measured by each ESC. UINT8_MAX if data not supplied by ESC.</field>
+    </message>
+    <message id="291" name="ESC_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>ESC information for higher rate streaming. Recommended streaming rate is ~10 Hz. Information that changes more slowly is sent in ESC_INFO. It should typically only be streamed on high-bandwidth links (i.e. to a companion computer).</description>
+      <field type="uint8_t" name="index">Index of the first ESC in this message. minValue = 0, maxValue = 60, increment = 4.</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="int32_t[4]" name="rpm" units="rpm">Reported motor RPM from each ESC (negative for reverse rotation).</field>
+      <field type="float[4]" name="voltage" units="V">Voltage measured from each ESC.</field>
+      <field type="float[4]" name="current" units="A">Current measured from each ESC.</field>
+    </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
       <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>
@@ -6605,13 +6757,13 @@
     <message id="334" name="CELLULAR_STATUS">
       <wip/>
       <description>Report current used cellular network status</description>
-      <field type="uint16_t" name="status" enum="CELLULAR_NETWORK_STATUS_FLAG" display="bitmask">Status bitmap</field>
+      <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
+      <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLUAR_STATUS_FAILED</field>
       <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
-      <field type="uint8_t" name="quality">Cellular network RSSI/RSRP in dBm, absolute value</field>
-      <field type="uint16_t" name="mcc">Mobile country code. If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="mnc">Mobile network code. If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="lac">Location area code. If unknown, set to: 0</field>
-      <field type="uint32_t" name="cid">Cell ID. If unknown, set to: UINT32_MAX</field>
+      <field type="uint8_t" name="quality">Signal quality in percent. If unknown, set to UINT8_MAX</field>
+      <field type="uint16_t" name="mcc">Mobile country code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="mnc">Mobile network code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="lac">Location area code. If unknown, set to 0</field>
     </message>
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
@@ -6623,6 +6775,17 @@
       <field type="uint8_t" name="ring_pending">1: Ring call pending, 0: No call pending.</field>
       <field type="uint8_t" name="tx_session_pending">1: Transmission session pending, 0: No transmission session pending.</field>
       <field type="uint8_t" name="rx_session_pending">1: Receiving session pending, 0: No receiving session pending.</field>
+    </message>
+    <message id="336" name="CELLULAR_CONFIG">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Configure cellular modems. This message is re-emitted as an acknowledgement by the modem. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE.</description>
+      <field type="uint8_t" name="enable_pin">Enable / disable PIN on the SIM card. 0: Unchange setttings 1: PIN disabled, 2: PIN enabled.</field>
+      <field type="char[32]" name="pin">PIN sent to the simcard. Blank when PIN is disabled. Empty when message is sent back as a response.</field>
+      <field type="char[32]" name="apn">Name of the cellular APN. Blank to leave it unchanged when setting. Current APN when sent back as a response.</field>
+      <field type="char[32]" name="puk">Required PUK code in case the user failed to authenticate 3 times with the PIN.</field>
+      <field type="uint8_t" name="roaming">Configure whether roaming is allowed, 0: settings not changed, 1: roaming disabled, 2: roaming enabled.</field>
+      <field type="uint8_t" name="response" enum="CELLULAR_CONFIG_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="339" name="RAW_RPM">
       <wip/>
