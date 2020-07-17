@@ -3498,6 +3498,12 @@
       <entry value="1048576" name="MAV_GENERATOR_STATUS_FLAG_MAINTENANCE_REQUIRED">
         <description>Generator requires maintenance.</description>
       </entry>
+      <entry value="2097152" name="MAV_GENERATOR_STATUS_FLAG_WARMING_UP">
+        <description>Generator is not ready to generate yet.</description>
+      </entry>
+      <entry value="4194304" name="MAV_GENERATOR_STATUS_FLAG_IDLE">
+        <description>Generator is idle.</description>
+      </entry>
     </enum>
     <enum name="MAV_VTOL_STATE">
       <description>Enumeration of VTOL states</description>
@@ -6883,6 +6889,8 @@
       <field type="int16_t" name="rectifier_temperature" units="degC">The temperature of the rectifier or power converter. INT16_MAX: field not provided.</field>
       <field type="float" name="bat_current_setpoint" units="A">The target battery current. Positive for out. Negative for in. NaN: field not provided</field>
       <field type="int16_t" name="generator_temperature" units="degC">The temperature of the mechanical motor, fuel cell core or generator. INT16_MAX: field not provided.</field>
+      <field type="uint32_t" name="runtime" units="s">Seconds this generator has run since it was rebooted. UINT32_MAX: field not provided.</field>
+      <field type="int32_t" name="time_until_maintenance" units="s">Seconds until this generator requires maintenance.  A negative value indicates maintenance is past-due. INT32_MAX: field not provided.</field>
     </message>
     <message id="375" name="ACTUATOR_OUTPUT_STATUS">
       <description>The raw values of the actuator outputs (e.g. on Pixhawk, from MAIN, AUX ports). This message supersedes SERVO_OUTPUT_RAW.</description>
