@@ -1372,6 +1372,21 @@
         <description>Parameter meta data.</description>
       </entry>
     </enum>
+    <enum name="PARAM_EXT_TRANSACTION_RESPONSE">
+      <description>Possible responses from a PARAM_EXT_START_TRANSACTION and PARAM_EXT_COMMIT_TRANSACTION messages.</description>
+      <entry value="0" name="PARAM_EXT_TRANSACTION_RESPONSE_ACCEPTED">
+        <description>Transaction accepted.</description>
+      </entry>
+      <entry value="1" name="PARAM_EXT_TRANSACTION_RESPONSE_FAILED">
+        <description>Transaction failed.</description>
+      </entry>
+      <entry value="2" name="PARAM_EXT_TRANSACTION_RESPONSE_UNSUPPORTED">
+        <description>Transaction unsupported.</description>
+      </entry>
+      <entry value="3" name="PARAM_EXT_TRANSACTION_RESPONSE_INPROGRESS">
+        <description>Transaction in progress.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -6701,6 +6716,22 @@
       <field type="char[128]" name="param_value">Parameter value (new value if PARAM_ACK_ACCEPTED, current value otherwise)</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
+    </message>
+    <message id="325" name="PARAM_EXT_START_TRANSACTION">
+      <description>Request to start a new parameter transaction. The response (ack) will contain the same message but with a response attached to it.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="client_transaction_id">This field contains the transaction id for the sending side. </field>
+      <field type="uint32_t" name="server_transaction_id">This field contains the transaction id for the receiving side. It will be set to zero in the request and will be filled in only in the response. </field>
+      <field type="uint8_t" name="response" enum="PARAM_EXT_TRANSACTION_RESPONSE">Message acceptance response (sent back to GS).</field>
+    </message>
+    <message id="326" name="PARAM_EXT_COMMIT_TRANSACTION">
+      <description>Request to end the current parameter transaction. This message will have effect only if a transaction was previously opened using the PARAM_EXT_START_TRANSACTION message. The response will contain the same message but with a response attached to it. The response can either be a success/failure or and in progress in case the receiving side takes some time to apply the parameters.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="client_transaction_id">This field contains the transaction id for the sending side.  </field>
+      <field type="uint32_t" name="server_transaction_id">This field contains the transaction id for the receiving side. It will be set to zero in the request and will be filled in only in the response. </field>
+      <field type="uint8_t" name="response" enum="PARAM_EXT_TRANSACTION_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="330" name="OBSTACLE_DISTANCE">
       <description>Obstacle distances in front of the sensor, starting from the left in increment degrees to the right</description>
