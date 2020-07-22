@@ -6729,14 +6729,14 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
     </message>
-    <message id="325" name="PARAM_START_TRANSACTION">
+    <message id="328" name="PARAM_START_TRANSACTION">
       <description>Request to start a new parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The response (ack) will contain the same message but with a response attached to it.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="param_transport" enum="PARAM_TRANSACTION_TRANSPORT">Message acceptance response (sent back to GS).</field>
       <field type="uint8_t" name="response" enum="PARAM_TRANSACTION_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
-    <message id="326" name="PARAM_COMMIT_TRANSACTION">
+    <message id="329" name="PARAM_COMMIT_TRANSACTION">
       <description>Request to end the current parameter transaction. This message will have effect only if a transaction was previously opened using the PARAM_START_TRANSACTION message. The response will contain the same message but with a response attached to it. The response can either be a success/failure or and in progress in case the receiving side takes some time to apply the parameters.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
