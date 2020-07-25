@@ -6715,7 +6715,7 @@
       <field type="uint8_t" name="target_component">Component ID</field>
     </message>
     <message id="322" name="PARAM_EXT_VALUE">
-      <deprecated since="2020-07" replaced_by="PARAM_EXT_VALUE_TRIMMED">The new version of this message correctly trims zeros.</deprecated>
+      <deprecated since="2020-07" replaced_by="PARAM_V3_VALUE">The new version of this message correctly trims zeros.</deprecated>
       <description>Emit the value of a parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows them to re-request missing parameters after a loss or timeout.</description>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="char[128]" name="param_value">Parameter value</field>
@@ -6724,7 +6724,7 @@
       <field type="uint16_t" name="param_index">Index of this parameter</field>
     </message>
     <message id="323" name="PARAM_EXT_SET">
-      <deprecated since="2020-07" replaced_by="PARAM_EXT_SET_TRIMMED">The new second version of this message correctly trims zeros.</deprecated>
+      <deprecated since="2020-07" replaced_by="PARAM_V3_SET">The new second version of this message correctly trims zeros.</deprecated>
       <description>Set a parameter value. In order to deal with message loss (and retransmission of PARAM_EXT_SET), when setting a parameter value and the new value is the same as the current value, you will immediately get a PARAM_ACK_ACCEPTED response. If the current state is PARAM_ACK_IN_PROGRESS, you will accordingly receive a PARAM_ACK_IN_PROGRESS in response.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -6733,24 +6733,24 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
     </message>
     <message id="324" name="PARAM_EXT_ACK">
-      <deprecated since="2020-07" replaced_by="PARAM_EXT_ACK_TRIMMED">The new second version of this message correctly trims zeros.</deprecated>
+      <deprecated since="2020-07" replaced_by="PARAM_V3_ACK">The new version of this message correctly trims zeros.</deprecated>
       <description>Response from a PARAM_EXT_SET message.</description>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="char[128]" name="param_value">Parameter value (new value if PARAM_ACK_ACCEPTED, current value otherwise)</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
     </message>
-    <message id="325" name="PARAM_EXT_VALUE_TRIMMED">
+    <message id="325" name="PARAM_V3_VALUE">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Emit the value of a parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows them to re-request missing parameters after a loss or timeout. Replacement for PARAM_EXT_VALUE.</description>
+      <description>Emit the value of a parameter. The param_count and param_index fields allow the recipient to keep track of received parameters and to re-request missing parameters after a loss or timeout. Replacement for PARAM_EXT_VALUE.</description>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
       <field type="uint16_t" name="param_count">Total number of parameters</field>
       <field type="uint16_t" name="param_index">Index of this parameter</field>
       <field type="char[128]" name="param_value">Parameter value (zeros get trimmed)</field>
     </message>
-    <message id="326" name="PARAM_EXT_SET_TRIMMED">
+    <message id="326" name="PARAM_V3_SET">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Set a parameter value. In order to deal with message loss (and retransmission of PARAM_EXT_SET), when setting a parameter value and the new value is the same as the current value, you will immediately get a PARAM_ACK_ACCEPTED response. If the current state is PARAM_ACK_IN_PROGRESS, you will accordingly receive a PARAM_ACK_IN_PROGRESS in response.</description>
@@ -6760,10 +6760,10 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
       <field type="char[128]" name="param_value">Parameter value (zeros get trimmed)</field>
     </message>
-    <message id="327" name="PARAM_EXT_ACK_TRIMMED">
+    <message id="327" name="PARAM_V3_ACK">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Response from a PARAM_EXT_SET_TRIMMED message.</description>
+      <description>Response from a PARAM_V3_SET message.</description>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
