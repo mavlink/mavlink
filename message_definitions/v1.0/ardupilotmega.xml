@@ -1096,6 +1096,25 @@
       <entry value="10" name="TRACKER_MODE_AUTO"/>
       <entry value="16" name="TRACKER_MODE_INITIALIZING"/>
     </enum>
+    <enum name="OSD_PARAM_CONFIG_TYPE">
+      <description>The type of parameter for the OSD parameter editor.</description>
+      <entry value="0" name="OSD_PARAM_NONE"/>
+      <entry value="1" name="OSD_PARAM_SERIAL_PROTOCOL"/>
+      <entry value="2" name="OSD_PARAM_SERVO_FUNCTION"/>
+      <entry value="3" name="OSD_PARAM_AUX_FUNCTION"/>
+      <entry value="4" name="OSD_PARAM_FLIGHT_MODE"/>
+      <entry value="5" name="OSD_PARAM_FAILSAFE_ACTION"/>
+      <entry value="6" name="OSD_PARAM_FAILSAFE_ACTION_1"/>
+      <entry value="7" name="OSD_PARAM_FAILSAFE_ACTION_2"/>
+      <entry value="8" name="OSD_PARAM_NUM_TYPES"/>
+    </enum>
+    <enum name="OSD_PARAM_CONFIG_ERROR">
+      <description>The error type for the OSD parameter editor.</description>
+      <entry value="0" name="OSD_PARAM_SUCCESS"/>
+      <entry value="1" name="OSD_PARAM_INVALID_SCREEN"/>
+      <entry value="2" name="OSD_PARAM_INVALID_PARAMETER_INDEX"/>
+      <entry value="3" name="OSD_PARAM_INVALID_PARAMETER"/>
+    </enum>
   </enums>
   <messages>
     <message id="150" name="SENSOR_OFFSETS">
@@ -1706,6 +1725,42 @@
       <field type="uint16_t[4]" name="totalcurrent" units="mAh">Total current.</field>
       <field type="uint16_t[4]" name="rpm" units="rpm">RPM (eRPM).</field>
       <field type="uint16_t[4]" name="count">count of telemetry packets received (wraps at 65535).</field>
+    </message>
+    <message id="11033" name="OSD_PARAM_CONFIG">
+      <description>Configure an OSD parameter slot.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint32_t" name="request_id">Request ID - copied to reply.</field>
+      <field type="uint8_t" name="osd_screen">OSD parameter screen index.</field>
+      <field type="uint8_t" name="osd_index">OSD parameter display index.</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="uint8_t" name="config_type" enum="OSD_PARAM_CONFIG_TYPE">Config type.</field>
+      <field type="float" name="min_value">OSD parameter minimum value.</field>
+      <field type="float" name="max_value">OSD parameter maximum value.</field>
+      <field type="float" name="increment">OSD parameter increment.</field>
+    </message>
+    <message id="11034" name="OSD_PARAM_CONFIG_REPLY">
+      <description>Configure OSD parameter reply.</description>
+      <field type="uint32_t" name="request_id">Request ID - copied from request.</field>
+      <field type="uint8_t" name="result" enum="OSD_PARAM_CONFIG_ERROR">Config error type.</field>
+    </message>
+    <message id="11035" name="OSD_PARAM_SHOW_CONFIG">
+      <description>Read a configured an OSD parameter slot.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint32_t" name="request_id">Request ID - copied to reply.</field>
+      <field type="uint8_t" name="osd_screen">OSD parameter screen index.</field>
+      <field type="uint8_t" name="osd_index">OSD parameter display index.</field>
+    </message>
+    <message id="11036" name="OSD_PARAM_SHOW_CONFIG_REPLY">
+      <description>Read configured OSD parameter reply.</description>
+      <field type="uint32_t" name="request_id">Request ID - copied from request.</field>
+      <field type="uint8_t" name="result" enum="OSD_PARAM_CONFIG_ERROR">Config error type.</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="uint8_t" name="config_type" enum="OSD_PARAM_CONFIG_TYPE">Config type.</field>
+      <field type="float" name="min_value">OSD parameter minimum value.</field>
+      <field type="float" name="max_value">OSD parameter maximum value.</field>
+      <field type="float" name="increment">OSD parameter increment.</field>
     </message>
   </messages>
 </mavlink>
