@@ -1395,6 +1395,9 @@
       <entry value="1" name="PARAM_TRANSACTION_TRANSPORT_PARAM_EXT">
         <description>Transaction over param_ext transport.</description>
       </entry>
+      <entry value="1" name="PARAM_TRANSACTION_TRANSPORT_PARAM_V3">
+        <description>Transaction over param_v3 transport.</description>
+      </entry>
     </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
@@ -2899,6 +2902,7 @@
       </entry>
     </enum>
     <enum name="MAV_PARAM_EXT_TYPE">
+      <deprecated since="2020-07" replaced_by="MAV_PARAM_V3_TYPE">The new enum will be used with the param v3 protocol as param ext is currently deprecated.</deprecated>
       <description>Specifies the datatype of a MAVLink extended parameter.</description>
       <entry value="1" name="MAV_PARAM_EXT_TYPE_UINT8">
         <description>8-bit unsigned integer</description>
@@ -2931,6 +2935,42 @@
         <description>64-bit floating-point</description>
       </entry>
       <entry value="11" name="MAV_PARAM_EXT_TYPE_CUSTOM">
+        <description>Custom Type</description>
+      </entry>
+    </enum>
+    <enum name="MAV_PARAM_V3_TYPE">
+      <description>Specifies the datatype of a MAVLink parameter v3.</description>
+      <entry value="1" name="MAV_PARAM_V3_TYPE_UINT8">
+        <description>8-bit unsigned integer</description>
+      </entry>
+      <entry value="2" name="MAV_PARAM_V3_TYPE_INT8">
+        <description>8-bit signed integer</description>
+      </entry>
+      <entry value="3" name="MAV_PARAM_V3_TYPE_UINT16">
+        <description>16-bit unsigned integer</description>
+      </entry>
+      <entry value="4" name="MAV_PARAM_V3_TYPE_INT16">
+        <description>16-bit signed integer</description>
+      </entry>
+      <entry value="5" name="MAV_PARAM_V3_TYPE_UINT32">
+        <description>32-bit unsigned integer</description>
+      </entry>
+      <entry value="6" name="MAV_PARAM_V3_TYPE_INT32">
+        <description>32-bit signed integer</description>
+      </entry>
+      <entry value="7" name="MAV_PARAM_V3_TYPE_UINT64">
+        <description>64-bit unsigned integer</description>
+      </entry>
+      <entry value="8" name="MAV_PARAM_V3_TYPE_INT64">
+        <description>64-bit signed integer</description>
+      </entry>
+      <entry value="9" name="MAV_PARAM_V3_TYPE_REAL32">
+        <description>32-bit floating-point</description>
+      </entry>
+      <entry value="10" name="MAV_PARAM_V3_TYPE_REAL64">
+        <description>64-bit floating-point</description>
+      </entry>
+      <entry value="11" name="MAV_PARAM_V3_TYPE_CUSTOM">
         <description>Custom Type</description>
       </entry>
     </enum>
@@ -4818,11 +4858,15 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="int16_t" name="param_index">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
+      <extensions/>
+      <field type="uint8_t" name="param_transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</field>
     </message>
     <message id="21" name="PARAM_REQUEST_LIST">
       <description>Request all parameters of this component. After this request, all parameters are emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
+      <extensions/>
+      <field type="uint8_t" name="param_transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</field>
     </message>
     <message id="22" name="PARAM_VALUE">
       <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
@@ -6751,7 +6795,7 @@
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Emit the value of a parameter. The param_count and param_index fields allow the recipient to keep track of received parameters and to re-request missing parameters after a loss or timeout. Replacement for PARAM_EXT_VALUE.</description>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_V3_TYPE">Parameter type.</field>
       <field type="uint16_t" name="param_count">Total number of parameters</field>
       <field type="uint16_t" name="param_index">Index of this parameter</field>
       <field type="char[128]" name="param_value">Parameter value (zeros get trimmed)</field>
@@ -6763,7 +6807,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_V3_TYPE">Parameter type.</field>
       <field type="char[128]" name="param_value">Parameter value (zeros get trimmed)</field>
     </message>
     <message id="327" name="PARAM_V3_ACK">
@@ -6771,7 +6815,7 @@
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Response from a PARAM_V3_SET message.</description>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_V3_TYPE">Parameter type.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
       <field type="char[128]" name="param_value">Parameter value (new value if PARAM_ACK_ACCEPTED, current value otherwise, zeros get trimmed)</field>
     </message>
