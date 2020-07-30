@@ -4148,14 +4148,14 @@
       <field type="float[4]" name="quaternion">Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid."</field>
     </message>
     <message id="133" name="TERRAIN_REQUEST">
-      <description>Request for terrain data and terrain status</description>
+      <description>Request for terrain data and terrain status. See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
       <field type="int32_t" name="lat" units="degE7">Latitude of SW corner of first grid</field>
       <field type="int32_t" name="lon" units="degE7">Longitude of SW corner of first grid</field>
       <field type="uint16_t" name="grid_spacing" units="m">Grid spacing</field>
       <field type="uint64_t" name="mask" display="bitmask" print_format="0x%07x">Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits)</field>
     </message>
     <message id="134" name="TERRAIN_DATA">
-      <description>Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN_REQUEST</description>
+      <description>Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN_REQUEST. See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
       <field type="int32_t" name="lat" units="degE7">Latitude of SW corner of first grid</field>
       <field type="int32_t" name="lon" units="degE7">Longitude of SW corner of first grid</field>
       <field type="uint16_t" name="grid_spacing" units="m">Grid spacing</field>
@@ -4168,7 +4168,7 @@
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
     </message>
     <message id="136" name="TERRAIN_REPORT">
-      <description>Response from a TERRAIN_CHECK request</description>
+      <description>Streamed from drone to report progress of terrain map download (or response from a TERRAIN_CHECK request - deprecated). See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
       <field type="uint16_t" name="spacing">grid spacing (zero if terrain at this location unavailable)</field>
