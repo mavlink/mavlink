@@ -1396,6 +1396,15 @@
         <description>Transaction over param_ext transport.</description>
       </entry>
     </enum>
+    <enum name="PARAM_TRANSACTION_ACTION">
+      <description>Possible parameter transaction action during a commit.</description>
+      <entry value="0" name="PARAM_TRANSACTION_ACTION_COMMIT">
+        <description>Commit the current parameter transaction.</description>
+      </entry>
+      <entry value="1" name="PARAM_TRANSACTION_ACTION_CANCEL">
+        <description>Cancel the current parameter transaction.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -6791,6 +6800,7 @@
       <description>Request to end the current parameter transaction. This message will have effect only if a transaction was previously opened using the PARAM_START_TRANSACTION message. The response will contain the same message but with a response attached to it. The response can either be a success/failure or and in progress in case the receiving side takes some time to apply the parameters.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="param_action" enum="PARAM_TRANSACTION_ACTION">Commit or cancel an ongoing transaction.</field>
       <field type="uint8_t" name="response" enum="PARAM_TRANSACTION_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="330" name="OBSTACLE_DISTANCE">
