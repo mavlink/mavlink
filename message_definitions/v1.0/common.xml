@@ -1396,6 +1396,15 @@
         <description>Transaction over param_ext transport.</description>
       </entry>
     </enum>
+    <enum name="PARAM_TRANSACTION_ACTION">
+      <description>Possible parameter transaction action during a commit.</description>
+      <entry value="0" name="PARAM_TRANSACTION_ACTION_COMMIT">
+        <description>Commit the current parameter transaction.</description>
+      </entry>
+      <entry value="1" name="PARAM_TRANSACTION_ACTION_CANCEL">
+        <description>Cancel the current parameter transaction.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -5937,14 +5946,14 @@
       <field type="uint8_t" name="signal_quality" units="%">Signal quality of the sensor. Specific to each sensor type, representing the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. 0 = unknown/unset signal quality, 1 = invalid signal, 100 = perfect signal.</field>
     </message>
     <message id="133" name="TERRAIN_REQUEST">
-      <description>Request for terrain data and terrain status</description>
+      <description>Request for terrain data and terrain status. See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
       <field type="int32_t" name="lat" units="degE7">Latitude of SW corner of first grid</field>
       <field type="int32_t" name="lon" units="degE7">Longitude of SW corner of first grid</field>
       <field type="uint16_t" name="grid_spacing" units="m">Grid spacing</field>
       <field type="uint64_t" name="mask" display="bitmask" print_format="0x%07x">Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits)</field>
     </message>
     <message id="134" name="TERRAIN_DATA">
-      <description>Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN_REQUEST</description>
+      <description>Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN_REQUEST. See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
       <field type="int32_t" name="lat" units="degE7">Latitude of SW corner of first grid</field>
       <field type="int32_t" name="lon" units="degE7">Longitude of SW corner of first grid</field>
       <field type="uint16_t" name="grid_spacing" units="m">Grid spacing</field>
@@ -5952,12 +5961,13 @@
       <field type="int16_t[16]" name="data" units="m">Terrain data MSL</field>
     </message>
     <message id="135" name="TERRAIN_CHECK">
+      <deprecated since="2020-08" replaced_by="">Deprecated (without replacement) as is not part of terrain protocol: https://mavlink.io/en/services/terrain.html.</deprecated>
       <description>Request that the vehicle report terrain height at the given location. Used by GCS to check if vehicle has all terrain data needed for a mission.</description>
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
     </message>
     <message id="136" name="TERRAIN_REPORT">
-      <description>Response from a TERRAIN_CHECK request</description>
+      <description>Streamed from drone to report progress of terrain map download (or response from a TERRAIN_CHECK request - deprecated). See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
       <field type="uint16_t" name="spacing">grid spacing (zero if terrain at this location unavailable)</field>
@@ -6432,7 +6442,7 @@
       <description>Information about a captured image. This is emitted every time a message is captured. It may be re-requested using MAV_CMD_REQUEST_MESSAGE, using param2 to indicate the sequence number for the missing image.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="time_utc" units="us">Timestamp (time since UNIX epoch) in UTC. 0 for unknown.</field>
-      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="camera_id">Deprecated/unused. Component IDs are used to differentiate multiple cameras.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude where image was taken</field>
       <field type="int32_t" name="lon" units="degE7">Longitude where capture was taken</field>
       <field type="int32_t" name="alt" units="mm">Altitude (MSL) where image was taken</field>
@@ -6805,6 +6815,7 @@
       <description>Request to end the current parameter transaction. This message will have effect only if a transaction was previously opened using the PARAM_START_TRANSACTION message. The response will contain the same message but with a response attached to it. The response can either be a success/failure or and in progress in case the receiving side takes some time to apply the parameters.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="param_action" enum="PARAM_TRANSACTION_ACTION">Commit or cancel an ongoing transaction.</field>
       <field type="uint8_t" name="response" enum="PARAM_TRANSACTION_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="330" name="OBSTACLE_DISTANCE">
