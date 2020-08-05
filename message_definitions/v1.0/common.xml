@@ -6754,11 +6754,15 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="int16_t" name="param_index">Parameter index. Set to -1 to use the Parameter ID field as identifier (else param_id will be ignored)</field>
+      <extensions/>
+      <field type="uint8_t" name="trimmed">Set to 1 if new _TRIMMED messages are supported and requested, 0 for non trimmed/old messages. Note that the counter part might not support the trimmed set yet and still respond with the old set. This signals that the counterpart is allowed to respond with trimmed.</field>
     </message>
     <message id="321" name="PARAM_EXT_REQUEST_LIST">
       <description>Request all parameters of this component. After this request, all parameters are emitted.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
+      <extensions/>
+      <field type="uint8_t" name="trimmed">Set to 1 if new _TRIMMED messages are supported and requested, 0 for non trimmed/old messages. Note that the counter part might not support the trimmed set yet and still respond with the old set. This signals that the counterpart is allowed to respond with trimmed.</field>
     </message>
     <message id="322" name="PARAM_EXT_VALUE">
       <deprecated since="2020-07" replaced_by="PARAM_EXT_VALUE_TRIMMED">The new version of this message correctly trims zeros.</deprecated>
@@ -6799,7 +6803,7 @@
     <message id="326" name="PARAM_EXT_SET_TRIMMED">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Set a parameter value. In order to deal with message loss (and retransmission of PARAM_EXT_SET), when setting a parameter value and the new value is the same as the current value, you will immediately get a PARAM_ACK_ACCEPTED response. If the current state is PARAM_ACK_IN_PROGRESS, you will accordingly receive a PARAM_ACK_IN_PROGRESS in response.</description>
+      <description>Set a parameter value. In order to deal with message loss (and retransmission of PARAM_EXT_SET_TRIMMED), when setting a parameter value and the new value is the same as the current value, you will immediately get a PARAM_ACK_ACCEPTED response. If the current state is PARAM_ACK_IN_PROGRESS, you will accordingly receive a PARAM_ACK_IN_PROGRESS in response. If there is no response to this message, and it is unknown whether the _TRIMMED messages are supported because no PARAM_EXT_GET or PARAM_EXT_REQUEST_LIST has been performed yet, then it is suggested to fall back to PARAM_EXT_SET.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
