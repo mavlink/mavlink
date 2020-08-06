@@ -6749,20 +6749,20 @@
       <field type="uint32_t" name="sw_vcs_commit">Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.</field>
     </message>
     <message id="320" name="PARAM_EXT_REQUEST_READ">
-      <description>Request to read the value of a parameter with the either the param_id string id or param_index.</description>
+      <description>Request to read the value of a parameter with either the param_id string id or param_index. PARAM_EXT_VALUE or PARAM_EXT_VALUE_TRIMMED should be emitted in response (see field: trimmed).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="int16_t" name="param_index">Parameter index. Set to -1 to use the Parameter ID field as identifier (else param_id will be ignored)</field>
       <extensions/>
-      <field type="uint8_t" name="trimmed">Set to 1 if new _TRIMMED messages are supported and requested, 0 for non trimmed/old messages. Note that the counter part might not support the trimmed set yet and still respond with the old set. This signals that the counterpart is allowed to respond with trimmed.</field>
+      <field type="uint8_t" name="trimmed">Request _TRIMMED variants of PARAM_EXT_ messages. Set to 1 if _TRIMMED message variants are supported, and 0 otherwise. This signals the recipient that _TRIMMED messages are supported by the sender (and should be used if supported by the recipient).</field>
     </message>
     <message id="321" name="PARAM_EXT_REQUEST_LIST">
-      <description>Request all parameters of this component. After this request, all parameters are emitted.</description>
+      <description>Request all parameters of this component. All parameters should be emitted in response (as PARAM_EXT_VALUE or PARAM_EXT_VALUE_TRIMMED messages - see field: trimmed).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <extensions/>
-      <field type="uint8_t" name="trimmed">Set to 1 if new _TRIMMED messages are supported and requested, 0 for non trimmed/old messages. Note that the counter part might not support the trimmed set yet and still respond with the old set. This signals that the counterpart is allowed to respond with trimmed.</field>
+      <field type="uint8_t" name="trimmed">Request _TRIMMED variants of PARAM_EXT_ messages. Set to 1 if _TRIMMED message variants are supported, and 0 otherwise. This signals the recipient that _TRIMMED messages are supported by the sender (and should be used if supported by the recipient).</field>
     </message>
     <message id="322" name="PARAM_EXT_VALUE">
       <deprecated since="2020-07" replaced_by="PARAM_EXT_VALUE_TRIMMED">The new version of this message correctly trims zeros.</deprecated>
