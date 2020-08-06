@@ -1100,12 +1100,6 @@
       <entry value="131072" name="GIMBAL_MANAGER_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
         <description>Gimbal manager supports to point to a global latitude, longitude, altitude position.</description>
       </entry>
-      <entry value="262144" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_TRACKING_POINT">
-        <description>Gimbal manager supports tracking of a point on the camera.</description>
-      </entry>
-      <entry value="524288" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_TRACKING_RECTANGLE">
-        <description>Gimbal manager supports tracking of a point on the camera.</description>
-      </entry>
       <entry value="1048576" name="GIMBAL_MANAGER_CAP_FLAGS_SUPPORTS_FOCAL_LENGTH_SCALE">
         <description>Gimbal manager supports pitching and yawing at an angular velocity scaled by focal length (the more zoomed in, the slower the movement).</description>
       </entry>
@@ -2359,24 +2353,6 @@
         <param index="5" label="Gimbal manager flags" enum="GIMBAL_MANAGER_FLAGS">Gimbal manager flags to use.</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
       </entry>
-      <entry value="1001" name="MAV_CMD_DO_GIMBAL_MANAGER_TRACK_POINT" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>If the gimbal manager supports visual tracking (GIMBAL_MANAGER_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking. Such a tracking gimbal manager would usually be an integrated camera/gimbal, or alternatively a companion computer connected to a camera.</description>
-        <param index="1" label="Point x" minValue="0" maxValue="1">Point to track x value.</param>
-        <param index="2" label="Point y" minValue="0" maxValue="1">Point to track y value.</param>
-        <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
-      </entry>
-      <entry value="1002" name="MAV_CMD_DO_GIMBAL_MANAGER_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>If the gimbal supports visual tracking (GIMBAL_MANAGER_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking. Such a tracking gimbal manager would usually be an integrated camera/gimbal, or alternatively a companion computer connected to a camera.</description>
-        <param index="1" label="Top left corner x" minValue="0" maxValue="1">Top left corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
-        <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
-        <param index="3" label="Bottom right corner x" minValue="0" maxValue="1">Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
-        <param index="4" label="Bottom right corner y" minValue="0" maxValue="1">Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
-        <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
-      </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
         <param index="1">Reserved (Set to 0)</param>
@@ -2408,6 +2384,28 @@
         <param index="1" label="Enable" minValue="-1" maxValue="1" increment="1">Trigger enable/disable (0 for disable, 1 for start), -1 to ignore</param>
         <param index="2" label="Reset" minValue="-1" maxValue="1" increment="1">1 to reset the trigger sequence, -1 or 0 to ignore</param>
         <param index="3" label="Pause" minValue="-1" maxValue="1" increment="2">1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore</param>
+      </entry>
+      <entry value="2004" name="MAV_CMD_CAMERA_TRACK_POINT" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking.</description>
+        <param index="1" label="Point x" minValue="0" maxValue="1">Point to track x value (normalized 0..1, 0 is left, 1 is right).</param>
+        <param index="2" label="Point y" minValue="0" maxValue="1">Point to track y value (normalized 0..1, 0 is top, 1 is bottom).</param>
+        <param index="3" label="Radius" minValue="0" maxValue="1">Point radius (normalized 0..1, 0 is image left, 1 is image right).</param>
+      </entry>
+      <entry value="2005" name="MAV_CMD_CAMERA_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking.</description>
+        <param index="1" label="Top left corner x" minValue="0" maxValue="1">Top left corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
+        <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
+        <param index="3" label="Bottom right corner x" minValue="0" maxValue="1">Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
+        <param index="4" label="Bottom right corner y" minValue="0" maxValue="1">Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
+      </entry>
+      <entry value="2010" name="MAV_CMD_CAMERA_STOP_TRACKING" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Stops ongoing tracking.</description>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Starts video capture (recording).</description>
@@ -3865,6 +3863,15 @@
       <entry value="256" name="CAMERA_CAP_FLAGS_HAS_VIDEO_STREAM">
         <description>Camera has video streaming capabilities (request VIDEO_STREAM_INFORMATION with MAV_CMD_REQUEST_MESSAGE for video streaming info)</description>
       </entry>
+      <entry value="512" name="CAMERA_CAP_FLAGS_HAS_TRACKING_POINT">
+        <description>Camera supports tracking of a point on the camera view.</description>
+      </entry>
+      <entry value="1024" name="CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE">
+        <description>Camera supports tracking of a selection rectangle on the camera view.</description>
+      </entry>
+      <entry value="2048" name="CAMERA_CAP_FLAGS_HAS_TRACKING_GEO_STATUS">
+        <description>Camera supports tracking geo status (CAMERA_TRACKING_GEO_STATUS).</description>
+      </entry>
     </enum>
     <enum name="VIDEO_STREAM_STATUS_FLAGS" bitmask="true">
       <description>Stream status flags (Bitmap)</description>
@@ -3888,6 +3895,45 @@
       </entry>
       <entry value="3" name="VIDEO_STREAM_TYPE_MPEG_TS_H264">
         <description>Stream is h.264 on MPEG TS (URI gives the port number)</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_TRACKING_STATUS_FLAGS">
+      <description>Camera tracking status flags</description>
+      <entry value="0" name="CAMERA_TRACKING_STATUS_FLAGS_IDLE">
+        <description>Camera is not tracking</description>
+      </entry>
+      <entry value="1" name="CAMERA_TRACKING_STATUS_FLAGS_ACTIVE">
+        <description>Camera is tracking</description>
+      </entry>
+      <entry value="2" name="CAMERA_TRACKING_STATUS_FLAGS_ERROR">
+        <description>Camera tracking in error state</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_TRACKING_MODE">
+      <description>Camera tracking modes</description>
+      <entry value="0" name="CAMERA_TRACKING_NONE">
+        <description>Not tracking</description>
+      </entry>
+      <entry value="1" name="CAMERA_TRACKING_POINT">
+        <description>Target is a point</description>
+      </entry>
+      <entry value="2" name="CAMERA_TRACKING_RECTANGLE">
+        <description>Target is a rectangle</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_TRACKING_TARGET_DATA" bitmask="true">
+      <description>Camera tracking target data (shows where tracked target is within image)</description>
+      <entry value="0" name="CAMERA_TRACKING_TARGET_NONE">
+        <description>No target data</description>
+      </entry>
+      <entry value="1" name="CAMERA_TRACKING_TARGET_EMBEDDED">
+        <description>Target data embedded in image data (proprietary)</description>
+      </entry>
+      <entry value="2" name="CAMERA_TRACKING_TARGET_RENDERED">
+        <description>Target data rendered in image</description>
+      </entry>
+      <entry value="4" name="CAMERA_TRACKING_TARGET_IN_STATUS">
+        <description>Target data within status message (Point or Rectangle)</description>
       </entry>
     </enum>
     <enum name="CAMERA_ZOOM_TYPE">
@@ -6554,6 +6600,39 @@
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float" name="hfov" units="deg">Horizontal field of view (NaN if unknown).</field>
       <field type="float" name="vfov" units="deg">Vertical field of view (NaN if unknown).</field>
+    </message>
+    <message id="275" name="CAMERA_TRACKING_IMAGE_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Camera tracking status, sent while in active tracking. Use MAV_CMD_SET_MESSAGE_INTERVAL to define message interval.</description>
+      <field type="uint8_t" name="tracking_status" enum="CAMERA_TRACKING_STATUS_FLAGS">Current tracking status</field>
+      <field type="uint8_t" name="tracking_mode" enum="CAMERA_TRACKING_MODE">Current tracking mode</field>
+      <field type="uint8_t" name="target_data" enum="CAMERA_TRACKING_TARGET_DATA">Defines location of target data</field>
+      <field type="float" name="point_x">Current tracked point x value if CAMERA_TRACKING_POINT (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
+      <field type="float" name="point_y">Current tracked point y value if CAMERA_TRACKING_POINT (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+      <field type="float" name="radius">Current tracked radius if CAMERA_TRACKING_POINT (normalized 0..1, 0 is image left, 1 is image right), NAN if unknown</field>
+      <field type="float" name="rec_top_x">Current tracked rectangle top x value if CAMERA_TRACKING_RECTANGLE (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
+      <field type="float" name="rec_top_y">Current tracked rectangle top y value if CAMERA_TRACKING_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+      <field type="float" name="rec_bottom_x">Current tracked rectangle bottom x value if CAMERA_TRACKING_RECTANGLE (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
+      <field type="float" name="rec_bottom_y">Current tracked rectangle bottom y value if CAMERA_TRACKING_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+    </message>
+    <message id="276" name="CAMERA_TRACKING_GEO_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Camera tracking status, sent while in active tracking. Use MAV_CMD_SET_MESSAGE_INTERVAL to define message interval.</description>
+      <field type="uint8_t" name="tracking_status" enum="CAMERA_TRACKING_STATUS_FLAGS">Current tracking status</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude of tracked object</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude of tracked object</field>
+      <field type="float" name="alt" units="m">Altitude of tracked object(AMSL, WGS84)</field>
+      <field type="float" name="h_acc" units="m">Horizontal accuracy. NAN if unknown</field>
+      <field type="float" name="v_acc" units="m">Vertical accuracy. NAN if unknown</field>
+      <field type="float" name="vel_n" units="m/s">North velocity of tracked object. NAN if unknown</field>
+      <field type="float" name="vel_e" units="m/s">East velocity of tracked object. NAN if unknown</field>
+      <field type="float" name="vel_d" units="m/s">Down velocity of tracked object. NAN if unknown</field>
+      <field type="float" name="vel_acc" units="m/s">Velocity accuracy. NAN if unknown</field>
+      <field type="float" name="dist" units="m">Distance between camera and tracked object. NAN if unknown</field>
+      <field type="float" name="hdg" units="rad">Heading in radians, in NED. NAN if unknown</field>
+      <field type="float" name="hdg_acc" units="rad">Accuracy of heading, in NED. NAN if unknown</field>
     </message>
     <message id="280" name="GIMBAL_MANAGER_INFORMATION">
       <wip/>
