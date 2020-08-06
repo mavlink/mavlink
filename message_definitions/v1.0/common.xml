@@ -709,6 +709,10 @@
       <entry value="190" name="MAV_COMP_ID_MISSIONPLANNER">
         <description>Component that can generate/supply a mission flight plan (e.g. GCS or developer API).</description>
       </entry>
+      <entry value="191" name="MAV_COMP_ID_ONBOARD_COMPUTER">
+        <description>Component that lives on the onboard computer (companion computer) and has some generic functionalities, such as settings system parameters and monitoring the status of some processes that don't directly speak mavlink and so on.</description>
+      </entry>
+      <!-- Component ids from 192-194 are reserved for any future mavlink components related to the mission computer. -->
       <entry value="195" name="MAV_COMP_ID_PATHPLANNER">
         <description>Component that finds an optimal path between points based on a certain constraint (e.g. minimum snap, shortest path, cost, etc.).</description>
       </entry>
@@ -6905,6 +6909,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="param_transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</field>
+      <field type="uint16_t" name="transaction_id">Identifier for a specific transaction.</field>
       <field type="uint8_t" name="response" enum="PARAM_TRANSACTION_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="329" name="PARAM_COMMIT_TRANSACTION">
@@ -6914,6 +6919,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="param_action" enum="PARAM_TRANSACTION_ACTION">Commit or cancel an ongoing transaction.</field>
+      <field type="uint16_t" name="transaction_id">Identifier for a specific transaction.</field>
       <field type="uint8_t" name="response" enum="PARAM_TRANSACTION_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="330" name="OBSTACLE_DISTANCE">
