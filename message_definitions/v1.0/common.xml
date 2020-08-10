@@ -3288,25 +3288,25 @@
       </entry>
     </enum>
     <enum name="MAV_PROTOCOL_CAPABILITY" bitmask="true">
-      <description>Bitmask of (optional) autopilot capabilities (64 bit). If a bit is set, the autopilot supports this capability.</description>
+      <description>Bitmask of (optional) autopilot/component capabilities (64 bit). If a bit is set, the autopilot/component supports this capability.</description>
       <entry value="1" name="MAV_PROTOCOL_CAPABILITY_MISSION_FLOAT">
         <description>Autopilot supports MISSION float message type.</description>
       </entry>
       <entry value="2" name="MAV_PROTOCOL_CAPABILITY_PARAM_FLOAT">
-        <description>Autopilot supports the new param float message type.</description>
+        <description>Autopilot/component supports the new param float message type.</description>
       </entry>
       <entry value="4" name="MAV_PROTOCOL_CAPABILITY_MISSION_INT">
         <deprecated since="2020-06" replaced_by="">This flag must always be set if missions are supported, because missions must always use MISSION_ITEM_INT (rather than MISSION_ITEM, which is deprecated).</deprecated>
         <description>Autopilot supports MISSION_ITEM_INT scaled integer message type.</description>
       </entry>
       <entry value="8" name="MAV_PROTOCOL_CAPABILITY_COMMAND_INT">
-        <description>Autopilot supports COMMAND_INT scaled integer message type.</description>
+        <description>Autopilot/component supports COMMAND_INT scaled integer message type.</description>
       </entry>
       <entry value="16" name="MAV_PROTOCOL_CAPABILITY_PARAM_UNION">
-        <description>Autopilot supports the new param union message type.</description>
+        <description>Autopilot/component supports the new param union message type.</description>
       </entry>
       <entry value="32" name="MAV_PROTOCOL_CAPABILITY_FTP">
-        <description>Autopilot supports the new FILE_TRANSFER_PROTOCOL message type.</description>
+        <description>Autopilot/component supports the new FILE_TRANSFER_PROTOCOL message type.</description>
       </entry>
       <entry value="64" name="MAV_PROTOCOL_CAPABILITY_SET_ATTITUDE_TARGET">
         <description>Autopilot supports commanding attitude offboard.</description>
@@ -3330,7 +3330,7 @@
         <description>Autopilot supports onboard compass calibration.</description>
       </entry>
       <entry value="8192" name="MAV_PROTOCOL_CAPABILITY_MAVLINK2">
-        <description>Autopilot supports MAVLink version 2.</description>
+        <description>Autopilot/component supports MAVLink version 2.</description>
       </entry>
       <entry value="16384" name="MAV_PROTOCOL_CAPABILITY_MISSION_FENCE">
         <description>Autopilot supports mission fence protocol.</description>
@@ -3340,6 +3340,12 @@
       </entry>
       <entry value="65536" name="MAV_PROTOCOL_CAPABILITY_FLIGHT_INFORMATION">
         <description>Autopilot supports the flight information protocol.</description>
+      </entry>
+      <entry value="131072" name="MAV_PROTOCOL_CAPABILITY_PARAM_EXT">
+        <description>Autopilot/component supports the extended parameter protocol (PARAM_EXT messages).</description>
+      </entry>
+      <entry value="262144" name="MAV_PROTOCOL_CAPABILITY_PARAM_EXT_TRIMMED">
+        <description>Autopilot/component supports the trimmed extended parameter protocol (PARAM_EXT_TRIMMED messages).</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_TYPE">
