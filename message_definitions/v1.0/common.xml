@@ -1373,21 +1373,6 @@
         <description>Parameter meta data.</description>
       </entry>
     </enum>
-    <enum name="PARAM_TRANSACTION_RESPONSE">
-      <description>Possible responses from a PARAM_START_TRANSACTION and PARAM_COMMIT_TRANSACTION messages.</description>
-      <entry value="0" name="PARAM_TRANSACTION_RESPONSE_ACCEPTED">
-        <description>Transaction accepted.</description>
-      </entry>
-      <entry value="1" name="PARAM_TRANSACTION_RESPONSE_FAILED">
-        <description>Transaction failed.</description>
-      </entry>
-      <entry value="2" name="PARAM_TRANSACTION_RESPONSE_UNSUPPORTED">
-        <description>Transaction unsupported.</description>
-      </entry>
-      <entry value="3" name="PARAM_TRANSACTION_RESPONSE_INPROGRESS">
-        <description>Transaction in progress.</description>
-      </entry>
-    </enum>
     <enum name="PARAM_TRANSACTION_TRANSPORT">
       <description>Possible transport layers to set and get parameters via mavlink during a parameter transaction.</description>
       <entry value="0" name="PARAM_TRANSACTION_TRANSPORT_PARAM">
@@ -1398,11 +1383,14 @@
       </entry>
     </enum>
     <enum name="PARAM_TRANSACTION_ACTION">
-      <description>Possible parameter transaction action during a commit.</description>
-      <entry value="0" name="PARAM_TRANSACTION_ACTION_COMMIT">
+      <description>Possible parameter transaction actions.</description>
+      <entry value="0" name="PARAM_TRANSACTION_ACTION_START">
         <description>Commit the current parameter transaction.</description>
       </entry>
-      <entry value="1" name="PARAM_TRANSACTION_ACTION_CANCEL">
+      <entry value="1" name="PARAM_TRANSACTION_ACTION_COMMIT">
+        <description>Commit the current parameter transaction.</description>
+      </entry>
+      <entry value="2" name="PARAM_TRANSACTION_ACTION_CANCEL">
         <description>Cancel the current parameter transaction.</description>
       </entry>
     </enum>
@@ -2348,6 +2336,14 @@
         <description>Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number.</description>
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
+      </entry>
+      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
+        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
+        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
+        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
       </entry>
       <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN" hasLocation="false" isDestination="false">
         <wip/>
@@ -6905,26 +6901,6 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="char[128]" name="param_value">Parameter value (new value if PARAM_ACK_ACCEPTED, current value otherwise, zeros get trimmed)</field>
-    </message>
-    <message id="328" name="PARAM_START_TRANSACTION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Request to start a new parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The response (ack) will contain the same message but with a response attached to it.</description>
-      <field type="uint8_t" name="target_system">System ID</field>
-      <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="param_transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</field>
-      <field type="uint16_t" name="transaction_id">Identifier for a specific transaction.</field>
-      <field type="uint8_t" name="response" enum="PARAM_TRANSACTION_RESPONSE">Message acceptance response (sent back to GS).</field>
-    </message>
-    <message id="329" name="PARAM_COMMIT_TRANSACTION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Request to end the current parameter transaction. This message will have effect only if a transaction was previously opened using the PARAM_START_TRANSACTION message. The response will contain the same message but with a response attached to it. The response can either be a success/failure or and in progress in case the receiving side takes some time to apply the parameters.</description>
-      <field type="uint8_t" name="target_system">System ID</field>
-      <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="param_action" enum="PARAM_TRANSACTION_ACTION">Commit or cancel an ongoing transaction.</field>
-      <field type="uint16_t" name="transaction_id">Identifier for a specific transaction.</field>
-      <field type="uint8_t" name="response" enum="PARAM_TRANSACTION_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="330" name="OBSTACLE_DISTANCE">
       <description>Obstacle distances in front of the sensor, starting from the left in increment degrees to the right</description>
