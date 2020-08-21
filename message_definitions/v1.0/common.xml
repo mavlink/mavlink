@@ -1192,6 +1192,16 @@
         <description>Gimbal is currently calibrating.</description>
       </entry>
     </enum>
+    <!-- gripper action enum -->
+    <enum name="GRIPPER_ACTIONS">
+      <description>Gripper actions.</description>
+      <entry value="0" name="GRIPPER_ACTION_RELEASE">
+        <description>Gripper release cargo.</description>
+      </entry>
+      <entry value="1" name="GRIPPER_ACTION_GRAB">
+        <description>Gripper grab onto cargo.</description>
+      </entry>
+    </enum>
     <!-- UAVCAN node health enumeration -->
     <enum name="UAVCAN_NODE_HEALTH">
       <description>Generalized UAVCAN node health</description>
@@ -2030,7 +2040,17 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <!-- 211 and 212 used in dialects -->
+      <!-- 212 used in dialects -->
+      <entry value="211" name="MAV_CMD_DO_GRIPPER">
+        <description>Mission command to operate a gripper.</description>
+        <param index="1" label="Instance" minValue="1" increment="1">Gripper instance number.</param>
+        <param index="2" label="Action" enum="GRIPPER_ACTIONS">Gripper action to perform.</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
       <entry value="213" name="MAV_CMD_NAV_SET_YAW_SPEED" hasLocation="false" isDestination="false">
         <description>Sets a desired vehicle turn angle and speed change.</description>
         <param index="1" label="Yaw" units="deg">Yaw angle to adjust steering by.</param>
