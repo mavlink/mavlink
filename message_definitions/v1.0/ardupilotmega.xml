@@ -27,16 +27,7 @@
     </enum>
     <!-- ardupilot specific MAV_CMD_* commands -->
     <enum name="MAV_CMD">
-      <entry value="211" name="MAV_CMD_DO_GRIPPER" hasLocation="false" isDestination="false">
-        <description>Mission command to operate EPM gripper.</description>
-        <param index="1" label="Instance" minValue="1" increment="1">Gripper instance number (from 1 to max number of grippers on the vehicle).</param>
-        <param index="2" label="Action" enum="GRIPPER_ACTIONS">Gripper action.</param>
-        <param index="3">Empty.</param>
-        <param index="4">Empty.</param>
-        <param index="5">Empty.</param>
-        <param index="6">Empty.</param>
-        <param index="7">Empty.</param>
-      </entry>
+      <!-- 211 used by common.xml -->
       <entry value="212" name="MAV_CMD_DO_AUTOTUNE_ENABLE" hasLocation="false" isDestination="false">
         <description>Enable/disable autotune.</description>
         <param index="1" label="Enable" minValue="0" maxValue="1" increment="1">Enable (1: enable, 0:disable).</param>
@@ -239,16 +230,7 @@
         <param index="6">Magic number.</param>
         <param index="7">Magic number.</param>
       </entry>
-      <entry value="42600" name="MAV_CMD_DO_WINCH" hasLocation="false" isDestination="false">
-        <description>Command to operate winch.</description>
-        <param index="1" label="Instance" minValue="0" increment="1">Winch instance number (0 for the default winch, otherwise a number from 1 to max number of winches on the vehicle).</param>
-        <param index="2" label="Action" enum="WINCH_ACTIONS">Action.</param>
-        <param index="3" label="Length" units="m">Release length (cable distance to unwind, negative numbers to wind in cable).</param>
-        <param index="4" label="Rate" units="m/s">Release rate.</param>
-        <param index="5">Empty.</param>
-        <param index="6">Empty.</param>
-        <param index="7">Empty.</param>
-      </entry>
+      <!-- 42600 used by common.xml -->
       <entry value="42650" name="MAV_CMD_FLASH_BOOTLOADER" hasLocation="false" isDestination="false">
         <description>Update the bootloader</description>
         <param index="1">Empty</param>
@@ -358,29 +340,6 @@
       </entry>
       <entry value="2" name="LAND_IMMEDIATELY">
         <description>Flag set when plane is to immediately descend to break altitude and land without GCS intervention. Flag not set when plane is to loiter at Rally point until commanded to land.</description>
-      </entry>
-    </enum>
-    <!-- gripper action enum -->
-    <enum name="GRIPPER_ACTIONS">
-      <description>Gripper actions.</description>
-      <entry value="0" name="GRIPPER_ACTION_RELEASE">
-        <description>Gripper release cargo.</description>
-      </entry>
-      <entry value="1" name="GRIPPER_ACTION_GRAB">
-        <description>Gripper grab onto cargo.</description>
-      </entry>
-    </enum>
-    <!-- Winch action enum -->
-    <enum name="WINCH_ACTIONS">
-      <description>Winch actions.</description>
-      <entry value="0" name="WINCH_RELAXED">
-        <description>Relax winch.</description>
-      </entry>
-      <entry value="1" name="WINCH_RELATIVE_LENGTH_CONTROL">
-        <description>Winch unwinds or winds specified length of cable optionally using specified rate.</description>
-      </entry>
-      <entry value="2" name="WINCH_RATE_CONTROL">
-        <description>Winch unwinds or winds cable at specified rate in meters/seconds.</description>
       </entry>
     </enum>
     <!-- Camera event types -->

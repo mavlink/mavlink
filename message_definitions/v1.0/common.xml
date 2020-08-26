@@ -331,6 +331,29 @@
         <description>Gimbal tracks system with specified system ID</description>
       </entry>
     </enum>
+    <!-- gripper action enum -->
+    <enum name="GRIPPER_ACTIONS">
+      <description>Gripper actions.</description>
+      <entry value="0" name="GRIPPER_ACTION_RELEASE">
+        <description>Gripper release cargo.</description>
+      </entry>
+      <entry value="1" name="GRIPPER_ACTION_GRAB">
+        <description>Gripper grab onto cargo.</description>
+      </entry>
+    </enum>
+    <!-- winch action enum -->
+    <enum name="WINCH_ACTIONS">
+      <description>Winch actions.</description>
+      <entry value="0" name="WINCH_RELAXED">
+        <description>Relax winch.</description>
+      </entry>
+      <entry value="1" name="WINCH_RELATIVE_LENGTH_CONTROL">
+        <description>Wind or unwind specified length of cable, optionally using specified rate.</description>
+      </entry>
+      <entry value="2" name="WINCH_RATE_CONTROL">
+        <description>Wind or unwind cable at specified rate.</description>
+      </entry>
+    </enum>
     <!-- UAVCAN node health enumeration -->
     <enum name="UAVCAN_NODE_HEALTH">
       <description>Generalized UAVCAN node health</description>
@@ -991,7 +1014,17 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <!-- 211 and 212 used in dialects -->
+      <entry value="211" name="MAV_CMD_DO_GRIPPER" hasLocation="false" isDestination="false">
+        <description>Mission command to operate a gripper.</description>
+        <param index="1" label="Instance" minValue="1" increment="1">Gripper instance number.</param>
+        <param index="2" label="Action" enum="GRIPPER_ACTIONS">Gripper action to perform.</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <!-- 212 used in dialects -->
       <entry value="213" name="MAV_CMD_NAV_SET_YAW_SPEED" hasLocation="false" isDestination="false">
         <description>Sets a desired vehicle turn angle and speed change.</description>
         <param index="1" label="Yaw" units="deg">Yaw angle to adjust steering by.</param>
@@ -1465,6 +1498,17 @@
         <param index="5">Reserved</param>
         <param index="6">Reserved</param>
         <param index="7">Reserved</param>
+      </entry>
+      <!-- from ardupilotmega.xml (hence ID is in that range) -->
+      <entry value="42600" name="MAV_CMD_DO_WINCH" hasLocation="false" isDestination="false">
+        <description>Command to operate winch.</description>
+        <param index="1" label="Instance" minValue="1" increment="1">Winch instance number.</param>
+        <param index="2" label="Action" enum="WINCH_ACTIONS">Action to perform.</param>
+        <param index="3" label="Length" units="m">Length of cable to release (negative to wind).</param>
+        <param index="4" label="Rate" units="m/s">Release rate (negative to wind).</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
       </entry>
       <!-- END of payload range (30000 to 30999) -->
       <!-- BEGIN user defined range (31000 to 31999) -->
