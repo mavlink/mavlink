@@ -6227,6 +6227,19 @@
       <field type="float" name="tilt_rate" units="rad/s">Tilt/pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="pan_rate" units="rad/s">Pan/yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
     </message>
+    <message id="288" name="GIMBAL_MANAGER_SET_MANUAL_CONTROL">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>High level message to control a gimbal manually, so without units. The actual angles or angular rates will be produced by the gimbal manager based on settings. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</field>
+      <field type="float" name="tilt">Tilt/pitch angle unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="pan">Pan/yaw angle unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="tilt_rate">Tilt/pitch angular rate unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="pan_rate">Pan/yaw angular rate unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
+    </message>
     <message id="290" name="ESC_INFO">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
