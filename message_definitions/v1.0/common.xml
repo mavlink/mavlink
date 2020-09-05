@@ -4190,6 +4190,16 @@
         <description>Winch clutch is engaged allowing motor to move freely</description>
       </entry>
     </enum>
+    <enum name="MAG_CAL_STATUS">
+      <entry value="0" name="MAG_CAL_NOT_STARTED"/>
+      <entry value="1" name="MAG_CAL_WAITING_TO_START"/>
+      <entry value="2" name="MAG_CAL_RUNNING_STEP_ONE"/>
+      <entry value="3" name="MAG_CAL_RUNNING_STEP_TWO"/>
+      <entry value="4" name="MAG_CAL_SUCCESS"/>
+      <entry value="5" name="MAG_CAL_FAILED"/>
+      <entry value="6" name="MAG_CAL_BAD_ORIENTATION"/>
+      <entry value="7" name="MAG_CAL_BAD_RADIUS"/>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -5584,6 +5594,30 @@
       <field type="uint32_t" name="breach_time" units="ms">Time (since boot) of last breach.</field>
       <extensions/>
       <field type="uint8_t" name="breach_mitigation" enum="FENCE_MITIGATE">Active action to prevent fence breach</field>
+    </message>
+    <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
+    <!-- 192 MAG_CAL_REPORT imported from ardupilotmega.xml -->
+    <message id="192" name="MAG_CAL_REPORT">
+      <description>Reports results of completed compass calibration. Sent until MAG_CAL_ACK received.</description>
+      <field type="uint8_t" name="compass_id">Compass being calibrated.</field>
+      <field type="uint8_t" name="cal_mask" display="bitmask">Bitmask of compasses being calibrated.</field>
+      <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Calibration Status.</field>
+      <field type="uint8_t" name="autosaved">0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.</field>
+      <field type="float" name="fitness" units="mgauss">RMS milligauss residuals.</field>
+      <field type="float" name="ofs_x">X offset.</field>
+      <field type="float" name="ofs_y">Y offset.</field>
+      <field type="float" name="ofs_z">Z offset.</field>
+      <field type="float" name="diag_x">X diagonal (matrix 11).</field>
+      <field type="float" name="diag_y">Y diagonal (matrix 22).</field>
+      <field type="float" name="diag_z">Z diagonal (matrix 33).</field>
+      <field type="float" name="offdiag_x">X off-diagonal (matrix 12 and 21).</field>
+      <field type="float" name="offdiag_y">Y off-diagonal (matrix 13 and 31).</field>
+      <field type="float" name="offdiag_z">Z off-diagonal (matrix 32 and 23).</field>
+      <extensions/>
+      <field type="float" name="orientation_confidence">Confidence in orientation (higher is better).</field>
+      <field type="uint8_t" name="old_orientation" enum="MAV_SENSOR_ORIENTATION">orientation before calibration.</field>
+      <field type="uint8_t" name="new_orientation" enum="MAV_SENSOR_ORIENTATION">orientation after calibration.</field>
+      <field type="float" name="scale_factor">field radius correction factor</field>
     </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
