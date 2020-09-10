@@ -86,21 +86,34 @@ def strip_text_before_string(original_text,strip_text):
     
 def inject_top_level_docs(input_html,filename):
     #Inject top level heading and other details.
-    print('FILENAME: %s' % filename)
+    print('FILENAME (prefix): %s' % filename)
     insert_text='<!-- THIS FILE IS AUTO-GENERATED: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_gitbook.py -->'
-    if filename == 'common.xml':
+    if filename == 'common':
         insert_text+="""
 # MAVLINK Common Message Set
 
-The MAVLink *common* message set is defined in [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).
-It contains the *standard* definitions that are managed by the MAVLink project.
-
+The MAVLink *common* message set contains *standard* definitions that are managed by the MAVLink project.
 The definitions cover functionality that is considered useful to most ground control stations and autopilots.
 MAVLink-compatible systems are expected to use these definitions where possible (if an appropriate message exists) rather than rolling out variants in their own [dialects](../messages/README.md).
 
-This topic is a human-readable form of [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).
+The original definitions are defined in [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).
+
+> **Tip** The common set `includes` [minimal.xml](minimal.md), which contains the *minimal set* of definitions for any MAVLink system.
+  These definitions are [reproduced at the end of this topic](#minimal).
+
 """
-    elif filename == 'ardupilotmega.xml':
+    elif filename == 'minimal':
+        insert_text+="""
+# MAVLink Minimal Set
+
+The MAVLink *minimal* set contains the minimal set of definitions for a viable MAVLink system.
+
+The message set is defined in [minimal.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/minimal.xml) and is managed by the MAVLink project.
+
+> **Tip** The minimal set is included (imported into) other xml definition files, including the [MAVLink Common Message Set (common.xml)](minimal.md).
+
+"""
+    elif filename == 'ardupilotmega':
         insert_text+="""
 # Dialect: ArduPilotMega
 
@@ -128,15 +141,28 @@ td {
 </style>
 """
     # Include HTML in generated content
-    insert_text+='\n\n{%% include "_html/%s.html" %%}' % filename[:-4]
+    insert_text+='\n\n{%% include "_html/%s.html" %%}' % filename
     input_html=insert_text+'\n\n'+input_html
+
+    if filename == 'common':
+        input_html+="""
+# Minimal.xml {#minimal}
+
+The minimal set of definitions required for any MAVLink system are included from [minimal.xml](minimal.md).
+These are listed below.
+
+
+{% include "_html/minimal.html" %}"""
+
     
     #print(input_html)
     return input_html
     
-dialect_files = set()    
+dialect_files = set()
+all_files = set()    
 
 for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
+    #Generate html for all the XML files
     for file in files:
         print(file)
         if not file.endswith('.xml'): #only process xml files.
@@ -171,23 +197,27 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             with open(output_file_name_html_withdir, 'w') as out:
                 out.write(prettyHTML)
 
-
+            # Create sortable list of output file names
             #Write output markdown file
             output_file_name_prefix = file.rsplit('.',1)[0]
-
-            markdown_text=''
-            #Inject a heading and doc-type intro (markdown format)
-            markdown_text = inject_top_level_docs(markdown_text,file)
-
-            output_file_name_md_withdir = output_dir+output_file_name_prefix+'.md'
-            print("Output filename (md): %s" % output_file_name_md_withdir)
-
-            with open(output_file_name_md_withdir, 'w') as out:
-                out.write(markdown_text)
-
-            # Create sortable list of output file names
+            all_files.add(output_file_name_prefix)
             if not file=='common.xml':
                 dialect_files.add(output_file_name_prefix)
+
+
+# Generate the markdown files
+for file_prefix in all_files:
+    print(file_prefix)
+    markdown_text=''
+    #Inject a heading and doc-type intro (markdown format)
+    markdown_text = inject_top_level_docs(markdown_text,file_prefix)
+
+    output_file_name_md_withdir = output_dir+file_prefix+'.md'
+    print("Output filename (md): %s" % output_file_name_md_withdir)
+
+    with open(output_file_name_md_withdir, 'w') as out:
+        out.write(markdown_text)
+
             
 for the_file in sorted(dialect_files):
     index_text+='\n* [%s.xml](%s.md)' % (the_file,the_file)
