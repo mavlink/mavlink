@@ -5619,6 +5619,24 @@
       <field type="uint8_t" name="new_orientation" enum="MAV_SENSOR_ORIENTATION">orientation after calibration.</field>
       <field type="float" name="scale_factor">field radius correction factor</field>
     </message>
+    <!-- 225 EFI_STATUS imported from ardupilotmega.xml -->
+    <message id="225" name="EFI_STATUS">
+      <description>EFI Status Output</description>
+      <field type="uint8_t" name="health">EFI Health status</field>
+      <field type="float" name="ecu_index">ECU Index</field>
+      <field type="float" name="rpm">RPM</field>
+      <field type="float" name="fuel_consumed" units="g">Fuel Consumed (grams)</field>
+      <field type="float" name="fuel_flow" units="g/min">Fuel Flow Rate (g/min)</field>
+      <field type="float" name="engine_load" units="%">Engine Load (%)</field>
+      <field type="float" name="throttle_position" units="%">Throttle Position (%)</field>
+      <field type="float" name="spark_dwell_time" units="ms">Spark Dwell Time (ms)</field>
+      <field type="float" name="barometric_pressure" units="kPa">Barometric Pressure (kPa)</field>
+      <field type="float" name="intake_manifold_pressure" units="kPa">Intake Manifold Pressure (kPa)(</field>
+      <field type="float" name="intake_manifold_temperature" units="degC">Intake Manifold Temperature (degC)</field>
+      <field type="float" name="cylinder_head_temperature" units="degC">cylinder_head_temperature (degC)</field>
+      <field type="float" name="ignition_timing" units="deg">Ignition timing for cylinder i (Crank Angle degrees)</field>
+      <field type="float" name="injection_time" units="ms">Injection time for injector i (ms)</field>
+    </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
       <description>Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovation test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovation test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.</description>
