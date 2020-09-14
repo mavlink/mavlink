@@ -6136,7 +6136,7 @@
     <message id="283" name="GIMBAL_DEVICE_INFORMATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Information about a low level gimbal. This message should be requested by the gimbal manager or a ground station using MAV_CMD_REQUEST_MESSAGE.</description>
+      <description>Information about a low level gimbal. This message should be requested by the gimbal manager or a ground station using MAV_CMD_REQUEST_MESSAGE. The maximum angles and rates are the limits by hardware. However, the limits by software used are likely different/smaller and dependent on mode/settings/etc..</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the gimbal vendor.</field>
       <field type="uint8_t[32]" name="model_name">Name of the gimbal model.</field>
@@ -6146,12 +6146,12 @@
       <field type="uint64_t" name="uid">UID of gimbal hardware (0 if unknown).</field>
       <field type="uint16_t" name="cap_flags" enum="GIMBAL_DEVICE_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
       <field type="uint16_t" name="custom_cap_flags" display="bitmask">Bitmap for use for gimbal-specific capability flags.</field>
-      <field type="float" name="tilt_max" units="rad">Maximum tilt/pitch angle (positive: up, negative: down).</field>
-      <field type="float" name="tilt_min" units="rad">Minimum tilt/pitch angle (positive: up, negative: down).</field>
-      <field type="float" name="tilt_rate_max" units="rad/s">Maximum tilt/pitch angular rate (positive: up, negative: down).</field>
-      <field type="float" name="pan_max" units="rad">Maximum pan/yaw angle (positive: to the right, negative: to the left).</field>
-      <field type="float" name="pan_min" units="rad">Minimum pan/yaw angle (positive: to the right, negative: to the left).</field>
-      <field type="float" name="pan_rate_max" units="rad/s">Minimum pan/yaw angular rate (positive: to the right, negative: to the left).</field>
+      <field type="float" name="tilt_max" units="rad">Maximum hardware tilt/pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="tilt_min" units="rad">Minimum hardware tilt/pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="tilt_rate_max" units="rad/s">Maximum hardware tilt/pitch angular rate (positive: up, negative: down)</field>
+      <field type="float" name="pan_max" units="rad">Maximum hardware pan/yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="pan_min" units="rad">Minimum hardware pan/yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="pan_rate_max" units="rad/s">Maximum hardware pan/yaw angular rate (positive: to the right, negative: to the left)</field>
     </message>
     <message id="284" name="GIMBAL_DEVICE_SET_ATTITUDE">
       <wip/>
@@ -6183,10 +6183,10 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Low level message containing autopilot state relevant for a gimbal device. This message is to be sent from the gimbal manager to the gimbal device component. The data of this message server for the gimbal's estimator corrections in particular horizon compensation, as well as the autopilot's control intention e.g. feed forward angular control in z-axis.</description>
+      <field type="uint64_t" name="time_boot_us" units="us">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint64_t" name="time_boot_us" units="us">Timestamp (time since system boot).</field>
-      <field type="float[4]" name="q">Quaternion components of autopilot attitude: w, x, y, z (1 0 0 0 is the null-rotation, Hamilton convention).</field>
+      <field type="float[4]" name="q">Quaternion components of autopilot attitude: w, x, y, z (1 0 0 0 is the null-rotation, Hamiltonian convention).</field>
       <field type="uint32_t" name="q_estimated_delay_us" units="us">Estimated delay of the attitude data.</field>
       <field type="float" name="vx" units="m/s">X Speed in NED (North, East, Down).</field>
       <field type="float" name="vy" units="m/s">Y Speed in NED (North, East, Down).</field>
