@@ -2824,10 +2824,10 @@
         <description>Battery state is too low for ordinary abort sequence. Perform fastest possible emergency stop to prevent damage.</description>
       </entry>
       <entry value="5" name="MAV_BATTERY_CHARGE_STATE_FAILED">
-        <description>Battery failed, damage unavoidable.</description>
+        <description>Battery failed, damage unavoidable. Possible causes (faults) are listed in MAV_BATTERY_FAULT.</description>
       </entry>
       <entry value="6" name="MAV_BATTERY_CHARGE_STATE_UNHEALTHY">
-        <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited.</description>
+        <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited. Possible causes (faults) are listed in MAV_BATTERY_FAULT.</description>
       </entry>
       <entry value="7" name="MAV_BATTERY_CHARGE_STATE_CHARGING">
         <description>Battery is charging.</description>
@@ -5530,7 +5530,7 @@
       <field type="int32_t" name="time_remaining" units="s">Remaining battery time, 0: autopilot does not provide remaining battery time estimate</field>
       <field type="uint8_t" name="charge_state" enum="MAV_BATTERY_CHARGE_STATE">State for extent of discharge, provided by autopilot for warning or external reactions</field>
       <field type="uint16_t[4]" name="voltages_ext" units="mV">Battery voltages for cells 11 to 14. Cells above the valid cell count for this battery should have a value of 0, where zero indicates not supported (note, this is different than for the voltages field and allows empty byte truncation). If the measured value is 0 then 1 should be sent instead.</field>
-      <field type="uint32_t" name="fault_bitmask" display="bitmask" enum="MAV_BATTERY_FAULT">Fault/health indications.</field>
+      <field type="uint32_t" name="fault_bitmask" display="bitmask" enum="MAV_BATTERY_FAULT">Fault/health indications. These should be set when charge_state is MAV_BATTERY_CHARGE_STATE_FAILED or MAV_BATTERY_CHARGE_STATE_UNHEALTHY (if not, fault reporting is not supported).</field>
     </message>
     <message id="148" name="AUTOPILOT_VERSION">
       <description>Version and capability of autopilot software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
