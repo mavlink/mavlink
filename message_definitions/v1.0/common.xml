@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <mavlink>
+  <include>minimal.xml</include>
   <version>3</version>
   <dialect>0</dialect>
   <enums>
+<!--
     <enum name="MAV_AUTOPILOT">
       <description>Micro air vehicle / autopilot classes. This identifies the individual model.</description>
       <entry value="0" name="MAV_AUTOPILOT_GENERIC">
@@ -48,16 +50,16 @@
         <description>SMACCMPilot - http://smaccmpilot.org</description>
       </entry>
       <entry value="14" name="MAV_AUTOPILOT_AUTOQUAD">
-        <description>AutoQuad -- http://autoquad.org</description>
+        <description>AutoQuad - http://autoquad.org</description>
       </entry>
       <entry value="15" name="MAV_AUTOPILOT_ARMAZILA">
-        <description>Armazila -- http://armazila.com</description>
+        <description>Armazila - http://armazila.com</description>
       </entry>
       <entry value="16" name="MAV_AUTOPILOT_AEROB">
-        <description>Aerob -- http://aerob.ru</description>
+        <description>Aerob - http://aerob.ru</description>
       </entry>
       <entry value="17" name="MAV_AUTOPILOT_ASLUAV">
-        <description>ASLUAV autopilot -- http://www.asl.ethz.ch</description>
+        <description>ASLUAV autopilot - http://www.asl.ethz.ch</description>
       </entry>
       <entry value="18" name="MAV_AUTOPILOT_SMARTAP">
         <description>SmartAP Autopilot - http://sky-drones.com</description>
@@ -66,7 +68,9 @@
         <description>AirRails - http://uaventure.com</description>
       </entry>
     </enum>
+-->
     <enum name="MAV_TYPE">
+<!--
       <description>MAVLINK component type reported in HEARTBEAT message. Flight controllers must report the type of the vehicle on which they are mounted (e.g. MAV_TYPE_OCTOROTOR). All other components must report a value appropriate for their type (e.g. a camera must use MAV_TYPE_CAMERA).</description>
       <entry value="0" name="MAV_TYPE_GENERIC">
         <description>Generic micro air vehicle</description>
@@ -134,7 +138,7 @@
       <entry value="21" name="MAV_TYPE_VTOL_TILTROTOR">
         <description>Tiltrotor VTOL</description>
       </entry>
-      <!-- Entries up to 25 reserved for other VTOL airframes -->
+      <!- Entries up to 25 reserved for other VTOL airframes ->
       <entry value="22" name="MAV_TYPE_VTOL_RESERVED2">
         <description>VTOL reserved 2</description>
       </entry>
@@ -171,6 +175,7 @@
       <entry value="33" name="MAV_TYPE_SERVO">
         <description>Servo</description>
       </entry>
+-->
       <entry value="34" name="MAV_TYPE_ODID">
         <description>Open Drone ID. See https://mavlink.io/en/services/opendroneid.html.</description>
       </entry>
@@ -238,6 +243,7 @@
         <description>Mission failure.</description>
       </entry>
     </enum>
+<!--
     <enum name="MAV_MODE_FLAG" bitmask="true">
       <description>These flags encode the MAV mode.</description>
       <entry value="128" name="MAV_MODE_FLAG_SAFETY_ARMED">
@@ -292,6 +298,7 @@
         <description>Eighth bit: 00000001</description>
       </entry>
     </enum>
+-->
     <enum name="MAV_GOTO">
       <description>Actions that may be specified in MAV_CMD_OVERRIDE_GOTO to override mission execution.</description>
       <entry value="0" name="MAV_GOTO_DO_HOLD">
@@ -344,6 +351,7 @@
         <description>UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only.</description>
       </entry>
     </enum>
+<!--
     <enum name="MAV_STATE">
       <entry value="0" name="MAV_STATE_UNINIT">
         <description>Uninitialized system, state is unknown.</description>
@@ -373,7 +381,9 @@
         <description>System is terminating itself.</description>
       </entry>
     </enum>
+-->
     <enum name="MAV_COMPONENT">
+<!--
       <description>Component ids (values) for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.).
       Components must use the appropriate ID in their source address when sending messages. Components can also use IDs to determine if they are the intended recipient of an incoming message. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components.
       When creating new entries, components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequential values. An appropriate number of values should be left free after these components to allow the number of instances to be expanded.</description>
@@ -383,7 +393,7 @@
       <entry value="1" name="MAV_COMP_ID_AUTOPILOT1">
         <description>System flight controller component ("autopilot"). Only one autopilot is expected in a particular system.</description>
       </entry>
-      <!-- Component ids from 25-99 are reserved for private OEM component definitions (and may be incompatible with other private components). Note that if this range is later reduced, higher ids will be reallocated first. -->
+      <!- Component ids from 25-99 are reserved for private OEM component definitions (and may be incompatible with other private components). Note that if this range is later reduced, higher ids will be reallocated first. ->
       <entry value="25" name="MAV_COMP_ID_USER1">
         <description>Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.</description>
       </entry>
@@ -691,6 +701,7 @@
       <entry value="160" name="MAV_COMP_ID_FLARM">
         <description>FLARM collision alert component.</description>
       </entry>
+-->
       <entry value="171" name="MAV_COMP_ID_GIMBAL2">
         <description>Gimbal #2.</description>
       </entry>
@@ -706,6 +717,7 @@
       <entry value="175" name="MAV_COMP_ID_GIMBAL6">
         <description>Gimbal #6.</description>
       </entry>
+<!--
       <entry value="190" name="MAV_COMP_ID_MISSIONPLANNER">
         <description>Component that can generate/supply a mission flight plan (e.g. GCS or developer API).</description>
       </entry>
@@ -736,6 +748,7 @@
       <entry value="221" name="MAV_COMP_ID_GPS2">
         <description>GPS #2.</description>
       </entry>
+-->
       <entry value="236" name="MAV_COMP_ID_ODID_TXRX_1">
         <description>Open Drone ID transmitter/receiver (Bluetooth/WiFi/Internet).</description>
       </entry>
@@ -745,19 +758,23 @@
       <entry value="238" name="MAV_COMP_ID_ODID_TXRX_3">
         <description>Open Drone ID transmitter/receiver (Bluetooth/WiFi/Internet).</description>
       </entry>
+<!--
       <entry value="240" name="MAV_COMP_ID_UDP_BRIDGE">
         <description>Component to bridge MAVLink to UDP (i.e. from a UART).</description>
       </entry>
       <entry value="241" name="MAV_COMP_ID_UART_BRIDGE">
         <description>Component to bridge to UART (i.e. from UDP).</description>
       </entry>
+-->
       <entry value="242" name="MAV_COMP_ID_TUNNEL_NODE">
         <description>Component handling TUNNEL messages (e.g. vendor specific GUI of a component).</description>
       </entry>
+<!--
       <entry value="250" name="MAV_COMP_ID_SYSTEM_CONTROL">
         <deprecated since="2018-11" replaced_by="MAV_COMP_ID_ALL">System control does not require a separate component ID.</deprecated>
         <description>Component for handling system messages (e.g. to ARM, takeoff, etc.).</description>
       </entry>
+-->
     </enum>
     <enum name="MAV_SYS_STATUS_SENSOR" bitmask="true">
       <description>These encode the sensors whose status is sent as part of the SYS_STATUS message.</description>
@@ -2132,6 +2149,7 @@
         <param index="2" label="Interval" units="us" minValue="-1" increment="1">The interval between two messages. Set to -1 to disable and 0 to request default rate.</param>
         <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address of message stream (if message has target address fields). 0: Flight-stack default (recommended), 1: address of requestor, 2: broadcast.</param>
       </entry>
+<!--
       <entry value="512" name="MAV_CMD_REQUEST_MESSAGE" hasLocation="false" isDestination="false">
         <description>Request the target system(s) emit a single instance of a specified message (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).</description>
         <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID of the requested message.</param>
@@ -2148,6 +2166,7 @@
         <param index="1" label="Protocol" minValue="0" maxValue="1" increment="1">1: Request supported protocol versions by all nodes on the network</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
+-->
       <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message</description>
@@ -4547,6 +4566,7 @@
     </enum>
   </enums>
   <messages>
+<!--
     <message id="0" name="HEARTBEAT">
       <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html</description>
       <field type="uint8_t" name="type" enum="MAV_TYPE">Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.). This should be used in preference to component id for identifying the component type.</field>
@@ -4556,6 +4576,7 @@
       <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag.</field>
       <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
     </message>
+-->
     <message id="1" name="SYS_STATUS">
       <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows whether the system is currently active or not and if an emergency occurred. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occurred it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
       <field type="uint32_t" name="onboard_control_sensors_present" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</field>
@@ -6414,9 +6435,10 @@
       <field type="int8_t" name="mode" enum="WIFI_CONFIG_AP_MODE">WiFi Mode.</field>
       <field type="int8_t" name="response" enum="WIFI_CONFIG_AP_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
+<!--
     <message id="300" name="PROTOCOL_VERSION">
       <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <!- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. ->
       <description>Version and capability of protocol version. This message can be requested with MAV_CMD_REQUEST_MESSAGE and is used as part of the handshaking to establish which MAVLink version should be used on the network. Every node should respond to a request for PROTOCOL_VERSION to enable the handshaking. Library implementers should consider adding this into the default decoding state machine to allow the protocol core to respond directly.</description>
       <field type="uint16_t" name="version">Currently active MAVLink version number * 100: v1.0 is 100, v2.0 is 200, etc.</field>
       <field type="uint16_t" name="min_version">Minimum MAVLink version supported</field>
@@ -6424,6 +6446,7 @@
       <field type="uint8_t[8]" name="spec_version_hash">The first 8 bytes (not characters printed in hex!) of the git hash.</field>
       <field type="uint8_t[8]" name="library_version_hash">The first 8 bytes (not characters printed in hex!) of the git hash.</field>
     </message>
+-->
     <message id="301" name="AIS_VESSEL">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
