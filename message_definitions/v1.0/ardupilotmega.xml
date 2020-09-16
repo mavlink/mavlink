@@ -112,16 +112,7 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW">
-        <description>Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM field tables in the vehicle, given only the known yaw of the vehicle. If Latitude and longitude are both zero then use the current vehicle location.</description>
-        <param index="1" label="Yaw" units="deg">Yaw of vehicle in earth frame.</param>
-        <param index="2" label="CompassMask">CompassMask, 0 for all.</param>
-        <param index="3" label="Latitude" units="deg">Latitude.</param>
-        <param index="4" label="Longitude" units="deg">Longitude.</param>
-        <param index="5">Empty.</param>
-        <param index="6">Empty.</param>
-        <param index="7">Empty.</param>
-      </entry>
+      <!-- 42006 MAV_CMD_FIXED_MAG_CAL_YAW moved to common.xml -->
       <entry value="42424" name="MAV_CMD_DO_START_MAG_CAL">
         <description>Initiate a magnetometer calibration.</description>
         <param index="1">uint8_t bitmask of magnetometers (0 means all).</param>
@@ -863,16 +854,6 @@
       <entry value="5" name="PID_TUNING_STEER"/>
       <entry value="6" name="PID_TUNING_LANDING"/>
     </enum>
-    <enum name="MAG_CAL_STATUS">
-      <entry value="0" name="MAG_CAL_NOT_STARTED"/>
-      <entry value="1" name="MAG_CAL_WAITING_TO_START"/>
-      <entry value="2" name="MAG_CAL_RUNNING_STEP_ONE"/>
-      <entry value="3" name="MAG_CAL_RUNNING_STEP_TWO"/>
-      <entry value="4" name="MAG_CAL_SUCCESS"/>
-      <entry value="5" name="MAG_CAL_FAILED"/>
-      <entry value="6" name="MAG_CAL_BAD_ORIENTATION"/>
-      <entry value="7" name="MAG_CAL_BAD_RADIUS"/>
-    </enum>
     <enum name="MAV_REMOTE_LOG_DATA_BLOCK_COMMANDS">
       <description>Special ACK block numbers control activation of dataflash log streaming.</description>
       <!-- C uses signed integers for enumerations; these constants start at MAX_INT32_T and go down -->
@@ -1367,28 +1348,7 @@
       <field type="float" name="direction_y">Body frame direction vector for display.</field>
       <field type="float" name="direction_z">Body frame direction vector for display.</field>
     </message>
-    <message id="192" name="MAG_CAL_REPORT">
-      <description>Reports results of completed compass calibration. Sent until MAG_CAL_ACK received.</description>
-      <field type="uint8_t" name="compass_id">Compass being calibrated.</field>
-      <field type="uint8_t" name="cal_mask" display="bitmask">Bitmask of compasses being calibrated.</field>
-      <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Calibration Status.</field>
-      <field type="uint8_t" name="autosaved">0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.</field>
-      <field type="float" name="fitness" units="mgauss">RMS milligauss residuals.</field>
-      <field type="float" name="ofs_x">X offset.</field>
-      <field type="float" name="ofs_y">Y offset.</field>
-      <field type="float" name="ofs_z">Z offset.</field>
-      <field type="float" name="diag_x">X diagonal (matrix 11).</field>
-      <field type="float" name="diag_y">Y diagonal (matrix 22).</field>
-      <field type="float" name="diag_z">Z diagonal (matrix 33).</field>
-      <field type="float" name="offdiag_x">X off-diagonal (matrix 12 and 21).</field>
-      <field type="float" name="offdiag_y">Y off-diagonal (matrix 13 and 31).</field>
-      <field type="float" name="offdiag_z">Z off-diagonal (matrix 32 and 23).</field>
-      <extensions/>
-      <field type="float" name="orientation_confidence">Confidence in orientation (higher is better).</field>
-      <field type="uint8_t" name="old_orientation" enum="MAV_SENSOR_ORIENTATION">orientation before calibration.</field>
-      <field type="uint8_t" name="new_orientation" enum="MAV_SENSOR_ORIENTATION">orientation after calibration.</field>
-      <field type="float" name="scale_factor">field radius correction factor</field>
-    </message>
+    <!-- 192 MAG_CAL_REPORT moved to common.xml -->
     <!-- EKF status message from autopilot to GCS. -->
     <message id="193" name="EKF_STATUS_REPORT">
       <description>EKF Status message including flags and variances.</description>
@@ -1491,26 +1451,7 @@
       <field type="uint8_t" name="status" enum="GOPRO_REQUEST_STATUS">Status.</field>
     </message>
     <!-- 219 to 224 RESERVED for more GOPRO-->
-    <message id="225" name="EFI_STATUS">
-      <description>EFI status output</description>
-      <field type="uint8_t" name="health">EFI health status</field>
-      <field type="float" name="ecu_index">ECU index</field>
-      <field type="float" name="rpm">RPM</field>
-      <field type="float" name="fuel_consumed" units="g">Fuel consumed</field>
-      <field type="float" name="fuel_flow" units="g/min">Fuel flow rate</field>
-      <field type="float" name="engine_load" units="%">Engine load</field>
-      <field type="float" name="throttle_position" units="%">Throttle position</field>
-      <field type="float" name="spark_dwell_time" units="ms">Spark dwell time</field>
-      <field type="float" name="barometric_pressure" units="kPa">Barometric pressure</field>
-      <field type="float" name="intake_manifold_pressure" units="kPa">Intake manifold pressure(</field>
-      <field type="float" name="intake_manifold_temperature" units="degC">Intake manifold temperature</field>
-      <field type="float" name="cylinder_head_temperature" units="degC">Cylinder head temperature</field>
-      <field type="float" name="ignition_timing" units="deg">Ignition timing (Crank angle degrees)</field>
-      <field type="float" name="injection_time" units="ms">Injection time</field>
-      <field type="float" name="exhaust_gas_temperature" units="degC">Exhaust gas temperature</field>
-      <field type="float" name="throttle_out" units="%">Output throttle</field>
-      <field type="float" name="pt_compensation">Pressure/temperature compensation</field>
-    </message>
+    <!-- 225 EFI_STATUS moved to common.xml -->
     <message id="226" name="RPM">
       <description>RPM sensor output.</description>
       <field type="float" name="rpm1">RPM Sensor1.</field>

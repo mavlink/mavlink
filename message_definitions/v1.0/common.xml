@@ -1527,8 +1527,8 @@
         <param index="7" label="6th Dimension">Generic dimension 6, in the sensor's raw units</param>
       </entry>
       <entry value="243" name="MAV_CMD_PREFLIGHT_UAVCAN" hasLocation="false" isDestination="false">
-        <description>Trigger UAVCAN config. This command will be only accepted if in pre-flight mode.</description>
-        <param index="1" label="Actuator ID">1: Trigger actuator ID assignment and direction mapping.</param>
+        <description>Trigger UAVCAN configuration (actuator ID assignment and direction mapping). Note that this maps to the legacy UAVCAN v0 function UAVCAN_ENUMERATE, which is intended to be executed just once during initial vehicle configuration (it is not a normal pre-flight command and has been poorly named).</description>
+        <param index="1" label="Actuator ID">1: Trigger actuator ID assignment and direction mapping. 0: Cancel command.</param>
         <param index="2">Reserved</param>
         <param index="3">Reserved</param>
         <param index="4">Reserved</param>
@@ -2014,6 +2014,16 @@
         <param index="7">Reserved</param>
       </entry>
       <!-- from ardupilotmega.xml (hence ID is in that range) -->
+      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW">
+        <description>Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM field tables in the vehicle, given only the known yaw of the vehicle. If Latitude and longitude are both zero then use the current vehicle location.</description>
+        <param index="1" label="Yaw" units="deg">Yaw of vehicle in earth frame.</param>
+        <param index="2" label="CompassMask">CompassMask, 0 for all.</param>
+        <param index="3" label="Latitude" units="deg">Latitude.</param>
+        <param index="4" label="Longitude" units="deg">Longitude.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
       <entry value="42600" name="MAV_CMD_DO_WINCH">
         <description>Command to operate winch.</description>
         <param index="1" label="Instance" minValue="1" increment="1">Winch instance number.</param>
@@ -4180,6 +4190,16 @@
         <description>Winch clutch is engaged allowing motor to move freely</description>
       </entry>
     </enum>
+    <enum name="MAG_CAL_STATUS">
+      <entry value="0" name="MAG_CAL_NOT_STARTED"/>
+      <entry value="1" name="MAG_CAL_WAITING_TO_START"/>
+      <entry value="2" name="MAG_CAL_RUNNING_STEP_ONE"/>
+      <entry value="3" name="MAG_CAL_RUNNING_STEP_TWO"/>
+      <entry value="4" name="MAG_CAL_SUCCESS"/>
+      <entry value="5" name="MAG_CAL_FAILED"/>
+      <entry value="6" name="MAG_CAL_BAD_ORIENTATION"/>
+      <entry value="7" name="MAG_CAL_BAD_RADIUS"/>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -5575,6 +5595,48 @@
       <field type="uint32_t" name="breach_time" units="ms">Time (since boot) of last breach.</field>
       <extensions/>
       <field type="uint8_t" name="breach_mitigation" enum="FENCE_MITIGATE">Active action to prevent fence breach</field>
+    </message>
+    <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
+    <!-- 192 MAG_CAL_REPORT imported from ardupilotmega.xml -->
+    <message id="192" name="MAG_CAL_REPORT">
+      <description>Reports results of completed compass calibration. Sent until MAG_CAL_ACK received.</description>
+      <field type="uint8_t" name="compass_id">Compass being calibrated.</field>
+      <field type="uint8_t" name="cal_mask" display="bitmask">Bitmask of compasses being calibrated.</field>
+      <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Calibration Status.</field>
+      <field type="uint8_t" name="autosaved">0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.</field>
+      <field type="float" name="fitness" units="mgauss">RMS milligauss residuals.</field>
+      <field type="float" name="ofs_x">X offset.</field>
+      <field type="float" name="ofs_y">Y offset.</field>
+      <field type="float" name="ofs_z">Z offset.</field>
+      <field type="float" name="diag_x">X diagonal (matrix 11).</field>
+      <field type="float" name="diag_y">Y diagonal (matrix 22).</field>
+      <field type="float" name="diag_z">Z diagonal (matrix 33).</field>
+      <field type="float" name="offdiag_x">X off-diagonal (matrix 12 and 21).</field>
+      <field type="float" name="offdiag_y">Y off-diagonal (matrix 13 and 31).</field>
+      <field type="float" name="offdiag_z">Z off-diagonal (matrix 32 and 23).</field>
+      <extensions/>
+      <field type="float" name="orientation_confidence">Confidence in orientation (higher is better).</field>
+      <field type="uint8_t" name="old_orientation" enum="MAV_SENSOR_ORIENTATION">orientation before calibration.</field>
+      <field type="uint8_t" name="new_orientation" enum="MAV_SENSOR_ORIENTATION">orientation after calibration.</field>
+      <field type="float" name="scale_factor">field radius correction factor</field>
+    </message>
+    <!-- 225 EFI_STATUS imported from ardupilotmega.xml -->
+    <message id="225" name="EFI_STATUS">
+      <description>EFI Status Output</description>
+      <field type="uint8_t" name="health">EFI Health status</field>
+      <field type="float" name="ecu_index">ECU Index</field>
+      <field type="float" name="rpm">RPM</field>
+      <field type="float" name="fuel_consumed" units="g">Fuel Consumed (grams)</field>
+      <field type="float" name="fuel_flow" units="g/min">Fuel Flow Rate (g/min)</field>
+      <field type="float" name="engine_load" units="%">Engine Load (%)</field>
+      <field type="float" name="throttle_position" units="%">Throttle Position (%)</field>
+      <field type="float" name="spark_dwell_time" units="ms">Spark Dwell Time (ms)</field>
+      <field type="float" name="barometric_pressure" units="kPa">Barometric Pressure (kPa)</field>
+      <field type="float" name="intake_manifold_pressure" units="kPa">Intake Manifold Pressure (kPa)(</field>
+      <field type="float" name="intake_manifold_temperature" units="degC">Intake Manifold Temperature (degC)</field>
+      <field type="float" name="cylinder_head_temperature" units="degC">cylinder_head_temperature (degC)</field>
+      <field type="float" name="ignition_timing" units="deg">Ignition timing for cylinder i (Crank Angle degrees)</field>
+      <field type="float" name="injection_time" units="ms">Injection time for injector i (ms)</field>
     </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
