@@ -134,6 +134,15 @@ configure_file(config.h.in config.h)
 install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} COMPONENT Dev)
 
 # mavlink generation
+find_program (
+    mavgen_EXECUTABLE
+    NAMES mavgen mavgen.py
+)
+message(STATUS "mavgen_EXECUTABLE: ${mavgen_EXECUTABLE}")
+if (mavgen_EXECUTABLE-NOTFOUND)
+    set(mavgen_EXECUTABLE ${PYTHON_EXECUTABLE} -m pymavlink.tools.mavgen)
+endif()
+
 macro(generateMavlink version definitions)
     foreach(definition ${definitions})
         set(targetName ${definition}-v${version})
@@ -141,7 +150,7 @@ macro(generateMavlink version definitions)
         message(STATUS "processing: ${definitionAbsPath}")
         add_custom_command( 
             OUTPUT ${targetName}-stamp
-            COMMAND PYTHONPATH=$ENV{PYTHONPATH}:${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON_EXECUTABLE} -m pymavlink.tools.mavgen --lang=C --wire-protocol=${version}
+            COMMAND PYTHONPATH=$ENV{PYTHONPATH}:${CMAKE_CURRENT_SOURCE_DIR} ${mavgen_EXECUTABLE} --lang=C --wire-protocol=${version}
                 --output=include/v${version} ${definitionAbsPath}
             COMMAND touch ${targetName}-stamp
             )
@@ -150,7 +159,6 @@ macro(generateMavlink version definitions)
 endmacro()
 
 # build
-set(mavgen -m pymavlink.tools.mavgen)
 set(v1.0Definitions
     ASLUAV.xml
     ardupilotmega.xml
