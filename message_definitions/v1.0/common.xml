@@ -966,7 +966,6 @@
         <param index="7">z</param>
       </entry>
       <!-- Camera Controller Mission Commands Enumeration -->
-      <!-- MAV_CMD_DO_DIGICAM_CONFIGURE should be deprecated and replaced with CAMERA_SETTINGS -->
       <entry value="202" name="MAV_CMD_DO_DIGICAM_CONFIGURE" hasLocation="false" isDestination="false">
         <description>Configure digital camera. This is a fallback message for systems that have not yet implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html ).</description>
         <param index="1" label="Mode" minValue="0" increment="1">Modes: P, TV, AV, M, Etc.</param>
@@ -1772,7 +1771,8 @@
       </entry>
     </enum>
     <enum name="MAV_ROI">
-      <description>THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. The ROI (region of interest) for the vehicle. This can be
+      <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
+      <description>The ROI (region of interest) for the vehicle. This can be
                 be used by the vehicle for camera/vehicle attitude alignment (see
                 MAV_CMD_NAV_ROI).</description>
       <entry value="0" name="MAV_ROI_NONE">
