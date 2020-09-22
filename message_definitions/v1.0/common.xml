@@ -4375,7 +4375,7 @@
       <field type="int16_t" name="ymag">Y Magnetic field (raw)</field>
       <field type="int16_t" name="zmag">Z Magnetic field (raw)</field>
       <extensions/>
-      <field type="uint8_t" name="id">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
+      <field type="uint8_t" name="id" instance="true">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
       <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
     <message id="28" name="RAW_PRESSURE">
@@ -5102,7 +5102,7 @@
       <field type="float" name="temperature" units="degC">Temperature</field>
       <field type="uint16_t" name="fields_updated" display="bitmask">Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
       <extensions/>
-      <field type="uint8_t" name="id">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
+      <field type="uint8_t" name="id" instance="true">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
     </message>
     <message id="106" name="OPTICAL_FLOW_RAD">
       <description>Optical flow from an angular rate flow sensor (e.g. PX4FLOW or mouse sensor)</description>
@@ -5407,7 +5407,7 @@
       <field type="uint16_t" name="max_distance" units="cm">Maximum distance the sensor can measure</field>
       <field type="uint16_t" name="current_distance" units="cm">Current distance reading</field>
       <field type="uint8_t" name="type" enum="MAV_DISTANCE_SENSOR">Type of distance sensor.</field>
-      <field type="uint8_t" name="id">Onboard ID of the sensor</field>
+      <field type="uint8_t" name="id" instance="true">Onboard ID of the sensor</field>
       <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces. downward-facing: ROTATION_PITCH_270, upward-facing: ROTATION_PITCH_90, backward-facing: ROTATION_PITCH_180, forward-facing: ROTATION_NONE, left-facing: ROTATION_YAW_90, right-facing: ROTATION_YAW_270</field>
       <field type="uint8_t" name="covariance" units="cm^2">Measurement variance. Max standard deviation is 6cm. 255 if unknown.</field>
       <extensions/>
@@ -5543,7 +5543,7 @@
     </message>
     <message id="147" name="BATTERY_STATUS">
       <description>Battery information. Updates GCS with flight controller battery status. Use SMART_BATTERY_* messages instead for smart batteries.</description>
-      <field type="uint8_t" name="id">Battery ID</field>
+      <field type="uint8_t" name="id" instance="true">Battery ID</field>
       <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
       <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
       <field type="int16_t" name="temperature" units="cdegC">Temperature of the battery. INT16_MAX for unknown temperature.</field>
@@ -5852,7 +5852,7 @@
     </message>
     <message id="250" name="DEBUG_VECT">
       <description>To debug something using a named 3D vector.</description>
-      <field type="char[10]" name="name">Name</field>
+      <field type="char[10]" name="name" instance="true">Name</field>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="float" name="x">x</field>
       <field type="float" name="y">y</field>
@@ -5861,13 +5861,13 @@
     <message id="251" name="NAMED_VALUE_FLOAT">
       <description>Send a key-value pair as float. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="char[10]" name="name">Name of the debug variable</field>
+      <field type="char[10]" name="name" instance="true">Name of the debug variable</field>
       <field type="float" name="value">Floating point value</field>
     </message>
     <message id="252" name="NAMED_VALUE_INT">
       <description>Send a key-value pair as integer. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="char[10]" name="name">Name of the debug variable</field>
+      <field type="char[10]" name="name" instance="true">Name of the debug variable</field>
       <field type="int32_t" name="value">Signed integer value</field>
     </message>
     <message id="253" name="STATUSTEXT">
