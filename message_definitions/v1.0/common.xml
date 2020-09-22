@@ -916,9 +916,9 @@
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5">Latitude</param>
-        <param index="6">Longitude</param>
-        <param index="7">Altitude</param>
+        <param index="5" label="Latitude">Latitude of ROI location</param>
+        <param index="6" label="Longitude">Longitude of ROI location</param>
+        <param index="7" label="Altitude">Altitude of ROI location</param>
       </entry>
       <entry value="196" name="MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET" hasLocation="false" isDestination="false">
         <description>Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
@@ -926,9 +926,9 @@
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5" label="Pitch Offset">pitch offset from next waypoint</param>
-        <param index="6" label="Roll Offset">roll offset from next waypoint</param>
-        <param index="7" label="Yaw Offset">yaw offset from next waypoint</param>
+        <param index="5" label="Pitch Offset">Pitch offset from next waypoint, positive tilting up</param>
+        <param index="6" label="Roll Offset">Roll offset from next waypoint, positive banking to the right</param>
+        <param index="7" label="Yaw Offset">Yaw offset from next waypoint, positive panning to the right</param>
       </entry>
       <entry value="197" name="MAV_CMD_DO_SET_ROI_NONE" hasLocation="false" isDestination="false">
         <description>Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
@@ -1373,7 +1373,7 @@
         <param index="3" label="Pause" minValue="-1" maxValue="1" increment="2">1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore</param>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE" hasLocation="false" isDestination="false">
-        <description>Starts video capture (recording). Use NaN for reserved values.</description>
+        <description>Starts video capture (recording).</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams)</param>
         <param index="2" label="Status Frequency" minValue="0" units="Hz">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency)</param>
         <param index="3" reserved="true" default="NaN"/>
@@ -1383,7 +1383,7 @@
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE" hasLocation="false" isDestination="false">
-        <description>Stop the current video capture (recording). Use NaN for reserved values.</description>
+        <description>Stop the current video capture (recording).</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams)</param>
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
@@ -2407,7 +2407,7 @@
         <description>Generator controller exceeded it's overvoltage threshold and shutdown to prevent it exceeding the voltage rating.</description>
       </entry>
       <entry value="262144" name="MAV_GENERATOR_STATUS_FLAG_BATTERY_UNDERVOLT_FAULT">
-        <description>Batteries are under voltage.</description>
+        <description>Batteries are under voltage (generator will not start).</description>
       </entry>
       <entry value="524288" name="MAV_GENERATOR_STATUS_FLAG_START_INHIBITED">
         <description>Generator start is inhibited by e.g. a safety switch.</description>
@@ -2510,8 +2510,8 @@
       </entry>
     </enum>
     <!-- ESTIMATOR_STATUS_FLAGS - these values should be bit-and with the messages flags field to know if flag has been set -->
-    <enum name="ESTIMATOR_STATUS_FLAGS">
-      <description>Flags in EKF_STATUS message</description>
+    <enum name="ESTIMATOR_STATUS_FLAGS" bitmask="true">
+      <description>Flags in ESTIMATOR_STATUS message</description>
       <entry value="1" name="ESTIMATOR_ATTITUDE">
         <description>True if the attitude estimate is good</description>
       </entry>
@@ -4770,7 +4770,7 @@
       <description>Information about a captured image. This is emitted every time a message is captured. It may be re-requested using MAV_CMD_REQUEST_MESSAGE, using param2 to indicate the sequence number for the missing image.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="time_utc" units="us">Timestamp (time since UNIX epoch) in UTC. 0 for unknown.</field>
-      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="camera_id">Deprecated/unused. Component IDs are used to differentiate multiple cameras.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude where image was taken</field>
       <field type="int32_t" name="lon" units="degE7">Longitude where capture was taken</field>
       <field type="int32_t" name="alt" units="mm">Altitude (MSL) where image was taken</field>
