@@ -412,8 +412,11 @@
       <entry value="1024" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_LOCK">
         <description>Gimbal device supports locking to an absolute heading (often this is an option available)</description>
       </entry>
-      <entry value="2048" name="GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_INFINITE_YAW">
-        <description>Gimbal device supports yawing/panning infinetely (e.g. using slip disk).</description>
+      <entry value="2048" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_INFINITE_YAW">
+        <description>Gimbal device supports yawing/panning infinitely (e.g. using slip ring).</description>
+      </entry>
+      <entry value="4096" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_ABSOLUTE_YAW">
+        <description>Gimbal device supports absolute yaw angles (this usually requires support by an autopilot, and can be dynamic, i.e., go on and off during runtime).</description>
       </entry>
     </enum>
     <enum name="GIMBAL_MANAGER_CAP_FLAGS" bitmask="true">
@@ -487,6 +490,13 @@
       <entry value="16" name="GIMBAL_DEVICE_FLAGS_YAW_LOCK">
         <description>Lock yaw angle to absolute angle relative to North (not relative to drone). If this flag is set, the quaternion is in the Earth frame with the x-axis pointing North (yaw absolute). If this flag is not set, the quaternion frame is in the Earth frame rotated so that the x-axis is pointing forward (yaw relative to vehicle).</description>
       </entry>
+      <entry value="32" name="GIMBAL_DEVICE_FLAGS_CAN_ACCEPT_YAW_ABSOLUTE">
+        <description>Gimbal device can accept absolute yaw angle input. This flag cannot be set, is only for reporting (attempts to set it are rejected by the gimbal device).</description>
+      </entry>
+      <entry value="64" name="GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE">
+        <description>Yaw angle is absolute (is only accepted if GIMBAL_DEVICE_FLAGS_CAN_ACCEPT_YAW_ABSOLUTE is set). If this flag is set, the quaternion is in the Earth frame with the x-axis pointing North (yaw absolute), else it is in the Earth frame rotated so that the x-axis is pointing forward (yaw relative to vehicle).</description>
+      </entry>
+      
     </enum>
     <enum name="GIMBAL_MANAGER_FLAGS" bitmask="true">
       <description>Flags for high level gimbal manager operation The first 16 bytes are identical to the GIMBAL_DEVICE_FLAGS.</description>
@@ -6141,24 +6151,24 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Low level gimbal flags.</field>
-      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, set all fields to NaN if only angular velocity should be used)</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is banking to the right, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is tilting up, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is panning to the right, NaN to be ignored.</field>
+      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, Hamilton convention, the frame depends on GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, set all fields to NaN if only angular velocity should be used)</field>
+      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is banking to the right (NaN to be ignored).</field>
+      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is tilting up (NaN to be ignored).</field>
+      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is panning to the right (the frame depends on GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
     </message>
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal device component. The angles encoded in the quaternion are in the global frame (roll: positive is tilt to the right, pitch: positive is tilting up, yaw is turn to the right). This message should be broadcast at a low regular rate (e.g. 10Hz).</description>
+      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal device component at a low regular rate (e.g. 10Hz).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Current gimbal flags set.</field>
-      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set)</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (NaN if unknown)</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (NaN if unknown)</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (NaN if unknown)</field>
-      <field type="uint32_t" name="failure_flags" display="bitmask" enum="GIMBAL_DEVICE_ERROR_FLAGS">Failure flags (0 for no failure)</field>
+      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, Hamilton convention, the frame depends on GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag).</field>
+      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (NaN if unknown).</field>
+      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (NaN if unknown).</field>
+      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (the frame depends on GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN if unknown).</field>
+      <field type="uint32_t" name="failure_flags" display="bitmask" enum="GIMBAL_DEVICE_ERROR_FLAGS">Failure flags (0 for no failure).</field>
     </message>
     <message id="286" name="AUTOPILOT_STATE_FOR_GIMBAL_DEVICE">
       <wip/>
