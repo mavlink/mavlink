@@ -2834,7 +2834,7 @@
         <description>Battery is not in low state. Normal operation.</description>
       </entry>
       <entry value="2" name="MAV_BATTERY_CHARGE_STATE_LOW">
-        <description>Battery state is low, warn and monitor close.</description>
+        <description>Battery state is low, warn and monitor closely.</description>
       </entry>
       <entry value="3" name="MAV_BATTERY_CHARGE_STATE_CRITICAL">
         <description>Battery state is critical, return or abort immediately.</description>
@@ -2849,7 +2849,11 @@
         <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited. Possible causes (faults) are listed in MAV_BATTERY_FAULT.</description>
       </entry>
       <entry value="7" name="MAV_BATTERY_CHARGE_STATE_CHARGING">
+        <deprecated since="2020-10" replaced_by="MAV_BATTERY_CHARGE_STATE_NOT_READY">Use MAV_BATTERY_CHARGE_STATE_NOT_READY and set MAV_BATTERY_MODE_CHARGING instead</deprecated>
         <description>Battery is charging.</description>
+      </entry>
+      <entry value="8" name="MAV_BATTERY_CHARGE_STATE_NOT_READY">
+        <description>Battery is not ready to use (because it is charging or in some other inappropriate MAV_BATTERY_MODE). Note that you would use MAV_BATTERY_CHARGE_STATE_LOW (say) to indicate the low battery state if not charging etc.).</description>
       </entry>
     </enum>
     <enum name="MAV_BATTERY_MODE">
@@ -2862,6 +2866,9 @@
       </entry>
       <entry value="2" name="MAV_BATTERY_MODE_HOT_SWAP">
         <description>Battery in hot-swap mode (current limited to prevent spikes that might damage sensitive electrical circuits).</description>
+      </entry>
+      <entry value="2" name="MAV_BATTERY_MODE_CHARGING">
+        <description>Battery is charging.</description>
       </entry>
     </enum>
     <enum name="MAV_BATTERY_FAULT" bitmask="true">
