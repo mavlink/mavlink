@@ -1718,17 +1718,17 @@
         <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Tilt/pitch angle (positive to tilt up, relative to vehicle for PAN mode, relative to world horizon for HOLD mode).</param>
         <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Pan/yaw angle (positive to pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode).</param>
         <param index="5" label="Gimbal manager flags" enum="GIMBAL_MANAGER_FLAGS">Gimbal manager flags to use.</param>
-        <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
+        <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one but not all gimbals.</param>
       </entry>
       <entry value="1001" name="MAV_CMD_DO_GIMBAL_MANAGER_CONFIGURE" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Gimbal configuration to set which sysid/compid is in primary and secondary control.</description>
-        <param index="1" label="sysid primary control">Sysid currently in primary control (0: no one in control).</param>
-        <param index="2" label="compid primary control">Compid currently in primary control (0: no one in control).</param>
-        <param index="3" label="sysid secondary control">Sysid currently in secondary control (0: no one in control).</param>
-        <param index="4" label="compid secondary control">Compid currently in secondary control (0: no one in control).</param>
-        <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</param>
+        <param index="1" label="sysid primary control">Sysid for primary control (0: no one in control).</param>
+        <param index="2" label="compid primary control">Compid for primary control (0: no one in control).</param>
+        <param index="3" label="sysid secondary control">Sysid for secondary control (0: no one in control).</param>
+        <param index="4" label="compid secondary control">Compid for secondary control (0: no one in control).</param>
+        <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one but not all gimbals.</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
@@ -6216,10 +6216,10 @@
     <message id="288" name="GIMBAL_MANAGER_SET_MANUAL_CONTROL">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>High level message to control a gimbal manually, so without units. The actual angles or angular rates will be produced by the gimbal manager based on settings. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
+      <description>High level message to control a gimbal manually. The actual angles or angular rates are unitless; the actual rates will depend on internal gimbal manager settings/configuration (e.g. set by parameters). This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags.</field>
       <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. (Send command multiple times for more than one but not all gimbals.)</field>
       <field type="float" name="tilt">Tilt/pitch angle unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="pan">Pan/yaw angle unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
