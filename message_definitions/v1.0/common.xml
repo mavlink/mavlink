@@ -1004,7 +1004,7 @@
         <param index="1" label="Delay" units="s" minValue="-1" increment="1">Delay (-1 to enable time-of-day fields)</param>
         <param index="2" label="Hour" minValue="-1" maxValue="23" increment="1">hour (24h format, UTC, -1 to ignore)</param>
         <param index="3" label="Minute" minValue="-1" maxValue="59" increment="1">minute (24h format, UTC, -1 to ignore)</param>
-        <param index="4" label="Second" minValue="-1" maxValue="59" increment="1">second (24h format, UTC)</param>
+        <param index="4" label="Second" minValue="-1" maxValue="59" increment="1">second (24h format, UTC, -1 to ignore)</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
@@ -1412,7 +1412,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="211" name="MAV_CMD_DO_GRIPPER">
+      <entry value="211" name="MAV_CMD_DO_GRIPPER" hasLocation="false" isDestination="false">
         <description>Mission command to operate a gripper.</description>
         <param index="1" label="Instance" minValue="1" increment="1">Gripper instance number.</param>
         <param index="2" label="Action" enum="GRIPPER_ACTIONS">Gripper action to perform.</param>
@@ -1558,6 +1558,7 @@
       </entry>
       <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
         <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Request a target system to start an upgrade of one (or all) of its components. For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller. The system doing the upgrade will report progress using the normal command protocol sequence for a long running operation. Command protocol information: https://mavlink.io/en/services/command.html.</description>
         <param index="1" label="Component ID" enum="MAV_COMPONENT">Component id of the component to be upgraded. If set to 0, all components should be upgraded.</param>
         <param index="2" label="Reboot" minValue="0" maxValue="1" increment="1">0: Do not reboot component after the action is executed, 1: Reboot component after the action is executed.</param>
@@ -1626,6 +1627,12 @@
         <param index="2" label="Interval" units="us" minValue="-1" increment="1">The interval between two messages. Set to -1 to disable and 0 to request default rate.</param>
         <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address of message stream (if message has target address fields). 0: Flight-stack default (recommended), 1: address of requestor, 2: broadcast.</param>
       </entry>
+      <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" hasLocation="false" isDestination="false">
+        <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
+        <description>Request MAVLink protocol version compatibility. All receivers should ACK the command and then emit their capabilities in an PROTOCOL_VERSION message</description>
+        <param index="1" label="Protocol" minValue="0" maxValue="1" increment="1">1: Request supported protocol versions by all nodes on the network</param>
+        <param index="2">Reserved (all remaining params)</param>
+      </entry>
       <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message</description>
@@ -1665,7 +1672,6 @@
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="528" name="MAV_CMD_REQUEST_FLIGHT_INFORMATION" hasLocation="false" isDestination="false">
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request flight information (FLIGHT_INFORMATION)</description>
         <param index="1" label="Flight Information" minValue="0" maxValue="1" increment="1">1: Request flight information</param>
@@ -1752,7 +1758,6 @@
       </entry>
       <entry value="2002" name="MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Re-request a CAMERA_IMAGE_CAPTURED message.</description>
         <param index="1" label="Number" minValue="0" increment="1">Sequence number for missing CAMERA_IMAGE_CAPTURED message</param>
         <param index="2" reserved="true" default="NaN"/>
@@ -1822,13 +1827,11 @@
       </entry>
       <entry value="2504" name="MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Request video stream information (VIDEO_STREAM_INFORMATION)</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
       </entry>
       <entry value="2505" name="MAV_CMD_REQUEST_VIDEO_STREAM_STATUS" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Request video stream status (VIDEO_STREAM_STATUS)</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
       </entry>
@@ -2017,7 +2020,7 @@
         <param index="7">Reserved</param>
       </entry>
       <!-- from ardupilotmega.xml (hence ID is in that range) -->
-      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW">
+      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW" hasLocation="true" isDestination="false">
         <description>Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM field tables in the vehicle, given only the known yaw of the vehicle. If Latitude and longitude are both zero then use the current vehicle location.</description>
         <param index="1" label="Yaw" units="deg">Yaw of vehicle in earth frame.</param>
         <param index="2" label="CompassMask">CompassMask, 0 for all.</param>
@@ -2027,7 +2030,7 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42600" name="MAV_CMD_DO_WINCH">
+      <entry value="42600" name="MAV_CMD_DO_WINCH" hasLocation="false" isDestination="false">
         <description>Command to operate winch.</description>
         <param index="1" label="Instance" minValue="1" increment="1">Winch instance number.</param>
         <param index="2" label="Action" enum="WINCH_ACTIONS">Action to perform.</param>
@@ -2837,34 +2840,49 @@
         <description>Battery state is too low for ordinary abort sequence. Perform fastest possible emergency stop to prevent damage.</description>
       </entry>
       <entry value="5" name="MAV_BATTERY_CHARGE_STATE_FAILED">
-        <description>Battery failed, damage unavoidable.</description>
+        <description>Battery failed, damage unavoidable. Possible causes (faults) are listed in MAV_BATTERY_FAULT.</description>
       </entry>
       <entry value="6" name="MAV_BATTERY_CHARGE_STATE_UNHEALTHY">
-        <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited.</description>
+        <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited. Possible causes (faults) are listed in MAV_BATTERY_FAULT.</description>
       </entry>
       <entry value="7" name="MAV_BATTERY_CHARGE_STATE_CHARGING">
         <description>Battery is charging.</description>
       </entry>
     </enum>
-    <enum name="MAV_SMART_BATTERY_FAULT" bitmask="true">
-      <description>Smart battery supply status/fault flags (bitmask) for health indication.</description>
-      <entry value="1" name="MAV_SMART_BATTERY_FAULT_DEEP_DISCHARGE">
+    <enum name="MAV_BATTERY_MODE">
+      <description>Battery mode. Note, the normal operation mode (i.e. when flying) should be reported as MAV_BATTERY_MODE_UNKNOWN to allow message trimming in normal flight.</description>
+      <entry value="0" name="MAV_BATTERY_MODE_UNKNOWN">
+        <description>Battery mode not supported/unknown battery mode/normal operation.</description>
+      </entry>
+      <entry value="1" name="MAV_BATTERY_MODE_AUTO_DISCHARGING">
+        <description>Battery is auto discharging (towards storage level).</description>
+      </entry>
+      <entry value="2" name="MAV_BATTERY_MODE_HOT_SWAP">
+        <description>Battery in hot-swap mode (current limited to prevent spikes that might damage sensitive electrical circuits).</description>
+      </entry>
+    </enum>
+    <enum name="MAV_BATTERY_FAULT" bitmask="true">
+      <description>Smart battery supply status/fault flags (bitmask) for health indication. The battery must also report either MAV_BATTERY_CHARGE_STATE_FAILED or MAV_BATTERY_CHARGE_STATE_UNHEALTHY if any of these are set.</description>
+      <entry value="1" name="MAV_BATTERY_FAULT_DEEP_DISCHARGE">
         <description>Battery has deep discharged.</description>
       </entry>
-      <entry value="2" name="MAV_SMART_BATTERY_FAULT_SPIKES">
+      <entry value="2" name="MAV_BATTERY_FAULT_SPIKES">
         <description>Voltage spikes.</description>
       </entry>
-      <entry value="4" name="MAV_SMART_BATTERY_FAULT_SINGLE_CELL_FAIL">
-        <description>Single cell has failed.</description>
+      <entry value="4" name="MAV_BATTERY_FAULT_CELL_FAIL">
+        <description>One or more cells have failed. Battery should also report MAV_BATTERY_CHARGE_STATE_FAILE (and should not be used).</description>
       </entry>
-      <entry value="8" name="MAV_SMART_BATTERY_FAULT_OVER_CURRENT">
+      <entry value="8" name="MAV_BATTERY_FAULT_OVER_CURRENT">
         <description>Over-current fault.</description>
       </entry>
-      <entry value="16" name="MAV_SMART_BATTERY_FAULT_OVER_TEMPERATURE">
+      <entry value="16" name="MAV_BATTERY_FAULT_OVER_TEMPERATURE">
         <description>Over-temperature fault.</description>
       </entry>
-      <entry value="32" name="MAV_SMART_BATTERY_FAULT_UNDER_TEMPERATURE">
+      <entry value="32" name="MAV_BATTERY_FAULT_UNDER_TEMPERATURE">
         <description>Under-temperature fault.</description>
+      </entry>
+      <entry value="64" name="MAV_BATTERY_FAULT_INCOMPATIBLE_VOLTAGE">
+        <description>Vehicle voltage is not compatible with this battery (batteries on same power rail should have similar voltage).</description>
       </entry>
     </enum>
     <enum name="MAV_GENERATOR_STATUS_FLAG" bitmask="true">
@@ -4226,8 +4244,8 @@
       <field type="uint64_t" name="time_unix_usec" units="us">Timestamp (UNIX epoch time).</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
     </message>
-    <!-- FIXME to be removed / merged with SYSTEM_TIME -->
     <message id="4" name="PING">
+      <deprecated since="2011-08" replaced_by="SYSTEM_TIME">to be removed / merged with SYSTEM_TIME</deprecated>
       <description>A ping message either requesting or responding to a ping. This allows to measure the system latencies, including serial port, radio modem and UDP connections. The ping microservice is documented at https://mavlink.io/en/services/ping.html</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint32_t" name="seq">PING sequence</field>
@@ -4372,7 +4390,7 @@
       <field type="int16_t" name="ymag">Y Magnetic field (raw)</field>
       <field type="int16_t" name="zmag">Z Magnetic field (raw)</field>
       <extensions/>
-      <field type="uint8_t" name="id">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
+      <field type="uint8_t" name="id" instance="true">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
       <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
     <message id="28" name="RAW_PRESSURE">
@@ -4390,7 +4408,7 @@
       <field type="float" name="press_diff" units="hPa">Differential pressure 1</field>
       <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
       <extensions/>
-      <field type="int16_t" name="temperature_press_diff" units="cdegC">Differential pressure temperature (UINT16_MAX, if not available)</field>
+      <field type="int16_t" name="temperature_press_diff" units="cdegC">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
     </message>
     <message id="30" name="ATTITUDE">
       <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right).</description>
@@ -5099,7 +5117,7 @@
       <field type="float" name="temperature" units="degC">Temperature</field>
       <field type="uint16_t" name="fields_updated" display="bitmask">Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
       <extensions/>
-      <field type="uint8_t" name="id">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
+      <field type="uint8_t" name="id" instance="true">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
     </message>
     <message id="106" name="OPTICAL_FLOW_RAD">
       <description>Optical flow from an angular rate flow sensor (e.g. PX4FLOW or mouse sensor)</description>
@@ -5404,7 +5422,7 @@
       <field type="uint16_t" name="max_distance" units="cm">Maximum distance the sensor can measure</field>
       <field type="uint16_t" name="current_distance" units="cm">Current distance reading</field>
       <field type="uint8_t" name="type" enum="MAV_DISTANCE_SENSOR">Type of distance sensor.</field>
-      <field type="uint8_t" name="id">Onboard ID of the sensor</field>
+      <field type="uint8_t" name="id" instance="true">Onboard ID of the sensor</field>
       <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces. downward-facing: ROTATION_PITCH_270, upward-facing: ROTATION_PITCH_90, backward-facing: ROTATION_PITCH_180, forward-facing: ROTATION_NONE, left-facing: ROTATION_YAW_90, right-facing: ROTATION_YAW_270</field>
       <field type="uint8_t" name="covariance" units="cm^2">Measurement variance. Max standard deviation is 6cm. 255 if unknown.</field>
       <extensions/>
@@ -5451,7 +5469,7 @@
       <field type="float" name="press_diff" units="hPa">Differential pressure</field>
       <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
       <extensions/>
-      <field type="int16_t" name="temperature_press_diff" units="cdegC">Differential pressure temperature (UINT16_MAX, if not available)</field>
+      <field type="int16_t" name="temperature_press_diff" units="cdegC">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
     </message>
     <message id="138" name="ATT_POS_MOCAP">
       <description>Motion capture attitude and position</description>
@@ -5502,7 +5520,7 @@
       <field type="float" name="press_diff" units="hPa">Differential pressure</field>
       <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
       <extensions/>
-      <field type="int16_t" name="temperature_press_diff" units="cdegC">Differential pressure temperature (UINT16_MAX, if not available)</field>
+      <field type="int16_t" name="temperature_press_diff" units="cdegC">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
     </message>
     <message id="144" name="FOLLOW_TARGET">
       <description>Current motion information from a designated system</description>
@@ -5539,8 +5557,8 @@
       <field type="float" name="yaw_rate" units="rad/s">Angular rate in yaw axis</field>
     </message>
     <message id="147" name="BATTERY_STATUS">
-      <description>Battery information. Updates GCS with flight controller battery status. Use SMART_BATTERY_* messages instead for smart batteries.</description>
-      <field type="uint8_t" name="id">Battery ID</field>
+      <description>Battery information. Updates GCS with flight controller battery status. Smart batteries also use this message, but may additionally send SMART_BATTERY_INFO.</description>
+      <field type="uint8_t" name="id" instance="true">Battery ID</field>
       <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
       <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
       <field type="int16_t" name="temperature" units="cdegC">Temperature of the battery. INT16_MAX for unknown temperature.</field>
@@ -5553,6 +5571,8 @@
       <field type="int32_t" name="time_remaining" units="s">Remaining battery time, 0: autopilot does not provide remaining battery time estimate</field>
       <field type="uint8_t" name="charge_state" enum="MAV_BATTERY_CHARGE_STATE">State for extent of discharge, provided by autopilot for warning or external reactions</field>
       <field type="uint16_t[4]" name="voltages_ext" units="mV">Battery voltages for cells 11 to 14. Cells above the valid cell count for this battery should have a value of 0, where zero indicates not supported (note, this is different than for the voltages field and allows empty byte truncation). If the measured value is 0 then 1 should be sent instead.</field>
+      <field type="uint8_t" name="mode" enum="MAV_BATTERY_MODE">Battery mode. Default (0) is that battery mode reporting is not supported or battery is in normal-use mode.</field>
+      <field type="uint32_t" name="fault_bitmask" display="bitmask" enum="MAV_BATTERY_FAULT">Fault/health indications. These should be set when charge_state is MAV_BATTERY_CHARGE_STATE_FAILED or MAV_BATTERY_CHARGE_STATE_UNHEALTHY (if not, fault reporting is not supported).</field>
     </message>
     <message id="148" name="AUTOPILOT_VERSION">
       <description>Version and capability of autopilot software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
@@ -5624,21 +5644,24 @@
     </message>
     <!-- 225 EFI_STATUS imported from ardupilotmega.xml -->
     <message id="225" name="EFI_STATUS">
-      <description>EFI Status Output</description>
-      <field type="uint8_t" name="health">EFI Health status</field>
-      <field type="float" name="ecu_index">ECU Index</field>
+      <description>EFI status output</description>
+      <field type="uint8_t" name="health">EFI health status</field>
+      <field type="float" name="ecu_index">ECU index</field>
       <field type="float" name="rpm">RPM</field>
-      <field type="float" name="fuel_consumed" units="g">Fuel Consumed (grams)</field>
-      <field type="float" name="fuel_flow" units="g/min">Fuel Flow Rate (g/min)</field>
-      <field type="float" name="engine_load" units="%">Engine Load (%)</field>
-      <field type="float" name="throttle_position" units="%">Throttle Position (%)</field>
-      <field type="float" name="spark_dwell_time" units="ms">Spark Dwell Time (ms)</field>
-      <field type="float" name="barometric_pressure" units="kPa">Barometric Pressure (kPa)</field>
-      <field type="float" name="intake_manifold_pressure" units="kPa">Intake Manifold Pressure (kPa)(</field>
-      <field type="float" name="intake_manifold_temperature" units="degC">Intake Manifold Temperature (degC)</field>
-      <field type="float" name="cylinder_head_temperature" units="degC">cylinder_head_temperature (degC)</field>
-      <field type="float" name="ignition_timing" units="deg">Ignition timing for cylinder i (Crank Angle degrees)</field>
-      <field type="float" name="injection_time" units="ms">Injection time for injector i (ms)</field>
+      <field type="float" name="fuel_consumed" units="g">Fuel consumed</field>
+      <field type="float" name="fuel_flow" units="g/min">Fuel flow rate</field>
+      <field type="float" name="engine_load" units="%">Engine load</field>
+      <field type="float" name="throttle_position" units="%">Throttle position</field>
+      <field type="float" name="spark_dwell_time" units="ms">Spark dwell time</field>
+      <field type="float" name="barometric_pressure" units="kPa">Barometric pressure</field>
+      <field type="float" name="intake_manifold_pressure" units="kPa">Intake manifold pressure(</field>
+      <field type="float" name="intake_manifold_temperature" units="degC">Intake manifold temperature</field>
+      <field type="float" name="cylinder_head_temperature" units="degC">Cylinder head temperature</field>
+      <field type="float" name="ignition_timing" units="deg">Ignition timing (Crank angle degrees)</field>
+      <field type="float" name="injection_time" units="ms">Injection time</field>
+      <field type="float" name="exhaust_gas_temperature" units="degC">Exhaust gas temperature</field>
+      <field type="float" name="throttle_out" units="%">Output throttle</field>
+      <field type="float" name="pt_compensation">Pressure/temperature compensation</field>
     </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
@@ -5846,7 +5869,7 @@
     </message>
     <message id="250" name="DEBUG_VECT">
       <description>To debug something using a named 3D vector.</description>
-      <field type="char[10]" name="name">Name</field>
+      <field type="char[10]" name="name" instance="true">Name</field>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="float" name="x">x</field>
       <field type="float" name="y">y</field>
@@ -5855,13 +5878,13 @@
     <message id="251" name="NAMED_VALUE_FLOAT">
       <description>Send a key-value pair as float. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="char[10]" name="name">Name of the debug variable</field>
+      <field type="char[10]" name="name" instance="true">Name of the debug variable</field>
       <field type="float" name="value">Floating point value</field>
     </message>
     <message id="252" name="NAMED_VALUE_INT">
       <description>Send a key-value pair as integer. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="char[10]" name="name">Name of the debug variable</field>
+      <field type="char[10]" name="name" instance="true">Name of the debug variable</field>
       <field type="int32_t" name="value">Signed integer value</field>
     </message>
     <message id="253" name="STATUSTEXT">
@@ -6490,8 +6513,10 @@
     <message id="370" name="SMART_BATTERY_INFO">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Smart Battery information (static/infrequent update). Use for updates from: smart battery to flight stack, flight stack to GCS. Use instead of BATTERY_STATUS for smart batteries.</description>
+      <description>Smart Battery information (static/infrequent update). Use for updates from: smart battery to flight stack, flight stack to GCS. Use BATTERY_STATUS for smart battery frequent updates.</description>
       <field type="uint8_t" name="id">Battery ID</field>
+      <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
+      <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
       <field type="int32_t" name="capacity_full_specification" units="mAh">Capacity when full according to manufacturer, -1: field not provided.</field>
       <field type="int32_t" name="capacity_full" units="mAh">Capacity when full (accounting for battery degradation), -1: field not provided.</field>
       <field type="uint16_t" name="cycle_count">Charge/discharge cycle count. -1: field not provided.</field>
@@ -6501,19 +6526,6 @@
       <field type="uint16_t" name="discharge_minimum_voltage" units="mV">Minimum per-cell voltage when discharging. If not supplied set to UINT16_MAX value.</field>
       <field type="uint16_t" name="charging_minimum_voltage" units="mV">Minimum per-cell voltage when charging. If not supplied set to UINT16_MAX value.</field>
       <field type="uint16_t" name="resting_minimum_voltage" units="mV">Minimum per-cell voltage when resting. If not supplied set to UINT16_MAX value.</field>
-    </message>
-    <message id="371" name="SMART_BATTERY_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Smart Battery information (dynamic). Use for updates from: smart battery to flight stack, flight stack to GCS. Use instead of BATTERY_STATUS for smart batteries.</description>
-      <field type="uint16_t" name="id">Battery ID</field>
-      <field type="int16_t" name="capacity_remaining" units="%">Remaining battery energy. Values: [0-100], -1: field not provided.</field>
-      <field type="int16_t" name="current" units="cA">Battery current (through all cells/loads). Positive if discharging, negative if charging. UINT16_MAX: field not provided.</field>
-      <field type="int16_t" name="temperature" units="cdegC">Battery temperature. -1: field not provided.</field>
-      <field type="int32_t" name="fault_bitmask" display="bitmask" enum="MAV_SMART_BATTERY_FAULT">Fault/health indications.</field>
-      <field type="int32_t" name="time_remaining" units="s">Estimated remaining battery time. -1: field not provided.</field>
-      <field type="uint16_t" default="0" name="cell_offset">The cell number of the first index in the 'voltages' array field. Using this field allows you to specify cell voltages for batteries with more than 16 cells.</field>
-      <field type="uint16_t[16]" name="voltages" units="mV">Individual cell voltages. Batteries with more 16 cells can use the cell_offset field to specify the cell offset for the array specified in the current message . Index values above the valid cell count for this battery should have the UINT16_MAX value.</field>
     </message>
     <message id="373" name="GENERATOR_STATUS">
       <description>Telemetry of power generation system. Alternator or mechanical generator.</description>
