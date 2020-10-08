@@ -4844,10 +4844,10 @@
       <field type="uint16_t" name="command" enum="MAV_CMD">Command ID (of acknowledged command).</field>
       <field type="uint8_t" name="result" enum="MAV_RESULT">Result of command.</field>
       <extensions/>
-      <field type="uint8_t" name="progress">WIP: Also used as result_param1, it can be set with a enum containing the errors reasons of why the command was denied or the progress percentage or 255 if unknown the progress when result is MAV_RESULT_IN_PROGRESS.</field>
+      <field type="uint8_t" name="progress">WIP: Also used as result_param1, it can be set with an enum containing the errors reasons of why the command was denied, or the progress percentage when result is MAV_RESULT_IN_PROGRESS (255 if the progress is unknown).</field>
       <field type="int32_t" name="result_param2">WIP: Additional parameter of the result, example: which parameter of MAV_CMD_NAV_WAYPOINT caused it to be denied.</field>
-      <field type="uint8_t" name="target_system">WIP: System which requested the command to be executed</field>
-      <field type="uint8_t" name="target_component">WIP: Component which requested the command to be executed</field>
+      <field type="uint8_t" name="target_system">WIP: System ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
+      <field type="uint8_t" name="target_component">WIP: Component ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
     </message>
     <message id="80" name="COMMAND_CANCEL">
       <wip/>
@@ -6142,9 +6142,9 @@
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about a low level gimbal. This message should be requested by the gimbal manager or a ground station using MAV_CMD_REQUEST_MESSAGE. The maximum angles and rates are the limits by hardware. However, the limits by software used are likely different/smaller and dependent on mode/settings/etc..</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t[32]" name="vendor_name">Name of the gimbal vendor.</field>
-      <field type="uint8_t[32]" name="model_name">Name of the gimbal model.</field>
-      <field type="uint8_t[32]" name="custom_name">Custom name of the gimbal given to it by the user.</field>
+      <field type="char[32]" name="vendor_name">Name of the gimbal vendor.</field>
+      <field type="char[32]" name="model_name">Name of the gimbal model.</field>
+      <field type="char[32]" name="custom_name">Custom name of the gimbal given to it by the user.</field>
       <field type="uint32_t" name="firmware_version">Version of the gimbal firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff).</field>
       <field type="uint32_t" name="hardware_version">Version of the gimbal hardware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff).</field>
       <field type="uint64_t" name="uid">UID of gimbal hardware (0 if unknown).</field>
@@ -6187,10 +6187,10 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Low level message containing autopilot state relevant for a gimbal device. This message is to be sent from the gimbal manager to the gimbal device component. The data of this message server for the gimbal's estimator corrections in particular horizon compensation, as well as the autopilot's control intention e.g. feed forward angular control in z-axis.</description>
-      <field type="uint64_t" name="time_boot_us" units="us">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="float[4]" name="q">Quaternion components of autopilot attitude: w, x, y, z (1 0 0 0 is the null-rotation, Hamiltonian convention).</field>
+      <field type="uint64_t" name="time_boot_us" units="us">Timestamp (time since system boot).</field>
+      <field type="float[4]" name="q">Quaternion components of autopilot attitude: w, x, y, z (1 0 0 0 is the null-rotation, Hamilton convention).</field>
       <field type="uint32_t" name="q_estimated_delay_us" units="us">Estimated delay of the attitude data.</field>
       <field type="float" name="vx" units="m/s">X Speed in NED (North, East, Down).</field>
       <field type="float" name="vy" units="m/s">Y Speed in NED (North, East, Down).</field>
