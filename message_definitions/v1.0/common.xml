@@ -1709,14 +1709,14 @@
         <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
         <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
       </entry>
-      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN" hasLocation="false" isDestination="false">
+      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>High level setpoint to be sent to a gimbal manager to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: a gimbal is never to react to this command but only the gimbal manager.</description>
-        <param index="1" label="Tilt rate" units="deg/s">Tilt/pitch rate (positive to tilt up).</param>
-        <param index="2" label="Pan rate" units="deg/s">Pan/yaw rate (positive to pan to the right).</param>
-        <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Tilt/pitch angle (positive to tilt up, relative to vehicle for PAN mode, relative to world horizon for HOLD mode).</param>
-        <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Pan/yaw angle (positive to pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode).</param>
+        <param index="1" label="Pitch rate" units="deg/s">Pitch rate (positive to pitch up).</param>
+        <param index="2" label="Yaw rate" units="deg/s">Yaw rate (positive to yaw to the right).</param>
+        <param index="3" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch angle (positive to pitch up, relative to vehicle for FOLLOW mode, relative to world horizon for LOCK mode).</param>
+        <param index="4" label="Yaw angle" units="deg" minValue="-180" maxValue="180">Yaw angle (positive to yaw to the right, relative to vehicle for FOLLOW mode, absolute to North for LOCK mode).</param>
         <param index="5" label="Gimbal manager flags" enum="GIMBAL_MANAGER_FLAGS">Gimbal manager flags to use.</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
       </entry>
@@ -5987,7 +5987,7 @@
       <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of log files</field>
     </message>
     <message id="265" name="MOUNT_ORIENTATION">
-      <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN">This message is being superseded by MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
+      <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">This message is being superseded by MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
       <description>Orientation of a mount</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="float" name="roll" units="deg">Roll in global frame (set to NaN for invalid).</field>
@@ -6109,8 +6109,8 @@
       <field type="float" name="roll_min" units="rad">Minimum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
       <field type="float" name="pitch_max" units="rad">Maximum pitch angle (positive: up, negative: down)</field>
       <field type="float" name="pitch_min" units="rad">Minimum pitch angle (positive: up, negative: down)</field>
-      <field type="float" name="yaw_max" units="rad">Maximum pan/yaw angle (positive: to the right, negative: to the left)</field>
-      <field type="float" name="yaw_min" units="rad">Minimum pan/yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="yaw_max" units="rad">Maximum yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="yaw_min" units="rad">Minimum yaw angle (positive: to the right, negative: to the left)</field>
     </message>
     <message id="281" name="GIMBAL_MANAGER_STATUS">
       <wip/>
@@ -6200,10 +6200,10 @@
       <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Bitmap indicating which estimator outputs are valid.</field>
       <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
     </message>
-    <message id="287" name="GIMBAL_MANAGER_SET_TILTPAN">
+    <message id="287" name="GIMBAL_MANAGER_SET_PITCHYAW">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>High level message to control a gimbal's tilt/pitch and pan/yaw angles. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
+      <description>High level message to control a gimbal's pitch and yaw angles. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
