@@ -497,7 +497,7 @@
         <description>Based on GIMBAL_DEVICE_FLAGS_YAW_LOCK</description>
       </entry>
       <entry value="1048576" name="GIMBAL_MANAGER_FLAGS_NONE">
-        <description>This flag can be set to give up control previously set using MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE. This flag must not be combined with other flags.</description>
+        <description>This flag can be set to give up control previously set using MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW. This flag must not be combined with other flags.</description>
       </entry>
     </enum>
     <enum name="GIMBAL_DEVICE_ERROR_FLAGS" bitmask="true">
@@ -1334,7 +1334,7 @@
       </entry>
       <!-- this one is messed up! altitude should be param 7, not param4 -->
       <entry value="205" name="MAV_CMD_DO_MOUNT_CONTROL" hasLocation="false" isDestination="false">
-        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE">This message is ambiguous and inconsistent. It has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE and MAV_CMD_DO_SET_ROI_*. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
+        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">This message is ambiguous and inconsistent. It has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW and MAV_CMD_DO_SET_ROI_*. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
         <description>Mission command to control a camera or antenna mount</description>
         <param index="1" label="Pitch">pitch depending on mount mode (degrees or degrees/second depending on pitch input).</param>
         <param index="2" label="Roll">roll depending on mount mode (degrees or degrees/second depending on roll input).</param>
@@ -1426,7 +1426,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="220" name="MAV_CMD_DO_MOUNT_CONTROL_QUAT" hasLocation="false" isDestination="false">
-        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE"/>
+        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW"/>
         <description>Mission command to control a camera or antenna mount, using a quaternion as reference.</description>
         <param index="1" label="Q1">quaternion param q1, w (1 in null-rotation)</param>
         <param index="2" label="Q2">quaternion param q2, x (0 in null-rotation)</param>
