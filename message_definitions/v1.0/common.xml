@@ -497,7 +497,7 @@
         <description>Based on GIMBAL_DEVICE_FLAGS_YAW_LOCK</description>
       </entry>
       <entry value="1048576" name="GIMBAL_MANAGER_FLAGS_NONE">
-        <description>This flag can be set to give up control previously set using MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE. This flag must not be combined with other flags.</description>
+        <description>This flag can be set to give up control previously set using MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW. This flag must not be combined with other flags.</description>
       </entry>
     </enum>
     <enum name="GIMBAL_DEVICE_ERROR_FLAGS" bitmask="true">
@@ -1259,9 +1259,9 @@
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5" label="Pitch Offset">Pitch offset from next waypoint, positive tilting up</param>
-        <param index="6" label="Roll Offset">roll offset from next waypoint, positive banking to the right</param>
-        <param index="7" label="Yaw Offset">yaw offset from next waypoint, positive panning to the right</param>
+        <param index="5" label="Pitch Offset">Pitch offset from next waypoint, positive pitching up</param>
+        <param index="6" label="Roll Offset">roll offset from next waypoint, positive rolling to the right</param>
+        <param index="7" label="Yaw Offset">yaw offset from next waypoint, positive yawing to the right</param>
       </entry>
       <entry value="197" name="MAV_CMD_DO_SET_ROI_NONE" hasLocation="false" isDestination="false">
         <description>Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message. After this command the gimbal manager should go back to manual input if available, and otherwise assume a neutral position.</description>
@@ -1334,7 +1334,7 @@
       </entry>
       <!-- this one is messed up! altitude should be param 7, not param4 -->
       <entry value="205" name="MAV_CMD_DO_MOUNT_CONTROL" hasLocation="false" isDestination="false">
-        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE">This message is ambiguous and inconsistent. It has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE and MAV_CMD_DO_SET_ROI_*. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
+        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">This message is ambiguous and inconsistent. It has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW and MAV_CMD_DO_SET_ROI_*. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
         <description>Mission command to control a camera or antenna mount</description>
         <param index="1" label="Pitch">pitch depending on mount mode (degrees or degrees/second depending on pitch input).</param>
         <param index="2" label="Roll">roll depending on mount mode (degrees or degrees/second depending on roll input).</param>
@@ -1426,7 +1426,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="220" name="MAV_CMD_DO_MOUNT_CONTROL_QUAT" hasLocation="false" isDestination="false">
-        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE"/>
+        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW"/>
         <description>Mission command to control a camera or antenna mount, using a quaternion as reference.</description>
         <param index="1" label="Q1">quaternion param q1, w (1 in null-rotation)</param>
         <param index="2" label="Q2">quaternion param q2, x (0 in null-rotation)</param>
@@ -1709,14 +1709,14 @@
         <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
         <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
       </entry>
-      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN" hasLocation="false" isDestination="false">
+      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>High level setpoint to be sent to a gimbal manager to set a gimbal attitude. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: a gimbal is never to react to this command but only the gimbal manager.</description>
-        <param index="1" label="Tilt rate" units="deg/s">Tilt/pitch rate (positive to tilt up).</param>
-        <param index="2" label="Pan rate" units="deg/s">Pan/yaw rate (positive to pan to the right).</param>
-        <param index="3" label="Tilt angle" units="deg" minValue="-180" maxValue="180">Tilt/pitch angle (positive to tilt up, relative to vehicle for PAN mode, relative to world horizon for HOLD mode).</param>
-        <param index="4" label="Pan angle" units="deg" minValue="-180" maxValue="180">Pan/yaw angle (positive to pan to the right, relative to vehicle for PAN mode, absolute to North for HOLD mode).</param>
+        <param index="1" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch angle (positive to pitch up, relative to vehicle for FOLLOW mode, relative to world horizon for LOCK mode).</param>
+        <param index="2" label="Yaw angle" units="deg" minValue="-180" maxValue="180">Yaw angle (positive to yaw to the right, relative to vehicle for FOLLOW mode, absolute to North for LOCK mode).</param>
+        <param index="3" label="Pitch rate" units="deg/s">Pitch rate (positive to pitch up).</param>
+        <param index="4" label="Yaw rate" units="deg/s">Yaw rate (positive to yaw to the right).</param>
         <param index="5" label="Gimbal manager flags" enum="GIMBAL_MANAGER_FLAGS">Gimbal manager flags to use.</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
       </entry>
@@ -4816,7 +4816,7 @@
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the COMMAND.</field>
       <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the mission item.</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
-      <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
+      <field type="uint8_t" name="autocontinue">Not used (set 0).</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
       <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
       <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
@@ -5103,8 +5103,8 @@
       <field type="float" name="xmag" units="gauss">X Magnetic field</field>
       <field type="float" name="ymag" units="gauss">Y Magnetic field</field>
       <field type="float" name="zmag" units="gauss">Z Magnetic field</field>
-      <field type="float" name="abs_pressure" units="mbar">Absolute pressure</field>
-      <field type="float" name="diff_pressure" units="mbar">Differential pressure</field>
+      <field type="float" name="abs_pressure" units="hPa">Absolute pressure</field>
+      <field type="float" name="diff_pressure" units="hPa">Differential pressure</field>
       <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
       <field type="float" name="temperature" units="degC">Temperature</field>
       <field type="uint16_t" name="fields_updated" display="bitmask">Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
@@ -5114,7 +5114,7 @@
     <message id="106" name="OPTICAL_FLOW_RAD">
       <description>Optical flow from an angular rate flow sensor (e.g. PX4FLOW or mouse sensor)</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="uint8_t" name="sensor_id">Sensor ID</field>
+      <field type="uint8_t" name="sensor_id" instance="true">Sensor ID</field>
       <field type="uint32_t" name="integration_time_us" units="us">Integration time. Divide integrated_x and integrated_y by the integration time to obtain average flow. The integration time also indicates the.</field>
       <field type="float" name="integrated_x" units="rad">Flow around X axis (Sensor RH rotation about the X axis induces a positive flow. Sensor linear motion along the positive Y axis induces a negative flow.)</field>
       <field type="float" name="integrated_y" units="rad">Flow around Y axis (Sensor RH rotation about the Y axis induces a positive flow. Sensor linear motion along the positive X axis induces a positive flow.)</field>
@@ -5138,8 +5138,8 @@
       <field type="float" name="xmag" units="gauss">X Magnetic field</field>
       <field type="float" name="ymag" units="gauss">Y Magnetic field</field>
       <field type="float" name="zmag" units="gauss">Z Magnetic field</field>
-      <field type="float" name="abs_pressure" units="mbar">Absolute pressure</field>
-      <field type="float" name="diff_pressure" units="mbar">Differential pressure (airspeed)</field>
+      <field type="float" name="abs_pressure" units="hPa">Absolute pressure</field>
+      <field type="float" name="diff_pressure" units="hPa">Differential pressure (airspeed)</field>
       <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
       <field type="float" name="temperature" units="degC">Temperature</field>
       <field type="uint32_t" name="fields_updated" display="bitmask">Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature, bit 31: full reset of attitude/position/velocities/etc was performed in sim.</field>
@@ -5614,7 +5614,7 @@
     <!-- 192 MAG_CAL_REPORT imported from ardupilotmega.xml -->
     <message id="192" name="MAG_CAL_REPORT">
       <description>Reports results of completed compass calibration. Sent until MAG_CAL_ACK received.</description>
-      <field type="uint8_t" name="compass_id">Compass being calibrated.</field>
+      <field type="uint8_t" name="compass_id" instance="true">Compass being calibrated.</field>
       <field type="uint8_t" name="cal_mask" display="bitmask">Bitmask of compasses being calibrated.</field>
       <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Calibration Status.</field>
       <field type="uint8_t" name="autosaved">0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.</field>
@@ -5684,7 +5684,7 @@
     <message id="232" name="GPS_INPUT">
       <description>GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the system.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="uint8_t" name="gps_id">ID of the GPS for multiple GPS inputs</field>
+      <field type="uint8_t" name="gps_id" instance="true">ID of the GPS for multiple GPS inputs</field>
       <field type="uint16_t" name="ignore_flags" enum="GPS_INPUT_IGNORE_FLAGS" display="bitmask">Bitmap indicating which GPS input flags fields to ignore.  All other fields must be provided.</field>
       <field type="uint32_t" name="time_week_ms" units="ms">GPS time (from start of GPS week)</field>
       <field type="uint16_t" name="time_week">GPS week number</field>
@@ -5711,6 +5711,7 @@
       <field type="uint8_t[180]" name="data">RTCM message (may be fragmented)</field>
     </message>
     <message id="234" name="HIGH_LATENCY">
+      <deprecated since="2020-10" replaced_by="HIGH_LATENCY2"/>
       <description>Message appropriate for high latency connections like Iridium</description>
       <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">Bitmap of enabled system modes.</field>
       <field type="uint32_t" name="custom_mode" display="bitmask">A bitfield for use for autopilot-specific flags.</field>
@@ -5943,7 +5944,7 @@
     <message id="261" name="STORAGE_INFORMATION">
       <description>Information about a storage medium. This message is sent in response to a request with MAV_CMD_REQUEST_MESSAGE and whenever the status of the storage changes (STORAGE_STATUS). Use MAV_CMD_REQUEST_MESSAGE.param2 to indicate the index/id of requested storage: 0 for all, 1 for first, 2 for second, etc.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="storage_id">Storage ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="storage_id" instance="true">Storage ID (1 for first, 2 for second, etc.)</field>
       <field type="uint8_t" name="storage_count">Number of storage devices</field>
       <field type="uint8_t" name="status" enum="STORAGE_STATUS">Status of storage</field>
       <field type="float" name="total_capacity" units="MiB">Total capacity. If storage is not ready (STORAGE_STATUS_READY) value will be ignored.</field>
@@ -5987,7 +5988,7 @@
       <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of log files</field>
     </message>
     <message id="265" name="MOUNT_ORIENTATION">
-      <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN">This message is being superseded by MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
+      <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">This message is being superseded by MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
       <description>Orientation of a mount</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="float" name="roll" units="deg">Roll in global frame (set to NaN for invalid).</field>
@@ -6024,7 +6025,7 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE, where param2 indicates the video stream id: 0 for all streams, 1 for first, 2 for second, etc.</description>
-      <field type="uint8_t" name="stream_id">Video Stream ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="stream_id" instance="true">Video Stream ID (1 for first, 2 for second, etc.)</field>
       <field type="uint8_t" name="count">Number of streams available.</field>
       <field type="uint8_t" name="type" enum="VIDEO_STREAM_TYPE">Type of stream.</field>
       <field type="uint16_t" name="flags" enum="VIDEO_STREAM_STATUS_FLAGS">Bitmap of stream status flags.</field>
@@ -6041,7 +6042,7 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about the status of a video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE.</description>
-      <field type="uint8_t" name="stream_id">Video Stream ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="stream_id" instance="true">Video Stream ID (1 for first, 2 for second, etc.)</field>
       <field type="uint16_t" name="flags" enum="VIDEO_STREAM_STATUS_FLAGS">Bitmap of stream status flags</field>
       <field type="float" name="framerate" units="Hz">Frame rate</field>
       <field type="uint16_t" name="resolution_h" units="pix">Horizontal resolution</field>
@@ -6104,13 +6105,13 @@
       <description>Information about a high level gimbal manager. This message should be requested by a ground station using MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="cap_flags" enum="GIMBAL_MANAGER_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
-      <field type="uint8_t" name="gimbal_device_id">Gimbal device ID that this gimbal manager is responsible for.</field>
-      <field type="float" name="tilt_max" units="rad">Maximum tilt/pitch angle (positive: up, negative: down)</field>
-      <field type="float" name="tilt_min" units="rad">Minimum tilt/pitch angle (positive: up, negative: down)</field>
-      <field type="float" name="tilt_rate_max" units="rad/s">Maximum tilt/pitch angular rate (positive: up, negative: down)</field>
-      <field type="float" name="pan_max" units="rad">Maximum pan/yaw angle (positive: to the right, negative: to the left)</field>
-      <field type="float" name="pan_min" units="rad">Minimum pan/yaw angle (positive: to the right, negative: to the left)</field>
-      <field type="float" name="pan_rate_max" units="rad/s">Minimum pan/yaw angular rate (positive: to the right, negative: to the left)</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Gimbal device ID that this gimbal manager is responsible for.</field>
+      <field type="float" name="roll_min" units="rad">Minimum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
+      <field type="float" name="roll_max" units="rad">Maximum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
+      <field type="float" name="pitch_min" units="rad">Minimum pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="pitch_max" units="rad">Maximum pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="yaw_min" units="rad">Minimum yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="yaw_max" units="rad">Maximum yaw angle (positive: to the right, negative: to the left)</field>
     </message>
     <message id="281" name="GIMBAL_MANAGER_STATUS">
       <wip/>
@@ -6118,7 +6119,7 @@
       <description>Current status about a high level gimbal manager. This message should be broadcast at a low regular rate (e.g. 5Hz).</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags currently applied.</field>
-      <field type="uint8_t" name="gimbal_device_id">Gimbal device ID that this gimbal manager is responsible for.</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Gimbal device ID that this gimbal manager is responsible for.</field>
       <field type="uint8_t" name="primary_control_sysid">System ID of MAVLink component with primary control, 0 for none.</field>
       <field type="uint8_t" name="primary_control_compid">Component ID of MAVLink component with primary control, 0 for none.</field>
       <field type="uint8_t" name="secondary_control_sysid">System ID of MAVLink component with secondary control, 0 for none.</field>
@@ -6131,11 +6132,11 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
-      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_MANAGER_FLAGS_YAW_LOCK is set)</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is banking to the right, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is tilting up, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is panning to the right, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
     </message>
     <message id="283" name="GIMBAL_DEVICE_INFORMATION">
       <wip/>
@@ -6150,12 +6151,12 @@
       <field type="uint64_t" name="uid">UID of gimbal hardware (0 if unknown).</field>
       <field type="uint16_t" name="cap_flags" enum="GIMBAL_DEVICE_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
       <field type="uint16_t" name="custom_cap_flags" display="bitmask">Bitmap for use for gimbal-specific capability flags.</field>
-      <field type="float" name="tilt_max" units="rad">Maximum hardware tilt/pitch angle (positive: up, negative: down)</field>
-      <field type="float" name="tilt_min" units="rad">Minimum hardware tilt/pitch angle (positive: up, negative: down)</field>
-      <field type="float" name="tilt_rate_max" units="rad/s">Maximum hardware tilt/pitch angular rate (positive: up, negative: down)</field>
-      <field type="float" name="pan_max" units="rad">Maximum hardware pan/yaw angle (positive: to the right, negative: to the left)</field>
-      <field type="float" name="pan_min" units="rad">Minimum hardware pan/yaw angle (positive: to the right, negative: to the left)</field>
-      <field type="float" name="pan_rate_max" units="rad/s">Maximum hardware pan/yaw angular rate (positive: to the right, negative: to the left)</field>
+      <field type="float" name="roll_min" units="rad">Minimum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
+      <field type="float" name="roll_max" units="rad">Maximum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
+      <field type="float" name="pitch_min" units="rad">Minimum hardware pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="pitch_max" units="rad">Maximum hardware pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="yaw_min" units="rad">Minimum hardware yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="yaw_max" units="rad">Maximum hardware yaw angle (positive: to the right, negative: to the left)</field>
     </message>
     <message id="284" name="GIMBAL_DEVICE_SET_ATTITUDE">
       <wip/>
@@ -6165,14 +6166,14 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Low level gimbal flags.</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, set all fields to NaN if only angular velocity should be used)</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is banking to the right, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is tilting up, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is panning to the right, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
     </message>
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal device component. The angles encoded in the quaternion are in the global frame (roll: positive is tilt to the right, pitch: positive is tilting up, yaw is turn to the right). This message should be broadcast at a low regular rate (e.g. 10Hz).</description>
+      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal device component. The angles encoded in the quaternion are in the global frame (roll: positive is rolling to the right, pitch: positive is pitching up, yaw is turn to the right). This message should be broadcast at a low regular rate (e.g. 10Hz).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
@@ -6200,18 +6201,18 @@
       <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Bitmap indicating which estimator outputs are valid.</field>
       <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
     </message>
-    <message id="287" name="GIMBAL_MANAGER_SET_TILTPAN">
+    <message id="287" name="GIMBAL_MANAGER_SET_PITCHYAW">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>High level message to control a gimbal's tilt and pan angles. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
+      <description>High level message to control a gimbal's pitch and yaw angles. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
-      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
-      <field type="float" name="tilt" units="rad">Tilt/pitch angle (positive: up, negative: down, NaN to be ignored).</field>
-      <field type="float" name="pan" units="rad">Pan/yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
-      <field type="float" name="tilt_rate" units="rad/s">Tilt/pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
-      <field type="float" name="pan_rate" units="rad/s">Pan/yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
+      <field type="float" name="pitch" units="rad">Pitch angle (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw" units="rad">Yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="pitch_rate" units="rad/s">Pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw_rate" units="rad/s">Yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
     </message>
     <message id="288" name="GIMBAL_MANAGER_SET_MANUAL_CONTROL">
       <wip/>
@@ -6220,17 +6221,17 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags.</field>
-      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
-      <field type="float" name="tilt">Tilt/pitch angle unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
-      <field type="float" name="pan">Pan/yaw angle unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
-      <field type="float" name="tilt_rate">Tilt/pitch angular rate unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
-      <field type="float" name="pan_rate">Pan/yaw angular rate unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
+      <field type="float" name="pitch">Pitch angle unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw">Yaw angle unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="pitch_rate">Pitch angular rate unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw_rate">Yaw angular rate unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
     </message>
     <message id="290" name="ESC_INFO">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>ESC information for lower rate streaming. Recommended streaming rate 1Hz. See ESC_STATUS for higher-rate ESC data.</description>
-      <field type="uint8_t" name="index">Index of the first ESC in this message. minValue = 0, maxValue = 60, increment = 4.</field>
+      <field type="uint8_t" name="index" instance="true">Index of the first ESC in this message. minValue = 0, maxValue = 60, increment = 4.</field>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="uint16_t" name="counter">Counter of data packets received.</field>
       <field type="uint8_t" name="count">Total number of ESCs in all messages of this type. Message fields with an index higher than this should be ignored because they contain invalid data.</field>
@@ -6244,7 +6245,7 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>ESC information for higher rate streaming. Recommended streaming rate is ~10 Hz. Information that changes more slowly is sent in ESC_INFO. It should typically only be streamed on high-bandwidth links (i.e. to a companion computer).</description>
-      <field type="uint8_t" name="index">Index of the first ESC in this message. minValue = 0, maxValue = 60, increment = 4.</field>
+      <field type="uint8_t" name="index" instance="true">Index of the first ESC in this message. minValue = 0, maxValue = 60, increment = 4.</field>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
       <field type="int32_t[4]" name="rpm" units="rpm">Reported motor RPM from each ESC (negative for reverse rotation).</field>
       <field type="float[4]" name="voltage" units="V">Voltage measured from each ESC.</field>
@@ -6503,7 +6504,7 @@
       <description>Large debug/prototyping array. The message uses the maximum available payload for data. The array_id and name fields are used to discriminate between messages in code and in user interfaces (respectively). Do not use in production code.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="char[10]" name="name">Name, for human-friendly display in a Ground Control Station</field>
-      <field type="uint16_t" name="array_id">Unique ID used to discriminate between arrays</field>
+      <field type="uint16_t" name="array_id" instance="true">Unique ID used to discriminate between arrays</field>
       <extensions/>
       <field type="float[58]" name="data">data</field>
     </message>
@@ -6523,7 +6524,7 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Smart Battery information (static/infrequent update). Use for updates from: smart battery to flight stack, flight stack to GCS. Use BATTERY_STATUS for smart battery frequent updates.</description>
-      <field type="uint8_t" name="id">Battery ID</field>
+      <field type="uint8_t" name="id" instance="true">Battery ID</field>
       <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
       <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
       <field type="int32_t" name="capacity_full_specification" units="mAh">Capacity when full according to manufacturer, -1: field not provided.</field>
