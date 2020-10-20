@@ -1867,6 +1867,16 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
+      <entry value="2700" name="MAV_CMD_CUSTOM_ACTION" hasLocation="false" isDestination="false">
+        <description>Custom action to execute at this specific waypoint. The definition of the action, or set of actions, to execute, as well as the associated metadata is stored in the system that is going to process the action.</description>
+        <param index="1" label="Action" minValue="0" increment="1">Number of the custom action that will be executed. The metadata associated with this action is stored on the system that is going to process this command.</param>
+        <param index="2" label="Execution control" minValue="0" increment="1" maxValue="2">Control when the Vehicle moves to the next waypoint. 0: Use ACK from component responsible for executing the action, to move to the next Waypoint. Otherwise, move when timeout (param 3) is reached; 1: Waits for an amount of time (param 3) before moving to the next waypoint, even if the ACK is received from the component responsible for executing the action; 2: Wait for the ACK component responsible for executing the action and blocks the navigation (just moves when an ACK is received).</param>
+        <param index="3" label="Timeout / Max execution time" units="s" minValue="0">Used by the navigation module to set the timeout for the receiving feedback of successful execution, or to set the time of execution before moving to the next waypoint.</param>
+        <param index="4" reserved="true" default="NaN"/>
+        <param index="5" reserved="true" default="NaN"/>
+        <param index="6" reserved="true" default="NaN"/>
+        <param index="7" reserved="true" default="NaN"/>
+      </entry>
       <entry value="2800" name="MAV_CMD_PANORAMA_CREATE" hasLocation="false" isDestination="false">
         <description>Create a panorama at the current position</description>
         <param index="1" label="Horizontal Angle" units="deg">Viewing angle horizontal of the panorama (+- 0.5 the total angle)</param>
