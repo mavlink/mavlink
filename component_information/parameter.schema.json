@@ -22,6 +22,8 @@
         "parameters": {
            "type": "array",
                        
+           "items": {
+            "type": "object",
             "properties": {
                 "name": {
                     "description":  "Parameter Name.",
@@ -100,12 +102,14 @@
                 "values": {
                     "description":  "Array of values and textual descriptions for use by GCS ui.",
                     "type":         "array",
-                    "properties": {
-                        "value": {
-                            "type": "number"
-                        },
-                        "description": {
-                            "type": "string"
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "number"
+                            },
+                            "description": {
+                                "type": "string"
                         }
                     }
                 }
@@ -113,6 +117,7 @@
             "required":             [ "name", "type" ],
             "additionalProperties": false
         }
+    }
     },
     "required":             [ "version", "uid", "scope", "parameters" ],
     "additionalProperties": false
