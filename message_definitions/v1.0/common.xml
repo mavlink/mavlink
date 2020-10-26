@@ -653,6 +653,36 @@
         <description>Camera does not supply storage status information. Capacity information in STORAGE_INFORMATION fields will be ignored.</description>
       </entry>
     </enum>
+    <enum name="STORAGE_TYPE">
+      <description>Flags to indicate the type of storage.</description>
+      <entry value="0" name="STORAGE_TYPE_UNKNOWN">
+        <description>Storage type is not known.</description>
+      </entry>
+      <entry value="1" name="STORAGE_TYPE_USB_STICK">
+        <description>Storage type is USB device.</description>
+      </entry>
+      <entry value="2" name="STORAGE_TYPE_SD">
+        <description>Storage type is SD card.</description>
+      </entry>
+      <entry value="3" name="STORAGE_TYPE_MICROSD">
+        <description>Storage type is microSD card.</description>
+      </entry>
+      <entry value="4" name="STORAGE_TYPE_CF">
+        <description>Storage type is CFast.</description>
+      </entry>
+      <entry value="5" name="STORAGE_TYPE_CFE">
+        <description>Storage type is CFexpress.</description>
+      </entry>
+      <entry value="6" name="STORAGE_TYPE_XQD">
+        <description>Storage type is XQD.</description>
+      </entry>
+      <entry value="7" name="STORAGE_TYPE_HD">
+        <description>Storage type is HD mass storage type.</description>
+      </entry>
+      <entry value="254" name="STORAGE_TYPE_OTHER">
+        <description>Storage type is other, not listed type.</description>
+      </entry>
+    </enum>
     <enum name="ORBIT_YAW_BEHAVIOUR">
       <description>Yaw behaviour during orbit flight.</description>
       <entry value="0" name="ORBIT_YAW_BEHAVIOUR_HOLD_FRONT_TO_CIRCLE_CENTER">
@@ -5952,6 +5982,9 @@
       <field type="float" name="available_capacity" units="MiB">Available storage capacity. If storage is not ready (STORAGE_STATUS_READY) value will be ignored.</field>
       <field type="float" name="read_speed" units="MiB/s">Read speed.</field>
       <field type="float" name="write_speed" units="MiB/s">Write speed.</field>
+      <extensions/>
+      <field type="uint8_t" name="type" enum="STORAGE_TYPE">Type of storage</field>
+      <field type="char[32]" name="name">Textual storage name to be used in UI (microSD 1, Internal Memory, etc.) This is a NULL terminated string. If it is exactly 32 characters long, add a terminating NULL. If this string is empty, the generic type is shown to the user.</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
       <description>Information about the status of a capture. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
