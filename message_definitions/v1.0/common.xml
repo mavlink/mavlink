@@ -496,9 +496,6 @@
       <entry value="16" name="GIMBAL_MANAGER_FLAGS_YAW_LOCK">
         <description>Based on GIMBAL_DEVICE_FLAGS_YAW_LOCK</description>
       </entry>
-      <entry value="1048576" name="GIMBAL_MANAGER_FLAGS_NONE">
-        <description>This flag can be set to give up control previously set using MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW. This flag must not be combined with other flags.</description>
-      </entry>
     </enum>
     <enum name="GIMBAL_DEVICE_ERROR_FLAGS" bitmask="true">
       <description>Gimbal device (low level) error flags (bitmap, 0 means no error)</description>
@@ -651,6 +648,36 @@
       </entry>
       <entry value="3" name="STORAGE_STATUS_NOT_SUPPORTED">
         <description>Camera does not supply storage status information. Capacity information in STORAGE_INFORMATION fields will be ignored.</description>
+      </entry>
+    </enum>
+    <enum name="STORAGE_TYPE">
+      <description>Flags to indicate the type of storage.</description>
+      <entry value="0" name="STORAGE_TYPE_UNKNOWN">
+        <description>Storage type is not known.</description>
+      </entry>
+      <entry value="1" name="STORAGE_TYPE_USB_STICK">
+        <description>Storage type is USB device.</description>
+      </entry>
+      <entry value="2" name="STORAGE_TYPE_SD">
+        <description>Storage type is SD card.</description>
+      </entry>
+      <entry value="3" name="STORAGE_TYPE_MICROSD">
+        <description>Storage type is microSD card.</description>
+      </entry>
+      <entry value="4" name="STORAGE_TYPE_CF">
+        <description>Storage type is CFast.</description>
+      </entry>
+      <entry value="5" name="STORAGE_TYPE_CFE">
+        <description>Storage type is CFexpress.</description>
+      </entry>
+      <entry value="6" name="STORAGE_TYPE_XQD">
+        <description>Storage type is XQD.</description>
+      </entry>
+      <entry value="7" name="STORAGE_TYPE_HD">
+        <description>Storage type is HD mass storage type.</description>
+      </entry>
+      <entry value="254" name="STORAGE_TYPE_OTHER">
+        <description>Storage type is other, not listed type.</description>
       </entry>
     </enum>
     <enum name="ORBIT_YAW_BEHAVIOUR">
@@ -1724,10 +1751,10 @@
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Gimbal configuration to set which sysid/compid is in primary and secondary control.</description>
-        <param index="1" label="sysid primary control">Sysid for primary control (0: no one in control).</param>
-        <param index="2" label="compid primary control">Compid for primary control (0: no one in control).</param>
-        <param index="3" label="sysid secondary control">Sysid for secondary control (0: no one in control).</param>
-        <param index="4" label="compid secondary control">Compid for secondary control (0: no one in control).</param>
+        <param index="1" label="sysid primary control">Sysid for primary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control).</param>
+        <param index="2" label="compid primary control">Compid for primary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control).</param>
+        <param index="3" label="sysid secondary control">Sysid for secondary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control).</param>
+        <param index="4" label="compid secondary control">Compid for secondary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control).</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
@@ -5952,6 +5979,9 @@
       <field type="float" name="available_capacity" units="MiB">Available storage capacity. If storage is not ready (STORAGE_STATUS_READY) value will be ignored.</field>
       <field type="float" name="read_speed" units="MiB/s">Read speed.</field>
       <field type="float" name="write_speed" units="MiB/s">Write speed.</field>
+      <extensions/>
+      <field type="uint8_t" name="type" enum="STORAGE_TYPE">Type of storage</field>
+      <field type="char[32]" name="name">Textual storage name to be used in UI (microSD 1, Internal Memory, etc.) This is a NULL terminated string. If it is exactly 32 characters long, add a terminating NULL. If this string is empty, the generic type is shown to the user.</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
       <description>Information about the status of a capture. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
@@ -5979,8 +6009,6 @@
       <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
     </message>
     <message id="264" name="FLIGHT_INFORMATION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about flight since last arming.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="arming_time_utc" units="us">Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown</field>
@@ -6022,8 +6050,6 @@
       <field type="uint16_t" name="sequence">sequence number (must match the one in LOGGING_DATA_ACKED)</field>
     </message>
     <message id="269" name="VIDEO_STREAM_INFORMATION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE, where param2 indicates the video stream id: 0 for all streams, 1 for first, 2 for second, etc.</description>
       <field type="uint8_t" name="stream_id" instance="true">Video Stream ID (1 for first, 2 for second, etc.)</field>
       <field type="uint8_t" name="count">Number of streams available.</field>
@@ -6478,8 +6504,6 @@
       <field type="float" name="frequency" units="rpm">Indicated rate</field>
     </message>
     <message id="340" name="UTM_GLOBAL_POSITION">
-      <wip/>
-      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>The global position resulting from GPS and sensor fusion.</description>
       <field type="uint64_t" name="time" units="us">Time of applicability of position (microseconds since UNIX epoch).</field>
       <field type="uint8_t[18]" name="uas_id">Unique UAS ID.</field>
@@ -6614,8 +6638,6 @@
       <field type="char[70]" name="translation_uri">The translations for strings within the metadata file. If null the either do not exist or may be included in the metadata file itself. The translations specified here supercede any which may be in the metadata file itself. The uri format is the same as component_metadata_uri . Files are in Json Translation spec format. Empty string indicates no tranlsation file.</field>
     </message>
     <message id="400" name="PLAY_TUNE_V2">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Play vehicle tone/tune (buzzer). Supersedes message PLAY_TUNE.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
