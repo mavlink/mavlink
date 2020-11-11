@@ -1372,13 +1372,13 @@
         <param index="7" label="Mode" enum="MAV_MOUNT_MODE">Mount mode.</param>
       </entry>
       <entry value="206" name="MAV_CMD_DO_SET_CAM_TRIGG_DIST" hasLocation="false" isDestination="false">
-        <description>Mission command to set camera trigger distance for this flight. The camera is triggered each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera. WIP: Params 4~6 enable a pseudo-oblique mode, where mount-enabled vehicles automatically roll the camera between shots to emulate an oblique camera setup (providing an increased HFOV).</description>
+        <description>Mission command to set camera trigger distance for this flight. The camera is triggered each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.</description>
         <param index="1" label="Distance" units="m" minValue="0">Camera trigger distance. 0 to stop triggering.</param>
         <param index="2" label="Shutter" units="ms" minValue="-1" increment="1">Camera shutter integration time. -1 or 0 to ignore</param>
         <param index="3" label="Trigger" minValue="0" maxValue="1" increment="1">Trigger camera once immediately. (0 = no trigger, 1 = trigger)</param>
-        <param index="4" label="Positions" minValue="0" increment="1" default="0">WIP: Total number of roll positions at which the camera will capture photos (images captures spread evenly across the limits defined by param5). Feature enabled if value is greater or equal to 2.</param>
-        <param index="5" label="Roll Angle" units="deg" minValue="0" default="0">WIP: Angle limits that the camera can be rolled to left and right of center. Enabled if param 4 is greater or equal to 2.</param>
-        <param index="6" label="Pitch Angle" units="deg" minValue="-180" maxValue="180" default="0">WIP: Fixed pitch angle that the camera will hold in pseudo oblique mode if the mount supports it. Enabled if param 4 is greater or equal to 2.</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
       <entry value="207" name="MAV_CMD_DO_FENCE_ENABLE" hasLocation="false" isDestination="false">
@@ -1586,6 +1586,17 @@
         <param index="5" label="Latitude/X">Latitude/X position.</param>
         <param index="6" label="Longitude/Y">Longitude/Y position.</param>
         <param index="7" label="Altitude/Z">Altitude/Z position.</param>
+      </entry>
+      <entry value="260" name="MAV_CMD_OBLIQUE_SURVEY" hasLocation="false" isDestination="false">
+        <wip/>
+        <description>Mission command to set a Camera Auto Mount Pivoting Oblique Survey. The camera is triggered each time this distance is exceeded, then the mount moves to the next position. This command can also be used to set the shutter integration time for the camera. Params 4~6 set-up the angle limits and number of positions for oblique survey, where mount-enabled vehicles automatically roll the camera between shots to emulate an oblique camera setup (providing an increased HFOV).</description>
+        <param index="1" label="Distance" units="m" minValue="0">Camera trigger distance. 0 to stop triggering.</param>
+        <param index="2" label="Shutter" units="ms" minValue="0" increment="1" default="0">Camera shutter integration time. 0 to ignore</param>
+        <param index="3" label="Min Interval" units="ms" minValue="0" maxValue="10000" increment="1" default="0">The minimum interval in which the camera is capable of taking subsequent pictures repeatedly. 0 to ignore.</param>
+        <param index="4" label="Positions" minValue="2" increment="1">Total number of roll positions at which the camera will capture photos (images captures spread evenly across the limits defined by param5).</param>
+        <param index="5" label="Roll Angle" units="deg" minValue="0" default="0">Angle limits that the camera can be rolled to left and right of center.</param>
+        <param index="6" label="Pitch Angle" units="deg" minValue="-180" maxValue="180" default="0">Fixed pitch angle that the camera will hold in pseudo oblique mode if the mount supports it.</param>
+        <param index="7">Empty</param>
       </entry>
       <entry value="300" name="MAV_CMD_MISSION_START" hasLocation="false" isDestination="false">
         <description>start running a mission</description>
