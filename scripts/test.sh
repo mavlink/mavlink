@@ -13,7 +13,7 @@ echo $sep
 echo "FORMAT TEST"
 echo $sep
 cd "$SRC_DIR"
-# ./scripts/format_xml.sh -c
+ ./scripts/format_xml.sh -c
 echo PASS
 
 generate_mavlink() {
