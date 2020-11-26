@@ -1395,6 +1395,24 @@
         <param index="6" reserved="true" default="NaN"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
+      <entry value="2502" name="MAV_CMD_VIDEO_START_STREAMING" hasLocation="false" isDestination="false">
+        <description>Start video streaming</description>
+        <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+      </entry>
+      <entry value="2503" name="MAV_CMD_VIDEO_STOP_STREAMING" hasLocation="false" isDestination="false">
+        <description>Stop the given video stream</description>
+        <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+      </entry>
+      <entry value="2504" name="MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION" hasLocation="false" isDestination="false">
+        <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
+        <description>Request video stream information (VIDEO_STREAM_INFORMATION)</description>
+        <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+      </entry>
+      <entry value="2505" name="MAV_CMD_REQUEST_VIDEO_STREAM_STATUS" hasLocation="false" isDestination="false">
+        <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
+        <description>Request video stream status (VIDEO_STREAM_STATUS)</description>
+        <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+      </entry>
       <entry value="2510" name="MAV_CMD_LOGGING_START" hasLocation="false" isDestination="false">
         <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
         <param index="1" label="Format" minValue="0" increment="1">Format: 0: ULog</param>
@@ -2751,6 +2769,30 @@
       </entry>
       <entry value="256" name="CAMERA_CAP_FLAGS_HAS_VIDEO_STREAM">
         <description>Camera has video streaming capabilities (request VIDEO_STREAM_INFORMATION with MAV_CMD_REQUEST_MESSAGE for video streaming info)</description>
+      </entry>
+    </enum>
+    <enum name="VIDEO_STREAM_STATUS_FLAGS" bitmask="true">
+      <description>Stream status flags (Bitmap)</description>
+      <entry value="1" name="VIDEO_STREAM_STATUS_FLAGS_RUNNING">
+        <description>Stream is active (running)</description>
+      </entry>
+      <entry value="2" name="VIDEO_STREAM_STATUS_FLAGS_THERMAL">
+        <description>Stream is thermal imaging</description>
+      </entry>
+    </enum>
+    <enum name="VIDEO_STREAM_TYPE">
+      <description>Video stream types</description>
+      <entry value="0" name="VIDEO_STREAM_TYPE_RTSP">
+        <description>Stream is RTSP</description>
+      </entry>
+      <entry value="1" name="VIDEO_STREAM_TYPE_RTPUDP">
+        <description>Stream is RTP UDP (URI gives the port number)</description>
+      </entry>
+      <entry value="2" name="VIDEO_STREAM_TYPE_TCP_MPEG">
+        <description>Stream is MPEG on TCP</description>
+      </entry>
+      <entry value="3" name="VIDEO_STREAM_TYPE_MPEG_TS_H264">
+        <description>Stream is h.264 on MPEG TS (URI gives the port number)</description>
       </entry>
     </enum>
     <enum name="CAMERA_MODE">
@@ -4825,6 +4867,32 @@
       <field type="uint8_t" name="target_system">system ID of the target</field>
       <field type="uint8_t" name="target_component">component ID of the target</field>
       <field type="uint16_t" name="sequence">sequence number (must match the one in LOGGING_DATA_ACKED)</field>
+    </message>
+    <message id="269" name="VIDEO_STREAM_INFORMATION">
+      <description>Information about video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE, where param2 indicates the video stream id: 0 for all streams, 1 for first, 2 for second, etc.</description>
+      <field type="uint8_t" name="stream_id" instance="true">Video Stream ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="count">Number of streams available.</field>
+      <field type="uint8_t" name="type" enum="VIDEO_STREAM_TYPE">Type of stream.</field>
+      <field type="uint16_t" name="flags" enum="VIDEO_STREAM_STATUS_FLAGS">Bitmap of stream status flags.</field>
+      <field type="float" name="framerate" units="Hz">Frame rate.</field>
+      <field type="uint16_t" name="resolution_h" units="pix">Horizontal resolution.</field>
+      <field type="uint16_t" name="resolution_v" units="pix">Vertical resolution.</field>
+      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate.</field>
+      <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise.</field>
+      <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view.</field>
+      <field type="char[32]" name="name">Stream name.</field>
+      <field type="char[160]" name="uri">Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to).</field>
+    </message>
+    <message id="270" name="VIDEO_STREAM_STATUS">
+      <description>Information about the status of a video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE.</description>
+      <field type="uint8_t" name="stream_id" instance="true">Video Stream ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint16_t" name="flags" enum="VIDEO_STREAM_STATUS_FLAGS">Bitmap of stream status flags</field>
+      <field type="float" name="framerate" units="Hz">Frame rate</field>
+      <field type="uint16_t" name="resolution_h" units="pix">Horizontal resolution</field>
+      <field type="uint16_t" name="resolution_v" units="pix">Vertical resolution</field>
+      <field type="uint32_t" name="bitrate" units="bits/s">Bit rate</field>
+      <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
+      <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
