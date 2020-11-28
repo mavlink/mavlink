@@ -3518,6 +3518,24 @@
         <description>Ignore yaw rate</description>
       </entry>
     </enum>
+    <enum name="POSITION_TARGET_SETPOINT_TYPE">
+      <description>Value indicating type of position setpoint. This may be used to customise flight behaviour e.g. extend landing gear.</description>
+      <entry value="0" name="POSITION_TARGET_SETPOINT_TYPE_NORMAL">
+        <description>Normal/default setpoint.</description>
+      </entry>
+      <entry value="4096" name="POSITION_TARGET_SETPOINT_TYPE_TAKEOFF">
+        <description>Takeoff setpoint.</description>
+      </entry>
+      <entry value="8192" name=POSITION_TARGET_SETPOINT_TYPE_LAND">
+        <description>Land setpoint.</description>
+      </entry>
+      <entry value="12288" name="POSITION_TARGET_SETPOINT_TYPE_LOITER">
+        <description>Loiter setpoint.</description>
+      </entry>
+      <entry value="16384" name="POSITION_TARGET_SETPOINT_TYPE_IDLE">
+        <description>Idle setpoint.</description>
+      </entry>
+    </enum>
     <enum name="UTM_FLIGHT_STATE">
       <description>Airborne status of UAS.</description>
       <entry value="1" name="UTM_FLIGHT_STATE_UNKNOWN">
@@ -4951,6 +4969,8 @@
       <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
       <field type="float" name="yaw" units="rad">yaw setpoint</field>
       <field type="float" name="yaw_rate" units="rad/s">yaw rate setpoint</field>
+      <extensions/>
+      <field type="uint8_t" name="setpoint_type" enum="POSITION_TARGET_SETPOINT_TYPE">Position setpoint type: takeoff, landing, etc. Default is 0 (normal setpoint).</field>
     </message>
     <message id="85" name="POSITION_TARGET_LOCAL_NED">
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED if the vehicle is being controlled this way.</description>
@@ -4968,6 +4988,8 @@
       <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
       <field type="float" name="yaw" units="rad">yaw setpoint</field>
       <field type="float" name="yaw_rate" units="rad/s">yaw rate setpoint</field>
+      <extensions/>
+      <field type="uint8_t" name="setpoint_type" enum="POSITION_TARGET_SETPOINT_TYPE">Position setpoint type: takeoff, landing, etc. Default is 0 (normal setpoint).</field>
     </message>
     <message id="86" name="SET_POSITION_TARGET_GLOBAL_INT">
       <description>Sets a desired vehicle position, velocity, and/or acceleration in a global coordinate system (WGS84). Used by an external controller to command the vehicle (manual controller or other system).</description>
@@ -4987,6 +5009,8 @@
       <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
       <field type="float" name="yaw" units="rad">yaw setpoint</field>
       <field type="float" name="yaw_rate" units="rad/s">yaw rate setpoint</field>
+      <extensions/>
+      <field type="uint8_t" name="setpoint_type" enum="POSITION_TARGET_SETPOINT_TYPE">Position setpoint type: takeoff, landing, etc. Default is 0 (normal setpoint).</field>
     </message>
     <message id="87" name="POSITION_TARGET_GLOBAL_INT">
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_GLOBAL_INT if the vehicle is being controlled this way.</description>
@@ -5004,6 +5028,8 @@
       <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
       <field type="float" name="yaw" units="rad">yaw setpoint</field>
       <field type="float" name="yaw_rate" units="rad/s">yaw rate setpoint</field>
+      <extensions/>
+      <field type="uint8_t" name="setpoint_type" enum="POSITION_TARGET_SETPOINT_TYPE">Position setpoint type: takeoff, landing, etc. Default is 0 (normal setpoint).</field>
     </message>
     <message id="89" name="LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET">
       <description>The offset in X, Y, Z and yaw between the LOCAL_POSITION_NED messages of MAV X and the global coordinate frame in NED coordinates. Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
