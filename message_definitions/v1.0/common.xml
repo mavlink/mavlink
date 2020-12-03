@@ -2657,6 +2657,24 @@
         <description>Landing target represented by a pre-defined visual shape/feature (ex: X-marker, H-marker, square)</description>
       </entry>
     </enum>
+    <enum name="ATTITUDE_TARGET_TYPEMASK" bitmask="true">
+      <description>Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b00000000 indicates that none of the setpoint dimensions should be ignored.</description>
+      <entry value="1" name="ATTITUDE_TARGET_TYPEMASK_BODY_ROLL_RATE_IGNORE">
+        <description>Ignore body roll rate</description>
+      </entry>
+      <entry value="2" name="ATTITUDE_TARGET_TYPEMASK_BODY_PITCH_RATE_IGNORE">
+        <description>Ignore body pitch rate</description>
+      </entry>
+      <entry value="4" name="ATTITUDE_TARGET_TYPEMASK_BODY_YAW_RATE_IGNORE">
+        <description>Ignore body yaw rate</description>
+      </entry>
+      <entry value="64" name="ATTITUDE_TARGET_TYPEMASK_THROTTLE_IGNORE">
+        <description>Ignore throttle</description>
+      </entry>
+      <entry value="128" name="ATTITUDE_TARGET_TYPEMASK_ATTITUDE_IGNORE">
+        <description>Ignore attitude</description>
+      </entry>
+    </enum>
     <enum name="VTOL_TRANSITION_HEADING">
       <description>Direction of VTOL transition</description>
       <entry value="0" name="VTOL_TRANSITION_HEADING_VEHICLE_DEFAULT">
@@ -3617,7 +3635,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="type_mask">Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 6: reserved, bit 7: throttle, bit 8: attitude</field>
+      <field type="uint8_t" name="type_mask" enum="ATTITUDE_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float" name="body_roll_rate" units="rad/s">Body roll rate</field>
       <field type="float" name="body_pitch_rate" units="rad/s">Body pitch rate</field>
@@ -3627,7 +3645,7 @@
     <message id="83" name="ATTITUDE_TARGET">
       <description>Reports the current commanded attitude of the vehicle as specified by the autopilot. This should match the commands sent in a SET_ATTITUDE_TARGET message if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="type_mask" display="bitmask">Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 7: reserved, bit 8: attitude</field>
+      <field type="uint8_t" name="type_mask" enum="ATTITUDE_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float" name="body_roll_rate" units="rad/s">Body roll rate</field>
       <field type="float" name="body_pitch_rate" units="rad/s">Body pitch rate</field>
