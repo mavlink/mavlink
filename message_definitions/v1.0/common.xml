@@ -21,33 +21,6 @@
         <description>official stable release</description>
       </entry>
     </enum>
-    <enum name="MAV_MODE_FLAG">
-      <description>These flags encode the MAV mode.</description>
-      <entry value="128" name="MAV_MODE_FLAG_SAFETY_ARMED">
-        <description>0b10000000 MAV safety set to armed. Motors are enabled / running / can start. Ready to fly. Additional note: this flag is to be ignore when sent in the command MAV_CMD_DO_SET_MODE and MAV_CMD_COMPONENT_ARM_DISARM shall be used instead. The flag can still be used to report the armed state.</description>
-      </entry>
-      <entry value="64" name="MAV_MODE_FLAG_MANUAL_INPUT_ENABLED">
-        <description>0b01000000 remote control input is enabled.</description>
-      </entry>
-      <entry value="32" name="MAV_MODE_FLAG_HIL_ENABLED">
-        <description>0b00100000 hardware in the loop simulation. All motors / actuators are blocked, but internal software is full operational.</description>
-      </entry>
-      <entry value="16" name="MAV_MODE_FLAG_STABILIZE_ENABLED">
-        <description>0b00010000 system stabilizes electronically its attitude (and optionally position). It needs however further control inputs to move around.</description>
-      </entry>
-      <entry value="8" name="MAV_MODE_FLAG_GUIDED_ENABLED">
-        <description>0b00001000 guided mode enabled, system flies waypoints / mission items.</description>
-      </entry>
-      <entry value="4" name="MAV_MODE_FLAG_AUTO_ENABLED">
-        <description>0b00000100 autonomous mode enabled, system finds its own goal positions. Guided flag can be set or not, depends on the actual implementation.</description>
-      </entry>
-      <entry value="2" name="MAV_MODE_FLAG_TEST_ENABLED">
-        <description>0b00000010 system has a test mode enabled. This flag is intended for temporary system tests and should not be used for stable implementations.</description>
-      </entry>
-      <entry value="1" name="MAV_MODE_FLAG_CUSTOM_MODE_ENABLED">
-        <description>0b00000001 Reserved for future use.</description>
-      </entry>
-    </enum>
     <enum name="MAV_MODE_FLAG_DECODE_POSITION">
       <description>These values encode the bit positions of the decode position. These values can be used to read the value of a flag bit by combining the base_mode variable with AND with the flag position value. The result will be either 0 or 1, depending on if the flag is set or not.</description>
       <entry value="128" name="MAV_MODE_FLAG_DECODE_POSITION_SAFETY">
