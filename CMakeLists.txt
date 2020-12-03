@@ -178,7 +178,6 @@ set(v1.0Definitions
     minimal.xml
     paparazzi.xml
     python_array_test.xml
-    slugs.xml
     test.xml
     ualberta.xml
     )
