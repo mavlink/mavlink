@@ -265,7 +265,7 @@
       Components must use the appropriate ID in their source address when sending messages. Components can also use IDs to determine if they are the intended recipient of an incoming message. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components.
       When creating new entries, components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequential values. An appropriate number of values should be left free after these components to allow the number of instances to be expanded.</description>
       <entry value="0" name="MAV_COMP_ID_ALL">
-        <description>Used to broadcast messages to all components of the receiving system. Components should attempt to process messages with this component ID and forward to components on any other interfaces.</description>
+        <description>Target id (target_component) used to broadcast messages to all components of the receiving system. Components should attempt to process messages with this component ID and forward to components on any other interfaces. Note: This is not a valid *source* component id for a message.</description>
       </entry>
       <entry value="1" name="MAV_COMP_ID_AUTOPILOT1">
         <description>System flight controller component ("autopilot"). Only one autopilot is expected in a particular system.</description>
@@ -400,8 +400,8 @@
       <entry value="67" name="MAV_COMP_ID_USER43">
         <description>Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.</description>
       </entry>
-      <entry value="68" name="MAV_COMP_ID_USER44">
-        <description>Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.</description>
+      <entry value="68" name="MAV_COMP_ID_TELEMETRY_RADIO">
+        <description>Telemetry radio (e.g. SiK radio, or other component that emits RADIO_STATUS messages).</description>
       </entry>
       <entry value="69" name="MAV_COMP_ID_USER45">
         <description>Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.</description>
@@ -557,7 +557,7 @@
         <description>Servo #14.</description>
       </entry>
       <entry value="154" name="MAV_COMP_ID_GIMBAL">
-        <description>Gimbal component.</description>
+        <description>Gimbal #1.</description>
       </entry>
       <entry value="155" name="MAV_COMP_ID_LOG">
         <description>Logging component.</description>
@@ -577,6 +577,21 @@
       </entry>
       <entry value="160" name="MAV_COMP_ID_FLARM">
         <description>FLARM collision alert component.</description>
+      </entry>
+      <entry value="171" name="MAV_COMP_ID_GIMBAL2">
+        <description>Gimbal #2.</description>
+      </entry>
+      <entry value="172" name="MAV_COMP_ID_GIMBAL3">
+        <description>Gimbal #3.</description>
+      </entry>
+      <entry value="173" name="MAV_COMP_ID_GIMBAL4">
+        <description>Gimbal #4</description>
+      </entry>
+      <entry value="174" name="MAV_COMP_ID_GIMBAL5">
+        <description>Gimbal #5.</description>
+      </entry>
+      <entry value="175" name="MAV_COMP_ID_GIMBAL6">
+        <description>Gimbal #6.</description>
       </entry>
       <entry value="190" name="MAV_COMP_ID_MISSIONPLANNER">
         <description>Component that can generate/supply a mission flight plan (e.g. GCS or developer API).</description>
