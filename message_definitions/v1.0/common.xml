@@ -5513,13 +5513,12 @@
       <field type="int16_t[16]" name="data" units="m">Terrain data MSL</field>
     </message>
     <message id="135" name="TERRAIN_CHECK">
-      <deprecated since="2020-08" replaced_by="">Deprecated (without replacement) as is not part of terrain protocol: https://mavlink.io/en/services/terrain.html.</deprecated>
-      <description>Request that the vehicle report terrain height at the given location. Used by GCS to check if vehicle has all terrain data needed for a mission.</description>
+      <description>Request that the vehicle report terrain height at the given location (expected response is a TERRAIN_REPORT). Used by GCS to check if vehicle has all terrain data needed for a mission.</description>
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
     </message>
     <message id="136" name="TERRAIN_REPORT">
-      <description>Streamed from drone to report progress of terrain map download (or response from a TERRAIN_CHECK request - deprecated). See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
+      <description>Streamed from drone to report progress of terrain map download (initiated by TERRAIN_REQUEST), or sent as a response to a TERRAIN_CHECK request. See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
       <field type="uint16_t" name="spacing">grid spacing (zero if terrain at this location unavailable)</field>
