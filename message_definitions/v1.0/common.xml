@@ -1233,10 +1233,16 @@
         <param index="6">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
         <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address for requested message (if message has target address fields). 0: Flight-stack default, 1: address of requestor, 2: broadcast.</param>
       </entry>
+      <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" hasLocation="false" isDestination="false">
+        <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
+        <description>Request MAVLink protocol version compatibility. All receivers should ACK the command and then emit their capabilities in an PROTOCOL_VERSION message</description>
+        <param index="1" label="Protocol" minValue="0" maxValue="1" increment="1">1: Request supported protocol versions by all nodes on the network</param>
+        <param index="2">Reserved (all remaining params)</param>
+      </entry>
       <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message</description>
-        <param index="1" label="Version">1: Request autopilot version</param>
+        <param index="1" label="Version" minValue="0" maxValue="1" increment="1">1: Request autopilot version</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION" hasLocation="false" isDestination="false">
