@@ -3641,10 +3641,15 @@
     <message id="53" name="MISSION_UID">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Unique mission ID for the current mission. The UID is set in a mission with MAV_CMD_MISSION_UID. When requesting the MISSION_UID with MAV_CMD_REQUEST_MESSAGE then use mission_type as param 2 of that message.</description>
-      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
-      <field type="float" name="uid_1">First 4 bytes of the unique mission ID</field>
-      <field type="float" name="uid_2">Last 4 bytes of the unique mission ID</field>
+      <description>Hash for the current mission, rally points or geofence plan (a GCS can use this hash to determine if it has a matching plan defintion).
+        This message must be broadcast following any change to a plan (immediately after the MISSION_ACK that completes the plan upload sequence).
+        It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the hash is required.
+        The hash must be calculated on the autopilot, but may also be calculated by the GCS.
+        The hash algorithm is XXXX. It is run over each item in the plan in seq order (excluding the home location, if stored), and covers fields:
+        frame, command, autocontinue, and each of the 7 param values, in order. 
+      </description>
+      <field type="uint8_t" name="plan_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+      <field type="uint64_t" name="hash">Hash</field>
     </message>
     <message id="54" name="SAFETY_SET_ALLOWED_AREA">
       <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/waypoints to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
