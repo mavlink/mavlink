@@ -566,7 +566,7 @@
         <param index="7" label="Altitude" units="m">Desired altitude</param>
       </entry>
       <entry value="31" name="MAV_CMD_NAV_LOITER_TO_ALT" hasLocation="true" isDestination="true">
-        <description>Begin loiter at the specified Latitude and Longitude.  If Lat=Lon=0, then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached.  Additionally, if the Heading Required parameter is non-zero the  aircraft will not leave the loiter until heading toward the next waypoint.</description>
+        <description>Begin loiter at the specified Latitude and Longitude.  If Lat=Lon=0, then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached. Additionally, if the Heading Required parameter is non-zero the aircraft will not leave the loiter until heading toward the next waypoint.</description>
         <param index="1" label="Heading Required" minValue="0" maxValue="1" increment="1">Heading Required (0 = False)</param>
         <param index="2" label="Radius" units="m">Radius. If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.</param>
         <param index="3">Empty</param>
@@ -578,11 +578,11 @@
       <entry value="32" name="MAV_CMD_DO_FOLLOW" hasLocation="false" isDestination="false">
         <description>Begin following a target</description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">System ID (of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode.</param>
-        <param index="2">RESERVED</param>
-        <param index="3">RESERVED</param>
+        <param index="2">Reserved</param>
+        <param index="3">Reserved</param>
         <param index="4" label="Altitude Mode" minValue="0" maxValue="2" increment="1">Altitude mode: 0: Keep current altitude, 1: keep altitude difference to target, 2: go to a fixed altitude above home.</param>
         <param index="5" label="Altitude" units="m">Altitude above home. (used if mode=2)</param>
-        <param index="6">RESERVED</param>
+        <param index="6">Reserved</param>
         <param index="7" label="Time to Land" units="s" minValue="0">Time to land in which the MAV should go to the default position hold mode after a message RX timeout.</param>
       </entry>
       <entry value="33" name="MAV_CMD_DO_FOLLOW_REPOSITION" hasLocation="false" isDestination="false">
@@ -612,9 +612,9 @@
         <param index="2" label="Global Ctrl" minValue="0" maxValue="3" increment="1">0: Disable full path planning (without resetting map), 1: Enable, 2: Enable and reset map/occupancy grid, 3: Enable and reset planned route, but not occupancy grid</param>
         <param index="3">Empty</param>
         <param index="4" label="Yaw" units="deg">Yaw angle at goal</param>
-        <param index="5">Latitude/X of goal</param>
-        <param index="6">Longitude/Y of goal</param>
-        <param index="7">Altitude/Z of goal</param>
+        <param index="5" label="Latitude/X">Latitude/X of goal</param>
+        <param index="6" label="Longitude/Y">Longitude/Y of goal</param>
+        <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
       </entry>
       <entry value="82" name="MAV_CMD_NAV_SPLINE_WAYPOINT" hasLocation="true" isDestination="true">
         <description>Navigate to waypoint using a spline path.</description>
@@ -622,9 +622,9 @@
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5">Latitude/X of goal</param>
-        <param index="6">Longitude/Y of goal</param>
-        <param index="7">Altitude/Z of goal</param>
+        <param index="5" label="Latitude/X">Latitude/X of goal</param>
+        <param index="6" label="Longitude/Y">Longitude/Y of goal</param>
+        <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
       </entry>
       <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF" hasLocation="true" isDestination="true">
         <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading.</description>
@@ -926,9 +926,9 @@
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5" label="Pitch Offset">Pitch offset from next waypoint, positive tilting up</param>
-        <param index="6" label="Roll Offset">Roll offset from next waypoint, positive banking to the right</param>
-        <param index="7" label="Yaw Offset">Yaw offset from next waypoint, positive panning to the right</param>
+        <param index="5" label="Pitch Offset">Pitch offset from next waypoint, positive pitching up</param>
+        <param index="6" label="Roll Offset">Roll offset from next waypoint, positive rolling to the right</param>
+        <param index="7" label="Yaw Offset">Yaw offset from next waypoint, positive yawing to the right</param>
       </entry>
       <entry value="197" name="MAV_CMD_DO_SET_ROI_NONE" hasLocation="false" isDestination="false">
         <description>Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
@@ -1206,8 +1206,8 @@
         <param index="2" label="Companion" minValue="0" maxValue="3" increment="1">0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer, 3: Reboot onboard computer and keep it in the bootloader until upgraded.</param>
         <param index="3">WIP: 0: Do nothing for camera, 1: Reboot onboard camera, 2: Shutdown onboard camera, 3: Reboot onboard camera and keep it in the bootloader until upgraded</param>
         <param index="4">WIP: 0: Do nothing for mount (e.g. gimbal), 1: Reboot mount, 2: Shutdown mount, 3: Reboot mount and keep it in the bootloader until upgraded</param>
-        <param index="5">Reserved, send 0</param>
-        <param index="6">Reserved, send 0</param>
+        <param index="5">Reserved (set to 0)</param>
+        <param index="6">Reserved (set to 0)</param>
         <param index="7">WIP: ID (e.g. camera ID -1 for all IDs)</param>
       </entry>
       <entry value="252" name="MAV_CMD_OVERRIDE_GOTO" hasLocation="true" isDestination="true">
@@ -1216,9 +1216,9 @@
         <param index="2" label="Position" enum="MAV_GOTO">MAV_GOTO_HOLD_AT_CURRENT_POSITION: hold at current position, MAV_GOTO_HOLD_AT_SPECIFIED_POSITION: hold at specified position.</param>
         <param index="3" label="Frame" enum="MAV_FRAME">Coordinate frame of hold point.</param>
         <param index="4" label="Yaw" units="deg">Desired yaw angle.</param>
-        <param index="5">Latitude / X position.</param>
-        <param index="6">Longitude / Y position.</param>
-        <param index="7">Altitude / Z position.</param>
+        <param index="5" label="Latitude/X">Latitude/X position.</param>
+        <param index="6" label="Longitude/Y">Longitude/Y position.</param>
+        <param index="7" label="Altitude/Z">Altitude/Z position.</param>
       </entry>
       <entry value="260" name="MAV_CMD_OBLIQUE_SURVEY" hasLocation="false" isDestination="false">
         <wip/>
@@ -1459,8 +1459,8 @@
         <param index="2">User defined</param>
         <param index="3">User defined</param>
         <param index="4">User defined</param>
-        <param index="5">Unscaled target latitude of center of circle in CIRCLE_MODE</param>
-        <param index="6">Unscaled target longitude of center of circle in CIRCLE_MODE</param>
+        <param index="5" label="Latitude">Target latitude of center of circle in CIRCLE_MODE</param>
+        <param index="6" label="Longitude">Target longitude of center of circle in CIRCLE_MODE</param>
       </entry>
       <entry value="5000" name="MAV_CMD_NAV_FENCE_RETURN_POINT" hasLocation="true" isDestination="true">
         <description>Fence return point. There can only be one fence return point.
@@ -4714,7 +4714,7 @@
       <field type="uint8_t" name="state" display="bitmask">Bitmap for state of buttons.</field>
     </message>
     <message id="258" name="PLAY_TUNE">
-      <description>Control vehicle tone generation (buzzer)</description>
+      <description>Control vehicle tone generation (buzzer).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[30]" name="tune">tune in board specific format</field>
@@ -4783,8 +4783,6 @@
       <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
     </message>
     <message id="264" name="FLIGHT_INFORMATION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about flight since last arming.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="arming_time_utc" units="us">Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown</field>
