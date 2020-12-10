@@ -845,7 +845,7 @@
         <description>Land at location.</description>
         <param index="1" label="Abort Alt" units="m">Minimum target altitude if landing is aborted (0 = undefined/use system default).</param>
         <param index="2" label="Land Mode" enum="PRECISION_LAND_MODE">Precision land mode.</param>
-        <param index="3">Empty</param>
+        <param index="3">Empty.</param>
         <param index="4" label="Yaw Angle" units="deg">Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5" label="Latitude">Latitude.</param>
         <param index="6" label="Longitude">Longitude.</param>
@@ -1190,7 +1190,7 @@
       </entry>
       <entry value="186" name="MAV_CMD_DO_CHANGE_ALTITUDE" hasLocation="false" isDestination="false">
         <description>Change altitude set point.</description>
-        <param index="1" label="Altitude" units="m">Altitude</param>
+        <param index="1" label="Altitude" units="m">Altitude.</param>
         <param index="2" label="Frame" enum="MAV_FRAME">Frame of new altitude.</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -1287,8 +1287,8 @@
         <param index="3">Empty</param>
         <param index="4">Empty</param>
         <param index="5" label="Pitch Offset">Pitch offset from next waypoint, positive pitching up</param>
-        <param index="6" label="Roll Offset">roll offset from next waypoint, positive rolling to the right</param>
-        <param index="7" label="Yaw Offset">yaw offset from next waypoint, positive yawing to the right</param>
+        <param index="6" label="Roll Offset">Roll offset from next waypoint, positive rolling to the right</param>
+        <param index="7" label="Yaw Offset">Yaw offset from next waypoint, positive yawing to the right</param>
       </entry>
       <entry value="197" name="MAV_CMD_DO_SET_ROI_NONE" hasLocation="false" isDestination="false">
         <description>Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message. After this command the gimbal manager should go back to manual input if available, and otherwise assume a neutral position.</description>
@@ -6506,6 +6506,7 @@
     </message>
     <message id="334" name="CELLULAR_STATUS">
       <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Report current used cellular network status</description>
       <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
       <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLUAR_STATUS_FAILED</field>
