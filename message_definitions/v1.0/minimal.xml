@@ -650,19 +650,6 @@
         <description>Component for handling system messages (e.g. to ARM, takeoff, etc.).</description>
       </entry>
     </enum>
-    <enum name="MAV_CMD">
-      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="512" name="MAV_CMD_REQUEST_MESSAGE" hasLocation="false" isDestination="false">
-        <description>Request the target system(s) emit a single instance of a specified message (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).</description>
-        <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID of the requested message.</param>
-        <param index="2" label="Req Param 1">Use for index ID, if required. Otherwise, the use of this parameter (if any) must be defined in the requested message. By default assumed not used (0).</param>
-        <param index="3" label="Req Param 2">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
-        <param index="4" label="Req Param 3">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
-        <param index="5" label="Req Param 4">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
-        <param index="6" label="Req Param 5">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
-        <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address for requested message (if message has target address fields). 0: Flight-stack default, 1: address of requestor, 2: broadcast.</param>
-      </entry>
-    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
