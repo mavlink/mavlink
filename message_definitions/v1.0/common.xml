@@ -3645,11 +3645,12 @@
         This message must be broadcast following any change to a plan (immediately after the MISSION_ACK that completes the plan upload sequence).
         It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the hash is required.
         The hash must be calculated on the autopilot, but may also be calculated by the GCS.
-        The hash algorithm is XXXX. It is run over each item in the plan in seq order (excluding the home location, if stored), and covers fields:
-        frame, command, autocontinue, and each of the 7 param values, in order. 
+        The hash uses the same CRC32 algorithm as MAVLink FTP (https://mavlink.io/en/services/ftp.html#crc32-implementation).
+        It is run over each item in the plan in seq order (excluding the home location if present in the plan), and covers the following fields (in order):
+        frame, command, autocontinue, param1, param2, param3, param4, param5, param6, param7.
       </description>
       <field type="uint8_t" name="plan_type" enum="MAV_MISSION_TYPE">Mission type.</field>
-      <field type="uint64_t" name="hash">Hash</field>
+      <field type="uint32_t" name="hash">Hash of current plan for specified type.</field>
     </message>
     <message id="54" name="SAFETY_SET_ALLOWED_AREA">
       <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/waypoints to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
