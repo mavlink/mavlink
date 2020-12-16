@@ -3644,8 +3644,8 @@
       <description>Hash for the current mission, rally points or geofence plan (a GCS can use this hash to determine if it has a matching plan defintion).
         This message must be broadcast following any change to a plan (immediately after the MISSION_ACK that completes the plan upload sequence).
         It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the hash is required.
-        The hash must be calculated on the autopilot, but may also be calculated by the GCS.
-        The hash uses the same CRC32 algorithm as MAVLink FTP (https://mavlink.io/en/services/ftp.html#crc32-implementation).
+        The checksum must be calculated on the autopilot, but may also be calculated by the GCS.
+        The checksum uses the same CRC32 algorithm as MAVLink FTP (https://mavlink.io/en/services/ftp.html#crc32-implementation).
         It is run over each item in the plan in seq order (excluding the home location if present in the plan), and covers the following fields (in order):
         frame, command, autocontinue, param1, param2, param3, param4, param5, param6, param7.
       </description>
