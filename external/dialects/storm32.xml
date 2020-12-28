@@ -1,19 +1,24 @@
 <?xml version="1.0"?>
 <!--
-  STORM32 and OLLIW additions
-  8. Dez. 2020
+Contact:
+  - send a PM to user OlliW at https://www.rcgroups.com (most quick)
+  - raise an issue in the https://github.com/olliw42/storm32bgc github repository
+  - send a message to user olliw at https://discuss.px4.io/ (may take a while to respond)
+Range of IDs:
+  messages: 62000 - 62025
+  commands: 62000 - 62025
+Documentation:  
+  STORM32 and QSHOT additions
+  25. Dez. 2020
   All messages are technically WIP, but some are quite stable now.
   Quite stable means that it is in practical use, but may see extension.
   A more detailed description of the concept underlying the STORM32 and QSHOT messages can be found here:
   http://www.olliw.eu/2020/mavlink-gimbal-protocol-v2/
 -->
 <mavlink>
-  <!-- For ArduPilot, include storm32.xml in ardupilotmega.xml (common.xml doesn't yet work in stable branches)
+  <!-- For ArduPilot, comment out the <include> and include storm32.xml in ardupilotmega.xml (common.xml doesn't yet work in stable branches)
     This makes it possible that ArduPilot's build system can handle it without modifications. -->
-  <!-- For OpentTx, uncomment this -->
-  <!-- <include>mavlink\message_definitions\v1.0\ardupilotmega.xml</include> -->
-  <!-- For EasyMavlink, uncomment this -->
-  <!-- <include>ardupilotmega.xml</include> -->
+  <include>../../message_definitions/v1.0/ardupilotmega.xml</include>
   <version>1</version>
   <dialect>0</dialect>
   <!--
@@ -337,7 +342,7 @@
       </entry>
     </enum>
     <!-- ***************************
-    STORM32 and OLLIW cmds
+    STORM32 and QSHOT cmds
     *************************** -->
     <enum name="MAV_CMD">
       <!-- leave room for 62000 gimbal device configure -->
