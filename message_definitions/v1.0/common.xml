@@ -376,6 +376,9 @@
       <entry value="5" name="MAV_MOUNT_MODE_SYSID_TARGET">
         <description>Gimbal tracks system with specified system ID</description>
       </entry>
+      <entry value="6" name="MAV_MOUNT_MODE_HOME_LOCATION">
+        <description>Gimbal tracks home location</description>
+      </entry>
     </enum>
     <enum name="GIMBAL_DEVICE_CAP_FLAGS" bitmask="true">
       <description>Gimbal device (low level) capability flags (bitmap)</description>
@@ -1657,6 +1660,16 @@
         <param index="2" label="Interval" units="us" minValue="-1" increment="1">The interval between two messages. Set to -1 to disable and 0 to request default rate.</param>
         <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address of message stream (if message has target address fields). 0: Flight-stack default (recommended), 1: address of requestor, 2: broadcast.</param>
       </entry>
+      <entry value="512" name="MAV_CMD_REQUEST_MESSAGE" hasLocation="false" isDestination="false">
+        <description>Request the target system(s) emit a single instance of a specified message (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).</description>
+        <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID of the requested message.</param>
+        <param index="2" label="Req Param 1">Use for index ID, if required. Otherwise, the use of this parameter (if any) must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="3" label="Req Param 2">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="4" label="Req Param 3">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="5" label="Req Param 4">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="6" label="Req Param 5">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address for requested message (if message has target address fields). 0: Flight-stack default, 1: address of requestor, 2: broadcast.</param>
+      </entry>
       <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request MAVLink protocol version compatibility. All receivers should ACK the command and then emit their capabilities in an PROTOCOL_VERSION message</description>
@@ -2714,9 +2727,6 @@
       </entry>
       <entry value="40" name="MAV_SENSOR_ROTATION_ROLL_90_PITCH_315">
         <description>Roll: 90, Pitch: 315</description>
-      </entry>
-      <entry value="41" name="MAV_SENSOR_ROTATION_ROLL_270_YAW_180">
-        <description>Roll: 270, Yaw: 180</description>
       </entry>
       <entry value="100" name="MAV_SENSOR_ROTATION_CUSTOM">
         <description>Custom orientation</description>
@@ -4379,7 +4389,9 @@
       <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
     </message>
     <message id="23" name="PARAM_SET">
-      <description>Set a parameter value (write new value to permanent storage). Within a transaction the recieving componenent should respond with PARAM_ACK_TRANSACTION to the setter component. IMPORTANT: If sent outside a transaction the receiving component should acknowledge the new parameter value by broadcasting a PARAM_VALUE message to all communication partners (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters). If the sending GCS did not receive a PARAM_VALUE or PARAM_ACK_TRANSACTION message within its timeout time, it should re-send the PARAM_SET message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <description>Set a parameter value (write new value to permanent storage).
+        The receiving component should acknowledge the new parameter value by broadcasting a PARAM_VALUE message (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters). If the sending GCS did not receive a PARAM_VALUE within its timeout time, it should re-send the PARAM_SET message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.
+        PARAM_SET may also be called within the context of a transaction (started with MAV_CMD_PARAM_TRANSACTION). Within a transaction the receiving component should respond with PARAM_ACK_TRANSACTION to the setter component (instead of broadcasting PARAM_VALUE), and PARAM_SET should be re-sent if this is ACK not received.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
@@ -4819,28 +4831,28 @@
       <field type="uint16_t" name="buttons">A bitfield corresponding to the joystick buttons' current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.</field>
     </message>
     <message id="70" name="RC_CHANNELS_OVERRIDE">
-      <description>The RAW values of the RC channels sent to the MAV to override info received from the RC radio. A value of UINT16_MAX means no change to that channel. A value of 0 means control of that channel should be released back to the RC radio. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
+      <description>The RAW values of the RC channels sent to the MAV to override info received from the RC radio. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.  Note carefully the semantic differences between the first 8 channels and the subsequent channels</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint16_t" name="chan1_raw" units="us">RC channel 1 value. A value of UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan2_raw" units="us">RC channel 2 value. A value of UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan3_raw" units="us">RC channel 3 value. A value of UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan4_raw" units="us">RC channel 4 value. A value of UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan5_raw" units="us">RC channel 5 value. A value of UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan6_raw" units="us">RC channel 6 value. A value of UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan7_raw" units="us">RC channel 7 value. A value of UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan8_raw" units="us">RC channel 8 value. A value of UINT16_MAX means to ignore this field.</field>
+      <field type="uint16_t" name="chan1_raw" units="us">RC channel 1 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan2_raw" units="us">RC channel 2 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan3_raw" units="us">RC channel 3 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan4_raw" units="us">RC channel 4 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan5_raw" units="us">RC channel 5 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan6_raw" units="us">RC channel 6 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan7_raw" units="us">RC channel 7 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan8_raw" units="us">RC channel 8 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
       <extensions/>
-      <field type="uint16_t" name="chan9_raw" units="us">RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan10_raw" units="us">RC channel 10 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan11_raw" units="us">RC channel 11 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan12_raw" units="us">RC channel 12 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan13_raw" units="us">RC channel 13 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan14_raw" units="us">RC channel 14 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan15_raw" units="us">RC channel 15 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan16_raw" units="us">RC channel 16 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan17_raw" units="us">RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
-      <field type="uint16_t" name="chan18_raw" units="us">RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field.</field>
+      <field type="uint16_t" name="chan9_raw" units="us">RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan10_raw" units="us">RC channel 10 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan11_raw" units="us">RC channel 11 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan12_raw" units="us">RC channel 12 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan13_raw" units="us">RC channel 13 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan14_raw" units="us">RC channel 14 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan15_raw" units="us">RC channel 15 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan16_raw" units="us">RC channel 16 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan17_raw" units="us">RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan18_raw" units="us">RC channel 18 val1ue. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
     </message>
     <message id="73" name="MISSION_ITEM_INT">
       <description>Message encoding a mission item. This message is emitted to announce
@@ -5501,13 +5513,12 @@
       <field type="int16_t[16]" name="data" units="m">Terrain data MSL</field>
     </message>
     <message id="135" name="TERRAIN_CHECK">
-      <deprecated since="2020-08" replaced_by="">Deprecated (without replacement) as is not part of terrain protocol: https://mavlink.io/en/services/terrain.html.</deprecated>
-      <description>Request that the vehicle report terrain height at the given location. Used by GCS to check if vehicle has all terrain data needed for a mission.</description>
+      <description>Request that the vehicle report terrain height at the given location (expected response is a TERRAIN_REPORT). Used by GCS to check if vehicle has all terrain data needed for a mission.</description>
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
     </message>
     <message id="136" name="TERRAIN_REPORT">
-      <description>Streamed from drone to report progress of terrain map download (or response from a TERRAIN_CHECK request - deprecated). See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
+      <description>Streamed from drone to report progress of terrain map download (initiated by TERRAIN_REQUEST), or sent as a response to a TERRAIN_CHECK request. See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
       <field type="uint16_t" name="spacing">grid spacing (zero if terrain at this location unavailable)</field>
@@ -6363,23 +6374,18 @@
       <field type="uint32_t" name="sw_vcs_commit">Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.</field>
     </message>
     <message id="320" name="PARAM_EXT_REQUEST_READ">
-      <description>Request to read the value of a parameter with either the param_id string id or param_index. PARAM_EXT_VALUE or PARAM_EXT_VALUE_TRIMMED should be emitted in response (see field: trimmed).</description>
+      <description>Request to read the value of a parameter with either the param_id string id or param_index. PARAM_EXT_VALUE should be emitted in response.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="int16_t" name="param_index">Parameter index. Set to -1 to use the Parameter ID field as identifier (else param_id will be ignored)</field>
-      <extensions/>
-      <field type="uint8_t" name="trimmed">Request _TRIMMED variants of PARAM_EXT_ messages. Set to 1 if _TRIMMED message variants are supported, and 0 otherwise. This signals the recipient that _TRIMMED messages are supported by the sender (and should be used if supported by the recipient).</field>
     </message>
     <message id="321" name="PARAM_EXT_REQUEST_LIST">
-      <description>Request all parameters of this component. All parameters should be emitted in response (as PARAM_EXT_VALUE or PARAM_EXT_VALUE_TRIMMED messages - see field: trimmed).</description>
+      <description>Request all parameters of this component. All parameters should be emitted in response as PARAM_EXT_VALUE.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <extensions/>
-      <field type="uint8_t" name="trimmed">Request _TRIMMED variants of PARAM_EXT_ messages. Set to 1 if _TRIMMED message variants are supported, and 0 otherwise. This signals the recipient that _TRIMMED messages are supported by the sender (and should be used if supported by the recipient).</field>
     </message>
     <message id="322" name="PARAM_EXT_VALUE">
-      <deprecated since="2020-07" replaced_by="PARAM_EXT_VALUE_TRIMMED">The new version of this message correctly trims zeros.</deprecated>
       <description>Emit the value of a parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows them to re-request missing parameters after a loss or timeout.</description>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="char[128]" name="param_value">Parameter value</field>
@@ -6388,7 +6394,6 @@
       <field type="uint16_t" name="param_index">Index of this parameter</field>
     </message>
     <message id="323" name="PARAM_EXT_SET">
-      <deprecated since="2020-07" replaced_by="PARAM_EXT_SET_TRIMMED">New version of PARAM_EXT_SET that correctly trims zeros.</deprecated>
       <description>Set a parameter value. In order to deal with message loss (and retransmission of PARAM_EXT_SET), when setting a parameter value and the new value is the same as the current value, you will immediately get a PARAM_ACK_ACCEPTED response. If the current state is PARAM_ACK_IN_PROGRESS, you will accordingly receive a PARAM_ACK_IN_PROGRESS in response.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -6397,41 +6402,11 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
     </message>
     <message id="324" name="PARAM_EXT_ACK">
-      <deprecated since="2020-07" replaced_by="PARAM_EXT_ACK_TRIMMED">New version of PARAM_EXT_ACK that correctly trims zeros.</deprecated>
       <description>Response from a PARAM_EXT_SET message.</description>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="char[128]" name="param_value">Parameter value (new value if PARAM_ACK_ACCEPTED, current value otherwise)</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
-    </message>
-    <message id="325" name="PARAM_EXT_VALUE_TRIMMED">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Emit the value of a parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows them to re-request missing parameters after a loss or timeout. Replacement for PARAM_EXT_VALUE.</description>
-      <field type="uint16_t" name="param_count">Total number of parameters</field>
-      <field type="uint16_t" name="param_index">Index of this parameter</field>
-      <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
-      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="char[128]" name="param_value">Parameter value (zeros get trimmed)</field>
-    </message>
-    <message id="326" name="PARAM_EXT_SET_TRIMMED">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Set a parameter value. In order to deal with message loss (and retransmission of PARAM_EXT_SET_TRIMMED), when setting a parameter value and the new value is the same as the current value, you will immediately get a PARAM_ACK_ACCEPTED response. If the current state is PARAM_ACK_IN_PROGRESS, you will accordingly receive a PARAM_ACK_IN_PROGRESS in response. If there is no response to this message, and it is unknown whether the _TRIMMED messages are supported (because no PARAM_EXT_REQUEST_READ or PARAM_EXT_REQUEST_LIST has been performed yet), then fall back to PARAM_EXT_SET.</description>
-      <field type="uint8_t" name="target_system">System ID</field>
-      <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
-      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="char[128]" name="param_value">Parameter value (zeros get trimmed)</field>
-    </message>
-    <message id="327" name="PARAM_EXT_ACK_TRIMMED">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Response from a PARAM_EXT_SET_TRIMMED message.</description>
-      <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
-      <field type="uint8_t" name="param_type" enum="MAV_PARAM_EXT_TYPE">Parameter type.</field>
-      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="char[128]" name="param_value">Parameter value (new value if PARAM_ACK_ACCEPTED, current value otherwise, zeros get trimmed)</field>
     </message>
     <message id="330" name="OBSTACLE_DISTANCE">
       <description>Obstacle distances in front of the sensor, starting from the left in increment degrees to the right</description>
@@ -6587,7 +6562,7 @@
       <field type="int32_t" name="capacity_full_specification" units="mAh">Capacity when full according to manufacturer, -1: field not provided.</field>
       <field type="int32_t" name="capacity_full" units="mAh">Capacity when full (accounting for battery degradation), -1: field not provided.</field>
       <field type="uint16_t" name="cycle_count">Charge/discharge cycle count. -1: field not provided.</field>
-      <field type="int32_t" name="serial_number">Serial number. -1: field not provided.</field>
+      <field type="char[16]" name="serial_number">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
       <field type="char[50]" name="device_name">Static device name. Encode as manufacturer and product names separated using an underscore.</field>
       <field type="uint16_t" name="weight" units="g">Battery weight. 0: field not provided.</field>
       <field type="uint16_t" name="discharge_minimum_voltage" units="mV">Minimum per-cell voltage when discharging. If not supplied set to UINT16_MAX value.</field>
