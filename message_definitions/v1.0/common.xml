@@ -5087,6 +5087,27 @@
       <extensions/>
       <field type="float[58]" name="data">data</field>
     </message>
+    <message id="370" name="SMART_BATTERY_INFO">
+      <description>Smart Battery information (static/infrequent update). Use for updates from: smart battery to flight stack, flight stack to GCS. Use BATTERY_STATUS for smart battery frequent updates.</description>
+      <field type="uint8_t" name="id" instance="true">Battery ID</field>
+      <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
+      <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
+      <field type="int32_t" name="capacity_full_specification" units="mAh">Capacity when full according to manufacturer, -1: field not provided.</field>
+      <field type="int32_t" name="capacity_full" units="mAh">Capacity when full (accounting for battery degradation), -1: field not provided.</field>
+      <field type="uint16_t" name="cycle_count">Charge/discharge cycle count. UINT16_MAX: field not provided.</field>
+      <field type="char[16]" name="serial_number">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
+      <field type="char[50]" name="device_name">Static device name in ASCII characters, 0 terminated. All 0: field not provided. Encode as manufacturer name then product name separated using an underscore.</field>
+      <field type="uint16_t" name="weight" units="g">Battery weight. 0: field not provided.</field>
+      <field type="uint16_t" name="discharge_minimum_voltage" units="mV">Minimum per-cell voltage when discharging. If not supplied set to UINT16_MAX value.</field>
+      <field type="uint16_t" name="charging_minimum_voltage" units="mV">Minimum per-cell voltage when charging. If not supplied set to UINT16_MAX value.</field>
+      <field type="uint16_t" name="resting_minimum_voltage" units="mV">Minimum per-cell voltage when resting. If not supplied set to UINT16_MAX value.</field>
+      <extensions/>
+      <field type="uint16_t" name="charging_maximum_voltage" units="mV">Maximum per-cell voltage when charged. 0: field not provided.</field>
+      <field type="uint8_t" name="cells_in_series">Number of battery cells in series. 0: field not provided.</field>
+      <field type="uint32_t" name="discharge_maximum_current" units="mA">Maximum pack discharge current. 0: field not provided.</field>
+      <field type="uint32_t" name="discharge_maximum_burst_current" units="mA">Maximum pack discharge burst current. 0: field not provided.</field>
+      <field type="char[11]" name="manufacture_date">Manufacture date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
+    </message>
     <message id="373" name="GENERATOR_STATUS">
       <description>Telemetry of power generation system. Alternator or mechanical generator.</description>
       <field type="uint64_t" name="status" display="bitmask" enum="MAV_GENERATOR_STATUS_FLAG">Status flags.</field>
