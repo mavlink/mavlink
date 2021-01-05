@@ -5574,9 +5574,9 @@
       <description>The autopilot is requesting a resource (file, binary, other type of data)</description>
       <field type="uint8_t" name="request_id">Request ID. This ID should be re-used when sending back URI contents</field>
       <field type="uint8_t" name="uri_type">The type of requested URI. 0 = a file via URL. 1 = a UAVCAN binary</field>
-      <field type="uint8_t[120]" name="uri">The requested unique resource identifier (URI). It is not necessarily a straight domain name (depends on the URI type enum)</field>
+      <field type="char[120]" name="uri">The requested unique resource identifier (URI). It is not necessarily a straight domain name (depends on the URI type enum)</field>
       <field type="uint8_t" name="transfer_type">The way the autopilot wants to receive the URI. 0 = MAVLink FTP. 1 = binary stream.</field>
-      <field type="uint8_t[120]" name="storage">The storage path the autopilot wants the URI to be stored in. Will only be valid if the transfer_type has a storage associated (e.g. MAVLink FTP).</field>
+      <field type="char[120]" name="storage">The storage path the autopilot wants the URI to be stored in. Will only be valid if the transfer_type has a storage associated (e.g. MAVLink FTP).</field>
     </message>
     <message id="143" name="SCALED_PRESSURE3">
       <description>Barometer readings for 3rd barometer</description>
@@ -5993,8 +5993,8 @@
     <message id="259" name="CAMERA_INFORMATION">
       <description>Information about a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
-      <field type="uint8_t[32]" name="model_name">Name of the camera model</field>
+      <field type="char[32]" name="vendor_name">Name of the camera vendor</field>
+      <field type="char[32]" name="model_name">Name of the camera model</field>
       <field type="uint32_t" name="firmware_version">Version of the camera firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
       <field type="float" name="focal_length" units="mm">Focal length</field>
       <field type="float" name="sensor_size_h" units="mm">Image sensor size horizontal</field>
