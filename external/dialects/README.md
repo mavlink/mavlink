@@ -16,7 +16,7 @@ Dialects XML files in this folder must meet the following criteria:
   * (Optionally) Link to additional documentation (e.g. a web page)
 * Include the dialect in [/mavlink/message_definitions/v1.0/all.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml) along with a comment indicating the message/command ranges it uses (the "all" dialect is constantly tested and ensures that messsage IDs and command IDs do not conflict).
 
-You may need to attend the [Dev Call](https://mavlink.io/en/about/support.html#dev_call) (once) for final approval.
+You will generally be invited to attend the [Dev Call](https://mavlink.io/en/about/support.html#dev_call) (once) to gain final approval.
 This is primarily for the MAVLink team to better understand your needs, and where the core standard can be improved.
 
 MAVlink reserves the right to refuse or remove a dialect that does not comply with the above conditions, or if required due for smooth running of the project (or some other common sense reason). 
