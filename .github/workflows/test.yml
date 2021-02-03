@@ -27,14 +27,13 @@ jobs:
         run: |
           ./scripts/test.sh format
 
-  python-generator:
-    name: Python ${{ matrix.python-version }} generator test
+  python-tests:
+    name: Python ${{ matrix.python-version }} tests
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
         python-version: [2.7, 3.6, 3.7, 3.8]
-
     steps:
       - uses: actions/checkout@v2
         with:
@@ -50,14 +49,13 @@ jobs:
         run: |
           ./scripts/test.sh py
 
-  node-generator:
-    name: Node ${{ matrix.node-version }} generator test
+  node-tests:
+    name: Node ${{ matrix.node-version }} test
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
         node-version: ['12', '14'] # 15 fails for some weird reason
-
     steps:
       - uses: actions/checkout@v2
         with:
@@ -76,3 +74,23 @@ jobs:
       - name : Test mavlink
         run: |
           ./scripts/test.sh node
+
+  deploy:
+    name: Generate and push C headers
+    needs: [format, python-tests, node-tests]
+    runs-on: ubuntu-20.04
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          pip install future lxml
+      - name: Run deploy script
+        run: |
+          echo "Would deploy now!"
