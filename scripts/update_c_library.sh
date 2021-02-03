@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # c_library repository update script
 # Author: Thomas Gubler <thomasgubler@gmail.com>
