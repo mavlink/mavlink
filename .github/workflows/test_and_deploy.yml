@@ -1,4 +1,4 @@
-name: Test
+name: Test and deploy
 
 on:
   push:
@@ -80,6 +80,8 @@ jobs:
     needs: [format, python-tests, node-tests]
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/master'
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -93,4 +95,4 @@ jobs:
           pip install future lxml
       - name: Run deploy script
         run: |
-          echo "Would deploy now!"
+          ./scripts/update_generated_repos.sh
