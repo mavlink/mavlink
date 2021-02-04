@@ -5,11 +5,11 @@ Contact:
   - raise an issue in the https://github.com/olliw42/storm32bgc github repository
   - send a message to user olliw at https://discuss.px4.io/ (may take a while to respond)
 Range of IDs:
-  messages: 62000 - 62025
-  commands: 62000 - 62025
+  messages: 60000 - 60049
+  commands: 60000 - 60049
 Documentation:  
   STORM32 and QSHOT additions
-  25. Dez. 2020
+  4. Jan. 2021
   All messages are technically WIP, but some are quite stable now.
   Quite stable means that it is in practical use, but may see extension.
   A more detailed description of the concept underlying the STORM32 and QSHOT messages can be found here:
@@ -345,9 +345,9 @@ Documentation:
     STORM32 and QSHOT cmds
     *************************** -->
     <enum name="MAV_CMD">
-      <!-- leave room for 62000 gimbal device configure -->
-      <!-- leave room for 62001 gimbal manager configure -->
-      <entry value="62002" name="MAV_CMD_STORM32_DO_GIMBAL_MANAGER_CONTROL_PITCHYAW" hasLocation="false" isDestination="false">
+      <!-- leave room for 60000 gimbal device configure -->
+      <!-- leave room for 60001 gimbal manager configure -->
+      <entry value="60002" name="MAV_CMD_STORM32_DO_GIMBAL_MANAGER_CONTROL_PITCHYAW" hasLocation="false" isDestination="false">
         <!-- Quite stable -->
         <description>Command to a gimbal manager to control the gimbal tilt and pan angles. It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. A gimbal device is never to react to this command.</description>
         <param index="1" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch/tilt angle (positive: tilt up, NaN to be ignored).</param>
@@ -358,7 +358,7 @@ Documentation:
         <param index="6" label="Gimbal manager flags" enum="MAV_STORM32_GIMBAL_MANAGER_FLAGS">Gimbal manager flags.</param>
         <param index="7" label="Gimbal ID and client ID">Gimbal ID of the gimbal manager to address (component ID or 1-6 for non-MAVLink gimbal, 0 for all gimbals, send command multiple times for more than one but not all gimbals). The client is copied into bits 8-15.</param>
       </entry>
-      <entry value="62010" name="MAV_CMD_STORM32_DO_GIMBAL_MANAGER_SETUP" hasLocation="false" isDestination="false">
+      <entry value="60010" name="MAV_CMD_STORM32_DO_GIMBAL_MANAGER_SETUP" hasLocation="false" isDestination="false">
         <wip/>
         <!-- WIP -->
         <description>Command to configure a gimbal manager. A gimbal device is never to react to this command. The selected profile is reported in the STORM32_GIMBAL_MANAGER_STATUS message.</description>
@@ -366,14 +366,14 @@ Documentation:
         <param index="2" label="Setup flags" enum="MAV_STORM32_GIMBAL_MANAGER_SETUP_FLAGS">Gimbal manager setup flags (0 = none).</param>
         <param index="7" label="Gimbal ID">Gimbal ID of the gimbal manager to address (component ID or 1-6 for non-MAVLink gimbal, 0 for all gimbals). Send command multiple times for more than one but not all gimbals.</param>
       </entry>
-      <entry value="62011" name="MAV_CMD_STORM32_DO_GIMBAL_ACTION" hasLocation="false" isDestination="false">
+      <entry value="60011" name="MAV_CMD_STORM32_DO_GIMBAL_ACTION" hasLocation="false" isDestination="false">
         <wip/>
         <!-- WIP -->
         <description>Command to initiate gimbal actions. Usually performed by the gimbal device, but some can also be done by the gimbal manager. It is hence best to broadcast this command.</description>
         <param index="1" label="Action" enum="MAV_STORM32_GIMBAL_ACTION">Gimbal action to initiate (0 = none).</param>
         <param index="7" label="Gimbal ID">Gimbal ID of the gimbal to address (component ID or 1-6 for non-MAVLink gimbal, 0 for all gimbals). Send command multiple times for more than one but not all gimbals.</param>
       </entry>
-      <entry value="62020" name="MAV_CMD_QSHOT_DO_CONFIGURE" hasLocation="false" isDestination="false">
+      <entry value="60020" name="MAV_CMD_QSHOT_DO_CONFIGURE" hasLocation="false" isDestination="false">
         <wip/>
         <!-- WIP -->
         <description>Command to set the shot manager mode.</description>
@@ -389,8 +389,8 @@ Documentation:
     <!-- ***************************
     STORM32 gimbal device messages
     *************************** -->
-    <!-- leave room for 62000 gimbal device information -->
-    <message id="62001" name="STORM32_GIMBAL_DEVICE_STATUS">
+    <!-- leave room for 60000 gimbal device information -->
+    <message id="60001" name="STORM32_GIMBAL_DEVICE_STATUS">
       <!-- Quite stable -->
       <description>Message reporting the current status of a gimbal device. This message should be broadcasted by a gimbal device component at a low regular rate (e.g. 4 Hz). For higher rates it should be emitted with a target.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -404,7 +404,7 @@ Documentation:
       <field type="float" name="yaw_absolute" units="deg">Yaw in absolute frame relative to Earth's North, north is 0 (NaN if unknown).</field>
       <field type="uint16_t" name="failure_flags" display="bitmask" enum="GIMBAL_DEVICE_ERROR_FLAGS">Failure flags (0 for no failure).</field>
     </message>
-    <message id="62002" name="STORM32_GIMBAL_DEVICE_CONTROL">
+    <message id="60002" name="STORM32_GIMBAL_DEVICE_CONTROL">
       <!-- Quite stable -->
       <description>Message to a gimbal device to control its attitude. This message is to be sent from the gimbal manager to the gimbal device. Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -418,7 +418,7 @@ Documentation:
     <!-- ***************************
     STORM32 gimbal manager messages
     *************************** -->
-    <message id="62010" name="STORM32_GIMBAL_MANAGER_INFORMATION">
+    <message id="60010" name="STORM32_GIMBAL_MANAGER_INFORMATION">
       <!-- Quite stable, may grow however -->
       <description>Information about a gimbal manager. This message should be requested by a ground station using MAV_CMD_REQUEST_MESSAGE. It mirrors some fields of the STORM32_GIMBAL_DEVICE_INFORMATION message, but not all. If the additional information is desired, also STORM32_GIMBAL_DEVICE_INFORMATION should be requested.</description>
       <field type="uint8_t" name="gimbal_id" instance="true">Gimbal ID (component ID or 1-6 for non-MAVLink gimbal) that this gimbal manager is responsible for.</field>
@@ -431,7 +431,7 @@ Documentation:
       <field type="float" name="yaw_min" units="rad">Hardware minimum yaw/pan angle (positive: pan to the right, relative to the vehicle/gimbal base, NaN if unknown).</field>
       <field type="float" name="yaw_max" units="rad">Hardware maximum yaw/pan angle (positive: pan to the right, relative to the vehicle/gimbal base, NaN if unknown).</field>
     </message>
-    <message id="62011" name="STORM32_GIMBAL_MANAGER_STATUS">
+    <message id="60011" name="STORM32_GIMBAL_MANAGER_STATUS">
       <!-- Quite stable, may grow however -->
       <description>Message reporting the current status of a gimbal manager. This message should be broadcast at a low regular rate (e.g. 1 Hz, may be increase momentarily to e.g. 5 Hz for a period of 1 sec after a change).</description>
       <field type="uint8_t" name="gimbal_id" instance="true">Gimbal ID (component ID or 1-6 for non-MAVLink gimbal) that this gimbal manager is responsible for.</field>
@@ -440,7 +440,7 @@ Documentation:
       <field type="uint16_t" name="manager_flags" enum="MAV_STORM32_GIMBAL_MANAGER_FLAGS">Gimbal manager flags currently applied.</field>
       <field type="uint8_t" name="profile" enum="MAV_STORM32_GIMBAL_MANAGER_PROFILE">Profile currently applied (0 = default).</field>
     </message>
-    <message id="62012" name="STORM32_GIMBAL_MANAGER_CONTROL">
+    <message id="60012" name="STORM32_GIMBAL_MANAGER_CONTROL">
       <!-- Quite stable -->
       <description>Message to a gimbal manager to control the gimbal attitude. Angles and rates can be set to NaN according to use case. A gimbal device is never to react to this message.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -454,7 +454,7 @@ Documentation:
       <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (positive: tilt up, NaN to be ignored).</field>
       <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
     </message>
-    <message id="62013" name="STORM32_GIMBAL_MANAGER_CONTROL_PITCHYAW">
+    <message id="60013" name="STORM32_GIMBAL_MANAGER_CONTROL_PITCHYAW">
       <!-- Quite stable -->
       <description>Message to a gimbal manager to control the gimbal tilt and pan angles. Angles and rates can be set to NaN according to use case. A gimbal device is never to react to this message.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -468,7 +468,7 @@ Documentation:
       <field type="float" name="pitch_rate" units="rad/s">Pitch/tilt angular rate (positive: tilt up, NaN to be ignored).</field>
       <field type="float" name="yaw_rate" units="rad/s">Yaw/pan angular rate (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
     </message>
-    <message id="62014" name="STORM32_GIMBAL_MANAGER_CORRECT_ROLL">
+    <message id="60014" name="STORM32_GIMBAL_MANAGER_CORRECT_ROLL">
       <!-- Quite stable -->
       <description>Message to a gimbal manager to correct the gimbal roll angle. This message is typically used to manually correct for a tilted horizon in operation. A gimbal device is never to react to this message.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -477,7 +477,7 @@ Documentation:
       <field type="uint8_t" name="client" enum="MAV_STORM32_GIMBAL_MANAGER_CLIENT">Client which is contacting the gimbal manager (must be set).</field>
       <field type="float" name="roll" units="rad">Roll angle (positive to roll to the right).</field>
     </message>
-    <message id="62015" name="STORM32_GIMBAL_MANAGER_PROFILE">
+    <message id="60015" name="STORM32_GIMBAL_MANAGER_PROFILE">
       <wip/>
       <!-- WIP -->
       <description>Message to set a gimbal manager profile. A gimbal device is never to react to this command. The selected profile is reported in the STORM32_GIMBAL_MANAGER_STATUS message.</description>
@@ -493,7 +493,7 @@ Documentation:
     <!-- ***************************
     QSHOT manager messages
     *************************** -->
-    <message id="62020" name="QSHOT_STATUS">
+    <message id="60020" name="QSHOT_STATUS">
       <wip/>
       <!-- WIP -->
       <description>Information about the shot operation.</description>
