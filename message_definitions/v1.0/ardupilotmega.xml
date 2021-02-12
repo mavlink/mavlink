@@ -962,6 +962,7 @@
       <entry value="21" name="PLANE_MODE_QRTL"/>
       <entry value="22" name="PLANE_MODE_QAUTOTUNE"/>
       <entry value="23" name="PLANE_MODE_QACRO"/>
+      <entry value="24" name="PLANE_MODE_THERMAL"/>
     </enum>
     <enum name="COPTER_MODE">
       <description>A mapping of copter flight modes for custom_mode field of heartbeat.</description>
@@ -1651,6 +1652,20 @@
       <field type="float" name="min_value">OSD parameter minimum value.</field>
       <field type="float" name="max_value">OSD parameter maximum value.</field>
       <field type="float" name="increment">OSD parameter increment.</field>
+    </message>
+    <message id="11037" name="OBSTACLE_DISTANCE_3D">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
+      <description>Obstacle located as a 3D vector.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="sensor_type" enum="MAV_DISTANCE_SENSOR">Class id of the distance sensor type.</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame of reference.</field>
+      <field type="uint16_t" name="obstacle_id"> Unique ID given to each obstacle so that its movement can be tracked. Use UINT16_MAX if object ID is unknown or cannot be determined.</field>
+      <field type="float" name="x" units="m"> X position of the obstacle.</field>
+      <field type="float" name="y" units="m"> Y position of the obstacle.</field>
+      <field type="float" name="z" units="m"> Z position of the obstacle.</field>
+      <field type="float" name="min_distance" units="m">Minimum distance the sensor can measure.</field>
+      <field type="float" name="max_distance" units="m">Maximum distance the sensor can measure.</field>
     </message>
   </messages>
 </mavlink>
