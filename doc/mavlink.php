@@ -6,12 +6,12 @@
 // Load the file from the repository / server.
 // Update this URL if the file location changes
 
-$xml_file_name = "https://raw.github.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml";
+$xml_file_name = "https://raw.github.com/auterion/mavlink/master/message_definitions/v1.0/common.xml";
 
 // Load the XSL transformation file from the repository / server.
 // This file can be updated by any client to adjust the table
 
-$xsl_file_name= "https://raw.github.com/mavlink/mavlink/master/doc/mavlink_to_html_table.xsl";
+$xsl_file_name= "https://raw.github.com/auterion/mavlink/master/doc/mavlink_to_html_table.xsl";
 
 // Load data XML file
 $xml = file_get_contents($xml_file_name);
@@ -57,7 +57,7 @@ else
 <br />
 
 <p>
-Messages are defined by the <a href="https://raw.github.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml">common.xml</a> file. The C packing/unpacking code is generated from this specification, as well as the HTML documentaiton in the section above.<br />
+Messages are defined by the <a href="https://raw.github.com/auterion/mavlink/master/message_definitions/v1.0/common.xml">common.xml</a> file. The C packing/unpacking code is generated from this specification, as well as the HTML documentaiton in the section above.<br />
 <br />
 <i>The XML displayed here is updated on every commit and therefore up-to-date.</i>
 </p>

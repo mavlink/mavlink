@@ -1,9 +1,9 @@
 #! /usr/bin/python
 
 """
-This script generates markdown files for all the MAVLink message definition XML at: 
-https://github.com/mavlink/mavlink/tree/master/message_definitions/v1.0
-  
+This script generates markdown files for all the MAVLink message definition XML at:
+https://github.com/auterion/mavlink/tree/master/message_definitions/v1.0
+
 The files can be imported into a gitbook to display the messages as HTML
 
 The script runs on both Python2 and Python 3. The following libraries must be imported: lxml, requests, bs4.
@@ -36,8 +36,8 @@ with open(xsl_file_name, 'r') as content_file:
     xsl_file = content_file.read()
 xslt = ET.fromstring(xsl_file)
 
-#initialise text for index file. 
-index_text="""<!-- THIS FILE IS AUTO-GENERATED (DO NOT UPDATE GITBOOK): https://github.com/mavlink/mavlink/blob/master/doc/mavlink_gitbook.py -->
+#initialise text for index file.
+index_text="""<!-- THIS FILE IS AUTO-GENERATED (DO NOT UPDATE GITBOOK): https://github.com/auterion/mavlink/blob/master/doc/mavlink_gitbook.py -->
 # Dialects {#dialects}
 
 MAVLink *dialects* are XML files that define *protocol-* and *vendor-specific* messages, enums and commands.
@@ -48,13 +48,13 @@ While a dialect can include any other message definition, only a single level of
 
 > **Note** Vendor forks of MAVLink may contain dialect messages that are not yet merged, and hence will not appear in this documentation.
 
-The dialect files are stored alongside in separate XML files in [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/).
+The dialect files are stored alongside in separate XML files in [mavlink/message definitions](https://github.com/auterion/mavlink/blob/master/message_definitions/).
 
 The human-readable forms of the XML dialect files are linked below:
 """
 
 #Fix up the BeautifulSoup output so to fix build-link errors in the generated gitbook.
-## BS puts each tag/content in its own line. Gitbook generates anchors using the spaces/newlines. 
+## BS puts each tag/content in its own line. Gitbook generates anchors using the spaces/newlines.
 ## This puts displayed text content immediately within tags so that anchors/links generate properly
 def fix_content_in_tags(input_html):
     #print("fix_content_in_tags was called")
@@ -64,7 +64,7 @@ def fix_content_in_tags(input_html):
 
     input_html=re.sub(r'\>(\s+?\w+?.*?)\<', remove_space_between_content_tags, input_html,flags=re.DOTALL)
     return input_html
-    
+
 def fix_include_file_extension(input_html):
     ## Fixes up file extension .xml.md.unlikely (easier than fixing up the XSLT to strip file extensions!)
     input_html=input_html.replace('.xml.md.unlikely','.md')
@@ -75,19 +75,19 @@ def fix_replace_space_marker(input_html):
     input_html=input_html.replace('xxx_space_xxx',' ')
     return input_html
 
-    
+
 def strip_text_before_string(original_text,strip_text):
     # Strip out all text before some string
     index=original_text.find(strip_text)
     stripped_string=original_text
     if index !=-1 :
-        stripped_string = stripped_string[index:] 
+        stripped_string = stripped_string[index:]
     return stripped_string
-    
+
 def inject_top_level_docs(input_html,filename):
     #Inject top level heading and other details.
     print('FILENAME (prefix): %s' % filename)
-    insert_text='<!-- THIS FILE IS AUTO-GENERATED: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_gitbook.py -->'
+    insert_text='<!-- THIS FILE IS AUTO-GENERATED: https://github.com/auterion/mavlink/blob/master/doc/mavlink_gitbook.py -->'
     if filename == 'common':
         insert_text+="""
 # MAVLINK Common Message Set
@@ -96,7 +96,7 @@ The MAVLink *common* message set contains *standard* definitions that are manage
 The definitions cover functionality that is considered useful to most ground control stations and autopilots.
 MAVLink-compatible systems are expected to use these definitions where possible (if an appropriate message exists) rather than rolling out variants in their own [dialects](../messages/README.md).
 
-The original definitions are defined in [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).
+The original definitions are defined in [common.xml](https://github.com/auterion/mavlink/blob/master/message_definitions/v1.0/common.xml).
 
 > **Tip** The common set `includes` [minimal.xml](minimal.md), which contains the *minimal set* of definitions for any MAVLink system.
   These definitions are [reproduced at the end of this topic](#minimal).
@@ -108,7 +108,7 @@ The original definitions are defined in [common.xml](https://github.com/mavlink/
 
 The MAVLink *minimal* set contains the minimal set of definitions for a viable MAVLink system.
 
-The message set is defined in [minimal.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/minimal.xml) and is managed by the MAVLink project.
+The message set is defined in [minimal.xml](https://github.com/auterion/mavlink/blob/master/message_definitions/v1.0/minimal.xml) and is managed by the MAVLink project.
 
 > **Tip** The minimal set is included (imported into) other xml definition files, including the [MAVLink Common Message Set (common.xml)](minimal.md).
 
@@ -119,13 +119,13 @@ The message set is defined in [minimal.xml](https://github.com/mavlink/mavlink/b
 
 These messages define the ArduPilot specific message set, which is custom to [http://ardupilot.org](http://ardupilot.org).
 
-This topic is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).
+This topic is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/auterion/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).
 
 > **Warning** The ArduPilot MAVLink fork of [ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) may contain messages that have not yet been merged into this documentation.
 """
     else:
         insert_text+='\n# Dialect: %s' % filename.rsplit('.',1)[0]
-        insert_text+='\n\n*This is a human-readable form of the XML definition file: [%s](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/%s).*' % (filename, filename)
+        insert_text+='\n\n*This is a human-readable form of the XML definition file: [%s](https://github.com/auterion/mavlink/blob/master/message_definitions/v1.0/%s).*' % (filename, filename)
     insert_text+="""
 
 <span></span>
@@ -154,12 +154,12 @@ These are listed below.
 
 {% include "_html/minimal.html" %}"""
 
-    
+
     #print(input_html)
     return input_html
-    
+
 dialect_files = set()
-all_files = set()    
+all_files = set()
 
 for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
     #Generate html for all the XML files
@@ -181,13 +181,13 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             #Strip out text before <html> tag in XSLT output
             prettyHTML=strip_text_before_string(prettyHTML,'<html>')
             prettyHTML = fix_content_in_tags(prettyHTML)
-            
+
             #Replace invalid file extensions (workaround for xslt)
             prettyHTML = fix_include_file_extension(prettyHTML)
 
             #Replace space markers with intentional space
             prettyHTML = fix_replace_space_marker(prettyHTML)
-            
+
             #Write output html file
             output_file_name_html = file.rsplit('.',1)[0]+".html"
 
@@ -218,15 +218,12 @@ for file_prefix in all_files:
     with open(output_file_name_md_withdir, 'w') as out:
         out.write(markdown_text)
 
-            
+
 for the_file in sorted(dialect_files):
     index_text+='\n* [%s.xml](%s.md)' % (the_file,the_file)
-            
+
 #Write the index
 with open(index_file_name, 'w') as content_file:
     content_file.write(index_text)
 
 print("COMPLETED")
-
-
-
