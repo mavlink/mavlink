@@ -1,0 +1,17 @@
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron: '0 17 * * *' # every day, by the end of the day, trigger the sync
+  workflow_dispatch: # on button click
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: tgymnich/fork-sync@v1.3
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          owner: auterion
+          base: master
+          head: master
