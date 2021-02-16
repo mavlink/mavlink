@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="0dp"
+    android:paddingTop="0dp"
+    android:paddingRight="0dp"
+    android:paddingBottom="0dp"
+    tools:context=".MainActivity">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp"
+    android:paddingRight="8dp">
+
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:textSize="24dp"
+        android:paddingTop="8dp"/>
+
+    <Button
+        android:id="@+id/start_heartbeat"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:text="@string/loop_start" />
+
+    <!-- The button stopping heartbeat is initially not visible (gone). -->
+    <Button
+        android:id="@+id/stop_heartbeat"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:text="@string/loop_stop"
+
+        android:visibility="gone" />
+<!--
+    <Button
+        android:id="@+id/action"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:text="Custom action" />
+-->
+    <TextView
+        android:id="@+id/text_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:fontFamily="monospace"
+        android:paddingRight="8dp" />
+    <TextView
+        android:id="@+id/text_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:fontFamily="monospace"
+        android:paddingRight="8dp" />
+
+    <!-- 1, X, pitch -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dip" >
+
+        <TextView
+            android:id="@+id/Seekbar1Text"
+            android:layout_width="8dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dip"
+            android:gravity="left"
+            android:text="X"></TextView>
+
+        <TextView
+            android:id="@+id/DutyCycleTextX"
+            android:layout_width="36dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dip"
+            android:gravity="right"
+            android:text="0" />
+
+        <SeekBar
+            android:id="@+id/Seekbar1"
+            style="@style/CustomSlider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dip"
+            android:layout_weight="4"
+            android:gravity="center"
+            android:max="100"
+            android:progress="50" />
+    </LinearLayout>
+
+    <!-- 2, Y, roll -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dip" >
+
+        <TextView
+            android:id="@+id/Seekbar2Text"
+            android:layout_width="8dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dip"
+            android:gravity="left"
+            android:text="Y"></TextView>
+
+        <TextView
+            android:id="@+id/DutyCycleTextY"
+            android:layout_width="36dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dip"
+            android:gravity="right"
+            android:text="0" />
+
+        <SeekBar
+            android:id="@+id/Seekbar2"
+            style="@style/CustomSlider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dip"
+            android:layout_weight="4"
+            android:gravity="center"
+            android:max="100"
+            android:progress="50" />
+    </LinearLayout>
+
+    <!-- 3, Z, thrust -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dip" >
+
+        <TextView
+            android:id="@+id/Seekbar3Text"
+            android:layout_width="8dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dip"
+            android:gravity="left"
+            android:text="Z"></TextView>
+
+        <TextView
+            android:id="@+id/DutyCycleTextZ"
+            android:layout_width="36dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dip"
+            android:gravity="right"
+            android:text="0" />
+
+        <SeekBar
+            android:id="@+id/Seekbar3"
+            style="@style/CustomSlider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dip"
+            android:layout_weight="4"
+            android:gravity="center"
+            android:max="100"
+            android:progress="50" />
+    </LinearLayout>
+
+    <!-- 4, R, yaw -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dip" >
+
+        <TextView
+            android:id="@+id/Seekbar4Text"
+            android:layout_width="8dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dip"
+            android:gravity="left"
+            android:text="R"></TextView>
+
+        <TextView
+            android:id="@+id/DutyCycleTextR"
+            android:layout_width="36dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dip"
+            android:gravity="right"
+            android:text="0" />
+
+        <SeekBar
+            android:id="@+id/Seekbar4"
+            style="@style/CustomSlider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dip"
+            android:layout_weight="4"
+            android:gravity="center"
+            android:max="100"
+            android:progress="50" />
+    </LinearLayout>
+</LinearLayout>
+</RelativeLayout>
