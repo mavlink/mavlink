@@ -216,9 +216,6 @@ if (validate(ip)) {
             case R.id.info:
                 networkObject.showInfo(this);
                 break;
-            case R.id.other_apps:
-                openOtherAppsPage();
-                break;
             case R.id.source_code:
                 openSourceCodePage();
                 break;
@@ -260,13 +257,8 @@ if (validate(ip)) {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    public void openOtherAppsPage() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=bezzalogowe.pl"));
-        startActivity(browserIntent);
-    }
-
     public void openSourceCodePage() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/mareksuma1985/MAVLink"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/mavlink/mavlink/tree/master/examples/android"));
         startActivity(browserIntent);
     }
 }
