@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView dutyCycleTextX, dutyCycleTextY, dutyCycleTextZ, dutyCycleTextR;
     String groundStationIP;
 
-    /** https://stackoverflow.com/questions/3291655/get-battery-level-and-state-in-android */
+    /* https://stackoverflow.com/questions/3291655/get-battery-level-and-state-in-android */
     private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context ctxt, Intent intent) {

@@ -5,7 +5,7 @@ import android.util.Log;
 public class MAVLink {
     private final static String TAG = MAVLink.class.getName();
 
-    /** Used to load the native library on application startup. */
+    /* Used to load the native library on application startup. */
     static {
         System.loadLibrary("mavlink_udp");
     }
@@ -24,7 +24,7 @@ public class MAVLink {
 
     public native int heartBeatStop();
 
-    /** displays a string from C code */
+    /* Displays a string from C code */
     public native String stringFromJNI();
 
     public native int sendProtocol();
@@ -39,7 +39,7 @@ public class MAVLink {
 
     public native void sendGlobalPosition(double lat, double lon, double alt);
 
-    /** Called from native code. This sets the content of the TextView from the UI thread. */
+    /* Called from native code. This sets the content of the TextView from the UI thread. */
     private void setMessage(final String message, boolean blink) {
         main.update.updateConversationHandler.post(new UpdateTextThread(main.textFeedback, message, blink));
     }
@@ -53,8 +53,8 @@ public class MAVLink {
         //System.out.println(message);
     }
 
-    private void setProgress(int x, int y, int z, int r) {
-        /** pitch, roll, thrust, yaw */
+    private void setProgress(short x, short y, short z, short r) {
+        /* pitch, roll, thrust, yaw */
         main.update.updateConversationHandler.post(new UpdateProgressThread(main.seekbar1, x / 20 + 50));
         main.update.updateConversationHandler.post(new UpdateTextThread(main.dutyCycleTextX, Integer.toString(x), false));
 

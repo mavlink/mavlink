@@ -17,14 +17,10 @@ import pl.bezzalogowe.mavlink.MainActivity;
 import pl.bezzalogowe.mavlink.UpdateTextThread;
 
 public class Location extends Thread {
-    private static final String TAG = "location";
     LocationManager locationManager;
     android.location.Location recentLocation;
-    android.location.Location waypointNext;
-    LinkedList<Waypoint> route = new LinkedList<Waypoint>();
     String deviceIdentifier = null;
     MainActivity main;
-    double[] altitudesample = new double[10];
 
     public Location(final MainActivity argActivity) {
         main = argActivity;
@@ -73,30 +69,8 @@ public class Location extends Thread {
     public void processLocation(android.location.Location location) {
         recentLocation = location;
 
-        Log.d("location", "Lat: " + recentLocation.getLatitude() + " Lon: " + recentLocation.getLongitude() + " alt: " + recentLocation.getAltitude() + " hdg: " + main.magObject.heading + " acc: " + recentLocation.getAccuracy());
-        main.update.updateConversationHandler.post(new UpdateTextThread(main.textFeedback, "Lat: " + recentLocation.getLatitude() + " Lon: " + recentLocation.getLongitude(), false));
-/*
-        8 x 3 = 24
-        8 x 4 = 32
-*/
-
-/*
-        byte[] temp = doubleArray2Bytes(data);
-        String tempString = "";
-        for (short i = 0; i < temp.length; i++)
-        {
-            tempString += "["+temp[i]+"]";
-            if (i!=temp.length-1)
-            {tempString += " ";}
-        }
-        System.out.println(tempString);
-*/
-
-/*
-        double[] data = {recentLocation.getLatitude(), recentLocation.getLongitude(), recentLocation.getAltitude()};
-        String base64string = android.util.Base64.encodeToString(doubleArray2Bytes(data), Base64.URL_SAFE | Base64.NO_WRAP);
-        Log.d("location", "base64: " + base64string);
-*/
+        Log.d("location", "lat: " + recentLocation.getLatitude() + " lon: " + recentLocation.getLongitude() + " alt: " + recentLocation.getAltitude() + " hdg: " + main.magObject.heading + " acc: " + recentLocation.getAccuracy());
+        main.update.updateConversationHandler.post(new UpdateTextThread(main.textFeedback, "lat: " + recentLocation.getLatitude() + " lon: " + recentLocation.getLongitude(), false));
         main.mavLink.sendGlobalPosition(recentLocation.getLatitude(), recentLocation.getLongitude(), recentLocation.getAltitude());
     }
 
@@ -104,13 +78,6 @@ public class Location extends Thread {
         locationManager = (LocationManager) main.getSystemService(Context.LOCATION_SERVICE);
         TelephonyManager telemamanger = (TelephonyManager) main.getSystemService(main.TELEPHONY_SERVICE);
 
-/*
-        try {
-            deviceIdentifier = telemamanger.getLine1Number();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-*/
         try {
             deviceIdentifier = telemamanger.getDeviceId();
         } catch (SecurityException e) {
@@ -141,51 +108,6 @@ public class Location extends Thread {
 
         if (ContextCompat.checkSelfPermission(main, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
-        }
-    }
-
-    public void printFlightpath() {
-        try {
-            Log.d(TAG, "waypoints read: " + route.size());
-            for (Waypoint item : route) {
-                Log.d(TAG, item.lat + "\u00B0 " + item.lon + "\u00B0 " + item.ele + "m");
-            }
-        } catch (Exception e) {
-            Log.d(TAG, e.toString());
-        }
-    }
-
-    class Waypoint {
-        public double lat;
-        public double lon;
-        public double ele;
-
-        // constructor with latitude and longitude
-        public Waypoint(double argLat, double argLon) {
-            super();
-            this.lat = argLat;
-            this.lon = argLon;
-        }
-
-        // constructor with latitude, longitude and elevation
-        public Waypoint(double argLat, double argLon, double argElevation) {
-            super();
-            this.lat = argLat;
-            this.lon = argLon;
-            this.ele = argElevation;
-        }
-    }
-
-    class Wrap implements Runnable {
-        @Override
-        public void run() {
-            double[] coordinates = {recentLocation.getLatitude(), recentLocation.getLongitude()};
-            try {
-                //main.sendTelemetry(2, coordinates);
-            } catch (Exception e) {
-                Log.d("Barometer", "error: " + e);
-                //main.logObject.saveComment("error: " + e.toString());
-            }
         }
     }
 }

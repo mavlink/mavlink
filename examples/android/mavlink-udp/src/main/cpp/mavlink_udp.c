@@ -189,7 +189,8 @@ static void sendDiscreteParameter(char *name, bool value) {
     param.type = MAV_PARAM_TYPE_INT32;
 
     mavlink_message_t msgParameter;
-    mavlink_msg_param_value_pack(THIS_SYSTEM, THIS_COMPONENT, &msgParameter, name, param.param_float, param.type, 1, 0);
+    mavlink_msg_param_value_pack(THIS_SYSTEM, THIS_COMPONENT, &msgParameter, name,
+                                 param.param_float, param.type, 1, 0);
     uint16_t len = mavlink_msg_to_send_buffer(buf, &msgParameter);
 
     bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr, sizeof(struct sockaddr_in));
@@ -218,7 +219,7 @@ void Java_pl_bezzalogowe_mavlink_MAVLink_classInit(JNIEnv *env, jclass klass) {
     set_message_method_id = (*env)->GetMethodID(env, klass, "setMessage", "(Ljava/lang/String;Z)V");
     set_buttons_method_id = (*env)->GetMethodID(env, klass, "setButtons", "(Ljava/lang/String;Z)V");
     set_log_method_id = (*env)->GetMethodID(env, klass, "setLog", "(Ljava/lang/String;)V");
-    set_progress_method_id = (*env)->GetMethodID(env, klass, "setProgress", "(IIII)V");
+    set_progress_method_id = (*env)->GetMethodID(env, klass, "setProgress", "(SSSS)V");
 }
 
 void Java_pl_bezzalogowe_mavlink_MAVLink_setGroundStationIP(JNIEnv *env, jclass klass, jstring ip) {
@@ -237,29 +238,33 @@ Java_pl_bezzalogowe_mavlink_MAVLink_setHeadingDegrees(JNIEnv *env, jclass klass,
     }
 }
 
-void Java_pl_bezzalogowe_mavlink_MAVLink_sendAttitude(JNIEnv *env, jclass klass, float roll, float pitch /*, float heading*/) {
+void Java_pl_bezzalogowe_mavlink_MAVLink_sendAttitude(JNIEnv *env, jclass klass, float roll,
+                                                      float pitch /*, float heading*/) {
     if (running) {
         mavlink_message_t msgAttitude;
 
         /* in radians, heading comes from a different sensor */
-        mavlink_msg_attitude_pack(THIS_SYSTEM, THIS_COMPONENT, &msgAttitude, microsSinceEpoch(), roll, pitch, hdg, 0.00, 0.00, 0.00);
+        mavlink_msg_attitude_pack(THIS_SYSTEM, THIS_COMPONENT, &msgAttitude, microsSinceEpoch(),
+                                  roll, pitch, hdg, 0.00, 0.00, 0.00);
 
         /* in degrees */
         //mavlink_msg_attitude_pack(THIS_SYSTEM, THIS_COMPONENT, &msgAttitude, microsSinceEpoch(), roll * M_PI / 180.0, pitch * M_PI / 180.0, hdg * M_PI / 180.0, 0.00, 0.00, 0.00);
 
         uint16_t len = mavlink_msg_to_send_buffer(buf, &msgAttitude);
-        bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr, sizeof(struct sockaddr_in));
+        bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr,
+                            sizeof(struct sockaddr_in));
     }
 }
 
-void Java_pl_bezzalogowe_mavlink_MAVLink_setBattery(JNIEnv *env, jclass klass, jint voltage, jint level) {
+void Java_pl_bezzalogowe_mavlink_MAVLink_setBattery(JNIEnv *env, jclass klass, jint voltage,
+                                                    jint level) {
     battery_voltage = voltage;
     battery_level = level;
 }
 
 void
-Java_pl_bezzalogowe_mavlink_MAVLink_sendGlobalPosition(JNIEnv *env, jclass klass, double latitude,
-                                                       double longitude, double altitude) {
+Java_pl_bezzalogowe_mavlink_MAVLink_sendGlobalPosition(JNIEnv *env, jclass klass,
+        double latitude, double longitude, double altitude) {
     if (running) {
         mavlink_message_t msgLocation;
 
@@ -277,8 +282,18 @@ Java_pl_bezzalogowe_mavlink_MAVLink_sendGlobalPosition(JNIEnv *env, jclass klass
     }
 }
 
-int *openSocket(jobject thiz)
-{
+/** https://mavlink.io/en/services/mission.html#download_mission */
+void sendMissionCount(uint8_t system_id, uint8_t component_id,
+                      mavlink_mission_request_list_t request_list) {
+    mavlink_mission_ack_t msgCount;
+    mavlink_msg_mission_count_pack(THIS_SYSTEM, THIS_COMPONENT, &msgCount, system_id, component_id,
+                                   0, request_list.mission_type);
+
+    uint16_t len = mavlink_msg_to_send_buffer(buf, &msgCount);
+    bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr, sizeof(struct sockaddr_in));
+}
+
+int *openSocket(jobject thiz) {
     char target_ip[100];
     float position[6] = {};
     sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -334,119 +349,140 @@ int *receiveFunction(jobject thiz) {
     unsigned int temp = 0;
 
     while (running) {
-    memset(rcv_buf, 0, BUFFER_LENGTH);
-    recsize = recvfrom(sock, (void *) rcv_buf, BUFFER_LENGTH, 0, (struct sockaddr *) &gcAddr, &fromlen);
-    if (recsize > 0) {
-        // Something received - print out all bytes and parse packet.
-        mavlink_message_t rcv_msg;
+        memset(rcv_buf, 0, BUFFER_LENGTH);
+        recsize = recvfrom(sock, (void *) rcv_buf, BUFFER_LENGTH, 0, (struct sockaddr *) &gcAddr,
+                           &fromlen);
+        if (recsize > 0) {
+            // Something received - print out all bytes and parse packet.
+            mavlink_message_t rcv_msg;
 
-        mavlink_status_t status;
+            mavlink_status_t status;
 
-        char feedback[128];
+            char feedback[128];
 
-        printf("Bytes Received: %d\nDatagram: ", (int) recsize);
-        for (i = 0; i < recsize; ++i) {
-            sprintf(feedback, "byte received: %02d", (unsigned char) rcv_buf[i]);
-            set_log_message(thiz, feedback);
+            printf("Bytes Received: %d\nDatagram: ", (int) recsize);
+            for (i = 0; i < recsize; ++i) {
+                sprintf(feedback, "byte received: %02d", (unsigned char) rcv_buf[i]);
+                set_log_message(thiz, feedback);
 
-            if (mavlink_parse_char(MAVLINK_COMM_0, rcv_buf[i], &rcv_msg, &status) == 1) {
-                // Packet received.
-                printf("\nReceived packet: SYS: %d, COMP: %d, LEN: %d, MSG ID: %d\n", rcv_msg.sysid,
-                       rcv_msg.compid, rcv_msg.len, rcv_msg.msgid);
+                if (mavlink_parse_char(MAVLINK_COMM_0, rcv_buf[i], &rcv_msg, &status) == 1) {
+                    // Packet received.
+                    printf("\nReceived packet: SYS: %d, COMP: %d, LEN: %d, MSG ID: %d\n",
+                           rcv_msg.sysid,
+                           rcv_msg.compid, rcv_msg.len, rcv_msg.msgid);
 
-                switch (rcv_msg.msgid) {
-                    case 0: {
-                        /** https://mavlink.io/en/messages/common.html#HEARTBEAT */
-                        //sprintf(feedback, "HEARTBEAT: %d", rcv_msg.seq);
-                        //set_ui_message_heartbeat(thiz, feedback, true);
+                    switch (rcv_msg.msgid) {
+                        case 0: {
+                            /** https://mavlink.io/en/messages/common.html#HEARTBEAT */
+                            //sprintf(feedback, "HEARTBEAT: %d", rcv_msg.seq);
+                            //set_ui_message_heartbeat(thiz, feedback, true);
+                        }
+                            break;
+                        case 2: {
+                            /** https://mavlink.io/en/messages/common.html#SYSTEM_TIME */
+                            set_ui_message(thiz, "SYSTEM_TIME", true);
+                        }
+                            break;
+                        case 20: {
+                            /** https://mavlink.io/en/messages/common.html#PARAM_REQUEST_READ */
+                            set_ui_message(thiz, "PARAM_REQUEST_READ", true);
+
+                            sprintf(feedback, "SYS: %d, COMP: %d, LEN: %d, MSG ID: %d, SEQ: %d",
+                                    rcv_msg.sysid, rcv_msg.compid, rcv_msg.len, rcv_msg.msgid,
+                                    rcv_msg.seq);
+                            set_log_message(thiz, feedback);
+                        }
+                            break;
+                        case 21: {
+                            /** https://mavlink.io/en/messages/common.html#PARAM_REQUEST_LIST */
+                            set_ui_message(thiz, "PARAM_REQUEST_LIST", true);
+                            /* This app sends magnetometer indication (not GPS) as heading */
+                            sendDiscreteParameter("COMPASS_USE", true);
+                        }
+                            break;
+                        case 43: {
+                            /** https://mavlink.io/en/messages/common.html#MISSION_REQUEST_LIST */
+                            set_ui_message(thiz, "MISSION_REQUEST_LIST", true);
+
+                            sprintf(feedback,
+                                    "MISSION_REQUEST_LIST\tSYS: %d, COMP: %d, LEN: %d, MSG ID: %d, SEQ: %d",
+                                    rcv_msg.sysid, rcv_msg.compid, rcv_msg.len, rcv_msg.msgid,
+                                    rcv_msg.seq);
+                            set_log_message(thiz, feedback);
+
+                            mavlink_mission_request_list_t request_list;
+                            mavlink_msg_mission_request_list_decode(&rcv_msg, &request_list);
+                            sendMissionCount(rcv_msg.sysid, rcv_msg.compid, request_list);
+                        }
+                            break;
+                        case 69: {
+                            /** https://mavlink.io/en/messages/common.html#MANUAL_CONTROL */
+                            mavlink_manual_control_t manual_control;
+                            mavlink_msg_manual_control_decode(&rcv_msg, &manual_control);
+
+                            char ui_string[128];
+                            char buttons[64];
+
+                            /** displays bit field representing pressed buttons */
+                            sprintf(buttons, BYTE_TO_BINARY_PATTERN BYTE_TO_BINARY_PATTERN,
+                                    BYTE_TO_BINARY(manual_control.buttons >> 8),
+                                    BYTE_TO_BINARY(manual_control.buttons));
+
+                            /** sets positions of seekbars representing joystick/gamepad axes */
+                            set_progress(thiz, manual_control.x, manual_control.y,
+                                    manual_control.z, manual_control.r);
+                            /*
+                            sprintf(ui_string, "axes: X: %d, Y: %d, Z: %d, R: %d\r\nbuttons: %s",
+                            manual_control.x, manual_control.y, manual_control.z, manual_control.r, buttons);
+                            */
+                            sprintf(ui_string, "buttons: %s", buttons);
+                            set_ui_message_buttons(thiz, ui_string, true);
+
+                            sprintf(feedback,
+                                    "MANUAL_CONTROL\tX: %d, Y: %d, Z: %d, R: %d, buttons: %s",
+                                    manual_control.x, manual_control.y,
+                                    manual_control.z, manual_control.r, buttons);
+                            set_log_message(thiz, feedback);
+                        }
+                            break;
+                        case 75: {
+                            /** https://mavlink.io/en/messages/common.html#COMMAND_INT */
+                            set_ui_message(thiz, "COMMAND_INT", true);
+
+                            sprintf(feedback,
+                                    "COMMAND_INT\tSYS: %d, COMP: %d, LEN: %d, MSG ID: %d, SEQ: %d",
+                                    rcv_msg.sysid, rcv_msg.compid, rcv_msg.len, rcv_msg.msgid,
+                                    rcv_msg.seq);
+                            set_log_message(thiz, feedback);
+                        }
+                            break;
+                        case 76: {
+                            /** https://mavlink.io/en/messages/common.html#COMMAND_LONG */
+                            set_ui_message(thiz, "COMMAND_LONG", true);
+
+                            sprintf(feedback,
+                                    "COMMAND_LONG\tSYS: %d, COMP: %d, LEN: %d, MSG ID: %d, SEQ: %d",
+                                    rcv_msg.sysid, rcv_msg.compid, rcv_msg.len, rcv_msg.msgid,
+                                    rcv_msg.seq);
+                            set_log_message(thiz, feedback);
+                        }
+                            break;
+                        default: {
+                            sprintf(feedback, "SYS: %d, COMP: %d, LEN: %d, MSG ID: %d, SEQ: %d",
+                                    rcv_msg.sysid, rcv_msg.compid, rcv_msg.len, rcv_msg.msgid,
+                                    rcv_msg.seq);
+                            set_log_message(thiz, feedback);
+                        }
+                            break;
                     }
-                        break;
-                    case 2: {
-                        /** https://mavlink.io/en/messages/common.html#SYSTEM_TIME */
-                        set_ui_message(thiz, "SYSTEM_TIME", true);
-                    }
-                        break;
-                    case 20: {
-                        /** https://mavlink.io/en/messages/common.html#PARAM_REQUEST_READ */
-                        set_ui_message(thiz, "PARAM_REQUEST_READ", true);
-
-                        sprintf(feedback,"SYS: %d, COMP: %d, LEN: %d, MSG ID: %d, SEQ: %d",
-                                rcv_msg.sysid, rcv_msg.compid, rcv_msg.len, rcv_msg.msgid, rcv_msg.seq);
-                        set_log_message(thiz, feedback);
-                    }
-                        break;
-                    case 21: {
-                        /** https://mavlink.io/en/messages/common.html#PARAM_REQUEST_LIST */
-                        set_ui_message(thiz, "PARAM_REQUEST_LIST", true);
-                        /* This app sends magnetometer indication (not GPS) as heading */
-                        sendDiscreteParameter("COMPASS_USE", true);
-                    }
-                        break;
-                    case 43: {
-                        //FIXME: Mission transfer failed. Error: Mission request list failed, maximum retries exceeded.
-                        /** https://mavlink.io/en/messages/common.html#MISSION_REQUEST_LIST */
-                        set_ui_message(thiz, "MISSION_REQUEST_LIST", true);
-                    }
-                        break;
-                    case 69: {
-                        /** https://mavlink.io/en/messages/common.html#MANUAL_CONTROL */
-                        mavlink_manual_control_t manual_control;
-                        mavlink_msg_manual_control_decode(&rcv_msg, &manual_control);
-
-                        char ui_string[128];
-                        char buttons[64];
-
-                        /** displays bit field representing pressed buttons */
-                        sprintf(buttons, BYTE_TO_BINARY_PATTERN BYTE_TO_BINARY_PATTERN,
-                                BYTE_TO_BINARY(manual_control.buttons >> 8),
-                                BYTE_TO_BINARY(manual_control.buttons));
-
-                        /** sets positions of seekbars representing joystick/gamepad axes */
-                        set_progress(thiz, manual_control.x, manual_control.y, manual_control.z, manual_control.r);
-
-                        //sprintf(ui_string, "axes: X: %d, Y: %d, Z: %d, R: %d\r\nbuttons: %s", manual_control.x, manual_control.y, manual_control.z, manual_control.r, buttons);
-                        sprintf(ui_string, "buttons: %s", buttons);
-                        set_ui_message_buttons(thiz, ui_string, true);
-
-                        sprintf(feedback, "MANUAL_CONTROL\tX: %d, Y: %d, Z: %d, R: %d, buttons: %s", manual_control.x, manual_control.y, manual_control.z, manual_control.r, buttons);
-                        set_log_message(thiz, feedback);
-                    }
-                        break;
-                    case 75: {
-                        /** https://mavlink.io/en/messages/common.html#COMMAND_INT */
-                        set_ui_message(thiz, "COMMAND_INT", true);
-
-                        sprintf(feedback,
-                                "COMMAND_INT\tSYS: %d, COMP: %d, LEN: %d, MSG ID: %d, SEQ: %d",
-                                rcv_msg.sysid, rcv_msg.compid, rcv_msg.len, rcv_msg.msgid, rcv_msg.seq);
-                        set_log_message(thiz, feedback);
-                    }
-                        break;
-                    case 76: {
-                        /** https://mavlink.io/en/messages/common.html#COMMAND_LONG */
-                        set_ui_message(thiz, "COMMAND_LONG", true);
-
-                        sprintf(feedback,
-                                "COMMAND_LONG\tSYS: %d, COMP: %d, LEN: %d, MSG ID: %d, SEQ: %d",
-                                rcv_msg.sysid, rcv_msg.compid, rcv_msg.len, rcv_msg.msgid, rcv_msg.seq);
-                        set_log_message(thiz, feedback);
-                    }
-                        break;
-                    default: {
-                        sprintf(feedback,"SYS: %d, COMP: %d, LEN: %d, MSG ID: %d, SEQ: %d",
-                                rcv_msg.sysid, rcv_msg.compid, rcv_msg.len, rcv_msg.msgid, rcv_msg.seq);
-                        set_ui_message(thiz, feedback, true);
-                    }
-                        break;
                 }
             }
+            printf("\n");
         }
-        printf("\n");
+        memset(rcv_buf, 0, BUFFER_LENGTH);
+        /** The typical RC servo expects to receive a pulse every 20 ms... */
+        usleep(20);
     }
-    memset(rcv_buf, 0, BUFFER_LENGTH);
-    /** The typical RC servo expects to receive a pulse every 20 ms... */
-    usleep(20);
-}
     return 0;
 }
 
@@ -462,9 +498,10 @@ int *mainAppFunction(jobject thiz) {
                                    MAV_STATE_ACTIVE);
 
         len = mavlink_msg_to_send_buffer(buf, &msg);
-        bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr, sizeof(struct sockaddr_in));
+        bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr,
+                            sizeof(struct sockaddr_in));
 
-        /** prints a log entry every time a heartbeat message is sent */
+        /* prints a log entry every time a heartbeat message is sent */
         /*
         char seqArr [32];
         sprintf(seqArr, "heartbeat: %d\n", msg.seq);
@@ -473,15 +510,17 @@ int *mainAppFunction(jobject thiz) {
 
         if (battery_voltage != NULL && battery_level != NULL) {
             mavlink_msg_sys_status_pack(THIS_SYSTEM, THIS_COMPONENT, &msg, 0, 0, 0, 500,
-            battery_voltage, -1, battery_level, 0, 0, 0, 0, 0, 0);
+                                        battery_voltage, -1, battery_level, 0, 0, 0, 0, 0, 0);
 
             len = mavlink_msg_to_send_buffer(buf, &msg);
-            bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr, sizeof(struct sockaddr_in));
+            bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr,
+                                sizeof(struct sockaddr_in));
 
             char feedback[128];
-            if (bytes_sent == -1)
-            {sprintf(feedback,"ERROR: bytes_sent == -1");
-                set_log_message(thiz, feedback);}
+            if (bytes_sent == -1) {
+                sprintf(feedback, "ERROR: bytes_sent == -1");
+                set_log_message(thiz, feedback);
+            }
         }
         sleep(1);
     }
@@ -514,7 +553,8 @@ jint Java_pl_bezzalogowe_mavlink_MAVLink_sendProtocol(JNIEnv *env, jobject thiz)
     mavlink_msg_protocol_version_encode(1, 200, &message, &version);
     int length;
     length = mavlink_msg_to_send_buffer(buf, &message);
-    bytes_sent = sendto(sock, buf, length, 0, (struct sockaddr *) &gcAddr, sizeof(struct sockaddr_in));
+    bytes_sent = sendto(sock, buf, length, 0, (struct sockaddr *) &gcAddr,
+                        sizeof(struct sockaddr_in));
     char feedback[128];
     sprintf(feedback, "version sent: %d, %d bytes", version, bytes_sent);
     set_ui_message(thiz, feedback, false);
@@ -556,4 +596,3 @@ uint64_t microsSinceEpoch() {
     return micros;
 }
 #endif
-
