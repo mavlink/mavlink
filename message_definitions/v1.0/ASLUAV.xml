@@ -88,13 +88,6 @@
       <field type="float" name="param6">Parameter 6, as defined by MAV_CMD enum.</field>
       <field type="float" name="param7">Parameter 7, as defined by MAV_CMD enum.</field>
     </message>
-    <message id="201" name="SENS_POWER">
-      <description>Voltage and current sensor data</description>
-      <field type="float" name="adc121_vspb_volt" units="V"> Power board voltage sensor reading</field>
-      <field type="float" name="adc121_cspb_amp" units="A"> Power board current sensor reading</field>
-      <field type="float" name="adc121_cs1_amp" units="A"> Board current sensor 1 reading</field>
-      <field type="float" name="adc121_cs2_amp" units="A"> Board current sensor 2 reading</field>
-    </message>
     <message id="202" name="SENS_MPPT">
       <description>Maximum Power Point Tracker (MPPT) sensor data for solar module power performance tracking</description>
       <field type="uint64_t" name="mppt_timestamp" units="us"> MPPT last timestamp </field>
@@ -270,7 +263,14 @@
       <field type="uint8_t" name="sinr_ecio">SINR (LTE) or ECIO (WCDMA) as reported by modem (unconverted)</field>
       <field type="uint8_t" name="rsrq">RSRQ (LTE only) as reported by modem (unconverted)</field>
     </message>
-    <message id="214" name="SATCOM_LINK_STATUS">
+    <message id="223" name="SENS_POWER">
+      <description>Voltage and current sensor data</description>
+      <field type="float" name="adc121_vspb_volt" units="V"> Power board voltage sensor reading</field>
+      <field type="float" name="adc121_cspb_amp" units="A"> Power board current sensor reading</field>
+      <field type="float" name="adc121_cs1_amp" units="A"> Board current sensor 1 reading</field>
+      <field type="float" name="adc121_cs2_amp" units="A"> Board current sensor 2 reading</field>
+    </message>
+    <message id="224" name="SATCOM_LINK_STATUS">
       <description>Status of the SatCom link</description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
       <field type="uint64_t" name="last_heartbeat" units="us">Timestamp of the last successful sbd session</field>
@@ -281,7 +281,7 @@
       <field type="uint8_t" name="tx_session_pending">Transmission session pending</field>
       <field type="uint8_t" name="rx_session_pending">Receiving session pending</field>
     </message>
-    <message id="215" name="SENSOR_AIRFLOW_ANGLES">
+    <message id="227" name="SENSOR_AIRFLOW_ANGLES">
       <description>Calibrated airflow angle measurements</description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
       <field type="float" name="angleofattack" units="deg">Angle of attack</field>
