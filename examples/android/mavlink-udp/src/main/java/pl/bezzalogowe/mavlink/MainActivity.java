@@ -7,9 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,15 +18,12 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -49,13 +44,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public UpdateTextThread update;
     public UpdateProgressThread updateProgress;
 
-    public TextView address, textFeedback, textButtons;
+    public TextView address_host, address_gcs, textFeedback, textButtons;
     public Gravity gravityObject = new Gravity(this);
     public Magnetometer magObject = new Magnetometer(this);
     public Location locObject = new Location(this);
     public MAVLink mavLink = new MAVLink(this);
     public Network networkObject = new Network();
-    Button startHeartbeat, stopHeartbeat;
+    Button startServer, stopServer;
     SeekBar seekbar1, seekbar2, seekbar3, seekbar4;
     TextView dutyCycleTextX, dutyCycleTextY, dutyCycleTextZ, dutyCycleTextR;
     String groundStationIP;
@@ -99,19 +94,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             askPermissions();
         }
 
-        readPreferences();
+        //readPreferences();
         mavLink.classInit();
 
-        address = findViewById(R.id.address);
-        address.setText(networkObject.getLocalIpAddress());
+        address_host = findViewById(R.id.host_address);
+        address_host.setText(networkObject.getLocalIpAddress());
+
+        address_gcs = findViewById(R.id.gcs_address);
 
         textFeedback = findViewById(R.id.text_feedback);
-        textFeedback.setTextColor(Color.BLACK);
         textButtons = findViewById(R.id.text_buttons);
-        textButtons.setTextColor(Color.BLACK);
 
-        startHeartbeat = findViewById(R.id.start_heartbeat);
-        stopHeartbeat = findViewById(R.id.stop_heartbeat);
+        startServer = findViewById(R.id.start_server);
+        stopServer = findViewById(R.id.stop_server);
 
         update = new UpdateTextThread();
         update.updateConversationHandler = new Handler();
@@ -125,22 +120,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
-        startHeartbeat.setOnClickListener(new View.OnClickListener() {
+        startServer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
                     main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
 /*
-String ip = address.getText().toString();
+String ip = address_gcs.getText().toString();
 if (validate(ip)) {
     mavLink.setGroundStationIP(ip);
     saveReceiverIP();
 }
 */
+                    mavLink.receiveInit();
                     mavLink.heartBeatInit();
-
                     /* doesn't allow starting thread twice */
-                    startHeartbeat.setVisibility(View.GONE);
-                    stopHeartbeat.setVisibility(View.VISIBLE);
+                    startServer.setVisibility(View.GONE);
+                    stopServer.setVisibility(View.VISIBLE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -150,12 +145,13 @@ if (validate(ip)) {
             }
         });
 
-        stopHeartbeat.setOnClickListener(new View.OnClickListener() {
+        stopServer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mavLink.heartBeatStop();
+                mavLink.receiveStop();
                 main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-                stopHeartbeat.setVisibility(View.GONE);
-                startHeartbeat.setVisibility(View.VISIBLE);
+                stopServer.setVisibility(View.GONE);
+                startServer.setVisibility(View.VISIBLE);
 
                 main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
                 main.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -171,11 +167,16 @@ if (validate(ip)) {
                 .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mavLink.heartBeatStop();
-                        finish();
-                        System.exit(0);
+                        exit();
                     }
                 }).setNegativeButton("no", null).show();
+    }
+
+    private void exit() {
+        mavLink.heartBeatStop();
+        mavLink.receiveStop();
+        finish();
+        System.exit(0);
     }
 
     @Override
@@ -210,35 +211,46 @@ if (validate(ip)) {
     public boolean onOptionsItemSelected(MenuItem item) {
         /* Handle menu item selection */
         switch (item.getItemId()) {
+            /*
             case R.id.address:
                 networkObject.showIP(this);
                 break;
+             */
             case R.id.info:
                 networkObject.showInfo(this);
                 break;
             case R.id.source_code:
                 openSourceCodePage();
                 break;
+            case R.id.action_exit: {
+                exit();
+            }
+            break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+/* reads remote address from preferences */
+/*
     private void readPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         groundStationIP = settings.getString("ground-station-ip", "192.168.0.100");
         Log.d("preferences read", "ground-station-ip" + groundStationIP);
     }
+*/
 
+/* saves remote address in preferences */
+/*
     private void saveReceiverIP() {
-        final EditText addressEditText = (EditText) this.findViewById(R.id.address);
+        final EditText addressEditText = (EditText) this.findViewById(R.id.gcs_address);
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("ground-station-ip", addressEditText.getText().toString());
         editor.commit();
     }
-
+*/
     protected void askPermissions() {
         String[] permissions = {
                 Manifest.permission.ACCESS_COARSE_LOCATION,

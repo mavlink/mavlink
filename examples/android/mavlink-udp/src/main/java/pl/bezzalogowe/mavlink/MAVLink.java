@@ -1,7 +1,5 @@
 package pl.bezzalogowe.mavlink;
 
-import android.util.Log;
-
 public class MAVLink {
     private final static String TAG = MAVLink.class.getName();
 
@@ -18,10 +16,10 @@ public class MAVLink {
 
     public static native void classInit();
 
-    public static native void setGroundStationIP(String ip);
+    public native int receiveInit();
+    public native int receiveStop();
 
     public native int heartBeatInit();
-
     public native int heartBeatStop();
 
     /* Displays a string from C code */
@@ -48,9 +46,13 @@ public class MAVLink {
         main.update.updateConversationHandler.post(new UpdateTextThread(main.textButtons, message, blink));
     }
 
+    private void setAddress(final String message, boolean blink) {
+        main.update.updateConversationHandler.post(new UpdateTextThread(main.address_gcs, message, blink));
+    }
+
     private void setLog(final String message) {
-        Log.d(TAG, message);
-        //System.out.println(message);
+        //Log.d(TAG, message);
+        System.out.println(message);
     }
 
     private void setProgress(short x, short y, short z, short r) {
