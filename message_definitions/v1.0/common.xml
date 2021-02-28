@@ -3540,6 +3540,9 @@
       <entry value="4" name="ATTITUDE_TARGET_TYPEMASK_BODY_YAW_RATE_IGNORE">
         <description>Ignore body yaw rate</description>
       </entry>
+      <entry value="32" name="ATTITUDE_TARGET_TYPEMASK_THRUST_BODY_SET">
+        <description>Use 3D body thrust setpoint instead of throttle</description>
+      </entry>
       <entry value="64" name="ATTITUDE_TARGET_TYPEMASK_THROTTLE_IGNORE">
         <description>Ignore throttle</description>
       </entry>
@@ -4953,6 +4956,8 @@
       <field type="float" name="body_pitch_rate" units="rad/s">Body pitch rate</field>
       <field type="float" name="body_yaw_rate" units="rad/s">Body yaw rate</field>
       <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse trust)</field>
+      <extensions/>
+      <field type="float[3]" name="thrust_body">3D thrust setpoint in the body NED frame</field>
     </message>
     <message id="83" name="ATTITUDE_TARGET">
       <description>Reports the current commanded attitude of the vehicle as specified by the autopilot. This should match the commands sent in a SET_ATTITUDE_TARGET message if the vehicle is being controlled this way.</description>
