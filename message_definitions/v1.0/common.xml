@@ -1936,7 +1936,8 @@
       </entry>
       <entry value="3000" name="MAV_CMD_DO_VTOL_TRANSITION" hasLocation="false" isDestination="false">
         <description>Request VTOL transition</description>
-        <param index="1" label="State" enum="MAV_VTOL_STATE">The target VTOL state. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.</param>
+        <param index="1" label="State" enum="MAV_VTOL_STATE">The target VTOL state. For normal transitions, only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.</param>
+        <param index="2" label="Immediate">Force immediate transition to the specified MAV_VTOL_STATE. 1: Force immediate, 0: normal transition. Can be used, for example, to trigger an emergency "Quadchute". Caution: Can be dangerous/damage vehicle, depending on autopilot implementation of this command.</param>
       </entry>
       <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST" hasLocation="false" isDestination="false">
         <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
