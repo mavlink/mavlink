@@ -704,6 +704,24 @@
         <description>Yaw controlled by RC input.</description>
       </entry>
     </enum>
+    <enum name="WIFI_NETWORK_SECURITY">
+      <description>WiFi wireless security protocols.</description>
+      <entry value="0" name="WIFI_NETWORK_SECURITY_OPEN">
+        <description>Open network, no security.</description>
+      </entry>
+      <entry value="1" name="WIFI_NETWORK_SECURITY_WEP">
+        <description>WEP.</description>
+      </entry>
+      <entry value="2" name="WIFI_NETWORK_SECURITY_WPA1">
+        <description>WPA1.</description>
+      </entry>
+      <entry value="3" name="WIFI_NETWORK_SECURITY_WPA2">
+        <description>WPA2.</description>
+      </entry>
+      <entry value="4" name="WIFI_NETWORK_SECURITY_WPA3">
+        <description>WPA3.</description>
+      </entry>
+    </enum>
     <enum name="WIFI_CONFIG_AP_RESPONSE">
       <description>Possible responses from a WIFI_CONFIG_AP message.</description>
       <entry value="0" name="WIFI_CONFIG_AP_RESPONSE_UNDEFINED">
@@ -6322,6 +6340,14 @@
       <field type="int32_t[4]" name="rpm" units="rpm">Reported motor RPM from each ESC (negative for reverse rotation).</field>
       <field type="float[4]" name="voltage" units="V">Voltage measured from each ESC.</field>
       <field type="float[4]" name="current" units="A">Current measured from each ESC.</field>
+    </message>
+    <message id="298" name="WIFI_NETWORK_INFO">
+      <description>Detected WiFi network status information. This message is sent per each WiFi network detected in range with known SSID and general status parameters.</description>
+      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID).</field>
+      <field type="uint8_t" name="channel_id">WiFi network operating channel ID.</field>
+      <field type="uint8_t" name="signal_quality" units="%">WiFi network measured signal quality. Normalized to percentage. 0 = unknown/unset signal quality, 1 = bad signal quality, 100 = perfect signal quality.</field>
+      <field type="uint16_t" name="data_rate" units="Mbit/s">WiFi network data rate.</field>
+      <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
