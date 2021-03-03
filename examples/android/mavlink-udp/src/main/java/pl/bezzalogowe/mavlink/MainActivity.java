@@ -14,6 +14,7 @@ import android.hardware.SensorEventListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public Magnetometer magObject = new Magnetometer(this);
     public Location locObject = new Location(this);
     public MAVLink mavLink = new MAVLink(this);
-    public Network networkObject = new Network();
+    public Network networkObject = new Network(this);
     Button startServer, stopServer;
     SeekBar seekbar1, seekbar2, seekbar3, seekbar4;
     TextView dutyCycleTextX, dutyCycleTextY, dutyCycleTextZ, dutyCycleTextR;
@@ -114,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         updateProgress = new UpdateProgressThread();
         updateProgress.updateConversationHandler = new Handler();
 
+        final Network networkObject = new Network(this);
+
         gravityObject.startGravity();
         magObject.startMagnetometer();
         locObject.startLocation();
@@ -122,8 +126,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         startServer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                try {
-                    main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+                if (networkObject.connected() >= 1) {
+                    /** Wi-Fi or GPRS connection active */
+                    try {
+
+                        main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
 /*
 String ip = address_gcs.getText().toString();
 if (validate(ip)) {
@@ -131,17 +138,21 @@ if (validate(ip)) {
     saveReceiverIP();
 }
 */
-                    mavLink.receiveInit();
-                    mavLink.heartBeatInit();
-                    /* doesn't allow starting thread twice */
-                    startServer.setVisibility(View.GONE);
-                    stopServer.setVisibility(View.VISIBLE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                        mavLink.receiveInit();
+                        mavLink.heartBeatInit();
+                        /* doesn't allow starting thread twice */
+                        startServer.setVisibility(View.GONE);
+                        stopServer.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-                main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-                main.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+                    main.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                } else {
+                    /** no connection available */
+                    Toast.makeText(getApplicationContext(), "No Wi-Fi nor cellular connection.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -157,6 +168,17 @@ if (validate(ip)) {
                 main.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         });
+
+        /** start UDP server immediately if device is connected */
+        if (networkObject.connected() >= 1) {
+            //FIXME: application crashes if device is rotated while threads are running, this is a temporary solution
+            main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+            mavLink.receiveInit();
+            mavLink.heartBeatInit();
+        } else {
+            stopServer.setVisibility(View.GONE);
+            startServer.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -217,7 +239,12 @@ if (validate(ip)) {
                 break;
              */
             case R.id.info:
-                networkObject.showInfo(this);
+                if (networkObject.connected() >= 2) {
+                    /** Wi-Fi connection active */
+                    networkObject.showInfo(this);
+                } else {
+                    Toast.makeText(getApplicationContext(), "No Wi-Fi connection.", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.source_code:
                 openSourceCodePage();
@@ -260,13 +287,6 @@ if (validate(ip)) {
 
         int requestCode = 200;
         ActivityCompat.requestPermissions(this, permissions, requestCode);
-    }
-
-    /* checks if device is online */
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(main.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public void openSourceCodePage() {
