@@ -232,7 +232,7 @@ if (validate(ip)) {
         return super.onOptionsItemSelected(item);
     }
 
-/* reads remote address from preferences */
+    /* reads remote address from preferences */
 /*
     private void readPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -241,7 +241,7 @@ if (validate(ip)) {
     }
 */
 
-/* saves remote address in preferences */
+    /* saves remote address in preferences */
 /*
     private void saveReceiverIP() {
         final EditText addressEditText = (EditText) this.findViewById(R.id.gcs_address);

@@ -68,8 +68,8 @@ void sendAutopilotVersion();
 
 uint64_t microsSinceEpoch();
 
-#define THIS_SYSTEM 2
-#define THIS_COMPONENT 1
+#define THIS_SYSTEM 1
+#define THIS_COMPONENT 191
 
 /* Android specific */
 #include <pthread.h>

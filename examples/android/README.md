@@ -1,7 +1,7 @@
 MAVLink UDP Android Example
 ================
 
-![screenshot](screenshots/pl.bezzalogowe.mavlink_en_001.png)
+![screenshot](screenshots/pl.bezzalogowe.mavlink_en_002.png)
 
 This is a fork of [MAVLink UDP Example](https://github.com/mavlink/mavlink/tree/master/examples/linux) created by [Bryan Godbolt](https://github.com/godbolt), rewritten for Android using JNI. The app sends some data to QGroundControl using the MAVLink protocol.
 
@@ -24,7 +24,7 @@ LOCAL_SRC_FILES := mavlink_udp.c
 include $(BUILD_SHARED_LIBRARY)
 ```
 
-According to [MAVLink Step by Step](https://discuss.ardupilot.org/t/mavlink-step-by-step/9629) by [Pedro Albuquerque](https://discuss.ardupilot.org/u/Pedro_Albuquerque) `System ID` should be a number between 2 and 254 and `Component ID` should be 1. Only then you can establish connection with QGroundControl and other ground control applications.
+`System ID` is hardcoded to 1, `Component ID` is hardcoded to 191 (`MAV_COMP_ID_ONBOARD_COMPUTER`).
 
 To establish connection check your Android device's IP address and add target host in QGroundControl:
 ![screenshot](screenshots/pl.bezzalogowe.mavlink_en_003.png)
