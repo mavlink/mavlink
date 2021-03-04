@@ -24,7 +24,7 @@ LOCAL_SRC_FILES := mavlink_udp.c
 include $(BUILD_SHARED_LIBRARY)
 ```
 
-`System ID` is hardcoded to 1, `Component ID` is hardcoded to 191 (`MAV_COMP_ID_ONBOARD_COMPUTER`).
+`System ID` is hardcoded to 1, `Component ID` is hardcoded to 1 (`MAV_COMP_ID_AUTOPILOT1`).
 
 To establish connection check your Android device's IP address and add target host in QGroundControl:
 ![screenshot](screenshots/pl.bezzalogowe.mavlink_en_003.png)

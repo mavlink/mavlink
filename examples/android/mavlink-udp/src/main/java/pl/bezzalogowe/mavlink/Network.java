@@ -3,6 +3,7 @@ package pl.bezzalogowe.mavlink;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -16,6 +17,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Network {
+    MainActivity main;
+
+    public Network(MainActivity argActivity) {
+        main = argActivity;
+    }
+
     public static String getLocalIpAddress() {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
@@ -40,9 +47,9 @@ public class Network {
         helpBuilder.setIcon(android.R.drawable.ic_dialog_info)
                 .setTitle(arg.getResources().getString(R.string.show_ip)).setMessage("IP address: " + getLocalIpAddress())
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
         AlertDialog helpDialog = helpBuilder.create();
         helpDialog.show();
     }
@@ -96,5 +103,26 @@ public class Network {
 
         AlertDialog helpDialog = helpBuilder.create();
         helpDialog.show();
+    }
+
+    public int connected() {
+        /** https://stackoverflow.com/questions/5027890/check-gprs-connection */
+        int connected = 0;
+
+        final ConnectivityManager connMgr = (ConnectivityManager) main.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        final WifiManager wifiManager = (WifiManager) main.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        if (wifiManager.isWifiEnabled()) {
+            connected += 2;
+        }
+
+        final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        if (mobile.isAvailable()) {
+            connected += 1;
+        }
+
+        return connected;
     }
 }

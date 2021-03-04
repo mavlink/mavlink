@@ -68,8 +68,10 @@ void sendAutopilotVersion();
 
 uint64_t microsSinceEpoch();
 
+/** THIS_SYSTEM can be any number from 1 to 255
+    THIS_COMPONENT must be 1, otherwise QGroundControl won't connect */
 #define THIS_SYSTEM 1
-#define THIS_COMPONENT 191
+#define THIS_COMPONENT 1
 
 /* Android specific */
 #include <pthread.h>
@@ -556,8 +558,7 @@ int *heartbeatFunction(jobject thiz) {
     while (heartbeat_running) {
 /* send heartbeat message if the ground station ever sent something and it's address is known */
         if (gcAddr.sin_addr.s_addr != -1) {
-            mavlink_msg_heartbeat_pack(THIS_SYSTEM, THIS_COMPONENT, &msg, MAV_TYPE_GENERIC,
-                                       MAV_AUTOPILOT_GENERIC, MAV_MODE_MANUAL_ARMED, 0,
+            mavlink_msg_heartbeat_pack(THIS_SYSTEM, THIS_COMPONENT, &msg, MAV_TYPE_GENERIC, MAV_AUTOPILOT_GENERIC, MAV_MODE_MANUAL_ARMED, 0,
                                        MAV_STATE_ACTIVE);
 
             len = mavlink_msg_to_send_buffer(buf, &msg);
