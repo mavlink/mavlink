@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,6 +20,7 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -129,54 +131,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if (networkObject.connected() >= 1) {
                     /** Wi-Fi or GPRS connection active */
                     try {
-
-                        main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-/*
-String ip = address_gcs.getText().toString();
-if (validate(ip)) {
-    mavLink.setGroundStationIP(ip);
-    saveReceiverIP();
-}
-*/
+                        main.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         mavLink.receiveInit();
                         mavLink.heartBeatInit();
+
                         /* doesn't allow starting thread twice */
                         startServer.setVisibility(View.GONE);
                         stopServer.setVisibility(View.VISIBLE);
+
+                        address_host.setText(networkObject.getLocalIpAddress());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-                    main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-                    main.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 } else {
                     /** no connection available */
                     Toast.makeText(getApplicationContext(), "No Wi-Fi nor cellular connection.", Toast.LENGTH_SHORT).show();
+
+                    address_host.setText("-.-.-.-");
+                    address_host.setGravity(0x00800005);
                 }
             }
         });
 
         stopServer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                main.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 mavLink.heartBeatStop();
                 mavLink.receiveStop();
-                main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+
                 stopServer.setVisibility(View.GONE);
                 startServer.setVisibility(View.VISIBLE);
-
-                main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-                main.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         });
 
         /** start UDP server immediately if device is connected */
         if (networkObject.connected() >= 1) {
-            //FIXME: application crashes if device is rotated while threads are running, this is a temporary solution
-            main.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+            main.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             mavLink.receiveInit();
             mavLink.heartBeatInit();
+
+            stopServer.setVisibility(View.VISIBLE);
         } else {
-            stopServer.setVisibility(View.GONE);
             startServer.setVisibility(View.VISIBLE);
         }
     }
@@ -243,7 +238,12 @@ if (validate(ip)) {
                     /** Wi-Fi connection active */
                     networkObject.showInfo(this);
                 } else {
-                    Toast.makeText(getApplicationContext(), "No Wi-Fi connection.", Toast.LENGTH_SHORT).show();
+                    if (networkObject.connected() == 1) {
+                        Toast.makeText(getApplicationContext(), "No Wi-Fi connection.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        /** no connection available */
+                        Toast.makeText(getApplicationContext(), "No Wi-Fi nor cellular connection.", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
             case R.id.source_code:
@@ -292,5 +292,20 @@ if (validate(ip)) {
     public void openSourceCodePage() {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/mavlink/mavlink/tree/master/examples/android"));
         startActivity(browserIntent);
+    }
+
+    /** https://developer.android.com/guide/topics/resources/runtime-changes.html */
+    /**
+     * prevents app from crashing when screen is rotated
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        /** Checks the orientation of the screen */
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            //Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            //Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
     }
 }
