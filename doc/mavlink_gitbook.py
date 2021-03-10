@@ -42,9 +42,10 @@ index_text="""<!-- THIS FILE IS AUTO-GENERATED (DO NOT UPDATE GITBOOK): https://
 
 MAVLink *dialects* are XML files that define *protocol-* and *vendor-specific* messages, enums and commands.
 
-Dialects may *include* other MAVLink XML files.
+Dialects may *include* other MAVLink XML files, which may in turn contain other XML files.
 A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the *MAVLink standard definitions*), extending it with vendor or protocol specific messages.
-While a dialect can include any other message definition, only a single level of nesting is supported ([at time of writing](https://github.com/ArduPilot/pymavlink/pull/248)).
+At time of writing up to 5 levels of XML file nesting are allowed (see `MAXIMUM_INCLUDE_FILE_NESTING` in [mavgen.py](https://github.com/ArduPilot/pymavlink/blob/master/generator/mavgen.py#L44)).
+
 
 > **Note** Vendor forks of MAVLink may contain dialect messages that are not yet merged, and hence will not appear in this documentation.
 
