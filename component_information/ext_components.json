@@ -1,0 +1,77 @@
+{
+    "$id":          "https://mavlink.io/comp_version.schema.json",
+    "$schema":      "http://json-schema.org/draft-07/schema",
+    "description":  "Schema for COMP_METADATA_TYPE_EXT_COMPONENTS",
+    "type":         "object",
+
+    "properties": {
+        "version": {
+            "description":  "Version number for the format of this file.",
+            "type":         "integer",
+            "minimum":      1
+        },
+        "components": {
+            "type":         "array",
+            "description":  "All external components",
+            "items": {
+                "name": {
+                    "type":         "string",
+                    "description":  "Human-readable name of the component."
+                    },
+                "vendorName": {
+                    "type":         "string",
+                    "description":  "Name of the component vendor."
+                },
+                "modelName": {
+                    "type":         "string",
+                    "description":  "Name of the component model."
+                    },
+                "firmwareVersion": {
+                    "type":         "string",
+                    "pattern":      "^\\d+\\.\\d+\\.\\d+(\\.\\d+)?$",
+                    "description":  "major.minor.patch.dev format"
+                },
+                "hardwareVersion": {
+                    "type":         "string",
+                    "pattern":      "^\\d+\\.\\d+\\.\\d+(\\.\\d+)?$",
+                    "description":  "major.minor.patch.dev format"
+                },
+                "metadataTypes": {
+                    "type":         "array",
+                    "description":  "Which `COMP_METADATA_TYPE` specs are supported, with URI's.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "description":  "COMP_METADATA_TYPE",
+                                "type":         "integer"
+                            },
+                            "uri": {
+                                "description":  "http[s] or MAVLink FTP uri",
+                                "type":         "string"
+                            },
+                            "fileCrc": {
+                                "description":  "CRC32 checksum of the file",
+                                "type":         "integer"
+                            },
+                            "translationUri": {
+                                "description":  "http[s] or MAVLink FTP url",
+                                "type":         "string"
+                            },
+                            "translationFileCrc": {
+                                "description":  "CRC32 checksum of the translation file",
+                                "type":         "integer"
+                            }
+                        },
+                        "required":             [ "type", "uri", "fileCrc" ],
+                        "additionalProperties": false
+                    }
+                }
+            },
+            "required":             [ "name" ],
+            "additionalProperties": false
+        }
+    },
+    "required":             [ "version", "components" ],
+    "additionalProperties": false
+}
