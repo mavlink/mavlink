@@ -769,6 +769,9 @@
       <entry value="2" name="COMP_METADATA_TYPE_COMMANDS">
         <description>Meta data which specifies the commands the vehicle supports. (WIP)</description>
       </entry>
+      <entry value="3" name="COMP_METADATA_TYPE_PERIPHERALS">
+        <description>Meta data which specifies potential external peripherals that do not talk MAVLink</description>
+      </entry>
     </enum>
     <enum name="PARAM_TRANSACTION_TRANSPORT">
       <description>Possible transport layers to set and get parameters via mavlink during a parameter transaction.</description>
@@ -6650,6 +6653,8 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="general_metadata_file_crc">CRC32 of the TYPE_GENERAL file (can be used by a GCS for file caching).</field>
       <field type="char[100]" name="general_metadata_uri">Component definition URI for TYPE_GENERAL. This must be a MAVLink FTP URI and the file might be compressed with xz.</field>
+      <field type="uint32_t" name="peripherals_metadata_file_crc">CRC32 of the TYPE_PERIPHERALS file (can be used by a GCS for file caching).</field>
+      <field type="char[100]" name="peripherals_metadata_uri">(Optional) Component definition URI for TYPE_PERIPHERALS. This must be a MAVLink FTP URI and the file might be compressed with xz.</field>
     </message>
     <message id="400" name="PLAY_TUNE_V2">
       <description>Play vehicle tone/tune (buzzer). Supersedes message PLAY_TUNE.</description>
