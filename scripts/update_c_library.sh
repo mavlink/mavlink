@@ -60,8 +60,8 @@ rm -rf $CLIBRARY_PATH/*
 
 # generate new c headers
 echo -e "\0033[34mStarting to generate c headers\0033[0m\n"
+generate_headers development $1
 generate_headers ardupilotmega $1
-generate_headers autoquad $1
 generate_headers matrixpilot $1
 generate_headers test $1
 generate_headers ASLUAV $1
