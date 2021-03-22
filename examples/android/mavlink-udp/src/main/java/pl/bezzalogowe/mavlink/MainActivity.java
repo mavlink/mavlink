@@ -7,27 +7,27 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Layout;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,10 +41,13 @@ import pl.bezzalogowe.PhoneUAV.Gravity;
 import pl.bezzalogowe.PhoneUAV.Location;
 import pl.bezzalogowe.PhoneUAV.Magnetometer;
 
+import static android.text.InputType.TYPE_CLASS_NUMBER;
+
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     private final static String TAG = MainActivity.class.getName();
 
     final MainActivity main = this;
+    SharedPreferences settings;
     public UpdateTextThread update;
     public UpdateProgressThread updateProgress;
 
@@ -56,8 +59,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public Network networkObject = new Network(this);
     Button startServer, stopServer;
     SeekBar seekbar1, seekbar2, seekbar3, seekbar4;
-    TextView dutyCycleTextX, dutyCycleTextY, dutyCycleTextZ, dutyCycleTextR;
+    TextView dutyCycleTextX, dutyCycleTextY, dutyCycleTextZ, dutyCycleTextR, system_id_value, component_id_value;
+    TableRow systemIDrow , componentIDrow;
     String groundStationIP;
+    int system_id, component_id;
 
     /* https://stackoverflow.com/questions/3291655/get-battery-level-and-state-in-android */
     private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
@@ -98,19 +103,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             askPermissions();
         }
 
-        //readPreferences();
         mavLink.classInit();
 
         address_host = findViewById(R.id.host_address);
-        address_host.setText(networkObject.getLocalIpAddress());
+        if (networkObject.connected() >= 1)
+        {address_host.setText(networkObject.getLocalIpAddressString());}
 
         address_gcs = findViewById(R.id.gcs_address);
+
+        systemIDrow = findViewById(R.id.system_id_row);
+        componentIDrow = findViewById(R.id.component_id_row);
+
+        system_id_value = findViewById(R.id.system_id_value);
+        component_id_value = findViewById(R.id.component_id_value);
 
         textFeedback = findViewById(R.id.text_feedback);
         textButtons = findViewById(R.id.text_buttons);
 
         startServer = findViewById(R.id.start_server);
         stopServer = findViewById(R.id.stop_server);
+
+        readPreferences();
 
         update = new UpdateTextThread();
         update.updateConversationHandler = new Handler();
@@ -126,6 +139,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
+        systemIDrow.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                popUpSetSystemID();
+            }
+        });
+
+        componentIDrow.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                popUpSetComponentID();
+            }
+        });
+
         startServer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (networkObject.connected() >= 1) {
@@ -139,7 +164,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         startServer.setVisibility(View.GONE);
                         stopServer.setVisibility(View.VISIBLE);
 
-                        address_host.setText(networkObject.getLocalIpAddress());
+                        /** displays IP number*/
+                        address_host.setText(networkObject.getLocalIpAddressString());
+
+                        /** displays hostname */
+                        /*try {
+                            InetAddress ia = InetAddress.getByName(networkObject.getLocalIpAddress());
+                            address_host.setText(ia.getHostName());
+                        } catch (UnknownHostException e) {
+                            e.printStackTrace();
+                        }*/
+
+                        /** canonical hostname */
+                        /*try {
+                            InetAddress ia = InetAddress.getByName(networkObject.getLocalIpAddress());
+                            address_host.setText(ia.getCanonicalHostName());
+                        } catch (UnknownHostException e) {
+                            e.printStackTrace();
+                        }*/
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -168,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (networkObject.connected() >= 1) {
             main.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             mavLink.receiveInit();
+            mavLink.setIDs((byte) 1, (byte) 1);
             mavLink.heartBeatInit();
 
             stopServer.setVisibility(View.VISIBLE);
@@ -228,18 +272,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public boolean onOptionsItemSelected(MenuItem item) {
         /* Handle menu item selection */
         switch (item.getItemId()) {
-            /*
-            case R.id.address:
-                networkObject.showIP(this);
-                break;
-             */
             case R.id.info:
                 if (networkObject.connected() >= 2) {
                     /** Wi-Fi connection active */
-                    networkObject.showInfo(this);
+                    networkObject.showWiFiInfo(this);
                 } else {
+                    /** cellular modem connection active */
                     if (networkObject.connected() == 1) {
-                        Toast.makeText(getApplicationContext(), "No Wi-Fi connection.", Toast.LENGTH_SHORT).show();
+                        networkObject.showNetworkInfo(this);
                     } else {
                         /** no connection available */
                         Toast.makeText(getApplicationContext(), "No Wi-Fi nor cellular connection.", Toast.LENGTH_SHORT).show();
@@ -259,14 +299,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return super.onOptionsItemSelected(item);
     }
 
-    /* reads remote address from preferences */
-/*
+    /* reads system_id and component_id from preferences */
     private void readPreferences() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        groundStationIP = settings.getString("ground-station-ip", "192.168.0.100");
-        Log.d("preferences read", "ground-station-ip" + groundStationIP);
+        settings = PreferenceManager.getDefaultSharedPreferences(this);
+        system_id = (settings.getInt("system_id", 1)) % 256;
+        component_id = (settings.getInt("component_id", 1)) % 256;
+        Log.d("preferences read", "system_id: " + system_id + "; " + "component_id: " + component_id);
+
+        system_id_value.setText(Integer.toString(system_id));
+        component_id_value.setText(Integer.toString(component_id));
     }
-*/
 
     /* saves remote address in preferences */
 /*
@@ -294,10 +336,74 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         startActivity(browserIntent);
     }
 
+    private void popUpSetSystemID() {
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
+        helpBuilder.setTitle(getResources().getString(R.string.system_id));
+        helpBuilder.setMessage(getResources().getString(R.string.new_value) + " " + getResources().getString(R.string.system_id)+":");
+
+        final EditText input = new EditText(this);
+        input.setSingleLine();
+        input.setInputType(TYPE_CLASS_NUMBER);
+        input.setText(Integer.toString(settings.getInt("system_id", 1)));
+        helpBuilder.setView(input);
+        helpBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    system_id = (Integer.valueOf(input.getText().toString())) % 256;
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putInt("system_id", system_id);
+                    editor.commit();
+
+                    mavLink.setIDs((byte) system_id, (byte) component_id);
+                    system_id_value.setText(Integer.toString(system_id));
+
+                } catch (NumberFormatException e) {
+                    Log.d("NumberFormatException", "Error: " + e);
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        AlertDialog helpDialog = helpBuilder.create();
+        helpDialog.show();
+    }
+
+    private void popUpSetComponentID() {
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
+        helpBuilder.setTitle(getResources().getString(R.string.component_id));
+        helpBuilder.setMessage(getResources().getString(R.string.new_value) + " " + getResources().getString(R.string.component_id)+":");
+
+        final EditText input = new EditText(this);
+        input.setSingleLine();
+        input.setInputType(TYPE_CLASS_NUMBER);
+        input.setText(Integer.toString(settings.getInt("component_id", 1)));
+        helpBuilder.setView(input);
+        helpBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    component_id = (Integer.valueOf(input.getText().toString())) % 256;
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putInt("component_id", component_id);
+                    editor.commit();
+
+                    mavLink.setIDs((byte) system_id, (byte) component_id);
+                    component_id_value.setText(Integer.toString(component_id));
+
+                } catch (NumberFormatException e) {
+                    Log.d("NumberFormatException", "Error: " + e);
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        AlertDialog helpDialog = helpBuilder.create();
+        helpDialog.show();
+    }
+
     /** https://developer.android.com/guide/topics/resources/runtime-changes.html */
-    /**
-     * prevents app from crashing when screen is rotated
-     */
+    /** prevents app from crashing when screen is rotated */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);

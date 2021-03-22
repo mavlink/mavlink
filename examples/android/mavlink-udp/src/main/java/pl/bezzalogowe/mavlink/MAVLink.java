@@ -16,6 +16,8 @@ public class MAVLink {
 
     public static native void classInit();
 
+    public native int setIDs(byte system, byte component);
+
     public native int receiveInit();
     public native int receiveStop();
 

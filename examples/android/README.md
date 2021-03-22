@@ -12,7 +12,9 @@ This is a fork of [MAVLink UDP Example](https://github.com/mavlink/mavlink/tree/
   sdk.dir=~/Library/Android/android-sdk-linux
 ```
 
- - Open `/mavlink-udp/src/main/cpp/Android.mk` and edit `LOCAL_CFLAGS` variable (path where your [generated MAVLink headers](https://mavlink.io/en/getting_started/generate_libraries.html) are):
+ - Download: [c_library_v2](https://github.com/mavlink/c_library_v2) or generate: [generate_libraries](https://mavlink.io/en/getting_started/generate_libraries.html) MAVLink headers.
+
+ - Open `/mavlink-udp/src/main/cpp/Android.mk` and edit `LOCAL_CFLAGS` variable so that it points to the folder where you keep the headers.
 
 ```
 LOCAL_PATH := $(call my-dir)
@@ -24,7 +26,11 @@ LOCAL_SRC_FILES := mavlink_udp.c
 include $(BUILD_SHARED_LIBRARY)
 ```
 
-`System ID` is hardcoded to 1, `Component ID` is hardcoded to 1 (`MAV_COMP_ID_AUTOPILOT1`).
+ - If you're having trouble building the project (`The system cannot find the file specified`) - try downloading [older NDK version](https://developer.android.com/ndk/downloads/older_releases#ndk-16b-downloads).
+
+`system_id` and `component_id` values are both set to 1 by default, but can be set by the user.
+
+Latest build of the app can be downloaded here: [mavlink-udp-debug.apk](https://github.com/mareksuma1985/mavlink/blob/master/examples/android/mavlink-udp/build/outputs/apk/debug/mavlink-udp-debug.apk).
 
 To establish connection check your Android device's IP address and add target host in QGroundControl:
 ![screenshot](screenshots/pl.bezzalogowe.mavlink_en_003.png)

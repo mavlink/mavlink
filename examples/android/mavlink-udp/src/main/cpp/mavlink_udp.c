@@ -68,14 +68,14 @@ void sendAutopilotVersion();
 
 uint64_t microsSinceEpoch();
 
-/** THIS_SYSTEM can be any number from 1 to 255
-    THIS_COMPONENT must be 1, otherwise QGroundControl won't connect */
-#define THIS_SYSTEM 1
-#define THIS_COMPONENT 1
-
 /* Android specific */
 #include <pthread.h>
 #include <jni.h>
+
+/** system_id can be any number from 1 to 255
+    component_id must be 1, otherwise QGroundControl won't connect */
+unsigned char system_id = 1;
+unsigned char component_id = 1;
 
 bool running = false;
 bool heartbeat_running = false;
@@ -209,7 +209,7 @@ static void sendBooleanParameter(char *name, bool value) {
     param.type = MAV_PARAM_TYPE_INT32;
 
     mavlink_message_t msgParameter;
-    mavlink_msg_param_value_pack(THIS_SYSTEM, THIS_COMPONENT, &msgParameter, name,
+    mavlink_msg_param_value_pack(system_id, component_id, &msgParameter, name,
                                  param.param_float, param.type, 1, 0);
     uint16_t len = mavlink_msg_to_send_buffer(buf, &msgParameter);
 
@@ -265,11 +265,11 @@ void Java_pl_bezzalogowe_mavlink_MAVLink_sendAttitude(JNIEnv *env, jclass klass,
         mavlink_message_t msgAttitude;
 
         /* in radians, heading comes from a different sensor */
-        mavlink_msg_attitude_pack(THIS_SYSTEM, THIS_COMPONENT, &msgAttitude, microsSinceEpoch(),
+        mavlink_msg_attitude_pack(system_id, component_id, &msgAttitude, microsSinceEpoch(),
                                   roll, pitch, hdg, 0.00, 0.00, 0.00);
 
         /* in degrees */
-        //mavlink_msg_attitude_pack(THIS_SYSTEM, THIS_COMPONENT, &msgAttitude, microsSinceEpoch(), roll * M_PI / 180.0, pitch * M_PI / 180.0, hdg * M_PI / 180.0, 0.00, 0.00, 0.00);
+        //mavlink_msg_attitude_pack(system_id, component_id, &msgAttitude, microsSinceEpoch(), roll * M_PI / 180.0, pitch * M_PI / 180.0, hdg * M_PI / 180.0, 0.00, 0.00, 0.00);
 
         uint16_t len = mavlink_msg_to_send_buffer(buf, &msgAttitude);
         bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr,
@@ -295,7 +295,7 @@ Java_pl_bezzalogowe_mavlink_MAVLink_sendGlobalPosition(JNIEnv *env, jclass klass
         int32_t alt = altitude * 1000;
         int32_t relative_alt = alt;
 
-        mavlink_msg_global_position_int_pack(THIS_SYSTEM, THIS_COMPONENT, &msgLocation,
+        mavlink_msg_global_position_int_pack(system_id, component_id, &msgLocation,
                                              microsSinceEpoch(), lat, lon, alt, relative_alt, 0, 0,
                                              0, /*hdg*/ 0);
         uint16_t len = mavlink_msg_to_send_buffer(buf, &msgLocation);
@@ -309,7 +309,7 @@ Java_pl_bezzalogowe_mavlink_MAVLink_sendGlobalPosition(JNIEnv *env, jclass klass
 void sendMissionCount(uint8_t system_id, uint8_t component_id,
                       mavlink_mission_request_list_t request_list) {
     mavlink_message_t msgCount;
-    mavlink_msg_mission_count_pack(THIS_SYSTEM, THIS_COMPONENT, &msgCount, system_id, component_id,
+    mavlink_msg_mission_count_pack(system_id, component_id, &msgCount, system_id, component_id,
                                    0, request_list.mission_type);
 
     uint16_t len = mavlink_msg_to_send_buffer(buf, &msgCount);
@@ -555,10 +555,17 @@ int *heartbeatFunction(jobject thiz) {
     mavlink_message_t msg;
     uint16_t len;
 
+    /*
+    char feedback[128];
+    sprintf(feedback, "system_id: %d, component_id: %d", system_id, component_id);
+    set_log_message(thiz, feedback);
+    */
+
     while (heartbeat_running) {
 /* send heartbeat message if the ground station ever sent something and it's address is known */
         if (gcAddr.sin_addr.s_addr != -1) {
-            mavlink_msg_heartbeat_pack(THIS_SYSTEM, THIS_COMPONENT, &msg, MAV_TYPE_GENERIC, MAV_AUTOPILOT_GENERIC, MAV_MODE_MANUAL_ARMED, 0,
+            mavlink_msg_heartbeat_pack(system_id, component_id, &msg, MAV_TYPE_GENERIC,
+                                       MAV_AUTOPILOT_GENERIC, MAV_MODE_MANUAL_ARMED, 0,
                                        MAV_STATE_ACTIVE);
 
             len = mavlink_msg_to_send_buffer(buf, &msg);
@@ -573,7 +580,7 @@ int *heartbeatFunction(jobject thiz) {
             */
 
             if (battery_voltage != 0 && battery_level != 0) {
-                mavlink_msg_sys_status_pack(THIS_SYSTEM, THIS_COMPONENT, &msg, 0, 0, 0, 500,
+                mavlink_msg_sys_status_pack(system_id, component_id, &msg, 0, 0, 0, 500,
                                             battery_voltage, -1, battery_level, 0, 0, 0, 0, 0, 0);
 
                 len = mavlink_msg_to_send_buffer(buf, &msg);
@@ -607,15 +614,23 @@ jint Java_pl_bezzalogowe_mavlink_MAVLink_receiveInit(JNIEnv *env, jobject thiz) 
 }
 
 jint Java_pl_bezzalogowe_mavlink_MAVLink_receiveStop(JNIEnv *env, jobject thiz) {
-
     set_ui_message(thiz, "stopped receiving thread", false);
     running = false;
     pthread_join(rcv_thread, NULL);
 }
 
+jint Java_pl_bezzalogowe_mavlink_MAVLink_setIDs(JNIEnv *env, jobject thiz, jbyte arg_system,
+                                                jbyte arg_component) {
+    system_id = arg_system;
+    component_id = arg_component;
+
+    return 0;
+}
+
 jint Java_pl_bezzalogowe_mavlink_MAVLink_heartBeatInit(JNIEnv *env, jobject thiz) {
     jobject *data = (*env)->NewGlobalRef(env, thiz);
     heartbeat_running = true;
+
     pthread_create(&heartbeat_thread, NULL, &heartbeatFunction, data);
     return 0;
 }
@@ -628,7 +643,7 @@ jint Java_pl_bezzalogowe_mavlink_MAVLink_heartBeatStop(JNIEnv *env, jobject thiz
 
 void sendACK(mavlink_command_long_t command_long) {
     mavlink_message_t msg;
-    mavlink_msg_command_ack_pack(THIS_SYSTEM, THIS_COMPONENT, &msg, command_long.command,
+    mavlink_msg_command_ack_pack(system_id, component_id, &msg, command_long.command,
                                  MAV_RESULT_ACCEPTED, 0, 0, command_long.target_system,
                                  command_long.target_component);
     uint16_t len;
@@ -639,7 +654,7 @@ void sendACK(mavlink_command_long_t command_long) {
 void sendProtocolVersion(int number) {
     mavlink_message_t message;
     mavlink_protocol_version_t *version = number;
-    mavlink_msg_protocol_version_encode(THIS_SYSTEM, THIS_COMPONENT, &message, &version);
+    mavlink_msg_protocol_version_encode(system_id, component_id, &message, &version);
     uint16_t len;
     len = mavlink_msg_to_send_buffer(buf, &message);
     bytes_sent = sendto(sock, buf, len, 0, (struct sockaddr *) &gcAddr, sizeof(struct sockaddr_in));
@@ -650,7 +665,7 @@ void sendAutopilotVersion() {
     /* bit field */
     //uint64_t capabilities = 0;
     uint64_t capabilities = UINT64_MAX;
-    mavlink_msg_autopilot_version_pack(THIS_SYSTEM, THIS_COMPONENT, &msg, &capabilities, 0, 0, 0, 0,
+    mavlink_msg_autopilot_version_pack(system_id, component_id, &msg, &capabilities, 0, 0, 0, 0,
                                        0, 0, 0, 0, 0, 0, 0);
     uint16_t len;
     len = mavlink_msg_to_send_buffer(buf, &msg);
@@ -696,5 +711,4 @@ uint64_t microsSinceEpoch() {
     micros = ((uint64_t) tv.tv_sec) * 1000000 + tv.tv_usec;
     return micros;
 }
-
 #endif

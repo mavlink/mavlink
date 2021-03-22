@@ -18,12 +18,33 @@ import java.util.regex.Pattern;
 
 public class Network {
     MainActivity main;
+    /* must be declared here, otherwise won't be accessible in GetHostNameThread */
+    String hostname, hostnameCanonical;
 
     public Network(MainActivity argActivity) {
         main = argActivity;
     }
 
-    public static String getLocalIpAddress() {
+    public static InetAddress getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf
+                        .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()
+                            && inetAddress instanceof Inet4Address) {
+                        return inetAddress;
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String getLocalIpAddressString() {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
                 NetworkInterface intf = en.nextElement();
@@ -45,7 +66,7 @@ public class Network {
     public void showIP(MainActivity arg) {
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(arg);
         helpBuilder.setIcon(android.R.drawable.ic_dialog_info)
-                .setTitle(arg.getResources().getString(R.string.show_ip)).setMessage("IP address: " + getLocalIpAddress())
+                .setTitle(arg.getResources().getString(R.string.show_ip)).setMessage("IP address: " + getLocalIpAddressString())
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -54,21 +75,61 @@ public class Network {
         helpDialog.show();
     }
 
-    public void showInfo(MainActivity arg) {
-        //FIXME: Doesn't work on some Android devices
-        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(arg);
+    public void showNetworkInfo(MainActivity arg) {
+        /* general network information */
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(main);
+        helpBuilder.setIcon(android.R.drawable.ic_dialog_info);
+
+        /** Checking host names must be done on separate thread */
+        Thread delayed = new Thread(new GetHostNameThread());
+        delayed.start();
+        try {
+            delayed.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        helpBuilder.setTitle(main.getResources().getString(R.string.show_network_info));
+
+        try {
+            helpBuilder.setMessage("hostname: " + hostname +
+                    "\r\ncanonical: " + hostnameCanonical);
+            helpBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        AlertDialog helpDialog = helpBuilder.create();
+        helpDialog.show();
+    }
+
+    public void showWiFiInfo(MainActivity arg) {
+        /* WiFi information */
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(main);
         helpBuilder.setIcon(android.R.drawable.ic_dialog_info);
         WifiManager wifi;
         WifiInfo info;
 
         String frequency, pattern;
+
         int channelWLAN;
 
-        helpBuilder.setTitle(arg.getResources().getString(R.string.show_info));
+        /** Checking host names must be done on separate thread */
+        Thread delayed = new Thread(new GetHostNameThread());
+        delayed.start();
+        try {
+            delayed.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        helpBuilder.setTitle(main.getResources().getString(R.string.show_wifi_info));
 
         try {
-            /* WiFi information */
-            wifi = (WifiManager) arg.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            wifi = (WifiManager) main.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             info = wifi.getConnectionInfo();
 
             if (Build.VERSION.SDK_INT <= 20) {
@@ -86,11 +147,15 @@ public class Network {
 
                 if (channelWLAN < 0)
                     channelWLAN = 0;
-                helpBuilder.setMessage("Wi-Fi channel: " + channelWLAN + info.toString().replace(", ", "\n"));
+                helpBuilder.setMessage("hostname: " + hostname +
+                        "\r\ncanonical: " + hostnameCanonical +
+                        "\r\nWi-Fi channel: " + channelWLAN + info.toString().replace(", ", "\n"));
             } else {
-                helpBuilder.setMessage("Wi-Fi frequency: " + info.getFrequency() + info.FREQUENCY_UNITS + "\n" +
-                        "Strength: " + info.getRssi() + "dBm\n" +
-                        "SSID: " + info.getSSID());
+                helpBuilder.setMessage("hostname: " + hostname +
+                        "\r\ncanonical: " + hostnameCanonical +
+                        "\r\nWi-Fi frequency: " + info.getFrequency() + " " + info.FREQUENCY_UNITS +
+                        "\r\nstrength: " + info.getRssi() + " dBm" +
+                        "\r\nSSID: " + info.getSSID());
             }
 
             helpBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -103,6 +168,7 @@ public class Network {
 
         AlertDialog helpDialog = helpBuilder.create();
         helpDialog.show();
+
     }
 
     public int connected() {
@@ -124,5 +190,13 @@ public class Network {
         }
 
         return connected;
+    }
+
+    class GetHostNameThread implements Runnable {
+        public void run() {
+            InetAddress ia = getLocalIpAddress();
+            hostname = ia.getHostName();
+            hostnameCanonical = ia.getCanonicalHostName();
+        }
     }
 }
