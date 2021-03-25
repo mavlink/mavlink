@@ -47,20 +47,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final static String TAG = MainActivity.class.getName();
 
     final MainActivity main = this;
-    SharedPreferences settings;
     public UpdateTextThread update;
     public UpdateProgressThread updateProgress;
-
     public TextView address_host, address_gcs, textFeedback, textButtons;
     public Gravity gravityObject = new Gravity(this);
     public Magnetometer magObject = new Magnetometer(this);
     public Location locObject = new Location(this);
     public MAVLink mavLink = new MAVLink(this);
     public Network networkObject = new Network(this);
+    SharedPreferences settings;
     Button startServer, stopServer;
     SeekBar seekbar1, seekbar2, seekbar3, seekbar4;
     TextView dutyCycleTextX, dutyCycleTextY, dutyCycleTextZ, dutyCycleTextR, system_id_value, component_id_value;
-    TableRow systemIDrow , componentIDrow;
+    TableRow systemIDrow, componentIDrow;
     String groundStationIP;
     int system_id, component_id;
 
@@ -106,8 +105,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mavLink.classInit();
 
         address_host = findViewById(R.id.host_address);
-        if (networkObject.connected() >= 1)
-        {address_host.setText(networkObject.getLocalIpAddressString());}
+        if (networkObject.connected() >= 1) {
+            address_host.setText(networkObject.getLocalIpAddressString());
+        }
 
         address_gcs = findViewById(R.id.gcs_address);
 
@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         component_id_value.setText(Integer.toString(component_id));
     }
 
-    /* saves remote address in preferences */
+/* saves remote address in preferences */
 /*
     private void saveReceiverIP() {
         final EditText addressEditText = (EditText) this.findViewById(R.id.gcs_address);
@@ -339,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void popUpSetSystemID() {
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
         helpBuilder.setTitle(getResources().getString(R.string.system_id));
-        helpBuilder.setMessage(getResources().getString(R.string.new_value) + " " + getResources().getString(R.string.system_id)+":");
+        helpBuilder.setMessage(getResources().getString(R.string.new_value) + " " + getResources().getString(R.string.system_id) + ":");
 
         final EditText input = new EditText(this);
         input.setSingleLine();
@@ -372,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void popUpSetComponentID() {
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
         helpBuilder.setTitle(getResources().getString(R.string.component_id));
-        helpBuilder.setMessage(getResources().getString(R.string.new_value) + " " + getResources().getString(R.string.component_id)+":");
+        helpBuilder.setMessage(getResources().getString(R.string.new_value) + " " + getResources().getString(R.string.component_id) + ":");
 
         final EditText input = new EditText(this);
         input.setSingleLine();
@@ -403,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     /** https://developer.android.com/guide/topics/resources/runtime-changes.html */
-    /** prevents app from crashing when screen is rotated */
+    /* prevents app from crashing when screen is rotated */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
