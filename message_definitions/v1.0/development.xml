@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<mavlink>
+  <!-- XML file for prototyping definitions for standard.xml  -->
+  <include>standard.xml</include>
+  <version>0</version>
+  <dialect>0</dialect>
+  <enums>
+    <enum name="WIFI_NETWORK_SECURITY">
+      <description>WiFi wireless security protocols.</description>
+      <entry value="0" name="WIFI_NETWORK_SECURITY_UNDEFINED">
+        <description>Undefined or unknown security protocol.</description>
+      </entry>
+      <entry value="1" name="WIFI_NETWORK_SECURITY_OPEN">
+        <description>Open network, no security.</description>
+      </entry>
+      <entry value="2" name="WIFI_NETWORK_SECURITY_WEP">
+        <description>WEP.</description>
+      </entry>
+      <entry value="3" name="WIFI_NETWORK_SECURITY_WPA1">
+        <description>WPA1.</description>
+      </entry>
+      <entry value="4" name="WIFI_NETWORK_SECURITY_WPA2">
+        <description>WPA2.</description>
+      </entry>
+      <entry value="5" name="WIFI_NETWORK_SECURITY_WPA3">
+        <description>WPA3.</description>
+      </entry>
+    </enum>
+  </enums>
+  <messages>
+    <message id="53" name="MISSION_CHECKSUM">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Checksum for the current mission, rally points or geofence plan (a GCS can use this checksum to determine if it has a matching plan definition).
+        This message must be broadcast following any change to a plan (immediately after the MISSION_ACK that completes the plan upload sequence).
+        It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the hash is required.
+        The checksum must be calculated on the autopilot, but may also be calculated by the GCS.
+        The checksum uses the same CRC32 algorithm as MAVLink FTP (https://mavlink.io/en/services/ftp.html#crc32-implementation).
+        It is run over each item in the plan in seq order (excluding the home location if present in the plan), and covers the following fields (in order):
+        frame, command, autocontinue, param1, param2, param3, param4, param5, param6, param7.
+      </description>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+      <field type="uint32_t" name="checksum">CRC32 checksum of current plan for specified type.</field>
+    </message>
+    <message id="298" name="WIFI_NETWORK_INFO">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Detected WiFi network status information. This message is sent per each WiFi network detected in range with known SSID and general status parameters.</description>
+      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID).</field>
+      <field type="uint8_t" name="channel_id">WiFi network operating channel ID. Set to 0 if unknown or unidentified.</field>
+      <field type="uint8_t" name="signal_quality" units="%">WiFi network signal quality.</field>
+      <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
+      <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
+    </message>
+  </messages>
+</mavlink>

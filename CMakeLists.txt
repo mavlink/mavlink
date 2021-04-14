@@ -19,6 +19,7 @@ set(LIBRARY_SOVERSION "0.0.0")
 # none required
 
 # options
+option(USE_SYSTEM_PYMAVLINK "Generate mavlink files with system-wide installed mavgen" OFF)
 option(WITH_TESTS "Build test programs." OFF)
 option(WITH_BUILD_DEPS "Build dependencies." OFF) # no deps currently to build
 option(WITH_BUILD_STATIC "Build preferring static linking." ON)
@@ -83,8 +84,21 @@ if (WITH_BUILD_STATIC)
 endif()
 
 # find libraries with cmake modules
-find_package(PythonInterp)
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+  option(USE_PYTHON3 "Use python3 to build MAVLink" OFF)
+else()
+  option(USE_PYTHON3 "Use python3 to build MAVLink" ON)
+endif()
 
+if(USE_PYTHON3)
+  find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+  set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
+  set(PYTHON_SITELIB ${Python3_SITELIB})  
+else()
+  find_package(PythonInterp)
+  set(PYTHON_SITELIB ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages)
+endif()
+  
 # enable languages
 if (WITH_TESTS)
     enable_language(C)
@@ -120,7 +134,23 @@ endif()
 configure_file(config.h.in config.h)
 install(FILES ${CMAKE_BINARY_DIR}/config.h DESTINATION include/${PROJECT_NAME} COMPONENT Dev)
 
-# mavlink generation
+# mavgen location for mavlink generation
+set(mavgen_EXECUTABLE_WITH_PYTHON_INVOCATION ${CMAKE_COMMAND} -E env "PYTHONPATH=$ENV{PYTHONPATH}:${CMAKE_CURRENT_SOURCE_DIR}" ${PYTHON_EXECUTABLE} -m pymavlink.tools.mavgen)
+if(USE_SYSTEM_PYMAVLINK)
+    find_program (
+        mavgen_EXECUTABLE
+        NAMES mavgen mavgen.py
+    )
+
+    # Fallback to Python invocation, if not found.
+    if (mavgen_EXECUTABLE-NOTFOUND)
+        set(mavgen_EXECUTABLE ${mavgen_EXECUTABLE_WITH_PYTHON_INVOCATION})
+    endif()
+else()
+    set(mavgen_EXECUTABLE ${mavgen_EXECUTABLE_WITH_PYTHON_INVOCATION})
+endif()
+message(STATUS "mavgen_EXECUTABLE: ${mavgen_EXECUTABLE}")
+
 macro(generateMavlink version definitions)
     foreach(definition ${definitions})
         set(targetName ${definition}-v${version})
@@ -128,16 +158,17 @@ macro(generateMavlink version definitions)
         message(STATUS "processing: ${definitionAbsPath}")
         add_custom_command( 
             OUTPUT ${targetName}-stamp
-            COMMAND PYTHONPATH=$ENV{PYTHONPATH}:${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON_EXECUTABLE} -m pymavlink.tools.mavgen --lang=C --wire-protocol=${version}
-                --output=include/v${version} ${definitionAbsPath}
+            COMMAND ${mavgen_EXECUTABLE} --lang=C
+                                         --wire-protocol=${version}
+                                         --output=include/v${version}
+                                         ${definitionAbsPath}
             COMMAND touch ${targetName}-stamp
-            )
+        )
         add_custom_target(${targetName} ALL DEPENDS ${targetName}-stamp)
     endforeach()
 endmacro()
 
 # build
-set(mavgen -m pymavlink.tools.mavgen)
 set(v1.0Definitions
     ASLUAV.xml
     ardupilotmega.xml
@@ -147,7 +178,6 @@ set(v1.0Definitions
     minimal.xml
     paparazzi.xml
     python_array_test.xml
-    slugs.xml
     test.xml
     ualberta.xml
     )
@@ -168,7 +198,7 @@ install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAM
 install(DIRECTORY ${CMAKE_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
 install(DIRECTORY ${MAVLINK_SOURCE_DIR}/share/${PROJECT_NAME} DESTINATION share COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
 if (UNIX)
-    install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages COMPONENT Dev)
+    install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION ${PYTHON_SITELIB} COMPONENT Dev)
 else ()
     install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION "share/pyshared" COMPONENT Dev)
 endif ()
