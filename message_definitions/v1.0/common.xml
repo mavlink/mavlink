@@ -4754,7 +4754,7 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
-      <field type="float[9]" name="covariance" invalid="NaN">Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[9]" name="covariance" invalid="[NaN,]">Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="62" name="NAV_CONTROLLER_OUTPUT">
       <description>The state of the fixed wing navigation and position controller.</description>
@@ -4778,7 +4778,7 @@
       <field type="float" name="vx" units="m/s">Ground X Speed (Latitude)</field>
       <field type="float" name="vy" units="m/s">Ground Y Speed (Longitude)</field>
       <field type="float" name="vz" units="m/s">Ground Z Speed (Altitude)</field>
-      <field type="float[36]" name="covariance" invalid="NaN">Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[36]" name="covariance" invalid="[NaN,]">Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="64" name="LOCAL_POSITION_NED_COV">
       <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
@@ -4793,7 +4793,7 @@
       <field type="float" name="ax" units="m/s/s">X Acceleration</field>
       <field type="float" name="ay" units="m/s/s">Y Acceleration</field>
       <field type="float" name="az" units="m/s/s">Z Acceleration</field>
-      <field type="float[45]" name="covariance" invalid="NaN">Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[45]" name="covariance" invalid="[NaN,]">Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="65" name="RC_CHANNELS">
       <description>The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.  A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
@@ -5143,7 +5143,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance" invalid="NaN">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x_global, y_global, z_global, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x_global, y_global, z_global, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="102" name="VISION_POSITION_ESTIMATE">
@@ -5156,7 +5156,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance" invalid="NaN">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="103" name="VISION_SPEED_ESTIMATE">
@@ -5166,7 +5166,7 @@
       <field type="float" name="y" units="m/s">Global Y speed</field>
       <field type="float" name="z" units="m/s">Global Z speed</field>
       <extensions/>
-      <field type="float[9]" name="covariance" invalid="NaN">Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[9]" name="covariance" invalid="[NaN,]">Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="104" name="VICON_POSITION_ESTIMATE">
@@ -5179,7 +5179,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance" invalid="NaN">Row-major representation of 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="105" name="HIGHRES_IMU">
       <description>The IMU readings in SI units in NED body frame</description>
@@ -5560,7 +5560,7 @@
       <field type="float" name="y" units="m">Y position (NED)</field>
       <field type="float" name="z" units="m">Z position (NED)</field>
       <extensions/>
-      <field type="float[21]" name="covariance" invalid="NaN">Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="139" name="SET_ACTUATOR_CONTROL_TARGET">
       <description>Set the vehicle attitude and body angular rates.</description>
@@ -5610,10 +5610,10 @@
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Altitude (MSL)</field>
-      <field type="float[3]" name="vel" units="m/s" invalid="[0,0,0]">target velocity (0,0,0) for unknown</field>
-      <field type="float[3]" name="acc" units="m/s/s" invalid="[0,0,0]">linear target acceleration (0,0,0) for unknown</field>
-      <field type="float[4]" name="attitude_q" invalid="[0,0,0,0]">(0 0 0 0 for unknown)</field>
-      <field type="float[3]" name="rates" invalid="[0,0,0]">(0 0 0 for unknown)</field>
+      <field type="float[3]" name="vel" units="m/s" invalid="[0]">target velocity (0,0,0) for unknown</field>
+      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">linear target acceleration (0,0,0) for unknown</field>
+      <field type="float[4]" name="attitude_q" invalid="[0]">(0 0 0 0 for unknown)</field>
+      <field type="float[3]" name="rates" invalid="[0]">(0 0 0 for unknown)</field>
       <field type="float[3]" name="position_cov">eph epv</field>
       <field type="uint64_t" name="custom_state">button states or switches of a tracker device</field>
     </message>
@@ -6251,7 +6251,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Low level gimbal flags.</field>
-      <field type="float[4]" name="q" invalid="[NaN,NaN,NaN,NaN]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, set all fields to NaN if only angular velocity should be used)</field>
+      <field type="float[4]" name="q" invalid="[NaN]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, set all fields to NaN if only angular velocity should be used)</field>
       <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
@@ -6452,8 +6452,8 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
-      <field type="float[21]" name="pose_covariance" invalid="NaN">Row-major representation of a 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
-      <field type="float[21]" name="velocity_covariance" invalid="NaN">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="pose_covariance" invalid="[NaN,]">Row-major representation of a 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="velocity_covariance" invalid="[NaN,]">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <extensions/>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
       <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Type of estimator that is providing the odometry.</field>
@@ -6462,28 +6462,28 @@
       <description>Describe a trajectory using an array of up-to 5 waypoints in the local frame (MAV_FRAME_LOCAL_NED).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="valid_points">Number of valid points (up-to 5 waypoints are possible)</field>
-      <field type="float[5]" name="pos_x" units="m" invalid="NaN">X-coordinate of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="pos_y" units="m" invalid="NaN">Y-coordinate of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="pos_z" units="m" invalid="NaN">Z-coordinate of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="vel_x" units="m/s" invalid="NaN">X-velocity of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="vel_y" units="m/s" invalid="NaN">Y-velocity of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="vel_z" units="m/s" invalid="NaN">Z-velocity of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="acc_x" units="m/s/s" invalid="NaN">X-acceleration of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="acc_y" units="m/s/s" invalid="NaN">Y-acceleration of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="acc_z" units="m/s/s" invalid="NaN">Z-acceleration of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="pos_yaw" units="rad" invalid="NaN">Yaw angle, set to NaN if not being used</field>
-      <field type="float[5]" name="vel_yaw" units="rad/s" invalid="NaN">Yaw rate, set to NaN if not being used</field>
-      <field type="uint16_t[5]" name="command" enum="MAV_CMD" invalid="UINT16_MAX">Scheduled action for each waypoint, UINT16_MAX if not being used.</field>
+      <field type="float[5]" name="pos_x" units="m" invalid="[NaN]">X-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_y" units="m" invalid="[NaN]">Y-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_z" units="m" invalid="[NaN]">Z-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_x" units="m/s" invalid="[NaN]">X-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_y" units="m/s" invalid="[NaN]">Y-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_z" units="m/s" invalid="[NaN]">Z-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_x" units="m/s/s" invalid="[NaN]">X-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_y" units="m/s/s" invalid="[NaN]">Y-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_z" units="m/s/s" invalid="[NaN]">Z-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_yaw" units="rad" invalid="[NaN]">Yaw angle, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_yaw" units="rad/s" invalid="[NaN]">Yaw rate, set to NaN if not being used</field>
+      <field type="uint16_t[5]" name="command" enum="MAV_CMD" invalid="[UINT16_MAX]">Scheduled action for each waypoint, UINT16_MAX if not being used.</field>
     </message>
     <message id="333" name="TRAJECTORY_REPRESENTATION_BEZIER">
       <description>Describe a trajectory using an array of up-to 5 bezier control points in the local frame (MAV_FRAME_LOCAL_NED).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="valid_points">Number of valid control points (up-to 5 points are possible)</field>
-      <field type="float[5]" name="pos_x" units="m" invalid="NaN">X-coordinate of bezier control points. Set to NaN if not being used</field>
-      <field type="float[5]" name="pos_y" units="m" invalid="NaN">Y-coordinate of bezier control points. Set to NaN if not being used</field>
-      <field type="float[5]" name="pos_z" units="m" invalid="NaN">Z-coordinate of bezier control points. Set to NaN if not being used</field>
-      <field type="float[5]" name="delta" units="s" invalid="NaN">Bezier time horizon. Set to NaN if velocity/acceleration should not be incorporated</field>
-      <field type="float[5]" name="pos_yaw" units="rad" invalid="NaN">Yaw. Set to NaN for unchanged</field>
+      <field type="float[5]" name="pos_x" units="m" invalid="[NaN]">X-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="pos_y" units="m" invalid="[NaN]">Y-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="pos_z" units="m" invalid="[NaN]">Z-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="delta" units="s" invalid="[NaN]">Bezier time horizon. Set to NaN if velocity/acceleration should not be incorporated</field>
+      <field type="float[5]" name="pos_yaw" units="rad" invalid="[NaN]">Yaw. Set to NaN for unchanged</field>
     </message>
     <message id="334" name="CELLULAR_STATUS">
       <wip/>
@@ -6579,7 +6579,7 @@
       <field type="int32_t" name="capacity_full_specification" units="mAh" invalid="-1">Capacity when full according to manufacturer, -1: field not provided.</field>
       <field type="int32_t" name="capacity_full" units="mAh" invalid="-1">Capacity when full (accounting for battery degradation), -1: field not provided.</field>
       <field type="uint16_t" name="cycle_count" invalid="UINT16_MAX">Charge/discharge cycle count. UINT16_MAX: field not provided.</field>
-      <field type="char[16]" name="serial_number" invalid="0">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
+      <field type="char[16]" name="serial_number" invalid="[0]">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
       <field type="char[50]" name="device_name">Static device name. Encode as manufacturer and product names separated using an underscore.</field>
       <field type="uint16_t" name="weight" units="g" invalid="0">Battery weight. 0: field not provided.</field>
       <field type="uint16_t" name="discharge_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when discharging. If not supplied set to UINT16_MAX value.</field>
@@ -6633,23 +6633,23 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint32_t" name="uptime" units="ms">Time since system boot.</field>
       <field type="uint8_t" name="type">Type of the onboard computer: 0: Mission computer primary, 1: Mission computer backup 1, 2: Mission computer backup 2, 3: Compute node, 4-5: Compute spares, 6-9: Payload computers.</field>
-      <field type="uint8_t[8]" name="cpu_cores" invalid="UINT8_MAX">CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
-      <field type="uint8_t[10]" name="cpu_combined" invalid="UINT8_MAX">Combined CPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
-      <field type="uint8_t[4]" name="gpu_cores" invalid="UINT8_MAX">GPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
-      <field type="uint8_t[10]" name="gpu_combined" invalid="UINT8_MAX">Combined GPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[8]" name="cpu_cores" invalid="[UINT8_MAX]">CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[10]" name="cpu_combined" invalid="[UINT8_MAX]">Combined CPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[4]" name="gpu_cores" invalid="[UINT8_MAX]">GPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[10]" name="gpu_combined" invalid="[UINT8_MAX]">Combined GPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
       <field type="int8_t" name="temperature_board" units="degC" invalid="INT8_MAX">Temperature of the board. A value of INT8_MAX implies the field is unused.</field>
-      <field type="int8_t[8]" name="temperature_core" units="degC" invalid="INT8_MAX">Temperature of the CPU core. A value of INT8_MAX implies the field is unused.</field>
-      <field type="int16_t[4]" name="fan_speed" units="rpm" invalid="INT16_MAX">Fan speeds. A value of INT16_MAX implies the field is unused.</field>
+      <field type="int8_t[8]" name="temperature_core" units="degC" invalid="[INT8_MAX]">Temperature of the CPU core. A value of INT8_MAX implies the field is unused.</field>
+      <field type="int16_t[4]" name="fan_speed" units="rpm" invalid="[INT16_MAX]">Fan speeds. A value of INT16_MAX implies the field is unused.</field>
       <field type="uint32_t" name="ram_usage" units="MiB" invalid="UINT32_MAX">Amount of used RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t" name="ram_total" units="MiB" invalid="UINT32_MAX">Total amount of RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[4]" name="storage_type" invalid="UINT32_MAX">Storage type: 0: HDD, 1: SSD, 2: EMMC, 3: SD card (non-removable), 4: SD card (removable). A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[4]" name="storage_usage" units="MiB" invalid="UINT32_MAX">Amount of used storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[4]" name="storage_total" units="MiB" invalid="UINT32_MAX">Total amount of storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[4]" name="storage_type" invalid="[UINT32_MAX]">Storage type: 0: HDD, 1: SSD, 2: EMMC, 3: SD card (non-removable), 4: SD card (removable). A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[4]" name="storage_usage" units="MiB" invalid="[UINT32_MAX]">Amount of used storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[4]" name="storage_total" units="MiB" invalid="[UINT32_MAX]">Total amount of storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_type">Link type: 0-9: UART, 10-19: Wired network, 20-29: Wifi, 30-39: Point-to-point proprietary, 40-49: Mesh proprietary</field>
-      <field type="uint32_t[6]" name="link_tx_rate" units="KiB/s" invalid="UINT32_MAX">Network traffic from the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s" invalid="UINT32_MAX">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[6]" name="link_tx_max" units="KiB/s" invalid="UINT32_MAX">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[6]" name="link_rx_max" units="KiB/s" invalid="UINT32_MAX">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_tx_rate" units="KiB/s" invalid="[UINT32_MAX]">Network traffic from the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s" invalid="[UINT32_MAX]">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_tx_max" units="KiB/s" invalid="[UINT32_MAX]">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_rx_max" units="KiB/s" invalid="[UINT32_MAX]">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
     </message>
     <message id="395" name="COMPONENT_INFORMATION">
       <wip/>
