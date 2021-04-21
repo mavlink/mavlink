@@ -704,6 +704,21 @@
         <description>Yaw controlled by RC input.</description>
       </entry>
     </enum>
+    <enum name="ORBIT_EXECUTION_STATE">
+      <description>State of execution during orbit flight.</description>
+      <entry value="0" name="ORBIT_EXECUTION_STATE_UNKNOWN">
+        <description>Vehicle state is unknown according to orbit action.</description>
+      </entry>
+      <entry value="1" name="ORBIT_EXECUTION_STATE_APPROACH_TO_CIRCLE">
+        <description>Vehicle is approaching to orbit track.</description>
+      </entry>
+      <entry value="2" name="ORBIT_EXECUTION_STATE_STARTED">
+        <description>Vehicle started following orbit track.</description>
+      </entry>
+      <entry value="3" name="ORBIT_EXECUTION_STATE_FINISHED">
+        <description>Vehicle finished following orbit track.</description>
+      </entry>
+    </enum>
     <enum name="WIFI_CONFIG_AP_RESPONSE">
       <description>Possible responses from a WIFI_CONFIG_AP message.</description>
       <entry value="0" name="WIFI_CONFIG_AP_RESPONSE_UNDEFINED">
@@ -6572,6 +6587,7 @@
       <field type="int32_t" name="x">X coordinate of center point. Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
       <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
       <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
+      <field type="uint8_t" name="state" enum="ORBIT_EXECUTION_STATE">State of execution during the orbit action.</field>
     </message>
     <!-- Smart battery messages -->
     <message id="370" name="SMART_BATTERY_INFO">
