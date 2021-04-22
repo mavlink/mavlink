@@ -1411,12 +1411,12 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="209" name="MAV_CMD_DO_MOTOR_TEST" hasLocation="false" isDestination="false">
-        <description>Mission command to perform motor test.</description>
-        <param index="1" label="Instance" minValue="1" increment="1">Motor instance number. (from 1 to max number of motors on the vehicle)</param>
-        <param index="2" label="Throttle Type" enum="MOTOR_TEST_THROTTLE_TYPE">Throttle type.</param>
-        <param index="3" label="Throttle">Throttle.</param>
-        <param index="4" label="Timeout" units="s" minValue="0">Timeout.</param>
-        <param index="5" label="Motor Count" minValue="0" increment="1">Motor count. (number of motors to test to test in sequence, waiting for the timeout above between them; 0=1 motor, 1=1 motor, 2=2 motors...)</param>
+        <description>Command to perform motor test.</description>
+        <param index="1" label="Instance" minValue="1" increment="1">Motor instance number (from 1 to max number of motors on the vehicle).</param>
+        <param index="2" label="Throttle Type" enum="MOTOR_TEST_THROTTLE_TYPE">Throttle type (whether the Throttle Value in param3 is a percentage, PWM value, etc.)</param>
+        <param index="3" label="Throttle">Throttle value.</param>
+        <param index="4" label="Timeout" units="s" minValue="0">Timeout between tests that are run in sequence.</param>
+        <param index="5" label="Motor Count" minValue="0" increment="1">Motor count. Number of motors to test in sequence: 0/1=one motor, 2= two motors, etc. The Timeout (param4) is used between tests.</param>
         <param index="6" label="Test Order" enum="MOTOR_TEST_ORDER">Motor test order.</param>
         <param index="7">Empty</param>
       </entry>
@@ -3143,29 +3143,31 @@
     </enum>
     <!-- motor test type enum -->
     <enum name="MOTOR_TEST_ORDER">
+      <description>Sequence that motors are tested when using MAV_CMD_DO_MOTOR_TEST.</description>
       <entry name="MOTOR_TEST_ORDER_DEFAULT" value="0">
-        <description>default autopilot motor test method</description>
+        <description>Default autopilot motor test method.</description>
       </entry>
       <entry name="MOTOR_TEST_ORDER_SEQUENCE" value="1">
-        <description>motor numbers are specified as their index in a predefined vehicle-specific sequence</description>
+        <description>Motor numbers are specified as their index in a predefined vehicle-specific sequence.</description>
       </entry>
       <entry name="MOTOR_TEST_ORDER_BOARD" value="2">
-        <description>motor numbers are specified as the output as labeled on the board</description>
+        <description>Motor numbers are specified as the output as labeled on the board.</description>
       </entry>
     </enum>
     <!-- motor test throttle type enum -->
     <enum name="MOTOR_TEST_THROTTLE_TYPE">
+      <description>Defines how throttle value is represented in MAV_CMD_DO_MOTOR_TEST.</description>
       <entry value="0" name="MOTOR_TEST_THROTTLE_PERCENT">
-        <description>throttle as a percentage from 0 ~ 100</description>
+        <description>Throttle as a percentage (0 ~ 100)</description>
       </entry>
       <entry value="1" name="MOTOR_TEST_THROTTLE_PWM">
-        <description>throttle as an absolute PWM value (normally in range of 1000~2000)</description>
+        <description>Throttle as an absolute PWM value (normally in range of 1000~2000).</description>
       </entry>
       <entry value="2" name="MOTOR_TEST_THROTTLE_PILOT">
-        <description>throttle pass-through from pilot's transmitter</description>
+        <description>Throttle pass-through from pilot's transmitter.</description>
       </entry>
       <entry value="3" name="MOTOR_TEST_COMPASS_CAL">
-        <description>per-motor compass calibration test</description>
+        <description>Per-motor compass calibration test.</description>
       </entry>
     </enum>
     <!-- GPS_INPUT ignore flags enum -->
@@ -6342,6 +6344,7 @@
       <field type="float[4]" name="voltage" units="V">Voltage measured from each ESC.</field>
       <field type="float[4]" name="current" units="A">Current measured from each ESC.</field>
     </message>
+    <!-- id 295 reserved for AIRSPEED message (development.xml). -->
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
       <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>

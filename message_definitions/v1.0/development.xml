@@ -26,6 +26,24 @@
         <description>WPA3.</description>
       </entry>
     </enum>
+    <enum name="AIRSPEED_SENSOR_TYPE">
+      <description>Types of airspeed sensor/data. May be be used in AIRSPEED message to estimate accuracy of indicated speed.</description>
+      <entry value="0" name="AIRSPEED_SENSOR_TYPE_UNKNOWN">
+        <description>Airspeed sensor type unknown/not supplied.</description>
+      </entry>
+      <entry value="1" name="AIRSPEED_SENSOR_TYPE_DIFFERENTIAL">
+        <description>Differential airspeed sensor</description>
+      </entry>
+      <entry value="2" name="AIRSPEED_SENSOR_TYPE_MASS_FLOW">
+        <description>Mass-flow airspeed sensor.</description>
+      </entry>
+      <entry value="3" name="AIRSPEED_SENSOR_TYPE_WINDVANE">
+        <description>Windvane airspeed sensor.</description>
+      </entry>
+      <entry value="4" name="AIRSPEED_SENSOR_TYPE_SYNTHETIC">
+        <description>Synthetic/calculated airspeed.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="53" name="MISSION_CHECKSUM">
@@ -41,6 +59,18 @@
       </description>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
       <field type="uint32_t" name="checksum">CRC32 checksum of current plan for specified type.</field>
+    </message>
+    <message id="295" name="AIRSPEED">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Airspeed information from a sensor.</description>
+      <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
+      <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS) if available, otherwise indicated airspeed (IAS).</field>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature. INT16_MAX for value unknown/not supplied.</field>
+      <field type="float" name="press_diff" units="hPa">Differential pressure. NaN for value unknown/not supplied.</field>
+      <field type="float" name="press_static" units="hPa">Static pressure. NaN for value unknown/not supplied.</field>
+      <field type="float" name="error" units="m/s">Error/accuracy. NaN for value unknown/not supplied.</field>
+      <field type="uint8_t" name="type" enum="AIRSPEED_SENSOR_TYPE">Airspeed sensor type. NaN for value unknown/not supplied. Used to estimate accuracy (i.e. as an alternative to using the error field).</field>
     </message>
     <message id="298" name="WIFI_NETWORK_INFO">
       <wip/>
