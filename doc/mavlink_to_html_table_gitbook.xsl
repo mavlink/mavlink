@@ -10,6 +10,7 @@
    <h2 id="enums">MAVLink Type Enumerations</h2>
    <xsl:apply-templates select="enum[@name!='MAV_CMD']" />
 
+   <a id="MAV_CMD"></a>
    <h2 id="mav_commands">MAVLink Commands (MAV_CMD)</h2>
    <blockquote class="alert alert-info clearfix"><strong class="fa fa-2x fa-edit"></strong><p>MAVLink commands (MAV_CMD) and messages are different! These commands define the values of up to 7 parameters that are packaged INSIDE specific messages used in the Mission Protocol and Command Protocol. Use commands for actions in missions or if you need acknowledgment and/or retry logic from a request. Otherwise use messages.</p></blockquote>
    <xsl:apply-templates select="enum[@name='MAV_CMD']" mode="params"/>

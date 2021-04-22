@@ -17,29 +17,18 @@
       <entry value="16777215" name="ACCELCAL_VEHICLE_POS_SUCCESS"/>
       <entry value="16777216" name="ACCELCAL_VEHICLE_POS_FAILED"/>
     </enum>
+    <enum name="HEADING_TYPE">
+      <entry value="0" name="HEADING_TYPE_COURSE_OVER_GROUND"/>
+      <entry value="1" name="HEADING_TYPE_HEADING"/>
+    </enum>
+    <enum name="SPEED_TYPE">
+      <entry value="0" name="SPEED_TYPE_AIRSPEED"/>
+      <entry value="1" name="SPEED_TYPE_GROUNDSPEED"/>
+    </enum>
     <!-- ardupilot specific MAV_CMD_* commands -->
     <enum name="MAV_CMD">
-      <entry value="211" name="MAV_CMD_DO_GRIPPER">
-        <description>Mission command to operate EPM gripper.</description>
-        <param index="1">Gripper number (a number from 1 to max number of grippers on the vehicle).</param>
-        <param index="2">Gripper action (0=release, 1=grab. See GRIPPER_ACTIONS enum).</param>
-        <param index="3">Empty.</param>
-        <param index="4">Empty.</param>
-        <param index="5">Empty.</param>
-        <param index="6">Empty.</param>
-        <param index="7">Empty.</param>
-      </entry>
-      <entry value="212" name="MAV_CMD_DO_AUTOTUNE_ENABLE">
-        <description>Enable/disable autotune.</description>
-        <param index="1">Enable (1: enable, 0:disable).</param>
-        <param index="2">Empty.</param>
-        <param index="3">Empty.</param>
-        <param index="4">Empty.</param>
-        <param index="5">Empty.</param>
-        <param index="6">Empty.</param>
-        <param index="7">Empty.</param>
-      </entry>
-      <entry value="215" name="MAV_CMD_DO_SET_RESUME_REPEAT_DIST">
+      <!-- 200 to 214 used by common.xml -->
+      <entry value="215" name="MAV_CMD_DO_SET_RESUME_REPEAT_DIST" hasLocation="false" isDestination="false">
         <description>Set the distance to be repeated on mission resume</description>
         <param index="1" label="Distance" units="m">Distance.</param>
         <param index="2">Empty.</param>
@@ -49,17 +38,27 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="83" name="MAV_CMD_NAV_ALTITUDE_WAIT">
-        <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
-        <param index="1">Altitude (m).</param>
-        <param index="2">Descent speed (m/s).</param>
-        <param index="3">Wiggle Time (s).</param>
+      <entry value="216" name="MAV_CMD_DO_SPRAYER" hasLocation="false" isDestination="false">
+        <description>Control attached liquid sprayer</description>
+        <param index="1" label="Sprayer Enable" minValue="0" maxValue="1" increment="1">0: disable sprayer. 1: enable sprayer.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
         <param index="4">Empty.</param>
         <param index="5">Empty.</param>
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42000" name="MAV_CMD_POWER_OFF_INITIATED">
+      <entry value="83" name="MAV_CMD_NAV_ALTITUDE_WAIT" hasLocation="false" isDestination="false">
+        <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
+        <param index="1" label="Altitude" units="m">Altitude.</param>
+        <param index="2" label="Descent Speed" units="m/s">Descent speed.</param>
+        <param index="3" label="Wiggle Time" units="s">How long to wiggle the control surfaces to prevent them seizing up.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
+      <entry value="42000" name="MAV_CMD_POWER_OFF_INITIATED" hasLocation="false" isDestination="false">
         <description>A system wide power-off event has been initiated.</description>
         <param index="1">Empty.</param>
         <param index="2">Empty.</param>
@@ -70,7 +69,7 @@
         <param index="7">Empty.</param>
       </entry>
       <!-- MAV_CMD_SOLO_BTN_* are here to provide vendor-specific support for 3DR Solo until a better solution is found to atomically make multiple commands with control flow -->
-      <entry value="42001" name="MAV_CMD_SOLO_BTN_FLY_CLICK">
+      <entry value="42001" name="MAV_CMD_SOLO_BTN_FLY_CLICK" hasLocation="false" isDestination="false">
         <description>FLY button has been clicked.</description>
         <param index="1">Empty.</param>
         <param index="2">Empty.</param>
@@ -80,9 +79,9 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42002" name="MAV_CMD_SOLO_BTN_FLY_HOLD">
+      <entry value="42002" name="MAV_CMD_SOLO_BTN_FLY_HOLD" hasLocation="false" isDestination="false">
         <description>FLY button has been held for 1.5 seconds.</description>
-        <param index="1">Takeoff altitude.</param>
+        <param index="1" label="Takeoff Altitude" units="m">Takeoff altitude.</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -90,9 +89,9 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42003" name="MAV_CMD_SOLO_BTN_PAUSE_CLICK">
+      <entry value="42003" name="MAV_CMD_SOLO_BTN_PAUSE_CLICK" hasLocation="false" isDestination="false">
         <description>PAUSE button has been clicked.</description>
-        <param index="1">1 if Solo is in a shot mode, 0 otherwise.</param>
+        <param index="1" label="Shot Mode" minValue="0" maxValue="1" increment="1">1 if Solo is in a shot mode, 0 otherwise.</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -100,50 +99,41 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42004" name="MAV_CMD_FIXED_MAG_CAL">
+      <entry value="42004" name="MAV_CMD_FIXED_MAG_CAL" hasLocation="false" isDestination="false">
         <description>Magnetometer calibration based on fixed position
         in earth field given by inclination, declination and intensity.</description>
-        <param index="1">MagDeclinationDegrees.</param>
-        <param index="2">MagInclinationDegrees.</param>
-        <param index="3">MagIntensityMilliGauss.</param>
-        <param index="4">YawDegrees.</param>
+        <param index="1" label="Declination" units="deg">Magnetic declination.</param>
+        <param index="2" label="Inclination" units="deg">Magnetic inclination.</param>
+        <param index="3" label="Intensity" units="mgauss">Magnetic intensity.</param>
+        <param index="4" label="Yaw" units="deg">Yaw.</param>
         <param index="5">Empty.</param>
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42005" name="MAV_CMD_FIXED_MAG_CAL_FIELD">
-        <description>Magnetometer calibration based on fixed expected field values in milliGauss.</description>
-        <param index="1">FieldX.</param>
-        <param index="2">FieldY.</param>
-        <param index="3">FieldZ.</param>
+      <entry value="42005" name="MAV_CMD_FIXED_MAG_CAL_FIELD" hasLocation="false" isDestination="false">
+        <description>Magnetometer calibration based on fixed expected field values.</description>
+        <param index="1" label="Field X" units="mgauss">Field strength X.</param>
+        <param index="2" label="Field Y" units="mgauss">Field strength Y.</param>
+        <param index="3" label="Field Z" units="mgauss">Field strength Z.</param>
         <param index="4">Empty.</param>
         <param index="5">Empty.</param>
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW">
-        <description>Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM field tables in the vehicle, given only the known yaw of the vehicle. If Latitude and longitude are both zero then use the current vehicle location.</description>
-        <param index="1" label="Yaw" units="deg">Yaw of vehicle in earth frame.</param>
-        <param index="2" label="CompassMask">CompassMask, 0 for all.</param>
-        <param index="3" label="Latitude" units="deg">Latitude.</param>
-        <param index="4" label="Longitude" units="deg">Longitude.</param>
-        <param index="5">Empty.</param>
+      <!-- 42006 MAV_CMD_FIXED_MAG_CAL_YAW moved to common.xml -->
+      <entry value="42424" name="MAV_CMD_DO_START_MAG_CAL" hasLocation="false" isDestination="false">
+        <description>Initiate a magnetometer calibration.</description>
+        <param index="1" label="Magnetometers Bitmask" minValue="0" maxValue="255" increment="1">Bitmask of magnetometers to calibrate. Use 0 to calibrate all sensors that can be started (sensors may not start if disabled, unhealthy, etc.). The command will NACK if calibration does not start for a sensor explicitly specified by the bitmask.</param>
+        <param index="2" label="Retry on Failure" minValue="0" maxValue="1" increment="1">Automatically retry on failure (0=no retry, 1=retry).</param>
+        <param index="3" label="Autosave" minValue="0" maxValue="1" increment="1">Save without user input (0=require input, 1=autosave).</param>
+        <param index="4" label="Delay" units="s">Delay.</param>
+        <param index="5" label="Autoreboot" minValue="0" maxValue="1" increment="1">Autoreboot (0=user reboot, 1=autoreboot).</param>
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42424" name="MAV_CMD_DO_START_MAG_CAL">
-        <description>Initiate a magnetometer calibration.</description>
-        <param index="1">uint8_t bitmask of magnetometers (0 means all).</param>
-        <param index="2">Automatically retry on failure (0=no retry, 1=retry).</param>
-        <param index="3">Save without user input (0=require input, 1=autosave).</param>
-        <param index="4">Delay (seconds).</param>
-        <param index="5">Autoreboot (0=user reboot, 1=autoreboot).</param>
-        <param index="6">Empty.</param>
-        <param index="7">Empty.</param>
-      </entry>
-      <entry value="42425" name="MAV_CMD_DO_ACCEPT_MAG_CAL">
-        <description>Initiate a magnetometer calibration.</description>
-        <param index="1">uint8_t bitmask of magnetometers (0 means all).</param>
+      <entry value="42425" name="MAV_CMD_DO_ACCEPT_MAG_CAL" hasLocation="false" isDestination="false">
+        <description>Accept a magnetometer calibration.</description>
+        <param index="1" label="Magnetometers Bitmask" minValue="0" maxValue="255" increment="1">Bitmask of magnetometers that calibration is accepted (0 means all).</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -151,9 +141,9 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42426" name="MAV_CMD_DO_CANCEL_MAG_CAL">
+      <entry value="42426" name="MAV_CMD_DO_CANCEL_MAG_CAL" hasLocation="false" isDestination="false">
         <description>Cancel a running magnetometer calibration.</description>
-        <param index="1">uint8_t bitmask of magnetometers (0 means all).</param>
+        <param index="1" label="Magnetometers Bitmask" minValue="0" maxValue="255" increment="1">Bitmask of magnetometers to cancel a running calibration (0 means all).</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -161,9 +151,9 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42429" name="MAV_CMD_ACCELCAL_VEHICLE_POS">
+      <entry value="42429" name="MAV_CMD_ACCELCAL_VEHICLE_POS" hasLocation="false" isDestination="false">
         <description>Used when doing accelerometer calibration. When sent to the GCS tells it what position to put the vehicle in. When sent to the vehicle says what position the vehicle is in.</description>
-        <param index="1">Position, one of the ACCELCAL_VEHICLE_POS enum values.</param>
+        <param index="1" label="Position" enum="ACCELCAL_VEHICLE_POS">Position.</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -171,7 +161,7 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42428" name="MAV_CMD_DO_SEND_BANNER">
+      <entry value="42428" name="MAV_CMD_DO_SEND_BANNER" hasLocation="false" isDestination="false">
         <description>Reply with the version banner.</description>
         <param index="1">Empty.</param>
         <param index="2">Empty.</param>
@@ -181,9 +171,9 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42427" name="MAV_CMD_SET_FACTORY_TEST_MODE">
+      <entry value="42427" name="MAV_CMD_SET_FACTORY_TEST_MODE" hasLocation="false" isDestination="false">
         <description>Command autopilot to get into factory test/diagnostic mode.</description>
-        <param index="1">0 means get out of test mode, 1 means get into test mode.</param>
+        <param index="1" label="Test Mode" minValue="0" maxValue="1" increment="1">0: activate test mode, 1: exit test mode.</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -191,7 +181,7 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42501" name="MAV_CMD_GIMBAL_RESET">
+      <entry value="42501" name="MAV_CMD_GIMBAL_RESET" hasLocation="false" isDestination="false">
         <description>Causes the gimbal to reset and boot as if it was just powered on.</description>
         <param index="1">Empty.</param>
         <param index="2">Empty.</param>
@@ -201,17 +191,17 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42502" name="MAV_CMD_GIMBAL_AXIS_CALIBRATION_STATUS">
+      <entry value="42502" name="MAV_CMD_GIMBAL_AXIS_CALIBRATION_STATUS" hasLocation="false" isDestination="false">
         <description>Reports progress and success or failure of gimbal axis calibration procedure.</description>
-        <param index="1">Gimbal axis we're reporting calibration progress for.</param>
-        <param index="2">Current calibration progress for this axis, 0x64=100%.</param>
-        <param index="3">Status of the calibration.</param>
+        <param index="1" label="Axis" enum="GIMBAL_AXIS">Gimbal axis we're reporting calibration progress for.</param>
+        <param index="2" label="Progress" units="%" minValue="0" maxValue="100">Current calibration progress for this axis.</param>
+        <param index="3" label="Status" enum="GIMBAL_AXIS_CALIBRATION_STATUS">Status of the calibration.</param>
         <param index="4">Empty.</param>
         <param index="5">Empty.</param>
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42503" name="MAV_CMD_GIMBAL_REQUEST_AXIS_CALIBRATION">
+      <entry value="42503" name="MAV_CMD_GIMBAL_REQUEST_AXIS_CALIBRATION" hasLocation="false" isDestination="false">
         <description>Starts commutation calibration on the gimbal.</description>
         <param index="1">Empty.</param>
         <param index="2">Empty.</param>
@@ -221,7 +211,7 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42505" name="MAV_CMD_GIMBAL_FULL_RESET">
+      <entry value="42505" name="MAV_CMD_GIMBAL_FULL_RESET" hasLocation="false" isDestination="false">
         <description>Erases gimbal application and parameters.</description>
         <param index="1">Magic number.</param>
         <param index="2">Magic number.</param>
@@ -231,23 +221,14 @@
         <param index="6">Magic number.</param>
         <param index="7">Magic number.</param>
       </entry>
-      <entry value="42600" name="MAV_CMD_DO_WINCH">
-        <description>Command to operate winch.</description>
-        <param index="1">Winch number (0 for the default winch, otherwise a number from 1 to max number of winches on the vehicle).</param>
-        <param index="2">Action (0=relax, 1=relative length control, 2=rate control. See WINCH_ACTIONS enum.).</param>
-        <param index="3">Release length (cable distance to unwind in meters, negative numbers to wind in cable).</param>
-        <param index="4">Release rate (meters/second).</param>
-        <param index="5">Empty.</param>
-        <param index="6">Empty.</param>
-        <param index="7">Empty.</param>
-      </entry>
-      <entry value="42650" name="MAV_CMD_FLASH_BOOTLOADER">
+      <!-- 42600 used by common.xml -->
+      <entry value="42650" name="MAV_CMD_FLASH_BOOTLOADER" hasLocation="false" isDestination="false">
         <description>Update the bootloader</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5">Magic number - set to 290876 to actually flash</param>
+        <param index="5" label="Magic Number" increment="1">Magic number - set to 290876 to actually flash</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
@@ -256,7 +237,7 @@
         <param index="1" label="battery mask">Bitmask of batteries to reset. Least significant bit is for the first battery.</param>
         <param index="2" label="percentage" minValue="0" maxValue="100" increment="1">Battery percentage remaining to set.</param>
       </entry>
-      <entry value="42700" name="MAV_CMD_DEBUG_TRAP">
+      <entry value="42700" name="MAV_CMD_DEBUG_TRAP" hasLocation="false" isDestination="false">
         <description>Issue a trap signal to the autopilot process, presumably to enter the debugger.</description>
         <param index="1">Magic number - set to 32451 to actually trap.</param>
         <param index="2">Empty.</param>
@@ -266,9 +247,39 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42701" name="MAV_CMD_SCRIPTING">
+      <entry value="42701" name="MAV_CMD_SCRIPTING" hasLocation="false" isDestination="false">
         <description>Control onboard scripting.</description>
         <param index="1" enum="SCRIPTING_CMD">Scripting command to execute</param>
+      </entry>
+      <entry value="43000" name="MAV_CMD_GUIDED_CHANGE_SPEED" hasLocation="false" isDestination="false">
+        <description>Change flight speed at a given rate. This slews the vehicle at a controllable rate between it's previous speed and the new one. (affects GUIDED only. Outside GUIDED, aircraft ignores these commands. Designed for onboard companion-computer command-and-control, not normally operator/GCS control.)</description>
+        <param index="1" label="speed type" enum="SPEED_TYPE">Airspeed or groundspeed.</param>
+        <param index="2" label="speed target" units="m/s">Target Speed</param>
+        <param index="3" label="speed rate-of-change" units="m/s/s">Acceleration rate, 0 to take effect instantly</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="43001" name="MAV_CMD_GUIDED_CHANGE_ALTITUDE" hasLocation="false" isDestination="false">
+        <description>Change target altitude at a given rate. This slews the vehicle at a controllable rate between it's previous altitude and the new one. (affects GUIDED only. Outside GUIDED, aircraft ignores these commands. Designed for onboard companion-computer command-and-control, not normally operator/GCS control.)</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3" label="alt rate-of-change" units="m/s/s" minValue="0">Rate of change, toward new altitude. 0 for maximum rate change. Positive numbers only, as negative numbers will not converge on the new target alt.</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7" label="target alt" units="m">Target Altitude</param>
+      </entry>
+      <entry value="43002" name="MAV_CMD_GUIDED_CHANGE_HEADING" hasLocation="false" isDestination="false">
+        <description>Change to target heading at a given rate, overriding previous heading/s. This slews the vehicle at a controllable rate between it's previous heading and the new one. (affects GUIDED only. Exiting GUIDED returns aircraft to normal behaviour defined elsewhere. Designed for onboard companion-computer command-and-control, not normally operator/GCS control.)</description>
+        <param index="1" label="heading type" enum="HEADING_TYPE">course-over-ground or raw vehicle heading.</param>
+        <param index="2" label="heading target" units="deg" minValue="0" maxValue="359.99">Target heading.</param>
+        <param index="3" label="heading rate-of-change" units="m/s/s">Maximum centripetal accelearation, ie rate of change,  toward new heading.</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
       </entry>
     </enum>
     <enum name="SCRIPTING_CMD">
@@ -320,29 +331,6 @@
       </entry>
       <entry value="2" name="LAND_IMMEDIATELY">
         <description>Flag set when plane is to immediately descend to break altitude and land without GCS intervention. Flag not set when plane is to loiter at Rally point until commanded to land.</description>
-      </entry>
-    </enum>
-    <!-- gripper action enum -->
-    <enum name="GRIPPER_ACTIONS">
-      <description>Gripper actions.</description>
-      <entry value="0" name="GRIPPER_ACTION_RELEASE">
-        <description>Gripper release cargo.</description>
-      </entry>
-      <entry value="1" name="GRIPPER_ACTION_GRAB">
-        <description>Gripper grab onto cargo.</description>
-      </entry>
-    </enum>
-    <!-- Winch action enum -->
-    <enum name="WINCH_ACTIONS">
-      <description>Winch actions.</description>
-      <entry value="0" name="WINCH_RELAXED">
-        <description>Relax winch.</description>
-      </entry>
-      <entry value="1" name="WINCH_RELATIVE_LENGTH_CONTROL">
-        <description>Winch unwinds or winds specified length of cable optionally using specified rate.</description>
-      </entry>
-      <entry value="2" name="WINCH_RATE_CONTROL">
-        <description>Winch unwinds or winds cable at specified rate in meters/seconds.</description>
       </entry>
     </enum>
     <!-- Camera event types -->
@@ -904,16 +892,6 @@
       <entry value="5" name="PID_TUNING_STEER"/>
       <entry value="6" name="PID_TUNING_LANDING"/>
     </enum>
-    <enum name="MAG_CAL_STATUS">
-      <entry value="0" name="MAG_CAL_NOT_STARTED"/>
-      <entry value="1" name="MAG_CAL_WAITING_TO_START"/>
-      <entry value="2" name="MAG_CAL_RUNNING_STEP_ONE"/>
-      <entry value="3" name="MAG_CAL_RUNNING_STEP_TWO"/>
-      <entry value="4" name="MAG_CAL_SUCCESS"/>
-      <entry value="5" name="MAG_CAL_FAILED"/>
-      <entry value="6" name="MAG_CAL_BAD_ORIENTATION"/>
-      <entry value="7" name="MAG_CAL_BAD_RADIUS"/>
-    </enum>
     <enum name="MAV_REMOTE_LOG_DATA_BLOCK_COMMANDS">
       <description>Special ACK block numbers control activation of dataflash log streaming.</description>
       <!-- C uses signed integers for enumerations; these constants start at MAX_INT32_T and go down -->
@@ -993,6 +971,8 @@
       <entry value="20" name="PLANE_MODE_QLAND"/>
       <entry value="21" name="PLANE_MODE_QRTL"/>
       <entry value="22" name="PLANE_MODE_QAUTOTUNE"/>
+      <entry value="23" name="PLANE_MODE_QACRO"/>
+      <entry value="24" name="PLANE_MODE_THERMAL"/>
     </enum>
     <enum name="COPTER_MODE">
       <description>A mapping of copter flight modes for custom_mode field of heartbeat.</description>
@@ -1015,6 +995,11 @@
       <entry value="19" name="COPTER_MODE_AVOID_ADSB"/>
       <entry value="20" name="COPTER_MODE_GUIDED_NOGPS"/>
       <entry value="21" name="COPTER_MODE_SMART_RTL"/>
+      <entry value="22" name="COPTER_MODE_FLOWHOLD"/>
+      <entry value="23" name="COPTER_MODE_FOLLOW"/>
+      <entry value="24" name="COPTER_MODE_ZIGZAG"/>
+      <entry value="25" name="COPTER_MODE_SYSTEMID"/>
+      <entry value="26" name="COPTER_MODE_AUTOROTATE"/>
     </enum>
     <enum name="SUB_MODE">
       <description>A mapping of sub flight modes for custom_mode field of heartbeat.</description>
@@ -1035,6 +1020,8 @@
       <entry value="3" name="ROVER_MODE_STEERING"/>
       <entry value="4" name="ROVER_MODE_HOLD"/>
       <entry value="5" name="ROVER_MODE_LOITER"/>
+      <entry value="6" name="ROVER_MODE_FOLLOW"/>
+      <entry value="7" name="ROVER_MODE_SIMPLE"/>
       <entry value="10" name="ROVER_MODE_AUTO"/>
       <entry value="11" name="ROVER_MODE_RTL"/>
       <entry value="12" name="ROVER_MODE_SMART_RTL"/>
@@ -1049,6 +1036,25 @@
       <entry value="3" name="TRACKER_MODE_SERVO_TEST"/>
       <entry value="10" name="TRACKER_MODE_AUTO"/>
       <entry value="16" name="TRACKER_MODE_INITIALIZING"/>
+    </enum>
+    <enum name="OSD_PARAM_CONFIG_TYPE">
+      <description>The type of parameter for the OSD parameter editor.</description>
+      <entry value="0" name="OSD_PARAM_NONE"/>
+      <entry value="1" name="OSD_PARAM_SERIAL_PROTOCOL"/>
+      <entry value="2" name="OSD_PARAM_SERVO_FUNCTION"/>
+      <entry value="3" name="OSD_PARAM_AUX_FUNCTION"/>
+      <entry value="4" name="OSD_PARAM_FLIGHT_MODE"/>
+      <entry value="5" name="OSD_PARAM_FAILSAFE_ACTION"/>
+      <entry value="6" name="OSD_PARAM_FAILSAFE_ACTION_1"/>
+      <entry value="7" name="OSD_PARAM_FAILSAFE_ACTION_2"/>
+      <entry value="8" name="OSD_PARAM_NUM_TYPES"/>
+    </enum>
+    <enum name="OSD_PARAM_CONFIG_ERROR">
+      <description>The error type for the OSD parameter editor.</description>
+      <entry value="0" name="OSD_PARAM_SUCCESS"/>
+      <entry value="1" name="OSD_PARAM_INVALID_SCREEN"/>
+      <entry value="2" name="OSD_PARAM_INVALID_PARAMETER_INDEX"/>
+      <entry value="3" name="OSD_PARAM_INVALID_PARAMETER"/>
     </enum>
   </enums>
   <messages>
@@ -1295,7 +1301,6 @@
       <field type="float" name="CompensationY">Motor Compensation Y.</field>
       <field type="float" name="CompensationZ">Motor Compensation Z.</field>
     </message>
-    <!-- Coming soon <message name="RALLY_LAND_POINT" id="177"> <description>A rally landing point. An aircraft loitering at a rally point may choose one of these points to land at.</description> <field name="target_system" type="uint8_t">System ID.</field> <field name="target_component" type="uint8_t">Component ID.</field> <field name="idx" type="uint8_t">Point index (first point is 0).</field> <field name="count" type="uint8_t">Total number of points (for sanity checking).</field> <field name="lat" type="int32_t">Latitude of point.</field> <field name="lng" type="int32_t">Longitude of point.</field> <field name="alt" type="uint16_t">Ground AGL (usually 0).</field> </message> <message name="RALLY_LAND_FETCH_POINT" id="178"> <description>Request a current rally land point from MAV.</description> <field name="target_system" type="uint8_t">System ID.</field> <field name="target_component" type="uint8_t">Component ID.</field> <field name="idx" type="uint8_t">Point index (first point is 0).</field> </message> -->
     <message id="178" name="AHRS2">
       <description>Status of secondary AHRS filter if available.</description>
       <field type="float" name="roll" units="rad">Roll angle.</field>
@@ -1398,7 +1403,7 @@
     </message>
     <message id="191" name="MAG_CAL_PROGRESS">
       <description>Reports progress of compass calibration.</description>
-      <field type="uint8_t" name="compass_id">Compass being calibrated.</field>
+      <field type="uint8_t" name="compass_id" instance="true">Compass being calibrated.</field>
       <field type="uint8_t" name="cal_mask" display="bitmask">Bitmask of compasses being calibrated.</field>
       <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Calibration Status.</field>
       <field type="uint8_t" name="attempt">Attempt number.</field>
@@ -1408,28 +1413,7 @@
       <field type="float" name="direction_y">Body frame direction vector for display.</field>
       <field type="float" name="direction_z">Body frame direction vector for display.</field>
     </message>
-    <message id="192" name="MAG_CAL_REPORT">
-      <description>Reports results of completed compass calibration. Sent until MAG_CAL_ACK received.</description>
-      <field type="uint8_t" name="compass_id">Compass being calibrated.</field>
-      <field type="uint8_t" name="cal_mask" display="bitmask">Bitmask of compasses being calibrated.</field>
-      <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Calibration Status.</field>
-      <field type="uint8_t" name="autosaved">0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.</field>
-      <field type="float" name="fitness" units="mgauss">RMS milligauss residuals.</field>
-      <field type="float" name="ofs_x">X offset.</field>
-      <field type="float" name="ofs_y">Y offset.</field>
-      <field type="float" name="ofs_z">Z offset.</field>
-      <field type="float" name="diag_x">X diagonal (matrix 11).</field>
-      <field type="float" name="diag_y">Y diagonal (matrix 22).</field>
-      <field type="float" name="diag_z">Z diagonal (matrix 33).</field>
-      <field type="float" name="offdiag_x">X off-diagonal (matrix 12 and 21).</field>
-      <field type="float" name="offdiag_y">Y off-diagonal (matrix 13 and 31).</field>
-      <field type="float" name="offdiag_z">Z off-diagonal (matrix 32 and 23).</field>
-      <extensions/>
-      <field type="float" name="orientation_confidence">Confidence in orientation (higher is better).</field>
-      <field type="uint8_t" name="old_orientation" enum="MAV_SENSOR_ORIENTATION">orientation before calibration.</field>
-      <field type="uint8_t" name="new_orientation" enum="MAV_SENSOR_ORIENTATION">orientation after calibration.</field>
-      <field type="float" name="scale_factor">field radius correction factor</field>
-    </message>
+    <!-- 192 MAG_CAL_REPORT moved to common.xml -->
     <!-- EKF status message from autopilot to GCS. -->
     <message id="193" name="EKF_STATUS_REPORT">
       <description>EKF Status message including flags and variances.</description>
@@ -1447,9 +1431,9 @@
     <!-- realtime PID tuning message -->
     <message id="194" name="PID_TUNING">
       <description>PID tuning information.</description>
-      <field type="uint8_t" name="axis" enum="PID_TUNING_AXIS">Axis.</field>
-      <field type="float" name="desired" units="deg/s">Desired rate.</field>
-      <field type="float" name="achieved" units="deg/s">Achieved rate.</field>
+      <field type="uint8_t" name="axis" enum="PID_TUNING_AXIS" instance="true">Axis.</field>
+      <field type="float" name="desired">Desired rate.</field>
+      <field type="float" name="achieved">Achieved rate.</field>
       <field type="float" name="FF">FF component.</field>
       <field type="float" name="P">P component.</field>
       <field type="float" name="I">I component.</field>
@@ -1532,26 +1516,7 @@
       <field type="uint8_t" name="status" enum="GOPRO_REQUEST_STATUS">Status.</field>
     </message>
     <!-- 219 to 224 RESERVED for more GOPRO-->
-    <message id="225" name="EFI_STATUS">
-      <description>EFI status output</description>
-      <field type="uint8_t" name="health">EFI health status</field>
-      <field type="float" name="ecu_index">ECU index</field>
-      <field type="float" name="rpm">RPM</field>
-      <field type="float" name="fuel_consumed" units="g">Fuel consumed</field>
-      <field type="float" name="fuel_flow" units="g/min">Fuel flow rate</field>
-      <field type="float" name="engine_load" units="%">Engine load</field>
-      <field type="float" name="throttle_position" units="%">Throttle position</field>
-      <field type="float" name="spark_dwell_time" units="ms">Spark dwell time</field>
-      <field type="float" name="barometric_pressure" units="kPa">Barometric pressure</field>
-      <field type="float" name="intake_manifold_pressure" units="kPa">Intake manifold pressure(</field>
-      <field type="float" name="intake_manifold_temperature" units="degC">Intake manifold temperature</field>
-      <field type="float" name="cylinder_head_temperature" units="degC">Cylinder head temperature</field>
-      <field type="float" name="ignition_timing" units="deg">Ignition timing (Crank angle degrees)</field>
-      <field type="float" name="injection_time" units="ms">Injection time</field>
-      <field type="float" name="exhaust_gas_temperature" units="degC">Exhaust gas temperature</field>
-      <field type="float" name="throttle_out" units="%">Output throttle</field>
-      <field type="float" name="pt_compensation">Pressure/temperature compensation</field>
-    </message>
+    <!-- 225 EFI_STATUS moved to common.xml -->
     <message id="226" name="RPM">
       <description>RPM sensor output.</description>
       <field type="float" name="rpm1">RPM Sensor1.</field>
@@ -1569,6 +1534,8 @@
       <field type="char[40]" name="busname">Name of device on bus (for SPI).</field>
       <field type="uint8_t" name="regstart">First register to read.</field>
       <field type="uint8_t" name="count">Count of registers to read.</field>
+      <extensions/>
+      <field type="uint8_t" name="bank">Bank number.</field>
     </message>
     <message id="11001" name="DEVICE_OP_READ_REPLY">
       <description>Read registers reply.</description>
@@ -1577,6 +1544,8 @@
       <field type="uint8_t" name="regstart">Starting register.</field>
       <field type="uint8_t" name="count">Count of bytes read.</field>
       <field type="uint8_t[128]" name="data">Reply data.</field>
+      <extensions/>
+      <field type="uint8_t" name="bank">Bank number.</field>
     </message>
     <message id="11002" name="DEVICE_OP_WRITE">
       <description>Write registers for a device.</description>
@@ -1590,6 +1559,8 @@
       <field type="uint8_t" name="regstart">First register to write.</field>
       <field type="uint8_t" name="count">Count of registers to write.</field>
       <field type="uint8_t[128]" name="data">Write data.</field>
+      <extensions/>
+      <field type="uint8_t" name="bank">Bank number.</field>
     </message>
     <message id="11003" name="DEVICE_OP_WRITE_REPLY">
       <description>Write registers reply.</description>
@@ -1599,7 +1570,7 @@
     <!-- realtime Adaptive Controller tuning message -->
     <message id="11010" name="ADAP_TUNING">
       <description>Adaptive Controller tuning information.</description>
-      <field type="uint8_t" name="axis" enum="PID_TUNING_AXIS">Axis.</field>
+      <field type="uint8_t" name="axis" enum="PID_TUNING_AXIS" instance="true">Axis.</field>
       <field type="float" name="desired" units="deg/s">Desired rate.</field>
       <field type="float" name="achieved" units="deg/s">Achieved rate.</field>
       <field type="float" name="error">Error between model and vehicle.</field>
@@ -1618,8 +1589,8 @@
       <description>Camera vision based attitude and position deltas.</description>
       <field name="time_usec" type="uint64_t" units="us">Timestamp (synced to UNIX time or since system boot).</field>
       <field name="time_delta_usec" type="uint64_t" units="us">Time since the last reported camera frame.</field>
-      <field type="float[3]" name="angle_delta">Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.</field>
-      <field type="float[3]" name="position_delta" units="m">Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).</field>
+      <field type="float[3]" name="angle_delta" units="rad">Defines a rotation vector [roll, pitch, yaw] to the current MAV_FRAME_BODY_FRD from the previous MAV_FRAME_BODY_FRD.</field>
+      <field type="float[3]" name="position_delta" units="m">Change in position to the current MAV_FRAME_BODY_FRD from the previous FRAME_BODY_FRD rotated to the current MAV_FRAME_BODY_FRD.</field>
       <field type="float" name="confidence" units="%">Normalised confidence value from 0 to 100.</field>
     </message>
     <!-- Angle of Attack and Side Slip Angle message -->
@@ -1655,6 +1626,56 @@
       <field type="uint16_t[4]" name="totalcurrent" units="mAh">Total current.</field>
       <field type="uint16_t[4]" name="rpm" units="rpm">RPM (eRPM).</field>
       <field type="uint16_t[4]" name="count">count of telemetry packets received (wraps at 65535).</field>
+    </message>
+    <message id="11033" name="OSD_PARAM_CONFIG">
+      <description>Configure an OSD parameter slot.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint32_t" name="request_id">Request ID - copied to reply.</field>
+      <field type="uint8_t" name="osd_screen">OSD parameter screen index.</field>
+      <field type="uint8_t" name="osd_index">OSD parameter display index.</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="uint8_t" name="config_type" enum="OSD_PARAM_CONFIG_TYPE">Config type.</field>
+      <field type="float" name="min_value">OSD parameter minimum value.</field>
+      <field type="float" name="max_value">OSD parameter maximum value.</field>
+      <field type="float" name="increment">OSD parameter increment.</field>
+    </message>
+    <message id="11034" name="OSD_PARAM_CONFIG_REPLY">
+      <description>Configure OSD parameter reply.</description>
+      <field type="uint32_t" name="request_id">Request ID - copied from request.</field>
+      <field type="uint8_t" name="result" enum="OSD_PARAM_CONFIG_ERROR">Config error type.</field>
+    </message>
+    <message id="11035" name="OSD_PARAM_SHOW_CONFIG">
+      <description>Read a configured an OSD parameter slot.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint32_t" name="request_id">Request ID - copied to reply.</field>
+      <field type="uint8_t" name="osd_screen">OSD parameter screen index.</field>
+      <field type="uint8_t" name="osd_index">OSD parameter display index.</field>
+    </message>
+    <message id="11036" name="OSD_PARAM_SHOW_CONFIG_REPLY">
+      <description>Read configured OSD parameter reply.</description>
+      <field type="uint32_t" name="request_id">Request ID - copied from request.</field>
+      <field type="uint8_t" name="result" enum="OSD_PARAM_CONFIG_ERROR">Config error type.</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="uint8_t" name="config_type" enum="OSD_PARAM_CONFIG_TYPE">Config type.</field>
+      <field type="float" name="min_value">OSD parameter minimum value.</field>
+      <field type="float" name="max_value">OSD parameter maximum value.</field>
+      <field type="float" name="increment">OSD parameter increment.</field>
+    </message>
+    <message id="11037" name="OBSTACLE_DISTANCE_3D">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
+      <description>Obstacle located as a 3D vector.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="sensor_type" enum="MAV_DISTANCE_SENSOR">Class id of the distance sensor type.</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame of reference.</field>
+      <field type="uint16_t" name="obstacle_id" instance="true"> Unique ID given to each obstacle so that its movement can be tracked. Use UINT16_MAX if object ID is unknown or cannot be determined.</field>
+      <field type="float" name="x" units="m"> X position of the obstacle.</field>
+      <field type="float" name="y" units="m"> Y position of the obstacle.</field>
+      <field type="float" name="z" units="m"> Z position of the obstacle.</field>
+      <field type="float" name="min_distance" units="m">Minimum distance the sensor can measure.</field>
+      <field type="float" name="max_distance" units="m">Maximum distance the sensor can measure.</field>
     </message>
   </messages>
 </mavlink>

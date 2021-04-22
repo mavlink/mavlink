@@ -48,7 +48,7 @@
       <entry value="0" name="GSM_MODEM_TYPE_UNKNOWN">
         <description>not specified</description>
       </entry>
-      <entry name="GSM_MODEM_TYPE_HUAWEI_E3372">
+      <entry value="1" name="GSM_MODEM_TYPE_HUAWEI_E3372">
         <description>HUAWEI LTE USB Stick E3372</description>
       </entry>
     </enum>
@@ -269,6 +269,25 @@
       <field type="uint8_t" name="rsrp_rscp">RSRP (LTE) or RSCP (WCDMA) as reported by modem (unconverted)</field>
       <field type="uint8_t" name="sinr_ecio">SINR (LTE) or ECIO (WCDMA) as reported by modem (unconverted)</field>
       <field type="uint8_t" name="rsrq">RSRQ (LTE only) as reported by modem (unconverted)</field>
+    </message>
+    <message id="214" name="SATCOM_LINK_STATUS">
+      <description>Status of the SatCom link</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint64_t" name="last_heartbeat" units="us">Timestamp of the last successful sbd session</field>
+      <field type="uint16_t" name="failed_sessions">Number of failed sessions</field>
+      <field type="uint16_t" name="successful_sessions">Number of successful sessions</field>
+      <field type="uint8_t" name="signal_quality">Signal quality</field>
+      <field type="uint8_t" name="ring_pending">Ring call pending</field>
+      <field type="uint8_t" name="tx_session_pending">Transmission session pending</field>
+      <field type="uint8_t" name="rx_session_pending">Receiving session pending</field>
+    </message>
+    <message id="215" name="SENSOR_AIRFLOW_ANGLES">
+      <description>Calibrated airflow angle measurements</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="float" name="angleofattack" units="deg">Angle of attack</field>
+      <field type="uint8_t" name="angleofattack_valid">Angle of attack measurement valid</field>
+      <field type="float" name="sideslip" units="deg">Sideslip angle</field>
+      <field type="uint8_t" name="sideslip_valid">Sideslip angle measurement valid</field>
     </message>
   </messages>
 </mavlink>
