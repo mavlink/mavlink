@@ -44,6 +44,25 @@
         <description>Synthetic/calculated airspeed.</description>
       </entry>
     </enum>
+    <!-- The MAV_CMD enum entries describe either: -->
+    <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
+    <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
+    <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
+    <enum name="MAV_CMD">
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <entry value="5005" name="MAV_CMD_SET_FENCE_BREACH_ACTION" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Sets the action on geofence breach.
+          If sent using the command protocol this sets the system-default geofence action.
+          As part of a mission protocol plan it sets the fence action for the next complete geofence definition *after* the command.
+          Note: A fence action defined in a plan will override the default system setting (even if the system-default is `FENCE_ACTION_NONE`).
+          Note: Every geofence in a plan can have its own action; if no fence action is defined for a particular fence the system-default will be used.
+          Note: The flight stack should reject a plan or command that uses a geofence action that it does not support and send a STATUSTEXT with the reason.
+        </description>
+        <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="53" name="MISSION_CHECKSUM">

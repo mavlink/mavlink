@@ -314,20 +314,30 @@
     </enum>
     <!-- fenced mode enums -->
     <enum name="FENCE_ACTION">
+      <description>Actions following geofence breach.</description>
       <entry value="0" name="FENCE_ACTION_NONE">
-        <description>Disable fenced mode</description>
+        <description>Disable fenced mode. If used in a plan this would mean the next fence is disabled.</description>
       </entry>
       <entry value="1" name="FENCE_ACTION_GUIDED">
-        <description>Switched to guided mode to return point (fence point 0)</description>
+        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
       </entry>
       <entry value="2" name="FENCE_ACTION_REPORT">
         <description>Report fence breach, but don't take action</description>
       </entry>
       <entry value="3" name="FENCE_ACTION_GUIDED_THR_PASS">
-        <description>Switched to guided mode to return point (fence point 0) with manual throttle control</description>
+        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT with manual throttle control in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
       </entry>
       <entry value="4" name="FENCE_ACTION_RTL">
-        <description>Switch to RTL (return to launch) mode and head for the return point.</description>
+        <description>Return/RTL mode.</description>
+      </entry>
+      <entry value="5" name="FENCE_ACTION_HOLD">
+        <description>Hold at current location.</description>
+      </entry>
+      <entry value="6" name="FENCE_ACTION_TERMINATE">
+        <description>Termination failsafe. Motors are shut down (some flight stacks may trigger other failsafe actions).</description>
+      </entry>
+      <entry value="7" name="FENCE_ACTION_LAND">
+        <description>Land at current location.</description>
       </entry>
     </enum>
     <enum name="FENCE_BREACH">
@@ -771,6 +781,9 @@
       </entry>
       <entry value="3" name="COMP_METADATA_TYPE_PERIPHERALS">
         <description>Meta data which specifies potential external peripherals that do not talk MAVLink</description>
+      </entry>
+      <entry value="4" name="COMP_METADATA_TYPE_EVENTS">
+        <description>Meta data for events interface</description>
       </entry>
     </enum>
     <enum name="PARAM_TRANSACTION_TRANSPORT">
@@ -2027,6 +2040,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7">Reserved</param>
       </entry>
+      <!-- value 4005 reserved for MAV_CMD_SET_FENCE_BREACH_ACTION (see development.xml). -->
       <entry value="5100" name="MAV_CMD_NAV_RALLY_POINT" hasLocation="true" isDestination="false">
         <description>Rally point. You can have multiple rally points defined.
         </description>
@@ -4300,6 +4314,18 @@
       <entry value="5" name="MAG_CAL_FAILED"/>
       <entry value="6" name="MAG_CAL_BAD_ORIENTATION"/>
       <entry value="7" name="MAG_CAL_BAD_RADIUS"/>
+    </enum>
+    <enum name="MAV_EVENT_ERROR_REASON">
+      <description>Reason for an event error response.</description>
+      <entry value="0" name="MAV_EVENT_ERROR_REASON_UNAVAILABLE">
+        <description>The requested event is not available (anymore).</description>
+      </entry>
+    </enum>
+    <enum name="MAV_EVENT_CURRENT_SEQUENCE_FLAGS">
+      <description>Flags for CURRENT_EVENT_SEQUENCE.</description>
+      <entry value="1" name="MAV_EVENT_CURRENT_SEQUENCE_FLAGS_RESET">
+        <description>A sequence reset has happened (e.g. vehicle reboot).</description>
+      </entry>
     </enum>
   </enums>
   <messages>
@@ -6683,6 +6709,45 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="format" enum="TUNE_FORMAT" display="bitmask">Bitfield of supported tune formats.</field>
+    </message>
+    <!-- Events Protocol -->
+    <message id="410" name="EVENT">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Event message. Each new event from a particular component gets a new sequence number. The same message might be sent multiple times if (re-)requested. Most events are broadcast, some can be specific to a target component (as receivers keep track of the sequence for missed events, all events need to be broadcast. Thus we use destination_component instead of target_component).</description>
+      <field type="uint8_t" name="destination_component">Component ID</field>
+      <field type="uint8_t" name="destination_system">System ID</field>
+      <field type="uint32_t" name="id">Event ID (as defined in the component metadata)</field>
+      <field type="uint32_t" name="event_time_boot_ms" units="ms">Timestamp (time since system boot when the event happened).</field>
+      <field type="uint16_t" name="sequence">Sequence number.</field>
+      <field type="uint8_t" name="log_levels">Log levels: 4 bits MSB: internal (for logging purposes), 4 bits LSB: external. Levels: Emergency = 0, Alert = 1, Critical = 2, Error = 3, Warning = 4, Notice = 5, Info = 6, Debug = 7, Protocol = 8, Disabled = 9</field>
+      <field type="uint8_t[40]" name="arguments">Arguments (depend on event ID).</field>
+    </message>
+    <message id="411" name="CURRENT_EVENT_SEQUENCE">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Regular broadcast for the current latest event sequence number for a component. This is used to check for dropped events.</description>
+      <field type="uint16_t" name="sequence">Sequence number.</field>
+      <field type="uint8_t" name="flags" enum="MAV_EVENT_CURRENT_SEQUENCE_FLAGS" display="bitmask">Flag bitset.</field>
+    </message>
+    <message id="412" name="REQUEST_EVENT">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Request one or more events to be (re-)sent. If first_sequence==last_sequence, only a single event is requested. Note that first_sequence can be larger than last_sequence (because the sequence number can wrap). Each sequence will trigger an EVENT or EVENT_ERROR response.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="first_sequence">First sequence number of the requested event.</field>
+      <field type="uint16_t" name="last_sequence">Last sequence number of the requested event.</field>
+    </message>
+    <message id="413" name="RESPONSE_EVENT_ERROR">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Response to a REQUEST_EVENT in case of an error (e.g. the event is not available anymore).</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="sequence">Sequence number.</field>
+      <field type="uint16_t" name="sequence_oldest_available">Oldest Sequence number that is still available after the sequence set in REQUEST_EVENT.</field>
+      <field type="uint8_t" name="reason" enum="MAV_EVENT_ERROR_REASON">Error reason.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
