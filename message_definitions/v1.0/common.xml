@@ -314,30 +314,20 @@
     </enum>
     <!-- fenced mode enums -->
     <enum name="FENCE_ACTION">
-      <description>Actions following geofence breach.</description>
       <entry value="0" name="FENCE_ACTION_NONE">
-        <description>Disable fenced mode. If used in a plan this would mean the next fence is disabled.</description>
+        <description>Disable fenced mode</description>
       </entry>
       <entry value="1" name="FENCE_ACTION_GUIDED">
-        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
+        <description>Switched to guided mode to return point (fence point 0)</description>
       </entry>
       <entry value="2" name="FENCE_ACTION_REPORT">
         <description>Report fence breach, but don't take action</description>
       </entry>
       <entry value="3" name="FENCE_ACTION_GUIDED_THR_PASS">
-        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT with manual throttle control in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
+        <description>Switched to guided mode to return point (fence point 0) with manual throttle control</description>
       </entry>
       <entry value="4" name="FENCE_ACTION_RTL">
-        <description>Return/RTL mode.</description>
-      </entry>
-      <entry value="5" name="FENCE_ACTION_HOLD">
-        <description>Hold at current location.</description>
-      </entry>
-      <entry value="6" name="FENCE_ACTION_TERMINATE">
-        <description>Termination failsafe. Motors are shut down (some flight stacks may trigger other failsafe actions).</description>
-      </entry>
-      <entry value="7" name="FENCE_ACTION_LAND">
-        <description>Land at current location.</description>
+        <description>Switch to RTL (return to launch) mode and head for the return point.</description>
       </entry>
     </enum>
     <enum name="FENCE_BREACH">
@@ -2040,7 +2030,6 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7">Reserved</param>
       </entry>
-      <!-- value 4005 reserved for MAV_CMD_SET_FENCE_BREACH_ACTION (see development.xml). -->
       <entry value="5100" name="MAV_CMD_NAV_RALLY_POINT" hasLocation="true" isDestination="false">
         <description>Rally point. You can have multiple rally points defined.
         </description>
