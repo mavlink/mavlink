@@ -172,7 +172,6 @@ endmacro()
 set(v1.0Definitions
     ASLUAV.xml
     ardupilotmega.xml
-    autoquad.xml
     common.xml
     matrixpilot.xml
     minimal.xml
