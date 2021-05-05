@@ -66,6 +66,14 @@ def fix_content_in_tags(input_html):
     input_html=re.sub(r'\>(\s+?\w+?.*?)\<', remove_space_between_content_tags, input_html,flags=re.DOTALL)
     return input_html
     
+def fix_external_dialect_link(input_html):
+    #print("fix_external_dialect_link was called")
+    def fixupexternaldialecturls(matchobj):
+        return matchobj.group(1).strip()
+
+    input_html=re.sub(r'<a href="../../external/.*?>(.*?)</a>', fixupexternaldialecturls, input_html,flags=re.DOTALL)
+    return input_html
+
 def fix_include_file_extension(input_html):
     ## Fixes up file extension .xml.md.unlikely (easier than fixing up the XSLT to strip file extensions!)
     input_html=input_html.replace('.xml.md.unlikely','.md')
@@ -76,7 +84,6 @@ def fix_replace_space_marker(input_html):
     input_html=input_html.replace('xxx_space_xxx',' ')
     return input_html
 
-    
 def strip_text_before_string(original_text,strip_text):
     # Strip out all text before some string
     index=original_text.find(strip_text)
@@ -123,6 +130,24 @@ These messages define the ArduPilot specific message set, which is custom to [ht
 This topic is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).
 
 > **Warning** The ArduPilot MAVLink fork of [ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) may contain messages that have not yet been merged into this documentation.
+"""
+    elif filename == 'development':
+        insert_text+="""
+# Dialect: development
+
+This dialect contains messages that are proposed for inclusion in the [standard set](standard.md), in order to ease development of prototype implementations.
+They should be considered a 'work in progress' and not included in production builds.
+
+This topic is a human-readable form of the XML definition file: [development.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/development.xml).
+"""
+    elif filename == 'all':
+        insert_text+="""
+# Dialect: all
+
+This dialect includes all other 'official' dialects.
+It is used to verify that there are no clashes in message/enum id ranges used in the included dialects.
+
+This topic is a human-readable form of the XML definition file: [all.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
 """
     else:
         insert_text+='\n# Dialect: %s' % filename.rsplit('.',1)[0]
@@ -188,6 +213,10 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
 
             #Replace space markers with intentional space
             prettyHTML = fix_replace_space_marker(prettyHTML)
+
+            #Fix up links to external dialects to not be links
+            prettyHTML = fix_external_dialect_link(prettyHTML)
+
             
             #Write output html file
             output_file_name_html = file.rsplit('.',1)[0]+".html"
