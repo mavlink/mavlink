@@ -69,14 +69,10 @@ def fix_content_in_tags(input_html):
 def fix_external_dialect_link(input_html):
     #print("fix_external_dialect_link was called")
     def fixupexternaldialecturls(matchobj):
-        stripped_string=matchobj.group(1).strip()
-        return '%s' % stripped_string
+        return matchobj.group(1).strip()
 
     input_html=re.sub(r'<a href="../../external/.*?>(.*?)</a>', fixupexternaldialecturls, input_html,flags=re.DOTALL)
     return input_html
-
-
-
 
 def fix_include_file_extension(input_html):
     ## Fixes up file extension .xml.md.unlikely (easier than fixing up the XSLT to strip file extensions!)
@@ -88,7 +84,6 @@ def fix_replace_space_marker(input_html):
     input_html=input_html.replace('xxx_space_xxx',' ')
     return input_html
 
-    
 def strip_text_before_string(original_text,strip_text):
     # Strip out all text before some string
     index=original_text.find(strip_text)
