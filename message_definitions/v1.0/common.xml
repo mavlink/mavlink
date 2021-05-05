@@ -4324,9 +4324,9 @@
       <field type="uint32_t" name="onboard_control_sensors_enabled" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
       <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
       <field type="uint16_t" name="load" units="d%">Maximum usage in percent of the mainloop time. Values: [0-1000] - should always be below 1000</field>
-      <field type="uint16_t" name="voltage_battery" units="mV">Battery voltage, UINT16_MAX: Voltage not sent by autopilot</field>
-      <field type="int16_t" name="current_battery" units="cA">Battery current, -1: Current not sent by autopilot</field>
-      <field type="int8_t" name="battery_remaining" units="%">Battery energy remaining, -1: Battery remaining energy not sent by autopilot</field>
+      <field type="uint16_t" name="voltage_battery" units="mV" invalid="UINT16_MAX">Battery voltage, UINT16_MAX: Voltage not sent by autopilot</field>
+      <field type="int16_t" name="current_battery" units="cA" invalid="-1">Battery current, -1: Current not sent by autopilot</field>
+      <field type="int8_t" name="battery_remaining" units="%" invalid="-1">Battery energy remaining, -1: Battery remaining energy not sent by autopilot</field>
       <field type="uint16_t" name="drop_rate_comm" units="c%">Communication drop rate, (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)</field>
       <field type="uint16_t" name="errors_comm">Communication errors (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)</field>
       <field type="uint16_t" name="errors_count1">Autopilot-specific errors</field>
@@ -4404,7 +4404,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="int16_t" name="param_index">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
+      <field type="int16_t" name="param_index" invalid="-1">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
     </message>
     <message id="21" name="PARAM_REQUEST_LIST">
       <description>Request all parameters of this component. After this request, all parameters are emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
@@ -4437,18 +4437,18 @@
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84, EGM96 ellipsoid)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84, EGM96 ellipsoid)</field>
       <field type="int32_t" name="alt" units="mm">Altitude (MSL). Positive for up. Note that virtually all GPS modules provide the MSL altitude in addition to the WGS84 altitude.</field>
-      <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="epv">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="vel" units="cm/s">GPS ground speed. If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="cog" units="cdeg">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
-      <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
+      <field type="uint16_t" name="eph" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="epv" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="vel" units="cm/s" invalid="UINT16_MAX">GPS ground speed. If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+      <field type="uint8_t" name="satellites_visible" invalid="UINT8_MAX">Number of satellites visible. If unknown, set to UINT8_MAX</field>
       <extensions/>
       <field type="int32_t" name="alt_ellipsoid" units="mm">Altitude (above WGS84, EGM96 ellipsoid). Positive for up.</field>
       <field type="uint32_t" name="h_acc" units="mm">Position uncertainty.</field>
       <field type="uint32_t" name="v_acc" units="mm">Altitude uncertainty.</field>
       <field type="uint32_t" name="vel_acc" units="mm">Speed uncertainty.</field>
       <field type="uint32_t" name="hdg_acc" units="degE5">Heading / track uncertainty</field>
-      <field type="uint16_t" name="yaw" units="cdeg">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use 65535 if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
+      <field type="uint16_t" name="yaw" units="cdeg" invalid="0">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use UINT16_MAX if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
     </message>
     <message id="25" name="GPS_STATUS">
       <description>The positioning status, as reported by GPS. This message is intended to display status information about each satellite visible to the receiver. See message GLOBAL_POSITION for the global position estimate. This message can contain information for up to 20 satellites.</description>
@@ -4494,8 +4494,8 @@
       <description>The RAW pressure readings for the typical setup of one absolute pressure and one differential pressure sensor. The sensor values should be the raw, UNSCALED ADC values.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="int16_t" name="press_abs">Absolute pressure (raw)</field>
-      <field type="int16_t" name="press_diff1">Differential pressure 1 (raw, 0 if nonexistent)</field>
-      <field type="int16_t" name="press_diff2">Differential pressure 2 (raw, 0 if nonexistent)</field>
+      <field type="int16_t" name="press_diff1" invalid="0">Differential pressure 1 (raw, 0 if nonexistent)</field>
+      <field type="int16_t" name="press_diff2" invalid="0">Differential pressure 2 (raw, 0 if nonexistent)</field>
       <field type="int16_t" name="temperature">Raw Temperature measurement (raw)</field>
     </message>
     <message id="29" name="SCALED_PRESSURE">
@@ -4505,7 +4505,7 @@
       <field type="float" name="press_diff" units="hPa">Differential pressure 1</field>
       <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
       <extensions/>
-      <field type="int16_t" name="temperature_press_diff" units="cdegC">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
+      <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
     </message>
     <message id="30" name="ATTITUDE">
       <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right).</description>
@@ -4528,7 +4528,7 @@
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
       <extensions/>
-      <field type="float[4]" name="repr_offset_q">Rotation offset by which the attitude quaternion and angular speed vector should be rotated for user display (quaternion with [w, x, y, z] order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if field not supported). This field is intended for systems in which the reference attitude may change during flight. For example, tailsitters VTOLs rotate their reference attitude by 90 degrees between hover mode and fixed wing mode, thus repr_offset_q is equal to [1, 0, 0, 0] in hover mode and equal to [0.7071, 0, 0.7071, 0] in fixed wing mode.</field>
+      <field type="float[4]" name="repr_offset_q" invalid="[0]">Rotation offset by which the attitude quaternion and angular speed vector should be rotated for user display (quaternion with [w, x, y, z] order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if field not supported). This field is intended for systems in which the reference attitude may change during flight. For example, tailsitters VTOLs rotate their reference attitude by 90 degrees between hover mode and fixed wing mode, thus repr_offset_q is equal to [1, 0, 0, 0] in hover mode and equal to [0.7071, 0, 0.7071, 0] in fixed wing mode.</field>
     </message>
     <message id="32" name="LOCAL_POSITION_NED">
       <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
@@ -4551,35 +4551,35 @@
       <field type="int16_t" name="vx" units="cm/s">Ground X Speed (Latitude, positive north)</field>
       <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude, positive east)</field>
       <field type="int16_t" name="vz" units="cm/s">Ground Z Speed (Altitude, positive down)</field>
-      <field type="uint16_t" name="hdg" units="cdeg">Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="hdg" units="cdeg" invalid="UINT16_MAX">Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
     </message>
     <message id="34" name="RC_CHANNELS_SCALED">
       <description>The scaled values of the RC channels received: (-100%) -10000, (0%) 0, (100%) 10000. Channels that are inactive should be set to UINT16_MAX.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
-      <field type="int16_t" name="chan1_scaled">RC channel 1 value scaled.</field>
-      <field type="int16_t" name="chan2_scaled">RC channel 2 value scaled.</field>
-      <field type="int16_t" name="chan3_scaled">RC channel 3 value scaled.</field>
-      <field type="int16_t" name="chan4_scaled">RC channel 4 value scaled.</field>
-      <field type="int16_t" name="chan5_scaled">RC channel 5 value scaled.</field>
-      <field type="int16_t" name="chan6_scaled">RC channel 6 value scaled.</field>
-      <field type="int16_t" name="chan7_scaled">RC channel 7 value scaled.</field>
-      <field type="int16_t" name="chan8_scaled">RC channel 8 value scaled.</field>
-      <field type="uint8_t" name="rssi">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.</field>
+      <field type="int16_t" name="chan1_scaled" invalid="UINT16_MAX">RC channel 1 value scaled.</field>
+      <field type="int16_t" name="chan2_scaled" invalid="UINT16_MAX">RC channel 2 value scaled.</field>
+      <field type="int16_t" name="chan3_scaled" invalid="UINT16_MAX">RC channel 3 value scaled.</field>
+      <field type="int16_t" name="chan4_scaled" invalid="UINT16_MAX">RC channel 4 value scaled.</field>
+      <field type="int16_t" name="chan5_scaled" invalid="UINT16_MAX">RC channel 5 value scaled.</field>
+      <field type="int16_t" name="chan6_scaled" invalid="UINT16_MAX">RC channel 6 value scaled.</field>
+      <field type="int16_t" name="chan7_scaled" invalid="UINT16_MAX">RC channel 7 value scaled.</field>
+      <field type="int16_t" name="chan8_scaled" invalid="UINT16_MAX">RC channel 8 value scaled.</field>
+      <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
     </message>
     <message id="35" name="RC_CHANNELS_RAW">
       <description>The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
-      <field type="uint16_t" name="chan1_raw" units="us">RC channel 1 value.</field>
-      <field type="uint16_t" name="chan2_raw" units="us">RC channel 2 value.</field>
-      <field type="uint16_t" name="chan3_raw" units="us">RC channel 3 value.</field>
-      <field type="uint16_t" name="chan4_raw" units="us">RC channel 4 value.</field>
-      <field type="uint16_t" name="chan5_raw" units="us">RC channel 5 value.</field>
-      <field type="uint16_t" name="chan6_raw" units="us">RC channel 6 value.</field>
-      <field type="uint16_t" name="chan7_raw" units="us">RC channel 7 value.</field>
-      <field type="uint16_t" name="chan8_raw" units="us">RC channel 8 value.</field>
-      <field type="uint8_t" name="rssi">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.</field>
+      <field type="uint16_t" name="chan1_raw" units="us" invalid="UINT16_MAX">RC channel 1 value.</field>
+      <field type="uint16_t" name="chan2_raw" units="us" invalid="UINT16_MAX">RC channel 2 value.</field>
+      <field type="uint16_t" name="chan3_raw" units="us" invalid="UINT16_MAX">RC channel 3 value.</field>
+      <field type="uint16_t" name="chan4_raw" units="us" invalid="UINT16_MAX">RC channel 4 value.</field>
+      <field type="uint16_t" name="chan5_raw" units="us" invalid="UINT16_MAX">RC channel 5 value.</field>
+      <field type="uint16_t" name="chan6_raw" units="us" invalid="UINT16_MAX">RC channel 6 value.</field>
+      <field type="uint16_t" name="chan7_raw" units="us" invalid="UINT16_MAX">RC channel 7 value.</field>
+      <field type="uint16_t" name="chan8_raw" units="us" invalid="UINT16_MAX">RC channel 8 value.</field>
+      <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
     </message>
     <message id="36" name="SERVO_OUTPUT_RAW">
       <description>Superseded by ACTUATOR_OUTPUT_STATUS. The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.</description>
@@ -4771,7 +4771,7 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
-      <field type="float[9]" name="covariance">Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[9]" name="covariance" invalid="[NaN,]">Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="62" name="NAV_CONTROLLER_OUTPUT">
       <description>The state of the fixed wing navigation and position controller.</description>
@@ -4795,7 +4795,7 @@
       <field type="float" name="vx" units="m/s">Ground X Speed (Latitude)</field>
       <field type="float" name="vy" units="m/s">Ground Y Speed (Longitude)</field>
       <field type="float" name="vz" units="m/s">Ground Z Speed (Altitude)</field>
-      <field type="float[36]" name="covariance">Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[36]" name="covariance" invalid="[NaN,]">Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="64" name="LOCAL_POSITION_NED_COV">
       <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
@@ -4810,31 +4810,31 @@
       <field type="float" name="ax" units="m/s/s">X Acceleration</field>
       <field type="float" name="ay" units="m/s/s">Y Acceleration</field>
       <field type="float" name="az" units="m/s/s">Z Acceleration</field>
-      <field type="float[45]" name="covariance">Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[45]" name="covariance" invalid="[NaN,]">Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="65" name="RC_CHANNELS">
       <description>The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.  A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="chancount">Total number of RC channels being received. This can be larger than 18, indicating that more channels are available but not given in this message. This value should be 0 when no RC channels are available.</field>
-      <field type="uint16_t" name="chan1_raw" units="us">RC channel 1 value.</field>
-      <field type="uint16_t" name="chan2_raw" units="us">RC channel 2 value.</field>
-      <field type="uint16_t" name="chan3_raw" units="us">RC channel 3 value.</field>
-      <field type="uint16_t" name="chan4_raw" units="us">RC channel 4 value.</field>
-      <field type="uint16_t" name="chan5_raw" units="us">RC channel 5 value.</field>
-      <field type="uint16_t" name="chan6_raw" units="us">RC channel 6 value.</field>
-      <field type="uint16_t" name="chan7_raw" units="us">RC channel 7 value.</field>
-      <field type="uint16_t" name="chan8_raw" units="us">RC channel 8 value.</field>
-      <field type="uint16_t" name="chan9_raw" units="us">RC channel 9 value.</field>
-      <field type="uint16_t" name="chan10_raw" units="us">RC channel 10 value.</field>
-      <field type="uint16_t" name="chan11_raw" units="us">RC channel 11 value.</field>
-      <field type="uint16_t" name="chan12_raw" units="us">RC channel 12 value.</field>
-      <field type="uint16_t" name="chan13_raw" units="us">RC channel 13 value.</field>
-      <field type="uint16_t" name="chan14_raw" units="us">RC channel 14 value.</field>
-      <field type="uint16_t" name="chan15_raw" units="us">RC channel 15 value.</field>
-      <field type="uint16_t" name="chan16_raw" units="us">RC channel 16 value.</field>
-      <field type="uint16_t" name="chan17_raw" units="us">RC channel 17 value.</field>
-      <field type="uint16_t" name="chan18_raw" units="us">RC channel 18 value.</field>
-      <field type="uint8_t" name="rssi">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.</field>
+      <field type="uint16_t" name="chan1_raw" units="us" invalid="UINT16_MAX">RC channel 1 value.</field>
+      <field type="uint16_t" name="chan2_raw" units="us" invalid="UINT16_MAX">RC channel 2 value.</field>
+      <field type="uint16_t" name="chan3_raw" units="us" invalid="UINT16_MAX">RC channel 3 value.</field>
+      <field type="uint16_t" name="chan4_raw" units="us" invalid="UINT16_MAX">RC channel 4 value.</field>
+      <field type="uint16_t" name="chan5_raw" units="us" invalid="UINT16_MAX">RC channel 5 value.</field>
+      <field type="uint16_t" name="chan6_raw" units="us" invalid="UINT16_MAX">RC channel 6 value.</field>
+      <field type="uint16_t" name="chan7_raw" units="us" invalid="UINT16_MAX">RC channel 7 value.</field>
+      <field type="uint16_t" name="chan8_raw" units="us" invalid="UINT16_MAX">RC channel 8 value.</field>
+      <field type="uint16_t" name="chan9_raw" units="us" invalid="UINT16_MAX">RC channel 9 value.</field>
+      <field type="uint16_t" name="chan10_raw" units="us" invalid="UINT16_MAX">RC channel 10 value.</field>
+      <field type="uint16_t" name="chan11_raw" units="us" invalid="UINT16_MAX">RC channel 11 value.</field>
+      <field type="uint16_t" name="chan12_raw" units="us" invalid="UINT16_MAX">RC channel 12 value.</field>
+      <field type="uint16_t" name="chan13_raw" units="us" invalid="UINT16_MAX">RC channel 13 value.</field>
+      <field type="uint16_t" name="chan14_raw" units="us" invalid="UINT16_MAX">RC channel 14 value.</field>
+      <field type="uint16_t" name="chan15_raw" units="us" invalid="UINT16_MAX">RC channel 15 value.</field>
+      <field type="uint16_t" name="chan16_raw" units="us" invalid="UINT16_MAX">RC channel 16 value.</field>
+      <field type="uint16_t" name="chan17_raw" units="us" invalid="UINT16_MAX">RC channel 17 value.</field>
+      <field type="uint16_t" name="chan18_raw" units="us" invalid="UINT16_MAX">RC channel 18 value.</field>
+      <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
     </message>
     <message id="66" name="REQUEST_DATA_STREAM">
       <deprecated since="2015-08" replaced_by="SET_MESSAGE_INTERVAL"/>
@@ -4855,35 +4855,35 @@
     <message id="69" name="MANUAL_CONTROL">
       <description>This message provides an API for manually controlling the vehicle using standard joystick axes nomenclature, along with a joystick-like input device. Unused axes can be disabled an buttons are also transmit as boolean values of their </description>
       <field type="uint8_t" name="target">The system to be controlled.</field>
-      <field type="int16_t" name="x">X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.</field>
-      <field type="int16_t" name="y">Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.</field>
-      <field type="int16_t" name="z">Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are positive thrust, negative values are negative thrust.</field>
-      <field type="int16_t" name="r">R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with counter-clockwise being 1000 and clockwise being -1000, and the yaw of a vehicle.</field>
+      <field type="int16_t" name="x" invalid="INT16_MAX">X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.</field>
+      <field type="int16_t" name="y" invalid="INT16_MAX">Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.</field>
+      <field type="int16_t" name="z" invalid="INT16_MAX">Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are positive thrust, negative values are negative thrust.</field>
+      <field type="int16_t" name="r" invalid="INT16_MAX">R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with counter-clockwise being 1000 and clockwise being -1000, and the yaw of a vehicle.</field>
       <field type="uint16_t" name="buttons">A bitfield corresponding to the joystick buttons' current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.</field>
     </message>
     <message id="70" name="RC_CHANNELS_OVERRIDE">
       <description>The RAW values of the RC channels sent to the MAV to override info received from the RC radio. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.  Note carefully the semantic differences between the first 8 channels and the subsequent channels</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint16_t" name="chan1_raw" units="us">RC channel 1 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan2_raw" units="us">RC channel 2 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan3_raw" units="us">RC channel 3 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan4_raw" units="us">RC channel 4 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan5_raw" units="us">RC channel 5 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan6_raw" units="us">RC channel 6 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan7_raw" units="us">RC channel 7 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan8_raw" units="us">RC channel 8 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan1_raw" units="us" invalid="UINT16_MAX">RC channel 1 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan2_raw" units="us" invalid="UINT16_MAX">RC channel 2 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan3_raw" units="us" invalid="UINT16_MAX">RC channel 3 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan4_raw" units="us" invalid="UINT16_MAX">RC channel 4 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan5_raw" units="us" invalid="UINT16_MAX">RC channel 5 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan6_raw" units="us" invalid="UINT16_MAX">RC channel 6 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan7_raw" units="us" invalid="UINT16_MAX">RC channel 7 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan8_raw" units="us" invalid="UINT16_MAX">RC channel 8 value. A value of UINT16_MAX means to ignore this field. A value of 0 means to release this channel back to the RC radio.</field>
       <extensions/>
-      <field type="uint16_t" name="chan9_raw" units="us">RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan10_raw" units="us">RC channel 10 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan11_raw" units="us">RC channel 11 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan12_raw" units="us">RC channel 12 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan13_raw" units="us">RC channel 13 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan14_raw" units="us">RC channel 14 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan15_raw" units="us">RC channel 15 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan16_raw" units="us">RC channel 16 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan17_raw" units="us">RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
-      <field type="uint16_t" name="chan18_raw" units="us">RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan9_raw" units="us" invalid="0">RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan10_raw" units="us" invalid="0">RC channel 10 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan11_raw" units="us" invalid="0">RC channel 11 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan12_raw" units="us" invalid="0">RC channel 12 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan13_raw" units="us" invalid="0">RC channel 13 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan14_raw" units="us" invalid="0">RC channel 14 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan15_raw" units="us" invalid="0">RC channel 15 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan16_raw" units="us" invalid="0">RC channel 16 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan17_raw" units="us" invalid="0">RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
+      <field type="uint16_t" name="chan18_raw" units="us" invalid="0">RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
     </message>
     <message id="73" name="MISSION_ITEM_INT">
       <description>Message encoding a mission item. This message is emitted to announce
@@ -4922,13 +4922,13 @@
       <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the mission item.</field>
       <field type="uint8_t" name="current">Not used.</field>
       <field type="uint8_t" name="autocontinue">Not used (set 0).</field>
-      <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
-      <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
-      <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
-      <field type="float" name="param4">PARAM4, see MAV_CMD enum</field>
-      <field type="int32_t" name="x">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
-      <field type="int32_t" name="y">PARAM6 / local: y position in meters * 1e4, global: longitude in degrees * 10^7</field>
-      <field type="float" name="z">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame).</field>
+      <field type="float" name="param1" invalid="NaN">PARAM1, see MAV_CMD enum</field>
+      <field type="float" name="param2" invalid="NaN">PARAM2, see MAV_CMD enum</field>
+      <field type="float" name="param3" invalid="NaN">PARAM3, see MAV_CMD enum</field>
+      <field type="float" name="param4" invalid="NaN">PARAM4, see MAV_CMD enum</field>
+      <field type="int32_t" name="x" invalid="INT32_MAX">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
+      <field type="int32_t" name="y" invalid="INT32_MAX">PARAM6 / local: y position in meters * 1e4, global: longitude in degrees * 10^7</field>
+      <field type="float" name="z" invalid="NaN">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame).</field>
     </message>
     <message id="76" name="COMMAND_LONG">
       <description>Send a command with up to seven parameters to the MAV. The command microservice is documented at https://mavlink.io/en/services/command.html</description>
@@ -4936,20 +4936,20 @@
       <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
       <field type="uint16_t" name="command" enum="MAV_CMD">Command ID (of command to send).</field>
       <field type="uint8_t" name="confirmation">0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)</field>
-      <field type="float" name="param1">Parameter 1 (for the specific command).</field>
-      <field type="float" name="param2">Parameter 2 (for the specific command).</field>
-      <field type="float" name="param3">Parameter 3 (for the specific command).</field>
-      <field type="float" name="param4">Parameter 4 (for the specific command).</field>
-      <field type="float" name="param5">Parameter 5 (for the specific command).</field>
-      <field type="float" name="param6">Parameter 6 (for the specific command).</field>
-      <field type="float" name="param7">Parameter 7 (for the specific command).</field>
+      <field type="float" name="param1" invalid="NaN">Parameter 1 (for the specific command).</field>
+      <field type="float" name="param2" invalid="NaN">Parameter 2 (for the specific command).</field>
+      <field type="float" name="param3" invalid="NaN">Parameter 3 (for the specific command).</field>
+      <field type="float" name="param4" invalid="NaN">Parameter 4 (for the specific command).</field>
+      <field type="float" name="param5" invalid="NaN">Parameter 5 (for the specific command).</field>
+      <field type="float" name="param6" invalid="NaN">Parameter 6 (for the specific command).</field>
+      <field type="float" name="param7" invalid="NaN">Parameter 7 (for the specific command).</field>
     </message>
     <message id="77" name="COMMAND_ACK">
       <description>Report status of a command. Includes feedback whether the command was executed. The command microservice is documented at https://mavlink.io/en/services/command.html</description>
       <field type="uint16_t" name="command" enum="MAV_CMD">Command ID (of acknowledged command).</field>
       <field type="uint8_t" name="result" enum="MAV_RESULT">Result of command.</field>
       <extensions/>
-      <field type="uint8_t" name="progress">WIP: Also used as result_param1, it can be set with an enum containing the errors reasons of why the command was denied, or the progress percentage when result is MAV_RESULT_IN_PROGRESS (255 if the progress is unknown).</field>
+      <field type="uint8_t" name="progress" invalid="UINT8_MAX">WIP: Also used as result_param1, it can be set with an enum containing the errors reasons of why the command was denied, or the progress percentage when result is MAV_RESULT_IN_PROGRESS (UINT8_MAX if the progress is unknown).</field>
       <field type="int32_t" name="result_param2">WIP: Additional parameter of the result, example: which parameter of MAV_CMD_NAV_WAYPOINT caused it to be denied.</field>
       <field type="uint8_t" name="target_system">WIP: System ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
       <field type="uint8_t" name="target_component">WIP: Component ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
@@ -5127,7 +5127,7 @@
       <field type="uint16_t" name="chan10_raw" units="us">RC channel 10 value</field>
       <field type="uint16_t" name="chan11_raw" units="us">RC channel 11 value</field>
       <field type="uint16_t" name="chan12_raw" units="us">RC channel 12 value</field>
-      <field type="uint8_t" name="rssi">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.</field>
+      <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
     </message>
     <message id="93" name="HIL_ACTUATOR_CONTROLS">
       <description>Sent from autopilot to simulation. Hardware in the loop control outputs (replacement for HIL_CONTROLS)</description>
@@ -5160,7 +5160,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x_global, y_global, z_global, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x_global, y_global, z_global, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="102" name="VISION_POSITION_ESTIMATE">
@@ -5173,7 +5173,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="103" name="VISION_SPEED_ESTIMATE">
@@ -5183,7 +5183,7 @@
       <field type="float" name="y" units="m/s">Global Y speed</field>
       <field type="float" name="z" units="m/s">Global Z speed</field>
       <extensions/>
-      <field type="float[9]" name="covariance">Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[9]" name="covariance" invalid="[NaN,]">Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="104" name="VICON_POSITION_ESTIMATE">
@@ -5196,7 +5196,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance">Row-major representation of 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="105" name="HIGHRES_IMU">
       <description>The IMU readings in SI units in NED body frame</description>
@@ -5279,11 +5279,11 @@
     </message>
     <message id="109" name="RADIO_STATUS">
       <description>Status generated by radio and injected into MAVLink stream.</description>
-      <field type="uint8_t" name="rssi">Local (message sender) recieved signal strength indication in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.</field>
-      <field type="uint8_t" name="remrssi">Remote (message receiver) signal strength indication in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.</field>
+      <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Local (message sender) recieved signal strength indication in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+      <field type="uint8_t" name="remrssi" invalid="UINT8_MAX">Remote (message receiver) signal strength indication in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
       <field type="uint8_t" name="txbuf" units="%">Remaining free transmitter buffer space.</field>
-      <field type="uint8_t" name="noise">Local background noise level. These are device dependent RSSI values (scale as approx 2x dB on SiK radios). Values: [0-254], 255: invalid/unknown.</field>
-      <field type="uint8_t" name="remnoise">Remote background noise level. These are device dependent RSSI values (scale as approx 2x dB on SiK radios). Values: [0-254], 255: invalid/unknown.</field>
+      <field type="uint8_t" name="noise" invalid="UINT8_MAX">Local background noise level. These are device dependent RSSI values (scale as approx 2x dB on SiK radios). Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+      <field type="uint8_t" name="remnoise" invalid="UINT8_MAX">Remote background noise level. These are device dependent RSSI values (scale as approx 2x dB on SiK radios). Values: [0-254], UINT8_MAX: invalid/unknown.</field>
       <field type="uint16_t" name="rxerrors">Count of radio packet receive errors (since boot).</field>
       <field type="uint16_t" name="fixed">Count of error corrected radio packets (since boot).</field>
     </message>
@@ -5312,14 +5312,14 @@
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="int32_t" name="alt" units="mm">Altitude (MSL). Positive for up.</field>
-      <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="epv">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="vel" units="cm/s">GPS ground speed. If unknown, set to: 65535</field>
+      <field type="uint16_t" name="eph" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="epv" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="vel" units="cm/s" invalid="UINT16_MAX">GPS ground speed. If unknown, set to: UINT16_MAX</field>
       <field type="int16_t" name="vn" units="cm/s">GPS velocity in north direction in earth-fixed NED frame</field>
       <field type="int16_t" name="ve" units="cm/s">GPS velocity in east direction in earth-fixed NED frame</field>
       <field type="int16_t" name="vd" units="cm/s">GPS velocity in down direction in earth-fixed NED frame</field>
-      <field type="uint16_t" name="cog" units="cdeg">Course over ground (NOT heading, but direction of movement), 0.0..359.99 degrees. If unknown, set to: 65535</field>
-      <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
+      <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground (NOT heading, but direction of movement), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+      <field type="uint8_t" name="satellites_visible" invalid="UINT8_MAX">Number of satellites visible. If unknown, set to UINT8_MAX</field>
       <extensions/>
       <field type="uint8_t" name="id">GPS ID (zero indexed). Used for multiple GPS inputs</field>
       <field type="uint16_t" name="yaw" units="cdeg">Yaw of vehicle relative to Earth's North, zero means not available, use 36000 for north</field>
@@ -5337,7 +5337,7 @@
       <field type="int16_t" name="temperature" units="cdegC">Temperature</field>
       <field type="uint8_t" name="quality">Optical flow quality / confidence. 0: no valid flow, 255: maximum quality</field>
       <field type="uint32_t" name="time_delta_distance_us" units="us">Time since the distance was sampled.</field>
-      <field type="float" name="distance" units="m">Distance to the center of the flow field. Positive value (including zero): distance known. Negative value: Unknown distance.</field>
+      <field type="float" name="distance" units="m" invalid="-1.0">Distance to the center of the flow field. Positive value (including zero): distance known. Negative value: Unknown distance.</field>
     </message>
     <message id="115" name="HIL_STATE_QUATERNION">
       <description>Sent from simulation to autopilot, avoids in contrast to HIL_STATE singularities. This packet is useful for high throughput applications such as hardware in the loop simulations.</description>
@@ -5371,7 +5371,7 @@
       <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
       <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
       <extensions/>
-      <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="0">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
     <message id="117" name="LOG_REQUEST_LIST">
       <description>Request a list of available logs. On some systems calling this may stop on-board logging until LOG_REQUEST_END is called. If there are no log files available this request shall be answered with one LOG_ENTRY message with id = 0 and num_logs = 0.</description>
@@ -5385,7 +5385,7 @@
       <field type="uint16_t" name="id">Log id</field>
       <field type="uint16_t" name="num_logs">Total number of logs</field>
       <field type="uint16_t" name="last_log_num">High log number</field>
-      <field type="uint32_t" name="time_utc" units="s">UTC timestamp of log since 1970, or 0 if not available</field>
+      <field type="uint32_t" name="time_utc" units="s" invalid="0">UTC timestamp of log since 1970, or 0 if not available</field>
       <field type="uint32_t" name="size" units="bytes">Size of the log (may be approximate)</field>
     </message>
     <message id="119" name="LOG_REQUEST_DATA">
@@ -5427,15 +5427,15 @@
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="int32_t" name="alt" units="mm">Altitude (MSL). Positive for up.</field>
-      <field type="uint16_t" name="eph">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="epv">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="vel" units="cm/s">GPS ground speed. If unknown, set to: UINT16_MAX</field>
-      <field type="uint16_t" name="cog" units="cdeg">Course over ground (NOT heading, but direction of movement): 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
-      <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
+      <field type="uint16_t" name="eph" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="epv" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="vel" units="cm/s" invalid="UINT16_MAX">GPS ground speed. If unknown, set to: UINT16_MAX</field>
+      <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground (NOT heading, but direction of movement): 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+      <field type="uint8_t" name="satellites_visible" invalid="UINT8_MAX">Number of satellites visible. If unknown, set to UINT8_MAX</field>
       <field type="uint8_t" name="dgps_numch">Number of DGPS satellites</field>
       <field type="uint32_t" name="dgps_age" units="ms">Age of DGPS info</field>
       <extensions/>
-      <field type="uint16_t" name="yaw" units="cdeg">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use 65535 if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
+      <field type="uint16_t" name="yaw" units="cdeg" invalid="0">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use UINT16_MAX if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
       <field type="int32_t" name="alt_ellipsoid" units="mm">Altitude (above WGS84, EGM96 ellipsoid). Positive for up.</field>
       <field type="uint32_t" name="h_acc" units="mm">Position uncertainty.</field>
       <field type="uint32_t" name="v_acc" units="mm">Altitude uncertainty.</field>
@@ -5502,7 +5502,7 @@
       <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
       <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
       <extensions/>
-      <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="0">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
     <message id="130" name="DATA_TRANSMISSION_HANDSHAKE">
       <description>Handshake message to initiate, control and stop image streaming when using the Image Transmission Protocol: https://mavlink.io/en/services/image_transmission.html.</description>
@@ -5528,12 +5528,12 @@
       <field type="uint8_t" name="type" enum="MAV_DISTANCE_SENSOR">Type of distance sensor.</field>
       <field type="uint8_t" name="id" instance="true">Onboard ID of the sensor</field>
       <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces. downward-facing: ROTATION_PITCH_270, upward-facing: ROTATION_PITCH_90, backward-facing: ROTATION_PITCH_180, forward-facing: ROTATION_NONE, left-facing: ROTATION_YAW_90, right-facing: ROTATION_YAW_270</field>
-      <field type="uint8_t" name="covariance" units="cm^2">Measurement variance. Max standard deviation is 6cm. 255 if unknown.</field>
+      <field type="uint8_t" name="covariance" units="cm^2" invalid="UINT8_MAX">Measurement variance. Max standard deviation is 6cm. UINT8_MAX if unknown.</field>
       <extensions/>
-      <field type="float" name="horizontal_fov" units="rad">Horizontal Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
-      <field type="float" name="vertical_fov" units="rad">Vertical Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
-      <field type="float[4]" name="quaternion">Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid."</field>
-      <field type="uint8_t" name="signal_quality" units="%">Signal quality of the sensor. Specific to each sensor type, representing the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. 0 = unknown/unset signal quality, 1 = invalid signal, 100 = perfect signal.</field>
+      <field type="float" name="horizontal_fov" units="rad" invalid="0">Horizontal Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
+      <field type="float" name="vertical_fov" units="rad" invalid="0">Vertical Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.</field>
+      <field type="float[4]" name="quaternion" invalid="[0]">Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid."</field>
+      <field type="uint8_t" name="signal_quality" units="%" invalid="0">Signal quality of the sensor. Specific to each sensor type, representing the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. 0 = unknown/unset signal quality, 1 = invalid signal, 100 = perfect signal.</field>
     </message>
     <message id="133" name="TERRAIN_REQUEST">
       <description>Request for terrain data and terrain status. See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
@@ -5572,7 +5572,7 @@
       <field type="float" name="press_diff" units="hPa">Differential pressure</field>
       <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
       <extensions/>
-      <field type="int16_t" name="temperature_press_diff" units="cdegC">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
+      <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
     </message>
     <message id="138" name="ATT_POS_MOCAP">
       <description>Motion capture attitude and position</description>
@@ -5582,7 +5582,7 @@
       <field type="float" name="y" units="m">Y position (NED)</field>
       <field type="float" name="z" units="m">Z position (NED)</field>
       <extensions/>
-      <field type="float[21]" name="covariance">Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="139" name="SET_ACTUATOR_CONTROL_TARGET">
       <description>Set the vehicle attitude and body angular rates.</description>
@@ -5623,7 +5623,7 @@
       <field type="float" name="press_diff" units="hPa">Differential pressure</field>
       <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
       <extensions/>
-      <field type="int16_t" name="temperature_press_diff" units="cdegC">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
+      <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
     </message>
     <message id="144" name="FOLLOW_TARGET">
       <description>Current motion information from a designated system</description>
@@ -5632,10 +5632,10 @@
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Altitude (MSL)</field>
-      <field type="float[3]" name="vel" units="m/s">target velocity (0,0,0) for unknown</field>
-      <field type="float[3]" name="acc" units="m/s/s">linear target acceleration (0,0,0) for unknown</field>
-      <field type="float[4]" name="attitude_q">(1 0 0 0 for unknown)</field>
-      <field type="float[3]" name="rates">(0 0 0 for unknown)</field>
+      <field type="float[3]" name="vel" units="m/s" invalid="[0]">target velocity (0,0,0) for unknown</field>
+      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">linear target acceleration (0,0,0) for unknown</field>
+      <field type="float[4]" name="attitude_q" invalid="[0]">(0 0 0 0 for unknown)</field>
+      <field type="float[3]" name="rates" invalid="[0]">(0 0 0 for unknown)</field>
       <field type="float[3]" name="position_cov">eph epv</field>
       <field type="uint64_t" name="custom_state">button states or switches of a tracker device</field>
     </message>
@@ -5651,7 +5651,7 @@
       <field type="float" name="x_pos" units="m">X position in local frame</field>
       <field type="float" name="y_pos" units="m">Y position in local frame</field>
       <field type="float" name="z_pos" units="m">Z position in local frame</field>
-      <field type="float" name="airspeed" units="m/s">Airspeed, set to -1 if unknown</field>
+      <field type="float" name="airspeed" units="m/s" invalid="-1">Airspeed, set to -1 if unknown</field>
       <field type="float[3]" name="vel_variance">Variance of body velocity estimate</field>
       <field type="float[3]" name="pos_variance">Variance in local position</field>
       <field type="float[4]" name="q">The attitude, represented as Quaternion</field>
@@ -5664,16 +5664,16 @@
       <field type="uint8_t" name="id" instance="true">Battery ID</field>
       <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
       <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
-      <field type="int16_t" name="temperature" units="cdegC">Temperature of the battery. INT16_MAX for unknown temperature.</field>
-      <field type="uint16_t[10]" name="voltages" units="mV">Battery voltage of cells 1 to 10 (see voltages_ext for cells 11-14). Cells in this field above the valid cell count for this battery should have the UINT16_MAX value. If individual cell voltages are unknown or not measured for this battery, then the overall battery voltage should be filled in cell 0, with all others set to UINT16_MAX. If the voltage of the battery is greater than (UINT16_MAX - 1), then cell 0 should be set to (UINT16_MAX - 1), and cell 1 to the remaining voltage. This can be extended to multiple cells if the total voltage is greater than 2 * (UINT16_MAX - 1).</field>
-      <field type="int16_t" name="current_battery" units="cA">Battery current, -1: autopilot does not measure the current</field>
-      <field type="int32_t" name="current_consumed" units="mAh">Consumed charge, -1: autopilot does not provide consumption estimate</field>
-      <field type="int32_t" name="energy_consumed" units="hJ">Consumed energy, -1: autopilot does not provide energy consumption estimate</field>
-      <field type="int8_t" name="battery_remaining" units="%">Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery.</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of the battery. INT16_MAX for unknown temperature.</field>
+      <field type="uint16_t[10]" name="voltages" units="mV" invalid="[UINT16_MAX]">Battery voltage of cells 1 to 10 (see voltages_ext for cells 11-14). Cells in this field above the valid cell count for this battery should have the UINT16_MAX value. If individual cell voltages are unknown or not measured for this battery, then the overall battery voltage should be filled in cell 0, with all others set to UINT16_MAX. If the voltage of the battery is greater than (UINT16_MAX - 1), then cell 0 should be set to (UINT16_MAX - 1), and cell 1 to the remaining voltage. This can be extended to multiple cells if the total voltage is greater than 2 * (UINT16_MAX - 1).</field>
+      <field type="int16_t" name="current_battery" units="cA" invalid="-1">Battery current, -1: autopilot does not measure the current</field>
+      <field type="int32_t" name="current_consumed" units="mAh" invalid="-1">Consumed charge, -1: autopilot does not provide consumption estimate</field>
+      <field type="int32_t" name="energy_consumed" units="hJ" invalid="-1">Consumed energy, -1: autopilot does not provide energy consumption estimate</field>
+      <field type="int8_t" name="battery_remaining" units="%" invalid="-1">Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery.</field>
       <extensions/>
-      <field type="int32_t" name="time_remaining" units="s">Remaining battery time, 0: autopilot does not provide remaining battery time estimate</field>
+      <field type="int32_t" name="time_remaining" units="s" invalid="0">Remaining battery time, 0: autopilot does not provide remaining battery time estimate</field>
       <field type="uint8_t" name="charge_state" enum="MAV_BATTERY_CHARGE_STATE">State for extent of discharge, provided by autopilot for warning or external reactions</field>
-      <field type="uint16_t[4]" name="voltages_ext" units="mV">Battery voltages for cells 11 to 14. Cells above the valid cell count for this battery should have a value of 0, where zero indicates not supported (note, this is different than for the voltages field and allows empty byte truncation). If the measured value is 0 then 1 should be sent instead.</field>
+      <field type="uint16_t[4]" name="voltages_ext" units="mV" invalid="[0]">Battery voltages for cells 11 to 14. Cells above the valid cell count for this battery should have a value of 0, where zero indicates not supported (note, this is different than for the voltages field and allows empty byte truncation). If the measured value is 0 then 1 should be sent instead.</field>
       <field type="uint8_t" name="mode" enum="MAV_BATTERY_MODE">Battery mode. Default (0) is that battery mode reporting is not supported or battery is in normal-use mode.</field>
       <field type="uint32_t" name="fault_bitmask" display="bitmask" enum="MAV_BATTERY_FAULT">Fault/health indications. These should be set when charge_state is MAV_BATTERY_CHARGE_STATE_FAILED or MAV_BATTERY_CHARGE_STATE_UNHEALTHY (if not, fault reporting is not supported).</field>
     </message>
@@ -5709,7 +5709,7 @@
       <field type="float" name="z" units="m">Z Position of the landing target in MAV_FRAME</field>
       <field type="float[4]" name="q">Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of landing target</field>
-      <field type="uint8_t" name="position_valid">Boolean indicating whether the position fields (x, y, z, q, type) contain valid target position information (valid: 1, invalid: 0). Default is 0 (invalid).</field>
+      <field type="uint8_t" name="position_valid" invalid="0">Boolean indicating whether the position fields (x, y, z, q, type) contain valid target position information (valid: 1, invalid: 0). Default is 0 (invalid).</field>
     </message>
     <!-- imported from ardupilotmega.xml (2019) -->
     <message id="162" name="FENCE_STATUS">
@@ -5803,8 +5803,8 @@
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Altitude (MSL). Positive for up.</field>
-      <field type="float" name="hdop">GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
-      <field type="float" name="vdop">GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
+      <field type="float" name="hdop" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
+      <field type="float" name="vdop" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
       <field type="float" name="vn" units="m/s">GPS velocity in north direction in earth-fixed NED frame</field>
       <field type="float" name="ve" units="m/s">GPS velocity in east direction in earth-fixed NED frame</field>
       <field type="float" name="vd" units="m/s">GPS velocity in down direction in earth-fixed NED frame</field>
@@ -5840,7 +5840,7 @@
       <field type="uint8_t" name="airspeed_sp" units="m/s">airspeed setpoint</field>
       <field type="uint8_t" name="groundspeed" units="m/s">groundspeed</field>
       <field type="int8_t" name="climb_rate" units="m/s">climb rate</field>
-      <field type="uint8_t" name="gps_nsat">Number of satellites visible. If unknown, set to 255</field>
+      <field type="uint8_t" name="gps_nsat" invalid="UINT8_MAX">Number of satellites visible. If unknown, set to UINT8_MAX</field>
       <field type="uint8_t" name="gps_fix_type" enum="GPS_FIX_TYPE">GPS Fix type.</field>
       <field type="uint8_t" name="battery_remaining" units="%">Remaining battery (percentage)</field>
       <field type="int8_t" name="temperature" units="degC">Autopilot temperature (degrees C)</field>
@@ -5872,7 +5872,7 @@
       <field type="uint8_t" name="epv" units="dm">Maximum error vertical position since last message</field>
       <field type="int8_t" name="temperature_air" units="degC">Air temperature from airspeed sensor</field>
       <field type="int8_t" name="climb_rate" units="dm/s">Maximum climb rate magnitude since last message</field>
-      <field type="int8_t" name="battery" units="%">Battery level (-1 if field not provided).</field>
+      <field type="int8_t" name="battery" units="%" invalid="-1">Battery level (-1 if field not provided).</field>
       <field type="uint16_t" name="wp_num">Current waypoint number</field>
       <field type="uint16_t" name="failure_flags" enum="HL_FAILURE_FLAG" display="bitmask">Bitmap of failure flags.</field>
       <field type="int8_t" name="custom0">Field for custom payload.</field>
@@ -5967,7 +5967,7 @@
     <message id="249" name="MEMORY_VECT">
       <description>Send raw controller memory. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
       <field type="uint16_t" name="address">Starting address of the debug variables</field>
-      <field type="uint8_t" name="ver">Version code of the type variable. 0=unknown, type ignored and assumed int16_t. 1=as below</field>
+      <field type="uint8_t" name="ver" invalid="0">Version code of the type variable. 0=unknown, type ignored and assumed int16_t. 1=as below</field>
       <field type="uint8_t" name="type">Type code of the memory variables. for ver = 1: 0=16 x int16_t, 1=16 x uint16_t, 2=16 x Q15, 3=16 x 1Q14</field>
       <field type="int8_t[32]" name="value">Memory contents at specified address</field>
     </message>
@@ -6049,8 +6049,8 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="mode_id" enum="CAMERA_MODE">Camera mode</field>
       <extensions/>
-      <field type="float" name="zoomLevel">Current zoom level (0.0 to 100.0, NaN if not known)</field>
-      <field type="float" name="focusLevel">Current focus level (0.0 to 100.0, NaN if not known)</field>
+      <field type="float" name="zoomLevel" invalid="NaN">Current zoom level (0.0 to 100.0, NaN if not known)</field>
+      <field type="float" name="focusLevel" invalid="NaN">Current focus level (0.0 to 100.0, NaN if not known)</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
       <description>Information about a storage medium. This message is sent in response to a request with MAV_CMD_REQUEST_MESSAGE and whenever the status of the storage changes (STORAGE_STATUS). Use MAV_CMD_REQUEST_MESSAGE.param2 to indicate the index/id of requested storage: 0 for all, 1 for first, 2 for second, etc.</description>
@@ -6081,7 +6081,7 @@
     <message id="263" name="CAMERA_IMAGE_CAPTURED">
       <description>Information about a captured image. This is emitted every time a message is captured. It may be re-requested using MAV_CMD_REQUEST_MESSAGE, using param2 to indicate the sequence number for the missing image.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint64_t" name="time_utc" units="us">Timestamp (time since UNIX epoch) in UTC. 0 for unknown.</field>
+      <field type="uint64_t" name="time_utc" units="us" invalid="0">Timestamp (time since UNIX epoch) in UTC. 0 for unknown.</field>
       <field type="uint8_t" name="camera_id">Deprecated/unused. Component IDs are used to differentiate multiple cameras.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude where image was taken</field>
       <field type="int32_t" name="lon" units="degE7">Longitude where capture was taken</field>
@@ -6095,19 +6095,19 @@
     <message id="264" name="FLIGHT_INFORMATION">
       <description>Information about flight since last arming.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint64_t" name="arming_time_utc" units="us">Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown</field>
-      <field type="uint64_t" name="takeoff_time_utc" units="us">Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown</field>
+      <field type="uint64_t" name="arming_time_utc" units="us" invalid="0">Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown</field>
+      <field type="uint64_t" name="takeoff_time_utc" units="us" invalid="0">Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown</field>
       <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of log files</field>
     </message>
     <message id="265" name="MOUNT_ORIENTATION">
       <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">This message is being superseded by MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
       <description>Orientation of a mount</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="float" name="roll" units="deg">Roll in global frame (set to NaN for invalid).</field>
-      <field type="float" name="pitch" units="deg">Pitch in global frame (set to NaN for invalid).</field>
-      <field type="float" name="yaw" units="deg">Yaw relative to vehicle (set to NaN for invalid).</field>
+      <field type="float" name="roll" units="deg" invalid="NaN">Roll in global frame (set to NaN for invalid).</field>
+      <field type="float" name="pitch" units="deg" invalid="NaN">Pitch in global frame (set to NaN for invalid).</field>
+      <field type="float" name="yaw" units="deg" invalid="NaN">Yaw relative to vehicle (set to NaN for invalid).</field>
       <extensions/>
-      <field type="float" name="yaw_absolute" units="deg">Yaw in absolute frame relative to Earth's North, north is 0 (set to NaN for invalid).</field>
+      <field type="float" name="yaw_absolute" units="deg" invalid="NaN">Yaw in absolute frame relative to Earth's North, north is 0 (set to NaN for invalid).</field>
     </message>
     <message id="266" name="LOGGING_DATA">
       <description>A message containing logged data (see also MAV_CMD_LOGGING_START)</description>
@@ -6115,7 +6115,7 @@
       <field type="uint8_t" name="target_component">component ID of the target</field>
       <field type="uint16_t" name="sequence">sequence number (can wrap)</field>
       <field type="uint8_t" name="length" units="bytes">data length</field>
-      <field type="uint8_t" name="first_message_offset" units="bytes">offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).</field>
+      <field type="uint8_t" name="first_message_offset" units="bytes" invalid="UINT8_MAX">offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to UINT8_MAX if no start exists).</field>
       <field type="uint8_t[249]" name="data">logged data</field>
     </message>
     <message id="267" name="LOGGING_DATA_ACKED">
@@ -6124,7 +6124,7 @@
       <field type="uint8_t" name="target_component">component ID of the target</field>
       <field type="uint16_t" name="sequence">sequence number (can wrap)</field>
       <field type="uint8_t" name="length" units="bytes">data length</field>
-      <field type="uint8_t" name="first_message_offset" units="bytes">offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).</field>
+      <field type="uint8_t" name="first_message_offset" units="bytes" invalid="UINT8_MAX">offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to UINT8_MAX if no start exists).</field>
       <field type="uint8_t[249]" name="data">logged data</field>
     </message>
     <message id="268" name="LOGGING_ACK">
@@ -6164,15 +6164,15 @@
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about the field of view of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="int32_t" name="lat_camera" units="degE7">Latitude of camera (INT32_MAX if unknown).</field>
-      <field type="int32_t" name="lon_camera" units="degE7">Longitude of camera (INT32_MAX if unknown).</field>
-      <field type="int32_t" name="alt_camera" units="mm">Altitude (MSL) of camera (INT32_MAX if unknown).</field>
-      <field type="int32_t" name="lat_image" units="degE7">Latitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
-      <field type="int32_t" name="lon_image" units="degE7">Longitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
-      <field type="int32_t" name="alt_image" units="mm">Altitude (MSL) of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
+      <field type="int32_t" name="lat_camera" units="degE7" invalid="INT32_MAX">Latitude of camera (INT32_MAX if unknown).</field>
+      <field type="int32_t" name="lon_camera" units="degE7" invalid="INT32_MAX">Longitude of camera (INT32_MAX if unknown).</field>
+      <field type="int32_t" name="alt_camera" units="mm" invalid="INT32_MAX">Altitude (MSL) of camera (INT32_MAX if unknown).</field>
+      <field type="int32_t" name="lat_image" units="degE7" invalid="INT32_MAX">Latitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
+      <field type="int32_t" name="lon_image" units="degE7" invalid="INT32_MAX">Longitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
+      <field type="int32_t" name="alt_image" units="mm" invalid="INT32_MAX">Altitude (MSL) of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
-      <field type="float" name="hfov" units="deg">Horizontal field of view (NaN if unknown).</field>
-      <field type="float" name="vfov" units="deg">Vertical field of view (NaN if unknown).</field>
+      <field type="float" name="hfov" units="deg" invalid="NaN">Horizontal field of view (NaN if unknown).</field>
+      <field type="float" name="vfov" units="deg" invalid="NaN">Vertical field of view (NaN if unknown).</field>
     </message>
     <message id="275" name="CAMERA_TRACKING_IMAGE_STATUS">
       <wip/>
@@ -6181,13 +6181,13 @@
       <field type="uint8_t" name="tracking_status" enum="CAMERA_TRACKING_STATUS_FLAGS">Current tracking status</field>
       <field type="uint8_t" name="tracking_mode" enum="CAMERA_TRACKING_MODE">Current tracking mode</field>
       <field type="uint8_t" name="target_data" enum="CAMERA_TRACKING_TARGET_DATA">Defines location of target data</field>
-      <field type="float" name="point_x">Current tracked point x value if CAMERA_TRACKING_MODE_POINT (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
-      <field type="float" name="point_y">Current tracked point y value if CAMERA_TRACKING_MODE_POINT (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
-      <field type="float" name="radius">Current tracked radius if CAMERA_TRACKING_MODE_POINT (normalized 0..1, 0 is image left, 1 is image right), NAN if unknown</field>
-      <field type="float" name="rec_top_x">Current tracked rectangle top x value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
-      <field type="float" name="rec_top_y">Current tracked rectangle top y value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
-      <field type="float" name="rec_bottom_x">Current tracked rectangle bottom x value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
-      <field type="float" name="rec_bottom_y">Current tracked rectangle bottom y value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+      <field type="float" name="point_x" invalid="NaN">Current tracked point x value if CAMERA_TRACKING_MODE_POINT (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
+      <field type="float" name="point_y" invalid="NaN">Current tracked point y value if CAMERA_TRACKING_MODE_POINT (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+      <field type="float" name="radius" invalid="NaN">Current tracked radius if CAMERA_TRACKING_MODE_POINT (normalized 0..1, 0 is image left, 1 is image right), NAN if unknown</field>
+      <field type="float" name="rec_top_x" invalid="NaN">Current tracked rectangle top x value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
+      <field type="float" name="rec_top_y" invalid="NaN">Current tracked rectangle top y value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+      <field type="float" name="rec_bottom_x" invalid="NaN">Current tracked rectangle bottom x value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
+      <field type="float" name="rec_bottom_y" invalid="NaN">Current tracked rectangle bottom y value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
     </message>
     <message id="276" name="CAMERA_TRACKING_GEO_STATUS">
       <wip/>
@@ -6197,15 +6197,15 @@
       <field type="int32_t" name="lat" units="degE7">Latitude of tracked object</field>
       <field type="int32_t" name="lon" units="degE7">Longitude of tracked object</field>
       <field type="float" name="alt" units="m">Altitude of tracked object(AMSL, WGS84)</field>
-      <field type="float" name="h_acc" units="m">Horizontal accuracy. NAN if unknown</field>
-      <field type="float" name="v_acc" units="m">Vertical accuracy. NAN if unknown</field>
-      <field type="float" name="vel_n" units="m/s">North velocity of tracked object. NAN if unknown</field>
-      <field type="float" name="vel_e" units="m/s">East velocity of tracked object. NAN if unknown</field>
-      <field type="float" name="vel_d" units="m/s">Down velocity of tracked object. NAN if unknown</field>
-      <field type="float" name="vel_acc" units="m/s">Velocity accuracy. NAN if unknown</field>
-      <field type="float" name="dist" units="m">Distance between camera and tracked object. NAN if unknown</field>
-      <field type="float" name="hdg" units="rad">Heading in radians, in NED. NAN if unknown</field>
-      <field type="float" name="hdg_acc" units="rad">Accuracy of heading, in NED. NAN if unknown</field>
+      <field type="float" name="h_acc" units="m" invalid="NaN">Horizontal accuracy. NAN if unknown</field>
+      <field type="float" name="v_acc" units="m" invalid="NaN">Vertical accuracy. NAN if unknown</field>
+      <field type="float" name="vel_n" units="m/s" invalid="NaN">North velocity of tracked object. NAN if unknown</field>
+      <field type="float" name="vel_e" units="m/s" invalid="NaN">East velocity of tracked object. NAN if unknown</field>
+      <field type="float" name="vel_d" units="m/s" invalid="NaN">Down velocity of tracked object. NAN if unknown</field>
+      <field type="float" name="vel_acc" units="m/s" invalid="NaN">Velocity accuracy. NAN if unknown</field>
+      <field type="float" name="dist" units="m" invalid="NaN">Distance between camera and tracked object. NAN if unknown</field>
+      <field type="float" name="hdg" units="rad" invalid="NaN">Heading in radians, in NED. NAN if unknown</field>
+      <field type="float" name="hdg_acc" units="rad" invalid="NaN">Accuracy of heading, in NED. NAN if unknown</field>
     </message>
     <message id="280" name="GIMBAL_MANAGER_INFORMATION">
       <wip/>
@@ -6242,9 +6242,9 @@
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
       <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_MANAGER_FLAGS_YAW_LOCK is set)</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
     </message>
     <message id="283" name="GIMBAL_DEVICE_INFORMATION">
       <wip/>
@@ -6256,7 +6256,7 @@
       <field type="char[32]" name="custom_name">Custom name of the gimbal given to it by the user.</field>
       <field type="uint32_t" name="firmware_version">Version of the gimbal firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff).</field>
       <field type="uint32_t" name="hardware_version">Version of the gimbal hardware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff).</field>
-      <field type="uint64_t" name="uid">UID of gimbal hardware (0 if unknown).</field>
+      <field type="uint64_t" name="uid" invalid="0">UID of gimbal hardware (0 if unknown).</field>
       <field type="uint16_t" name="cap_flags" enum="GIMBAL_DEVICE_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
       <field type="uint16_t" name="custom_cap_flags" display="bitmask">Bitmap for use for gimbal-specific capability flags.</field>
       <field type="float" name="roll_min" units="rad">Minimum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
@@ -6273,10 +6273,10 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Low level gimbal flags.</field>
-      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, set all fields to NaN if only angular velocity should be used)</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
+      <field type="float[4]" name="q" invalid="[NaN]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, set all fields to NaN if only angular velocity should be used)</field>
+      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
     </message>
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
       <wip/>
@@ -6287,9 +6287,9 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Current gimbal flags set.</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set)</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (NaN if unknown)</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (NaN if unknown)</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (NaN if unknown)</field>
+      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (NaN if unknown)</field>
+      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (NaN if unknown)</field>
+      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (NaN if unknown)</field>
       <field type="uint32_t" name="failure_flags" display="bitmask" enum="GIMBAL_DEVICE_ERROR_FLAGS">Failure flags (0 for no failure)</field>
     </message>
     <message id="286" name="AUTOPILOT_STATE_FOR_GIMBAL_DEVICE">
@@ -6305,9 +6305,9 @@
       <field type="float" name="vy" units="m/s">Y Speed in NED (North, East, Down).</field>
       <field type="float" name="vz" units="m/s">Z Speed in NED (North, East, Down).</field>
       <field type="uint32_t" name="v_estimated_delay_us" units="us">Estimated delay of the speed data.</field>
-      <field type="float" name="feed_forward_angular_velocity_z" units="rad/s">Feed forward Z component of angular velocity, positive is yawing to the right, NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
+      <field type="float" name="feed_forward_angular_velocity_z" units="rad/s" invalid="NaN">Feed forward Z component of angular velocity, positive is yawing to the right, NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
       <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Bitmap indicating which estimator outputs are valid.</field>
-      <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
+      <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE" invalid="MAV_LANDED_STATE_UNDEFINED">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
     </message>
     <message id="287" name="GIMBAL_MANAGER_SET_PITCHYAW">
       <wip/>
@@ -6317,10 +6317,10 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
       <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
-      <field type="float" name="pitch" units="rad">Pitch angle (positive: up, negative: down, NaN to be ignored).</field>
-      <field type="float" name="yaw" units="rad">Yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
-      <field type="float" name="pitch_rate" units="rad/s">Pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
-      <field type="float" name="yaw_rate" units="rad/s">Yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="pitch" units="rad" invalid="NaN">Pitch angle (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw" units="rad" invalid="NaN">Yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="pitch_rate" units="rad/s" invalid="NaN">Pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw_rate" units="rad/s" invalid="NaN">Yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
     </message>
     <message id="288" name="GIMBAL_MANAGER_SET_MANUAL_CONTROL">
       <wip/>
@@ -6330,10 +6330,10 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags.</field>
       <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
-      <field type="float" name="pitch">Pitch angle unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
-      <field type="float" name="yaw">Yaw angle unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
-      <field type="float" name="pitch_rate">Pitch angular rate unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
-      <field type="float" name="yaw_rate">Yaw angular rate unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="pitch" invalid="NaN">Pitch angle unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw" invalid="NaN">Yaw angle unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="pitch_rate" invalid="NaN">Pitch angular rate unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw_rate" invalid="NaN">Yaw angular rate unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
     </message>
     <message id="290" name="ESC_INFO">
       <wip/>
@@ -6410,14 +6410,14 @@
       <field type="uint8_t[16]" name="hw_unique_id">Hardware unique 128-bit ID.</field>
       <field type="uint8_t" name="sw_version_major">Software major version number.</field>
       <field type="uint8_t" name="sw_version_minor">Software minor version number.</field>
-      <field type="uint32_t" name="sw_vcs_commit">Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.</field>
+      <field type="uint32_t" name="sw_vcs_commit" invalid="0">Version control system (VCS) revision identifier (e.g. git short commit hash). 0 if unknown.</field>
     </message>
     <message id="320" name="PARAM_EXT_REQUEST_READ">
       <description>Request to read the value of a parameter with either the param_id string id or param_index. PARAM_EXT_VALUE should be emitted in response.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="int16_t" name="param_index">Parameter index. Set to -1 to use the Parameter ID field as identifier (else param_id will be ignored)</field>
+      <field type="int16_t" name="param_index" invalid="-1">Parameter index. Set to -1 to use the Parameter ID field as identifier (else param_id will be ignored)</field>
     </message>
     <message id="321" name="PARAM_EXT_REQUEST_LIST">
       <description>Request all parameters of this component. All parameters should be emitted in response as PARAM_EXT_VALUE.</description>
@@ -6451,7 +6451,7 @@
       <description>Obstacle distances in front of the sensor, starting from the left in increment degrees to the right</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="sensor_type" enum="MAV_DISTANCE_SENSOR">Class id of the distance sensor type.</field>
-      <field type="uint16_t[72]" name="distances" units="cm">Distance of obstacles around the vehicle with index 0 corresponding to north + angle_offset, unless otherwise specified in the frame. A value of 0 is valid and means that the obstacle is practically touching the sensor. A value of max_distance +1 means no obstacle is present. A value of UINT16_MAX for unknown/not used. In a array element, one unit corresponds to 1cm.</field>
+      <field type="uint16_t[72]" name="distances" units="cm" invalid="[UINT16_MAX]">Distance of obstacles around the vehicle with index 0 corresponding to north + angle_offset, unless otherwise specified in the frame. A value of 0 is valid and means that the obstacle is practically touching the sensor. A value of max_distance +1 means no obstacle is present. A value of UINT16_MAX for unknown/not used. In a array element, one unit corresponds to 1cm.</field>
       <field type="uint8_t" name="increment" units="deg">Angular width in degrees of each array element. Increment direction is clockwise. This field is ignored if increment_f is non-zero.</field>
       <field type="uint16_t" name="min_distance" units="cm">Minimum distance the sensor can measure.</field>
       <field type="uint16_t" name="max_distance" units="cm">Maximum distance the sensor can measure.</field>
@@ -6475,8 +6475,8 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
-      <field type="float[21]" name="pose_covariance">Row-major representation of a 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
-      <field type="float[21]" name="velocity_covariance">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="pose_covariance" invalid="[NaN,]">Row-major representation of a 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="velocity_covariance" invalid="[NaN,]">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <extensions/>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
       <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Type of estimator that is providing the odometry.</field>
@@ -6485,28 +6485,28 @@
       <description>Describe a trajectory using an array of up-to 5 waypoints in the local frame (MAV_FRAME_LOCAL_NED).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="valid_points">Number of valid points (up-to 5 waypoints are possible)</field>
-      <field type="float[5]" name="pos_x" units="m">X-coordinate of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="pos_y" units="m">Y-coordinate of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="pos_z" units="m">Z-coordinate of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="vel_x" units="m/s">X-velocity of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="vel_y" units="m/s">Y-velocity of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="vel_z" units="m/s">Z-velocity of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="acc_x" units="m/s/s">X-acceleration of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="acc_y" units="m/s/s">Y-acceleration of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="acc_z" units="m/s/s">Z-acceleration of waypoint, set to NaN if not being used</field>
-      <field type="float[5]" name="pos_yaw" units="rad">Yaw angle, set to NaN if not being used</field>
-      <field type="float[5]" name="vel_yaw" units="rad/s">Yaw rate, set to NaN if not being used</field>
-      <field type="uint16_t[5]" name="command" enum="MAV_CMD">Scheduled action for each waypoint, UINT16_MAX if not being used.</field>
+      <field type="float[5]" name="pos_x" units="m" invalid="[NaN]">X-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_y" units="m" invalid="[NaN]">Y-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_z" units="m" invalid="[NaN]">Z-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_x" units="m/s" invalid="[NaN]">X-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_y" units="m/s" invalid="[NaN]">Y-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_z" units="m/s" invalid="[NaN]">Z-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_x" units="m/s/s" invalid="[NaN]">X-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_y" units="m/s/s" invalid="[NaN]">Y-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_z" units="m/s/s" invalid="[NaN]">Z-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_yaw" units="rad" invalid="[NaN]">Yaw angle, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_yaw" units="rad/s" invalid="[NaN]">Yaw rate, set to NaN if not being used</field>
+      <field type="uint16_t[5]" name="command" enum="MAV_CMD" invalid="[UINT16_MAX]">Scheduled action for each waypoint, UINT16_MAX if not being used.</field>
     </message>
     <message id="333" name="TRAJECTORY_REPRESENTATION_BEZIER">
       <description>Describe a trajectory using an array of up-to 5 bezier control points in the local frame (MAV_FRAME_LOCAL_NED).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="valid_points">Number of valid control points (up-to 5 points are possible)</field>
-      <field type="float[5]" name="pos_x" units="m">X-coordinate of bezier control points. Set to NaN if not being used</field>
-      <field type="float[5]" name="pos_y" units="m">Y-coordinate of bezier control points. Set to NaN if not being used</field>
-      <field type="float[5]" name="pos_z" units="m">Z-coordinate of bezier control points. Set to NaN if not being used</field>
-      <field type="float[5]" name="delta" units="s">Bezier time horizon. Set to NaN if velocity/acceleration should not be incorporated</field>
-      <field type="float[5]" name="pos_yaw" units="rad">Yaw. Set to NaN for unchanged</field>
+      <field type="float[5]" name="pos_x" units="m" invalid="[NaN]">X-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="pos_y" units="m" invalid="[NaN]">Y-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="pos_z" units="m" invalid="[NaN]">Z-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="delta" units="s" invalid="[NaN]">Bezier time horizon. Set to NaN if velocity/acceleration should not be incorporated</field>
+      <field type="float[5]" name="pos_yaw" units="rad" invalid="[NaN]">Yaw. Set to NaN for unchanged</field>
     </message>
     <message id="334" name="CELLULAR_STATUS">
       <wip/>
@@ -6515,10 +6515,10 @@
       <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
       <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLUAR_STATUS_FAILED</field>
       <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
-      <field type="uint8_t" name="quality">Signal quality in percent. If unknown, set to UINT8_MAX</field>
-      <field type="uint16_t" name="mcc">Mobile country code. If unknown, set to UINT16_MAX</field>
-      <field type="uint16_t" name="mnc">Mobile network code. If unknown, set to UINT16_MAX</field>
-      <field type="uint16_t" name="lac">Location area code. If unknown, set to 0</field>
+      <field type="uint8_t" name="quality" invalid="UINT8_MAX">Signal quality in percent. If unknown, set to UINT8_MAX</field>
+      <field type="uint16_t" name="mcc" invalid="UINT16_MAX">Mobile country code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="mnc" invalid="UINT16_MAX">Mobile network code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="lac" invalid="0">Location area code. If unknown, set to 0</field>
     </message>
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
@@ -6568,7 +6568,7 @@
       <field type="int32_t" name="next_lat" units="degE7">Next waypoint, latitude (WGS84)</field>
       <field type="int32_t" name="next_lon" units="degE7">Next waypoint, longitude (WGS84)</field>
       <field type="int32_t" name="next_alt" units="mm">Next waypoint, altitude (WGS84)</field>
-      <field type="uint16_t" name="update_rate" units="cs">Time until next update. Set to 0 if unknown or in data driven mode.</field>
+      <field type="uint16_t" name="update_rate" units="cs" invalid="0">Time until next update. Set to 0 if unknown or in data driven mode.</field>
       <field type="uint8_t" name="flight_state" enum="UTM_FLIGHT_STATE">Flight state</field>
       <field type="uint8_t" name="flags" enum="UTM_DATA_AVAIL_FLAGS" display="bitmask">Bitwise OR combination of the data available flags.</field>
     </message>
@@ -6599,29 +6599,29 @@
       <field type="uint8_t" name="id" instance="true">Battery ID</field>
       <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
       <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
-      <field type="int32_t" name="capacity_full_specification" units="mAh">Capacity when full according to manufacturer, -1: field not provided.</field>
-      <field type="int32_t" name="capacity_full" units="mAh">Capacity when full (accounting for battery degradation), -1: field not provided.</field>
-      <field type="uint16_t" name="cycle_count">Charge/discharge cycle count. UINT16_MAX: field not provided.</field>
-      <field type="char[16]" name="serial_number">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
+      <field type="int32_t" name="capacity_full_specification" units="mAh" invalid="-1">Capacity when full according to manufacturer, -1: field not provided.</field>
+      <field type="int32_t" name="capacity_full" units="mAh" invalid="-1">Capacity when full (accounting for battery degradation), -1: field not provided.</field>
+      <field type="uint16_t" name="cycle_count" invalid="UINT16_MAX">Charge/discharge cycle count. UINT16_MAX: field not provided.</field>
+      <field type="char[16]" name="serial_number" invalid="[0]">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
       <field type="char[50]" name="device_name">Static device name. Encode as manufacturer and product names separated using an underscore.</field>
-      <field type="uint16_t" name="weight" units="g">Battery weight. 0: field not provided.</field>
-      <field type="uint16_t" name="discharge_minimum_voltage" units="mV">Minimum per-cell voltage when discharging. If not supplied set to UINT16_MAX value.</field>
-      <field type="uint16_t" name="charging_minimum_voltage" units="mV">Minimum per-cell voltage when charging. If not supplied set to UINT16_MAX value.</field>
-      <field type="uint16_t" name="resting_minimum_voltage" units="mV">Minimum per-cell voltage when resting. If not supplied set to UINT16_MAX value.</field>
+      <field type="uint16_t" name="weight" units="g" invalid="0">Battery weight. 0: field not provided.</field>
+      <field type="uint16_t" name="discharge_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when discharging. If not supplied set to UINT16_MAX value.</field>
+      <field type="uint16_t" name="charging_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when charging. If not supplied set to UINT16_MAX value.</field>
+      <field type="uint16_t" name="resting_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when resting. If not supplied set to UINT16_MAX value.</field>
     </message>
     <message id="373" name="GENERATOR_STATUS">
       <description>Telemetry of power generation system. Alternator or mechanical generator.</description>
       <field type="uint64_t" name="status" display="bitmask" enum="MAV_GENERATOR_STATUS_FLAG">Status flags.</field>
-      <field type="uint16_t" name="generator_speed" units="rpm">Speed of electrical generator or alternator. UINT16_MAX: field not provided.</field>
-      <field type="float" name="battery_current" units="A">Current into/out of battery. Positive for out. Negative for in. NaN: field not provided.</field>
-      <field type="float" name="load_current" units="A">Current going to the UAV. If battery current not available this is the DC current from the generator. Positive for out. Negative for in. NaN: field not provided</field>
-      <field type="float" name="power_generated" units="W">The power being generated. NaN: field not provided</field>
+      <field type="uint16_t" name="generator_speed" units="rpm" invalid="UINT16_MAX">Speed of electrical generator or alternator. UINT16_MAX: field not provided.</field>
+      <field type="float" name="battery_current" units="A" invalid="NaN">Current into/out of battery. Positive for out. Negative for in. NaN: field not provided.</field>
+      <field type="float" name="load_current" units="A" invalid="NaN">Current going to the UAV. If battery current not available this is the DC current from the generator. Positive for out. Negative for in. NaN: field not provided</field>
+      <field type="float" name="power_generated" units="W" invalid="NaN">The power being generated. NaN: field not provided</field>
       <field type="float" name="bus_voltage" units="V">Voltage of the bus seen at the generator, or battery bus if battery bus is controlled by generator and at a different voltage to main bus.</field>
-      <field type="int16_t" name="rectifier_temperature" units="degC">The temperature of the rectifier or power converter. INT16_MAX: field not provided.</field>
-      <field type="float" name="bat_current_setpoint" units="A">The target battery current. Positive for out. Negative for in. NaN: field not provided</field>
-      <field type="int16_t" name="generator_temperature" units="degC">The temperature of the mechanical motor, fuel cell core or generator. INT16_MAX: field not provided.</field>
-      <field type="uint32_t" name="runtime" units="s">Seconds this generator has run since it was rebooted. UINT32_MAX: field not provided.</field>
-      <field type="int32_t" name="time_until_maintenance" units="s">Seconds until this generator requires maintenance.  A negative value indicates maintenance is past-due. INT32_MAX: field not provided.</field>
+      <field type="int16_t" name="rectifier_temperature" units="degC" invalid="INT16_MAX">The temperature of the rectifier or power converter. INT16_MAX: field not provided.</field>
+      <field type="float" name="bat_current_setpoint" units="A" invalid="NaN">The target battery current. Positive for out. Negative for in. NaN: field not provided</field>
+      <field type="int16_t" name="generator_temperature" units="degC" invalid="INT16_MAX">The temperature of the mechanical motor, fuel cell core or generator. INT16_MAX: field not provided.</field>
+      <field type="uint32_t" name="runtime" units="s" invalid="UINT32_MAX">Seconds this generator has run since it was rebooted. UINT32_MAX: field not provided.</field>
+      <field type="int32_t" name="time_until_maintenance" units="s" invalid="INT32_MAX">Seconds until this generator requires maintenance.  A negative value indicates maintenance is past-due. INT32_MAX: field not provided.</field>
     </message>
     <message id="375" name="ACTUATOR_OUTPUT_STATUS">
       <description>The raw values of the actuator outputs (e.g. on Pixhawk, from MAIN, AUX ports). This message supersedes SERVO_OUTPUT_RAW.</description>
@@ -6635,9 +6635,9 @@
       <description>Time/duration estimates for various events and actions given the current vehicle state and position.</description>
       <field type="int32_t" name="safe_return" units="s">Estimated time to complete the vehicle's configured "safe return" action from its current position (e.g. RTL, Smart RTL, etc.). -1 indicates that the vehicle is landed, or that no time estimate available.</field>
       <field type="int32_t" name="land" units="s">Estimated time for vehicle to complete the LAND action from its current position. -1 indicates that the vehicle is landed, or that no time estimate available.</field>
-      <field type="int32_t" name="mission_next_item" units="s">Estimated time for reaching/completing the currently active mission item. -1 means no time estimate available.</field>
-      <field type="int32_t" name="mission_end" units="s">Estimated time for completing the current mission. -1 means no mission active and/or no estimate available.</field>
-      <field type="int32_t" name="commanded_action" units="s">Estimated time for completing the current commanded action (i.e. Go To, Takeoff, Land, etc.). -1 means no action active and/or no estimate available.</field>
+      <field type="int32_t" name="mission_next_item" units="s" invalid="-1">Estimated time for reaching/completing the currently active mission item. -1 means no time estimate available.</field>
+      <field type="int32_t" name="mission_end" units="s" invalid="-1">Estimated time for completing the current mission. -1 means no mission active and/or no estimate available.</field>
+      <field type="int32_t" name="commanded_action" units="s" invalid="-1">Estimated time for completing the current commanded action (i.e. Go To, Takeoff, Land, etc.). -1 means no action active and/or no estimate available.</field>
     </message>
     <message id="385" name="TUNNEL">
       <wip/>
@@ -6656,23 +6656,23 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint32_t" name="uptime" units="ms">Time since system boot.</field>
       <field type="uint8_t" name="type">Type of the onboard computer: 0: Mission computer primary, 1: Mission computer backup 1, 2: Mission computer backup 2, 3: Compute node, 4-5: Compute spares, 6-9: Payload computers.</field>
-      <field type="uint8_t[8]" name="cpu_cores">CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
-      <field type="uint8_t[10]" name="cpu_combined">Combined CPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
-      <field type="uint8_t[4]" name="gpu_cores">GPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
-      <field type="uint8_t[10]" name="gpu_combined">Combined GPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
-      <field type="int8_t" name="temperature_board" units="degC">Temperature of the board. A value of INT8_MAX implies the field is unused.</field>
-      <field type="int8_t[8]" name="temperature_core" units="degC">Temperature of the CPU core. A value of INT8_MAX implies the field is unused.</field>
-      <field type="int16_t[4]" name="fan_speed" units="rpm">Fan speeds. A value of INT16_MAX implies the field is unused.</field>
-      <field type="uint32_t" name="ram_usage" units="MiB">Amount of used RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t" name="ram_total" units="MiB">Total amount of RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[4]" name="storage_type">Storage type: 0: HDD, 1: SSD, 2: EMMC, 3: SD card (non-removable), 4: SD card (removable). A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[4]" name="storage_usage" units="MiB">Amount of used storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[4]" name="storage_total" units="MiB">Total amount of storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint8_t[8]" name="cpu_cores" invalid="[UINT8_MAX]">CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[10]" name="cpu_combined" invalid="[UINT8_MAX]">Combined CPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[4]" name="gpu_cores" invalid="[UINT8_MAX]">GPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.</field>
+      <field type="uint8_t[10]" name="gpu_combined" invalid="[UINT8_MAX]">Combined GPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.</field>
+      <field type="int8_t" name="temperature_board" units="degC" invalid="INT8_MAX">Temperature of the board. A value of INT8_MAX implies the field is unused.</field>
+      <field type="int8_t[8]" name="temperature_core" units="degC" invalid="[INT8_MAX]">Temperature of the CPU core. A value of INT8_MAX implies the field is unused.</field>
+      <field type="int16_t[4]" name="fan_speed" units="rpm" invalid="[INT16_MAX]">Fan speeds. A value of INT16_MAX implies the field is unused.</field>
+      <field type="uint32_t" name="ram_usage" units="MiB" invalid="UINT32_MAX">Amount of used RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t" name="ram_total" units="MiB" invalid="UINT32_MAX">Total amount of RAM on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[4]" name="storage_type" invalid="[UINT32_MAX]">Storage type: 0: HDD, 1: SSD, 2: EMMC, 3: SD card (non-removable), 4: SD card (removable). A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[4]" name="storage_usage" units="MiB" invalid="[UINT32_MAX]">Amount of used storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[4]" name="storage_total" units="MiB" invalid="[UINT32_MAX]">Total amount of storage space on the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_type">Link type: 0-9: UART, 10-19: Wired network, 20-29: Wifi, 30-39: Point-to-point proprietary, 40-49: Mesh proprietary</field>
-      <field type="uint32_t[6]" name="link_tx_rate" units="KiB/s">Network traffic from the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[6]" name="link_tx_max" units="KiB/s">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
-      <field type="uint32_t[6]" name="link_rx_max" units="KiB/s">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_tx_rate" units="KiB/s" invalid="[UINT32_MAX]">Network traffic from the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s" invalid="[UINT32_MAX]">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_tx_max" units="KiB/s" invalid="[UINT32_MAX]">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint32_t[6]" name="link_rx_max" units="KiB/s" invalid="[UINT32_MAX]">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
     </message>
     <message id="395" name="COMPONENT_INFORMATION">
       <wip/>
@@ -6750,12 +6750,12 @@
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Winch status.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (synced to UNIX time or since system boot).</field>
-      <field type="float" name="line_length" units="m">Length of line released. NaN if unknown</field>
-      <field type="float" name="speed" units="m/s">Speed line is being released or retracted. Positive values if being released, negative values if being retracted, NaN if unknown</field>
-      <field type="float" name="tension" units="kg">Tension on the line. NaN if unknown</field>
-      <field type="float" name="voltage" units="V">Voltage of the battery supplying the winch. NaN if unknown</field>
-      <field type="float" name="current" units="A">Current draw from the winch. NaN if unknown</field>
-      <field type="int16_t" name="temperature" units="degC">Temperature of the motor. INT16_MAX if unknown</field>
+      <field type="float" name="line_length" units="m" invalid="NaN">Length of line released. NaN if unknown</field>
+      <field type="float" name="speed" units="m/s" invalid="NaN">Speed line is being released or retracted. Positive values if being released, negative values if being retracted, NaN if unknown</field>
+      <field type="float" name="tension" units="kg" invalid="NaN">Tension on the line. NaN if unknown</field>
+      <field type="float" name="voltage" units="V" invalid="NaN">Voltage of the battery supplying the winch. NaN if unknown</field>
+      <field type="float" name="current" units="A" invalid="NaN">Current draw from the winch. NaN if unknown</field>
+      <field type="int16_t" name="temperature" units="degC" invalid="INT16_MAX">Temperature of the motor. INT16_MAX if unknown</field>
       <field type="uint32_t" name="status" display="bitmask" enum="MAV_WINCH_STATUS_FLAG">Status flags</field>
     </message>
     <message id="12900" name="OPEN_DRONE_ID_BASIC_ID">
@@ -6777,15 +6777,15 @@
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="status" enum="MAV_ODID_STATUS">Indicates whether the unmanned aircraft is on the ground or in the air.</field>
-      <field type="uint16_t" name="direction" units="cdeg">Direction over ground (not heading, but direction of movement) measured clockwise from true North: 0 - 35999 centi-degrees. If unknown: 36100 centi-degrees.</field>
+      <field type="uint16_t" name="direction" units="cdeg" invalid="36100">Direction over ground (not heading, but direction of movement) measured clockwise from true North: 0 - 35999 centi-degrees. If unknown: 36100 centi-degrees.</field>
       <field type="uint16_t" name="speed_horizontal" units="cm/s">Ground speed. Positive only. If unknown: 25500 cm/s. If speed is larger than 25425 cm/s, use 25425 cm/s.</field>
       <field type="int16_t" name="speed_vertical" units="cm/s">The vertical speed. Up is positive. If unknown: 6300 cm/s. If speed is larger than 6200 cm/s, use 6200 cm/s. If lower than -6200 cm/s, use -6200 cm/s.</field>
-      <field type="int32_t" name="latitude" units="degE7">Current latitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).</field>
-      <field type="int32_t" name="longitude" units="degE7">Current longitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).</field>
-      <field type="float" name="altitude_barometric" units="m">The altitude calculated from the barometric pressue. Reference is against 29.92inHg or 1013.2mb. If unknown: -1000 m.</field>
-      <field type="float" name="altitude_geodetic" units="m">The geodetic altitude as defined by WGS84. If unknown: -1000 m.</field>
+      <field type="int32_t" name="latitude" units="degE7" invalid="0">Current latitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).</field>
+      <field type="int32_t" name="longitude" units="degE7" invalid="0">Current longitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).</field>
+      <field type="float" name="altitude_barometric" units="m" invalid="-1000">The altitude calculated from the barometric pressue. Reference is against 29.92inHg or 1013.2mb. If unknown: -1000 m.</field>
+      <field type="float" name="altitude_geodetic" units="m" invalid="-1000">The geodetic altitude as defined by WGS84. If unknown: -1000 m.</field>
       <field type="uint8_t" name="height_reference" enum="MAV_ODID_HEIGHT_REF">Indicates the reference point for the height field.</field>
-      <field type="float" name="height" units="m">The current height of the unmanned aircraft above the take-off location or the ground as indicated by height_reference. If unknown: -1000 m.</field>
+      <field type="float" name="height" units="m" invalid="-1000">The current height of the unmanned aircraft above the take-off location or the ground as indicated by height_reference. If unknown: -1000 m.</field>
       <field type="uint8_t" name="horizontal_accuracy" enum="MAV_ODID_HOR_ACC">The accuracy of the horizontal position.</field>
       <field type="uint8_t" name="vertical_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the vertical position.</field>
       <field type="uint8_t" name="barometer_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the barometric altitude.</field>
@@ -6826,12 +6826,12 @@
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="operator_location_type" enum="MAV_ODID_OPERATOR_LOCATION_TYPE">Specifies the operator location type.</field>
       <field type="uint8_t" name="classification_type" enum="MAV_ODID_CLASSIFICATION_TYPE">Specifies the classification type of the UA.</field>
-      <field type="int32_t" name="operator_latitude" units="degE7">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
-      <field type="int32_t" name="operator_longitude" units="degE7">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
+      <field type="int32_t" name="operator_latitude" units="degE7" invalid="0">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
+      <field type="int32_t" name="operator_longitude" units="degE7" invalid="0">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="uint16_t" name="area_count">Number of aircraft in the area, group or formation (default 1).</field>
       <field type="uint16_t" name="area_radius" units="m">Radius of the cylindrical area of the group or formation (default 0).</field>
-      <field type="float" name="area_ceiling" units="m">Area Operations Ceiling relative to WGS84. If unknown: -1000 m.</field>
-      <field type="float" name="area_floor" units="m">Area Operations Floor relative to WGS84. If unknown: -1000 m.</field>
+      <field type="float" name="area_ceiling" units="m" invalid="-1000">Area Operations Ceiling relative to WGS84. If unknown: -1000 m.</field>
+      <field type="float" name="area_floor" units="m" invalid="-1000">Area Operations Floor relative to WGS84. If unknown: -1000 m.</field>
       <field type="uint8_t" name="category_eu" enum="MAV_ODID_CATEGORY_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the category of the UA.</field>
       <field type="uint8_t" name="class_eu" enum="MAV_ODID_CLASS_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the class of the UA.</field>
     </message>
