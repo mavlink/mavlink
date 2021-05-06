@@ -314,20 +314,30 @@
     </enum>
     <!-- fenced mode enums -->
     <enum name="FENCE_ACTION">
+      <description>Actions following geofence breach.</description>
       <entry value="0" name="FENCE_ACTION_NONE">
-        <description>Disable fenced mode</description>
+        <description>Disable fenced mode. If used in a plan this would mean the next fence is disabled.</description>
       </entry>
       <entry value="1" name="FENCE_ACTION_GUIDED">
-        <description>Switched to guided mode to return point (fence point 0)</description>
+        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
       </entry>
       <entry value="2" name="FENCE_ACTION_REPORT">
         <description>Report fence breach, but don't take action</description>
       </entry>
       <entry value="3" name="FENCE_ACTION_GUIDED_THR_PASS">
-        <description>Switched to guided mode to return point (fence point 0) with manual throttle control</description>
+        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT with manual throttle control in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
       </entry>
       <entry value="4" name="FENCE_ACTION_RTL">
-        <description>Switch to RTL (return to launch) mode and head for the return point.</description>
+        <description>Return/RTL mode.</description>
+      </entry>
+      <entry value="5" name="FENCE_ACTION_HOLD">
+        <description>Hold at current location.</description>
+      </entry>
+      <entry value="6" name="FENCE_ACTION_TERMINATE">
+        <description>Termination failsafe. Motors are shut down (some flight stacks may trigger other failsafe actions).</description>
+      </entry>
+      <entry value="7" name="FENCE_ACTION_LAND">
+        <description>Land at current location.</description>
       </entry>
     </enum>
     <enum name="FENCE_BREACH">
