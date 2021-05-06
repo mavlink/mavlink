@@ -314,20 +314,30 @@
     </enum>
     <!-- fenced mode enums -->
     <enum name="FENCE_ACTION">
+      <description>Actions following geofence breach.</description>
       <entry value="0" name="FENCE_ACTION_NONE">
-        <description>Disable fenced mode</description>
+        <description>Disable fenced mode. If used in a plan this would mean the next fence is disabled.</description>
       </entry>
       <entry value="1" name="FENCE_ACTION_GUIDED">
-        <description>Switched to guided mode to return point (fence point 0)</description>
+        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
       </entry>
       <entry value="2" name="FENCE_ACTION_REPORT">
         <description>Report fence breach, but don't take action</description>
       </entry>
       <entry value="3" name="FENCE_ACTION_GUIDED_THR_PASS">
-        <description>Switched to guided mode to return point (fence point 0) with manual throttle control</description>
+        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT with manual throttle control in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
       </entry>
       <entry value="4" name="FENCE_ACTION_RTL">
-        <description>Switch to RTL (return to launch) mode and head for the return point.</description>
+        <description>Return/RTL mode.</description>
+      </entry>
+      <entry value="5" name="FENCE_ACTION_HOLD">
+        <description>Hold at current location.</description>
+      </entry>
+      <entry value="6" name="FENCE_ACTION_TERMINATE">
+        <description>Termination failsafe. Motors are shut down (some flight stacks may trigger other failsafe actions).</description>
+      </entry>
+      <entry value="7" name="FENCE_ACTION_LAND">
+        <description>Land at current location.</description>
       </entry>
     </enum>
     <enum name="FENCE_BREACH">
@@ -6591,10 +6601,7 @@
       <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
       <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
     </message>
-    <!-- Smart battery messages -->
     <message id="370" name="SMART_BATTERY_INFO">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Smart Battery information (static/infrequent update). Use for updates from: smart battery to flight stack, flight stack to GCS. Use BATTERY_STATUS for smart battery frequent updates.</description>
       <field type="uint8_t" name="id" instance="true">Battery ID</field>
       <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
@@ -6603,11 +6610,17 @@
       <field type="int32_t" name="capacity_full" units="mAh" invalid="-1">Capacity when full (accounting for battery degradation), -1: field not provided.</field>
       <field type="uint16_t" name="cycle_count" invalid="UINT16_MAX">Charge/discharge cycle count. UINT16_MAX: field not provided.</field>
       <field type="char[16]" name="serial_number" invalid="[0]">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
-      <field type="char[50]" name="device_name">Static device name. Encode as manufacturer and product names separated using an underscore.</field>
+      <field type="char[50]" name="device_name" invalid="[0]">Static device name in ASCII characters, 0 terminated. All 0: field not provided. Encode as manufacturer name then product name separated using an underscore.</field>
       <field type="uint16_t" name="weight" units="g" invalid="0">Battery weight. 0: field not provided.</field>
       <field type="uint16_t" name="discharge_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when discharging. If not supplied set to UINT16_MAX value.</field>
       <field type="uint16_t" name="charging_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when charging. If not supplied set to UINT16_MAX value.</field>
       <field type="uint16_t" name="resting_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when resting. If not supplied set to UINT16_MAX value.</field>
+      <extensions/>
+      <field type="uint16_t" name="charging_maximum_voltage" units="mV" invalid="0">Maximum per-cell voltage when charged. 0: field not provided.</field>
+      <field type="uint8_t" name="cells_in_series" invalid="0">Number of battery cells in series. 0: field not provided.</field>
+      <field type="uint32_t" name="discharge_maximum_current" units="mA" invalid="0">Maximum pack discharge current. 0: field not provided.</field>
+      <field type="uint32_t" name="discharge_maximum_burst_current" units="mA" invalid="0">Maximum pack discharge burst current. 0: field not provided.</field>
+      <field type="char[11]" name="manufacture_date" invalid="[0]">Manufacture date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
     </message>
     <message id="373" name="GENERATOR_STATUS">
       <description>Telemetry of power generation system. Alternator or mechanical generator.</description>

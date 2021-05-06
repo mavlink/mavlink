@@ -9,7 +9,7 @@ Range of IDs:
   commands: 60000 - 60049
 Documentation:  
   STORM32 and QSHOT additions
-  4. Feb. 2021
+  5. May. 2021
   All messages are technically WIP, but some are quite stable now.
   Quite stable means that it is in practical use, but may see extension.
   A more detailed description of the concept underlying the STORM32 and QSHOT messages can be found here:
@@ -340,6 +340,9 @@ Documentation:
       <entry value="8" name="MAV_QSHOT_MODE_CABLECAM_2POINT">
         <description>Start 2-point cable cam quick shot.</description>
       </entry>
+      <entry value="9" name="MAV_QSHOT_MODE_HOME_TARGETING">
+        <description>Start gimbal tracking the home location.</description>
+      </entry>
     </enum>
     <!-- ***************************
     STORM32 and QSHOT cmds
@@ -398,10 +401,10 @@ Documentation:
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint16_t" name="flags" enum="MAV_STORM32_GIMBAL_DEVICE_FLAGS">Gimbal device flags currently applied.</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation). The frame depends on the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag.</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (NaN if unknown).</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (NaN if unknown).</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (the frame depends on the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN if unknown).</field>
-      <field type="float" name="yaw_absolute" units="deg">Yaw in absolute frame relative to Earth's North, north is 0 (NaN if unknown).</field>
+      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (NaN if unknown).</field>
+      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (NaN if unknown).</field>
+      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (the frame depends on the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN if unknown).</field>
+      <field type="float" name="yaw_absolute" units="deg" invalid="NaN">Yaw in absolute frame relative to Earth's North, north is 0 (NaN if unknown).</field>
       <field type="uint16_t" name="failure_flags" display="bitmask" enum="GIMBAL_DEVICE_ERROR_FLAGS">Failure flags (0 for no failure).</field>
     </message>
     <message id="60002" name="STORM32_GIMBAL_DEVICE_CONTROL">
@@ -409,11 +412,11 @@ Documentation:
       <description>Message to a gimbal device to control its attitude. This message is to be sent from the gimbal manager to the gimbal device. Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint16_t" name="flags" enum="MAV_STORM32_GIMBAL_DEVICE_FLAGS">Gimbal device flags (UINT16_MAX to be ignored).</field>
-      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (positive: roll to the right, NaN to be ignored).</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (positive: tilt up, NaN to be ignored).</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
+      <field type="uint16_t" name="flags" enum="MAV_STORM32_GIMBAL_DEVICE_FLAGS" invalid="UINT16_MAX">Gimbal device flags (UINT16_MAX to be ignored).</field>
+      <field type="float[4]" name="q" invalid="[NaN,]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
+      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (positive: roll to the right, NaN to be ignored).</field>
+      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (positive: tilt up, NaN to be ignored).</field>
+      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
     </message>
     <!-- ***************************
     STORM32 gimbal manager messages
@@ -424,12 +427,12 @@ Documentation:
       <field type="uint8_t" name="gimbal_id" instance="true">Gimbal ID (component ID or 1-6 for non-MAVLink gimbal) that this gimbal manager is responsible for.</field>
       <field type="uint32_t" name="device_cap_flags" enum="MAV_STORM32_GIMBAL_DEVICE_CAP_FLAGS" display="bitmask">Gimbal device capability flags.</field>
       <field type="uint32_t" name="manager_cap_flags" enum="MAV_STORM32_GIMBAL_MANAGER_CAP_FLAGS" display="bitmask">Gimbal manager capability flags.</field>
-      <field type="float" name="roll_min" units="rad">Hardware minimum roll angle (positive: roll to the right, NaN if unknown).</field>
-      <field type="float" name="roll_max" units="rad">Hardware maximum roll angle (positive: roll to the right, NaN if unknown).</field>
-      <field type="float" name="pitch_min" units="rad">Hardware minimum pitch/tilt angle (positive: tilt up, NaN if unknown).</field>
-      <field type="float" name="pitch_max" units="rad">Hardware maximum pitch/tilt angle (positive: tilt up, NaN if unknown).</field>
-      <field type="float" name="yaw_min" units="rad">Hardware minimum yaw/pan angle (positive: pan to the right, relative to the vehicle/gimbal base, NaN if unknown).</field>
-      <field type="float" name="yaw_max" units="rad">Hardware maximum yaw/pan angle (positive: pan to the right, relative to the vehicle/gimbal base, NaN if unknown).</field>
+      <field type="float" name="roll_min" units="rad" invalid="NaN">Hardware minimum roll angle (positive: roll to the right, NaN if unknown).</field>
+      <field type="float" name="roll_max" units="rad" invalid="NaN">Hardware maximum roll angle (positive: roll to the right, NaN if unknown).</field>
+      <field type="float" name="pitch_min" units="rad" invalid="NaN">Hardware minimum pitch/tilt angle (positive: tilt up, NaN if unknown).</field>
+      <field type="float" name="pitch_max" units="rad" invalid="NaN">Hardware maximum pitch/tilt angle (positive: tilt up, NaN if unknown).</field>
+      <field type="float" name="yaw_min" units="rad" invalid="NaN">Hardware minimum yaw/pan angle (positive: pan to the right, relative to the vehicle/gimbal base, NaN if unknown).</field>
+      <field type="float" name="yaw_max" units="rad" invalid="NaN">Hardware maximum yaw/pan angle (positive: pan to the right, relative to the vehicle/gimbal base, NaN if unknown).</field>
     </message>
     <message id="60011" name="STORM32_GIMBAL_MANAGER_STATUS">
       <!-- Quite stable, may grow however -->
@@ -447,12 +450,12 @@ Documentation:
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="gimbal_id" instance="true">Gimbal ID of the gimbal manager to address (component ID or 1-6 for non-MAVLink gimbal, 0 for all gimbals, send command multiple times for more than one but not all gimbals).</field>
       <field type="uint8_t" name="client" enum="MAV_STORM32_GIMBAL_MANAGER_CLIENT">Client which is contacting the gimbal manager (must be set).</field>
-      <field type="uint16_t" name="device_flags" enum="MAV_STORM32_GIMBAL_DEVICE_FLAGS">Gimbal device flags (UINT16_MAX to be ignored).</field>
-      <field type="uint16_t" name="manager_flags" enum="MAV_STORM32_GIMBAL_MANAGER_FLAGS">Gimbal manager flags (0 to be ignored).</field>
-      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is determined by the GIMBAL_MANAGER_FLAGS_ABSOLUTE_YAW flag, NaN to be ignored).</field>
-      <field type="float" name="angular_velocity_x" units="rad/s">X component of angular velocity (positive: roll to the right, NaN to be ignored).</field>
-      <field type="float" name="angular_velocity_y" units="rad/s">Y component of angular velocity (positive: tilt up, NaN to be ignored).</field>
-      <field type="float" name="angular_velocity_z" units="rad/s">Z component of angular velocity (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
+      <field type="uint16_t" name="device_flags" enum="MAV_STORM32_GIMBAL_DEVICE_FLAGS" invalid="UINT16_MAX">Gimbal device flags (UINT16_MAX to be ignored).</field>
+      <field type="uint16_t" name="manager_flags" enum="MAV_STORM32_GIMBAL_MANAGER_FLAGS" invalid="0">Gimbal manager flags (0 to be ignored).</field>
+      <field type="float[4]" name="q" invalid="[NaN,]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is determined by the GIMBAL_MANAGER_FLAGS_ABSOLUTE_YAW flag, NaN to be ignored).</field>
+      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (positive: roll to the right, NaN to be ignored).</field>
+      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (positive: tilt up, NaN to be ignored).</field>
+      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
     </message>
     <message id="60013" name="STORM32_GIMBAL_MANAGER_CONTROL_PITCHYAW">
       <!-- Quite stable -->
@@ -461,12 +464,12 @@ Documentation:
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="gimbal_id" instance="true">Gimbal ID of the gimbal manager to address (component ID or 1-6 for non-MAVLink gimbal, 0 for all gimbals, send command multiple times for more than one but not all gimbals).</field>
       <field type="uint8_t" name="client" enum="MAV_STORM32_GIMBAL_MANAGER_CLIENT">Client which is contacting the gimbal manager (must be set).</field>
-      <field type="uint16_t" name="device_flags" enum="MAV_STORM32_GIMBAL_DEVICE_FLAGS">Gimbal device flags (UINT16_MAX to be ignored).</field>
-      <field type="uint16_t" name="manager_flags" enum="MAV_STORM32_GIMBAL_MANAGER_FLAGS">Gimbal manager flags (0 to be ignored).</field>
-      <field type="float" name="pitch" units="rad">Pitch/tilt angle (positive: tilt up, NaN to be ignored).</field>
-      <field type="float" name="yaw" units="rad">Yaw/pan angle (positive: pan the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
-      <field type="float" name="pitch_rate" units="rad/s">Pitch/tilt angular rate (positive: tilt up, NaN to be ignored).</field>
-      <field type="float" name="yaw_rate" units="rad/s">Yaw/pan angular rate (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
+      <field type="uint16_t" name="device_flags" enum="MAV_STORM32_GIMBAL_DEVICE_FLAGS" invalid="UINT16_MAX">Gimbal device flags (UINT16_MAX to be ignored).</field>
+      <field type="uint16_t" name="manager_flags" enum="MAV_STORM32_GIMBAL_MANAGER_FLAGS" invalid="0">Gimbal manager flags (0 to be ignored).</field>
+      <field type="float" name="pitch" units="rad" invalid="NaN">Pitch/tilt angle (positive: tilt up, NaN to be ignored).</field>
+      <field type="float" name="yaw" units="rad" invalid="NaN">Yaw/pan angle (positive: pan the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
+      <field type="float" name="pitch_rate" units="rad/s" invalid="NaN">Pitch/tilt angular rate (positive: tilt up, NaN to be ignored).</field>
+      <field type="float" name="yaw_rate" units="rad/s" invalid="NaN">Yaw/pan angular rate (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
     </message>
     <message id="60014" name="STORM32_GIMBAL_MANAGER_CORRECT_ROLL">
       <!-- Quite stable -->
