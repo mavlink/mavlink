@@ -1008,7 +1008,7 @@
       </entry>
       <entry value="85" name="MAV_CMD_NAV_VTOL_LAND" hasLocation="true" isDestination="true">
         <description>Land using VTOL mode</description>
-        <param index="1">Empty</param>
+        <param index="1" label="Land Options" enum="NAV_VTOL_LAND_OPTIONS">Landing behaviour.</param>
         <param index="2">Empty</param>
         <param index="3" label="Approach Altitude" units="m">Approach altitude (with the same reference as the Altitude field). NaN if unspecified.</param>
         <param index="4" label="Yaw" units="deg">Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
@@ -4287,6 +4287,19 @@
       </entry>
       <entry value="7" name="FAILURE_TYPE_INTERMITTENT">
         <description>Unit is sometimes working, sometimes not.</description>
+      </entry>
+    </enum>
+    <enum name="NAV_VTOL_LAND_OPTIONS">
+      <entry value="0" name="NAV_VTOL_LAND_OPTIONS_DEFAULT">
+        <description>Default autopilot landing behaviour.</description>
+      </entry>
+      <entry value="1" name="NAV_VTOL_LAND_OPTIONS_FW_DESCENT">
+        <description>Descend in fixed wing mode, transitioning to multicopter mode for vertical landing when close to the ground.
+          The fixed wing descent pattern is at the discretion of the vehicle (e.g. transition altitude, loiter direction, radius, and speed, etc.).        
+        </description>
+      </entry>
+      <entry value="2" name="NAV_VTOL_LAND_OPTIONS_HOVER_DESCENT">
+        <description>Land in multicopter mode on reaching the landing co-ordinates (the whole landing is by "hover descent").</description>
       </entry>
     </enum>
     <enum name="MAV_WINCH_STATUS_FLAG" bitmask="true">
