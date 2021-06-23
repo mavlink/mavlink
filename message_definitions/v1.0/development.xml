@@ -82,14 +82,13 @@
       <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
       <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
     </message>
-    <message id="420" name="ATMOSPHERE_OUTPUT_STATUS">
+    <message id="420" name="HYGROMENT_SENSOR">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>hygrometer output atmosphere temperature humidity.</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="sensor_id">Sensor ID</field>
-      <field type="float" name="atmosphere_temp" units="degC">temperature</field>
-      <field type="float" name="atmosphere_humidity" units="%">humidity</field>
+      <description>temperature and humidity from hygrometer.</description>
+      <field type="uint8_t" name="id" instance="true">Hygrometer ID</field>
+      <field type="int8_t" name="temperature" units="degC">temperature</field>
+      <field type="uint8_t" name="humidity" units="%">humidity</field>
     </message>
   </messages>
 </mavlink>
