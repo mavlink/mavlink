@@ -1227,8 +1227,6 @@
         <param index="7" label="Altitude/Z">Altitude/Z position.</param>
       </entry>
       <entry value="260" name="MAV_CMD_OBLIQUE_SURVEY" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Mission command to set a Camera Auto Mount Pivoting Oblique Survey (Replaces CAM_TRIGG_DIST for this purpose). The camera is triggered each time this distance is exceeded, then the mount moves to the next position. Params 4~6 set-up the angle limits and number of positions for oblique survey, where mount-enabled vehicles automatically roll the camera between shots to emulate an oblique camera setup (providing an increased HFOV). This command can also be used to set the shutter integration time for the camera.</description>
         <param index="1" label="Distance" units="m" minValue="0">Camera trigger distance. 0 to stop triggering.</param>
         <param index="2" label="Shutter" units="ms" minValue="0" increment="1" default="0">Camera shutter integration time. 0 to ignore</param>
@@ -3027,6 +3025,42 @@
       </entry>
       <entry value="2" name="PARACHUTE_RELEASE">
         <description>Release parachute and kill motors.</description>
+      </entry>
+    </enum>
+    <!-- TUNNEL related enums, used by STorM32 gimbal-->
+    <enum name="MAV_TUNNEL_PAYLOAD_TYPE">
+      <entry value="0" name="MAV_TUNNEL_PAYLOAD_TYPE_UNKNOWN">
+        <description>Encoding of payload unknown.</description>
+      </entry>
+      <entry value="200" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED0">
+        <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+      <entry value="201" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED1">
+        <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+      <entry value="202" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED2">
+        <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+      <entry value="203" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED3">
+        <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+      <entry value="204" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED4">
+        <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+      <entry value="205" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED5">
+        <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+      <entry value="206" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED6">
+        <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+      <entry value="207" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED7">
+        <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+      <entry value="208" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED8">
+        <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+      <entry value="209" name="MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED9">
+        <description>Registered for STorM32 gimbal controller.</description>
       </entry>
     </enum>
     <!-- AIS related enums-->
@@ -5225,6 +5259,14 @@
       <field type="uint32_t" name="active" display="bitmask">Active outputs</field>
       <field type="float[32]" name="actuator">Servo / motor output array values. Zero values indicate unused channels.</field>
     </message>
+    <message id="385" name="TUNNEL">
+      <description>Message for transporting "arbitrary" variable-length data from one component to another (broadcast is not forbidden, but discouraged). The encoding of the data is usually extension specific, i.e. determined by the source, and is usually not documented as part of the MAVLink specification.</description>
+      <field type="uint8_t" name="target_system">System ID (can be 0 for broadcast, but this is discouraged)</field>
+      <field type="uint8_t" name="target_component">Component ID (can be 0 for broadcast, but this is discouraged)</field>
+      <field type="uint16_t" name="payload_type" enum="MAV_TUNNEL_PAYLOAD_TYPE">A code that identifies the content of the payload (0 for unknown, which is the default). If this code is less than 32768, it is a 'registered' payload type and the corresponding code should be added to the MAV_TUNNEL_PAYLOAD_TYPE enum. Software creators can register blocks of types as needed. Codes greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.</field>
+      <field type="uint8_t" name="payload_length">Length of the data transported in payload</field>
+      <field type="uint8_t[128]" name="payload">Variable length payload. The payload length is defined by payload_length. The entire content of this block is opaque unless you understand the encoding specified by payload_type.</field>
+    </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
       <description>Cumulative distance traveled for each reported wheel.</description>
@@ -5233,8 +5275,6 @@
       <field type="double[16]" name="distance" units="m">Distance reported by individual wheel encoders. Forward rotations increase values, reverse rotations decrease them. Not all wheels will necessarily have wheel encoders; the mapping of encoders to wheel positions must be agreed/understood by the endpoints.</field>
     </message>
     <message id="9005" name="WINCH_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Winch status.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (synced to UNIX time or since system boot).</field>
       <field type="float" name="line_length" units="m">Length of line released. NaN if unknown</field>
