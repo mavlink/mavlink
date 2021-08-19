@@ -47,7 +47,7 @@ A typical pattern is for a dialect to include [common.xml](../messages/common.md
 
 ## Standard Definitions
 
-Not all XML definition files are dialects:
+The following XML definition files are considered standard/core (i.e. not dialects):
 
 * [minimal.xml](minimal.md) - the minimum set of entities (messages, enums, MAV_CMD) required to set up a MAVLink network.
 * [standard.xml](standard.md) - the standard set of entities that are implemented by almost all flight stacks (at least 2, in a compatible way).
