@@ -382,6 +382,46 @@
         <description>Gimbal tracks home location</description>
       </entry>
     </enum>
+    <!-- Gimbal Device Capability Enumeration.  Used by latest (2021) STorM32 and mavlink Gimbal v2 -->
+    <enum name="GIMBAL_DEVICE_CAP_FLAGS" bitmask="true">
+      <description>Gimbal device (low level) capability flags (bitmap)</description>
+      <entry value="1" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT">
+        <description>Gimbal device supports a retracted position</description>
+      </entry>
+      <entry value="2" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_NEUTRAL">
+        <description>Gimbal device supports a horizontal, forward looking position, stabilized</description>
+      </entry>
+      <entry value="4" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_AXIS">
+        <description>Gimbal device supports rotating around roll axis.</description>
+      </entry>
+      <entry value="8" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_FOLLOW">
+        <description>Gimbal device supports to follow a roll angle relative to the vehicle</description>
+      </entry>
+      <entry value="16" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_LOCK">
+        <description>Gimbal device supports locking to an roll angle (generally that's the default with roll stabilized)</description>
+      </entry>
+      <entry value="32" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_AXIS">
+        <description>Gimbal device supports rotating around pitch axis.</description>
+      </entry>
+      <entry value="64" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_FOLLOW">
+        <description>Gimbal device supports to follow a pitch angle relative to the vehicle</description>
+      </entry>
+      <entry value="128" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_LOCK">
+        <description>Gimbal device supports locking to an pitch angle (generally that's the default with pitch stabilized)</description>
+      </entry>
+      <entry value="256" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_AXIS">
+        <description>Gimbal device supports rotating around yaw axis.</description>
+      </entry>
+      <entry value="512" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_FOLLOW">
+        <description>Gimbal device supports to follow a yaw angle relative to the vehicle (generally that's the default)</description>
+      </entry>
+      <entry value="1024" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_LOCK">
+        <description>Gimbal device supports locking to an absolute heading (often this is an option available)</description>
+      </entry>
+      <entry value="2048" name="GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_INFINITE_YAW">
+        <description>Gimbal device supports yawing/panning infinetely (e.g. using slip disk).</description>
+      </entry>
+    </enum>
     <!-- gripper action enum -->
     <enum name="GRIPPER_ACTIONS">
       <description>Gripper actions.</description>
@@ -4961,6 +5001,9 @@
       <field type="float" name="available_capacity" units="MiB">Available storage capacity. If storage is not ready (STORAGE_STATUS_READY) value will be ignored.</field>
       <field type="float" name="read_speed" units="MiB/s">Read speed.</field>
       <field type="float" name="write_speed" units="MiB/s">Write speed.</field>
+      <extensions/>
+      <field type="uint8_t" name="type" enum="STORAGE_TYPE">Type of storage</field>
+      <field type="char[32]" name="name">Textual storage name to be used in UI (microSD 1, Internal Memory, etc.) This is a NULL terminated string. If it is exactly 32 characters long, add a terminating NULL. If this string is empty, the generic type is shown to the user.</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
       <description>Information about the status of a capture. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
@@ -5052,6 +5095,39 @@
       <field type="uint32_t" name="bitrate" units="bits/s">Bit rate</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
+    </message>
+    <message id="283" name="GIMBAL_DEVICE_INFORMATION">
+      <description>Information about a low level gimbal. This message should be requested by the gimbal manager or a ground station using MAV_CMD_REQUEST_MESSAGE. The maximum angles and rates are the limits by hardware. However, the limits by software used are likely different/smaller and dependent on mode/settings/etc..</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="char[32]" name="vendor_name">Name of the gimbal vendor.</field>
+      <field type="char[32]" name="model_name">Name of the gimbal model.</field>
+      <field type="char[32]" name="custom_name">Custom name of the gimbal given to it by the user.</field>
+      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff).</field>
+      <field type="uint32_t" name="hardware_version">Version of the gimbal hardware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff).</field>
+      <field type="uint64_t" name="uid" invalid="0">UID of gimbal hardware (0 if unknown).</field>
+      <field type="uint16_t" name="cap_flags" enum="GIMBAL_DEVICE_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
+      <field type="uint16_t" name="custom_cap_flags" display="bitmask">Bitmap for use for gimbal-specific capability flags.</field>
+      <field type="float" name="roll_min" units="rad">Minimum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
+      <field type="float" name="roll_max" units="rad">Maximum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
+      <field type="float" name="pitch_min" units="rad">Minimum hardware pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="pitch_max" units="rad">Maximum hardware pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="yaw_min" units="rad">Minimum hardware yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="yaw_max" units="rad">Maximum hardware yaw angle (positive: to the right, negative: to the left)</field>
+    </message>
+    <message id="286" name="AUTOPILOT_STATE_FOR_GIMBAL_DEVICE">
+      <description>Low level message containing autopilot state relevant for a gimbal device. This message is to be sent from the gimbal manager to the gimbal device component. The data of this message server for the gimbal's estimator corrections in particular horizon compensation, as well as the autopilot's control intention e.g. feed forward angular control in z-axis.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint64_t" name="time_boot_us" units="us">Timestamp (time since system boot).</field>
+      <field type="float[4]" name="q">Quaternion components of autopilot attitude: w, x, y, z (1 0 0 0 is the null-rotation, Hamilton convention).</field>
+      <field type="uint32_t" name="q_estimated_delay_us" units="us">Estimated delay of the attitude data.</field>
+      <field type="float" name="vx" units="m/s">X Speed in NED (North, East, Down).</field>
+      <field type="float" name="vy" units="m/s">Y Speed in NED (North, East, Down).</field>
+      <field type="float" name="vz" units="m/s">Z Speed in NED (North, East, Down).</field>
+      <field type="uint32_t" name="v_estimated_delay_us" units="us">Estimated delay of the speed data.</field>
+      <field type="float" name="feed_forward_angular_velocity_z" units="rad/s" invalid="NaN">Feed forward Z component of angular velocity, positive is yawing to the right, NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
+      <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Bitmap indicating which estimator outputs are valid.</field>
+      <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE" invalid="MAV_LANDED_STATE_UNDEFINED">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
     </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
