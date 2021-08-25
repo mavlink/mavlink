@@ -40,18 +40,48 @@ xslt = ET.fromstring(xsl_file)
 index_text="""<!-- THIS FILE IS AUTO-GENERATED (DO NOT UPDATE GITBOOK): https://github.com/mavlink/mavlink/blob/master/doc/mavlink_gitbook.py -->
 # Dialects {#dialects}
 
-MAVLink *dialects* are XML files that define *protocol-* and *vendor-specific* messages, enums and commands.
+MAVLink *dialects* are XML definition files that define *protocol-* and *vendor-specific* messages, enums and commands.
 
-Dialects may *include* other MAVLink XML files, which may in turn contain other XML files.
+Dialects may *include* other MAVLink XML files, which may in turn contain other XML files (up to 5 levels of XML file nesting are allowed - see `MAXIMUM_INCLUDE_FILE_NESTING` in [mavgen.py](https://github.com/ArduPilot/pymavlink/blob/master/generator/mavgen.py#L44)).
 A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the *MAVLink standard definitions*), extending it with vendor or protocol specific messages.
-At time of writing up to 5 levels of XML file nesting are allowed (see `MAXIMUM_INCLUDE_FILE_NESTING` in [mavgen.py](https://github.com/ArduPilot/pymavlink/blob/master/generator/mavgen.py#L44)).
 
+## Standard Definitions
+
+The following XML definition files are considered standard/core (i.e. not dialects):
+
+* [minimal.xml](minimal.md) - the minimum set of entities (messages, enums, MAV_CMD) required to set up a MAVLink network.
+* [standard.xml](standard.md) - the standard set of entities that are implemented by almost all flight stacks (at least 2, in a compatible way).
+  This `includes` [minimal.xml](minimal.md).
+* [common.xml](../messages/common.md) - the set of entitites that have been implemented in at least one core flight stack.
+  This `includes` [standard.xml](minimal.md)
+
+Further, [all.xml](all.md) is a _special case_.
+Where includes all dialect and standard files, where possible, and can be used to verify that there are no ID clashes (and can potentially be used by GCS to communicate with any core dialect).
+
+> **Note** We are still working towards moving the truly standard entities from **common.xml** to **standard.xml**
+  Currently you should include [common.xml](../messages/common.md)
+
+## Core Dialects
+
+Core dialects are stored in [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/).
+These are the dialects for the major MAVLink stakeholder flight stacks.
 
 > **Note** Vendor forks of MAVLink may contain dialect messages that are not yet merged, and hence will not appear in this documentation.
 
-The dialect files are stored alongside in separate XML files in [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/).
+Human-readable forms of all the the core dialects are linked below:
+"""
 
-The human-readable forms of the XML dialect files are linked below:
+index_text_trailer="""## External Dialects
+
+MAVLink provides the [/external/dialects](https://github.com/mavlink/mavlink/tree/master/external/dialects) folder for dialects from projects that are not maintained by core MAVLink stakeholders or part of the MAVLink standard.
+
+This mechanism is provided to help non-stakeholder dialect owners avoid clashes with other dialects (and the standard), and to ease integration of generic behaviours into the standard in future.
+These are not managed by the core team and do not appear in this documentation.
+
+Information about using the folder can be found in github: [/external/dialects](https://github.com/mavlink/mavlink/tree/master/external/dialects)
+
+> **Note** We *highly* recommend that you work with the standard and core stakeholder dialects rather than using this approach (there are significant benefits in terms of compatibility and adoptability when using the standard definitions).
+
 """
 
 #Fix up the BeautifulSoup output so to fix build-link errors in the generated gitbook.
@@ -144,10 +174,17 @@ This topic is a human-readable form of the XML definition file: [development.xml
         insert_text+="""
 # Dialect: all
 
-This dialect includes all other 'official' dialects.
-It is used to verify that there are no clashes in message/enum id ranges used in the included dialects.
+This dialect is intended to `include` all other [dialects](../messages/README.md) in the mavlink/mavlink repository (including [external dialects](https://github.com/mavlink/mavlink/tree/master/external/dialects#mavlink-external-dialects)).
 
-This topic is a human-readable form of the XML definition file: [all.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
+Dialects that are in **all.xml** are guaranteed to not have clashes in messages, enums, enum ids, and MAV_CMDs.
+This ensure that:
+- Systems based on these dialects can co-exist on the same MAVLink network.
+- A Ground Station might (optionally) use libraries generated from **all.xml** to communicate using any of the dialects.
+
+> **Warning** New dialect files in the official repository must be added to **all.xml** and restrict themselves to using ids in their own allocated range.
+  A few older dialects are not included because these operate in completely closed networks or because they are only used for tests.
+  
+This topic is a human-readable form of the XML definition file: [development.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
 """
     else:
         insert_text+='\n# Dialect: %s' % filename.rsplit('.',1)[0]
@@ -231,7 +268,7 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             #Write output markdown file
             output_file_name_prefix = file.rsplit('.',1)[0]
             all_files.add(output_file_name_prefix)
-            if not file=='common.xml':
+            if not file=='common.xml' and not file=='standard.xml' and not file=='minimal.xml':
                 dialect_files.add(output_file_name_prefix)
 
 
@@ -251,6 +288,8 @@ for file_prefix in all_files:
             
 for the_file in sorted(dialect_files):
     index_text+='\n* [%s.xml](%s.md)' % (the_file,the_file)
+index_text+='\n\n'
+index_text+=index_text_trailer
             
 #Write the index
 with open(index_file_name, 'w') as content_file:

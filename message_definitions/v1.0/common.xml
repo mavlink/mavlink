@@ -1617,8 +1617,6 @@
         <param index="7" label="Altitude/Z">Altitude/Z position.</param>
       </entry>
       <entry value="260" name="MAV_CMD_OBLIQUE_SURVEY" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Mission command to set a Camera Auto Mount Pivoting Oblique Survey (Replaces CAM_TRIGG_DIST for this purpose). The camera is triggered each time this distance is exceeded, then the mount moves to the next position. Params 4~6 set-up the angle limits and number of positions for oblique survey, where mount-enabled vehicles automatically roll the camera between shots to emulate an oblique camera setup (providing an increased HFOV). This command can also be used to set the shutter integration time for the camera.</description>
         <param index="1" label="Distance" units="m" minValue="0">Camera trigger distance. 0 to stop triggering.</param>
         <param index="2" label="Shutter" units="ms" minValue="0" increment="1" default="0">Camera shutter integration time. 0 to ignore</param>
@@ -1658,8 +1656,6 @@
         <param index="7">Reserved</param>
       </entry>
       <entry value="420" name="MAV_CMD_INJECT_FAILURE">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Inject artificial failure for testing purposes. Note that autopilots should implement an additional protection before accepting this command such as a specific param setting.</description>
         <param index="1" label="Failure unit" enum="FAILURE_UNIT">The unit which is affected by the failure.</param>
         <param index="2" label="Failure type" enum="FAILURE_TYPE">The type how the failure manifests itself.</param>
@@ -4983,10 +4979,10 @@
       <field type="uint16_t" name="command" enum="MAV_CMD">Command ID (of acknowledged command).</field>
       <field type="uint8_t" name="result" enum="MAV_RESULT">Result of command.</field>
       <extensions/>
-      <field type="uint8_t" name="progress" invalid="UINT8_MAX">WIP: Also used as result_param1, it can be set with an enum containing the errors reasons of why the command was denied, or the progress percentage when result is MAV_RESULT_IN_PROGRESS (UINT8_MAX if the progress is unknown).</field>
-      <field type="int32_t" name="result_param2">WIP: Additional parameter of the result, example: which parameter of MAV_CMD_NAV_WAYPOINT caused it to be denied.</field>
-      <field type="uint8_t" name="target_system">WIP: System ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
-      <field type="uint8_t" name="target_component">WIP: Component ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
+      <field type="uint8_t" name="progress" invalid="UINT8_MAX">Also used as result_param1, it can be set with an enum containing the errors reasons of why the command was denied, or the progress percentage when result is MAV_RESULT_IN_PROGRESS (UINT8_MAX if the progress is unknown).</field>
+      <field type="int32_t" name="result_param2">Additional parameter of the result, example: which parameter of MAV_CMD_NAV_WAYPOINT caused it to be denied.</field>
+      <field type="uint8_t" name="target_system">System ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
+      <field type="uint8_t" name="target_component">Component ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
     </message>
     <message id="80" name="COMMAND_CANCEL">
       <wip/>
@@ -6381,7 +6377,7 @@
       <field type="uint8_t" name="info" display="bitmask">Information regarding online/offline status of each ESC.</field>
       <field type="uint16_t[4]" name="failure_flags" enum="ESC_FAILURE_FLAGS" display="bitmask">Bitmap of ESC failure flags.</field>
       <field type="uint32_t[4]" name="error_count">Number of reported errors by each ESC since boot.</field>
-      <field type="uint8_t[4]" name="temperature" units="degC">Temperature measured by each ESC. UINT8_MAX if data not supplied by ESC.</field>
+      <field type="int16_t[4]" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of each ESC. INT16_MAX: if data not supplied by ESC.</field>
     </message>
     <message id="291" name="ESC_STATUS">
       <wip/>
@@ -6677,8 +6673,6 @@
       <field type="int32_t" name="commanded_action" units="s" invalid="-1">Estimated time for completing the current commanded action (i.e. Go To, Takeoff, Land, etc.). -1 means no action active and/or no estimate available.</field>
     </message>
     <message id="385" name="TUNNEL">
-      <wip/>
-      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Message for transporting "arbitrary" variable-length data from one component to another (broadcast is not forbidden, but discouraged). The encoding of the data is usually extension specific, i.e. determined by the source, and is usually not documented as part of the MAVLink specification.</description>
       <field type="uint8_t" name="target_system">System ID (can be 0 for broadcast, but this is discouraged)</field>
       <field type="uint8_t" name="target_component">Component ID (can be 0 for broadcast, but this is discouraged)</field>
@@ -6729,8 +6723,6 @@
       <field type="char[248]" name="tune">Tune definition as a NULL-terminated string.</field>
     </message>
     <message id="401" name="SUPPORTED_TUNES">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Tune formats supported by vehicle. This should be emitted as response to MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -6783,8 +6775,6 @@
       <field type="double[16]" name="distance" units="m">Distance reported by individual wheel encoders. Forward rotations increase values, reverse rotations decrease them. Not all wheels will necessarily have wheel encoders; the mapping of encoders to wheel positions must be agreed/understood by the endpoints.</field>
     </message>
     <message id="9005" name="WINCH_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Winch status.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (synced to UNIX time or since system boot).</field>
       <field type="float" name="line_length" units="m" invalid="NaN">Length of line released. NaN if unknown</field>
@@ -6892,6 +6882,12 @@
       <field type="uint8_t" name="single_message_size" units="bytes">This field must currently always be equal to 25 (bytes), since all encoded OpenDroneID messages are specificed to have this length.</field>
       <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 10.</field>
       <field type="uint8_t[250]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
+    </message>
+    <message id="12920" name="HYGROMETER_SENSOR">
+      <description>Temperature and humidity from hygrometer.</description>
+      <field type="uint8_t" name="id" instance="true">Hygrometer ID</field>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature</field>
+      <field type="uint16_t" name="humidity" units="c%">Humidity</field>
     </message>
   </messages>
 </mavlink>
