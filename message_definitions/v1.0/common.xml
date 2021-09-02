@@ -627,7 +627,7 @@
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Flags to report ESC failures.</description>
       <entry value="0" name="ESC_FAILURE_NONE">
-        <description>No ESC failure.</description>
+        <description>No ESC failures.</description>
       </entry>
       <entry value="1" name="ESC_FAILURE_OVER_CURRENT">
         <description>Over current failure.</description>
@@ -635,20 +635,55 @@
       <entry value="2" name="ESC_FAILURE_OVER_VOLTAGE">
         <description>Over voltage failure.</description>
       </entry>
-      <entry value="4" name="ESC_FAILURE_OVER_TEMPERATURE">
-        <description>Over temperature failure.</description>
+      <entry value="4" name="ESC_FAILURE_WARNING_TEMPERATURE">
+        <description>ESC has reached a dangerous temperature.</description>
       </entry>
-      <entry value="8" name="ESC_FAILURE_OVER_RPM">
-        <description>Over RPM failure.</description>
+      <entry value="8" name="ESC_FAILURE_CRITICAL_TEMPERATURE">
+        <description>ESC has reached a critical temperature which can lead to compoment breakdown.</description>
       </entry>
       <entry value="16" name="ESC_FAILURE_INCONSISTENT_CMD">
         <description>Inconsistent command failure i.e. out of bounds.</description>
       </entry>
-      <entry value="32" name="ESC_FAILURE_MOTOR_STUCK">
-        <description>Motor stuck failure.</description>
-      </entry>
-      <entry value="64" name="ESC_FAILURE_GENERIC">
+      <entry value="32" name="ESC_FAILURE_GENERIC">
         <description>Generic ESC failure.</description>
+      </entry>
+    </enum>
+    <enum name="MOTOR_FAILURE_FLAGS" bitmask="true">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Flags to report Motor failures.</description>
+      <entry value="0" name="MOTOR_FAILURE_NONE">
+        <description>No Motor failures.</description>
+      </entry>
+      <entry value="1" name="MOTOR_WARNING_TEMPERATURE_FAULT">
+        <description>Motor has reached a dangerous temperature.</description>
+      </entry>
+      <entry value="2" name="MOTOR_CRITICAL_TEMPERATURE_FAULT">
+        <description>Motor has reached the critical temperature which can lead to compoment breakdown.</description>
+      </entry>
+      <entry value="4" name="MOTOR_OVER_RPM_FAULT">
+        <description>Over RPM failure.</description>
+      </entry>
+      <entry value="8" name="MOTOR_STALL_FAULT">
+        <description>Load applied on the motor is exceeding the breakdown torque.</description>
+      </entry>
+      <entry value="16" name="MOTOR_GENERIC_FAULT">
+        <description>Generic Motor failure.</description>
+      </entry>
+    </enum>
+    <enum name="MOTOR_TYPE" bitmask="true">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Indicates the motor type.</description>
+      <entry value="0" name="MOTOR_TYPE_UNKNOWN">
+        <description>Motor type not specified.</description>
+      </entry>
+      <entry value="1" name="MOTOR_TYPE_BLDC">
+        <description>Traditional electric Brushless DC motor.</description>
+      </entry>
+      <entry value="2" name="MOTOR_TYPE_BRUSHED">
+        <description>Brushed electric DC motor.</description>
+      </entry>
+      <entry value="4" name="MOTOR_TYPE_GAS">
+        <description>Over RPM failure.</description>
       </entry>
     </enum>
     <enum name="STORAGE_STATUS">
@@ -6384,6 +6419,18 @@
       <field type="int32_t[4]" name="rpm" units="rpm">Reported motor RPM from each ESC (negative for reverse rotation).</field>
       <field type="float[4]" name="voltage" units="V">Voltage measured from each ESC.</field>
       <field type="float[4]" name="current" units="A">Current measured from each ESC.</field>
+    </message>
+    <message id="292" name="MOTOR_INFO">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Motor information for lower rate streaming. Recommended streaming rate 1Hz.</description>
+      <field type="uint8_t" name="index" instance="true">Index of the first Motor in this message. minValue = 0, maxValue = 60, increment = 4.</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.</field>
+      <field type="uint16_t" name="counter">Counter of data packets received.</field>
+      <field type="uint8_t" name="count">Total number of Motors in all messages of this type. Message fields with an index higher than this should be ignored because they contain invalid data.</field>
+      <field type="uint8_t" name="type" enum="MOTOR_TYPE">Motor type.</field>
+      <field type="uint16_t[4]" name="failure_flags" enum="MOTOR_FAILURE_FLAGS" display="bitmask">Bitmap of Motor failure flags.</field>
+      <field type="int16_t[4]" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of each Motor. INT16_MAX: if data not supplied by the Motor.</field>
     </message>
     <!-- id 295 reserved for AIRSPEED message (development.xml). -->
     <message id="299" name="WIFI_CONFIG_AP">
