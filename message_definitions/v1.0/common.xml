@@ -1610,6 +1610,14 @@
         <param index="1" label="First Item" minValue="0" increment="1">first_item: the first mission item to run</param>
         <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
       </entry>
+      <entry value="301" name="MAV_CMD_GROUP_START" hasLocation="false" isDestination="false">
+        <description>Define beginning of a group of mission items. When control reaches this command a GROUP_START message is emitted. Groups can be nested.</description>
+        <param index="1" label="Group ID" minValue="0" increment="1">Unique group id</param>
+      </entry>
+      <entry value="302" name="MAV_CMD_GROUP_END" hasLocation="false" isDestination="false">
+        <description>Define ending of a group of mission items. When control reaches this command a GROUP_END message is emitted. Groups can be nested.</description>
+        <param index="1" label="Group ID" minValue="0" increment="1">Unique group id</param>
+      </entry>
       <entry value="400" name="MAV_CMD_COMPONENT_ARM_DISARM" hasLocation="false" isDestination="false">
         <description>Arms / Disarms a component</description>
         <param index="1" label="Arm" minValue="0" maxValue="1" increment="1">0: disarm, 1: arm</param>
@@ -4690,6 +4698,20 @@
       <field type="float" name="p2x" units="m">x position 2 / Latitude 2</field>
       <field type="float" name="p2y" units="m">y position 2 / Longitude 2</field>
       <field type="float" name="p2z" units="m">z position 2 / Altitude 2</field>
+    </message>
+    <message id="56" name="GROUP_START">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Emitted when control reaches MAV_CMD_GROUP_START with unique group id and time stamp of the event.</description>
+      <field type="uint32_t" name="group_id">Unique group id.</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+    </message>
+    <message id="57" name="GROUP_END">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Emitted when control reaches MAV_CMD_GROUP_END with unique group id and time stamp of the event.</description>
+      <field type="uint32_t" name="group_id">Unique group id.</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
     </message>
     <message id="61" name="ATTITUDE_QUATERNION_COV">
       <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right), expressed as quaternion. Quaternion order is w, x, y, z and a zero rotation would be expressed as (1 0 0 0).</description>
