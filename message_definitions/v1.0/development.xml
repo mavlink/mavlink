@@ -5,6 +5,27 @@
   <version>0</version>
   <dialect>0</dialect>
   <enums>
+    <enum name="COMPONENT_CONTROL">
+      <description>Type of controls or state changes for system components.</description>
+      <entry value="1" name="COMPONENT_CONTROL_START">
+        <description>Start/turn-on system component.</description>
+      </entry>
+      <entry value="2" name="COMPONENT_CONTROL_STOP">
+        <description>Stop/turn-off system component.</description>
+      </entry>
+      <entry value="3" name="COMPONENT_CONTROL_RESTART">
+        <description>Restart/reboot system component.</description>
+      </entry>
+      <entry value="4" name="COMPONENT_CONTROL_RESTART_AND_KEEP_BL">
+        <description>Restart/reboot system component and keep it in the bootloader until upgraded.</description>
+      </entry>
+      <entry value="5" name="COMPONENT_CONTROL_ENABLE">
+        <description>Enable system component. Used to switch a system component from an idle state to an active state.</description>
+      </entry>
+      <entry value="6" name="COMPONENT_CONTROL_DISABLE">
+        <description>Disable system component. Used to switch a system component from an active state to an idle state.</description>
+      </entry>
+    </enum>
     <enum name="WIFI_NETWORK_SECURITY">
       <description>WiFi wireless security protocols.</description>
       <entry value="0" name="WIFI_NETWORK_SECURITY_UNDEFINED">
@@ -42,6 +63,18 @@
       </entry>
       <entry value="4" name="AIRSPEED_SENSOR_TYPE_SYNTHETIC">
         <description>Synthetic/calculated airspeed.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_CMD">
+      <entry value="248" name="MAV_CMD_COMPONENT_CONTROL" hasLocation="false" isDestination="false">
+        <description>Control the state or functionality of system components.</description>
+        <param index="1" label="Component ID" enum="MAV_COMPONENT">Component ID of the system component to be controlled.</param>
+        <param index="2" label="Component Control Type" enum="COMPONENT_CONTROL">Control command type being sent to the system component.</param>
+        <param index="3" label="Component Instance ID" minValue="0" maxValue="1" increment="1">Component instance, when there is more than one instance per component.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
       </entry>
     </enum>
   </enums>
