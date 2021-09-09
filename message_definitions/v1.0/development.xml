@@ -105,20 +105,26 @@
         <param index="7">Empty.</param>
       </entry>
       <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
         <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
         <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
         <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
+      </entry>
+      <entry value="5010" name="MAV_CMD_SET_FENCE_BREACH_ACTION" hasLocation="false" isDestination="false">
+        <description>Sets the action on geofence breach.
+          If sent using the command protocol this sets the system-default geofence action.
+          As part of a mission protocol plan it sets the fence action for the next complete geofence definition *after* the command.
+          Note: A fence action defined in a plan will override the default system setting (even if the system-default is `FENCE_ACTION_NONE`).
+          Note: Every geofence in a plan can have its own action; if no fence action is defined for a particular fence the system-default will be used.
+          Note: The flight stack should reject a plan or command that uses a geofence action that it does not support and send a STATUSTEXT with the reason.
+        </description>
+        <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
       </entry>
     </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
     <message id="19" name="PARAM_ACK_TRANSACTION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Response from a PARAM_SET message when it is used in a transaction.</description>
       <field type="uint8_t" name="target_system">Id of system that sent PARAM_SET message.</field>
       <field type="uint8_t" name="target_component">Id of system that sent PARAM_SET message.</field>
@@ -129,8 +135,6 @@
     </message>
     <!-- mission protocol enhancements -->
     <message id="52" name="MISSION_CHANGED">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>A broadcast message to notify any ground station or SDK if a mission, geofence or safe points have changed on the vehicle.</description>
       <field type="int16_t" name="start_index">Start index for partial mission change (-1 for all items).</field>
       <field type="int16_t" name="end_index">End index of a partial mission change. -1 is a synonym for the last mission item (i.e. selects all items from start_index). Ignore field if start_index=-1.</field>
@@ -139,8 +143,6 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
     <message id="53" name="MISSION_CHECKSUM">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Checksum for the current mission, rally points or geofence plan (a GCS can use this checksum to determine if it has a matching plan definition).
         This message must be broadcast following any change to a plan (immediately after the MISSION_ACK that completes the plan upload sequence).
         It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the hash is required.
@@ -153,8 +155,6 @@
       <field type="uint32_t" name="checksum">CRC32 checksum of current plan for specified type.</field>
     </message>
     <message id="295" name="AIRSPEED">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Airspeed information from a sensor.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
       <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS) if available, otherwise indicated airspeed (IAS).</field>
@@ -165,8 +165,6 @@
       <field type="uint8_t" name="type" enum="AIRSPEED_SENSOR_TYPE">Airspeed sensor type. NaN for value unknown/not supplied. Used to estimate accuracy (i.e. as an alternative to using the error field).</field>
     </message>
     <message id="298" name="WIFI_NETWORK_INFO">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Detected WiFi network status information. This message is sent per each WiFi network detected in range with known SSID and general status parameters.</description>
       <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID).</field>
       <field type="uint8_t" name="channel_id">WiFi network operating channel ID. Set to 0 if unknown or unidentified.</field>
