@@ -1606,9 +1606,13 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="300" name="MAV_CMD_MISSION_START" hasLocation="false" isDestination="false">
-        <description>start running a mission</description>
-        <param index="1" label="First Item" minValue="0" increment="1">first_item: the first mission item to run</param>
-        <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
+        <description>Start running a mission at a specified mission item.
+        If needed, vehicles should first attempt to arm, switch to mission mode, and takeoff. The flight stack may reject the command if it is unable to perform these operations.
+        
+        Note: If the selected start mission item does not start a takeoff operation/sequence, the flight stack may takeoff using the "default takeoff mode" for the vehicle type.
+        Note: A flight stack will ignore any mission commands that are not appropriate for the current vehicle state. For example, it will ignore a command to takeoff if it is already flying.</description>
+        <param index="1" label="First Item" minValue="0" increment="1">The first mission item to run</param>
+        <param index="2" label="Last Item" minValue="0" increment="1">The last mission item to run (after this item is run, the mission ends).</param>
       </entry>
       <entry value="400" name="MAV_CMD_COMPONENT_ARM_DISARM" hasLocation="false" isDestination="false">
         <description>Arms / Disarms a component</description>
