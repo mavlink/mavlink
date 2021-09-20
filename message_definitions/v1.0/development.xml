@@ -155,6 +155,16 @@
         <description>SIM is available, but not usuable for connection</description>
       </entry>
     </enum>
+    <enum name="MAV_CMD">
+      <entry value="301" name="MAV_CMD_GROUP_START" hasLocation="false" isDestination="false">
+        <description>Define start of a group of mission items. When control reaches this command a GROUP_START message is emitted. The end of a group is marked using MAV_CMD_GROUP_END with the same group id. Groups can be nested or overlap.</description>
+        <param index="1" label="Group ID" minValue="0" increment="1">Mission-unique group id</param>
+      </entry>
+      <entry value="302" name="MAV_CMD_GROUP_END" hasLocation="false" isDestination="false">
+        <description>Define end of a group of mission items. When control reaches this command a GROUP_END message is emitted. The start of the group is marked is marked using MAV_CMD_GROUP_START with the same group id. Groups can be nested or overlap.</description>
+        <param index="1" label="Group ID" minValue="0" increment="1">Mission-unique group id</param>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
@@ -216,6 +226,16 @@
       <field type="uint16_t" name="mcc" invalid="UINT16_MAX">Mobile country code. If unknown, set to UINT16_MAX</field>
       <field type="uint16_t" name="mnc" invalid="UINT16_MAX">Mobile network code. If unknown, set to UINT16_MAX</field>
       <field type="uint16_t" name="lac" invalid="0">Location area code. If unknown, set to 0</field>
+    </message>
+    <message id="414" name="GROUP_START">
+      <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
+      <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_START).</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+    </message>
+    <message id="415" name="GROUP_END">
+      <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_END.</description>
+      <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_END).</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
     </message>
   </messages>
 </mavlink>

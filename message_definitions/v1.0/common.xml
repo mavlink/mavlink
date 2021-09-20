@@ -1610,14 +1610,6 @@
         <param index="1" label="First Item" minValue="0" increment="1">first_item: the first mission item to run</param>
         <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
       </entry>
-      <entry value="301" name="MAV_CMD_GROUP_START" hasLocation="false" isDestination="false">
-        <description>Define start of a group of mission items. When control reaches this command a GROUP_START message is emitted. The end of a group is marked using MAV_CMD_GROUP_END with the same group id. Groups can be nested or overlap.</description>
-        <param index="1" label="Group ID" minValue="0" increment="1">Mission-unique group id</param>
-      </entry>
-      <entry value="302" name="MAV_CMD_GROUP_END" hasLocation="false" isDestination="false">
-        <description>Define end of a group of mission items. When control reaches this command a GROUP_END message is emitted. The start of the group is marked is marked using MAV_CMD_GROUP_START with the same group id. Groups can be nested or overlap.</description>
-        <param index="1" label="Group ID" minValue="0" increment="1">Mission-unique group id</param>
-      </entry>
       <entry value="400" name="MAV_CMD_COMPONENT_ARM_DISARM" hasLocation="false" isDestination="false">
         <description>Arms / Disarms a component</description>
         <param index="1" label="Arm" minValue="0" maxValue="1" increment="1">0: disarm, 1: arm</param>
@@ -6663,20 +6655,6 @@
       <field type="uint16_t" name="sequence">Sequence number.</field>
       <field type="uint16_t" name="sequence_oldest_available">Oldest Sequence number that is still available after the sequence set in REQUEST_EVENT.</field>
       <field type="uint8_t" name="reason" enum="MAV_EVENT_ERROR_REASON">Error reason.</field>
-    </message>
-    <message id="414" name="GROUP_START">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
-      <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_START).</field>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-    </message>
-    <message id="415" name="GROUP_END">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_END.</description>
-      <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_END).</field>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
