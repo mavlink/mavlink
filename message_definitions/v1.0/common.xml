@@ -248,10 +248,10 @@
         <description>ENU local tangent frame (x: East, y: North, z: Up) with origin fixed relative to earth.</description>
       </entry>
       <entry value="5" name="MAV_FRAME_GLOBAL_INT">
-        <description>Global (WGS84) coordinate frame (scaled) + MSL altitude. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude over mean sea level (MSL).</description>
+        <description>Global (WGS84) coordinate frame (scaled) + MSL altitude. First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude over mean sea level (MSL).</description>
       </entry>
       <entry value="6" name="MAV_FRAME_GLOBAL_RELATIVE_ALT_INT">
-        <description>Global (WGS84) coordinate frame (scaled) + altitude relative to the home position. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude with 0 being at the altitude of the home location.</description>
+        <description>Global (WGS84) coordinate frame (scaled) + altitude relative to the home position. First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude with 0 being at the altitude of the home location.</description>
       </entry>
       <entry value="7" name="MAV_FRAME_LOCAL_OFFSET_NED">
         <description>NED local tangent frame (x: North, y: East, z: Down) with origin that travels with the vehicle.</description>
@@ -268,7 +268,7 @@
         <description>Global (WGS84) coordinate frame with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees, second value / y: longitude in degrees, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
       </entry>
       <entry value="11" name="MAV_FRAME_GLOBAL_TERRAIN_ALT_INT">
-        <description>Global (WGS84) coordinate frame (scaled) with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
+        <description>Global (WGS84) coordinate frame (scaled) with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
       </entry>
       <entry value="12" name="MAV_FRAME_BODY_FRD">
         <description>FRD local tangent frame (x: Forward, y: Right, z: Down) with origin that travels with vehicle. The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
@@ -3691,6 +3691,9 @@
       <entry value="3" name="MAV_ODID_ID_TYPE_UTM_ASSIGNED_UUID">
         <description>UTM (Unmanned Traffic Management) assigned UUID (RFC4122).</description>
       </entry>
+      <entry value="4" name="MAV_ODID_ID_TYPE_SPECIFIC_SESSION_ID">
+        <description>A 20 byte ID for a specific flight/session. The exact ID type is indicated by the first byte of uas_id and these type values are managed by ICAO.</description>
+      </entry>
     </enum>
     <enum name="MAV_ODID_UA_TYPE">
       <entry value="0" name="MAV_ODID_UA_TYPE_NONE">
@@ -3910,6 +3913,9 @@
       </entry>
       <entry value="4" name="MAV_ODID_AUTH_TYPE_NETWORK_REMOTE_ID">
         <description>Authentication is provided by Network Remote ID.</description>
+      </entry>
+      <entry value="5" name="MAV_ODID_AUTH_TYPE_SPECIFIC_AUTHENTICATION">
+        <description>The exact authentication type is indicated by the first byte of authentication_data and these type values are managed by ICAO.</description>
       </entry>
     </enum>
     <enum name="MAV_ODID_DESC_TYPE">
@@ -6716,7 +6722,7 @@
       <field type="uint8_t" name="vertical_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the vertical position.</field>
       <field type="uint8_t" name="barometer_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the barometric altitude.</field>
       <field type="uint8_t" name="speed_accuracy" enum="MAV_ODID_SPEED_ACC">The accuracy of the horizontal and vertical speed.</field>
-      <field type="float" name="timestamp" units="s">Seconds after the full hour with reference to UTC time. Typically the GPS outputs a time-of-week value in milliseconds. First convert that to UTC and then convert for this field using ((float) (time_week_ms % (60*60*1000))) / 1000.</field>
+      <field type="float" name="timestamp" units="s" invalid="0xFFFF">Seconds after the full hour with reference to UTC time. Typically the GPS outputs a time-of-week value in milliseconds. First convert that to UTC and then convert for this field using ((float) (time_week_ms % (60*60*1000))) / 1000. If unknown: 0xFFFF.</field>
       <field type="uint8_t" name="timestamp_accuracy" enum="MAV_ODID_TIME_ACC">The accuracy of the timestamps.</field>
     </message>
     <message id="12902" name="OPEN_DRONE_ID_AUTHENTICATION">
@@ -6727,9 +6733,9 @@
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="authentication_type" enum="MAV_ODID_AUTH_TYPE">Indicates the type of authentication.</field>
-      <field type="uint8_t" name="data_page">Allowed range is 0 - 4.</field>
-      <field type="uint8_t" name="page_count">This field is only present for page 0. Allowed range is 0 - 5.</field>
-      <field type="uint8_t" name="length" units="bytes">This field is only present for page 0. Total bytes of authentication_data from all data pages. Allowed range is 0 - 109 (17 + 23*4).</field>
+      <field type="uint8_t" name="data_page">Allowed range is 0 - 15.</field>
+      <field type="uint8_t" name="last_page_index">This field is only present for page 0. Allowed range is 0 - 15. See the description of struct ODID_Auth_data at https://github.com/opendroneid/opendroneid-core-c/blob/master/libopendroneid/opendroneid.h.</field>
+      <field type="uint8_t" name="length" units="bytes">This field is only present for page 0. Total bytes of authentication_data from all data pages. See the description of struct ODID_Auth_data at https://github.com/opendroneid/opendroneid-core-c/blob/master/libopendroneid/opendroneid.h.</field>
       <field type="uint32_t" name="timestamp" units="s">This field is only present for page 0. 32 bit Unix Timestamp in seconds since 00:00:00 01/01/2019.</field>
       <field type="uint8_t[23]" name="authentication_data">Opaque authentication data. For page 0, the size is only 17 bytes. For other pages, the size is 23 bytes. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
@@ -6760,6 +6766,7 @@
       <field type="float" name="area_floor" units="m" invalid="-1000">Area Operations Floor relative to WGS84. If unknown: -1000 m.</field>
       <field type="uint8_t" name="category_eu" enum="MAV_ODID_CATEGORY_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the category of the UA.</field>
       <field type="uint8_t" name="class_eu" enum="MAV_ODID_CLASS_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the class of the UA.</field>
+      <field type="float" name="operator_altitude_geo" units="m" invalid="-1000">Geodetic altitude of the operator relative to WGS84. If unknown: -1000 m.</field>
     </message>
     <message id="12905" name="OPEN_DRONE_ID_OPERATOR_ID">
       <wip/>
@@ -6778,9 +6785,10 @@
       <description>An OpenDroneID message pack is a container for multiple encoded OpenDroneID messages (i.e. not in the format given for the above messages descriptions but after encoding into the compressed OpenDroneID byte format). Used e.g. when transmitting on Bluetooth 5.0 Long Range/Extended Advertising or on WiFi Neighbor Aware Networking.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="single_message_size" units="bytes">This field must currently always be equal to 25 (bytes), since all encoded OpenDroneID messages are specificed to have this length.</field>
-      <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 10.</field>
-      <field type="uint8_t[250]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
+      <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 9.</field>
+      <field type="uint8_t[225]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
     <message id="12920" name="HYGROMETER_SENSOR">
       <description>Temperature and humidity from hygrometer.</description>
