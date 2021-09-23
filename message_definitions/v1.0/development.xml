@@ -65,8 +65,36 @@
         <description>Synthetic/calculated airspeed.</description>
       </entry>
     </enum>
+    <!-- Transactions for parameter protocol -->
+    <enum name="PARAM_TRANSACTION_TRANSPORT">
+      <description>Possible transport layers to set and get parameters via mavlink during a parameter transaction.</description>
+      <entry value="0" name="PARAM_TRANSACTION_TRANSPORT_PARAM">
+        <description>Transaction over param transport.</description>
+      </entry>
+      <entry value="1" name="PARAM_TRANSACTION_TRANSPORT_PARAM_EXT">
+        <description>Transaction over param_ext transport.</description>
+      </entry>
+    </enum>
+    <enum name="PARAM_TRANSACTION_ACTION">
+      <description>Possible parameter transaction actions.</description>
+      <entry value="0" name="PARAM_TRANSACTION_ACTION_START">
+        <description>Commit the current parameter transaction.</description>
+      </entry>
+      <entry value="1" name="PARAM_TRANSACTION_ACTION_COMMIT">
+        <description>Commit the current parameter transaction.</description>
+      </entry>
+      <entry value="2" name="PARAM_TRANSACTION_ACTION_CANCEL">
+        <description>Cancel the current parameter transaction.</description>
+      </entry>
+    </enum>
+    <!-- The MAV_CMD enum entries describe either: -->
+    <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
+    <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
+    <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
       <entry value="248" name="MAV_CMD_COMPONENT_CONTROL" hasLocation="false" isDestination="false">
+        <wip/>
         <description>Control the state or functionality of system components.</description>
         <param index="1" label="Component ID" enum="MAV_COMPONENT">Component ID of the system component to be controlled.</param>
         <param index="2" label="Component Control Type" enum="COMPONENT_CONTROL">Control command type being sent to the system component.</param>
@@ -76,12 +104,103 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
+      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
+        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
+        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
+        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
+        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
+      </entry>
+      <entry value="5010" name="MAV_CMD_SET_FENCE_BREACH_ACTION" hasLocation="false" isDestination="false">
+        <description>Sets the action on geofence breach.
+          If sent using the command protocol this sets the system-default geofence action.
+          As part of a mission protocol plan it sets the fence action for the next complete geofence definition *after* the command.
+          Note: A fence action defined in a plan will override the default system setting (even if the system-default is `FENCE_ACTION_NONE`).
+          Note: Every geofence in a plan can have its own action; if no fence action is defined for a particular fence the system-default will be used.
+          Note: The flight stack should reject a plan or command that uses a geofence action that it does not support and send a STATUSTEXT with the reason.
+        </description>
+        <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
+      </entry>
+    </enum>
+    <enum name="CELLULAR_NETWORK_RADIO_TYPE">
+      <description>Cellular network radio type</description>
+      <entry value="0" name="CELLULAR_NETWORK_RADIO_TYPE_NONE"/>
+      <entry value="1" name="CELLULAR_NETWORK_RADIO_TYPE_GSM"/>
+      <entry value="2" name="CELLULAR_NETWORK_RADIO_TYPE_CDMA"/>
+      <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
+      <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
+    </enum>
+    <!-- cellular status information -->
+    <enum name="CELLULAR_STATUS_FLAG">
+      <description>These flags encode the cellular network status</description>
+      <entry value="0" name="CELLULAR_STATUS_FLAG_UNKNOWN">
+        <description>State unknown or not reportable.</description>
+      </entry>
+      <entry value="1" name="CELLULAR_STATUS_FLAG_FAILED">
+        <description>Modem is unusable</description>
+      </entry>
+      <entry value="2" name="CELLULAR_STATUS_FLAG_INITIALIZING">
+        <description>Modem is being initialized</description>
+      </entry>
+      <entry value="3" name="CELLULAR_STATUS_FLAG_LOCKED">
+        <description>Modem is locked</description>
+      </entry>
+      <entry value="4" name="CELLULAR_STATUS_FLAG_DISABLED">
+        <description>Modem is not enabled and is powered down</description>
+      </entry>
+      <entry value="5" name="CELLULAR_STATUS_FLAG_DISABLING">
+        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_DISABLED state</description>
+      </entry>
+      <entry value="6" name="CELLULAR_STATUS_FLAG_ENABLING">
+        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_ENABLED state</description>
+      </entry>
+      <entry value="7" name="CELLULAR_STATUS_FLAG_ENABLED">
+        <description>Modem is enabled and powered on but not registered with a network provider and not available for data connections</description>
+      </entry>
+      <entry value="8" name="CELLULAR_STATUS_FLAG_SEARCHING">
+        <description>Modem is searching for a network provider to register</description>
+      </entry>
+      <entry value="9" name="CELLULAR_STATUS_FLAG_REGISTERED">
+        <description>Modem is registered with a network provider, and data connections and messaging may be available for use</description>
+      </entry>
+      <entry value="10" name="CELLULAR_STATUS_FLAG_DISCONNECTING">
+        <description>Modem is disconnecting and deactivating the last active packet data bearer. This state will not be entered if more than one packet data bearer is active and one of the active bearers is deactivated</description>
+      </entry>
+      <entry value="11" name="CELLULAR_STATUS_FLAG_CONNECTING">
+        <description>Modem is activating and connecting the first packet data bearer. Subsequent bearer activations when another bearer is already active do not cause this state to be entered</description>
+      </entry>
+      <entry value="12" name="CELLULAR_STATUS_FLAG_CONNECTED">
+        <description>One or more packet data bearers is active and connected</description>
+      </entry>
+    </enum>
+    <enum name="CELLULAR_NETWORK_FAILED_REASON">
+      <description>These flags are used to diagnose the failure state of CELLULAR_STATUS</description>
+      <entry value="0" name="CELLULAR_NETWORK_FAILED_REASON_NONE">
+        <description>No error</description>
+      </entry>
+      <entry value="1" name="CELLULAR_NETWORK_FAILED_REASON_UNKNOWN">
+        <description>Error state is unknown</description>
+      </entry>
+      <entry value="2" name="CELLULAR_NETWORK_FAILED_REASON_SIM_MISSING">
+        <description>SIM is required for the modem but missing</description>
+      </entry>
+      <entry value="3" name="CELLULAR_NETWORK_FAILED_REASON_SIM_ERROR">
+        <description>SIM is available, but not usuable for connection</description>
+      </entry>
     </enum>
   </enums>
   <messages>
+    <!-- Transactions for parameter protocol -->
+    <message id="19" name="PARAM_ACK_TRANSACTION">
+      <description>Response from a PARAM_SET message when it is used in a transaction.</description>
+      <field type="uint8_t" name="target_system">Id of system that sent PARAM_SET message.</field>
+      <field type="uint8_t" name="target_component">Id of system that sent PARAM_SET message.</field>
+      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Parameter value (new value if PARAM_ACCEPTED, current value otherwise)</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type.</field>
+      <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
+    </message>
+    <!-- mission protocol enhancements -->
     <message id="52" name="MISSION_CHANGED">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>A broadcast message to notify any ground station or SDK if a mission, geofence or safe points have changed on the vehicle.</description>
       <field type="int16_t" name="start_index">Start index for partial mission change (-1 for all items).</field>
       <field type="int16_t" name="end_index">End index of a partial mission change. -1 is a synonym for the last mission item (i.e. selects all items from start_index). Ignore field if start_index=-1.</field>
@@ -90,8 +209,6 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
     <message id="53" name="MISSION_CHECKSUM">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Checksum for the current mission, rally points or geofence plan (a GCS can use this checksum to determine if it has a matching plan definition).
         This message must be broadcast following any change to a plan (immediately after the MISSION_ACK that completes the plan upload sequence).
         It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the hash is required.
@@ -104,8 +221,6 @@
       <field type="uint32_t" name="checksum">CRC32 checksum of current plan for specified type.</field>
     </message>
     <message id="295" name="AIRSPEED">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Airspeed information from a sensor.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
       <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS) if available, otherwise indicated airspeed (IAS).</field>
@@ -116,14 +231,23 @@
       <field type="uint8_t" name="type" enum="AIRSPEED_SENSOR_TYPE">Airspeed sensor type. NaN for value unknown/not supplied. Used to estimate accuracy (i.e. as an alternative to using the error field).</field>
     </message>
     <message id="298" name="WIFI_NETWORK_INFO">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Detected WiFi network status information. This message is sent per each WiFi network detected in range with known SSID and general status parameters.</description>
       <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID).</field>
       <field type="uint8_t" name="channel_id">WiFi network operating channel ID. Set to 0 if unknown or unidentified.</field>
       <field type="uint8_t" name="signal_quality" units="%">WiFi network signal quality.</field>
       <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
       <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
+    </message>
+    <!-- cellular status information -->
+    <message id="334" name="CELLULAR_STATUS">
+      <description>Report current used cellular network status</description>
+      <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
+      <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLUAR_STATUS_FAILED</field>
+      <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
+      <field type="uint8_t" name="quality" invalid="UINT8_MAX">Signal quality in percent. If unknown, set to UINT8_MAX</field>
+      <field type="uint16_t" name="mcc" invalid="UINT16_MAX">Mobile country code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="mnc" invalid="UINT16_MAX">Mobile network code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="lac" invalid="0">Location area code. If unknown, set to 0</field>
     </message>
   </messages>
 </mavlink>

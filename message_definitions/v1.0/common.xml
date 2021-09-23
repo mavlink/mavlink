@@ -786,27 +786,6 @@
         <description>Meta data for the events interface.</description>
       </entry>
     </enum>
-    <enum name="PARAM_TRANSACTION_TRANSPORT">
-      <description>Possible transport layers to set and get parameters via mavlink during a parameter transaction.</description>
-      <entry value="0" name="PARAM_TRANSACTION_TRANSPORT_PARAM">
-        <description>Transaction over param transport.</description>
-      </entry>
-      <entry value="1" name="PARAM_TRANSACTION_TRANSPORT_PARAM_EXT">
-        <description>Transaction over param_ext transport.</description>
-      </entry>
-    </enum>
-    <enum name="PARAM_TRANSACTION_ACTION">
-      <description>Possible parameter transaction actions.</description>
-      <entry value="0" name="PARAM_TRANSACTION_ACTION_START">
-        <description>Commit the current parameter transaction.</description>
-      </entry>
-      <entry value="1" name="PARAM_TRANSACTION_ACTION_COMMIT">
-        <description>Commit the current parameter transaction.</description>
-      </entry>
-      <entry value="2" name="PARAM_TRANSACTION_ACTION_CANCEL">
-        <description>Cancel the current parameter transaction.</description>
-      </entry>
-    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -1778,14 +1757,7 @@
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
       </entry>
-      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
-        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
-        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
-        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
-      </entry>
+      <!-- entry value 900 reserved for MAV_CMD_PARAM_TRANSACTION (development.xml) -->
       <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
@@ -2037,6 +2009,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7">Reserved</param>
       </entry>
+      <!-- value 5010 reserved for MAV_CMD_SET_FENCE_BREACH_ACTION (see development.xml). -->
       <entry value="5100" name="MAV_CMD_NAV_RALLY_POINT" hasLocation="true" isDestination="false">
         <description>Rally point. You can have multiple rally points defined.
         </description>
@@ -2074,6 +2047,7 @@
       <!-- VALUES FROM 0-40000 are reserved for the common message set. Values from 40000 to UINT16_MAX are available for dialects -->
       <!-- BEGIN of payload range (30000 to 30999) -->
       <entry value="30001" name="MAV_CMD_PAYLOAD_PREPARE_DEPLOY" hasLocation="true" isDestination="true">
+        <deprecated since="2021-06" replaced_by=""/>
         <description>Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity.</description>
         <param index="1" label="Operation Mode" minValue="0" maxValue="2" increment="1">Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.</param>
         <param index="2" label="Approach Vector" units="deg" minValue="-1" maxValue="360">Desired approach vector in compass heading. A negative value indicates the system can define the approach vector at will.</param>
@@ -2084,6 +2058,7 @@
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
       <entry value="30002" name="MAV_CMD_PAYLOAD_CONTROL_DEPLOY" hasLocation="false" isDestination="false">
+        <deprecated since="2021-06" replaced_by=""/>
         <description>Control the payload deployment.</description>
         <param index="1" label="Operation Mode" minValue="0" maxValue="101" increment="1">Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deployment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests.</param>
         <param index="2">Reserved</param>
@@ -3627,71 +3602,6 @@
         <description>The fields next_lat, next_lon and next_alt contain valid data.</description>
       </entry>
     </enum>
-    <enum name="CELLULAR_NETWORK_RADIO_TYPE">
-      <description>Cellular network radio type</description>
-      <entry value="0" name="CELLULAR_NETWORK_RADIO_TYPE_NONE"/>
-      <entry value="1" name="CELLULAR_NETWORK_RADIO_TYPE_GSM"/>
-      <entry value="2" name="CELLULAR_NETWORK_RADIO_TYPE_CDMA"/>
-      <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
-      <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
-    </enum>
-    <enum name="CELLULAR_STATUS_FLAG">
-      <description>These flags encode the cellular network status</description>
-      <entry value="0" name="CELLULAR_STATUS_FLAG_UNKNOWN">
-        <description>State unknown or not reportable.</description>
-      </entry>
-      <entry value="1" name="CELLULAR_STATUS_FLAG_FAILED">
-        <description>Modem is unusable</description>
-      </entry>
-      <entry value="2" name="CELLULAR_STATUS_FLAG_INITIALIZING">
-        <description>Modem is being initialized</description>
-      </entry>
-      <entry value="3" name="CELLULAR_STATUS_FLAG_LOCKED">
-        <description>Modem is locked</description>
-      </entry>
-      <entry value="4" name="CELLULAR_STATUS_FLAG_DISABLED">
-        <description>Modem is not enabled and is powered down</description>
-      </entry>
-      <entry value="5" name="CELLULAR_STATUS_FLAG_DISABLING">
-        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_DISABLED state</description>
-      </entry>
-      <entry value="6" name="CELLULAR_STATUS_FLAG_ENABLING">
-        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_ENABLED state</description>
-      </entry>
-      <entry value="7" name="CELLULAR_STATUS_FLAG_ENABLED">
-        <description>Modem is enabled and powered on but not registered with a network provider and not available for data connections</description>
-      </entry>
-      <entry value="8" name="CELLULAR_STATUS_FLAG_SEARCHING">
-        <description>Modem is searching for a network provider to register</description>
-      </entry>
-      <entry value="9" name="CELLULAR_STATUS_FLAG_REGISTERED">
-        <description>Modem is registered with a network provider, and data connections and messaging may be available for use</description>
-      </entry>
-      <entry value="10" name="CELLULAR_STATUS_FLAG_DISCONNECTING">
-        <description>Modem is disconnecting and deactivating the last active packet data bearer. This state will not be entered if more than one packet data bearer is active and one of the active bearers is deactivated</description>
-      </entry>
-      <entry value="11" name="CELLULAR_STATUS_FLAG_CONNECTING">
-        <description>Modem is activating and connecting the first packet data bearer. Subsequent bearer activations when another bearer is already active do not cause this state to be entered</description>
-      </entry>
-      <entry value="12" name="CELLULAR_STATUS_FLAG_CONNECTED">
-        <description>One or more packet data bearers is active and connected</description>
-      </entry>
-    </enum>
-    <enum name="CELLULAR_NETWORK_FAILED_REASON">
-      <description>These flags are used to diagnose the failure state of CELLULAR_STATUS</description>
-      <entry value="0" name="CELLULAR_NETWORK_FAILED_REASON_NONE">
-        <description>No error</description>
-      </entry>
-      <entry value="1" name="CELLULAR_NETWORK_FAILED_REASON_UNKNOWN">
-        <description>Error state is unknown</description>
-      </entry>
-      <entry value="2" name="CELLULAR_NETWORK_FAILED_REASON_SIM_MISSING">
-        <description>SIM is required for the modem but missing</description>
-      </entry>
-      <entry value="3" name="CELLULAR_NETWORK_FAILED_REASON_SIM_ERROR">
-        <description>SIM is available, but not usuable for connection</description>
-      </entry>
-    </enum>
     <enum name="PRECISION_LAND_MODE">
       <description>Precision land modes (used in MAV_CMD_NAV_LAND).</description>
       <entry value="0" name="PRECISION_LAND_MODE_DISABLED">
@@ -4418,17 +4328,7 @@
       <field type="uint32_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
     </message>
     <!-- IDs 15-17 reserved for PARAM_VALUE_UNION and other param messages -->
-    <message id="19" name="PARAM_ACK_TRANSACTION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Response from a PARAM_SET message when it is used in a transaction.</description>
-      <field type="uint8_t" name="target_system">Id of system that sent PARAM_SET message.</field>
-      <field type="uint8_t" name="target_component">Id of system that sent PARAM_SET message.</field>
-      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="float" name="param_value">Parameter value (new value if PARAM_ACCEPTED, current value otherwise)</field>
-      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type.</field>
-      <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
-    </message>
+    <!-- IDs 19 reserved for PARAM_ACK_TRANSACTION (development.xml) -->
     <message id="20" name="PARAM_REQUEST_READ">
       <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -&gt; value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also https://mavlink.io/en/services/parameter.html for a full documentation of QGroundControl and IMU code.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -6534,18 +6434,7 @@
       <field type="float[5]" name="delta" units="s" invalid="[NaN]">Bezier time horizon. Set to NaN if velocity/acceleration should not be incorporated</field>
       <field type="float[5]" name="pos_yaw" units="rad" invalid="[NaN]">Yaw. Set to NaN for unchanged</field>
     </message>
-    <message id="334" name="CELLULAR_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Report current used cellular network status</description>
-      <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
-      <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLUAR_STATUS_FAILED</field>
-      <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
-      <field type="uint8_t" name="quality" invalid="UINT8_MAX">Signal quality in percent. If unknown, set to UINT8_MAX</field>
-      <field type="uint16_t" name="mcc" invalid="UINT16_MAX">Mobile country code. If unknown, set to UINT16_MAX</field>
-      <field type="uint16_t" name="mnc" invalid="UINT16_MAX">Mobile network code. If unknown, set to UINT16_MAX</field>
-      <field type="uint16_t" name="lac" invalid="0">Location area code. If unknown, set to 0</field>
-    </message>
+    <!-- id 344 reserved for CELLULAR_STATUS (development.xml) -->
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
