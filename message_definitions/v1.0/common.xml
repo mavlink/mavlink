@@ -696,6 +696,27 @@
         <description>Storage type is other, not listed type.</description>
       </entry>
     </enum>
+    <enum name="STORAGE_USAGE_FLAG">
+      <description>Flags to indicate how a storage is being used.</description>
+      <entry value="1" name="STORAGE_USAGE_SET">
+        <description>To signal that this flag is set at all (if used as an extension).</description>
+      </entry>
+      <entry value="2" name="STORAGE_USAGE_UNUSED">
+        <description>Storage is currently unused.</description>
+      </entry>
+      <entry value="4" name="STORAGE_USAGE_USED_PRIMARILY">
+        <description>Storage is used primarily as main storage.</description>
+      </entry>
+      <entry value="8" name="STORAGE_USAGE_USED_SECONDARILY">
+        <description>Storage is used secondarily for redundancy.</description>
+      </entry>
+      <entry value="16" name="STORAGE_USAGE_USED_FOR_PHOTO">
+        <description>Storage is used to save photos.</description>
+      </entry>
+      <entry value="32" name="STORAGE_USAGE_USED_FOR_VIDEO">
+        <description>Storage is used to save videos.</description>
+      </entry>
+    </enum>
     <enum name="ORBIT_YAW_BEHAVIOUR">
       <description>Yaw behaviour during orbit flight.</description>
       <entry value="0" name="ORBIT_YAW_BEHAVIOUR_HOLD_FRONT_TO_CIRCLE_CENTER">
@@ -1747,6 +1768,11 @@
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
         <param index="7" reserved="true" default="NaN"/>
+      </entry>
+      <entry value="533" name="MAV_CMD_SET_STORAGE_USAGE" hasLocation="false" isDestination="false">
+        <description>Specify storage usage, e.g. if a camera should save to internal memory or an external SD card.</description>
+        <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
+        <param index="2" label="Usage" enum="STORAGE_USAGE_FLAG">Usage flags</param>
       </entry>
       <entry value="600" name="MAV_CMD_JUMP_TAG" hasLocation="false" isDestination="false">
         <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
@@ -4218,7 +4244,7 @@
       </entry>
       <entry value="1" name="NAV_VTOL_LAND_OPTIONS_FW_DESCENT">
         <description>Descend in fixed wing mode, transitioning to multicopter mode for vertical landing when close to the ground.
-          The fixed wing descent pattern is at the discretion of the vehicle (e.g. transition altitude, loiter direction, radius, and speed, etc.).        
+          The fixed wing descent pattern is at the discretion of the vehicle (e.g. transition altitude, loiter direction, radius, and speed, etc.).
         </description>
       </entry>
       <entry value="2" name="NAV_VTOL_LAND_OPTIONS_HOVER_DESCENT">
@@ -5998,6 +6024,7 @@
       <extensions/>
       <field type="uint8_t" name="type" enum="STORAGE_TYPE">Type of storage</field>
       <field type="char[32]" name="name">Textual storage name to be used in UI (microSD 1, Internal Memory, etc.) This is a NULL terminated string. If it is exactly 32 characters long, add a terminating NULL. If this string is empty, the generic type is shown to the user.</field>
+      <field type="uint8_t" name="storage_usage" enum="STORAGE_USAGE_FLAG">Flags about usage of a storage</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
       <description>Information about the status of a capture. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
