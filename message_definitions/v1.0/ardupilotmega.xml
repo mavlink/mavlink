@@ -48,6 +48,26 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
+      <entry value="217" name="MAV_CMD_DO_SEND_SCRIPT_MESSAGE" hasLocation="false" isDestination="false">
+        <description>Pass instructions onto scripting, a script should be checking for a new command</description>
+        <param index="1" label="ID" minValue="0" maxValue="65535" increment="1">uint16 ID value to be passed to scripting</param>
+        <param index="2" label="param 1">float value to be passed to scripting</param>
+        <param index="3" label="param 2">float value to be passed to scripting</param>
+        <param index="4" label="param 3">float value to be passed to scripting</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
+      <entry value="218" name="MAV_CMD_DO_AUX_FUNCTION">
+        <description>Execute auxiliary function</description>
+        <param index="1" label="AuxiliaryFunction">Auxiliary Function.</param>
+        <param index="2" label="SwitchPosition" enum="MAV_CMD_DO_AUX_FUNCTION_SWITCH_LEVEL">Switch Level.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
       <entry value="83" name="MAV_CMD_NAV_ALTITUDE_WAIT" hasLocation="false" isDestination="false">
         <description>Mission command to wait for an altitude or downwards vertical speed. This is meant for high altitude balloon launches, allowing the aircraft to be idle until either an altitude is reached or a negative vertical speed is reached (indicating early balloon burst). The wiggle time is how often to wiggle the control surfaces to prevent them seizing up.</description>
         <param index="1" label="Altitude" units="m">Altitude.</param>
@@ -121,6 +141,16 @@
         <param index="7">Empty.</param>
       </entry>
       <!-- 42006 MAV_CMD_FIXED_MAG_CAL_YAW moved to common.xml -->
+      <entry value="42007" name="MAV_CMD_SET_EKF_SOURCE_SET" hasLocation="false" isDestination="false">
+        <description>Set EKF sensor source set.</description>
+        <param index="1" label="SourceSetId" minValue="1" maxValue="3" increment="1">Source Set Id.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
       <entry value="42424" name="MAV_CMD_DO_START_MAG_CAL" hasLocation="false" isDestination="false">
         <description>Initiate a magnetometer calibration.</description>
         <param index="1" label="Magnetometers Bitmask" minValue="0" maxValue="255" increment="1">Bitmask of magnetometers to calibrate. Use 0 to calibrate all sensors that can be started (sensors may not start if disabled, unhealthy, etc.). The command will NACK if calibration does not start for a sensor explicitly specified by the bitmask.</param>
@@ -312,7 +342,7 @@
       </entry>
     </enum>
     <!-- AP_Limits Modules - power of 2 (1,2,4,8,16,32 etc) so we can send as bitfield -->
-    <enum name="LIMIT_MODULE">
+    <enum name="LIMIT_MODULE" bitmask="true">
       <entry value="1" name="LIMIT_GPSLOCK">
         <description>Pre-initialization.</description>
       </entry>
@@ -324,7 +354,7 @@
       </entry>
     </enum>
     <!-- RALLY flags - power of 2 (1,2,4,8,16,32,64,128) so we can send as a bitfield -->
-    <enum name="RALLY_FLAGS">
+    <enum name="RALLY_FLAGS" bitmask="true">
       <description>Flags in RALLY_POINT message.</description>
       <entry value="1" name="FAVORABLE_WIND">
         <description>Flag set when requiring favorable winds for landing.</description>
@@ -447,7 +477,7 @@
         <description>An unrecoverable error was encountered with the connected GoPro, it may require a power cycle.</description>
       </entry>
     </enum>
-    <enum name="GOPRO_HEARTBEAT_FLAGS">
+    <enum name="GOPRO_HEARTBEAT_FLAGS" bitmask="true">
       <!-- each entry is a mask to test a bit in GOPRO_HEARTBEAT_STATUS.flags -->
       <entry value="1" name="GOPRO_FLAG_RECORDING">
         <description>GoPro is currently recording.</description>
@@ -641,7 +671,7 @@
         <description>0x02: Narrow.</description>
       </entry>
     </enum>
-    <enum name="GOPRO_VIDEO_SETTINGS_FLAGS">
+    <enum name="GOPRO_VIDEO_SETTINGS_FLAGS" bitmask="true">
       <entry value="1" name="GOPRO_VIDEO_SETTINGS_TV_MODE">
         <description>0=NTSC, 1=PAL.</description>
       </entry>
@@ -835,6 +865,17 @@
         <description>30 Shots / 6 Second.</description>
       </entry>
     </enum>
+    <enum name="MAV_CMD_DO_AUX_FUNCTION_SWITCH_LEVEL">
+      <entry value="0" name="MAV_CMD_DO_AUX_FUNCTION_SWITCH_LEVEL_LOW">
+        <description>Switch Low.</description>
+      </entry>
+      <entry value="1" name="MAV_CMD_DO_AUX_FUNCTION_SWITCH_LEVEL_MIDDLE">
+        <description>Switch Middle.</description>
+      </entry>
+      <entry value="2" name="MAV_CMD_DO_AUX_FUNCTION_SWITCH_LEVEL_HIGH">
+        <description>Switch High.</description>
+      </entry>
+    </enum>
     <!-- led control pattern enums (enumeration of specific patterns) -->
     <enum name="LED_CONTROL_PATTERN">
       <entry value="0" name="LED_CONTROL_PATTERN_OFF">
@@ -848,7 +889,7 @@
       </entry>
     </enum>
     <!-- EKF_STATUS_FLAGS - these values should be bit-and with the messages flags field to know if flag has been set -->
-    <enum name="EKF_STATUS_FLAGS">
+    <enum name="EKF_STATUS_FLAGS" bitmask="true">
       <description>Flags in EKF_STATUS message.</description>
       <entry value="1" name="EKF_ATTITUDE">
         <description>Set if EKF's attitude estimate is good.</description>
@@ -1000,6 +1041,7 @@
       <entry value="24" name="COPTER_MODE_ZIGZAG"/>
       <entry value="25" name="COPTER_MODE_SYSTEMID"/>
       <entry value="26" name="COPTER_MODE_AUTOROTATE"/>
+      <entry value="27" name="COPTER_MODE_AUTO_RTL"/>
     </enum>
     <enum name="SUB_MODE">
       <description>A mapping of sub flight modes for custom_mode field of heartbeat.</description>
@@ -1438,6 +1480,9 @@
       <field type="float" name="P">P component.</field>
       <field type="float" name="I">I component.</field>
       <field type="float" name="D">D component.</field>
+      <extensions/>
+      <field type="float" name="SRate">Slew rate.</field>
+      <field type="float" name="PDmod">P/D oscillation modifier.</field>
     </message>
     <message id="195" name="DEEPSTALL">
       <description>Deepstall path planning.</description>
@@ -1676,6 +1721,28 @@
       <field type="float" name="z" units="m"> Z position of the obstacle.</field>
       <field type="float" name="min_distance" units="m">Minimum distance the sensor can measure.</field>
       <field type="float" name="max_distance" units="m">Maximum distance the sensor can measure.</field>
+    </message>
+    <message id="11038" name="WATER_DEPTH">
+      <description>Water depth</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot)</field>
+      <field type="uint8_t" name="id" instance="true">Onboard ID of the sensor</field>
+      <field type="uint8_t" name="healthy">Sensor data healthy (0=unhealthy, 1=healthy)</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude</field>
+      <field type="int32_t" name="lng" units="degE7">Longitude</field>
+      <field type="float" name="alt" units="m">Altitude (MSL) of vehicle</field>
+      <field type="float" name="roll" units="rad">Roll angle</field>
+      <field type="float" name="pitch" units="rad">Pitch angle</field>
+      <field type="float" name="yaw" units="rad">Yaw angle</field>
+      <field type="float" name="distance" units="m">Distance (uncorrected)</field>
+      <field type="float" name="temperature" units="degC">Water temperature</field>
+    </message>
+    <message id="11039" name="MCU_STATUS">
+      <description>The MCU status, giving MCU temperature and voltage. The min and max voltages are to allow for detecting power supply instability.</description>
+      <field type="uint8_t" name="id" instance="true">MCU instance</field>
+      <field type="int16_t" name="MCU_temperature" units="cdegC">MCU Internal temperature</field>
+      <field type="uint16_t" name="MCU_voltage" units="mV">MCU voltage</field>
+      <field type="uint16_t" name="MCU_voltage_min" units="mV">MCU voltage minimum</field>
+      <field type="uint16_t" name="MCU_voltage_max" units="mV">MCU voltage maximum</field>
     </message>
   </messages>
 </mavlink>
