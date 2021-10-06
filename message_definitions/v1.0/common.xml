@@ -697,18 +697,18 @@
       </entry>
     </enum>
     <enum name="STORAGE_USAGE_FLAG">
-      <description>Flags to indicate how a storage is being used.</description>
+      <description>Flags to indicate usage for a particular storage (see `STORAGE_INFORMATION.storage_usage` and `MAV_CMD_SET_STORAGE_USAGE`).</description>
       <entry value="1" name="STORAGE_USAGE_FLAG_SET">
-        <description>Always set true (indicates this extension field is supported).</description>
+        <description>Always set to 1 (indicates `STORAGE_INFORMATION.storage_usage` is supported).</description>
       </entry>
-      <entry value="2" name="STORAGE_USAGE_FLAG_USED_FOR_PHOTO">
-        <description>Storage to be used to save photos.</description>
+      <entry value="2" name="STORAGE_USAGE_FLAG_PHOTO">
+        <description>Storage for saving photos.</description>
       </entry>
-      <entry value="4" name="STORAGE_USAGE_FLAG_USED_FOR_VIDEO">
-        <description>Storage to be used to save videos.</description>
+      <entry value="4" name="STORAGE_USAGE_FLAG_VIDEO">
+        <description>Storage for saving videos.</description>
       </entry>
-      <entry value="8" name="STORAGE_USAGE_FLAG_USED_FOR_LOGS">
-        <description>Storage to be used to save logs.</description>
+      <entry value="8" name="STORAGE_USAGE_FLAG_LOGS">
+        <description>Storage for saving logs.</description>
       </entry>
     </enum>
     <enum name="ORBIT_YAW_BEHAVIOUR">
@@ -1764,7 +1764,11 @@
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="533" name="MAV_CMD_SET_STORAGE_USAGE" hasLocation="false" isDestination="false">
-        <description>Specify storage usage, e.g. if a camera should save to internal memory or an external SD card.</description>
+        <description>Set that a particular storage is the preferred location for saving photos, videos, and/or other media (e.g. to set that an SD card is used for storing videos).
+          There can only be one preferred save location for each particular media type: setting a media usage flag will clear/reset that same flag if set on any other storage.
+          If no flag is set the system should use its default storage.
+          A target system can choose to always use default storage, in which case it should ACK the command with MAV_RESULT_UNSUPPORTED.
+          A target system can choose to not allow a particular storage to be set as preferred storage, in which case it should ACK the command with MAV_RESULT_DENIED.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
         <param index="2" label="Usage" enum="STORAGE_USAGE_FLAG">Usage flags</param>
       </entry>
@@ -6018,7 +6022,7 @@
       <extensions/>
       <field type="uint8_t" name="type" enum="STORAGE_TYPE">Type of storage</field>
       <field type="char[32]" name="name">Textual storage name to be used in UI (microSD 1, Internal Memory, etc.) This is a NULL terminated string. If it is exactly 32 characters long, add a terminating NULL. If this string is empty, the generic type is shown to the user.</field>
-      <field type="uint8_t" name="storage_usage" enum="STORAGE_USAGE_FLAG">Flags about usage of a storage</field>
+      <field type="uint8_t" name="storage_usage" enum="STORAGE_USAGE_FLAG">Flags indicating whether this instance is preferred storage for photos, videos, etc.</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
       <description>Information about the status of a capture. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
