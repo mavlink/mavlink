@@ -9,7 +9,7 @@ Range of IDs:
   commands: 60000 - 60049
 Documentation:  
   STORM32 and QSHOT additions
-  5. May. 2021
+  6. Okt. 2021
   All messages are technically WIP, but some are quite stable now.
   Quite stable means that it is in practical use, but may see extension.
   A more detailed description of the concept underlying the STORM32 and QSHOT messages can be found here:
@@ -59,6 +59,59 @@ Documentation:
       </entry>
       <entry value="209" name="MAV_STORM32_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED9">
         <description>Registered for STorM32 gimbal controller.</description>
+      </entry>
+    </enum>
+    <!-- ***************************
+    STORM32 gimbal prearm check flags
+    *************************** -->
+    <enum name="MAV_STORM32_GIMBAL_PREARM_FLAGS" bitmask="true">
+      <!-- Quite stable -->
+      <description>STorM32 gimbal prearm check flags.</description>
+      <entry value="1" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_IS_NORMAL">
+        <description>STorM32 gimbal is in normal state.</description>
+      </entry>
+      <entry value="2" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_IMUS_WORKING">
+        <description>The IMUs are healthy and working normally.</description>
+      </entry>
+      <entry value="4" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_MOTORS_WORKING">
+        <description>The motors are active and working normally.</description>
+      </entry>
+      <entry value="8" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_ENCODERS_WORKING">
+        <description>The encoders are healthy and working normally.</description>
+      </entry>
+      <entry value="16" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_VOLTAGE_OK">
+        <description>A battery voltage is applied and is in range.</description>
+      </entry>
+      <entry value="32" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_VIRTUALCHANNELS_RECEIVING">
+        <description>???.</description>
+      </entry>
+      <entry value="64" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_MAVLINK_RECEIVING">
+        <description>Mavlink messages are being received.</description>
+      </entry>
+      <entry value="128" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_STORM32LINK_QFIX">
+        <description>The STorM32Link data indicates QFix.</description>
+      </entry>
+      <entry value="256" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_STORM32LINK_WORKING">
+        <description>The STorM32Link is working.</description>
+      </entry>
+      <entry value="512" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_CAMERA_CONNECTED">
+        <description>The camera has been found and is connected.</description>
+      </entry>
+      <entry value="1024" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_AUX0_LOW">
+        <description>The signal on the AUX0 input pin is low.</description>
+      </entry>
+      <entry value="2048" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_AUX1_LOW">
+        <description>The signal on the AUX1 input pin is low.</description>
+      </entry>
+      <entry value="4096" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_NTLOGGER_WORKING">
+        <description>The NTLogger is working normally.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_STORM32_CAMERA_PREARM_FLAGS" bitmask="true">
+      <!-- Quite stable -->
+      <description>STorM32 camera prearm check flags.</description>
+      <entry value="1" name="MAV_STORM32_CAMERA_PREARM_FLAGS_CONNECTED">
+        <description>The camera has been found and is connected.</description>
       </entry>
     </enum>
     <!-- ***************************
@@ -502,6 +555,17 @@ Documentation:
       <description>Information about the shot operation.</description>
       <field type="uint16_t" name="mode" enum="MAV_QSHOT_MODE">Current shot mode.</field>
       <field type="uint16_t" name="shot_state">Current state in the shot. States are specific to the selected shot mode.</field>
+    </message>
+    <!-- ***************************
+    General messages
+    *************************** -->
+    <message id="60025" name="COMPONENT_PREARM_STATUS">
+      <!-- Quite stable -->
+      <description>Message reporting the status of the prearm checks. The flags are component specific.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="enabled_flags" invalid="UINT32_MAX">Currently enabled prearm checks. 0 means no checks are being performed, UINT32_MAX means not known.</field>
+      <field type="uint32_t" name="fail_flags">Currently not passed prearm checks. 0 means all checks have been passed.</field>
     </message>
   </messages>
 </mavlink>
