@@ -184,7 +184,7 @@ This ensure that:
 > **Warning** New dialect files in the official repository must be added to **all.xml** and restrict themselves to using ids in their own allocated range.
   A few older dialects are not included because these operate in completely closed networks or because they are only used for tests.
   
-This topic is a human-readable form of the XML definition file: [development.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
+This topic is a human-readable form of the XML definition file: [all.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
 """
     else:
         insert_text+='\n# Dialect: %s' % filename.rsplit('.',1)[0]
