@@ -80,12 +80,13 @@
    </xsl:if>
    
    <xsl:if test='../*/@enum'>
-     <td> 
+   <td><xsl:if test='@enum'>
       <a><xsl:attribute name="href">#<xsl:value-of select="@enum" /></xsl:attribute><xsl:value-of select="@enum" /></a>
-     </td> <!-- mavlink_value -->
+      </xsl:if>
+   </td> <!-- mavlink_value -->
    </xsl:if>
      
-   <td> <xsl:value-of select="." /> </td> <!-- mavlink_comment -->
+   <td><xsl:value-of select="." /></td> <!-- mavlink_comment -->
    </tr>
 </xsl:template>
 
@@ -102,8 +103,7 @@
 <xsl:template match="//enum">
    <h3> <!-- mavlink_enum_name -->
      <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
-     <a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
-     <xsl:value-of select="@name" /></a></h3>
+     <xsl:value-of select="@name" /></h3>
    <xsl:apply-templates select="deprecated" />  
    <p><a href="#enums">[Enum]</a><xsl:value-of select="description" /></p> <!-- description -->
    <table class="sortable">
@@ -201,7 +201,7 @@
      <td>
       <xsl:choose>
          <xsl:when test="@enum">
-           <xsl:value-of select="@enum" />
+           <a><xsl:attribute name="href">#<xsl:value-of select="@enum" /></xsl:attribute><xsl:value-of select="@enum" /></a>
          </xsl:when>
          <xsl:when test="@minValue or @maxValue or @increment ">
            <xsl:if test='@minValue'><em>min:</em><xsl:value-of select="@minValue" /><xsl:text>xxx_space_xxx</xsl:text></xsl:if>
