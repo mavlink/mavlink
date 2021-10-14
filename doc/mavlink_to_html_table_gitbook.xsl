@@ -102,8 +102,7 @@
 <xsl:template match="//enum">
    <h3> <!-- mavlink_enum_name -->
      <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
-     <a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute>
-     <xsl:value-of select="@name" /></a></h3>
+     <xsl:value-of select="@name" /></h3>
    <xsl:apply-templates select="deprecated" />  
    <p><a href="#enums">[Enum]</a><xsl:value-of select="description" /></p> <!-- description -->
    <table class="sortable">
