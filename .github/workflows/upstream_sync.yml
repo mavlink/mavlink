@@ -1,0 +1,26 @@
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron: '0 17 * * *' # every day, by the end of the day, trigger the sync
+  workflow_dispatch: # on button click
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set timestamp
+        id: timestamp
+        run: echo "::set-output name=timestamp::$(date)"
+      - name: Sync with upstream
+        uses: shubhsherl/create-catchup-pr@v0.1.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          SOURCE_REPO: "mavlink"
+          SOURCE_BRANCH: "master"
+          TARGET_BRANCH: "master"
+          TITLE: Sync with upstream master | ${{ steps.timestamp.outputs.timestamp }}
+          BODY: Sync master with upstream mavlink/mavlink:master
