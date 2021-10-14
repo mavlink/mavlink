@@ -93,17 +93,6 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="248" name="MAV_CMD_COMPONENT_CONTROL" hasLocation="false" isDestination="false">
-        <wip/>
-        <description>Control the state or functionality of system components.</description>
-        <param index="1" label="Component ID" enum="MAV_COMPONENT">Component ID of the system component to be controlled.</param>
-        <param index="2" label="Component Control Type" enum="COMPONENT_CONTROL">Control command type being sent to the system component.</param>
-        <param index="3" label="Component Instance ID" minValue="0" maxValue="1" increment="1">Component instance, when there is more than one instance per component.</param>
-        <param index="4">Empty.</param>
-        <param index="5">Empty.</param>
-        <param index="6">Empty.</param>
-        <param index="7">Empty.</param>
-      </entry>
       <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
         <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
         <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
@@ -129,49 +118,6 @@
       <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
       <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
     </enum>
-    <!-- cellular status information -->
-    <enum name="CELLULAR_STATUS_FLAG">
-      <description>These flags encode the cellular network status</description>
-      <entry value="0" name="CELLULAR_STATUS_FLAG_UNKNOWN">
-        <description>State unknown or not reportable.</description>
-      </entry>
-      <entry value="1" name="CELLULAR_STATUS_FLAG_FAILED">
-        <description>Modem is unusable</description>
-      </entry>
-      <entry value="2" name="CELLULAR_STATUS_FLAG_INITIALIZING">
-        <description>Modem is being initialized</description>
-      </entry>
-      <entry value="3" name="CELLULAR_STATUS_FLAG_LOCKED">
-        <description>Modem is locked</description>
-      </entry>
-      <entry value="4" name="CELLULAR_STATUS_FLAG_DISABLED">
-        <description>Modem is not enabled and is powered down</description>
-      </entry>
-      <entry value="5" name="CELLULAR_STATUS_FLAG_DISABLING">
-        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_DISABLED state</description>
-      </entry>
-      <entry value="6" name="CELLULAR_STATUS_FLAG_ENABLING">
-        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_ENABLED state</description>
-      </entry>
-      <entry value="7" name="CELLULAR_STATUS_FLAG_ENABLED">
-        <description>Modem is enabled and powered on but not registered with a network provider and not available for data connections</description>
-      </entry>
-      <entry value="8" name="CELLULAR_STATUS_FLAG_SEARCHING">
-        <description>Modem is searching for a network provider to register</description>
-      </entry>
-      <entry value="9" name="CELLULAR_STATUS_FLAG_REGISTERED">
-        <description>Modem is registered with a network provider, and data connections and messaging may be available for use</description>
-      </entry>
-      <entry value="10" name="CELLULAR_STATUS_FLAG_DISCONNECTING">
-        <description>Modem is disconnecting and deactivating the last active packet data bearer. This state will not be entered if more than one packet data bearer is active and one of the active bearers is deactivated</description>
-      </entry>
-      <entry value="11" name="CELLULAR_STATUS_FLAG_CONNECTING">
-        <description>Modem is activating and connecting the first packet data bearer. Subsequent bearer activations when another bearer is already active do not cause this state to be entered</description>
-      </entry>
-      <entry value="12" name="CELLULAR_STATUS_FLAG_CONNECTED">
-        <description>One or more packet data bearers is active and connected</description>
-      </entry>
-    </enum>
     <enum name="CELLULAR_NETWORK_FAILED_REASON">
       <description>These flags are used to diagnose the failure state of CELLULAR_STATUS</description>
       <entry value="0" name="CELLULAR_NETWORK_FAILED_REASON_NONE">
@@ -185,6 +131,24 @@
       </entry>
       <entry value="3" name="CELLULAR_NETWORK_FAILED_REASON_SIM_ERROR">
         <description>SIM is available, but not usuable for connection</description>
+      </entry>
+    </enum>
+    <enum name="MAV_CMD">
+      <entry value="301" name="MAV_CMD_GROUP_START" hasLocation="false" isDestination="false">
+        <description>Define start of a group of mission items. When control reaches this command a GROUP_START message is emitted.
+          The end of a group is marked using MAV_CMD_GROUP_END with the same group id.
+          Group ids are expected, but not required, to iterate sequentially.
+          Groups can be nested.</description>
+        <param index="1" label="Group ID" minValue="0" maxValue="16777216" increment="1">Mission-unique group id.
+          Group id is limited because only 24 bit integer can be stored in 32 bit float.</param>
+      </entry>
+      <entry value="302" name="MAV_CMD_GROUP_END" hasLocation="false" isDestination="false">
+        <description>Define end of a group of mission items. When control reaches this command a GROUP_END message is emitted.
+          The start of the group is marked is marked using MAV_CMD_GROUP_START with the same group id.
+          Group ids are expected, but not required, to iterate sequentially.
+          Groups can be nested.</description>
+        <param index="1" label="Group ID" minValue="0" maxValue="16777216" increment="1">Mission-unique group id.
+          Group id is limited because only 24 bit integer can be stored in 32 bit float.</param>
       </entry>
     </enum>
   </enums>
@@ -209,13 +173,15 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
     <message id="53" name="MISSION_CHECKSUM">
-      <description>Checksum for the current mission, rally points or geofence plan (a GCS can use this checksum to determine if it has a matching plan definition).
-        This message must be broadcast following any change to a plan (immediately after the MISSION_ACK that completes the plan upload sequence).
-        It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the hash is required.
+      <description>Checksum for the current mission, rally point or geofence plan, or for the "combined" plan (a GCS can use these checksums to determine if it has matching plans).
+        This message must be broadcast with the appropriate checksum following any change to a mission, geofence or rally point definition
+        (immediately after the MISSION_ACK that completes the upload sequence).
+        It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the checksum is required.
         The checksum must be calculated on the autopilot, but may also be calculated by the GCS.
         The checksum uses the same CRC32 algorithm as MAVLink FTP (https://mavlink.io/en/services/ftp.html#crc32-implementation).
-        It is run over each item in the plan in seq order (excluding the home location if present in the plan), and covers the following fields (in order):
+        The checksum for a mission, geofence or rally point definition is run over each item in the plan in seq order (excluding the home location if present in the plan), and covers the following fields (in order):
         frame, command, autocontinue, param1, param2, param3, param4, param5, param6, param7.
+        The checksum for the whole plan (MAV_MISSION_TYPE_ALL) is calculated using the same approach, running over each sub-plan in the following order: mission, geofence then rally point.
       </description>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
       <field type="uint32_t" name="checksum">CRC32 checksum of current plan for specified type.</field>
@@ -238,16 +204,19 @@
       <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
       <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
     </message>
-    <!-- cellular status information -->
-    <message id="334" name="CELLULAR_STATUS">
-      <description>Report current used cellular network status</description>
-      <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
-      <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLUAR_STATUS_FAILED</field>
-      <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
-      <field type="uint8_t" name="quality" invalid="UINT8_MAX">Signal quality in percent. If unknown, set to UINT8_MAX</field>
-      <field type="uint16_t" name="mcc" invalid="UINT16_MAX">Mobile country code. If unknown, set to UINT16_MAX</field>
-      <field type="uint16_t" name="mnc" invalid="UINT16_MAX">Mobile network code. If unknown, set to UINT16_MAX</field>
-      <field type="uint16_t" name="lac" invalid="0">Location area code. If unknown, set to 0</field>
+    <message id="414" name="GROUP_START">
+      <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
+      <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_START).</field>
+      <field type="uint32_t" name="mission_checksum">CRC32 checksum of current plan for MAV_MISSION_TYPE_ALL. As defined in MISSION_CHECKSUM message.</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot).
+        The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+    </message>
+    <message id="415" name="GROUP_END">
+      <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_END.</description>
+      <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_END).</field>
+      <field type="uint32_t" name="mission_checksum">CRC32 checksum of current plan for MAV_MISSION_TYPE_ALL. As defined in MISSION_CHECKSUM message.</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot).
+        The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
     </message>
   </messages>
 </mavlink>

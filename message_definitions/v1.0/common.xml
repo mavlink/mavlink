@@ -216,11 +216,27 @@
       </entry>
     </enum>
     <enum name="MAV_FRAME">
+      <description>Co-ordinate frames used by MAVLink. Not all frames are supported by all commands, messages, or vehicles.
+      
+      Global frames use the following naming conventions:
+      - `GLOBAL`: Global co-ordinate frame with WGS84 latitude/longitude and altitude positive over mean sea level (MSL) by default. 
+        The following modifiers may be used with `GLOBAL`:
+        - `RELATIVE_ALT`: Altitude is relative to the vehicle home position rather than MSL
+        - `TERRAIN_ALT`: Altitude is relative to ground level rather than MSL
+        - `INT`: Latitude/longitude (in degrees) are scaled by multiplying by 1E7  
+
+      Local frames use the following naming conventions:
+      - `LOCAL`: Origin of local frame is fixed relative to earth. Unless otherwise specified this origin is the origin of the vehicle position-estimator ("EKF").
+      - `BODY`: Origin of local frame travels with the vehicle. NOTE, `BODY` does NOT indicate alignment of frame axis with vehicle attitude.
+      - `OFFSET`: Deprecated synonym for `BODY` (origin travels with the vehicle). Not to be used for new frames.
+
+      Some deprecated frames do not follow these conventions (e.g. MAV_FRAME_BODY_NED and MAV_FRAME_BODY_OFFSET_NED).
+ </description>
       <entry value="0" name="MAV_FRAME_GLOBAL">
         <description>Global (WGS84) coordinate frame + MSL altitude. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL).</description>
       </entry>
       <entry value="1" name="MAV_FRAME_LOCAL_NED">
-        <description>Local coordinate frame, Z-down (x: North, y: East, z: Down).</description>
+        <description>NED local tangent frame (x: North, y: East, z: Down) with origin fixed relative to earth.</description>
       </entry>
       <entry value="2" name="MAV_FRAME_MISSION">
         <description>NOT a coordinate frame, indicates a mission command.</description>
@@ -229,33 +245,33 @@
         <description>Global (WGS84) coordinate frame + altitude relative to the home position. First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at the altitude of the home location.</description>
       </entry>
       <entry value="4" name="MAV_FRAME_LOCAL_ENU">
-        <description>Local coordinate frame, Z-up (x: East, y: North, z: Up).</description>
+        <description>ENU local tangent frame (x: East, y: North, z: Up) with origin fixed relative to earth.</description>
       </entry>
       <entry value="5" name="MAV_FRAME_GLOBAL_INT">
-        <description>Global (WGS84) coordinate frame (scaled) + MSL altitude. First value / x: latitude in degrees*1.0e-7, second value / y: longitude in degrees*1.0e-7, third value / z: positive altitude over mean sea level (MSL).</description>
+        <description>Global (WGS84) coordinate frame (scaled) + MSL altitude. First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude over mean sea level (MSL).</description>
       </entry>
       <entry value="6" name="MAV_FRAME_GLOBAL_RELATIVE_ALT_INT">
-        <description>Global (WGS84) coordinate frame (scaled) + altitude relative to the home position. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude with 0 being at the altitude of the home location.</description>
+        <description>Global (WGS84) coordinate frame (scaled) + altitude relative to the home position. First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude with 0 being at the altitude of the home location.</description>
       </entry>
       <entry value="7" name="MAV_FRAME_LOCAL_OFFSET_NED">
-        <description>Offset to the current local frame. Anything expressed in this frame should be added to the current local frame position.</description>
+        <description>NED local tangent frame (x: North, y: East, z: Down) with origin that travels with the vehicle.</description>
       </entry>
       <entry value="8" name="MAV_FRAME_BODY_NED">
         <deprecated since="2019-08" replaced_by="MAV_FRAME_BODY_FRD"/>
-        <description>Setpoint in body NED frame. This makes sense if all position control is externalized - e.g. useful to command 2 m/s^2 acceleration to the right.</description>
+        <description>Same as MAV_FRAME_LOCAL_NED when used to represent position values. Same as MAV_FRAME_BODY_FRD when used with velocity/accelaration values.</description>
       </entry>
       <entry value="9" name="MAV_FRAME_BODY_OFFSET_NED">
         <deprecated since="2019-08" replaced_by="MAV_FRAME_BODY_FRD"/>
-        <description>Offset in body NED frame. This makes sense if adding setpoints to the current flight path, to avoid an obstacle - e.g. useful to command 2 m/s^2 acceleration to the east.</description>
+        <description>This is the same as MAV_FRAME_BODY_FRD.</description>
       </entry>
       <entry value="10" name="MAV_FRAME_GLOBAL_TERRAIN_ALT">
         <description>Global (WGS84) coordinate frame with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees, second value / y: longitude in degrees, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
       </entry>
       <entry value="11" name="MAV_FRAME_GLOBAL_TERRAIN_ALT_INT">
-        <description>Global (WGS84) coordinate frame (scaled) with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
+        <description>Global (WGS84) coordinate frame (scaled) with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
       </entry>
       <entry value="12" name="MAV_FRAME_BODY_FRD">
-        <description>Body fixed frame of reference, Z-down (x: Forward, y: Right, z: Down).</description>
+        <description>FRD local tangent frame (x: Forward, y: Right, z: Down) with origin that travels with vehicle. The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
       </entry>
       <entry value="13" name="MAV_FRAME_RESERVED_13">
         <deprecated since="2019-04" replaced_by=""/>
@@ -286,10 +302,10 @@
         <description>MAV_FRAME_ESTIM_ENU - Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-up (x: East, y: North, z: Up).</description>
       </entry>
       <entry value="20" name="MAV_FRAME_LOCAL_FRD">
-        <description>Forward, Right, Down coordinate frame. This is a local frame with Z-down and arbitrary F/R alignment (i.e. not aligned with NED/earth frame).</description>
+        <description>FRD local tangent frame (x: Forward, y: Right, z: Down) with origin fixed relative to earth. The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
       </entry>
       <entry value="21" name="MAV_FRAME_LOCAL_FLU">
-        <description>Forward, Left, Up coordinate frame. This is a local frame with Z-up and arbitrary F/L alignment (i.e. not aligned with ENU/earth frame).</description>
+        <description>FLU local tangent frame (x: Forward, y: Left, z: Up) with origin fixed relative to earth. The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
       </entry>
     </enum>
     <enum name="MAVLINK_DATA_STREAM_TYPE">
@@ -694,6 +710,21 @@
       </entry>
       <entry value="254" name="STORAGE_TYPE_OTHER">
         <description>Storage type is other, not listed type.</description>
+      </entry>
+    </enum>
+    <enum name="STORAGE_USAGE_FLAG">
+      <description>Flags to indicate usage for a particular storage (see `STORAGE_INFORMATION.storage_usage` and `MAV_CMD_SET_STORAGE_USAGE`).</description>
+      <entry value="1" name="STORAGE_USAGE_FLAG_SET">
+        <description>Always set to 1 (indicates `STORAGE_INFORMATION.storage_usage` is supported).</description>
+      </entry>
+      <entry value="2" name="STORAGE_USAGE_FLAG_PHOTO">
+        <description>Storage for saving photos.</description>
+      </entry>
+      <entry value="4" name="STORAGE_USAGE_FLAG_VIDEO">
+        <description>Storage for saving videos.</description>
+      </entry>
+      <entry value="8" name="STORAGE_USAGE_FLAG_LOGS">
+        <description>Storage for saving logs.</description>
       </entry>
     </enum>
     <enum name="ORBIT_YAW_BEHAVIOUR">
@@ -1567,8 +1598,8 @@
         <description>Request the reboot or shutdown of system components.</description>
         <param index="1" label="Autopilot" minValue="0" maxValue="3" increment="1">0: Do nothing for autopilot, 1: Reboot autopilot, 2: Shutdown autopilot, 3: Reboot autopilot and keep it in the bootloader until upgraded.</param>
         <param index="2" label="Companion" minValue="0" maxValue="3" increment="1">0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer, 3: Reboot onboard computer and keep it in the bootloader until upgraded.</param>
-        <param index="3">WIP: 0: Do nothing for camera, 1: Reboot onboard camera, 2: Shutdown onboard camera, 3: Reboot onboard camera and keep it in the bootloader until upgraded</param>
-        <param index="4">WIP: 0: Do nothing for mount (e.g. gimbal), 1: Reboot mount, 2: Shutdown mount, 3: Reboot mount and keep it in the bootloader until upgraded</param>
+        <param index="3" label="Component action" minValue="0" maxValue="3" increment="1">0: Do nothing for component, 1: Reboot component, 2: Shutdown component, 3: Reboot component and keep it in the bootloader until upgraded</param>
+        <param index="4" label="Component ID" minValue="0" maxValue="255" increment="1">MAVLink Component ID targeted in param3 (0 for all components).</param>
         <param index="5">Reserved (set to 0)</param>
         <param index="6">Reserved (set to 0)</param>
         <param index="7">WIP: ID (e.g. camera ID -1 for all IDs)</param>
@@ -1747,6 +1778,15 @@
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
         <param index="7" reserved="true" default="NaN"/>
+      </entry>
+      <entry value="533" name="MAV_CMD_SET_STORAGE_USAGE" hasLocation="false" isDestination="false">
+        <description>Set that a particular storage is the preferred location for saving photos, videos, and/or other media (e.g. to set that an SD card is used for storing videos).
+          There can only be one preferred save location for each particular media type: setting a media usage flag will clear/reset that same flag if set on any other storage.
+          If no flag is set the system should use its default storage.
+          A target system can choose to always use default storage, in which case it should ACK the command with MAV_RESULT_UNSUPPORTED.
+          A target system can choose to not allow a particular storage to be set as preferred storage, in which case it should ACK the command with MAV_RESULT_DENIED.</description>
+        <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
+        <param index="2" label="Usage" enum="STORAGE_USAGE_FLAG">Usage flags</param>
       </entry>
       <entry value="600" name="MAV_CMD_JUMP_TAG" hasLocation="false" isDestination="false">
         <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
@@ -3602,6 +3642,49 @@
         <description>The fields next_lat, next_lon and next_alt contain valid data.</description>
       </entry>
     </enum>
+    <!-- cellular status information -->
+    <enum name="CELLULAR_STATUS_FLAG">
+      <description>These flags encode the cellular network status</description>
+      <entry value="0" name="CELLULAR_STATUS_FLAG_UNKNOWN">
+        <description>State unknown or not reportable.</description>
+      </entry>
+      <entry value="1" name="CELLULAR_STATUS_FLAG_FAILED">
+        <description>Modem is unusable</description>
+      </entry>
+      <entry value="2" name="CELLULAR_STATUS_FLAG_INITIALIZING">
+        <description>Modem is being initialized</description>
+      </entry>
+      <entry value="3" name="CELLULAR_STATUS_FLAG_LOCKED">
+        <description>Modem is locked</description>
+      </entry>
+      <entry value="4" name="CELLULAR_STATUS_FLAG_DISABLED">
+        <description>Modem is not enabled and is powered down</description>
+      </entry>
+      <entry value="5" name="CELLULAR_STATUS_FLAG_DISABLING">
+        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_DISABLED state</description>
+      </entry>
+      <entry value="6" name="CELLULAR_STATUS_FLAG_ENABLING">
+        <description>Modem is currently transitioning to the CELLULAR_STATUS_FLAG_ENABLED state</description>
+      </entry>
+      <entry value="7" name="CELLULAR_STATUS_FLAG_ENABLED">
+        <description>Modem is enabled and powered on but not registered with a network provider and not available for data connections</description>
+      </entry>
+      <entry value="8" name="CELLULAR_STATUS_FLAG_SEARCHING">
+        <description>Modem is searching for a network provider to register</description>
+      </entry>
+      <entry value="9" name="CELLULAR_STATUS_FLAG_REGISTERED">
+        <description>Modem is registered with a network provider, and data connections and messaging may be available for use</description>
+      </entry>
+      <entry value="10" name="CELLULAR_STATUS_FLAG_DISCONNECTING">
+        <description>Modem is disconnecting and deactivating the last active packet data bearer. This state will not be entered if more than one packet data bearer is active and one of the active bearers is deactivated</description>
+      </entry>
+      <entry value="11" name="CELLULAR_STATUS_FLAG_CONNECTING">
+        <description>Modem is activating and connecting the first packet data bearer. Subsequent bearer activations when another bearer is already active do not cause this state to be entered</description>
+      </entry>
+      <entry value="12" name="CELLULAR_STATUS_FLAG_CONNECTED">
+        <description>One or more packet data bearers is active and connected</description>
+      </entry>
+    </enum>
     <enum name="PRECISION_LAND_MODE">
       <description>Precision land modes (used in MAV_CMD_NAV_LAND).</description>
       <entry value="0" name="PRECISION_LAND_MODE_DISABLED">
@@ -3674,6 +3757,9 @@
       </entry>
       <entry value="3" name="MAV_ODID_ID_TYPE_UTM_ASSIGNED_UUID">
         <description>UTM (Unmanned Traffic Management) assigned UUID (RFC4122).</description>
+      </entry>
+      <entry value="4" name="MAV_ODID_ID_TYPE_SPECIFIC_SESSION_ID">
+        <description>A 20 byte ID for a specific flight/session. The exact ID type is indicated by the first byte of uas_id and these type values are managed by ICAO.</description>
       </entry>
     </enum>
     <enum name="MAV_ODID_UA_TYPE">
@@ -3894,6 +3980,9 @@
       </entry>
       <entry value="4" name="MAV_ODID_AUTH_TYPE_NETWORK_REMOTE_ID">
         <description>Authentication is provided by Network Remote ID.</description>
+      </entry>
+      <entry value="5" name="MAV_ODID_AUTH_TYPE_SPECIFIC_AUTHENTICATION">
+        <description>The exact authentication type is indicated by the first byte of authentication_data and these type values are managed by ICAO.</description>
       </entry>
     </enum>
     <enum name="MAV_ODID_DESC_TYPE">
@@ -4212,7 +4301,7 @@
       </entry>
       <entry value="1" name="NAV_VTOL_LAND_OPTIONS_FW_DESCENT">
         <description>Descend in fixed wing mode, transitioning to multicopter mode for vertical landing when close to the ground.
-          The fixed wing descent pattern is at the discretion of the vehicle (e.g. transition altitude, loiter direction, radius, and speed, etc.).        
+          The fixed wing descent pattern is at the discretion of the vehicle (e.g. transition altitude, loiter direction, radius, and speed, etc.).
         </description>
       </entry>
       <entry value="2" name="NAV_VTOL_LAND_OPTIONS_HOVER_DESCENT">
@@ -5992,6 +6081,10 @@
       <extensions/>
       <field type="uint8_t" name="type" enum="STORAGE_TYPE">Type of storage</field>
       <field type="char[32]" name="name">Textual storage name to be used in UI (microSD 1, Internal Memory, etc.) This is a NULL terminated string. If it is exactly 32 characters long, add a terminating NULL. If this string is empty, the generic type is shown to the user.</field>
+      <field type="uint8_t" name="storage_usage" enum="STORAGE_USAGE_FLAG">Flags indicating whether this instance is preferred storage for photos, videos, etc.
+        Note: Implementations should initially set the flags on the system-default storage id used for saving media (if possible/supported).
+        This setting can then be overridden using `MAV_CMD_SET_STORAGE_USAGE`.
+        If the media usage flags are not set, a GCS may assume storage ID 1 is the default storage for all media types.</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
       <description>Information about the status of a capture. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
@@ -6273,7 +6366,7 @@
       <field type="uint8_t" name="info" display="bitmask">Information regarding online/offline status of each ESC.</field>
       <field type="uint16_t[4]" name="failure_flags" enum="ESC_FAILURE_FLAGS" display="bitmask">Bitmap of ESC failure flags.</field>
       <field type="uint32_t[4]" name="error_count">Number of reported errors by each ESC since boot.</field>
-      <field type="int16_t[4]" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of each ESC. INT16_MAX: if data not supplied by ESC.</field>
+      <field type="int16_t[4]" name="temperature" units="cdegC" invalid="[INT16_MAX]">Temperature of each ESC. INT16_MAX: if data not supplied by ESC.</field>
     </message>
     <message id="291" name="ESC_STATUS">
       <wip/>
@@ -6434,7 +6527,17 @@
       <field type="float[5]" name="delta" units="s" invalid="[NaN]">Bezier time horizon. Set to NaN if velocity/acceleration should not be incorporated</field>
       <field type="float[5]" name="pos_yaw" units="rad" invalid="[NaN]">Yaw. Set to NaN for unchanged</field>
     </message>
-    <!-- id 344 reserved for CELLULAR_STATUS (development.xml) -->
+    <!-- cellular status information -->
+    <message id="334" name="CELLULAR_STATUS">
+      <description>Report current used cellular network status</description>
+      <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
+      <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLUAR_STATUS_FAILED</field>
+      <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
+      <field type="uint8_t" name="quality" invalid="UINT8_MAX">Signal quality in percent. If unknown, set to UINT8_MAX</field>
+      <field type="uint16_t" name="mcc" invalid="UINT16_MAX">Mobile country code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="mnc" invalid="UINT16_MAX">Mobile network code. If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="lac" invalid="0">Location area code. If unknown, set to 0</field>
+    </message>
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
@@ -6700,20 +6803,20 @@
       <field type="uint8_t" name="vertical_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the vertical position.</field>
       <field type="uint8_t" name="barometer_accuracy" enum="MAV_ODID_VER_ACC">The accuracy of the barometric altitude.</field>
       <field type="uint8_t" name="speed_accuracy" enum="MAV_ODID_SPEED_ACC">The accuracy of the horizontal and vertical speed.</field>
-      <field type="float" name="timestamp" units="s">Seconds after the full hour with reference to UTC time. Typically the GPS outputs a time-of-week value in milliseconds. First convert that to UTC and then convert for this field using ((float) (time_week_ms % (60*60*1000))) / 1000.</field>
+      <field type="float" name="timestamp" units="s" invalid="0xFFFF">Seconds after the full hour with reference to UTC time. Typically the GPS outputs a time-of-week value in milliseconds. First convert that to UTC and then convert for this field using ((float) (time_week_ms % (60*60*1000))) / 1000. If unknown: 0xFFFF.</field>
       <field type="uint8_t" name="timestamp_accuracy" enum="MAV_ODID_TIME_ACC">The accuracy of the timestamps.</field>
     </message>
     <message id="12902" name="OPEN_DRONE_ID_AUTHENTICATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 4, PageCount, Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
+      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 15, PageCount, Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="authentication_type" enum="MAV_ODID_AUTH_TYPE">Indicates the type of authentication.</field>
-      <field type="uint8_t" name="data_page">Allowed range is 0 - 4.</field>
-      <field type="uint8_t" name="page_count">This field is only present for page 0. Allowed range is 0 - 5.</field>
-      <field type="uint8_t" name="length" units="bytes">This field is only present for page 0. Total bytes of authentication_data from all data pages. Allowed range is 0 - 109 (17 + 23*4).</field>
+      <field type="uint8_t" name="data_page">Allowed range is 0 - 15.</field>
+      <field type="uint8_t" name="last_page_index">This field is only present for page 0. Allowed range is 0 - 15. See the description of struct ODID_Auth_data at https://github.com/opendroneid/opendroneid-core-c/blob/master/libopendroneid/opendroneid.h.</field>
+      <field type="uint8_t" name="length" units="bytes">This field is only present for page 0. Total bytes of authentication_data from all data pages. See the description of struct ODID_Auth_data at https://github.com/opendroneid/opendroneid-core-c/blob/master/libopendroneid/opendroneid.h.</field>
       <field type="uint32_t" name="timestamp" units="s">This field is only present for page 0. 32 bit Unix Timestamp in seconds since 00:00:00 01/01/2019.</field>
       <field type="uint8_t[23]" name="authentication_data">Opaque authentication data. For page 0, the size is only 17 bytes. For other pages, the size is 23 bytes. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
@@ -6744,6 +6847,7 @@
       <field type="float" name="area_floor" units="m" invalid="-1000">Area Operations Floor relative to WGS84. If unknown: -1000 m.</field>
       <field type="uint8_t" name="category_eu" enum="MAV_ODID_CATEGORY_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the category of the UA.</field>
       <field type="uint8_t" name="class_eu" enum="MAV_ODID_CLASS_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the class of the UA.</field>
+      <field type="float" name="operator_altitude_geo" units="m" invalid="-1000">Geodetic altitude of the operator relative to WGS84. If unknown: -1000 m.</field>
     </message>
     <message id="12905" name="OPEN_DRONE_ID_OPERATOR_ID">
       <wip/>
@@ -6762,9 +6866,10 @@
       <description>An OpenDroneID message pack is a container for multiple encoded OpenDroneID messages (i.e. not in the format given for the above messages descriptions but after encoding into the compressed OpenDroneID byte format). Used e.g. when transmitting on Bluetooth 5.0 Long Range/Extended Advertising or on WiFi Neighbor Aware Networking.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="single_message_size" units="bytes">This field must currently always be equal to 25 (bytes), since all encoded OpenDroneID messages are specificed to have this length.</field>
-      <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 10.</field>
-      <field type="uint8_t[250]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
+      <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 9.</field>
+      <field type="uint8_t[225]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
     <message id="12920" name="HYGROMETER_SENSOR">
       <description>Temperature and humidity from hygrometer.</description>
