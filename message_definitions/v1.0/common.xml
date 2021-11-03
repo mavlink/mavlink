@@ -227,8 +227,8 @@
 
       Local frames use the following naming conventions:
       - `LOCAL`: Origin of local frame is fixed relative to earth. Unless otherwise specified this origin is the origin of the vehicle position-estimator ("EKF").
-      - `BODY`: Origin of local frame travels with the vehicle. NOTE, `BODY` does NOT indicate alignment of frame axis with vehicle attitude.
-      - `OFFSET`: Deprecated synonym for `BODY` (origin travels with the vehicle). Not to be used for new frames.
+      - `MAV`: Origin of local frame travels with the vehicle.
+      - `OFFSET`: Deprecated synonym for `MAV` (origin travels with the vehicle). Not to be used for new frames.
 
       Some deprecated frames do not follow these conventions (e.g. MAV_FRAME_BODY_NED and MAV_FRAME_BODY_OFFSET_NED).
  </description>
@@ -257,12 +257,12 @@
         <description>NED local tangent frame (x: North, y: East, z: Down) with origin that travels with the vehicle.</description>
       </entry>
       <entry value="8" name="MAV_FRAME_BODY_NED">
-        <deprecated since="2019-08" replaced_by="MAV_FRAME_BODY_FRD"/>
-        <description>Same as MAV_FRAME_LOCAL_NED when used to represent position values. Same as MAV_FRAME_BODY_FRD when used with velocity/accelaration values.</description>
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_MAV_FRD"/>
+        <description>Same as MAV_FRAME_LOCAL_NED when used to represent position values. Same as MAV_FRAME_MAV_FRD when used with velocity/accelaration values.</description>
       </entry>
       <entry value="9" name="MAV_FRAME_BODY_OFFSET_NED">
-        <deprecated since="2019-08" replaced_by="MAV_FRAME_BODY_FRD"/>
-        <description>This is the same as MAV_FRAME_BODY_FRD.</description>
+        <deprecated since="2019-08" replaced_by="MAV_FRAME_MAV_FRD"/>
+        <description>This is the same as MAV_FRAME_MAV_FRD.</description>
       </entry>
       <entry value="10" name="MAV_FRAME_GLOBAL_TERRAIN_ALT">
         <description>Global (WGS84) coordinate frame with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees, second value / y: longitude in degrees, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
@@ -271,7 +271,8 @@
         <description>Global (WGS84) coordinate frame (scaled) with AGL altitude (at the waypoint coordinate). First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
       </entry>
       <entry value="12" name="MAV_FRAME_BODY_FRD">
-        <description>FRD local tangent frame (x: Forward, y: Right, z: Down) with origin that travels with vehicle. The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
+        <deprecated since="2021-11" replaced_by="MAV_FRAME_MAV_FRD"/>
+        <description>Alias of MAV_FRAME_MAV_FRD (Deprecated because _BODY_ implies attitude alignment not origin).</description>
       </entry>
       <entry value="13" name="MAV_FRAME_RESERVED_13">
         <deprecated since="2019-04" replaced_by=""/>
@@ -306,6 +307,10 @@
       </entry>
       <entry value="21" name="MAV_FRAME_LOCAL_FLU">
         <description>FLU local tangent frame (x: Forward, y: Left, z: Up) with origin fixed relative to earth. The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
+      </entry>
+      <entry value="22" name="MAV_FRAME_MAV_FRD">
+        <description>FRD local tangent frame (x: Forward, y: Right, z: Down) with origin that travels with vehicle.
+          The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
       </entry>
     </enum>
     <enum name="MAVLINK_DATA_STREAM_TYPE">
@@ -6584,7 +6589,7 @@
       <extensions/>
       <field type="float" name="increment_f" units="deg">Angular width in degrees of each array element as a float. If non-zero then this value is used instead of the uint8_t increment field. Positive is clockwise direction, negative is counter-clockwise.</field>
       <field type="float" name="angle_offset" units="deg">Relative angle offset of the 0-index element in the distances array. Value of 0 corresponds to forward. Positive is clockwise direction, negative is counter-clockwise.</field>
-      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame of reference for the yaw rotation and offset of the sensor data. Defaults to MAV_FRAME_GLOBAL, which is north aligned. For body-mounted sensors use MAV_FRAME_BODY_FRD, which is vehicle front aligned.</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame of reference for the yaw rotation and offset of the sensor data. Defaults to MAV_FRAME_GLOBAL, which is north aligned. For body-mounted sensors use MAV_FRAME_MAV_FRD, which is vehicle front aligned.</field>
     </message>
     <message id="331" name="ODOMETRY">
       <description>Odometry message to communicate odometry information with an external interface. Fits ROS REP 147 standard for aerial vehicles (http://www.ros.org/reps/rep-0147.html).</description>
