@@ -1024,7 +1024,7 @@
         <param index="4" label="Yaw" units="deg">Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Ground Altitude" units="m">Altitude (ground level)</param>
+        <param index="7" label="Ground Altitude" units="m">Altitude (ground level) relative to the current coordinate frame. NaN to use system default landing altitude (ignore value).</param>
       </entry>
       <!-- IDs 90 and 91 are reserved until the end of 2014,
                     as they were used in some conflicting proposals
@@ -1604,18 +1604,7 @@
         <param index="6">Reserved (set to 0)</param>
         <param index="7">WIP: ID (e.g. camera ID -1 for all IDs)</param>
       </entry>
-      <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Request a target system to start an upgrade of one (or all) of its components. For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller. The system doing the upgrade will report progress using the normal command protocol sequence for a long running operation. Command protocol information: https://mavlink.io/en/services/command.html.</description>
-        <param index="1" label="Component ID" enum="MAV_COMPONENT">Component id of the component to be upgraded. If set to 0, all components should be upgraded.</param>
-        <param index="2" label="Reboot" minValue="0" maxValue="1" increment="1">0: Do not reboot component after the action is executed, 1: Reboot component after the action is executed.</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
-        <param index="5">Reserved</param>
-        <param index="6">Reserved</param>
-        <param index="7">WIP: upgrade progress report rate (can be used for more granular control).</param>
-      </entry>
+      <!-- id "247" reserved for MAV_CMD_DO_UPGRADE in development.xml -->
       <entry value="252" name="MAV_CMD_OVERRIDE_GOTO" hasLocation="true" isDestination="true">
         <description>Override current mission with command to pause mission, pause mission and move to position, continue/resume mission. When param 1 indicates that the mission is paused (MAV_GOTO_DO_HOLD), param 2 defines whether it holds in place or moves to another position.</description>
         <param index="1" label="Continue" enum="MAV_GOTO">MAV_GOTO_DO_HOLD: pause mission and either hold or move to specified position (depending on param2), MAV_GOTO_DO_CONTINUE: resume mission.</param>
@@ -1760,8 +1749,6 @@
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="531" name="MAV_CMD_SET_CAMERA_ZOOM" hasLocation="false" isDestination="false">
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <wip/>
         <description>Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
         <param index="1" label="Zoom Type" enum="CAMERA_ZOOM_TYPE">Zoom type</param>
         <param index="2" label="Zoom Value">Zoom value. The range of valid values depend on the zoom type.</param>
@@ -1770,8 +1757,6 @@
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="532" name="MAV_CMD_SET_CAMERA_FOCUS" hasLocation="false" isDestination="false">
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <wip/>
         <description>Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
         <param index="1" label="Focus Type" enum="SET_FOCUS_TYPE">Focus type</param>
         <param index="2" label="Focus Value">Focus value</param>
@@ -2304,7 +2289,7 @@
         <description>Enable ATTITUDE_CONTROLLER_OUTPUT, POSITION_CONTROLLER_OUTPUT, NAV_CONTROLLER_OUTPUT.</description>
       </entry>
       <entry value="6" name="MAV_DATA_STREAM_POSITION">
-        <description>Enable LOCAL_POSITION, GLOBAL_POSITION/GLOBAL_POSITION_INT messages.</description>
+        <description>Enable LOCAL_POSITION, GLOBAL_POSITION_INT messages.</description>
       </entry>
       <entry value="10" name="MAV_DATA_STREAM_EXTRA1">
         <description>Dependent on the autopilot</description>
@@ -3685,6 +3670,29 @@
         <description>One or more packet data bearers is active and connected</description>
       </entry>
     </enum>
+    <enum name="CELLULAR_NETWORK_FAILED_REASON">
+      <description>These flags are used to diagnose the failure state of CELLULAR_STATUS</description>
+      <entry value="0" name="CELLULAR_NETWORK_FAILED_REASON_NONE">
+        <description>No error</description>
+      </entry>
+      <entry value="1" name="CELLULAR_NETWORK_FAILED_REASON_UNKNOWN">
+        <description>Error state is unknown</description>
+      </entry>
+      <entry value="2" name="CELLULAR_NETWORK_FAILED_REASON_SIM_MISSING">
+        <description>SIM is required for the modem but missing</description>
+      </entry>
+      <entry value="3" name="CELLULAR_NETWORK_FAILED_REASON_SIM_ERROR">
+        <description>SIM is available, but not usuable for connection</description>
+      </entry>
+    </enum>
+    <enum name="CELLULAR_NETWORK_RADIO_TYPE">
+      <description>Cellular network radio type</description>
+      <entry value="0" name="CELLULAR_NETWORK_RADIO_TYPE_NONE"/>
+      <entry value="1" name="CELLULAR_NETWORK_RADIO_TYPE_GSM"/>
+      <entry value="2" name="CELLULAR_NETWORK_RADIO_TYPE_CDMA"/>
+      <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
+      <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
+    </enum>
     <enum name="PRECISION_LAND_MODE">
       <description>Precision land modes (used in MAV_CMD_NAV_LAND).</description>
       <entry value="0" name="PRECISION_LAND_MODE_DISABLED">
@@ -4345,6 +4353,102 @@
         <description>A sequence reset has happened (e.g. vehicle reboot).</description>
       </entry>
     </enum>
+    <enum name="HIL_SENSOR_UPDATED_FLAGS" bitmask="true">
+      <description>Flags in the HIL_SENSOR message indicate which fields have updated since the last message</description>
+      <entry value="0" name="HIL_SENSOR_UPDATED_NONE">
+        <description>None of the fields in HIL_SENSOR have been updated</description>
+      </entry>
+      <entry value="1" name="HIL_SENSOR_UPDATED_XACC">
+        <description>The value in the xacc field has been updated</description>
+      </entry>
+      <entry value="2" name="HIL_SENSOR_UPDATED_YACC">
+        <description>The value in the yacc field has been updated</description>
+      </entry>
+      <entry value="4" name="HIL_SENSOR_UPDATED_ZACC">
+        <description>The value in the zacc field has been updated</description>
+      </entry>
+      <entry value="8" name="HIL_SENSOR_UPDATED_XGYRO">
+        <description>The value in the xgyro field has been updated</description>
+      </entry>
+      <entry value="16" name="HIL_SENSOR_UPDATED_YGYRO">
+        <description>The value in the ygyro field has been updated</description>
+      </entry>
+      <entry value="32" name="HIL_SENSOR_UPDATED_ZGYRO">
+        <description>The value in the zgyro field has been updated</description>
+      </entry>
+      <entry value="64" name="HIL_SENSOR_UPDATED_XMAG">
+        <description>The value in the xmag field has been updated</description>
+      </entry>
+      <entry value="128" name="HIL_SENSOR_UPDATED_YMAG">
+        <description>The value in the ymag field has been updated</description>
+      </entry>
+      <entry value="256" name="HIL_SENSOR_UPDATED_ZMAG">
+        <description>The value in the zmag field has been updated</description>
+      </entry>
+      <entry value="512" name="HIL_SENSOR_UPDATED_ABS_PRESSURE">
+        <description>The value in the abs_pressure field has been updated</description>
+      </entry>
+      <entry value="1024" name="HIL_SENSOR_UPDATED_DIFF_PRESSURE">
+        <description>The value in the diff_pressure field has been updated</description>
+      </entry>
+      <entry value="2048" name="HIL_SENSOR_UPDATED_PRESSURE_ALT">
+        <description>The value in the pressure_alt field has been updated</description>
+      </entry>
+      <entry value="4096" name="HIL_SENSOR_UPDATED_TEMPERATURE">
+        <description>The value in the temperature field has been updated</description>
+      </entry>
+      <entry value="2147483648" name="HIL_SENSOR_UPDATED_RESET">
+        <description>Full reset of attitude/position/velocities/etc was performed in sim (Bit 31).</description>
+      </entry>
+    </enum>
+    <enum name="HIGHRES_IMU_UPDATED_FLAGS" bitmask="true">
+      <description>Flags in the HIGHRES_IMU message indicate which fields have updated since the last message</description>
+      <entry value="0" name="HIGHRES_IMU_UPDATED_NONE">
+        <description>None of the fields in HIGHRES_IMU have been updated</description>
+      </entry>
+      <entry value="1" name="HIGHRES_IMU_UPDATED_XACC">
+        <description>The value in the xacc field has been updated</description>
+      </entry>
+      <entry value="2" name="HIGHRES_IMU_UPDATED_YACC">
+        <description>The value in the yacc field has been updated</description>
+      </entry>
+      <entry value="4" name="HIGHRES_IMU_UPDATED_ZACC">
+        <description>The value in the zacc field has been updated since</description>
+      </entry>
+      <entry value="8" name="HIGHRES_IMU_UPDATED_XGYRO">
+        <description>The value in the xgyro field has been updated</description>
+      </entry>
+      <entry value="16" name="HIGHRES_IMU_UPDATED_YGYRO">
+        <description>The value in the ygyro field has been updated</description>
+      </entry>
+      <entry value="32" name="HIGHRES_IMU_UPDATED_ZGYRO">
+        <description>The value in the zgyro field has been updated</description>
+      </entry>
+      <entry value="64" name="HIGHRES_IMU_UPDATED_XMAG">
+        <description>The value in the xmag field has been updated</description>
+      </entry>
+      <entry value="128" name="HIGHRES_IMU_UPDATED_YMAG">
+        <description>The value in the ymag field has been updated</description>
+      </entry>
+      <entry value="256" name="HIGHRES_IMU_UPDATED_ZMAG">
+        <description>The value in the zmag field has been updated</description>
+      </entry>
+      <entry value="512" name="HIGHRES_IMU_UPDATED_ABS_PRESSURE">
+        <description>The value in the abs_pressure field has been updated</description>
+      </entry>
+      <entry value="1024" name="HIGHRES_IMU_UPDATED_DIFF_PRESSURE">
+        <description>The value in the diff_pressure field has been updated</description>
+      </entry>
+      <entry value="2048" name="HIGHRES_IMU_UPDATED_PRESSURE_ALT">
+        <description>The value in the pressure_alt field has been updated</description>
+      </entry>
+      <entry value="4096" name="HIGHRES_IMU_UPDATED_TEMPERATURE">
+        <description>The value in the temperature field has been updated</description>
+      </entry>
+      <entry value="65535" name="HIGHRES_IMU_UPDATED_ALL">
+        <description>All fields in HIGHRES_IMU have been updated.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -4450,7 +4554,7 @@
     </message>
     <message id="24" name="GPS_RAW_INT">
       <description>The global position, as returned by the Global Positioning System (GPS). This is
-                NOT the global position estimate of the system, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate.</description>
+                NOT the global position estimate of the system, but rather a RAW sensor value. See message GLOBAL_POSITION_INT for the global position estimate.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84, EGM96 ellipsoid)</field>
@@ -4470,7 +4574,7 @@
       <field type="uint16_t" name="yaw" units="cdeg" invalid="0">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use UINT16_MAX if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
     </message>
     <message id="25" name="GPS_STATUS">
-      <description>The positioning status, as reported by GPS. This message is intended to display status information about each satellite visible to the receiver. See message GLOBAL_POSITION for the global position estimate. This message can contain information for up to 20 satellites.</description>
+      <description>The positioning status, as reported by GPS. This message is intended to display status information about each satellite visible to the receiver. See message GLOBAL_POSITION_INT for the global position estimate. This message can contain information for up to 20 satellites.</description>
       <field type="uint8_t" name="satellites_visible">Number of satellites visible</field>
       <field type="uint8_t[20]" name="satellite_prn">Global satellite ID</field>
       <field type="uint8_t[20]" name="satellite_used">0: Satellite not used, 1: used for localization</field>
@@ -5229,7 +5333,7 @@
       <field type="float" name="diff_pressure" units="hPa">Differential pressure</field>
       <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
       <field type="float" name="temperature" units="degC">Temperature</field>
-      <field type="uint16_t" name="fields_updated" display="bitmask">Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature</field>
+      <field type="uint16_t" name="fields_updated" enum="HIGHRES_IMU_UPDATED_FLAGS" display="bitmask">Bitmap for fields that have updated since last message</field>
       <extensions/>
       <field type="uint8_t" name="id" instance="true">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
     </message>
@@ -5264,7 +5368,7 @@
       <field type="float" name="diff_pressure" units="hPa">Differential pressure (airspeed)</field>
       <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
       <field type="float" name="temperature" units="degC">Temperature</field>
-      <field type="uint32_t" name="fields_updated" display="bitmask">Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature, bit 31: full reset of attitude/position/velocities/etc was performed in sim.</field>
+      <field type="uint32_t" name="fields_updated" enum="HIL_SENSOR_UPDATED_FLAGS" display="bitmask">Bitmap for fields that have updated since last message</field>
       <extensions/>
       <field type="uint8_t" name="id">Sensor ID (zero indexed). Used for multiple sensor inputs</field>
     </message>
@@ -5321,7 +5425,7 @@
     </message>
     <message id="113" name="HIL_GPS">
       <description>The global position, as returned by the Global Positioning System (GPS). This is
-                 NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate.</description>
+                 NOT the global position estimate of the sytem, but rather a RAW sensor value. See message GLOBAL_POSITION_INT for the global position estimate.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value of this field unless it is at least two, so always correctly fill in the fix.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
@@ -5471,6 +5575,9 @@
       <field type="uint32_t" name="baudrate" units="bits/s">Baudrate of transfer. Zero means no change.</field>
       <field type="uint8_t" name="count" units="bytes">how many bytes in this transfer</field>
       <field type="uint8_t[70]" name="data">serial data</field>
+      <extensions/>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
     </message>
     <message id="127" name="GPS_RTK">
       <description>RTK GPS data. Gives information on the relative baseline calculation the GPS is reporting</description>
@@ -5698,7 +5805,7 @@
       <field type="uint32_t" name="flight_sw_version">Firmware version number</field>
       <field type="uint32_t" name="middleware_sw_version">Middleware version number</field>
       <field type="uint32_t" name="os_sw_version">Operating system version number</field>
-      <field type="uint32_t" name="board_version">HW / board version (last 8 bytes should be silicon ID, if any)</field>
+      <field type="uint32_t" name="board_version">HW / board version (last 8 bits should be silicon ID, if any). The first 16 bits of this field specify https://github.com/PX4/PX4-Bootloader/blob/master/board_types.txt</field>
       <field type="uint8_t[8]" name="flight_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
       <field type="uint8_t[8]" name="middleware_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
       <field type="uint8_t[8]" name="os_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
@@ -6550,9 +6657,9 @@
       <field type="uint8_t" name="rx_session_pending">1: Receiving session pending, 0: No receiving session pending.</field>
     </message>
     <message id="336" name="CELLULAR_CONFIG">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Configure cellular modems. This message is re-emitted as an acknowledgement by the modem. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE.</description>
+      <description>Configure cellular modems.
+        This message is re-emitted as an acknowledgement by the modem.
+        The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint8_t" name="enable_lte">Enable/disable LTE. 0: setting unchanged, 1: disabled, 2: enabled. Current setting when sent back as a response.</field>
       <field type="uint8_t" name="enable_pin">Enable/disable PIN on the SIM card. 0: setting unchanged, 1: disabled, 2: enabled. Current setting when sent back as a response.</field>
       <field type="char[16]" name="pin">PIN sent to the SIM card. Blank when PIN is disabled. Empty when message is sent back as a response.</field>

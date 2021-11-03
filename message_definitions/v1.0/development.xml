@@ -110,30 +110,20 @@
         <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
       </entry>
     </enum>
-    <enum name="CELLULAR_NETWORK_RADIO_TYPE">
-      <description>Cellular network radio type</description>
-      <entry value="0" name="CELLULAR_NETWORK_RADIO_TYPE_NONE"/>
-      <entry value="1" name="CELLULAR_NETWORK_RADIO_TYPE_GSM"/>
-      <entry value="2" name="CELLULAR_NETWORK_RADIO_TYPE_CDMA"/>
-      <entry value="3" name="CELLULAR_NETWORK_RADIO_TYPE_WCDMA"/>
-      <entry value="4" name="CELLULAR_NETWORK_RADIO_TYPE_LTE"/>
-    </enum>
-    <enum name="CELLULAR_NETWORK_FAILED_REASON">
-      <description>These flags are used to diagnose the failure state of CELLULAR_STATUS</description>
-      <entry value="0" name="CELLULAR_NETWORK_FAILED_REASON_NONE">
-        <description>No error</description>
-      </entry>
-      <entry value="1" name="CELLULAR_NETWORK_FAILED_REASON_UNKNOWN">
-        <description>Error state is unknown</description>
-      </entry>
-      <entry value="2" name="CELLULAR_NETWORK_FAILED_REASON_SIM_MISSING">
-        <description>SIM is required for the modem but missing</description>
-      </entry>
-      <entry value="3" name="CELLULAR_NETWORK_FAILED_REASON_SIM_ERROR">
-        <description>SIM is available, but not usuable for connection</description>
-      </entry>
-    </enum>
     <enum name="MAV_CMD">
+      <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
+        <description>Request a target system to start an upgrade of one (or all) of its components.
+          For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller.
+          The system doing the upgrade will report progress using the normal command protocol sequence for a long running operation.
+          Command protocol information: https://mavlink.io/en/services/command.html.</description>
+        <param index="1" label="Component ID" enum="MAV_COMPONENT">Component id of the component to be upgraded. If set to 0, all components should be upgraded.</param>
+        <param index="2" label="Reboot" minValue="0" maxValue="1" increment="1">0: Do not reboot component after the action is executed, 1: Reboot component after the action is executed.</param>
+        <param index="3">Reserved</param>
+        <param index="4">Reserved</param>
+        <param index="5">Reserved</param>
+        <param index="6">Reserved</param>
+        <param index="7">WIP: upgrade progress report rate (can be used for more granular control).</param>
+      </entry>
       <entry value="301" name="MAV_CMD_GROUP_START" hasLocation="false" isDestination="false">
         <description>Define start of a group of mission items. When control reaches this command a GROUP_START message is emitted.
           The end of a group is marked using MAV_CMD_GROUP_END with the same group id.

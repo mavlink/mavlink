@@ -122,6 +122,24 @@ def strip_text_before_string(original_text,strip_text):
         stripped_string = stripped_string[index:] 
     return stripped_string
     
+def fix_add_implicit_links_items(input_html):
+    # Makes screaming snake case into anchors. Special fix for MAV_CMD.
+    #print("fix_add_implicit_link was called")
+    def make_text_to_link(matchobj):
+        #print("make_entry_to_link was called: %s" % matchobj.group(0))
+        item_string = matchobj.group(1)
+        item_url=item_string
+        if item_string == 'MAV_CMD':
+            item_url='mav_commands'
+        returnString = ' <a href="#%s">%s</a>%s' % (item_url,item_string,matchobj.group(2))
+        #print("returnstring: %s" % returnString)
+        return returnString
+
+    #input_html=re.sub(r'\s[A-Z0-9]{2,}(?:_[A-Z0-9]+)*', make_text_to_link, input_html,flags=re.DOTALL)
+    input_html=re.sub(r'\s([A-Z]{2,}(?:_[A-Z0-9]+)+)([\s\.,:])', make_text_to_link, input_html,flags=re.DOTALL)
+    return input_html
+    
+    
 def inject_top_level_docs(input_html,filename):
     #Inject top level heading and other details.
     print('FILENAME (prefix): %s' % filename)
@@ -184,7 +202,7 @@ This ensure that:
 > **Warning** New dialect files in the official repository must be added to **all.xml** and restrict themselves to using ids in their own allocated range.
   A few older dialects are not included because these operate in completely closed networks or because they are only used for tests.
   
-This topic is a human-readable form of the XML definition file: [development.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
+This topic is a human-readable form of the XML definition file: [all.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
 """
     else:
         insert_text+='\n# Dialect: %s' % filename.rsplit('.',1)[0]
@@ -253,7 +271,10 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
 
             #Fix up links to external dialects to not be links
             prettyHTML = fix_external_dialect_link(prettyHTML)
-
+            
+            #Fix up plain text mav symbols to be internal links
+            prettyHTML = fix_add_implicit_links_items(prettyHTML)     
+            
             
             #Write output html file
             output_file_name_html = file.rsplit('.',1)[0]+".html"
