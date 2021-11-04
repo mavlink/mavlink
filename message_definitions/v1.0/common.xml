@@ -449,7 +449,7 @@
       </entry>
     </enum>
     <enum name="GIMBAL_MANAGER_CAP_FLAGS" bitmask="true">
-      <description>Gimbal manager high level capability flags (bitmap). The first 16 bits are identical to the GIMBAL_DEVICE_CAP_FLAGS which are identical with GIMBAL_DEVICE_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
+      <description>Gimbal manager high level capability flags (bitmap). The first 16 bits are identical to the GIMBAL_DEVICE_CAP_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
       <entry value="1" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_RETRACT">
         <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT.</description>
       </entry>
@@ -512,7 +512,7 @@
       </entry>
     </enum>
     <enum name="GIMBAL_MANAGER_FLAGS" bitmask="true">
-      <description>Flags for high level gimbal manager operation The first 16 bytes are identical to the GIMBAL_DEVICE_FLAGS.</description>
+      <description>Flags for high level gimbal manager operation The first 16 bits are identical to the GIMBAL_DEVICE_FLAGS.</description>
       <entry value="1" name="GIMBAL_MANAGER_FLAGS_RETRACT">
         <description>Based on GIMBAL_DEVICE_FLAGS_RETRACT</description>
       </entry>
@@ -6407,7 +6407,7 @@
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal device component. The angles encoded in the quaternion are in the global frame (roll: positive is rolling to the right, pitch: positive is pitching up, yaw is turn to the right). This message should be broadcast at a low regular rate (e.g. 10Hz).</description>
+      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal device component. The angles encoded in the quaternion are relative to absolute North if the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set (roll: positive is rolling to the right, pitch: positive is pitching up, yaw is turn to the right) or relative to the vehicle heading if the flag is not set. This message should be broadcast at a low regular rate (e.g. 10Hz).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
