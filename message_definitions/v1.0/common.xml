@@ -820,6 +820,129 @@
         <description>Meta data for actuator configuration (motors, servos and vehicle geometry) and testing.</description>
       </entry>
     </enum>
+    <enum name="ACTUATOR_CONFIGURATION">
+      <description>Actuator configuration, used to change a setting on an actuator. Component information metadata can be used to know which outputs support which commands.</description>
+      <entry value="0" name="ACTUATOR_CONFIGURATION_NONE">
+        <description>Do nothing.</description>
+      </entry>
+      <entry value="1" name="ACTUATOR_CONFIGURATION_BEEP">
+        <description>Command the actuator to beep now.</description>
+      </entry>
+      <entry value="2" name="ACTUATOR_CONFIGURATION_3D_MODE_ON">
+        <description>Permanently set the actuator (ESC) to 3D mode (reversible thrust).</description>
+      </entry>
+      <entry value="3" name="ACTUATOR_CONFIGURATION_3D_MODE_OFF">
+        <description>Permanently set the actuator (ESC) to non 3D mode (non-reversible thrust).</description>
+      </entry>
+      <entry value="4" name="ACTUATOR_CONFIGURATION_SPIN_DIRECTION1">
+        <description>Permanently set the actuator (ESC) to spin direction 1 (which can be clockwise or counter-clockwise).</description>
+      </entry>
+      <entry value="5" name="ACTUATOR_CONFIGURATION_SPIN_DIRECTION2">
+        <description>Permanently set the actuator (ESC) to spin direction 2 (opposite of direction 1).</description>
+      </entry>
+    </enum>
+    <enum name="ACTUATOR_OUTPUT_FUNCTION">
+      <description>Actuator output function. Values greater or equal to 1000 are autopilot-specific.</description>
+      <entry value="0" name="ACTUATOR_OUTPUT_FUNCTION_NONE">
+        <description>No function (disabled).</description>
+      </entry>
+      <entry value="1" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR1">
+        <description>Motor 1</description>
+      </entry>
+      <entry value="2" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR2">
+        <description>Motor 2</description>
+      </entry>
+      <entry value="3" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR3">
+        <description>Motor 3</description>
+      </entry>
+      <entry value="4" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR4">
+        <description>Motor 4</description>
+      </entry>
+      <entry value="5" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR5">
+        <description>Motor 5</description>
+      </entry>
+      <entry value="6" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR6">
+        <description>Motor 6</description>
+      </entry>
+      <entry value="7" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR7">
+        <description>Motor 7</description>
+      </entry>
+      <entry value="8" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR8">
+        <description>Motor 8</description>
+      </entry>
+      <entry value="9" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR9">
+        <description>Motor 9</description>
+      </entry>
+      <entry value="10" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR10">
+        <description>Motor 10</description>
+      </entry>
+      <entry value="11" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR11">
+        <description>Motor 11</description>
+      </entry>
+      <entry value="12" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR12">
+        <description>Motor 12</description>
+      </entry>
+      <entry value="13" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR13">
+        <description>Motor 13</description>
+      </entry>
+      <entry value="14" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR14">
+        <description>Motor 14</description>
+      </entry>
+      <entry value="15" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR15">
+        <description>Motor 15</description>
+      </entry>
+      <entry value="16" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR16">
+        <description>Motor 16</description>
+      </entry>
+      <entry value="33" name="ACTUATOR_OUTPUT_FUNCTION_SERVO1">
+        <description>Servo 1</description>
+      </entry>
+      <entry value="34" name="ACTUATOR_OUTPUT_FUNCTION_SERVO2">
+        <description>Servo 2</description>
+      </entry>
+      <entry value="35" name="ACTUATOR_OUTPUT_FUNCTION_SERVO3">
+        <description>Servo 3</description>
+      </entry>
+      <entry value="36" name="ACTUATOR_OUTPUT_FUNCTION_SERVO4">
+        <description>Servo 4</description>
+      </entry>
+      <entry value="37" name="ACTUATOR_OUTPUT_FUNCTION_SERVO5">
+        <description>Servo 5</description>
+      </entry>
+      <entry value="38" name="ACTUATOR_OUTPUT_FUNCTION_SERVO6">
+        <description>Servo 6</description>
+      </entry>
+      <entry value="39" name="ACTUATOR_OUTPUT_FUNCTION_SERVO7">
+        <description>Servo 7</description>
+      </entry>
+      <entry value="40" name="ACTUATOR_OUTPUT_FUNCTION_SERVO8">
+        <description>Servo 8</description>
+      </entry>
+      <entry value="41" name="ACTUATOR_OUTPUT_FUNCTION_SERVO9">
+        <description>Servo 9</description>
+      </entry>
+      <entry value="42" name="ACTUATOR_OUTPUT_FUNCTION_SERVO10">
+        <description>Servo 10</description>
+      </entry>
+      <entry value="43" name="ACTUATOR_OUTPUT_FUNCTION_SERVO11">
+        <description>Servo 11</description>
+      </entry>
+      <entry value="44" name="ACTUATOR_OUTPUT_FUNCTION_SERVO12">
+        <description>Servo 12</description>
+      </entry>
+      <entry value="45" name="ACTUATOR_OUTPUT_FUNCTION_SERVO13">
+        <description>Servo 13</description>
+      </entry>
+      <entry value="46" name="ACTUATOR_OUTPUT_FUNCTION_SERVO14">
+        <description>Servo 14</description>
+      </entry>
+      <entry value="47" name="ACTUATOR_OUTPUT_FUNCTION_SERVO15">
+        <description>Servo 15</description>
+      </entry>
+      <entry value="48" name="ACTUATOR_OUTPUT_FUNCTION_SERVO16">
+        <description>Servo 16</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -1632,6 +1755,26 @@
         <description>start running a mission</description>
         <param index="1" label="First Item" minValue="0" increment="1">first_item: the first mission item to run</param>
         <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
+      </entry>
+      <entry value="310" name="MAV_CMD_ACTUATOR_TEST" hasLocation="false" isDestination="false">
+        <description>Actuator testing command. This is similar to MAV_CMD_DO_MOTOR_TEST but operates on the level of output functions, i.e. it is possible to test Motor1 independent from which output it is configured on. Autopilots typically refuse this command while armed.</description>
+        <param index="1" label="Value" minValue="-1" maxValue="1">Output value: 1 means maximum positive output, 0 to center servos or minimum motor thrust (expected to spin), -1 for maximum negative (if not supported by the motors, i.e. motor is not reversible, smaller than 0 maps to NaN). And NaN maps to disarmed (stop the motors).</param>
+        <param index="2" label="Timeout" units="s" minValue="0" maxValue="3">Timeout after which the test command expires and the output is restored to the previous value. A timeout has to be set for safety reasons. A timeout of 0 means to restore the previous value immediately.</param>
+        <param index="3" reserved="true" default="0"/>
+        <param index="4" reserved="true" default="0"/>
+        <param index="5" label="Output Function" enum="ACTUATOR_OUTPUT_FUNCTION">Actuator Output function</param>
+        <param index="6" reserved="true" default="0"/>
+        <param index="7" reserved="true" default="0"/>
+      </entry>
+      <entry value="311" name="MAV_CMD_CONFIGURE_ACTUATOR" hasLocation="false" isDestination="false">
+        <description>Actuator configuration command.</description>
+        <param index="1" label="Configuration" enum="ACTUATOR_CONFIGURATION">Actuator configuration action</param>
+        <param index="2" reserved="true" default="0"/>
+        <param index="3" reserved="true" default="0"/>
+        <param index="4" reserved="true" default="0"/>
+        <param index="5" label="Output Function" enum="ACTUATOR_OUTPUT_FUNCTION">Actuator Output function</param>
+        <param index="6" reserved="true" default="0"/>
+        <param index="7" reserved="true" default="0"/>
       </entry>
       <entry value="400" name="MAV_CMD_COMPONENT_ARM_DISARM" hasLocation="false" isDestination="false">
         <description>Arms / Disarms a component</description>
