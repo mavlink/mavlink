@@ -466,7 +466,7 @@ Documentation:
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="flags" enum="MAV_STORM32_GIMBAL_DEVICE_FLAGS" invalid="UINT16_MAX">Gimbal device flags (UINT16_MAX to be ignored).</field>
-      <field type="float[4]" name="q" invalid="[NaN,]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
+      <field type="float[4]" name="q" invalid="[NaN:]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, set first element to NaN to be ignored).</field>
       <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (positive: roll to the right, NaN to be ignored).</field>
       <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (positive: tilt up, NaN to be ignored).</field>
       <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
@@ -505,7 +505,7 @@ Documentation:
       <field type="uint8_t" name="client" enum="MAV_STORM32_GIMBAL_MANAGER_CLIENT">Client which is contacting the gimbal manager (must be set).</field>
       <field type="uint16_t" name="device_flags" enum="MAV_STORM32_GIMBAL_DEVICE_FLAGS" invalid="UINT16_MAX">Gimbal device flags (UINT16_MAX to be ignored).</field>
       <field type="uint16_t" name="manager_flags" enum="MAV_STORM32_GIMBAL_MANAGER_FLAGS" invalid="0">Gimbal manager flags (0 to be ignored).</field>
-      <field type="float[4]" name="q" invalid="[NaN,]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is determined by the GIMBAL_MANAGER_FLAGS_ABSOLUTE_YAW flag, NaN to be ignored).</field>
+      <field type="float[4]" name="q" invalid="[NaN:]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is determined by the GIMBAL_MANAGER_FLAGS_ABSOLUTE_YAW flag, set first element to NaN to be ignored).</field>
       <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (positive: roll to the right, NaN to be ignored).</field>
       <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (positive: tilt up, NaN to be ignored).</field>
       <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: pan to the right, the frame is determined by the STORM32_GIMBAL_DEVICE_FLAGS_YAW_ABSOLUTE flag, NaN to be ignored).</field>
