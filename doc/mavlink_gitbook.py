@@ -135,8 +135,7 @@ def fix_add_implicit_links_items(input_html):
         #print("returnstring: %s" % returnString)
         return returnString
 
-    #input_html=re.sub(r'\s[A-Z0-9]{2,}(?:_[A-Z0-9]+)*', make_text_to_link, input_html,flags=re.DOTALL)
-    input_html=re.sub(r'([\`\(\s,])([A-Z]{2,}(?:_[A-Z0-9]+)+)([\`\)\s\.,:])', make_text_to_link, input_html,flags=re.DOTALL)
+    input_html=re.sub(r'([\`\(\s,]|^)([A-Z]{2,}(?:_[A-Z0-9]+)+)([\`\)\s\.,:]|$)', make_text_to_link, input_html,flags=re.DOTALL)
     return input_html
     
     
