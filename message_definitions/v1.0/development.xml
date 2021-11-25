@@ -141,6 +141,27 @@
           Group id is limited because only 24 bit integer can be stored in 32 bit float.</param>
       </entry>
     </enum>
+    <enum name="COMPONENT_CAP_FLAGS1" bitmask="true">
+      <description>Component capability flags 1 (Bitmap)</description>
+      <entry value="1" name="COMPONENT_CAP_FLAGS1_PARAM">
+        <description>Component has parameters, and supports the parameter protocol (PARAM messages).</description>
+      </entry>
+      <entry value="2" name="COMPONENT_CAP_FLAGS1_PARAM_EXT">
+        <description>Component has parameters, and supports the extended parameter protocol (PARAM_EXT messages).</description>
+      </entry>
+      <entry value="4" name="COMPONENT_CAP_FLAGS1_COMPONENT_INFORMATION">
+        <description>Component supports the component information protocol.</description>
+      </entry>
+      <entry value="8" name="COMPONENT_CAP_FLAGS1_GIMBAL_V2">
+        <description>Component supports the gimbal v2 protocol.</description>
+      </entry>
+      <entry value="16" name="COMPONENT_CAP_FLAGS1_MAVLINK_FTP">
+        <description>Component supports the MAVLink FTP protocol.</description>
+      </entry>
+      <entry value="32" name="COMPONENT_CAP_FLAGS1_EVENTS_INTERFACE">
+        <description>Component supports the events interface protocol.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
@@ -193,6 +214,15 @@
       <field type="uint8_t" name="signal_quality" units="%">WiFi network signal quality.</field>
       <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
       <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
+    </message>
+    <message id="396" name="COMPONENT_INFORMATION_BASIC">
+      <description>Basic component information data.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t[32]" name="vendor_name">Name of the component vendor</field>
+      <field type="uint8_t[32]" name="model_name">Name of the component model</field>
+      <field type="char[24]" name="software_version">Sofware version. The version format can be custom, recommended is SEMVER 'major.minor.patch'.</field>
+      <field type="char[24]" name="hardware_version">Hardware version. The version format can be custom, recommended is SEMVER 'major.minor.patch'.</field>
+      <field type="uint64_t" name="component_cap_flags1" enum="COMPONENT_CAP_FLAGS1" display="bitmask">Component capability flags 1 (this is called 1, so that number 2 could be added in the future).</field>
     </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>

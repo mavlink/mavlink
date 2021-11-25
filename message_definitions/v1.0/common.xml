@@ -219,16 +219,16 @@
       <description>Co-ordinate frames used by MAVLink. Not all frames are supported by all commands, messages, or vehicles.
       
       Global frames use the following naming conventions:
-      - `GLOBAL`: Global co-ordinate frame with WGS84 latitude/longitude and altitude positive over mean sea level (MSL) by default. 
-        The following modifiers may be used with `GLOBAL`:
-        - `RELATIVE_ALT`: Altitude is relative to the vehicle home position rather than MSL
-        - `TERRAIN_ALT`: Altitude is relative to ground level rather than MSL
-        - `INT`: Latitude/longitude (in degrees) are scaled by multiplying by 1E7  
+      - "GLOBAL": Global co-ordinate frame with WGS84 latitude/longitude and altitude positive over mean sea level (MSL) by default. 
+        The following modifiers may be used with "GLOBAL":
+        - "RELATIVE_ALT": Altitude is relative to the vehicle home position rather than MSL.
+        - "TERRAIN_ALT": Altitude is relative to ground level rather than MSL.
+        - "INT": Latitude/longitude (in degrees) are scaled by multiplying by 1E7.
 
       Local frames use the following naming conventions:
-      - `LOCAL`: Origin of local frame is fixed relative to earth. Unless otherwise specified this origin is the origin of the vehicle position-estimator ("EKF").
-      - `BODY`: Origin of local frame travels with the vehicle. NOTE, `BODY` does NOT indicate alignment of frame axis with vehicle attitude.
-      - `OFFSET`: Deprecated synonym for `BODY` (origin travels with the vehicle). Not to be used for new frames.
+      - "LOCAL": Origin of local frame is fixed relative to earth. Unless otherwise specified this origin is the origin of the vehicle position-estimator ("EKF").
+      - "BODY": Origin of local frame travels with the vehicle. NOTE, "BODY" does NOT indicate alignment of frame axis with vehicle attitude.
+      - "OFFSET": Deprecated synonym for "BODY" (origin travels with the vehicle). Not to be used for new frames.
 
       Some deprecated frames do not follow these conventions (e.g. MAV_FRAME_BODY_NED and MAV_FRAME_BODY_OFFSET_NED).
  </description>
@@ -449,7 +449,7 @@
       </entry>
     </enum>
     <enum name="GIMBAL_MANAGER_CAP_FLAGS" bitmask="true">
-      <description>Gimbal manager high level capability flags (bitmap). The first 16 bits are identical to the GIMBAL_DEVICE_CAP_FLAGS which are identical with GIMBAL_DEVICE_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
+      <description>Gimbal manager high level capability flags (bitmap). The first 16 bits are identical to the GIMBAL_DEVICE_CAP_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
       <entry value="1" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_RETRACT">
         <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT.</description>
       </entry>
@@ -512,7 +512,7 @@
       </entry>
     </enum>
     <enum name="GIMBAL_MANAGER_FLAGS" bitmask="true">
-      <description>Flags for high level gimbal manager operation The first 16 bytes are identical to the GIMBAL_DEVICE_FLAGS.</description>
+      <description>Flags for high level gimbal manager operation The first 16 bits are identical to the GIMBAL_DEVICE_FLAGS.</description>
       <entry value="1" name="GIMBAL_MANAGER_FLAGS_RETRACT">
         <description>Based on GIMBAL_DEVICE_FLAGS_RETRACT</description>
       </entry>
@@ -713,9 +713,9 @@
       </entry>
     </enum>
     <enum name="STORAGE_USAGE_FLAG">
-      <description>Flags to indicate usage for a particular storage (see `STORAGE_INFORMATION.storage_usage` and `MAV_CMD_SET_STORAGE_USAGE`).</description>
+      <description>Flags to indicate usage for a particular storage (see STORAGE_INFORMATION.storage_usage and MAV_CMD_SET_STORAGE_USAGE).</description>
       <entry value="1" name="STORAGE_USAGE_FLAG_SET">
-        <description>Always set to 1 (indicates `STORAGE_INFORMATION.storage_usage` is supported).</description>
+        <description>Always set to 1 (indicates STORAGE_INFORMATION.storage_usage is supported).</description>
       </entry>
       <entry value="2" name="STORAGE_USAGE_FLAG_PHOTO">
         <description>Storage for saving photos.</description>
@@ -815,6 +815,132 @@
       </entry>
       <entry value="4" name="COMP_METADATA_TYPE_EVENTS">
         <description>Meta data for the events interface.</description>
+      </entry>
+      <entry value="5" name="COMP_METADATA_TYPE_ACTUATORS">
+        <description>Meta data for actuator configuration (motors, servos and vehicle geometry) and testing.</description>
+      </entry>
+    </enum>
+    <enum name="ACTUATOR_CONFIGURATION">
+      <description>Actuator configuration, used to change a setting on an actuator. Component information metadata can be used to know which outputs support which commands.</description>
+      <entry value="0" name="ACTUATOR_CONFIGURATION_NONE">
+        <description>Do nothing.</description>
+      </entry>
+      <entry value="1" name="ACTUATOR_CONFIGURATION_BEEP">
+        <description>Command the actuator to beep now.</description>
+      </entry>
+      <entry value="2" name="ACTUATOR_CONFIGURATION_3D_MODE_ON">
+        <description>Permanently set the actuator (ESC) to 3D mode (reversible thrust).</description>
+      </entry>
+      <entry value="3" name="ACTUATOR_CONFIGURATION_3D_MODE_OFF">
+        <description>Permanently set the actuator (ESC) to non 3D mode (non-reversible thrust).</description>
+      </entry>
+      <entry value="4" name="ACTUATOR_CONFIGURATION_SPIN_DIRECTION1">
+        <description>Permanently set the actuator (ESC) to spin direction 1 (which can be clockwise or counter-clockwise).</description>
+      </entry>
+      <entry value="5" name="ACTUATOR_CONFIGURATION_SPIN_DIRECTION2">
+        <description>Permanently set the actuator (ESC) to spin direction 2 (opposite of direction 1).</description>
+      </entry>
+    </enum>
+    <enum name="ACTUATOR_OUTPUT_FUNCTION">
+      <description>Actuator output function. Values greater or equal to 1000 are autopilot-specific.</description>
+      <entry value="0" name="ACTUATOR_OUTPUT_FUNCTION_NONE">
+        <description>No function (disabled).</description>
+      </entry>
+      <entry value="1" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR1">
+        <description>Motor 1</description>
+      </entry>
+      <entry value="2" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR2">
+        <description>Motor 2</description>
+      </entry>
+      <entry value="3" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR3">
+        <description>Motor 3</description>
+      </entry>
+      <entry value="4" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR4">
+        <description>Motor 4</description>
+      </entry>
+      <entry value="5" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR5">
+        <description>Motor 5</description>
+      </entry>
+      <entry value="6" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR6">
+        <description>Motor 6</description>
+      </entry>
+      <entry value="7" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR7">
+        <description>Motor 7</description>
+      </entry>
+      <entry value="8" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR8">
+        <description>Motor 8</description>
+      </entry>
+      <entry value="9" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR9">
+        <description>Motor 9</description>
+      </entry>
+      <entry value="10" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR10">
+        <description>Motor 10</description>
+      </entry>
+      <entry value="11" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR11">
+        <description>Motor 11</description>
+      </entry>
+      <entry value="12" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR12">
+        <description>Motor 12</description>
+      </entry>
+      <entry value="13" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR13">
+        <description>Motor 13</description>
+      </entry>
+      <entry value="14" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR14">
+        <description>Motor 14</description>
+      </entry>
+      <entry value="15" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR15">
+        <description>Motor 15</description>
+      </entry>
+      <entry value="16" name="ACTUATOR_OUTPUT_FUNCTION_MOTOR16">
+        <description>Motor 16</description>
+      </entry>
+      <entry value="33" name="ACTUATOR_OUTPUT_FUNCTION_SERVO1">
+        <description>Servo 1</description>
+      </entry>
+      <entry value="34" name="ACTUATOR_OUTPUT_FUNCTION_SERVO2">
+        <description>Servo 2</description>
+      </entry>
+      <entry value="35" name="ACTUATOR_OUTPUT_FUNCTION_SERVO3">
+        <description>Servo 3</description>
+      </entry>
+      <entry value="36" name="ACTUATOR_OUTPUT_FUNCTION_SERVO4">
+        <description>Servo 4</description>
+      </entry>
+      <entry value="37" name="ACTUATOR_OUTPUT_FUNCTION_SERVO5">
+        <description>Servo 5</description>
+      </entry>
+      <entry value="38" name="ACTUATOR_OUTPUT_FUNCTION_SERVO6">
+        <description>Servo 6</description>
+      </entry>
+      <entry value="39" name="ACTUATOR_OUTPUT_FUNCTION_SERVO7">
+        <description>Servo 7</description>
+      </entry>
+      <entry value="40" name="ACTUATOR_OUTPUT_FUNCTION_SERVO8">
+        <description>Servo 8</description>
+      </entry>
+      <entry value="41" name="ACTUATOR_OUTPUT_FUNCTION_SERVO9">
+        <description>Servo 9</description>
+      </entry>
+      <entry value="42" name="ACTUATOR_OUTPUT_FUNCTION_SERVO10">
+        <description>Servo 10</description>
+      </entry>
+      <entry value="43" name="ACTUATOR_OUTPUT_FUNCTION_SERVO11">
+        <description>Servo 11</description>
+      </entry>
+      <entry value="44" name="ACTUATOR_OUTPUT_FUNCTION_SERVO12">
+        <description>Servo 12</description>
+      </entry>
+      <entry value="45" name="ACTUATOR_OUTPUT_FUNCTION_SERVO13">
+        <description>Servo 13</description>
+      </entry>
+      <entry value="46" name="ACTUATOR_OUTPUT_FUNCTION_SERVO14">
+        <description>Servo 14</description>
+      </entry>
+      <entry value="47" name="ACTUATOR_OUTPUT_FUNCTION_SERVO15">
+        <description>Servo 15</description>
+      </entry>
+      <entry value="48" name="ACTUATOR_OUTPUT_FUNCTION_SERVO16">
+        <description>Servo 16</description>
       </entry>
     </enum>
     <!-- The MAV_CMD enum entries describe either: -->
@@ -1629,6 +1755,26 @@
         <description>start running a mission</description>
         <param index="1" label="First Item" minValue="0" increment="1">first_item: the first mission item to run</param>
         <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
+      </entry>
+      <entry value="310" name="MAV_CMD_ACTUATOR_TEST" hasLocation="false" isDestination="false">
+        <description>Actuator testing command. This is similar to MAV_CMD_DO_MOTOR_TEST but operates on the level of output functions, i.e. it is possible to test Motor1 independent from which output it is configured on. Autopilots typically refuse this command while armed.</description>
+        <param index="1" label="Value" minValue="-1" maxValue="1">Output value: 1 means maximum positive output, 0 to center servos or minimum motor thrust (expected to spin), -1 for maximum negative (if not supported by the motors, i.e. motor is not reversible, smaller than 0 maps to NaN). And NaN maps to disarmed (stop the motors).</param>
+        <param index="2" label="Timeout" units="s" minValue="0" maxValue="3">Timeout after which the test command expires and the output is restored to the previous value. A timeout has to be set for safety reasons. A timeout of 0 means to restore the previous value immediately.</param>
+        <param index="3" reserved="true" default="0"/>
+        <param index="4" reserved="true" default="0"/>
+        <param index="5" label="Output Function" enum="ACTUATOR_OUTPUT_FUNCTION">Actuator Output function</param>
+        <param index="6" reserved="true" default="0"/>
+        <param index="7" reserved="true" default="0"/>
+      </entry>
+      <entry value="311" name="MAV_CMD_CONFIGURE_ACTUATOR" hasLocation="false" isDestination="false">
+        <description>Actuator configuration command.</description>
+        <param index="1" label="Configuration" enum="ACTUATOR_CONFIGURATION">Actuator configuration action</param>
+        <param index="2" reserved="true" default="0"/>
+        <param index="3" reserved="true" default="0"/>
+        <param index="4" reserved="true" default="0"/>
+        <param index="5" label="Output Function" enum="ACTUATOR_OUTPUT_FUNCTION">Actuator Output function</param>
+        <param index="6" reserved="true" default="0"/>
+        <param index="7" reserved="true" default="0"/>
       </entry>
       <entry value="400" name="MAV_CMD_COMPONENT_ARM_DISARM" hasLocation="false" isDestination="false">
         <description>Arms / Disarms a component</description>
@@ -3465,6 +3611,15 @@
       <entry value="3" name="FOCUS_TYPE_METERS">
         <description>Focus value in metres. Note that there is no message to get the valid focus range of the camera, so this can type can only be used for cameras where the range is known (implying that this cannot reliably be used in a GCS for an arbitrary camera).</description>
       </entry>
+      <entry value="4" name="FOCUS_TYPE_AUTO">
+        <description>Focus automatically.</description>
+      </entry>
+      <entry value="5" name="FOCUS_TYPE_AUTO_SINGLE">
+        <description>Single auto focus. Mainly used for still pictures. Usually abbreviated as AF-S.</description>
+      </entry>
+      <entry value="6" name="FOCUS_TYPE_AUTO_CONTINUOUS">
+        <description>Continuous auto focus. Mainly used for dynamic scenes. Abbreviated as AF-C.</description>
+      </entry>
     </enum>
     <enum name="PARAM_ACK">
       <description>Result from PARAM_EXT_SET message (or a PARAM_SET within a transaction).</description>
@@ -4069,15 +4224,6 @@
       </entry>
       <entry value="2" name="TUNE_FORMAT_MML_MODERN">
         <description>Format is Modern Music Markup Language (MML): https://en.wikipedia.org/wiki/Music_Macro_Language#Modern_MML.</description>
-      </entry>
-    </enum>
-    <enum name="COMPONENT_CAP_FLAGS" bitmask="true">
-      <description>Component capability flags (Bitmap)</description>
-      <entry value="1" name="COMPONENT_CAP_FLAGS_PARAM">
-        <description>Component has parameters, and supports the parameter protocol (PARAM messages).</description>
-      </entry>
-      <entry value="2" name="COMPONENT_CAP_FLAGS_PARAM_EXT">
-        <description>Component has parameters, and supports the extended parameter protocol (PARAM_EXT messages).</description>
       </entry>
     </enum>
     <!-- AIS related enums-->
@@ -4885,7 +5031,7 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
-      <field type="float[9]" name="covariance" invalid="[NaN,]">Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[9]" name="covariance" invalid="[NaN:]">Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="62" name="NAV_CONTROLLER_OUTPUT">
       <description>The state of the navigation and position controller.</description>
@@ -4909,7 +5055,7 @@
       <field type="float" name="vx" units="m/s">Ground X Speed (Latitude)</field>
       <field type="float" name="vy" units="m/s">Ground Y Speed (Longitude)</field>
       <field type="float" name="vz" units="m/s">Ground Z Speed (Altitude)</field>
-      <field type="float[36]" name="covariance" invalid="[NaN,]">Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[36]" name="covariance" invalid="[NaN:]">Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="64" name="LOCAL_POSITION_NED_COV">
       <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
@@ -4924,7 +5070,7 @@
       <field type="float" name="ax" units="m/s/s">X Acceleration</field>
       <field type="float" name="ay" units="m/s/s">Y Acceleration</field>
       <field type="float" name="az" units="m/s/s">Z Acceleration</field>
-      <field type="float[45]" name="covariance" invalid="[NaN,]">Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[45]" name="covariance" invalid="[NaN:]">Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="65" name="RC_CHANNELS">
       <description>The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.  A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
@@ -5279,7 +5425,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x_global, y_global, z_global, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN:]">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x_global, y_global, z_global, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="102" name="VISION_POSITION_ESTIMATE">
@@ -5292,7 +5438,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN:]">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="103" name="VISION_SPEED_ESTIMATE">
@@ -5302,7 +5448,7 @@
       <field type="float" name="y" units="m/s">Global Y speed</field>
       <field type="float" name="z" units="m/s">Global Z speed</field>
       <extensions/>
-      <field type="float[9]" name="covariance" invalid="[NaN,]">Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[9]" name="covariance" invalid="[NaN:]">Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
     </message>
     <message id="104" name="VICON_POSITION_ESTIMATE">
@@ -5315,7 +5461,7 @@
       <field type="float" name="pitch" units="rad">Pitch angle</field>
       <field type="float" name="yaw" units="rad">Yaw angle</field>
       <extensions/>
-      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN:]">Row-major representation of 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="105" name="HIGHRES_IMU">
       <description>The IMU readings in SI units in NED body frame</description>
@@ -5704,7 +5850,7 @@
       <field type="float" name="y" units="m">Y position (NED)</field>
       <field type="float" name="z" units="m">Z position (NED)</field>
       <extensions/>
-      <field type="float[21]" name="covariance" invalid="[NaN,]">Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="covariance" invalid="[NaN:]">Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
     <message id="139" name="SET_ACTUATOR_CONTROL_TARGET">
       <description>Set the vehicle attitude and body angular rates.</description>
@@ -6190,7 +6336,7 @@
       <field type="char[32]" name="name">Textual storage name to be used in UI (microSD 1, Internal Memory, etc.) This is a NULL terminated string. If it is exactly 32 characters long, add a terminating NULL. If this string is empty, the generic type is shown to the user.</field>
       <field type="uint8_t" name="storage_usage" enum="STORAGE_USAGE_FLAG">Flags indicating whether this instance is preferred storage for photos, videos, etc.
         Note: Implementations should initially set the flags on the system-default storage id used for saving media (if possible/supported).
-        This setting can then be overridden using `MAV_CMD_SET_STORAGE_USAGE`.
+        This setting can then be overridden using MAV_CMD_SET_STORAGE_USAGE.
         If the media usage flags are not set, a GCS may assume storage ID 1 is the default storage for all media types.</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
@@ -6205,7 +6351,13 @@
       <field type="int32_t" name="image_count">Total number of images captured ('forever', or until reset using MAV_CMD_STORAGE_FORMAT).</field>
     </message>
     <message id="263" name="CAMERA_IMAGE_CAPTURED">
-      <description>Information about a captured image. This is emitted every time a message is captured. It may be re-requested using MAV_CMD_REQUEST_MESSAGE, using param2 to indicate the sequence number for the missing image.</description>
+      <description>Information about a captured image. This is emitted every time a message is captured.
+        MAV_CMD_REQUEST_MESSAGE can be used to (re)request this message for a specific sequence number or range of sequence numbers:
+        MAV_CMD_REQUEST_MESSAGE.param2 indicates the sequence number the first image to send, or set to -1 to send the message for all sequence numbers.
+        MAV_CMD_REQUEST_MESSAGE.param3 is used to specify a range of messages to send:
+        set to 0 (default) to send just the the message for the sequence number in param 2,
+        set to -1 to send the message for the sequence number in param 2 and all the following sequence numbers, 
+        set to the sequence number of the final message in the range.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="time_utc" units="us" invalid="0">Timestamp (time since UNIX epoch) in UTC. 0 for unknown.</field>
       <field type="uint8_t" name="camera_id">Deprecated/unused. Component IDs are used to differentiate multiple cameras.</field>
@@ -6407,7 +6559,7 @@
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal device component. The angles encoded in the quaternion are in the global frame (roll: positive is rolling to the right, pitch: positive is pitching up, yaw is turn to the right). This message should be broadcast at a low regular rate (e.g. 10Hz).</description>
+      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal device component. The angles encoded in the quaternion are relative to absolute North if the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set (roll: positive is rolling to the right, pitch: positive is pitching up, yaw is turn to the right) or relative to the vehicle heading if the flag is not set. This message should be broadcast at a low regular rate (e.g. 10Hz).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
@@ -6601,8 +6753,8 @@
       <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
       <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
-      <field type="float[21]" name="pose_covariance" invalid="[NaN,]">Row-major representation of a 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
-      <field type="float[21]" name="velocity_covariance" invalid="[NaN,]">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="pose_covariance" invalid="[NaN:]">Row-major representation of a 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="float[21]" name="velocity_covariance" invalid="[NaN:]">Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <extensions/>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
       <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Type of estimator that is providing the odometry.</field>

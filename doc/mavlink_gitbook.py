@@ -127,16 +127,15 @@ def fix_add_implicit_links_items(input_html):
     #print("fix_add_implicit_link was called")
     def make_text_to_link(matchobj):
         #print("make_entry_to_link was called: %s" % matchobj.group(0))
-        item_string = matchobj.group(1)
+        item_string = matchobj.group(2)
         item_url=item_string
         if item_string == 'MAV_CMD':
             item_url='mav_commands'
-        returnString = ' <a href="#%s">%s</a>%s' % (item_url,item_string,matchobj.group(2))
+        returnString = '%s<a href="#%s">%s</a>%s' % (matchobj.group(1),item_url,item_string,matchobj.group(3))
         #print("returnstring: %s" % returnString)
         return returnString
 
-    #input_html=re.sub(r'\s[A-Z0-9]{2,}(?:_[A-Z0-9]+)*', make_text_to_link, input_html,flags=re.DOTALL)
-    input_html=re.sub(r'\s([A-Z]{2,}(?:_[A-Z0-9]+)+)([\s\.,:])', make_text_to_link, input_html,flags=re.DOTALL)
+    input_html=re.sub(r'([\`\(\s,]|^)([A-Z]{2,}(?:_[A-Z0-9]+)+)([\`\)\s\.,:]|$)', make_text_to_link, input_html,flags=re.DOTALL)
     return input_html
     
     
