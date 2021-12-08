@@ -214,6 +214,15 @@
       <entry value="1073741824" name="MAV_SYS_STATUS_SENSOR_PROPULSION">
         <description>0x40000000 propulsion (actuator, esc, motor or propellor)</description>
       </entry>
+      <entry value="2147483648" name="MAV_SYS_STATUS_EXTENSION_USED">
+        <description>0x80000000 Extended bit-field are used for further sensor status bits (needs to be set in onboard_control_sensors_present only)</description>
+      </entry>
+    </enum>
+    <enum name="MAV_SYS_STATUS_SENSOR_EXTENDED" bitmask="true">
+      <description>These encode the sensors whose status is sent as part of the SYS_STATUS message in the extended fields.</description>
+      <entry value="1" name="MAV_SYS_STATUS_RECOVERY_SYSTEM">
+        <description>0x01 Recovery system (parachute, balloon, retracts etc)</description>
+      </entry>
     </enum>
     <enum name="MAV_FRAME">
       <description>Co-ordinate frames used by MAVLink. Not all frames are supported by all commands, messages, or vehicles.
@@ -4612,6 +4621,10 @@
       <field type="uint16_t" name="errors_count2">Autopilot-specific errors</field>
       <field type="uint16_t" name="errors_count3">Autopilot-specific errors</field>
       <field type="uint16_t" name="errors_count4">Autopilot-specific errors</field>
+      <extensions/>
+      <field type="uint32_t" name="onboard_control_sensors_present_extended" enum="MAV_SYS_STATUS_SENSOR_EXTENDED" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</field>
+      <field type="uint32_t" name="onboard_control_sensors_enabled_extended" enum="MAV_SYS_STATUS_SENSOR_EXTENDED" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
+      <field type="uint32_t" name="onboard_control_sensors_health_extended" enum="MAV_SYS_STATUS_SENSOR_EXTENDED" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
     </message>
     <message id="2" name="SYSTEM_TIME">
       <description>The system time is the time of the master clock, typically the computer clock of the main onboard computer.</description>
