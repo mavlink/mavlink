@@ -189,7 +189,7 @@
         <xsl:if test='@label'>: <xsl:value-of select="@label" /></xsl:if>
         </td> <!-- mission_param -->
 
-        <td><xsl:value-of select="." />
+        <td><xsl:if test='@reserved = "true"'>Reserved (set to <xsl:if test='@default'><xsl:value-of select="@default" /></xsl:if><xsl:if test='not(@default)'>0</xsl:if>)</xsl:if><xsl:value-of select="." />
             <xsl:if test='@decimalPlaces'><br /><strong>GCS display settings:</strong>
             <xsl:if test='@label'><em>Label:</em> <xsl:value-of select="@label" />, </xsl:if>
             <xsl:if test='@decimalPlaces'><em>decimalPlaces:</em> <xsl:value-of select="@decimalPlaces" /></xsl:if>
