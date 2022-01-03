@@ -581,14 +581,32 @@
     <!-- winch action enum -->
     <enum name="WINCH_ACTIONS">
       <description>Winch actions.</description>
-      <entry value="0" name="WINCH_RELAXED">
-        <description>Relax winch.</description>
+      <entry value="0" name="WINCH_ACTION_FREEWHEEL">
+        <description>Allow motor to freewheel.</description>
       </entry>
-      <entry value="1" name="WINCH_RELATIVE_LENGTH_CONTROL">
+      <entry value="1" name="WINCH_ACTION_RELATIVE_LENGTH_CONTROL">
         <description>Wind or unwind specified length of cable, optionally using specified rate.</description>
       </entry>
-      <entry value="2" name="WINCH_RATE_CONTROL">
+      <entry value="2" name="WINCH_ACTION_RATE_CONTROL">
         <description>Wind or unwind cable at specified rate.</description>
+      </entry>
+      <entry value="3" name="WINCH_ACTION_LOCK">
+        <description>Perform the locking sequence.</description>
+      </entry>
+      <entry value="4" name="WINCH_ACTION_DELIVER">
+        <description>Sequence of drop, slow down, touch down, reel up, lock.</description>
+      </entry>
+      <entry value="5" name="WINCH_ACTION_HOLD">
+        <description>Engage motor and hold current position.</description>
+      </entry>
+      <entry value="6" name="WINCH_ACTION_RETURN">
+        <description>Return the reel to the home position.</description>
+      </entry>
+      <entry value="7" name="WINCH_ACTION_DISENGAGE">
+        <description>Disengage clutch. Motor will become inactive.</description>
+      </entry>
+      <entry value="8" name="WINCH_ACTION_LOAD">
+        <description>Load the reel with line.</description>
       </entry>
     </enum>
     <!-- UAVCAN node health enumeration -->
@@ -4471,19 +4489,34 @@
         <description>Land in multicopter mode on reaching the landing co-ordinates (the whole landing is by "hover descent").</description>
       </entry>
     </enum>
-    <enum name="MAV_WINCH_STATUS_FLAG" bitmask="true">
+    <enum name="WINCH_STATUS_FLAG" bitmask="true">
       <description>Winch status flags used in WINCH_STATUS</description>
-      <entry value="1" name="MAV_WINCH_STATUS_HEALTHY">
+      <entry value="1" name="WINCH_STATUS_HEALTHY">
         <description>Winch is healthy</description>
       </entry>
-      <entry value="2" name="MAV_WINCH_STATUS_FULLY_RETRACTED">
+      <entry value="2" name="WINCH_STATUS_FULLY_RETRACTED">
         <description>Winch thread is fully retracted</description>
       </entry>
-      <entry value="4" name="MAV_WINCH_STATUS_MOVING">
+      <entry value="4" name="WINCH_STATUS_MOVING">
         <description>Winch motor is moving</description>
       </entry>
-      <entry value="8" name="MAV_WINCH_STATUS_CLUTCH_ENGAGED">
-        <description>Winch clutch is engaged allowing motor to move freely</description>
+      <entry value="8" name="WINCH_STATUS_CLUTCH_ENGAGED">
+        <description>Winch clutch is engaged. Motor is active.</description>
+      </entry>
+      <entry value="16" name="WINCH_STATUS_LOCKED">
+        <description>Winch is locked by locking mechanism.</description>
+      </entry>
+      <entry value="32" name="WINCH_STATUS_DROPPING">
+        <description>Winch is dropping payload.</description>
+      </entry>
+      <entry value="64" name="WINCH_STATUS_ARRESTING">
+        <description>Winch is arresting payload descent.</description>
+      </entry>
+      <entry value="128" name="WINCH_STATUS_GROUND_SENSE">
+        <description>Winch is using torque measurements to sense the ground.</description>
+      </entry>
+      <entry value="256" name="WINCH_STATUS_RETURNING_TO_HOME">
+        <description>Winch is returning to the home position.</description>
       </entry>
     </enum>
     <enum name="MAG_CAL_STATUS">
@@ -7041,7 +7074,7 @@
       <field type="float" name="voltage" units="V" invalid="NaN">Voltage of the battery supplying the winch. NaN if unknown</field>
       <field type="float" name="current" units="A" invalid="NaN">Current draw from the winch. NaN if unknown</field>
       <field type="int16_t" name="temperature" units="degC" invalid="INT16_MAX">Temperature of the motor. INT16_MAX if unknown</field>
-      <field type="uint32_t" name="status" display="bitmask" enum="MAV_WINCH_STATUS_FLAG">Status flags</field>
+      <field type="uint32_t" name="status" display="bitmask" enum="WINCH_STATUS_FLAG">Status flags</field>
     </message>
     <message id="12900" name="OPEN_DRONE_ID_BASIC_ID">
       <wip/>
