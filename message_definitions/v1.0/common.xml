@@ -1928,6 +1928,42 @@
         <description>64-bit floating-point</description>
       </entry>
     </enum>
+    <enum name="MAV_PARAM_EXT_TYPE">
+      <description>Specifies the datatype of a MAVLink extended parameter.</description>
+      <entry value="1" name="MAV_PARAM_EXT_TYPE_UINT8">
+        <description>8-bit unsigned integer</description>
+      </entry>
+      <entry value="2" name="MAV_PARAM_EXT_TYPE_INT8">
+        <description>8-bit signed integer</description>
+      </entry>
+      <entry value="3" name="MAV_PARAM_EXT_TYPE_UINT16">
+        <description>16-bit unsigned integer</description>
+      </entry>
+      <entry value="4" name="MAV_PARAM_EXT_TYPE_INT16">
+        <description>16-bit signed integer</description>
+      </entry>
+      <entry value="5" name="MAV_PARAM_EXT_TYPE_UINT32">
+        <description>32-bit unsigned integer</description>
+      </entry>
+      <entry value="6" name="MAV_PARAM_EXT_TYPE_INT32">
+        <description>32-bit signed integer</description>
+      </entry>
+      <entry value="7" name="MAV_PARAM_EXT_TYPE_UINT64">
+        <description>64-bit unsigned integer</description>
+      </entry>
+      <entry value="8" name="MAV_PARAM_EXT_TYPE_INT64">
+        <description>64-bit signed integer</description>
+      </entry>
+      <entry value="9" name="MAV_PARAM_EXT_TYPE_REAL32">
+        <description>32-bit floating-point</description>
+      </entry>
+      <entry value="10" name="MAV_PARAM_EXT_TYPE_REAL64">
+        <description>64-bit floating-point</description>
+      </entry>
+      <entry value="11" name="MAV_PARAM_EXT_TYPE_CUSTOM">
+        <description>Custom Type</description>
+      </entry>
+    </enum>
     <enum name="MAV_RESULT">
       <description>Result from a MAVLink command (MAV_CMD)</description>
       <entry value="0" name="MAV_RESULT_ACCEPTED">
@@ -2899,6 +2935,21 @@
         <description>Stream is h.264 on MPEG TS (URI gives the port number)</description>
       </entry>
     </enum>
+    <enum name="PARAM_ACK">
+      <description>Result from PARAM_EXT_SET message (or a PARAM_SET within a transaction).</description>
+      <entry value="0" name="PARAM_ACK_ACCEPTED">
+        <description>Parameter value ACCEPTED and SET</description>
+      </entry>
+      <entry value="1" name="PARAM_ACK_VALUE_UNSUPPORTED">
+        <description>Parameter value UNKNOWN/UNSUPPORTED</description>
+      </entry>
+      <entry value="2" name="PARAM_ACK_FAILED">
+        <description>Parameter failed to set</description>
+      </entry>
+      <entry value="3" name="PARAM_ACK_IN_PROGRESS">
+        <description>Parameter value received but not yet set/accepted. A subsequent PARAM_ACK_TRANSACTION or PARAM_EXT_ACK with the final result will follow once operation is completed. This is returned immediately for parameters that take longer to set, indicating taht the the parameter was recieved and does not need to be resent.</description>
+      </entry>
+    </enum>
     <enum name="CAMERA_MODE">
       <description>Camera Modes.</description>
       <entry value="0" name="CAMERA_MODE_IMAGE">
@@ -3360,6 +3411,7 @@
       <field type="uint32_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
     </message>
     <!-- IDs 15-17 reserved for PARAM_VALUE_UNION and other param messages -->
+    <!-- IDs 19 reserved for PARAM_ACK_TRANSACTION (development.xml) -->
     <message id="20" name="PARAM_REQUEST_READ">
       <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -&gt; value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also https://mavlink.io/en/services/parameter.html for a full documentation of QGroundControl and IMU code.</description>
       <field type="uint8_t" name="target_system">System ID</field>
