@@ -2964,7 +2964,7 @@
         <description>Autopilot supports the new param union message type.</description>
       </entry>
       <entry value="32" name="MAV_PROTOCOL_CAPABILITY_FTP">
-        <description>Autopilot supports the new FILE_TRANSFER_PROTOCOL message type.</description>
+        <description>Autopilot supports the File Transfer Protocol v1: https://mavlink.io/en/services/ftp.html.</description>
       </entry>
       <entry value="64" name="MAV_PROTOCOL_CAPABILITY_SET_ATTITUDE_TARGET">
         <description>Autopilot supports commanding attitude offboard.</description>
@@ -5620,11 +5620,12 @@
       <field type="uint16_t" name="fixed">Count of error corrected radio packets (since boot).</field>
     </message>
     <message id="110" name="FILE_TRANSFER_PROTOCOL">
-      <description>File transfer message</description>
+      <description>File transfer protocol message: https://mavlink.io/en/services/ftp.html.
+        Note that this may be used in private/non-standard FTP protocols as the data format is opaque.</description>
       <field type="uint8_t" name="target_network">Network ID (0 for broadcast)</field>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast)</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast)</field>
-      <field type="uint8_t[251]" name="payload">Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields.  The entire content of this block is opaque unless you understand any the encoding message_type.  The particular encoding used can be extension specific and might not always be documented as part of the mavlink specification.</field>
+      <field type="uint8_t[251]" name="payload">Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields. The entire content of this block is opaque unless you understand the encoding used.</field>
     </message>
     <message id="111" name="TIMESYNC">
       <description>Time synchronization message.</description>
