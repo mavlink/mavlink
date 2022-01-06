@@ -508,7 +508,7 @@
         <description>Set to retracted safe position (no stabilization), takes presedence over all other flags.</description>
       </entry>
       <entry value="2" name="GIMBAL_DEVICE_FLAGS_NEUTRAL">
-        <description>Set to neutral position (horizontal, forward looking, with stabiliziation), takes presedence over all other flags except RETRACT.</description>
+        <description>Set to neutral/default position, taking precedence over all other flags except RETRACT. Neutral is commonly forward-facing and horizontal (pitch=yaw=0) but may be any orientation.</description>
       </entry>
       <entry value="4" name="GIMBAL_DEVICE_FLAGS_ROLL_LOCK">
         <description>Lock roll angle to absolute angle relative to horizon (not relative to drone). This is generally the default with a stabilizing gimbal.</description>
@@ -950,6 +950,21 @@
       </entry>
       <entry value="48" name="ACTUATOR_OUTPUT_FUNCTION_SERVO16">
         <description>Servo 16</description>
+      </entry>
+    </enum>
+    <enum name="AUTOTUNE_AXIS" bitmask="true">
+      <description>Enable axes that will be tuned via autotuning. Used in MAV_CMD_DO_AUTOTUNE_ENABLE.</description>
+      <entry value="0" name="AUTOTUNE_AXIS_DEFAULT">
+        <description>Flight stack tunes axis according to its default settings.</description>
+      </entry>
+      <entry value="1" name="AUTOTUNE_AXIS_ROLL">
+        <description>Autotune roll axis.</description>
+      </entry>
+      <entry value="2" name="AUTOTUNE_AXIS_PITCH">
+        <description>Autotune pitch axis.</description>
+      </entry>
+      <entry value="4" name="AUTOTUNE_AXIS_YAW">
+        <description>Autotune yaw axis.</description>
       </entry>
     </enum>
     <!-- The MAV_CMD enum entries describe either: -->
@@ -1599,7 +1614,7 @@
       <entry value="212" name="MAV_CMD_DO_AUTOTUNE_ENABLE" hasLocation="false" isDestination="false">
         <description>Enable/disable autotune.</description>
         <param index="1" label="Enable" minValue="0" maxValue="1" increment="1">Enable (1: enable, 0:disable).</param>
-        <param index="2">Empty.</param>
+        <param index="2" label="Axis" enum="AUTOTUNE_AXIS">Specify which axis are autotuned. 0 indicates autopilot default settings.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
         <param index="5">Empty.</param>
