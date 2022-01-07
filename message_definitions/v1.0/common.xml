@@ -582,13 +582,31 @@
     <enum name="WINCH_ACTIONS">
       <description>Winch actions.</description>
       <entry value="0" name="WINCH_RELAXED">
-        <description>Relax winch.</description>
+        <description>Allow motor to freewheel.</description>
       </entry>
       <entry value="1" name="WINCH_RELATIVE_LENGTH_CONTROL">
-        <description>Wind or unwind specified length of cable, optionally using specified rate.</description>
+        <description>Wind or unwind specified length of line, optionally using specified rate.</description>
       </entry>
       <entry value="2" name="WINCH_RATE_CONTROL">
-        <description>Wind or unwind cable at specified rate.</description>
+        <description>Wind or unwind line at specified rate.</description>
+      </entry>
+      <entry value="3" name="WINCH_LOCK">
+        <description>Perform the locking sequence to relieve motor while in the fully retracted position. Only action and instance command parameters are used, others are ignored.</description>
+      </entry>
+      <entry value="4" name="WINCH_DELIVER">
+        <description>Sequence of drop, slow down, touch down, reel up, lock. Only action and instance command parameters are used, others are ignored.</description>
+      </entry>
+      <entry value="5" name="WINCH_HOLD">
+        <description>Engage motor and hold current position. Only action and instance command parameters are used, others are ignored.</description>
+      </entry>
+      <entry value="6" name="WINCH_RETRACT">
+        <description>Return the reel to the fully retracted position. Only action and instance command parameters are used, others are ignored.</description>
+      </entry>
+      <entry value="7" name="WINCH_LOAD_LINE">
+        <description>Load the reel with line. The winch will calculate the total loaded length and stop when the tension exceeds a threshold. Only action and instance command parameters are used, others are ignored.</description>
+      </entry>
+      <entry value="8" name="WINCH_ABANDON_LINE">
+        <description>Spool out the entire length of the line. Only action and instance command parameters are used, others are ignored.</description>
       </entry>
     </enum>
     <!-- UAVCAN node health enumeration -->
@@ -2278,7 +2296,7 @@
         <description>Command to operate winch.</description>
         <param index="1" label="Instance" minValue="1" increment="1">Winch instance number.</param>
         <param index="2" label="Action" enum="WINCH_ACTIONS">Action to perform.</param>
-        <param index="3" label="Length" units="m">Length of cable to release (negative to wind).</param>
+        <param index="3" label="Length" units="m">Length of line to release (negative to wind).</param>
         <param index="4" label="Rate" units="m/s">Release rate (negative to wind).</param>
         <param index="5">Empty.</param>
         <param index="6">Empty.</param>
@@ -4492,13 +4510,34 @@
         <description>Winch is healthy</description>
       </entry>
       <entry value="2" name="MAV_WINCH_STATUS_FULLY_RETRACTED">
-        <description>Winch thread is fully retracted</description>
+        <description>Winch line is fully retracted</description>
       </entry>
       <entry value="4" name="MAV_WINCH_STATUS_MOVING">
         <description>Winch motor is moving</description>
       </entry>
       <entry value="8" name="MAV_WINCH_STATUS_CLUTCH_ENGAGED">
-        <description>Winch clutch is engaged allowing motor to move freely</description>
+        <description>Winch clutch is engaged allowing motor to move freely.</description>
+      </entry>
+      <entry value="16" name="MAV_WINCH_STATUS_LOCKED">
+        <description>Winch is locked by locking mechanism.</description>
+      </entry>
+      <entry value="32" name="MAV_WINCH_STATUS_DROPPING">
+        <description>Winch is gravity dropping payload.</description>
+      </entry>
+      <entry value="64" name="MAV_WINCH_STATUS_ARRESTING">
+        <description>Winch is arresting payload descent.</description>
+      </entry>
+      <entry value="128" name="MAV_WINCH_STATUS_GROUND_SENSE">
+        <description>Winch is using torque measurements to sense the ground.</description>
+      </entry>
+      <entry value="256" name="MAV_WINCH_STATUS_RETRACTING">
+        <description>Winch is returning to the fully retracted position.</description>
+      </entry>
+      <entry value="512" name="MAV_WINCH_STATUS_REDELIVER">
+        <description>Winch is redelivering the payload. This is a failover state if the line tension goes above a threshold during RETRACTING.</description>
+      </entry>
+      <entry value="1024" name="MAV_WINCH_STATUS_ABANDON_LINE">
+        <description>Winch is abandoning the line and possibly payload. Winch unspools the entire calculated line length. This is a failover state from REDELIVER if the number of attemps exceeds a threshold.</description>
       </entry>
     </enum>
     <enum name="MAG_CAL_STATUS">
