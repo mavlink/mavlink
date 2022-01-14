@@ -2999,8 +2999,8 @@
       <entry value="32768" name="MAV_PROTOCOL_CAPABILITY_MISSION_RALLY">
         <description>Autopilot supports mission rally point protocol.</description>
       </entry>
-      <entry value="65536" name="MAV_PROTOCOL_CAPABILITY_FLIGHT_INFORMATION">
-        <description>Autopilot supports the flight information protocol.</description>
+      <entry value="65536" name="MAV_PROTOCOL_CAPABILITY_RESERVED2">
+        <description>Reserved for future use.</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_TYPE">
@@ -6441,7 +6441,9 @@
       <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
     </message>
     <message id="264" name="FLIGHT_INFORMATION">
-      <description>Information about flight since last arming.</description>
+      <description>Information about flight since last arming.
+        This can be requested using MAV_CMD_REQUEST_MESSAGE.
+      </description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="arming_time_utc" units="us" invalid="0">Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown</field>
       <field type="uint64_t" name="takeoff_time_utc" units="us" invalid="0">Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown</field>
