@@ -7027,10 +7027,10 @@
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Information about a component. For camera components instead use CAMERA_INFORMATION, and for autopilots additionally use AUTOPILOT_VERSION. Components including GCSes should consider supporting requests of this message via MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint32_t" name="general_metadata_file_crc">CRC32 of the TYPE_GENERAL file (can be used by a GCS for file caching).</field>
+      <field type="uint32_t" name="general_metadata_file_crc">CRC32 of the TYPE_GENERAL file (can be used by a GCS for file caching). The general metadata file contains URLs to other files of different type according to COMP_METADATA_TYPE.</field>
       <field type="char[100]" name="general_metadata_uri">Component definition URI for TYPE_GENERAL. This must be a MAVLink FTP URI and the file might be compressed with xz.</field>
       <field type="uint32_t" name="peripherals_metadata_file_crc">CRC32 of the TYPE_PERIPHERALS file (can be used by a GCS for file caching).</field>
-      <field type="char[100]" name="peripherals_metadata_uri">(Optional) Component definition URI for TYPE_PERIPHERALS. This must be a MAVLink FTP URI and the file might be compressed with xz.</field>
+      <field type="char[100]" name="peripherals_metadata_uri">(Optional) Component definition URI for TYPE_PERIPHERALS. This must be a MAVLink FTP URI and the file might be compressed with xz. Peripherals are listed as a separate URL and not included in the general metadata file because it will likely be generated at runtime while the general (and other referenced files) might be generated at compile time.</field>
     </message>
     <message id="400" name="PLAY_TUNE_V2">
       <description>Play vehicle tone/tune (buzzer). Supersedes message PLAY_TUNE.</description>
