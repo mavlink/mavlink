@@ -182,6 +182,11 @@
       <field type="char[24]" name="hardware_version">Hardware version. The version format can be custom, recommended is SEMVER 'major.minor.patch'.</field>
       <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY" display="bitmask">Component capability flags</field>
     </message>
+    <message id="397" name="COMPONENT_INFORMATION_STATE">
+      <description>Contains the current checksums from COMPONENT_INFORMATION and is intended for dynamic updates. For hosts: this message is optional and only required when metadata changes dynamically after bootup. In that case the host broadcasts this message at regular intervals with the updated CRC's. For clients: if a new CRC is detected, re-request the metadata via COMPONENT_INFORMATION.</description>
+      <field type="uint32_t" name="general_metadata_file_crc">CRC32 of the TYPE_GENERAL file (can be used by a GCS for file caching). The general metadata file contains URLs to other files of different type according to COMP_METADATA_TYPE.</field>
+      <field type="uint32_t" name="peripherals_metadata_file_crc">CRC32 of the TYPE_PERIPHERALS file (can be used by a GCS for file caching).</field>
+    </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
       <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_START).</field>
