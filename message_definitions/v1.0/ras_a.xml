@@ -3,6 +3,221 @@
   <include>development.xml</include>
   <version>0</version>
   <dialect>0</dialect>
-  <enums/>
-  <messages/>
+  <enums>
+    <!-- The MAV_CMD enum entries describe either: -->
+    <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
+    <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
+    <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
+    <enum name="MAV_CMD">
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <entry value="199" name="MAV_CMD_SET_POI_FOCUS" hasLocation="false" isDestination="false">
+        <description>Sets a POI at the current focus point of the camera frame. This assumes that the camera system has the ability to geo-locate the current focus point.</description>
+        <param index="1" label="Operation mode" minValue="0" maxValue="1" increment="1">Operation mode. 0 = set POI at current location; 1 = set POI at current location and track it.</param>
+        <param index="2" label="X Position in the camera frame" minValue="0" increment="1">Position given by the number of pixels in X direction of the camera frame. Origin on the bottom left corner of the camera frame.</param>
+        <param index="3" label="Y Position in the camera frame" minValue="0" increment="1">Position given by the number of pixels in Y direction of the camera frame. Origin on the bottom left corner of the camera frame.</param>
+      </entry>
+    </enum>
+    <enum name="POI_GEOMETRY_TYPE">
+      <description>Point-of-Interest geometry types.</description>
+      <entry value="0" name="POI_GEOMETRY_TYPE_UNKNOWN">
+        <description>Unknown geometry.</description>
+      </entry>
+      <entry value="1" name="POI_GEOMETRY_TYPE_SQUARE">
+        <description>Square.</description>
+      </entry>
+      <entry value="2" name="POI_GEOMETRY_TYPE_RECTANGLE">
+        <description>Rectangle.</description>
+      </entry>
+      <entry value="3" name="POI_GEOMETRY_TYPE_CIRCLE">
+        <description>Circle.</description>
+      </entry>
+      <entry value="4" name="POI_GEOMETRY_TYPE_CUBE">
+        <description>Cube.</description>
+      </entry>
+      <entry value="5" name="POI_GEOMETRY_TYPE_CUBOID">
+        <description>Cuboid.</description>
+      </entry>
+      <entry value="6" name="POI_GEOMETRY_TYPE_SPHERE">
+        <description>Sphere.</description>
+      </entry>
+      <entry value="7" name="POI_GEOMETRY_TYPE_CYLINDER">
+        <description>Cylinder.</description>
+      </entry>
+    </enum>
+    <enum name="POI_CLASSIFICATION">
+      <description>
+        Point-of-Interest classification. Used on the the POI_REPORT 'classification' field. Provides default classes (0 to 2147483647).
+      </description>
+      <entry value="0" name="POI_CLASSIFICATION_UNKNOWN">
+        <description>Unknown classification.</description>
+      </entry>
+      <entry value="1" name="POI_CLASSIFICATION_GEO_MARKER">
+        <description>Geolocation marker.</description>
+      </entry>
+      <entry value="2" name="POI_CLASSIFICATION_LANDING_PAD">
+        <description>Landing pad.</description>
+      </entry>
+      <entry value="3" name="POI_CLASSIFICATION_CLEAR_LANDING_SPOT">
+        <description>Detected suited landing spot.</description>
+      </entry>
+      <entry value="4" name="POI_CLASSIFICATION_BUILDING">
+        <description>Generic building (unidentified type).</description>
+      </entry>
+      <entry value="5" name="POI_CLASSIFICATION_RESIDENTIAL_BUILDING">
+        <description>Residential building. Eg. house, cottage, housebarn, tonwhouse, retirement home.</description>
+      </entry>
+      <entry value="6" name="POI_CLASSIFICATION_COMERCIAL_OFFICE_BUILDING">
+        <description>Comercial office building.</description>
+      </entry>
+      <entry value="7" name="POI_CLASSIFICATION_COMERCIAL_RETAIL_BUILDING">
+        <description>Comercial retail building. Eg. shopping center, retail outlet.</description>
+      </entry>
+      <entry value="8" name="POI_CLASSIFICATION_COMERCIAL_HOTEL_BUILDING">
+        <description>Comercial hotel building. Eg. hotel, motel, resort.</description>
+      </entry>
+      <entry value="9" name="POI_CLASSIFICATION_COMERCIAL_SPECIAL_PURPOSE_BUILDING">
+        <description>Comercial special purpose building. Eg. theater, cinema, self-storage, marina.</description>
+      </entry>
+      <entry value="10" name="POI_CLASSIFICATION_INDUSTRIAL_MANUFACTURING_BUILDING">
+        <description>Industrial manufacturing building.</description>
+      </entry>
+      <entry value="11" name="POI_CLASSIFICATION_INDUSTRIAL_WAREHOUSE_BUILDING">
+        <description>Industrial warehouse building.</description>
+      </entry>
+      <entry value="12" name="POI_CLASSIFICATION_INDUSTRIAL_FLEX_SPACE_BUILDING">
+        <description>Industrial flex space building. Eg. data center, showroom, laboratory.</description>
+      </entry>
+      <entry value="13" name="POI_CLASSIFICATION_AGRICULTURAL_BUILDING">
+        <description>Agricultural building. Eg. barn, greenhouse, silo, stable, windmill, chickenhouse.</description>
+      </entry>
+      <entry value="14" name="POI_CLASSIFICATION_INFRASTRUCTURE_BUILDING">
+        <description>Infrastructure building. Eg. dam, power plant, waste transfer cetner, composting facility.</description>
+      </entry>
+      <entry value="15" name="POI_CLASSIFICATION_INSTITUTIONAL_MEDICAL_BUILDING">
+        <description>Institutional medical building. Eg. hospital, nursing home.</description>
+      </entry>
+      <entry value="16" name="POI_CLASSIFICATION_INSTITUTIONAL_EDUCATIONAL_BUILDING">
+        <description>Institutional educational building. Eg. college, school, orphanage.</description>
+      </entry>
+      <entry value="17" name="POI_CLASSIFICATION_INSTITUTIONAL_CIVIC_BUILDING">
+        <description>Institutional civic building. Eg. library, museum, community hall.</description>
+      </entry>
+      <entry value="18" name="POI_CLASSIFICATION_INSTITUTIONAL_RELIGIOUS_BUILDING">
+        <description>Institutional religious building. Eg. church, monastery, synagogue.</description>
+      </entry>
+      <entry value="19" name="POI_CLASSIFICATION_INSTITUTIONAL_GOVERNMENT_BUILDING">
+        <description>Institutional government building. Eg. embassy, police station, fire station, city hall, post office.</description>
+      </entry>
+      <entry value="20" name="POI_CLASSIFICATION_INSTITUTIONAL_MILITARY_BUILDING">
+        <description>Institutional military building. Eg. barracks, arsenal, bunker, citadel.</description>
+      </entry>
+      <entry value="21" name="POI_CLASSIFICATION_INSTITUTIONAL_TRANSPORTATION_BUILDING">
+        <description>Institutional transportation building. Eg. airport, bus station, lighthouse, ferry terminal.</description>
+      </entry>
+      <entry value="22" name="POI_CLASSIFICATION_BUILDING_DOOR">
+        <description>Building door.</description>
+      </entry>
+      <entry value="23" name="POI_CLASSIFICATION_BUILDING_WINDOW">
+        <description>Building window.</description>
+      </entry>
+      <entry value="24" name="POI_CLASSIFICATION_BUILDING_VENT">
+        <description>Building vent.</description>
+      </entry>
+      <entry value="25" name="POI_CLASSIFICATION_PERSON">
+        <description>Person.</description>
+      </entry>
+      <entry value="26" name="POI_CLASSIFICATION_CIVILIAN_PERSON">
+        <description>Civilian person.</description>
+      </entry>
+      <entry value="27" name="POI_CLASSIFICATION_MILITARY_PERSON">
+        <description>Military person.</description>
+      </entry>
+      <entry value="28" name="POI_CLASSIFICATION_INGRESS_PORTAL">
+        <description>Object or structure ingress portal.</description>
+      </entry>
+      <entry value="29" name="POI_CLASSIFICATION_EGRESS_PORTAL">
+        <description>Object or structure egress portal.</description>
+      </entry>
+      <entry value="30" name="POI_CLASSIFICATION_VEHICLE">
+        <description>Vehicle (unidentified type).</description>
+      </entry>
+      <entry value="31" name="POI_CLASSIFICATION_GROUND_MANNED_VEHICLE">
+        <description>Ground manned vehicle.</description>
+      </entry>
+      <entry value="32" name="POI_CLASSIFICATION_GROUND_UNMANNED_VEHICLE">
+        <description>Ground unmanned vehicle.</description>
+      </entry>
+      <entry value="33" name="POI_CLASSIFICATION_MANNED_AIRCRAFT">
+        <description>Manned aircraft.</description>
+      </entry>
+      <entry value="34" name="POI_CLASSIFICATION_UNMANNED_AIRCRAFT">
+        <description>Unmanned aircraft.</description>
+      </entry>
+      <entry value="35" name="POI_CLASSIFICATION_MANNED_WATERCRAFT">
+        <description>Manned watercraft.</description>
+      </entry>
+      <entry value="36" name="POI_CLASSIFICATION_UNMANNED_WATERCRAFT">
+        <description>Unmanned watercraft.</description>
+      </entry>
+      <entry value="37" name="POI_CLASSIFICATION_MANNED_AMPHIBIOUS_VEHICLE">
+        <description>Manned amphibious vehicle.</description>
+      </entry>
+      <entry value="38" name="POI_CLASSIFICATION_UNMANNED_AMPHIBIOUS_VEHICLE">
+        <description>Unmanned amphibious vehicle.</description>
+      </entry>
+      <entry value="39" name="POI_CLASSIFICATION_RAILED_VEHICLE">
+        <description>Land Vehicle.</description>
+      </entry>
+      <entry value="40" name="POI_CLASSIFICATION_ANIMAL">
+        <description>Animal (unidentified species).</description>
+      </entry>
+    </enum>
+  </enums>
+  <messages>
+    <message id="238" name="POI_REPORT">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Reports information for a detected Point-of-Interest (POI).
+        This can be either set by an operator (through MAV_CMD_SET_POI_FOCUS) or through onboard software or external processes.
+        The receiving system should track the POI being reported based on its UID + time of detection + time of update.
+        Detection time happens once for the same UID, while time of update changes when a specific metadata of that POI gets changed (e.g. position).
+        The time of update should be changed on the sending system, based on the determined data in regards to that specific POI.
+        So, POIs that are received again should be updated if the time of update has changed.
+        Note: The sending system should repeat the current POIs at a fixed default rate of 2Hz to keep the protocol stateless). The fixed rate though can be set by the receiver using MAV_CMD_SET_MESSAGE_INTERVAL, which is advised for POIs that are not static or for which the state updates are high - decision on the rates of some specific POIs is at the implementers consideration.
+      </description>
+      <field type="uint64_t" name="uid" invalid="0">Unique ID for a given POI. Updates to a POIs information should use the same uid. 0 means unknown.</field>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint64_t" name="time_utc_detected" units="ms" invalid="0">Timestamp (time since UNIX epoch) of the POI detection, in UTC. 0 for unknown.</field>
+      <field type="uint64_t" name="time_utc_updated" units="ms" invalid="0">Timestamp (time since UNIX epoch) of the last POI update, in UTC. 0 for unknown.</field>
+      <field type="uint8_t" name="confidence_overall" units="%" invalid="UINT8_MAX">Generic confidence level. Can be used for an implementation specific confidence level. 0..100, UINT8_MAX when unknown.</field>
+      <field type="uint8_t" name="confidence_detection" units="%" invalid="UINT8_MAX">Confidence level of the POI detection. 0..100, UINT8_MAX when unknown.</field>
+      <field type="uint8_t" name="confidence_classification" units="%" invalid="UINT8_MAX">Confidence level of the POI classification. 0..100, UINT8_MAX when unknown.</field>
+      <field type="uint8_t" name="confidence_localization" units="%" invalid="UINT8_MAX">Confidence level of the POI localization. 0..100, UINT8_MAX when unknown.</field>
+      <field type="uint16_t" name="ttl" units="s">Time to live: If this time has elapsed since last update, the POI should be deleted on the receiver side. A value of 0 should indicate no timeout.</field>
+      <field type="uint8_t" name="status_flags">Bitmask for POI status. Bit 1: POI is in focus on camera, Bit 8: POI has been cleared and should be deleted.</field>
+      <field type="int32_t" name="latitude" units="degE7" invalid="INT32_MAX">Latitude (WGS84) of the POI. If unknown: INT32_MAX (both Lat/Lon).</field>
+      <field type="int32_t" name="longitude" units="degE7" invalid="INT32_MAX">Longitude (WGS84) of the POI. If unknown: INT32_MAX (both Lat/Lon).</field>
+      <field type="float" name="alt_msl" units="m" invalid="NaN">Altitude of the POI with respect to the MSL. Positive for up. NaN if unknown.</field>
+      <field type="float" name="alt_ellip" units="m" invalid="NaN">Altitude of the POI with respect to the EGM96 ellipsoid. Positive for up. NaN if unknown.</field>
+      <field type="float" name="alt_ground" units="m" invalid="NaN">Altitude of the POI with respect to the ground level. Positive for up. NaN if unknown.</field>
+      <field type="uint32_t" name="classification" enum="POI_CLASSIFICATION">Classification of the POI. Can either used the POI_CLASSIFICATION enumeration (0x0 - 0x7FFFFFFF reserved), or use the reserved range for implementation specific classifications (0x80000000 - UINT32_MAX).</field>
+      <field type="float" name="x" units="m" invalid="NaN">X position of the POI in the local NED frame. The local frame might either be the vehicle navigation frame or a common reference frame to multiple systems. NAN if unknown.</field>
+      <field type="float" name="y" units="m" invalid="NaN">Y position of the POI in the local NED frame. The local frame might either be the vehicle navigation frame or a common reference frame to multiple systems. NAN if unknown.</field>
+      <field type="float" name="z" units="m" invalid="NaN">Z position of the POI in the local NED frame. The local frame might either be the vehicle navigation frame or a common reference frame to multiple systems. NAN if unknown.</field>
+      <field type="float[4]" name="q" invalid="[NAN]">Orientation quaternion (w, x, y, z order) of the POI in the NED frame. Zero-rotation is 1, 0, 0, 0. Unknown is NAN, NAN, NAN, NAN.</field>
+      <field type="float" name="dist" units="m" invalid="NaN">Distance from the aircraft sensor/camera focal point to the POI. NAN if unknown.</field>
+      <field type="float" name="vel_n" units="m/s" invalid="NaN">North velocity of the POI. NAN if unknown.</field>
+      <field type="float" name="vel_e" units="m/s" invalid="NaN">East velocity of the POI. NAN if unknown.</field>
+      <field type="float" name="vel_d" units="m/s" invalid="NaN">Down velocity of the POI. NAN if unknown.</field>
+      <field type="float" name="hdg" units="rad" invalid="NaN">Heading of the POI in the NED frame. NAN if unknown.</field>
+      <field type="float" name="height" units="m" invalid="NaN">Height of the POI shape. When the geometry is a circle, sphere or cylinder, represents the radius. NAN if unknown.</field>
+      <field type="float" name="width" units="m" invalid="NaN">Width of the POI shape. NAN if unknown.</field>
+      <field type="float" name="depth" units="m" invalid="NaN">Depth of the POI shape. NAN if unknown.</field>
+      <field type="uint8_t" name="geometry" enum="POI_GEOMETRY_TYPE">POI geometry type.</field>
+      <field type="float[3]" name="approach_vector_start" units="m" invalid="[NaN]">Recommended vector start point, in the NED frame, for vehicle approach to the POI. This can either be determined by the end system where the POI was detected or by a system forwarding the information to another vehicle. Unknown is NaN, NaN, NaN.</field>
+      <field type="float[3]" name="approach_vector_end" units="m" invalid="[NaN]">Recommended vector end point, in the NED frame, for vehicle approach to the POI. This can either be determined by the end system where the POI was detected or by a system forwarding the information to another vehicle. Unknown is NaN, NaN, NaN.</field>
+      <field type="float[3]" name="approach_velocity" units="m/s" invalid="[NaN]">Recommended NED velocity for vehicle approach to the POI. This can either be determined by the end system where the POI was detected ir by a system forwarding the information to another vehicle. Unknown is NaN, NaN, NaN.</field>
+      <field type="char[32]" name="name">Name of the POI, if the system provides one. NULL terminated string.</field>
+    </message>
+  </messages>
 </mavlink>
