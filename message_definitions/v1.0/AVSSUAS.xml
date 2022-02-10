@@ -3,16 +3,16 @@
 <!-- AVSS is first commercially available products are parachute recovery systems for commercial drones. -->
 <!-- AVSS contact info: -->
 <!-- company URL: https://www.avss.co -->
-<!-- email contact: josh.boudreau@avss.co thomas.li@avss.co-->
+<!-- email contact: josh.boudreau@avss.co thomas.li@avss.co llxxgg@gmail.com-->
 <!-- mavlink messenger ID range: 60050 - 60099,  mavlink command ID range: 60050 - 60099-->
 <mavlink>
-  <include>common.xml</include>
-  <version>1</version>
+  <include>../../message_definitions/v1.0/common.xml</include>
+  <version>2</version>
   <dialect>1</dialect>
   <enums>
     <enum name="MAV_CMD">
       <!-- AVSS specific MAV_CMD_PRS* commands -->
-      <entry value="60050" name="MAV_CMD_PRS_SET_ARM" hasLocation="false" isDestination="false">
+      <entry name="MAV_CMD_PRS_SET_ARM" value="60050" isDestination="false" hasLocation="false">
         <description>AVSS defined command. Set PRS arm statuses.</description>
         <param index="1" label="ARM status">PRS arm statuses</param>
         <param index="2">User defined</param>
@@ -22,7 +22,7 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="60051" name="MAV_CMD_PRS_GET_ARM" hasLocation="false" isDestination="false">
+      <entry name="MAV_CMD_PRS_GET_ARM" value="60051" isDestination="false" hasLocation="false">
         <description>AVSS defined command. Gets PRS arm statuses</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -32,7 +32,7 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="60052" name="MAV_CMD_PRS_GET_BATTERY" hasLocation="false" isDestination="false">
+      <entry name="MAV_CMD_PRS_GET_BATTERY" value="60052" isDestination="false" hasLocation="false">
         <description>AVSS defined command.  Get the PRS battery voltage in millivolts</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -42,7 +42,7 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="60053" name="MAV_CMD_PRS_GET_ERR" hasLocation="false" isDestination="false">
+      <entry name="MAV_CMD_PRS_GET_ERR" value="60053" isDestination="false" hasLocation="false">
         <description>AVSS defined command. Get the PRS error statuses.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -52,7 +52,7 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="60070" name="MAV_CMD_PRS_SET_ARM_ALTI" hasLocation="false" isDestination="false">
+      <entry name="MAV_CMD_PRS_SET_ARM_ALTI" value="60070" isDestination="false" hasLocation="false">
         <description>AVSS defined command. Set the ATS arming altitude in meters.</description>
         <param index="1" label="Altitude" units="m">ATS arming altitude</param>
         <param index="2">User defined</param>
@@ -62,7 +62,7 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="60071" name="MAV_CMD_PRS_GET_ARM_ALTI" hasLocation="false" isDestination="false">
+      <entry name="MAV_CMD_PRS_GET_ARM_ALTI" value="60071" isDestination="false" hasLocation="false">
         <description>AVSS defined command. Get the ATS arming altitude in meters.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -72,68 +72,8 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="60072" name="MAV_CMD_PRS_SHUTDOWN" hasLocation="false" isDestination="false">
+      <entry name="MAV_CMD_PRS_SHUTDOWN" value="60072" isDestination="false" hasLocation="false">
         <description>AVSS defined command. Shuts down the PRS system.</description>
-        <param index="1">User defined</param>
-        <param index="2">User defined</param>
-        <param index="3">User defined</param>
-        <param index="4">User defined</param>
-        <param index="5">User defined</param>
-        <param index="6">User defined</param>
-        <param index="7">User defined</param>
-      </entry>
-      <entry value="60073" name="MAV_CMD_PRS_SET_CHARGE_MV" hasLocation="false" isDestination="false">
-        <description>AVSS defined command. Set the threshold to charge from outside in millivolts</description>
-        <param index="1" label="Charge Threshold" units="mV">Charge Threshold</param>
-        <param index="2">User defined</param>
-        <param index="3">User defined</param>
-        <param index="4">User defined</param>
-        <param index="5">User defined</param>
-        <param index="6">User defined</param>
-        <param index="7">User defined</param>
-      </entry>
-      <entry value="60074" name="MAV_CMD_PRS_GET_CHARGE_MV" hasLocation="false" isDestination="false">
-        <description>AVSS defined command. Get the threshold to charge from outside in millivolts.</description>
-        <param index="1">User defined</param>
-        <param index="2">User defined</param>
-        <param index="3">User defined</param>
-        <param index="4">User defined</param>
-        <param index="5">User defined</param>
-        <param index="6">User defined</param>
-        <param index="7">User defined</param>
-      </entry>
-      <entry value="60075" name="MAV_CMD_PRS_SET_TIMEOUT" hasLocation="false" isDestination="false">
-        <description>AVSS defined command. Set the timeout between FTS request and deploying the chute.</description>
-        <param index="1" label="Timeout" units="ms">User defined</param>
-        <param index="2">User defined</param>
-        <param index="3">User defined</param>
-        <param index="4">User defined</param>
-        <param index="5">User defined</param>
-        <param index="6">User defined</param>
-        <param index="7">User defined</param>
-      </entry>
-      <entry value="60076" name="MAV_CMD_PRS_GET_TIMEOUT" hasLocation="false" isDestination="false">
-        <description>AVSS defined command. Get the timeout between FTS request and deploying the chute.</description>
-        <param index="1">User defined</param>
-        <param index="2">User defined</param>
-        <param index="3">User defined</param>
-        <param index="4">User defined</param>
-        <param index="5">User defined</param>
-        <param index="6">User defined</param>
-        <param index="7">User defined</param>
-      </entry>
-      <entry value="60077" name="MAV_CMD_PRS_SET_FTS_CONNECT" hasLocation="false" isDestination="false">
-        <description>AVSS defined command. Set up the PRS to connect to the drone..</description>
-        <param index="1">User defined</param>
-        <param index="2">User defined</param>
-        <param index="3">User defined</param>
-        <param index="4">User defined</param>
-        <param index="5">User defined</param>
-        <param index="6">User defined</param>
-        <param index="7">User defined</param>
-      </entry>
-      <entry value="60078" name="MAV_CMD_PRS_GET_FTS_CONNECT" hasLocation="false" isDestination="false">
-        <description>AVSS defined command. Get the connection status of PRS and drone.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
         <param index="3">User defined</param>
@@ -144,25 +84,115 @@
       </entry>
     </enum>
     <enum name="MAV_AVSS_COMMAND_FAILURE_REASON">
-      <entry value="1" name="PRS_NOT_STEADY" hasLocation="false" isDestination="false">
+      <entry name="PRS_NOT_STEADY" value="1">
         <description>AVSS defined command failure reason. PRS not steady.</description>
       </entry>
-      <entry value="2" name="PRS_DTM_NOT_ARMED" hasLocation="false" isDestination="false">
+      <entry name="PRS_DTM_NOT_ARMED" value="2">
         <description>AVSS defined command failure reason. PRS DTM not armed.</description>
       </entry>
-      <entry value="3" name="PRS_OTM_NOT_ARMED" hasLocation="false" isDestination="false">
+      <entry name="PRS_OTM_NOT_ARMED" value="3">
         <description>AVSS defined command failure reason. PRS OTM not armed.</description>
+      </entry>
+    </enum>
+    <enum name="AVSS_M300_OPERATION_MODE">
+      <entry name="MODE_M300_MANUAL_CTRL" value="0">
+        <description>In manual control mode</description>
+      </entry>
+      <entry name="MODE_M300_ATTITUDE" value="1">
+        <description>In attitude mode </description>
+      </entry>
+      <entry name="MODE_M300_P_GPS" value="6">
+        <description>In GPS mode</description>
+      </entry>
+      <entry name="MODE_M300_HOTPOINT_MODE " value="9">
+        <description>In hotpoint mode </description>
+      </entry>
+      <entry name="MODE_M300_ASSISTED_TAKEOFF" value="10">
+        <description>In assisted takeoff mode</description>
+      </entry>
+      <entry name="MODE_M300_AUTO_TAKEOFF" value="11">
+        <description>In auto takeoff mode</description>
+      </entry>
+      <entry name="MODE_M300_AUTO_LANDING" value="12">
+        <description>In auto landing mode</description>
+      </entry>
+      <entry name="MODE_M300_NAVI_GO_HOME" value="15">
+        <description>In go home mode</description>
+      </entry>
+      <entry name="MODE_M300_NAVI_SDK_CTRL " value="17">
+        <description>In sdk control mode</description>
+      </entry>
+      <entry name="MODE_M300_S_SPORT" value="31">
+        <description>In sport mode</description>
+      </entry>
+      <entry name=" MODE_M300_FORCE_AUTO_LANDING" value="33">
+        <description>In force auto landing mode</description>
+      </entry>
+      <entry name="MODE_M300_T_TRIPOD" value="38">
+        <description>In tripod mode</description>
+      </entry>
+      <entry name="MODE_M300_SEARCH_MODE" value="40">
+        <description>In search mode</description>
+      </entry>
+      <entry name="MODE_M300_ENGINE_START" value="41">
+        <description>In engine mode</description>
+      </entry>
+    </enum>
+    <enum name="AVSS_HORSEFLY_OPERATION_MODE">
+      <entry name="MODE_HORSEFLY_MANUAL_CTRL" value="0">
+        <description>In manual control mode</description>
+      </entry>
+      <entry name="MODE_HORSEFLY_AUTO_TAKEOFF" value="1">
+        <description>In auto takeoff mode</description>
+      </entry>
+      <entry name="MODE_HORSEFLY_AUTO_LANDING" value="2">
+        <description>In auto landing mode</description>
+      </entry>
+      <entry name="MODE_HORSEFLY_NAVI_GO_HOME" value="3">
+        <description>In go home mode</description>
+      </entry>
+      <entry name="MODE_HORSEFLY_DROP" value="4">
+        <description>In drop mode</description>
       </entry>
     </enum>
   </enums>
   <messages>
-    <message id="60050" name="AVSS_PRS_SYS_STATUS">
+    <message name="AVSS_PRS_SYS_STATUS" id="60050">
       <description> AVSS PRS system status.</description>
-      <field type="uint8_t" name="arm_status">PRS arm statuses</field>
-      <field type="uint16_t" name="battery_status">Estimated battery run-time without a remote connection and PRS battery voltage</field>
-      <field type="uint32_t" name="error_status">PRS error statuses</field>
-      <field type="uint8_t" name="change_status">PRS battery change statuses</field>
-      <field type="uint32_t" name="time_boot_ms">Time since PRS system boot</field>
+      <field name="time_boot_ms" units="ms" type="uint32_t">Timestamp (time since PRS boot).</field>
+      <field name="error_status" type="uint32_t">PRS error statuses</field>
+      <field name="battery_status" type="uint32_t">Estimated battery run-time without a remote connection and PRS battery voltage</field>
+      <field name="arm_status" type="uint8_t">PRS arm statuses</field>
+      <field name="charge_status" type="uint8_t">PRS battery charge statuses</field>
+    </message>
+    <message name="AVSS_DRONE_POSITION" id="60051">
+      <description> Drone position.</description>
+      <field name="time_boot_ms" units="ms" type="uint32_t">Timestamp (time since FC boot).</field>
+      <field name="lat" units="degE7" type="int32_t">Latitude, expressed</field>
+      <field name="lon" units="degE7" type="int32_t">Longitude, expressed</field>
+      <field name="alt" units="mm" type="int32_t">Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.</field>
+      <field name="ground_alt" units="m" type="float">Altitude above ground, This altitude is measured by a ultrasound, Laser rangefinder or millimeter-wave radar</field>
+      <field name="barometer_alt" units="m" type="float">This altitude is measured by a barometer</field>
+    </message>
+    <message name="AVSS_DRONE_IMU" id="60052">
+      <description> Drone IMU data. Quaternion order is w, x, y, z and a zero rotation would be expressed as (1 0 0 0).</description>
+      <field name="time_boot_ms" units="ms" type="uint32_t">Timestamp (time since FC boot).</field>
+      <field name="q1" type="float">Quaternion component 1, w (1 in null-rotation)</field>
+      <field name="q2" type="float">Quaternion component 2, x (0 in null-rotation)</field>
+      <field name="q3" type="float">Quaternion component 3, y (0 in null-rotation)</field>
+      <field name="q4" type="float">Quaternion component 4, z (0 in null-rotation)</field>
+      <field name="xacc" units="m/s/s" type="float">X acceleration</field>
+      <field name="yacc" units="m/s/s" type="float">Y acceleration</field>
+      <field name="zacc" units="m/s/s" type="float">Z acceleration</field>
+      <field name="xgyro" units="rad/s" type="float">Angular speed around X axis</field>
+      <field name="ygyro" units="rad/s" type="float">Angular speed around Y axis</field>
+      <field name="zgyro" units="rad/s" type="float">Angular speed around Z axis</field>
+    </message>
+    <message name="AVSS_DRONE_OPERATION_MODE" id="60053">
+      <description> Drone operation mode.</description>
+      <field name="time_boot_ms" units="ms" type="uint32_t">Timestamp (time since FC boot).</field>
+      <field name="M300_operation_mode" type="uint8_t">DJI M300 operation mode</field>
+      <field name="horsefly_operation_mode" type="uint8_t">horsefly operation mode</field>
     </message>
   </messages>
 </mavlink>
