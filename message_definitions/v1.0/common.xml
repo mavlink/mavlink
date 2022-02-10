@@ -1827,7 +1827,7 @@
       </entry>
       <!-- END of user range (31000 to 31999) -->
       <entry value="32000" name="MAV_CMD_CAN_FORWARD" hasLocation="false" isDestination="false">
-        <description>Request forwarding of CAN packets from the given CAN bus to this interface. CAN Frames are sent using CAN_FRAME messages</description>
+        <description>Request forwarding of CAN packets from the given CAN bus to this interface. CAN Frames are sent using CAN_FRAME and CANFD_FRAME messages</description>
         <param index="1" label="bus">Bus number (0 to disable forwarding, 1 for first bus, 2 for 2nd bus, 3 for 3rd bus).</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
@@ -3379,6 +3379,11 @@
       <entry value="5" name="MAG_CAL_FAILED"/>
       <entry value="6" name="MAG_CAL_BAD_ORIENTATION"/>
       <entry value="7" name="MAG_CAL_BAD_RADIUS"/>
+    </enum>
+    <enum name="CAN_FILTER_OP">
+      <entry value="0" name="CAN_FILTER_REPLACE"/>
+      <entry value="1" name="CAN_FILTER_ADD"/>
+      <entry value="2" name="CAN_FILTER_REMOVE"/>
     </enum>
   </enums>
   <messages>
@@ -5429,6 +5434,24 @@
       <field type="uint8_t" name="len">Frame length</field>
       <field type="uint32_t" name="id">Frame ID</field>
       <field type="uint8_t[8]" name="data">Frame data</field>
+    </message>
+    <message id="387" name="CANFD_FRAME">
+      <description>A forwarded CANFD frame as requested by MAV_CMD_CAN_FORWARD. These are separated from CAN_FRAME as they need different handling (eg. TAO handling)</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint8_t" name="bus">bus number</field>
+      <field type="uint8_t" name="len">Frame length</field>
+      <field type="uint32_t" name="id">Frame ID</field>
+      <field type="uint8_t[64]" name="data">Frame data</field>
+    </message>
+    <message id="388" name="CAN_FILTER_MODIFY">
+      <description>Modify the filter of what CAN messages to forward over the mavlink. This can be used to make CAN forwarding work well on low bandwith links. The filtering is applied on bits 8 to 24 of the CAN id (2nd and 3rd bytes) which corresponds to the DroneCAN message ID for DroneCAN. Filters with more than 16 IDs can be constructed by sending multiple CAN_FILTER_MODIFY messages.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint8_t" name="bus">bus number</field>
+      <field type="uint8_t" name="operation" enum="CAN_FILTER_OP">what operation to perform on the filter list. See CAN_FILTER_OP enum.</field>
+      <field type="uint8_t" name="num_ids">number of IDs in filter list</field>
+      <field type="uint16_t[16]" name="ids">filter IDs, length num_ids</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
