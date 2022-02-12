@@ -2455,6 +2455,16 @@
         <param index="7">User defined</param>
       </entry>
       <!-- END of user range (31000 to 31999) -->
+      <entry value="32000" name="MAV_CMD_CAN_FORWARD" hasLocation="false" isDestination="false">
+        <description>Request forwarding of CAN packets from the given CAN bus to this component. CAN Frames are sent using CAN_FRAME and CANFD_FRAME messages</description>
+        <param index="1" label="bus">Bus number (0 to disable forwarding, 1 for first bus, 2 for 2nd bus, 3 for 3rd bus).</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
     </enum>
     <enum name="MAV_DATA_STREAM">
       <deprecated since="2015-06" replaced_by="MESSAGE_INTERVAL"/>
@@ -4660,6 +4670,11 @@
       <entry value="65535" name="HIGHRES_IMU_UPDATED_ALL">
         <description>All fields in HIGHRES_IMU have been updated.</description>
       </entry>
+    </enum>
+    <enum name="CAN_FILTER_OP">
+      <entry value="0" name="CAN_FILTER_REPLACE"/>
+      <entry value="1" name="CAN_FILTER_ADD"/>
+      <entry value="2" name="CAN_FILTER_REMOVE"/>
     </enum>
   </enums>
   <messages>
@@ -6998,6 +7013,15 @@
       <field type="uint8_t" name="payload_length">Length of the data transported in payload</field>
       <field type="uint8_t[128]" name="payload">Variable length payload. The payload length is defined by payload_length. The entire content of this block is opaque unless you understand the encoding specified by payload_type.</field>
     </message>
+    <message id="386" name="CAN_FRAME">
+      <description>A forwarded CAN frame as requested by MAV_CMD_CAN_FORWARD.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint8_t" name="bus">Bus number</field>
+      <field type="uint8_t" name="len">Frame length</field>
+      <field type="uint32_t" name="id">Frame ID</field>
+      <field type="uint8_t[8]" name="data">Frame data</field>
+    </message>
     <message id="390" name="ONBOARD_COMPUTER_STATUS">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
@@ -7084,6 +7108,24 @@
       <field type="uint16_t" name="sequence">Sequence number.</field>
       <field type="uint16_t" name="sequence_oldest_available">Oldest Sequence number that is still available after the sequence set in REQUEST_EVENT.</field>
       <field type="uint8_t" name="reason" enum="MAV_EVENT_ERROR_REASON">Error reason.</field>
+    </message>
+    <message id="387" name="CANFD_FRAME">
+      <description>A forwarded CANFD frame as requested by MAV_CMD_CAN_FORWARD. These are separated from CAN_FRAME as they need different handling (eg. TAO handling)</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint8_t" name="bus">bus number</field>
+      <field type="uint8_t" name="len">Frame length</field>
+      <field type="uint32_t" name="id">Frame ID</field>
+      <field type="uint8_t[64]" name="data">Frame data</field>
+    </message>
+    <message id="388" name="CAN_FILTER_MODIFY">
+      <description>Modify the filter of what CAN messages to forward over the mavlink. This can be used to make CAN forwarding work well on low bandwith links. The filtering is applied on bits 8 to 24 of the CAN id (2nd and 3rd bytes) which corresponds to the DroneCAN message ID for DroneCAN. Filters with more than 16 IDs can be constructed by sending multiple CAN_FILTER_MODIFY messages.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint8_t" name="bus">bus number</field>
+      <field type="uint8_t" name="operation" enum="CAN_FILTER_OP">what operation to perform on the filter list. See CAN_FILTER_OP enum.</field>
+      <field type="uint8_t" name="num_ids">number of IDs in filter list</field>
+      <field type="uint16_t[16]" name="ids">filter IDs, length num_ids</field>
     </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
