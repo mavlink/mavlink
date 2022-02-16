@@ -62,8 +62,8 @@
                 },
                 "function": {
                     "type": "string",
-                    "description": "Optional semantics of the parameters. Valid values for geometry parameters: ['pos{x,y,z}': position parameters (expected in [m]). 'axis{x,y,z}': where the actuator points to. 'spin-dir': spinning direction (CCW=true or 1). 'type': enum param to select the specific actuator type (e.g. left aileron)]. Values for output configuration parameters: ['disarmed', 'min', 'max', 'failsafe'. 'function': defines the actuator output function]. For a given list, the same value can be assigned at most once.",
-                    "pattern": "^(posx|posy|posz|axisx|axisy|axisz|spin-dir|type|disarmed|min|max|failsafe|function)$"
+                    "description": "Optional semantics of the parameters. Valid values for geometry parameters: ['pos{x,y,z}': position parameters (expected in [m]). 'axis{x,y,z}': where the actuator points to. 'spin-dir': spinning direction (CCW=true or 1). 'type': enum param to select the specific actuator type (e.g. left aileron). 'reversible': configure motor to be reversible (bool/int32)]. Values for output configuration parameters: ['disarmed', 'min', 'max', 'failsafe'. 'function': defines the actuator output function]. For a given list, the same value can be assigned at most once.",
+                    "pattern": "^(posx|posy|posz|axisx|axisy|axisz|spin-dir|type|reversible|disarmed|min|max|failsafe|function)$"
                 },
                 "index-offset": {
                     "type": "integer",
@@ -348,6 +348,14 @@
                                 "type": "string",
                                 "pattern": "^(multirotor)$",
                                 "description": "Optional geometry type indicator. A UI may use these to render type-dependent geometry images"
+                            },
+                            "title": {
+                                "type": "string",
+                                "description": "Optional geometry title (e.g. Multirotor)"
+                            },
+                            "help-url": {
+                                "type": "string",
+                                "description": "Optional url with documentation"
                             },
                             "actuators": {
                                 "type": "array",
