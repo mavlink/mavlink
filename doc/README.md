@@ -2,7 +2,7 @@
 
 Files:
 
-- **Doxyfile**: - Doxygen project configuration file
+- **Doxyfile**: Doxygen project configuration file
 - **MAVLink2.md**: MAVLink2 Documentation
 - **README**: This file
 - **mavlink.php**: Generates online documentation from MAVLink XML - http://mavlink.org/messages/common
