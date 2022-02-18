@@ -87,6 +87,91 @@
         <description>Cancel the current parameter transaction.</description>
       </entry>
     </enum>
+    <enum name="MAV_STANDARD_MODE">
+      <description>Standard modes with a well understood meaning across flight stacks and vehicle types.
+        For example, most flight stack have the concept of a "return" or "RTL" mode that takes a vehicle to safety, even though the precise mechanics of this mode may differ.
+        Modes may be set using MAV_CMD_DO_SET_STANDARD_MODE.
+      </description>
+      <entry value="0" name="MAV_STANDARD_MODE_NON_STANDARD">
+        <description>Non standard mode.
+          This may be used when reporting the mode if the current flight mode is not a standard mode.
+        </description>
+      </entry>
+      <entry value="1" name="MAV_STANDARD_MODE_POSITION_HOLD">
+        <description>Position mode (manual).
+          Position-controlled and stabilized manual mode.
+          When sticks are released vehicles return to their level-flight orientation and hold both position and altitude against wind and external forces.
+          This mode can only be set by vehicles that can hold a fixed position.
+          Multicopter (MC) vehicles actively brake and hold both position and altitude against wind and external forces.
+          Hybrid MC/FW ("VTOL") vehicles first transition to multicopter mode (if needed) but otherwise behave in the same way as MC vehicles.
+          Fixed-wing (FW) vehicles must not support this mode.
+          Other vehicle types must not support this mode (this may be revisited through the PR process).
+        </description>
+      </entry>
+      <entry value="2" name="MAV_STANDARD_MODE_ORBIT">
+        <description>Orbit (manual).
+          Position-controlled and stabilized manual mode.
+          The vehicle circles around a fixed setpoint in the horizontal plane at a particular radius, altitude, and direction.
+          Flight stacks may further allow manual control over the setpoint position, radius, direction, speed, and/or altitude of the circle, but this is not mandated.
+          Flight stacks may support the [MAV_CMD_DO_ORBIT](https://mavlink.io/en/messages/common.html#MAV_CMD_DO_ORBIT) for changing the orbit parameters.
+          MC and FW vehicles may support this mode.
+          Hybrid MC/FW ("VTOL") vehicles may support this mode in MC/FW or both modes; if the mode is not supported by the current configuration the vehicle should transition to the supported configuration.
+          Other vehicle types must not support this mode (this may be revisited through the PR process).
+        </description>
+      </entry>
+      <entry value="3" name="MAV_STANDARD_MODE_CRUISE">
+        <description>Cruise mode (manual).
+          Position-controlled and stabilized manual mode.
+          When sticks are released vehicles return to their level-flight orientation and hold their original track against wind and external forces.
+          Fixed-wing (FW) vehicles level orientation and maintain current track and altitude against wind and external forces.
+          Hybrid MC/FW ("VTOL") vehicles first transition to FW mode (if needed) but otherwise behave in the same way as MC vehicles.
+          Multicopter (MC) vehicles must not support this mode.
+          Other vehicle types must not support this mode (this may be revisited through the PR process).
+        </description>
+      </entry>
+      <entry value="4" name="MAV_STANDARD_MODE_ALTITUDE_HOLD">
+        <description>Altitude hold (manual).
+          Altitude-controlled and stabilized manual mode.
+          When sticks are released vehicles return to their level-flight orientation and hold their altitude.
+          MC vehicles continue with existing momentum and may move with wind (or other external forces).
+          FW vehicles continue with current heading, but may be moved off-track by wind.
+          Hybrid MC/FW ("VTOL") vehicles behave according to their current configuration/mode (FW or MC).
+          Other vehicle types must not support this mode (this may be revisited through the PR process).
+        </description>
+      </entry>
+      <entry value="5" name="MAV_STANDARD_MODE_RETURN_HOME">
+        <description>Return home mode (auto).
+          Automatic mode that returns vehicle to home via a safe flight path.
+          It may also automatically land the vehicle (i.e. RTL).
+          The precise flight path and landing behaviour depend on vehicle configuration and type.
+        </description>
+      </entry>
+      <entry value="6" name="MAV_STANDARD_MODE_SAFE_RECOVERY">
+        <description>Safe recovery mode (auto).
+          Automatic mode that takes vehicle to a predefined safe location via a safe flight path (rally point or mission defined landing) .
+          It may also automatically land the vehicle.
+          The precise return location, flight path, and landing behaviour depend on vehicle configuration and type.
+        </description>
+      </entry>
+      <entry value="7" name="MAV_STANDARD_MODE_MISSION">
+        <description>Mission mode (automatic).
+          Automatic mode that executes MAVLink missions.
+          Missions are executed from the current waypoint as soon as the mode is enabled.
+        </description>
+      </entry>
+      <entry value="8" name="MAV_STANDARD_MODE_LAND">
+        <description>Land mode (auto).
+          Automatic mode that lands the vehicle at the current location.
+          The precise landing behaviour depends on vehicle configuration and type.
+        </description>
+      </entry>
+      <entry value="9" name="MAV_STANDARD_MODE_TAKEOFF">
+        <description>Takeoff mode (auto).
+          Automatic takeoff mode.
+          The precise takeoff behaviour depends on vehicle configuration and type.
+        </description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -139,6 +224,18 @@
           Groups can be nested.</description>
         <param index="1" label="Group ID" minValue="0" maxValue="16777216" increment="1">Mission-unique group id.
           Group id is limited because only 24 bit integer can be stored in 32 bit float.</param>
+      </entry>
+      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" hasLocation="false" isDestination="false">
+        <description>Enable the specified standard MAVLink mode.
+          If the mode is not supported the vehicle should ACK with MAV_RESULT_FAILED.
+        </description>
+        <param index="1" label="Standard Mode" enum="MAV_STANDARD_MODE">The mode to set.</param>
+        <param index="2" reserved="true" default="0"/>
+        <param index="3" reserved="true" default="0"/>
+        <param index="4" reserved="true" default="0"/>
+        <param index="5" reserved="true" default="0"/>
+        <param index="6" reserved="true" default="0"/>
+        <param index="7" reserved="true" default="NaN"/>
       </entry>
     </enum>
   </enums>
@@ -216,6 +313,29 @@
       <field type="uint32_t" name="mission_checksum">CRC32 checksum of current plan for MAV_MISSION_TYPE_ALL. As defined in MISSION_CHECKSUM message.</field>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot).
         The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+    </message>
+    <message id="435" name="AVAILABLE_MODES">
+      <description>Get information about a particular flight modes.
+        The message can be enumerated or requested for a particular mode using MAV_CMD_REQUEST_MESSAGE.
+        Specify 0 in param2 to request that the message is emitted for all available modes or the specific index for just one mode.
+        The modes must be available/settable for the current vehicle/frame type.
+        Each modes should only be emitted once (even if it is both standard and custom).
+      </description>
+      <field type="uint8_t" name="number_modes">The total number of available modes for the current vehicle type.</field>
+      <field type="uint8_t" name="mode_index">The current mode index within number_modes, indexed from 1.</field>
+      <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
+      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="char[50]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
+    </message>
+    <message id="436" name="CURRENT_MODE">
+      <description>Get the current mode.
+        This should be emitted on any mode change, and broadcast at low rate (nominally 0.5 Hz).
+        It may be requested using MAV_CMD_REQUEST_MESSAGE.
+      </description>
+      <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
+      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
     </message>
   </messages>
 </mavlink>
