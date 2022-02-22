@@ -1379,8 +1379,15 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="185" name="MAV_CMD_DO_FLIGHTTERMINATION" hasLocation="false" isDestination="false">
-        <description>Terminate flight immediately</description>
-        <param index="1" label="Terminate" minValue="0" maxValue="1" increment="1">Flight termination activated if &gt; 0.5</param>
+        <description>Terminate flight immediately.
+          Flight termination immediately and irreversably terminates the current flight, returning the vehicle to ground.
+          The vehicle will ignore RC or other input until it has been power-cycled.
+          Termination may trigger safety measures, including: disabling motors and deployment of parachute on multicopters, and setting flight surfaces to initiate a landing pattern on fixed-wing).
+          On multicopters without a parachute it may trigger a crash landing.
+          Support for this command can be tested using the protocol bit: MAV_PROTOCOL_CAPABILITY_FLIGHT_TERMINATION.
+          Support for this command can also be tested by sending the command with param1=0 (&lt; 0.5); the ACK should be either MAV_RESULT_FAILED or MAV_RESULT_UNSUPPORTED.
+        </description>
+        <param index="1" label="Terminate" minValue="0" maxValue="1" increment="1">Flight termination activated if &gt; 0.5. Otherwise not activated and ACK with MAV_RESULT_FAILED.</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -2995,7 +3002,7 @@
         <description>Autopilot supports direct actuator control.</description>
       </entry>
       <entry value="2048" name="MAV_PROTOCOL_CAPABILITY_FLIGHT_TERMINATION">
-        <description>Autopilot supports the flight termination command.</description>
+        <description>Autopilot supports the MAV_CMD_DO_FLIGHTTERMINATION command (flight termination).</description>
       </entry>
       <entry value="4096" name="MAV_PROTOCOL_CAPABILITY_COMPASS_CALIBRATION">
         <description>Autopilot supports onboard compass calibration.</description>
