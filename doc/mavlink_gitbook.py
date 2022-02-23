@@ -38,50 +38,54 @@ xslt = ET.fromstring(xsl_file)
 
 #initialise text for index file. 
 index_text="""<!-- THIS FILE IS AUTO-GENERATED (DO NOT UPDATE GITBOOK): https://github.com/mavlink/mavlink/blob/master/doc/mavlink_gitbook.py -->
-# Dialects {#dialects}
+# XML Definition Files & Dialects
 
-MAVLink *dialects* are XML definition files that define *protocol-* and *vendor-specific* messages, enums and commands.
+MAVLink definitions files can be found in [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/).
+These can roughtly be divided into:
+- [Standard definitions](#standard-definitions) - core definitions shared by many flight stacks
+- [Test definitions](#test-definitions) - definitions to support testing and validation
+- [Dialects](#dialects) - *protocol-* and *vendor-specific* messages, enums and commands
 
-Dialects may *include* other MAVLink XML files, which may in turn contain other XML files (up to 5 levels of XML file nesting are allowed - see `MAXIMUM_INCLUDE_FILE_NESTING` in [mavgen.py](https://github.com/ArduPilot/pymavlink/blob/master/generator/mavgen.py#L44)).
-A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the *MAVLink standard definitions*), extending it with vendor or protocol specific messages.
 
 ## Standard Definitions
 
 The following XML definition files are considered standard/core (i.e. not dialects):
 
-* [minimal.xml](minimal.md) - the minimum set of entities (messages, enums, MAV_CMD) required to set up a MAVLink network.
-* [standard.xml](standard.md) - the standard set of entities that are implemented by almost all flight stacks (at least 2, in a compatible way).
+- [minimal.xml](minimal.md) - the minimum set of entities (messages, enums, MAV_CMD) required to set up a MAVLink network.
+- [standard.xml](standard.md) - the standard set of entities that are implemented by almost all flight stacks (at least 2, in a compatible way).
   This `includes` [minimal.xml](minimal.md).
-* [common.xml](../messages/common.md) - the set of entitites that have been implemented in at least one core flight stack.
+- [common.xml](../messages/common.md) - the set of entitites that have been implemented in at least one core flight stack.
   This `includes` [standard.xml](minimal.md)
-
-Further, [all.xml](all.md) is a _special case_.
-It includes almost all other XML definition files, and can be used to verify that there are no ID clashes (and can potentially be used by GCS to communicate with any core dialect).
 
 > **Note** We are still working towards moving the truly standard entities from **common.xml** to **standard.xml**
   Currently you should include [common.xml](../messages/common.md)
+  
+ In addition:
+ - [development.xml](development.md) - XML definitions that are _proposed_ for inclusion in the standard definitions.
+   These are work in progress.
 
-## Core Dialects
 
-Core dialects are stored in [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/).
-These are the dialects for the major MAVLink stakeholder flight stacks.
+## Test Definitions
 
-> **Note** Vendor forks of MAVLink may contain dialect messages that are not yet merged, and hence will not appear in this documentation.
+The following definitions are used for testing and dialect validation:
 
-Human-readable forms of all the the core dialects are linked below:
+- [all.xml](all.md) - This includes all other XML files, and is used to verify that there are no ID clashes (and can potentially be used by GCS to communicate with any core dialect).
+- [test.xml](test.md) - Test XML definition file.
+
+
+## Dialects  {#dialects}
+
+MAVLink *dialects* are XML definition files that define *protocol-* and *vendor-specific* messages, enums and commands.
+
+> **Note** Vendor forks of MAVLink may contain XML entities that have not yet been pushed into the main repository (and will not be documented).
+
+Dialects may *include* other MAVLink XML files, which may in turn contain other XML files (up to 5 levels of XML file nesting are allowed - see `MAXIMUM_INCLUDE_FILE_NESTING` in [mavgen.py](https://github.com/ArduPilot/pymavlink/blob/master/generator/mavgen.py#L44)).
+A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the *MAVLink standard definitions*), extending it with vendor or protocol specific messages.
+
+The dialect definitions are:
 """
 
-index_text_trailer="""## External Dialects
-
-MAVLink provides the [/external/dialects](https://github.com/mavlink/mavlink/tree/master/external/dialects) folder for dialects from projects that are not maintained by core MAVLink stakeholders or part of the MAVLink standard.
-
-This mechanism is provided to help non-stakeholder dialect owners avoid clashes with other dialects (and the standard), and to ease integration of generic behaviours into the standard in future.
-These are not managed by the core team and do not appear in this documentation.
-
-Information about using the folder can be found in github: [/external/dialects](https://github.com/mavlink/mavlink/tree/master/external/dialects)
-
-> **Note** We *highly* recommend that you work with the standard and core stakeholder dialects rather than using this approach (there are significant benefits in terms of compatibility and adoptability when using the standard definitions).
-
+index_text_trailer="""
 """
 
 #Fix up the BeautifulSoup output so to fix build-link errors in the generated gitbook.
@@ -288,7 +292,7 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             #Write output markdown file
             output_file_name_prefix = file.rsplit('.',1)[0]
             all_files.add(output_file_name_prefix)
-            if not file=='common.xml' and not file=='standard.xml' and not file=='minimal.xml':
+            if not file=='common.xml' and not file=='standard.xml' and not file=='minimal.xml' and not file=='test.xml' and not file=='development.xml':
                 dialect_files.add(output_file_name_prefix)
 
 
