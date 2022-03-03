@@ -2969,8 +2969,10 @@
           Note that MISSION_ITEM is deprecated, and autopilots should use MISSION_INT instead.
         </description>
       </entry>
-      <entry value="2" name="MAV_PROTOCOL_CAPABILITY_PARAM_FLOAT">
-        <description>Autopilot supports the new param float message type.</description>
+      <entry value="2" name="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST">
+        <description>Parameter protocol uses C-cast of parameter values to set the param_value (float) fields: https://mavlink.io/en/services/parameter.html#parameter-encoding.
+          Note that either this flag or MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE should be set if the parameter protocol is supported.
+        </description>
       </entry>
       <entry value="4" name="MAV_PROTOCOL_CAPABILITY_MISSION_INT">
         <description>Autopilot supports MISSION_ITEM_INT scaled integer message type.
@@ -2980,8 +2982,10 @@
       <entry value="8" name="MAV_PROTOCOL_CAPABILITY_COMMAND_INT">
         <description>Autopilot supports COMMAND_INT scaled integer message type.</description>
       </entry>
-      <entry value="16" name="MAV_PROTOCOL_CAPABILITY_PARAM_UNION">
-        <description>Autopilot supports the new param union message type.</description>
+      <entry value="16" name="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE">
+        <description>Parameter protocol uses byte-wise encoding of parameter values into param_value (float) fields: https://mavlink.io/en/services/parameter.html#parameter-encoding.
+          Note that either this flag or MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE should be set if the parameter protocol is supported.
+        </description>
       </entry>
       <entry value="32" name="MAV_PROTOCOL_CAPABILITY_FTP">
         <description>Autopilot supports the File Transfer Protocol v1: https://mavlink.io/en/services/ftp.html.</description>
@@ -6403,7 +6407,7 @@
       <field type="uint8_t" name="lens_id">Reserved for a lens ID</field>
       <field type="uint32_t" name="flags" enum="CAMERA_CAP_FLAGS" display="bitmask">Bitmap of camera capability flags.</field>
       <field type="uint16_t" name="cam_definition_version">Camera definition version (iteration)</field>
-      <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available). HTTP- (http://) and MAVLink FTP- (mavlinkftp://) formatted URIs are allowed (and both must be supported by any GCS that implements the Camera Protocol). The definition file may be xz compressed, which will be indicated by the file extension .xml.xz (a GCS that implements the protocol must support decompressing the file).</field>
+      <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available). HTTP- (http://) and MAVLink FTP- (mavlinkftp://) formatted URIs are allowed (and both must be supported by any GCS that implements the Camera Protocol). The definition file may be xz compressed, which will be indicated by the file extension .xml.xz (a GCS that implements the protocol must support decompressing the file). The string needs to be zero terminated.</field>
     </message>
     <message id="260" name="CAMERA_SETTINGS">
       <description>Settings of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
@@ -7069,9 +7073,9 @@
       </description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="general_metadata_file_crc">CRC32 of the general metadata file (general_metadata_uri).</field>
-      <field type="char[100]" name="general_metadata_uri">MAVLink FTP URI for the general metadata file (COMP_METADATA_TYPE_GENERAL), which may be compressed with xz. The file contains general component metadata, and may contain URI links for additional metadata (see COMP_METADATA_TYPE). The information is static from boot, and may be generated at compile time.</field>
+      <field type="char[100]" name="general_metadata_uri">MAVLink FTP URI for the general metadata file (COMP_METADATA_TYPE_GENERAL), which may be compressed with xz. The file contains general component metadata, and may contain URI links for additional metadata (see COMP_METADATA_TYPE). The information is static from boot, and may be generated at compile time. The string needs to be zero terminated.</field>
       <field type="uint32_t" name="peripherals_metadata_file_crc">CRC32 of peripherals metadata file (peripherals_metadata_uri).</field>
-      <field type="char[100]" name="peripherals_metadata_uri">(Optional) MAVLink FTP URI for the peripherals metadata file (COMP_METADATA_TYPE_PERIPHERALS), which may be compressed with xz. This contains data about "attached components" such as UAVCAN nodes. The peripherals are in a separate file because the information must be generated dynamically at runtime.</field>
+      <field type="char[100]" name="peripherals_metadata_uri">(Optional) MAVLink FTP URI for the peripherals metadata file (COMP_METADATA_TYPE_PERIPHERALS), which may be compressed with xz. This contains data about "attached components" such as UAVCAN nodes. The peripherals are in a separate file because the information must be generated dynamically at runtime. The string needs to be zero terminated.</field>
     </message>
     <message id="400" name="PLAY_TUNE_V2">
       <description>Play vehicle tone/tune (buzzer). Supersedes message PLAY_TUNE.</description>
