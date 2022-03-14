@@ -2969,10 +2969,9 @@
           Note that MISSION_ITEM is deprecated, and autopilots should use MISSION_INT instead.
         </description>
       </entry>
-      <entry value="2" name="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST">
-        <description>Parameter protocol uses C-cast of parameter values to set the param_value (float) fields: https://mavlink.io/en/services/parameter.html#parameter-encoding.
-          Note that either this flag or MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE should be set if the parameter protocol is supported.
-        </description>
+      <entry value="2" name="MAV_PROTOCOL_CAPABILITY_PARAM_FLOAT">
+        <deprecated since="2022-03" replaced_by="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST"/>
+        <description>Autopilot supports the new param float message type.</description>
       </entry>
       <entry value="4" name="MAV_PROTOCOL_CAPABILITY_MISSION_INT">
         <description>Autopilot supports MISSION_ITEM_INT scaled integer message type.
@@ -3022,6 +3021,11 @@
       </entry>
       <entry value="65536" name="MAV_PROTOCOL_CAPABILITY_RESERVED2">
         <description>Reserved for future use.</description>
+      </entry>
+      <entry value="131072" name="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST">
+        <description>Parameter protocol uses C-cast of parameter values to set the param_value (float) fields: https://mavlink.io/en/services/parameter.html#parameter-encoding.
+          Note that either this flag or MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE should be set if the parameter protocol is supported.
+        </description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_TYPE">
