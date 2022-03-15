@@ -9,9 +9,10 @@ MAVLink is a very lightweight, header-only message library for communication bet
 > **Tip** MAVLink is very well suited for applications with very limited communication bandwidth. Its reference implementation in C is highly optimized for resource-constrained systems with limited RAM and flash memory. It is field-proven and deployed in many products where it serves as interoperability interface between components of different manufacturers.
 
 Key Links:
-* Development Website: http://dev.ardupilot.org
+* Development Website: https://ardupilot.org/dev/
 * Source: [Mavlink Generator](https://github.com/ArduPilot/pymavlink)
-* Discussion: [Gitter Channel](http://gitter.im/ArduPilot/pymavlink)
+* Discussion: [Discord Mavlink Channel](https://discord.com/channels/674039678562861068/728017546313466047)
+* Discussion: [Discord pymavlink Channel](https://discord.com/channels/674039678562861068/930641827592306718)
 * [Documentation/Website](https://mavlink.io/en/) (mavlink.io/en/)
 * [Discussion/Support](https://mavlink.io/en/#support) (Slack)
 * [Contributing](https://mavlink.io/en/contributing/contributing.html)
