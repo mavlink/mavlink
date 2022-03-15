@@ -2341,7 +2341,7 @@
         <description>Autopilot supports the new param union message type.</description>
       </entry>
       <entry value="32" name="MAV_PROTOCOL_CAPABILITY_FTP">
-        <description>Autopilot supports the new FILE_TRANSFER_PROTOCOL message type.</description>
+        <description>Autopilot supports the File Transfer Protocol v1: https://mavlink.io/en/services/ftp.html.</description>
       </entry>
       <entry value="64" name="MAV_PROTOCOL_CAPABILITY_SET_ATTITUDE_TARGET">
         <description>Autopilot supports commanding attitude offboard.</description>
@@ -2359,7 +2359,7 @@
         <description>Autopilot supports direct actuator control.</description>
       </entry>
       <entry value="2048" name="MAV_PROTOCOL_CAPABILITY_FLIGHT_TERMINATION">
-        <description>Autopilot supports the flight termination command.</description>
+        <description>Autopilot supports the MAV_CMD_DO_FLIGHTTERMINATION command (flight termination).</description>
       </entry>
       <entry value="4096" name="MAV_PROTOCOL_CAPABILITY_COMPASS_CALIBRATION">
         <description>Autopilot supports onboard compass calibration.</description>
@@ -2476,10 +2476,10 @@
         <description>Battery state is too low for ordinary abort sequence. Perform fastest possible emergency stop to prevent damage.</description>
       </entry>
       <entry value="5" name="MAV_BATTERY_CHARGE_STATE_FAILED">
-        <description>Battery failed, damage unavoidable.</description>
+        <description>Battery failed, damage unavoidable. Possible causes (faults) are listed in MAV_BATTERY_FAULT.</description>
       </entry>
       <entry value="6" name="MAV_BATTERY_CHARGE_STATE_UNHEALTHY">
-        <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited.</description>
+        <description>Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited. Possible causes (faults) are listed in MAV_BATTERY_FAULT.</description>
       </entry>
       <entry value="7" name="MAV_BATTERY_CHARGE_STATE_CHARGING">
         <description>Battery is charging.</description>
@@ -2728,29 +2728,31 @@
     </enum>
     <!-- motor test type enum -->
     <enum name="MOTOR_TEST_ORDER">
+      <description>Sequence that motors are tested when using MAV_CMD_DO_MOTOR_TEST.</description>
       <entry name="MOTOR_TEST_ORDER_DEFAULT" value="0">
-        <description>default autopilot motor test method</description>
+        <description>Default autopilot motor test method.</description>
       </entry>
       <entry name="MOTOR_TEST_ORDER_SEQUENCE" value="1">
-        <description>motor numbers are specified as their index in a predefined vehicle-specific sequence</description>
+        <description>Motor numbers are specified as their index in a predefined vehicle-specific sequence.</description>
       </entry>
       <entry name="MOTOR_TEST_ORDER_BOARD" value="2">
-        <description>motor numbers are specified as the output as labeled on the board</description>
+        <description>Motor numbers are specified as the output as labeled on the board.</description>
       </entry>
     </enum>
     <!-- motor test throttle type enum -->
     <enum name="MOTOR_TEST_THROTTLE_TYPE">
+      <description>Defines how throttle value is represented in MAV_CMD_DO_MOTOR_TEST.</description>
       <entry value="0" name="MOTOR_TEST_THROTTLE_PERCENT">
-        <description>throttle as a percentage from 0 ~ 100</description>
+        <description>Throttle as a percentage (0 ~ 100)</description>
       </entry>
       <entry value="1" name="MOTOR_TEST_THROTTLE_PWM">
-        <description>throttle as an absolute PWM value (normally in range of 1000~2000)</description>
+        <description>Throttle as an absolute PWM value (normally in range of 1000~2000).</description>
       </entry>
       <entry value="2" name="MOTOR_TEST_THROTTLE_PILOT">
-        <description>throttle pass-through from pilot's transmitter</description>
+        <description>Throttle pass-through from pilot's transmitter.</description>
       </entry>
       <entry value="3" name="MOTOR_TEST_COMPASS_CAL">
-        <description>per-motor compass calibration test</description>
+        <description>Per-motor compass calibration test.</description>
       </entry>
     </enum>
     <!-- GPS_INPUT ignore flags enum -->
