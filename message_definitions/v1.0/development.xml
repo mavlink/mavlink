@@ -178,24 +178,6 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
-        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
-        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
-        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
-        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
-      </entry>
-      <entry value="5010" name="MAV_CMD_SET_FENCE_BREACH_ACTION" hasLocation="false" isDestination="false">
-        <description>Sets the action on geofence breach.
-          If sent using the command protocol this sets the system-default geofence action.
-          As part of a mission protocol plan it sets the fence action for the next complete geofence definition *after* the command.
-          Note: A fence action defined in a plan will override the default system setting (even if the system-default is `FENCE_ACTION_NONE`).
-          Note: Every geofence in a plan can have its own action; if no fence action is defined for a particular fence the system-default will be used.
-          Note: The flight stack should reject a plan or command that uses a geofence action that it does not support and send a STATUSTEXT with the reason.
-        </description>
-        <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
-      </entry>
-    </enum>
-    <enum name="MAV_CMD">
       <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
         <description>Request a target system to start an upgrade of one (or all) of its components.
           For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller.
@@ -208,6 +190,28 @@
         <param index="5">Reserved</param>
         <param index="6">Reserved</param>
         <param index="7">WIP: upgrade progress report rate (can be used for more granular control).</param>
+      </entry>
+      <entry value="248" name="MAV_CMD_COMPONENT_CONTROL" hasLocation="false" isDestination="false">
+        <description>Control the state or functionality of system components.</description>
+        <param index="1" label="Component ID" enum="MAV_COMPONENT">Component ID of the system component to be controlled.</param>
+        <param index="2" label="Component Control Type" enum="COMPONENT_CONTROL">Control command type being sent to the system component.</param>
+        <param index="3" label="Component Instance ID" minValue="0" maxValue="1" increment="1">Component instance, when there is more than one instance per component.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
+      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" hasLocation="false" isDestination="false">
+        <description>Enable the specified standard MAVLink mode.
+          If the mode is not supported the vehicle should ACK with MAV_RESULT_FAILED.
+        </description>
+        <param index="1" label="Standard Mode" enum="MAV_STANDARD_MODE">The mode to set.</param>
+        <param index="2" reserved="true" default="0"/>
+        <param index="3" reserved="true" default="0"/>
+        <param index="4" reserved="true" default="0"/>
+        <param index="5" reserved="true" default="0"/>
+        <param index="6" reserved="true" default="0"/>
+        <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="301" name="MAV_CMD_GROUP_START" hasLocation="false" isDestination="false">
         <description>Define start of a group of mission items. When control reaches this command a GROUP_START message is emitted.
@@ -225,17 +229,21 @@
         <param index="1" label="Group ID" minValue="0" maxValue="16777216" increment="1">Mission-unique group id.
           Group id is limited because only 24 bit integer can be stored in 32 bit float.</param>
       </entry>
-      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" hasLocation="false" isDestination="false">
-        <description>Enable the specified standard MAVLink mode.
-          If the mode is not supported the vehicle should ACK with MAV_RESULT_FAILED.
+      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
+        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
+        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
+        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
+        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
+      </entry>
+      <entry value="5010" name="MAV_CMD_SET_FENCE_BREACH_ACTION" hasLocation="false" isDestination="false">
+        <description>Sets the action on geofence breach.
+          If sent using the command protocol this sets the system-default geofence action.
+          As part of a mission protocol plan it sets the fence action for the next complete geofence definition *after* the command.
+          Note: A fence action defined in a plan will override the default system setting (even if the system-default is `FENCE_ACTION_NONE`).
+          Note: Every geofence in a plan can have its own action; if no fence action is defined for a particular fence the system-default will be used.
+          Note: The flight stack should reject a plan or command that uses a geofence action that it does not support and send a STATUSTEXT with the reason.
         </description>
-        <param index="1" label="Standard Mode" enum="MAV_STANDARD_MODE">The mode to set.</param>
-        <param index="2" reserved="true" default="0"/>
-        <param index="3" reserved="true" default="0"/>
-        <param index="4" reserved="true" default="0"/>
-        <param index="5" reserved="true" default="0"/>
-        <param index="6" reserved="true" default="0"/>
-        <param index="7" reserved="true" default="NaN"/>
+        <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
       </entry>
     </enum>
   </enums>
