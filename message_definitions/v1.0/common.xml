@@ -4691,6 +4691,100 @@
       <entry value="1" name="CAN_FILTER_ADD"/>
       <entry value="2" name="CAN_FILTER_REMOVE"/>
     </enum>
+    <enum name="MAV_FTP_ERR">
+      <description>MAV FTP error codes (https://mavlink.io/en/services/ftp.html)</description>
+      <entry value="0" name="MAV_FTP_ERR_NONE">
+        <description>None: No error</description>
+      </entry>
+      <entry value="1" name="MAV_FTP_ERR_FAIL">
+        <description>Fail: Unknown failure</description>
+      </entry>
+      <entry value="2" name="MAV_FTP_ERR_FAILERRNO">
+        <description>FailErrno: Command failed, Err number sent back in PayloadHeader.data[1].
+		This is a file-system error number understood by the server operating system.</description>
+      </entry>
+      <entry value="3" name="MAV_FTP_ERR_INVALIDDATASIZE">
+        <description>InvalidDataSize: Payload size is invalid</description>
+      </entry>
+      <entry value="4" name="MAV_FTP_ERR_INVALIDSESSION">
+        <description>InvalidSession: Session is not currently open</description>
+      </entry>
+      <entry value="5" name="MAV_FTP_ERR_NOSESSIONSAVAILABLE">
+        <description>NoSessionsAvailable: All available sessions are already in use</description>
+      </entry>
+      <entry value="6" name="MAV_FTP_ERR_EOF">
+        <description>EOF: Offset past end of file for ListDirectory and ReadFile commands</description>
+      </entry>
+      <entry value="7" name="MAV_FTP_ERR_UNKNOWNCOMMAND">
+        <description>UnknownCommand: Unknown command / opcode</description>
+      </entry>
+      <entry value="8" name="MAV_FTP_ERR_FILEEXISTS">
+        <description>FileExists: File/directory already exists</description>
+      </entry>
+      <entry value="9" name="MAV_FTP_ERR_FILEPROTECTED">
+        <description>FileProtected: File/directory is write protected</description>
+      </entry>
+      <entry value="10" name="MAV_FTP_ERR_FILENOTFOUND">
+        <description>FileNotFound: File/directory not found</description>
+      </entry>
+    </enum>
+    <enum name="MAV_FTP_OPCODE">
+      <description>MAV FTP opcodes: https://mavlink.io/en/services/ftp.html</description>
+      <entry value="0" name="MAV_FTP_OPCODE_NONE">
+        <description>None. Ignored, always ACKed</description>
+      </entry>
+      <entry value="1" name="MAV_FTP_OPCODE_TERMINATESESSION">
+        <description>TerminateSession: Terminates open Read session</description>
+      </entry>
+      <entry value="2" name="MAV_FTP_OPCODE_RESETSESSION">
+        <description>ResetSessions: Terminates all open read sessions</description>
+      </entry>
+      <entry value="3" name="MAV_FTP_OPCODE_LISTDIRECTORY">
+        <description>ListDirectory. List files and directories in path from offset</description>
+      </entry>
+      <entry value="4" name="MAV_FTP_OPCODE_OPENFILERO">
+        <description>OpenFileRO: Opens file at path for reading, returns session</description>
+      </entry>
+      <entry value="5" name="MAV_FTP_OPCODE_READFILE">
+        <description>ReadFile: Reads size bytes from offset in session</description>
+      </entry>
+      <entry value="6" name="MAV_FTP_OPCODE_CREATEFILE">
+        <description>CreateFile: Creates file at path for writing, returns session</description>
+      </entry>
+      <entry value="7" name="MAV_FTP_OPCODE_WRITEFILE">
+        <description>WriteFile: Writes size bytes to offset in session</description>
+      </entry>
+      <entry value="8" name="MAV_FTP_OPCODE_REMOVEFILE">
+        <description>RemoveFile: Remove file at path</description>
+      </entry>
+      <entry value="9" name="MAV_FTP_OPCODE_CREATEDIRECTORY">
+        <description>CreateDirectory: Creates directory at path</description>
+      </entry>
+      <entry value="10" name="MAV_FTP_OPCODE_REMOVEDIRECTORY">
+        <description>RemoveDirectory: Removes directory at path. The directory must be empty.</description>
+      </entry>
+      <entry value="11" name="MAV_FTP_OPCODE_OPENFILEWO">
+        <description>OpenFileWO: Opens file at path for writing, returns session</description>
+      </entry>
+      <entry value="12" name="MAV_FTP_OPCODE_TRUNCATEFILE">
+        <description>TruncateFile: Truncate file at path to offset length</description>
+      </entry>
+      <entry value="13" name="MAV_FTP_OPCODE_RENAME">
+        <description>Rename: Rename path1 to path2</description>
+      </entry>
+      <entry value="14" name="MAV_FTP_OPCODE_CALCFILECRC">
+        <description>CalcFileCRC32: Calculate CRC32 for file at path</description>
+      </entry>
+      <entry value="15" name="MAV_FTP_OPCODE_BURSTREADFILE">
+        <description>BurstReadFile: Burst download session file</description>
+      </entry>
+      <entry value="128" name="MAV_FTP_OPCODE_ACK">
+        <description>ACK: ACK response</description>
+      </entry>
+      <entry value="129" name="MAV_FTP_OPCODE_NAK">
+        <description>NAK: NAK response</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
