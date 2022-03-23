@@ -16,5 +16,30 @@
       <field type="uint8_t" name="queue_size"> Local (message sender) number of packets in buffer.</field>
       <field type="uint8_t" name="air_time" units="%">Local (message sender) percentage of time the radio is transmitting.</field>
     </message>
+    <message id="500" name="IMG_DETECTION_2D">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Contains information on an object detection in a video stream or frame.
+        This message can be used to annotate individual video frames in systems where the detection algorithm and video playback run in different modules.
+        This message can be sent by A) the system running the detection algorithm to display the object annotation on the playback device or B) the playback device to indicate that this object shall be tracked.
+        Note that the video frame ID must uniquely identify the same frame on all receiving devices. </description>
+      <field type="uint64_t" name="timestamp" units="ns"> Local (message sender) system time.</field>
+      <field type="uint64_t" name="frame_id"> Unique ID specifiying the video frame in the message sender video stream.</field>
+      <field type="uint64_t" name="class_id"> Unique ID specifiying the class of the object.</field>
+      <field type="uint32_t" name="object_id"> Unique ID representing the object.</field>
+      <field type="uint16_t" name="ttl" units="s"> Time to live: If this time has elapsed since last update, the object should be deleted on the receiver side. A value of 0 should indicate no timeout.</field>
+      <field type="uint8_t" name="do_track"> Boolean indicating wether this object should be tracked or not.</field>
+      <field type="float" name="score" units="%"> Confidence score in the range of [0.0, 1,0] for the classifcation.</field>
+      <field type="float" name="top_left_x" units="%"> Relative image x coordinate (left to right axis) in the range of [0.0, 1,0] describing the top left corner of the bounding box .</field>
+      <field type="float" name="top_left_y" units="%"> Relative image y coordinate (top to bottom axis) in the range of [0.0, 1,0] describing the top left corner of the bounding box.</field>
+      <field type="float" name="bot_right_x" units="%"> Relative image x coordinate (left to right axis) in the range of [0.0, 1,0] describing the bottom right corner of the bounding box.</field>
+      <field type="float" name="bot_right_y" units="%"> Relative image y coordinate (top to bottom axis) in the range of [0.0, 1,0] describing the bottom left corner of the bounding box.</field>
+      <field type="double" name="longitude" units="deg" invalid="NaN"> Latitude in WGS84 coordinate frame of the detected object. NAN if unknown.</field>
+      <field type="double" name="latitude" units="deg" invalid="NaN"> Longitude in WGS84 coordinate frame of the detected object. NAN if unknown.</field>
+      <field type="float" name="altitude" units="m" invalid="NaN"> Altitude in EGM96 coordiante frame of the detected object. NAN if unknown.</field>
+      <field type="float" name="vel_n" units="m/s" invalid="NaN"> North velocity of the object. NAN if unknown.</field>
+      <field type="float" name="vel_e" units="m/s" invalid="NaN"> East velocity of the object. NAN if unknown.</field>
+      <field type="float" name="vel_d" units="m/s" invalid="NaN"> Down velocity of the object. NAN if unknown.</field>
+    </message>
   </messages>
 </mavlink>
