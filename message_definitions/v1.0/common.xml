@@ -4442,7 +4442,6 @@
       </entry>
     </enum>
     <enum name="AIS_FLAGS" bitmask="true">
-      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>These flags are used in the AIS_VESSEL.fields bitmask to indicate validity of data in the other message fields. When set, the data is valid.</description>
       <entry value="1" name="AIS_FLAGS_POSITION_ACCURACY">
         <description>1 = Position accuracy less than 10m, 0 = position accuracy greater than 10m.</description>
@@ -4690,6 +4689,100 @@
       <entry value="0" name="CAN_FILTER_REPLACE"/>
       <entry value="1" name="CAN_FILTER_ADD"/>
       <entry value="2" name="CAN_FILTER_REMOVE"/>
+    </enum>
+    <enum name="MAV_FTP_ERR">
+      <description>MAV FTP error codes (https://mavlink.io/en/services/ftp.html)</description>
+      <entry value="0" name="MAV_FTP_ERR_NONE">
+        <description>None: No error</description>
+      </entry>
+      <entry value="1" name="MAV_FTP_ERR_FAIL">
+        <description>Fail: Unknown failure</description>
+      </entry>
+      <entry value="2" name="MAV_FTP_ERR_FAILERRNO">
+        <description>FailErrno: Command failed, Err number sent back in PayloadHeader.data[1].
+		This is a file-system error number understood by the server operating system.</description>
+      </entry>
+      <entry value="3" name="MAV_FTP_ERR_INVALIDDATASIZE">
+        <description>InvalidDataSize: Payload size is invalid</description>
+      </entry>
+      <entry value="4" name="MAV_FTP_ERR_INVALIDSESSION">
+        <description>InvalidSession: Session is not currently open</description>
+      </entry>
+      <entry value="5" name="MAV_FTP_ERR_NOSESSIONSAVAILABLE">
+        <description>NoSessionsAvailable: All available sessions are already in use</description>
+      </entry>
+      <entry value="6" name="MAV_FTP_ERR_EOF">
+        <description>EOF: Offset past end of file for ListDirectory and ReadFile commands</description>
+      </entry>
+      <entry value="7" name="MAV_FTP_ERR_UNKNOWNCOMMAND">
+        <description>UnknownCommand: Unknown command / opcode</description>
+      </entry>
+      <entry value="8" name="MAV_FTP_ERR_FILEEXISTS">
+        <description>FileExists: File/directory already exists</description>
+      </entry>
+      <entry value="9" name="MAV_FTP_ERR_FILEPROTECTED">
+        <description>FileProtected: File/directory is write protected</description>
+      </entry>
+      <entry value="10" name="MAV_FTP_ERR_FILENOTFOUND">
+        <description>FileNotFound: File/directory not found</description>
+      </entry>
+    </enum>
+    <enum name="MAV_FTP_OPCODE">
+      <description>MAV FTP opcodes: https://mavlink.io/en/services/ftp.html</description>
+      <entry value="0" name="MAV_FTP_OPCODE_NONE">
+        <description>None. Ignored, always ACKed</description>
+      </entry>
+      <entry value="1" name="MAV_FTP_OPCODE_TERMINATESESSION">
+        <description>TerminateSession: Terminates open Read session</description>
+      </entry>
+      <entry value="2" name="MAV_FTP_OPCODE_RESETSESSION">
+        <description>ResetSessions: Terminates all open read sessions</description>
+      </entry>
+      <entry value="3" name="MAV_FTP_OPCODE_LISTDIRECTORY">
+        <description>ListDirectory. List files and directories in path from offset</description>
+      </entry>
+      <entry value="4" name="MAV_FTP_OPCODE_OPENFILERO">
+        <description>OpenFileRO: Opens file at path for reading, returns session</description>
+      </entry>
+      <entry value="5" name="MAV_FTP_OPCODE_READFILE">
+        <description>ReadFile: Reads size bytes from offset in session</description>
+      </entry>
+      <entry value="6" name="MAV_FTP_OPCODE_CREATEFILE">
+        <description>CreateFile: Creates file at path for writing, returns session</description>
+      </entry>
+      <entry value="7" name="MAV_FTP_OPCODE_WRITEFILE">
+        <description>WriteFile: Writes size bytes to offset in session</description>
+      </entry>
+      <entry value="8" name="MAV_FTP_OPCODE_REMOVEFILE">
+        <description>RemoveFile: Remove file at path</description>
+      </entry>
+      <entry value="9" name="MAV_FTP_OPCODE_CREATEDIRECTORY">
+        <description>CreateDirectory: Creates directory at path</description>
+      </entry>
+      <entry value="10" name="MAV_FTP_OPCODE_REMOVEDIRECTORY">
+        <description>RemoveDirectory: Removes directory at path. The directory must be empty.</description>
+      </entry>
+      <entry value="11" name="MAV_FTP_OPCODE_OPENFILEWO">
+        <description>OpenFileWO: Opens file at path for writing, returns session</description>
+      </entry>
+      <entry value="12" name="MAV_FTP_OPCODE_TRUNCATEFILE">
+        <description>TruncateFile: Truncate file at path to offset length</description>
+      </entry>
+      <entry value="13" name="MAV_FTP_OPCODE_RENAME">
+        <description>Rename: Rename path1 to path2</description>
+      </entry>
+      <entry value="14" name="MAV_FTP_OPCODE_CALCFILECRC">
+        <description>CalcFileCRC32: Calculate CRC32 for file at path</description>
+      </entry>
+      <entry value="15" name="MAV_FTP_OPCODE_BURSTREADFILE">
+        <description>BurstReadFile: Burst download session file</description>
+      </entry>
+      <entry value="128" name="MAV_FTP_OPCODE_ACK">
+        <description>ACK: ACK response</description>
+      </entry>
+      <entry value="129" name="MAV_FTP_OPCODE_NAK">
+        <description>NAK: NAK response</description>
+      </entry>
     </enum>
   </enums>
   <messages>
@@ -6290,7 +6383,11 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
     </message>
     <message id="244" name="MESSAGE_INTERVAL">
-      <description>The interval between messages for a particular MAVLink message ID. This message is the response to the MAV_CMD_GET_MESSAGE_INTERVAL command. This interface replaces DATA_STREAM.</description>
+      <description>
+        The interval between messages for a particular MAVLink message ID.
+        This message is sent in response to the MAV_CMD_REQUEST_MESSAGE command with param1=244 (this message) and param2=message_id (the id of the message for which the interval is required).
+	It may also be sent in response to MAV_CMD_GET_MESSAGE_INTERVAL.
+	This interface replaces DATA_STREAM.</description>
       <field type="uint16_t" name="message_id">The ID of the requested MAVLink message. v1.0 is limited to 254 messages.</field>
       <field type="int32_t" name="interval_us" units="us">The interval between two messages. A value of -1 indicates this stream is disabled, 0 indicates it is not available, &gt; 0 indicates the interval at which it is sent.</field>
     </message>
@@ -6750,8 +6847,6 @@
       <field type="int8_t" name="response" enum="WIFI_CONFIG_AP_RESPONSE">Message acceptance response (sent back to GS).</field>
     </message>
     <message id="301" name="AIS_VESSEL">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>The location and information of an AIS vessel</description>
       <field type="uint32_t" name="MMSI">Mobile Marine Service Identifier, 9 decimal digits</field>
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
