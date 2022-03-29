@@ -985,6 +985,42 @@
         <description>Autotune yaw axis.</description>
       </entry>
     </enum>
+    <enum name="PREFLIGHT_STORAGE_PARAMETER_ACTION">
+      <description>
+        Actions for reading/writing parameters between persistent and volatile storage when using MAV_CMD_PREFLIGHT_STORAGE.
+        (Commonly parameters are loaded from persistent storage (flash/EEPROM) into volatile storage (RAM) on startup and written back when they are changed.)
+      </description>
+      <entry value="0" name="PARAM_READ_PERSISTENT">
+        <description>Read all parameters from persistent storage. Replaces values in volatile storage.</description>
+      </entry>
+      <entry value="1" name="PARAM_WRITE_PERSISTENT">
+        <description>Write all parameter values to persistent storage (flash/EEPROM)</description>
+      </entry>
+      <entry value="2" name="PARAM_RESET_CONFIG_DEFAULT">
+        <description>Reset all user configurable parameters to their default value. Does not reset values that contain operation counters and vehicle computed statistics.</description>
+      </entry>
+      <entry value="3" name="PARAM_RESET_SENSOR_DEFAULT">
+        <description>Reset only sensor calibration parameters to factory defaults (or firmware default if not available)</description>
+      </entry>
+      <entry value="4" name="PARAM_RESET_ALL_DEFAULT">
+        <description>Reset all parameters, including operation counters, to default values</description>
+      </entry>
+    </enum>
+    <enum name="PREFLIGHT_STORAGE_MISSION_ACTION">
+      <description>
+        Actions for reading and writing plan information (mission, rally points, geofence) between persistent and volatile storage when using MAV_CMD_PREFLIGHT_STORAGE.
+        (Commonly missions are loaded from persistent storage (flash/EEPROM) into volatile storage (RAM) on startup and written back when they are changed.)
+      </description>
+      <entry value="0" name="MISSION_READ_PERSISTENT">
+        <description>Read current mission data from persistent storage</description>
+      </entry>
+      <entry value="1" name="MISSION_WRITE_PERSISTENT">
+        <description>Write current mission data to persistent storage</description>
+      </entry>
+      <entry value="2" name="MISSION_RESET_DEFAULT">
+        <description>Erase all mission data stored on the vehicle (both persistent and volatile storage)</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -1761,8 +1797,8 @@
       </entry>
       <entry value="245" name="MAV_CMD_PREFLIGHT_STORAGE" hasLocation="false" isDestination="false">
         <description>Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.</description>
-        <param index="1" label="Parameter Storage" minValue="0" maxValue="3" increment="1">Parameter storage: 0: Read from flash/EEPROM, 1: Write current parameter data to flash/EEPROM, 2: Reset to defaults, 3: Reset sensor calibration parameter data to factory default (or firmware default if not available)</param>
-        <param index="2" label="Mission Storage" minValue="0" maxValue="2" increment="1">Mission storage: 0: Read from FLASH/EEPROM, 1: Write current data to flash/EEPROM, 2: Reset to defaults</param>
+        <param index="1" label="Parameter Storage" enum="PREFLIGHT_STORAGE_PARAMETER_ACTION">Action to perform on the persistent parameter storage</param>
+        <param index="2" label="Mission Storage" enum="PREFLIGHT_STORAGE_MISSION_ACTION">Action to perform on the persistent mission storage</param>
         <param index="3" label="Logging Rate" units="Hz" minValue="-1" increment="1">Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, &gt; 1: logging rate (e.g. set to 1000 for 1000 Hz logging)</param>
         <param index="4">Reserved</param>
         <param index="5">Empty</param>
