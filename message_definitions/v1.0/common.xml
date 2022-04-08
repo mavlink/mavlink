@@ -1143,22 +1143,6 @@
         <param index="6" label="Longitude/Y">Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. INT32_MAX (or NaN if sent in COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
         <param index="7" label="Altitude/Z">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude.</param>
       </entry>
-      <entry value="35" name="MAV_CMD_DO_FIGURE_EIGHT" hasLocation="true" isDestination="true">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Fly a figure eight path as defined by the parameters.
-          Set parameters to NaN/INT32_MAX (as appropriate) to use system-default values.
-          The command is intended for fixed wing vehicles (and VTOL hybrids flying in fixed-wing mode).
-          Multicopters and other unsupported vehicles s must NAK the command as unsupported.
-        </description>
-        <param index="1" label="Major Radius" units="m">Major axis radius of the figure eight. Positive: orbit clockwise. Negative: orbit counter-clockwise. NaN: Use vehicle default radius, or current radius if already orbiting.</param>
-        <param index="2" label="Minor Radius" units="m">Minor axis radius of the figure eight. Defines the radius of the circles. Negative value has no effect.</param>
-        <param index="3" label="Velocity" units="m/s">Cruising Velocity. NaN: Use vehicle default velocity, or current velocity if already orbiting.</param>
-        <param index="4" label="Orientation" units="rad">Orientation of the figure eight major axis with respect to north. NaN: use default value of 0.</param>
-        <param index="5" label="Latitude/X">Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. INT32_MAX (or NaN if sent in COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
-        <param index="6" label="Longitude/Y">Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. INT32_MAX (or NaN if sent in COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
-        <param index="7" label="Altitude/Z">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude.</param>
-      </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false">
         <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
         <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
@@ -7075,19 +7059,6 @@
       <description>Vehicle status report that is sent out while orbit execution is in progress (see MAV_CMD_DO_ORBIT).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="float" name="radius" units="m">Radius of the orbit circle. Positive values orbit clockwise, negative values orbit counter-clockwise.</field>
-      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the fields: x, y, z.</field>
-      <field type="int32_t" name="x">X coordinate of center point. Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
-      <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
-      <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
-    </message>
-    <message id="361" name="FIGURE_EIGHT_EXECUTION_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-      <description>Vehicle status report that is sent out while figure eight execution is in progress (see MAV_CMD_DO_FIGUREEIGHT).</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="float" name="major_radius" units="m">Major axis radius of the figure eight. Positive values orbit clockwise, negative values orbit counter-clockwise.</field>
-      <field type="float" name="minor_radius" units="m">Minor axis radius of the figure eight.</field>
-      <field type="float" name="orientation" units="rad">Orientation of the major axis of the figure eight.</field>
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the fields: x, y, z.</field>
       <field type="int32_t" name="x">X coordinate of center point. Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
       <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
