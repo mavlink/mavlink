@@ -985,6 +985,42 @@
         <description>Autotune yaw axis.</description>
       </entry>
     </enum>
+    <enum name="PREFLIGHT_STORAGE_PARAMETER_ACTION">
+      <description>
+        Actions for reading/writing parameters between persistent and volatile storage when using MAV_CMD_PREFLIGHT_STORAGE.
+        (Commonly parameters are loaded from persistent storage (flash/EEPROM) into volatile storage (RAM) on startup and written back when they are changed.)
+      </description>
+      <entry value="0" name="PARAM_READ_PERSISTENT">
+        <description>Read all parameters from persistent storage. Replaces values in volatile storage.</description>
+      </entry>
+      <entry value="1" name="PARAM_WRITE_PERSISTENT">
+        <description>Write all parameter values to persistent storage (flash/EEPROM)</description>
+      </entry>
+      <entry value="2" name="PARAM_RESET_CONFIG_DEFAULT">
+        <description>Reset all user configurable parameters to their default value (including airframe selection, sensor calibration data, safety settings, and so on). Does not reset values that contain operation counters and vehicle computed statistics.</description>
+      </entry>
+      <entry value="3" name="PARAM_RESET_SENSOR_DEFAULT">
+        <description>Reset only sensor calibration parameters to factory defaults (or firmware default if not available)</description>
+      </entry>
+      <entry value="4" name="PARAM_RESET_ALL_DEFAULT">
+        <description>Reset all parameters, including operation counters, to default values</description>
+      </entry>
+    </enum>
+    <enum name="PREFLIGHT_STORAGE_MISSION_ACTION">
+      <description>
+        Actions for reading and writing plan information (mission, rally points, geofence) between persistent and volatile storage when using MAV_CMD_PREFLIGHT_STORAGE.
+        (Commonly missions are loaded from persistent storage (flash/EEPROM) into volatile storage (RAM) on startup and written back when they are changed.)
+      </description>
+      <entry value="0" name="MISSION_READ_PERSISTENT">
+        <description>Read current mission data from persistent storage</description>
+      </entry>
+      <entry value="1" name="MISSION_WRITE_PERSISTENT">
+        <description>Write current mission data to persistent storage</description>
+      </entry>
+      <entry value="2" name="MISSION_RESET_DEFAULT">
+        <description>Erase all mission data stored on the vehicle (both persistent and volatile storage)</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -1761,8 +1797,8 @@
       </entry>
       <entry value="245" name="MAV_CMD_PREFLIGHT_STORAGE" hasLocation="false" isDestination="false">
         <description>Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.</description>
-        <param index="1" label="Parameter Storage" minValue="0" maxValue="3" increment="1">Parameter storage: 0: Read from flash/EEPROM, 1: Write current parameter data to flash/EEPROM, 2: Reset to defaults, 3: Reset sensor calibration parameter data to factory default (or firmware default if not available)</param>
-        <param index="2" label="Mission Storage" minValue="0" maxValue="2" increment="1">Mission storage: 0: Read from FLASH/EEPROM, 1: Write current data to flash/EEPROM, 2: Reset to defaults</param>
+        <param index="1" label="Parameter Storage" enum="PREFLIGHT_STORAGE_PARAMETER_ACTION">Action to perform on the persistent parameter storage</param>
+        <param index="2" label="Mission Storage" enum="PREFLIGHT_STORAGE_MISSION_ACTION">Action to perform on the persistent mission storage</param>
         <param index="3" label="Logging Rate" units="Hz" minValue="-1" increment="1">Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, &gt; 1: logging rate (e.g. set to 1000 for 1000 Hz logging)</param>
         <param index="4">Reserved</param>
         <param index="5">Empty</param>
@@ -4064,6 +4100,9 @@
       <entry value="3" name="MAV_ODID_STATUS_EMERGENCY">
         <description>The UA is having an emergency.</description>
       </entry>
+      <entry value="4" name="MAV_ODID_STATUS_REMOTE_ID_SYSTEM_FAILURE">
+        <description>The remote ID system is failing or unreliable in some way.</description>
+      </entry>
     </enum>
     <enum name="MAV_ODID_HEIGHT_REF">
       <entry value="0" name="MAV_ODID_HEIGHT_REF_OVER_TAKEOFF">
@@ -4226,18 +4265,24 @@
     </enum>
     <enum name="MAV_ODID_DESC_TYPE">
       <entry value="0" name="MAV_ODID_DESC_TYPE_TEXT">
-        <description>Free-form text description of the purpose of the flight.</description>
+        <description>Optional free-form text description of the purpose of the flight.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_DESC_TYPE_EMERGENCY">
+        <description>Optional additional clarification when status == MAV_ODID_STATUS_EMERGENCY.</description>
+      </entry>
+      <entry value="2" name="MAV_ODID_DESC_TYPE_EXTENDED_STATUS">
+        <description>Optional additional clarification when status != MAV_ODID_STATUS_EMERGENCY.</description>
       </entry>
     </enum>
     <enum name="MAV_ODID_OPERATOR_LOCATION_TYPE">
       <entry value="0" name="MAV_ODID_OPERATOR_LOCATION_TYPE_TAKEOFF">
-        <description>The location of the operator is the same as the take-off location.</description>
+        <description>The location/altitude of the operator is the same as the take-off location.</description>
       </entry>
       <entry value="1" name="MAV_ODID_OPERATOR_LOCATION_TYPE_LIVE_GNSS">
-        <description>The location of the operator is based on live GNSS data.</description>
+        <description>The location/altitude of the operator is dynamic. E.g. based on live GNSS data.</description>
       </entry>
       <entry value="2" name="MAV_ODID_OPERATOR_LOCATION_TYPE_FIXED">
-        <description>The location of the operator is a fixed location.</description>
+        <description>The location/altitude of the operator are fixed values.</description>
       </entry>
     </enum>
     <enum name="MAV_ODID_CLASSIFICATION_TYPE">
@@ -7273,7 +7318,7 @@
     <message id="12900" name="OPEN_DRONE_ID_BASIC_ID">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. These messages are compatible with the ASTM Remote ID standard at https://www.astm.org/Standards/F3411.htm and the ASD-STAN Direct Remote ID standard. The usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
+      <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. These messages are compatible with the ASTM F3411 Remote ID standard and the ASD-STAN prEN 4709-002 Direct Remote ID standard. Additional information and usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
@@ -7308,7 +7353,7 @@
     <message id="12902" name="OPEN_DRONE_ID_AUTHENTICATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. Five data pages are supported. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 15, PageCount, Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
+      <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 15, PageCount, Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
@@ -7322,7 +7367,7 @@
     <message id="12903" name="OPEN_DRONE_ID_SELF_ID">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID Self ID message. The Self ID Message is an opportunity for the operator to (optionally) declare their identity and purpose of the flight. This message can provide additional information that could reduce the threat profile of a UA (Unmanned Aircraft) flying in a particular area or manner.</description>
+      <description>Data for filling the OpenDroneID Self ID message. The Self ID Message is an opportunity for the operator to (optionally) declare their identity and purpose of the flight. This message can provide additional information that could reduce the threat profile of a UA (Unmanned Aircraft) flying in a particular area or manner. This message can also be used to provide optional additional clarification in an emergency/remote ID system failure situation.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
@@ -7332,7 +7377,7 @@
     <message id="12904" name="OPEN_DRONE_ID_SYSTEM">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the operator location and possible aircraft group information.</description>
+      <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the operator location/altitude and possible aircraft group and/or category/class information.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
@@ -7347,6 +7392,7 @@
       <field type="uint8_t" name="category_eu" enum="MAV_ODID_CATEGORY_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the category of the UA.</field>
       <field type="uint8_t" name="class_eu" enum="MAV_ODID_CLASS_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the class of the UA.</field>
       <field type="float" name="operator_altitude_geo" units="m" invalid="-1000">Geodetic altitude of the operator relative to WGS84. If unknown: -1000 m.</field>
+      <field type="uint32_t" name="timestamp" units="s">32 bit Unix Timestamp in seconds since 00:00:00 01/01/2019.</field>
     </message>
     <message id="12905" name="OPEN_DRONE_ID_OPERATOR_ID">
       <wip/>
@@ -7362,7 +7408,7 @@
     <message id="12915" name="OPEN_DRONE_ID_MESSAGE_PACK">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>An OpenDroneID message pack is a container for multiple encoded OpenDroneID messages (i.e. not in the format given for the above messages descriptions but after encoding into the compressed OpenDroneID byte format). Used e.g. when transmitting on Bluetooth 5.0 Long Range/Extended Advertising or on WiFi Neighbor Aware Networking.</description>
+      <description>An OpenDroneID message pack is a container for multiple encoded OpenDroneID messages (i.e. not in the format given for the above message descriptions but after encoding into the compressed OpenDroneID byte format). Used e.g. when transmitting on Bluetooth 5.0 Long Range/Extended Advertising or on WiFi Neighbor Aware Networking or on WiFi Beacon.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
