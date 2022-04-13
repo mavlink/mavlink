@@ -39,11 +39,11 @@
                         "type":         "integer"
                     },
                     "uri": {
-                        "description":  "http[s] or MAVLink FTP uri",
+                        "description":  "https or MAVLink FTP uri",
                         "type":         "string"
                     },
                     "fileCrc": {
-                        "description":  "CRC32 checksum of the file",
+                        "description":  "CRC32 checksum of the file. This should not be set for dynamically updated metadata.",
                         "type":         "integer"
                     },
                     "uriFallback": {
@@ -55,23 +55,15 @@
                         "type":         "integer"
                     },
                     "translationUri": {
-                        "description":  "http[s] or MAVLink FTP url",
+                        "description":  "https or MAVLink FTP url",
                         "type":         "string"
-                    },
-                    "translationFileCrc": {
-                        "description":  "CRC32 checksum of the translation file",
-                        "type":         "integer"
                     },
                     "translationUriFallback": {
                         "description":  "Fallback URI when primary translation is not available",
                         "type":         "string"
-                    },
-                    "translationFileCrcFallback": {
-                        "description":  "CRC32 checksum of the translation fallback file",
-                        "type":         "integer"
                     }
                 },
-                "required":             [ "type", "uri", "fileCrc", "uriFallback", "fileCrcFallback" ],
+                "required":             [ "type", "uri" ],
                 "additionalProperties": false
             }
         }
