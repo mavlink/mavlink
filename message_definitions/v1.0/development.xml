@@ -271,15 +271,14 @@
       <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
     </message>
     <message id="396" name="COMPONENT_INFORMATION_BASIC">
-      <description>Basic component information data.</description>
+      <description>Basic component information data. Should be requested using MAV_CMD_REQUEST_MESSAGE on startup, or when required.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t[32]" name="vendor_name">Name of the component vendor</field>
-      <field type="uint8_t[32]" name="model_name">Name of the component model</field>
-      <field type="char[24]" name="software_version">Sofware version. The version format can be custom, recommended is SEMVER 'major.minor.patch'.</field>
-      <field type="char[24]" name="hardware_version">Hardware version. The version format can be custom, recommended is SEMVER 'major.minor.patch'.</field>
       <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY" display="bitmask">Component capability flags</field>
-      <extensions/>
-      <field type="char[24]" name="serial_number">Hardware serial number, zero terminated</field>
+      <field type="char[32]" name="vendor_name">Name of the component vendor. Needs to be zero terminated.</field>
+      <field type="char[32]" name="model_name">Name of the component model. Needs to be zero terminated.</field>
+      <field type="char[24]" name="software_version">Sofware version. The version format can be custom, recommended is SEMVER 'major.minor.patch'. This field needs to be zero terminated and is optional and can therefore be empty/all zero.</field>
+      <field type="char[24]" name="hardware_version">Hardware version. The version format can be custom, recommended is SEMVER 'major.minor.patch'. Needs to be zero terminated. This field is optional and can be empty.</field>
+      <field type="char[32]" name="serial_number">Hardware serial number. Needs to be zero terminated. This field is optional and can be empty.</field>
     </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
