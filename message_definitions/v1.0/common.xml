@@ -1876,6 +1876,7 @@
         <param index="1" label="Enable" minValue="0" maxValue="1" increment="1">0: Illuminators OFF, 1: Illuminators ON</param>
       </entry>
       <entry value="410" name="MAV_CMD_GET_HOME_POSITION" hasLocation="false" isDestination="false">
+        <deprecated since="2022-04" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request the home position from the vehicle.</description>
         <param index="1">Reserved</param>
         <param index="2">Reserved</param>
@@ -6402,7 +6403,14 @@
       <field type="uint32_t" name="clipping_2">third accelerometer clipping count</field>
     </message>
     <message id="242" name="HOME_POSITION">
-      <description>This message can be requested by sending the MAV_CMD_GET_HOME_POSITION command. The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitly set by the operator before or after. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.</description>
+      <description>
+        This message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=242 (or the MAV_CMD_GET_HOME_POSITION command).
+	The position the system will return to and land on.
+	The position is set automatically by the system during the takeoff in case it was not explicitly set by the operator before or after.
+	The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface.
+	Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach.
+	The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.
+      </description>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
       <field type="int32_t" name="altitude" units="mm">Altitude (MSL). Positive for up.</field>
