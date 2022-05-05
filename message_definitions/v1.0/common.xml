@@ -7349,6 +7349,16 @@
       <field type="uint8_t" name="count">Number of wheels reported.</field>
       <field type="double[16]" name="distance" units="m">Distance reported by individual wheel encoders. Forward rotations increase values, reverse rotations decrease them. Not all wheels will necessarily have wheel encoders; the mapping of encoders to wheel positions must be agreed/understood by the endpoints.</field>
     </message>
+    <message id="405" name="MISSION_DEFAULT_YAW">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>
+        The system default mission yaw.
+        This can be requested using MAV_CMD_REQUEST_MESSAGE.
+        Note that the yaw is the default value for all missions if yaw is not explicitly specified, and may be set using AV_CMD_SET_DEFAULT_YAW_MODE.
+      </description>
+      <field type="uint8_t" name="connection_type" enum="MISSION_YAW_MODE">Default mission yaw mode (e.g. towards next waypoint, towards home, etc).</field>
+    </message>
     <message id="9005" name="WINCH_STATUS">
       <description>Winch status.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (synced to UNIX time or since system boot).</field>
