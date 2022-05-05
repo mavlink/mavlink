@@ -15,7 +15,7 @@ set(PROJECT_CONTACT_VENDOR mavlink)
 set(LIBRARY_VERSION ${PROJECT_VERSION})
 set(LIBRARY_SOVERSION "0.0.0")
 
-# third party 
+# third party
 # none required
 
 # options
@@ -93,12 +93,12 @@ endif()
 if(USE_PYTHON3)
   find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
   set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
-  set(PYTHON_SITELIB ${Python3_SITELIB})  
+  set(PYTHON_SITELIB ${Python3_SITELIB})
 else()
   find_package(PythonInterp)
   set(PYTHON_SITELIB ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages)
 endif()
-  
+
 # enable languages
 if (WITH_TESTS)
     enable_language(C)
@@ -127,7 +127,7 @@ endif()
 # configure
 #check_include_files(string.h HAVE_STRING_H)
 #check_function_exists(memcopy HAVE_MEMCOPY)
-#check_symbol_exists(LC_MESSAGES "locale.h" HAVE_LC_MESSAGES) 
+#check_symbol_exists(LC_MESSAGES "locale.h" HAVE_LC_MESSAGES)
 #check_library_exists(pthread  attachNode "" HAVE_PTHREAD)
 
 # config files
@@ -156,7 +156,7 @@ macro(generateMavlink version definitions)
         set(targetName ${definition}-v${version})
         set(definitionAbsPath ${MAVLINK_SOURCE_DIR}/message_definitions/v1.0/${definition})
         message(STATUS "processing: ${definitionAbsPath}")
-        add_custom_command( 
+        add_custom_command(
             OUTPUT ${targetName}-stamp
             COMMAND ${mavgen_EXECUTABLE} --lang=C
                                          --wire-protocol=${version}
@@ -172,6 +172,7 @@ endmacro()
 set(v1.0Definitions
     ASLUAV.xml
     ardupilotmega.xml
+    auterion.xml
     common.xml
     matrixpilot.xml
     minimal.xml
@@ -185,7 +186,7 @@ generateMavlink("2.0" "${v1.0Definitions}")
 
 # testing
 if (BUILD_TEST)
-    if (UNIX) 
+    if (UNIX)
         include_directories(${CMAKE_BINARY_DIR}/include/v1.0/common)
         # TODO fix udp example
         #add_executable(mavlink_udp examples/linux/mavlink_udp.c)

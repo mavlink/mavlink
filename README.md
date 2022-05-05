@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/mavlink/mavlink/workflows/Test%20and%20deploy/badge.svg)](https://github.com/mavlink/mavlink/actions?query=branch%3Amaster)
+[![Build Status](https://github.com/auterion/mavlink/workflows/Test%20and%20deploy/badge.svg)](https://github.com/auterion/mavlink/actions?query=branch%3Amaster)
 
 ## MAVLink ##
 
