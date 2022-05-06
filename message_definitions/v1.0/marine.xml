@@ -299,13 +299,14 @@
       <field type="uint8_t" name="result" enum="PAYLOAD_LIST_RESULT">Payload List result.</field>
     </message>
     <message id="44205" name="PAYLOAD_STATUS_REQUEST">
-      <description>Request the status of the payload item with the specified payload ID. The response of the system to this message should be a PAYLOAD_STATUS message.</description>
+      <deprecated since="2022-05" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
+      <description>Request the status of the payload item with the specified payload ID. The response of the system to this message should be a PAYLOAD_STATUS message. Note: this message has been deprecated in favor of using MAV_CMD_REQUEST_MESSAGE with param1 specifiying the message ID and param2 specifying the payload ID.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="payload_id">Payload ID.</field>
     </message>
     <message id="44206" name="PAYLOAD_STATUS">
-      <description>This message is emitted as response to PAYLOAD_STATUS_REQUEST, and contains the details (ID and Type) and health and status (as bitmasks) of the specified payload.</description>
+      <description>This message is emitted as response to MAV_CMD_REQUEST_MESSAGE with param1 specifying the message ID (44206) andparam2 specifying the payload ID, and contains the details (ID and Type) and health and status (as bitmasks) of the specified payload.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="payload_id">Payload ID, 1 - N.</field>
