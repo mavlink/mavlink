@@ -54,21 +54,5 @@
       <field type="uint16_t[10]" name="axis_value" invalid="[UINT16_MAX]">Value of each joystick axis</field>
       <field type="uint8_t[20]" name="button_value" invalid="[UINT8_MAX]">Value of each joystick button</field>
     </message>
-    <message id="514" name="JOYSTICK_INFORMATION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Information about a joystick. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="uint8_t[32]" name="vendor_name">Name of the joystick vendor</field>
-      <field type="uint8_t[32]" name="model_name">Name of the joystick model</field>
-      <field type="uint8_t" name="number_of_axes">Number of joystick axes</field>
-      <field type="uint8_t" name="number_of_buttons">Number of joystick buttons</field>
-      <field type="uint8_t" name="button_trigger_value">Value of button when triggered</field>
-      <field type="uint8_t" name="button_release_value">Value of button when release</field>
-      <field type="uint16_t" name="axis_shift">Axis shift to positive direction, before multiplying and sending as integer in joystick status.</field>
-      <field type="uint16_t" name="axis_multiplier">Axis value is first shifted, then multipled by this number before sending in the joystick state as an integer</field>
-      <field type="uint16_t" name="joy_definition_version">Joystick definition version (iteration)</field>
-      <field type="char[140]" name="joy_definition_uri">Joystick definition URI (if any, otherwise only basic functions will be available). HTTP- (http://) and MAVLink FTP- (mavlinkftp://) formatted URIs are allowed (and both must be supported by any GCS that implements the Camera Protocol). The definition file may be xz compressed, which will be indicated by the file extension .xml.xz (a GCS that implements the protocol must support decompressing the file). The string needs to be zero terminated.</field>
-    </message>
   </messages>
 </mavlink>
