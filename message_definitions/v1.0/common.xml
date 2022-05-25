@@ -6299,16 +6299,16 @@
       <field type="float" name="pos_vert_accuracy" units="m">Vertical position 1-STD accuracy relative to the EKF local origin</field>
     </message>
     <message id="231" name="WIND_COV">
-      <description>Wind covariance estimate from vehicle.</description>
+      <description>Wind estimate from vehicle. Note that despite the name, this message does not actually contain any covariances but instead variability and accuracy fields in terms of standard deviation (1-STD).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="float" name="wind_x" units="m/s">Wind in X (NED) direction</field>
-      <field type="float" name="wind_y" units="m/s">Wind in Y (NED) direction</field>
-      <field type="float" name="wind_z" units="m/s">Wind in Z (NED) direction</field>
-      <field type="float" name="var_horiz" units="m/s">Variability of the wind in XY. RMS of a 1 Hz lowpassed wind estimate.</field>
-      <field type="float" name="var_vert" units="m/s">Variability of the wind in Z. RMS of a 1 Hz lowpassed wind estimate.</field>
-      <field type="float" name="wind_alt" units="m">Altitude (MSL) that this measurement was taken at</field>
-      <field type="float" name="horiz_accuracy" units="m/s">Horizontal speed 1-STD accuracy</field>
-      <field type="float" name="vert_accuracy" units="m/s">Vertical speed 1-STD accuracy</field>
+      <field type="float" name="wind_x" units="m/s" invalid="NaN">Wind in North (NED) direction (NAN if unknown)</field>
+      <field type="float" name="wind_y" units="m/s" invalid="NaN">Wind in East (NED) direction (NAN if unknown)</field>
+      <field type="float" name="wind_z" units="m/s" invalid="NaN">Wind in down (NED) direction (NAN if unknown)</field>
+      <field type="float" name="var_horiz" units="m/s" invalid="NaN">Variability of wind in XY, 1-STD estimated from a 1 Hz lowpassed wind estimate (NAN if unknown)</field>
+      <field type="float" name="var_vert" units="m/s" invalid="NaN">Variability of wind in Z, 1-STD estimated from a 1 Hz lowpassed wind estimate (NAN if unknown)</field>
+      <field type="float" name="wind_alt" units="m" invalid="NaN">Altitude (MSL) that this measurement was taken at (NAN if unknown)</field>
+      <field type="float" name="horiz_accuracy" units="m/s" invalid="0">Horizontal speed 1-STD accuracy (0 if unknown)</field>
+      <field type="float" name="vert_accuracy" units="m/s" invalid="0">Vertical speed 1-STD accuracy (0 if unknown)</field>
     </message>
     <message id="232" name="GPS_INPUT">
       <description>GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the system.</description>
