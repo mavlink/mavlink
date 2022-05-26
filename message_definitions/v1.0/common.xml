@@ -251,7 +251,10 @@
         <description>NOT a coordinate frame, indicates a mission command.</description>
       </entry>
       <entry value="3" name="MAV_FRAME_GLOBAL_RELATIVE_ALT">
-        <description>Global (WGS84) coordinate frame + altitude relative to the home position. First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at the altitude of the home location.</description>
+        <description>
+          Global (WGS84) coordinate frame + altitude relative to the home position.
+          First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at the altitude of the home position.
+        </description>
       </entry>
       <entry value="4" name="MAV_FRAME_LOCAL_ENU">
         <description>ENU local tangent frame (x: East, y: North, z: Up) with origin fixed relative to earth.</description>
@@ -260,7 +263,10 @@
         <description>Global (WGS84) coordinate frame (scaled) + MSL altitude. First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude over mean sea level (MSL).</description>
       </entry>
       <entry value="6" name="MAV_FRAME_GLOBAL_RELATIVE_ALT_INT">
-        <description>Global (WGS84) coordinate frame (scaled) + altitude relative to the home position. First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude with 0 being at the altitude of the home location.</description>
+        <description>
+          Global (WGS84) coordinate frame (scaled) + altitude relative to the home position.
+          First value / x: latitude in degrees*1E7, second value / y: longitude in degrees*1E7, third value / z: positive altitude with 0 being at the altitude of the home position.
+        </description>
       </entry>
       <entry value="7" name="MAV_FRAME_LOCAL_OFFSET_NED">
         <description>NED local tangent frame (x: North, y: East, z: Down) with origin that travels with the vehicle.</description>
@@ -415,7 +421,7 @@
         <description>Gimbal tracks system with specified system ID</description>
       </entry>
       <entry value="6" name="MAV_MOUNT_MODE_HOME_LOCATION">
-        <description>Gimbal tracks home location</description>
+        <description>Gimbal tracks home position</description>
       </entry>
     </enum>
     <enum name="GIMBAL_DEVICE_CAP_FLAGS" bitmask="true">
@@ -1355,7 +1361,12 @@
         <param index="7" reserved="true" default="0"/>
       </entry>
       <entry value="179" name="MAV_CMD_DO_SET_HOME" hasLocation="true" isDestination="false">
-        <description>Changes the home location either to the current location or a specified location.</description>
+        <description>
+          Sets the home position to either to the current position or a specified position.
+          The home position is the default position that the system will return to and land on.
+          The position is set automatically by the system during the takeoff (and may also be set using this command).
+          Note: the current home position may be emitted in a HOME_POSITION message on request (using MAV_CMD_REQUEST_MESSAGE with param1=242).      
+        </description>
         <param index="1" label="Use Current" minValue="0" maxValue="1" increment="1">Use current (1=use current location, 0=use specified location)</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -1877,7 +1888,8 @@
       </entry>
       <entry value="410" name="MAV_CMD_GET_HOME_POSITION" hasLocation="false" isDestination="false">
         <deprecated since="2022-04" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
-        <description>Request the home position from the vehicle.</description>
+        <description>Request the home position from the vehicle.
+	  The vehicle will ACK the command and then emit the HOME_POSITION message.</description>
         <param index="1">Reserved</param>
         <param index="2">Reserved</param>
         <param index="3">Reserved</param>
@@ -6409,12 +6421,13 @@
     </message>
     <message id="242" name="HOME_POSITION">
       <description>
-        This message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=242 (or the MAV_CMD_GET_HOME_POSITION command).
-	The position the system will return to and land on.
-	The position is set automatically by the system during the takeoff in case it was not explicitly set by the operator before or after.
+	Contains the home position.
+	The home position is the default position that the system will return to and land on.
+	The position must be set automatically by the system during the takeoff, and may also be explicitly set using MAV_CMD_DO_SET_HOME.
 	The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface.
 	Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach.
 	The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.
+        Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=242 (or the deprecated MAV_CMD_GET_HOME_POSITION command).
       </description>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
@@ -6430,8 +6443,16 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
     </message>
     <message id="243" name="SET_HOME_POSITION">
-      <deprecated since="2022-02" replaced_by="MAV_CMD_DO_SET_HOME">This message is being superseded by MAV_CMD_DO_SET_HOME.  Using the command protocols allows a GCS to detect setting of the home position has failed.</deprecated>
-      <description>The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitly set by the operator before or after. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.</description>
+      <deprecated since="2022-02" replaced_by="MAV_CMD_DO_SET_HOME">The command protocol version (MAV_CMD_DO_SET_HOME) allows a GCS to detect when setting the home position has failed.</deprecated>
+      <description>
+        Sets the home position.
+	The home position is the default position that the system will return to and land on.
+        The position is set automatically by the system during the takeoff (and may also be set using this message).
+        The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface.
+        Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach.
+        The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.
+        Note: the current home position may be emitted in a HOME_POSITION message on request (using MAV_CMD_REQUEST_MESSAGE with param1=242).
+      </description>
       <field type="uint8_t" name="target_system">System ID.</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
