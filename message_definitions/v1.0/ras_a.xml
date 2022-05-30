@@ -10,12 +10,6 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="199" name="MAV_CMD_SET_POI_FOCUS" hasLocation="false" isDestination="false">
-        <description>Sets a POI at the current focus point of the camera frame. This assumes that the camera system has the ability to geo-locate the current focus point.</description>
-        <param index="1" label="Operation mode" minValue="0" maxValue="1" increment="1">Operation mode. 0 = set POI at current location; 1 = set POI at current location and track it.</param>
-        <param index="2" label="X Position in the camera frame" minValue="0" increment="1">Position given by the number of pixels in X direction of the camera frame. Origin on the bottom left corner of the camera frame.</param>
-        <param index="3" label="Y Position in the camera frame" minValue="0" increment="1">Position given by the number of pixels in Y direction of the camera frame. Origin on the bottom left corner of the camera frame.</param>
-      </entry>
       <entry value="40500" name="MAV_CMD_GO_THROUGH_PORTAL" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
@@ -146,6 +140,14 @@
         <param index="5" label="Approach vector final point X or Latitude">Local X (mE4) or Latitude (degE7) (WGS84) of point 2 of the exploration 3D space boundaries cuboid. NaN or INT32_MAX if not applicable.</param>
         <param index="6" label="Approach vector final point Y or Longitude">Local Y (mE4) or Longitude (degE7) (WGS84) of point 2 of the exploration 3D space boundaries cuboid. NaN or INT32_MAX if not applicable.</param>
         <param index="7" label="Approach vector final point Z or Altitude (MSL)" units="m">Local Z or Altitude (MSL) point 3 of the exploration 3D space boundaries cuboid. This also represents the height of the bottom plane of the cuboid. NaN if not applicable.</param>
+      </entry>
+      <entry value="41050" name="MAV_CMD_SET_POI_FOCUS" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Sets a POI at the current focus point of the camera frame. This assumes that the camera system has the ability to geo-locate the current focus point.</description>
+        <param index="1" label="Operation mode" minValue="0" maxValue="1" increment="1">Operation mode. 0 = set POI at current location; 1 = set POI at current location and track it.</param>
+        <param index="2" label="X Position in the camera frame" minValue="0" increment="1">Position given by the number of pixels in X direction of the camera frame. Origin on the bottom left corner of the camera frame.</param>
+        <param index="3" label="Y Position in the camera frame" minValue="0" increment="1">Position given by the number of pixels in Y direction of the camera frame. Origin on the bottom left corner of the camera frame.</param>
       </entry>
     </enum>
     <enum name="POI_GEOMETRY_TYPE">
