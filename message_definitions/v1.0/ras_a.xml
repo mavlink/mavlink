@@ -222,5 +222,68 @@
       <field type="char[32]" name="name">Name of the POI, if the system provides one. NULL terminated string.</field>
       <field type="char[31]" name="app6_symbol">APP-6(D) standard symbol 30-digit Symbol Identification Code (SIDC) that provides the necessary information to display a tactical symbol. The SIDC is formed with eleven elements which are presented in two sets of ten digits and an additional set of ten digits composed of three elements, which are optional. Any unspecified element should be set to '0'. The way these codes are built can be checked on the Annex A to the APP-6 - NATO Joint Military Symbology, version D. NULL terminated string.</field>
     </message>
+    <message id="450" name="EXPLORATION_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Provides status over an exploration task. The message should, by default, be streamed at 1Hz.</description>
+      <field type="uint64_t" name="time_usec" units="us" invalid="0">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint64_t" name="time_to_timeout" units="us" invalid="UINT64_MAX">Remaining time for the vehicle to execute the exploration task, after which another predefined behavior is triggered. UINT64_MAX when unknown or not applicable.</field>
+      <field type="uint8_t" name="exploration_id" invalid="UINT8_MAX">ID of the exploration task. 255 if not applicable or unknown.</field>
+      <field type="uint16_t" name="progress" invalid="UINT16_MAX">Progress measurement of the exploration task. Specific meaning may vary by implementation, but in general, increasing values mean more has been explored. UINT16_MAX when unknown or not applicable.</field>
+      <field type="uint16_t" name="denominator" invalid="0">Measurement of the known size of the exploration task. Specific meaning may vary, but when progress == denominator, this should imply that exploration is complete. This value may increase as more need to explore is discovered, or may be fixed (100 recommended) if the end state is known (e.g., exploration in a known mapped environment). 0 when no meaningful size can be communicated.</field>
+      <field type="uint8_t" name="flags" enum="MAV_EXPLORATION_STATUS">Bitmap of the exploration task status flags.</field>
+      <field type="int8_t" name="level" invalid="INT8_MAX">In an indoor exploration task, it indicates the floor/level of the structure that is currently being explored. The level where the vehicle started the exploration is considered the level 0. INT8_MAX when unknown, not capable to provide or not applicable.</field>
+    </message>
+    <message id="451" name="EXPLORATION_INFO">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Provides configuration information about an exploration task.
+        The message can be requested using the MAV_CMD_REQUEST_MESSAGE command, where param 3 should be used to set which exploration task to get.
+        To determine all coordinates of the cuboid, consider: p1_x equals p3_x, p1_y equals p3_y, p1_z equals p2_z, p1_lat equals p3_lat, p1_lon equals p3_lon and p1_alt equals p2_alt.
+      </description>
+      <field type="uint8_t" name="exploration_id" invalid="UINT8_MAX">ID of the exploration task. 255 to get the information of the current running exploration task.</field>
+      <field type="uint32_t" name="time_limit" units="s" invalid="0">Time limit to execute the exploration. Reaching this time triggers the behavior defined in the behaviour_after_stopping field. Set to 0 when the exploration time is not limited.</field>
+      <field type="uint8_t" name="behaviour_after_stopping">The behavior after stopping the exploration task. 0: Hold, 1: Land, 2: Return (to exploration return position).</field>
+      <field type="int32_t" name="boundaries_p1_lat" units="degE7" invalid="INT32_MAX">Exploration cuboid boundaries point 1 Latitude (WGS84). INT32_MAX if unknown. p1_lat == p3_lat.</field>
+      <field type="int32_t" name="boundaries_p1_lon" units="degE7" invalid="INT32_MAX">Exploration cuboid boundaries point 1 Longitude (WGS84). INT32_MAX if unknown. p1_lat == p3_lat.</field>
+      <field type="float" name="boundaries_p1_alt" units="m" invalid="NaN">Exploration cuboid boundaries point 1 Altitude (MSL). NaN if unknown. p1_alt == p2_alt.</field>
+      <field type="float" name="boundaries_p1_x" units="m" invalid="NaN">Exploration cuboid boundaries point 1 local NED X coordinate. NaN if unknown. p1_x == p3_x.</field>
+      <field type="float" name="boundaries_p1_y" units="m" invalid="NaN">Exploration cuboid boundaries point 1 local NED Y coordinate. NaN if unknown. p1_y == p3_y.</field>
+      <field type="float" name="boundaries_p1_z" units="m" invalid="NaN">Exploration cuboid boundaries point 1 local NED Z coordinate. NaN if unknown. p1_z == p2_z.</field>
+      <field type="int32_t" name="boundaries_p2_lat" units="degE7" invalid="INT32_MAX">Exploration cuboid boundaries point 2 Latitude (WGS84). INT32_MAX if unknown.</field>
+      <field type="int32_t" name="boundaries_p2_lon" units="degE7" invalid="INT32_MAX">Exploration cuboid boundaries point 2 Longitude (WGS84). INT32_MAX if unknown.</field>
+      <field type="float" name="boundaries_p2_x" units="m" invalid="NaN">Exploration cuboid boundaries point 2 local NED X coordinate. NaN if unknown.</field>
+      <field type="float" name="boundaries_p2_y" units="m" invalid="NaN">Exploration cuboid boundaries point 2 local NED Y coordinate. NaN if unknown.</field>
+      <field type="float" name="boundaries_p3_alt" units="m" invalid="NaN">Exploration cuboid boundaries point 3 Altitude (MSL). NaN if unknown.</field>
+      <field type="float" name="boundaries_p3_z" units="m" invalid="NaN">Exploration cuboid boundaries point 3 local NED Z coordinate. NaN if unknown.</field>
+      <field type="uint32_t" name="ingress_portal_id" invalid="UINT32_MAX">Currently defined ingress portal ID. This portal ID can either be set by the system autonomy engine or by an offboard controller or operator using MAV_CMD_SET_INGRESS_PORTAL. When unknown, not applicable or not deterministic, set to UINT32_MAX.</field>
+      <field type="int32_t" name="ingress_portal_lat" units="degE7" invalid="INT32_MAX">Currently defined ingress portal Latitude (WGS84). INT32_MAX if unknown, not applicable or when ingress_portal_id is set and different from UINT32_MAX.</field>
+      <field type="int32_t" name="ingress_portal_lon" units="degE7" invalid="INT32_MAX">Currently defined ingress portal Longitude (WGS84). INT32_MAX if unknown, not applicable or when ingress_portal_id is set and different from UINT32_MAX.</field>
+      <field type="float" name="ingress_portal_alt" units="m" invalid="NaN">Currently defined ingress portal Altitude (MSL). NaN if unknown, not applicable or when ingress_portal_id is set and different from UINT32_MAX.</field>
+      <field type="uint32_t" name="egress_portal_id" invalid="UINT32_MAX">Currently defined egress portal ID. This portal ID can either be set by the system autonomy engine or by an offboard controller or operator using MAV_CMD_SET_EGRESS_PORTAL. When unknown, not applicable or not deterministic, set to UINT32_MAX.</field>
+      <field type="int32_t" name="egress_portal_lat" units="degE7" invalid="INT32_MAX">Currently defined egress portal Latitude (WGS84). INT32_MAX if unknown, not applicable or when egress_portal_id is set and different from UINT32_MAX.</field>
+      <field type="int32_t" name="egress_portal_lon" units="degE7" invalid="INT32_MAX">Currently defined egress portal Longitude (WGS84). INT32_MAX if unknown, not applicable or when egress_portal_id is set and different from UINT32_MAX.</field>
+      <field type="float" name="egress_portal_alt" units="m" invalid="NaN">Currently defined egress portal Altitude (MSL). NaN if unknown, not applicable or when egress_portal_id is set and different from UINT32_MAX.</field>
+    </message>
+    <message id="452" name="EXPLORATION_RETURN_POSITION">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Provides the return-from-exploration position when an exploration is completed (e.g. volume set by the exploration boundaries does not have new open areas for
+        the vehicle to explore) or canceled (e.g. the operator stops the exploration task and requests the vehicle to leave the defined exploration area).
+        Can either be set by the vehicle's onboard autonomy engine or set by the user MAV_CMD_SET_EXPLORATION_RETURN_POS.
+        A MAV_CMD_NAV_EXPLORATION_RETURN can be used to send the vehicle to the position defined by this message.
+        This message can be requested by sending the MAV_CMD_REQUEST_MESSAGE command.
+      </description>
+      <field type="uint64_t" name="time_usec" units="us" invalid="0">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="int32_t" name="latitude" units="degE7" invalid="INT32_MAX">Latitude (WGS84). INT32_MAX when unknown.</field>
+      <field type="int32_t" name="longitude" units="degE7" invalid="INT32_MAX">Longitude (WGS84). INT32_MAX when unknown.</field>
+      <field type="int32_t" name="altitude" units="mm" invalid="NaN">Altitude (MSL). Positive for up. Note that virtually all GPS modules provide both WGS84 and MSL. INT32_MAX when unknown.</field>
+      <field type="int32_t" name="relative_alt" units="mm" invalid="NaN">Altitude above ground. INT32_MAX when unknown.</field>
+      <field type="int32_t" name="geoid_alt" units="mm" invalid="NaN">Altitude relative to WGS84 geoid. INT32_MAX when unknown.</field>
+      <field type="float" name="x" units="m" invalid="NaN">Local X position of this position in the local coordinate NED frame. NaN when unknown.</field>
+      <field type="float" name="y" units="m" invalid="NaN">Local Y position of this position in the local coordinate NED frame. NaN when unknown.</field>
+      <field type="float" name="z" units="m" invalid="NaN">Local Z position of this position in the local coordinate NED frame. NaN when unknown.</field>
+      <field type="float" name="yaw" units="rad" invalid="NaN">World to surface heading transformation of the return-from-exploration position. Used to indicate the heading with respect to the ground. NaN when unknown.</field>
+    </message>
   </messages>
 </mavlink>
