@@ -15,82 +15,83 @@
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
           Go through a portal. In an indoor exploration context, a portal represents an structural identifiable entry or pass point to start, stop or continue an exploration.
-          COMMAND_INT should be used so to set the MAV_FRAME and consequently, frame and coordinates of the portal position (MAV_FRAME_GLOBAL means global coordinates are being used,
+          By default, the vehicle should go into Hold/Loiter mode after passing through the portal, unless configured differently on the vehicle autonomy engine (through a parameter, for example).
+          COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates used for the portal position (MAV_FRAME_GLOBAL means global coordinates are being used,
           while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
         <param index="1" label="Portal ID" minValue="0" maxValue="4294967295" increment="1">ID of the portal. If the ID is unknown or not deterministic, set it to UINT32_MAX and use params 5, 6 and 7 to define the local or global position of the portal.</param>
-        <param index="2" reserved="true" default="0"/>
-        <param index="3" reserved="true" default="0"/>
-        <param index="4" reserved="true" default="0"/>
-        <param index="5" label="Position X or Latitude">X or Latitude (WGS84) coordinate of the portal position. NaN or INT32_MAX if unknown (or if using param 1 to set the portal).</param>
-        <param index="6" label="Position Y or Longitude">Y or Longitude (WGS84) coordinate of the portal position. NaN or INT32_MAX if unknown (or if using param 1 to set the portal).</param>
-        <param index="7" label="Position Z or Altitude (MSL)">Z or Altitude (MSL) coordinate of the portal position. NaN when unknown or when using param 1 to set the portal.</param>
+        <param index="2" reserved="true" default="NaN"/>
+        <param index="3" reserved="true" default="NaN"/>
+        <param index="4" reserved="true" default="NaN"/>
+        <param index="5" label="Position X or Latitude">X (mE4) or Latitude (degE7) coordinate (depending on MAV_FRAME) of the portal position. INT32_MAX if unknown (or if using param 1 to set the portal).</param>
+        <param index="6" label="Position Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the portal position. INT32_MAX if unknown (or if using param 1 to set the portal).</param>
+        <param index="7" label="Position Z or Altitude (MSL)">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the portal position. NaN when unknown or when using param 1 to set the portal.</param>
       </entry>
       <entry value="40501" name="MAV_CMD_SET_INGRESS_PORTAL" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
-          Sets a specific portal to be an entry portal. Defines also the approach vector for a vehicle to approach and go through the portal.
-          COMMAND_INT should be used so to set the MAV_FRAME and consequently, frame and coordinates of the approach vector (MAV_FRAME_GLOBAL means global coordinates are being used,
+          Sets a specific portal to be an ingress portal. Defines also the approach vector for a vehicle to approach and go through the portal.
+          COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates used for the approach vector (MAV_FRAME_GLOBAL means global coordinates are being used,
           while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
         <param index="1" label="Portal ID" minValue="0" maxValue="4294967295" increment="1">ID of the portal to be set as an ingress point.</param>
-        <param index="2" label="Approach vector initial point X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate of the initial point of the approach vector to the portal. NaN or INT32_MAX  if unknown.</param>
-        <param index="3" label="Approach vector initial point Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate of the initial point of the approach vector to the portal. NaN or INT32_MAX  if unknown.</param>
-        <param index="4" label="Approach vector initial point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate of the initial point of the approach vector to the portal. NaN if unknown.</param>
-        <param index="5" label="Approach vector final point X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate of the final point of the approach vector to the portal. NaN or INT32_MAX  if unknown.</param>
-        <param index="6" label="Approach vector final point Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate of the final point of the approach vector to the portal. NaN or INT32_MAX if unknown.</param>
-        <param index="7" label="Approach vector final point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate of the final point of the approach vector to the portal. NaN if unknown.</param>
+        <param index="2" label="Approach vector initial point X or Latitude">X (m) or Latitude (deg) (WGS84) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
+        <param index="3" label="Approach vector initial point Y or Longitude">Y (m) or Longitude (deg) (WGS84) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
+        <param index="4" label="Approach vector initial point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
+        <param index="5" label="Approach vector final point X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. INT32_MAX  if unknown.</param>
+        <param index="6" label="Approach vector final point Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. INT32_MAX if unknown.</param>
+        <param index="7" label="Approach vector final point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. NaN if unknown.</param>
       </entry>
       <entry value="40502" name="MAV_CMD_SET_EGRESS_PORTAL" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
-          Sets a specific portal to be an entry portal. Defines also the approach vector for a vehicle to approach and go through the portal.
-          COMMAND_INT should be used so to set the MAV_FRAME and consequently, frame and coordinates of the approach vector (MAV_FRAME_GLOBAL means global coordinates are being used,
+          Sets a specific portal to be an egress portal. Defines also the approach vector for a vehicle to approach and go through the portal.
+          COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates used for the approach vector (MAV_FRAME_GLOBAL means global coordinates are being used,
           while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
         <param index="1" label="Portal ID" minValue="0" maxValue="4294967295" increment="1">ID of the portal to be set as an egress point.</param>
-        <param index="2" label="Approach vector initial point X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate of the initial point of the approach vector to the portal. NaN or INT32_MAX  if unknown.</param>
-        <param index="3" label="Approach vector initial point Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate of the initial point of the approach vector to the portal. NaN or INT32_MAX  if unknown.</param>
-        <param index="4" label="Approach vector initial point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate of the initial point of the approach vector to the portal. NaN if unknown.</param>
-        <param index="5" label="Approach vector final point X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate of the final point of the approach vector to the portal. NaN or INT32_MAX  if unknown.</param>
-        <param index="6" label="Approach vector final point Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate of the final point of the approach vector to the portal. NaN or INT32_MAX if unknown.</param>
-        <param index="7" label="Approach vector final point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate of the final point of the approach vector to the portal. NaN if unknown.</param>
+        <param index="2" label="Approach vector initial point X or Latitude">X (m) or Latitude (deg) (WGS84) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
+        <param index="3" label="Approach vector initial point Y or Longitude">Y (m) or Longitude (deg) (WGS84) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
+        <param index="4" label="Approach vector initial point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
+        <param index="5" label="Approach vector final point X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. INT32_MAX if unknown.</param>
+        <param index="6" label="Approach vector final point Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. INT32_MAX if unknown.</param>
+        <param index="7" label="Approach vector final point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. NaN if unknown.</param>
       </entry>
       <entry value="40510" name="MAV_CMD_DO_EXPLORATION" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
           Start or continue the exploration task.
-          If starting a new exploration, but requiring to get through a portal first, params 4 or 5 to 7 should be set and different from the specified ignore values.
+          If starting a new exploration that starts with a portal ingress, then params 4, 5 and 7 must be set with valid portal position information.
           Continuing an exploration can be done without necessarily setting the ingress portal, unless the exploration requires the definition of more than the initial ingress portal.
-          If the passed exploration ID does not exist or is not listed as a valid exploration ID in the vehicle autonomy engine, then this command should be rejected.
-          COMMAND_INT should be used so to set the MAV_FRAME and consequently, frame and coordinates of the portal position (MAV_FRAME_GLOBAL means global coordinates are being used,
+          When passing the exploration ID in the param 1 field, if the ID doesn't exist, it means a new exploration is created. If param 1 &gt; UINT8_MAX, then the command should be rejected.
+          COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates used for the portal position (MAV_FRAME_GLOBAL means global coordinates are being used,
           while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
         <param index="1" label="Exploration task ID" minValue="0" maxValue="255" increment="1">Sets the ID of the exploration task to start. If the ID already exists, it resumes that (queued/listed) exploration task. Set to UINT8_MAX if one wants to resume the last exploration task.</param>
         <param index="2" label="Time limit" units="s" minValue="0">Time limit to execute the exploration. Reaching this time triggers the behavior defined in param 4. Set to 0 when there is no time limit.</param>
-        <param index="3" label="Behavior after stopping" minValue="0" maxValue="2" increment="1">The behavior after stopping the exploration task. 0: Hold, 1: Land, 2: Return to position.</param>
+        <param index="3" label="Behavior after finishing" minValue="0" maxValue="2" increment="1">The behavior after finishing the exploration task. 0: Hold, 1: Land, 2: Return to position.</param>
         <param index="4" label="Ingress Portal ID" minValue="0" maxValue="4294967295" increment="1">ID of the ingress portal. If the ID is unknown, not deterministic, or when already in the area to explore after going through a portal, set it to UINT32_MAX and use params 5, 6 and 7 to define the local or global position of the portal. Note that an egress portal is not defined by this command but can be consequently set either by the vehicle autonomy engine or by an operator/external controller using MAV_CMD_SET_EGRESS_PORTAL.</param>
-        <param index="5" label="Position X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate of the portal position. NaN or INT32_MAX if unknown (or if using param 4 to set the portal).</param>
-        <param index="6" label="Position Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate of the portal position. NaN or INT32_MAX if unknown (or if using param 1 to set the portal).</param>
-        <param index="7" label="Position Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate of the portal position. NaN when unknown or when using param 4 to set the portal ID.</param>
+        <param index="5" label="Position X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the portal position. INT32_MAX if unknown (or if using param 4 to set the portal).</param>
+        <param index="6" label="Position Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the portal position. INT32_MAX if unknown (or if using param 4 to set the portal).</param>
+        <param index="7" label="Position Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the portal position. NaN when unknown or when using param 4 to set the portal ID.</param>
       </entry>
       <entry value="40511" name="MAV_CMD_STOP_EXPLORATION" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
           Stop an exploration task. The behavior after stopping is defined by a parameter
-           Return to position should take the vehicle to the defined exit portal first, and then to the return post-exploration point (accessible through EXPLORATION_RETURN_POSITION).
-           If the passed exploration ID does not exist or is not listed as a valid exploration ID in the vehicle autonomy engine, then this command should be rejected.
+          Return to position should take the vehicle to the defined exit portal first, and then to the return post-exploration point (accessible through EXPLORATION_RETURN_POSITION).
+          If the passed exploration ID does not exist or is not listed as a valid exploration ID in the vehicle autonomy engine, then this command should be rejected.
         </description>
         <param index="1" label="Exploration task ID" minValue="0" maxValue="4294967295" increment="1">Sets the ID of the (current or queued) exploration task to stop. Set to UINT32_MAX if one wants to stop the current exploration task.</param>
         <param index="2" label="Behavior after stopping" minValue="0" maxValue="2" increment="1">The behavior after stopping the exploration task. 0: Hold, 1: Land, 2: Return to position.</param>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
-        <param index="5" reserved="true" default="NaN"/>
-        <param index="6" reserved="true" default="NaN"/>
+        <param index="5" reserved="true" default="0"/>
+        <param index="6" reserved="true" default="0"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="40512" name="MAV_CMD_SET_EXPLORATION_RETURN_POS" hasLocation="true" isDestination="false">
@@ -98,16 +99,16 @@
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
           Sets the return position after stopping or finishing an exploration task. Used when the vehicle autonomy engine does not set this position or to overwrite it.
-          COMMAND_INT should be used so to set the MAV_FRAME and consequently, frame and coordinates of the position (MAV_FRAME_GLOBAL means global coordinates are being used,
+          COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates used for the position (MAV_FRAME_GLOBAL means global coordinates are being used,
           while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
-        <param index="1" reserved="true" default="0"/>
-        <param index="2" reserved="true" default="0"/>
-        <param index="3" reserved="true" default="0"/>
+        <param index="1" label="Exploration task ID" minValue="0" maxValue="4294967295" increment="1">ID of the exploration to set the return position to. Set to UINT32_MAX if one wants to set it to the current exploration task.</param>
+        <param index="2" reserved="true" default="NaN"/>
+        <param index="3" reserved="true" default="NaN"/>
         <param index="4" label="Yaw or Heading" units="rad">Yaw or heading of the return position. NaN if unknown.</param>
-        <param index="5" label="Position X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate of the return position. NaN or INT32_MAX if unknown.</param>
-        <param index="6" label="Position Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate of the return position. NaN or INT32_MAX if unknown.</param>
-        <param index="7" label="Position Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate of the return position. NaN or INT32_MAX if unknown.</param>
+        <param index="5" label="Position X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the return position. INT32_MAX if unknown.</param>
+        <param index="6" label="Position Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the return position. INT32_MAX if unknown.</param>
+        <param index="7" label="Position Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the return position. NaN if unknown.</param>
       </entry>
       <entry value="40513" name="MAV_CMD_DO_EXPLORATION_RETURN" hasLocation="false" isDestination="false">
         <wip/>
@@ -117,29 +118,29 @@
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
-        <param index="5" reserved="true" default="NaN"/>
-        <param index="6" reserved="true" default="NaN"/>
+        <param index="5" reserved="true" default="0"/>
+        <param index="6" reserved="true" default="0"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="40514" name="MAV_CMD_SET_EXPLORATION_BOUNDARIES" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
-          Set exploration task world boundaries. When starting a new behavior, either the system has default boundaries or it iss boundless.
+          Set exploration task world boundaries. When starting a new behavior, either the system has default boundaries or it is boundless.
           This message will be accepted when the task ID already exists, or otherwise should fail. In order to set the exploration task world boundaries,
           p1 and p2 identify the vertices of a rectangle, which define a 2D localization of the exploration area, while p3, matching the same coordinates of p1,
           provides the height limitation of the 3D volume to explore.
           In short, the coordinates are x1, y1, x2, y2, z and the height of the cuboid / 3D volume, where the point coordinates can be represented by
-          p1(x1, y1, z+h), p2(x2, y2, z+h) and p3(x1, y1, z). COMMAND_INT should be used so to set the MAV_FRAME and consequently,frame and coordinates of the boundaries
-          cuboid (MAV_FRAME_GLOBAL means global coordinates are being used, while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
+          p1(x1, y1, z+h), p2(x2, y2, z+h) and p3(x1, y1, z). COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates
+          used for the boundaries cuboid (MAV_FRAME_GLOBAL means global coordinates are being used, while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
         <param index="1" label="Exploration task ID" minValue="0" maxValue="255" increment="1">ID of the exploration task to set these boundaries to. Set to UINT8_MAX if not applicable or/and to set these boundaries to the current running or active exploration task.</param>
         <param index="2" label="Cuboid height" units="m">Exploration 3D space boundaries cuboid height. The Z local coordinate or altitude (MSL) of point 1 and 2 are computed by the sum of this height with the local Z or altitude (MSL) of point 3, i.e Z1 = Z2 = Z3 + cuboid height. NaN if not applicable.</param>
-        <param index="3" label="Approach vector initial point Y or Longitude">Local X (mE4) or Latitude (degE7) (WGS84) of point 1 of the exploration 3D space boundaries cuboid. NaN or INT32_MAX if not applicable.</param>
-        <param index="4" label="Approach vector initial point Z or Altitude (MSL)">Local Y (mE4) or Longitude (degE7) (WGS84) of point 1 of the exploration 3D space boundaries cuboid. NaN or INT32_MAX if not applicable.</param>
-        <param index="5" label="Approach vector final point X or Latitude">Local X (mE4) or Latitude (degE7) (WGS84) of point 2 of the exploration 3D space boundaries cuboid. NaN or INT32_MAX if not applicable.</param>
-        <param index="6" label="Approach vector final point Y or Longitude">Local Y (mE4) or Longitude (degE7) (WGS84) of point 2 of the exploration 3D space boundaries cuboid. NaN or INT32_MAX if not applicable.</param>
-        <param index="7" label="Approach vector final point Z or Altitude (MSL)" units="m">Local Z or Altitude (MSL) point 3 of the exploration 3D space boundaries cuboid. This also represents the height of the bottom plane of the cuboid. NaN if not applicable.</param>
+        <param index="3" label="X1 or Latitude 1">Local X (m) or Latitude (deg) (WGS84) (depending on MAV_FRAME) of point 1 of the exploration 3D space boundaries cuboid. NaN if not applicable.</param>
+        <param index="4" label="Y1 or Longitude 1">Local Y (m) or Longitude (deg) (WGS84) (depending on MAV_FRAME) of point 1 of the exploration 3D space boundaries cuboid. NaN if not applicable.</param>
+        <param index="5" label="X2 or Latitude 2">Local X (mE4) or Latitude (degE7) (WGS84) (depending on MAV_FRAME) of point 2 of the exploration 3D space boundaries cuboid. INT32_MAX if not applicable.</param>
+        <param index="6" label="Y2 or Longitude 2">Local Y (mE4) or Longitude (degE7) (WGS84) (depending on MAV_FRAME) of point 2 of the exploration 3D space boundaries cuboid. INT32_MAX if not applicable.</param>
+        <param index="7" label="Z3 or Altitude 3" units="m">Local Z or Altitude (MSL) (depending on MAV_FRAME) point 3 of the exploration 3D space boundaries cuboid. This also represents the height of the bottom plane of the cuboid. NaN if not applicable.</param>
       </entry>
       <entry value="41050" name="MAV_CMD_SET_POI_FOCUS" hasLocation="false" isDestination="false">
         <wip/>
@@ -391,7 +392,7 @@
       <field type="uint8_t" name="exploration_id" invalid="UINT8_MAX">ID of the exploration task. 255 if not applicable or unknown.</field>
       <field type="uint16_t" name="progress" invalid="UINT16_MAX">Progress measurement of the exploration task. Specific meaning may vary by implementation, but in general, increasing values mean more has been explored. UINT16_MAX when unknown or not applicable.</field>
       <field type="uint16_t" name="denominator" invalid="0">Measurement of the known size of the exploration task. Specific meaning may vary, but when progress == denominator, this should imply that exploration is complete. This value may increase as more need to explore is discovered, or may be fixed (100 recommended) if the end state is known (e.g., exploration in a known mapped environment). 0 when no meaningful size can be communicated.</field>
-      <field type="uint8_t" name="flags" enum="MAV_EXPLORATION_STATUS_FLAGS">Bitmap of the exploration task status flags.</field>
+      <field type="uint16_t" name="flags" enum="MAV_EXPLORATION_STATUS_FLAGS">Bitmap of the exploration task status flags.</field>
       <field type="int8_t" name="level" invalid="INT8_MAX">In an indoor exploration task, it indicates the floor/level of the structure that is currently being explored. The level where the vehicle started the exploration is considered the level 0. INT8_MAX when unknown, not capable to provide or not applicable.</field>
     </message>
     <message id="451" name="EXPLORATION_INFO">
