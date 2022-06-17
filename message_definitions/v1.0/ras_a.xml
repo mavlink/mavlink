@@ -4,6 +4,21 @@
   <version>0</version>
   <dialect>0</dialect>
   <enums>
+    <enum name="MAV_PROTOCOL_CAPABILITY" bitmask="true">
+      <description>Bitmask of (optional) autopilot capabilities (64 bit). If a bit is set, the autopilot supports this capability.</description>
+      <entry value="262144" name="MAV_PROTOCOL_CAPABILITY_INDOOR_OBSTACLE_AVOIDANCE">
+        <description>Autopilot is capable of indoor obstacle avoidance. The obstacle visualization range (i.e. omnidirectional, single direction) is not determined by this flag and is system specific.</description>
+      </entry>
+      <entry value="524288" name="MAV_PROTOCOL_CAPABILITY_OUTDOOR_OBSTACLE_AVOIDANCE">
+        <description>Autopilot is capable of outdoor obstacle avoidance. The obstacle visualization range (i.e. omnidirectional, single direction) is not determined by this flag and is system specific.</description>
+      </entry>
+      <entry value="1048576" name="MAV_PROTOCOL_CAPABILITY_VIO_AUTONOMOUS_NAVIGATION">
+        <description>Autopilot is capable of autonomous navigation using Visual-Inertial Odometry algorithms and/or subsystems.</description>
+      </entry>
+      <entry value="2097152" name="MAV_PROTOCOL_CAPABILITY_AUTONOMOUS_EXPLORATION">
+        <description>Autopilot is capable of autonomous exploration tasks in indoor/outdoor environments. This necessarily means that the vehicle is capable of autonomous navigation and obstacle avoidance.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
