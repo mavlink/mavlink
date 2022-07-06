@@ -1186,11 +1186,11 @@
         <param index="7" label="Altitude/Z">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude.</param>
       </entry>
       <entry value="36" name="MAV_CMD_DO_PRECISION_HOLD" hasLocation="true" isDestination="true">
-        <description>Vehicle moves to specified location and enables or disables Precision Hold mode which allows the vehicle to hover precisely above a LANDING_TARGET. If any of the 3 fields Latitude/Longitude/Altitude are NAN the current position will be used instead.</description>
-        <param index="1" label="Enable">Enable or disable Precision Hold.</param>
-        <param index="2" label="Target number">The ID of the target (LANDING_TARGET.target_num) if multiple targets are present. If the specified target is not found, the lowest ID target available will be used.</param>
-        <param index="3" label="Use Heading">Set to 1 if the drone should align it's heading with the target heading.</param>
-        <param index="4" label="Height above target" units="m">Set to zero to maintain current altitude.</param>
+        <description>Vehicle moves to specified location and engages Precison Hold mode which allows the vehicle to hover precisely above a LANDING_TARGET. If Latitude/Longitude are FLT_MAX (COMMAND_LONG) or INT32_MAX (COMMAND_INT) the current position will be used instead. If Altitude is FLT_MAX (COMMAND_LONG) or INT32_MAX (COMMAND_INT) the current altitude will be used instead </description>
+        <param index="1" label="Target number">The ID of the target (LANDING_TARGET.target_num) if multiple targets are present. If the specified target is not found the vehicle will use normal Position Hold mode.</param>
+        <param index="2" label="Use Heading">Set to 1 if the drone should align it's heading with the target heading.</param>
+        <param index="3" label="Height above target" units="m">Set to NaN to maintain current altitude.</param>
+        <param index="4">Empty</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude">Altitude</param>
