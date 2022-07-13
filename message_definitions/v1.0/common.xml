@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?xml version="1.0"?>
 <mavlink>
   <include>minimal.xml</include>
@@ -7830,9 +7829,9 @@
     </enum>
     <enum name="MAV_FRAME">
       <description>Coordinate frames used by MAVLink. Not all frames are supported by all commands, messages, or vehicles.
-      
+
       Global frames use the following naming conventions:
-      - "GLOBAL": Global coordinate frame with WGS84 latitude/longitude and altitude positive over mean sea level (MSL) by default. 
+      - "GLOBAL": Global coordinate frame with WGS84 latitude/longitude and altitude positive over mean sea level (MSL) by default.
         The following modifiers may be used with "GLOBAL":
         - "RELATIVE_ALT": Altitude is relative to the vehicle home position rather than MSL.
         - "TERRAIN_ALT": Altitude is relative to ground level rather than MSL.
@@ -8969,7 +8968,7 @@
           Sets the home position to either to the current position or a specified position.
           The home position is the default position that the system will return to and land on.
           The position is set automatically by the system during the takeoff (and may also be set using this command).
-          Note: the current home position may be emitted in a HOME_POSITION message on request (using MAV_CMD_REQUEST_MESSAGE with param1=242).      
+          Note: the current home position may be emitted in a HOME_POSITION message on request (using MAV_CMD_REQUEST_MESSAGE with param1=242).
         </description>
         <param index="1" label="Use Current" minValue="0" maxValue="1" increment="1">Use current (1=use current location, 0=use specified location)</param>
         <param index="2">Empty</param>
@@ -12017,7 +12016,7 @@
       </entry>
       <entry value="8" name="MAV_ODID_RADIO_TYPES_WIFI_BEACON">
         <description>The device has support for WiFi Beacon.</description>
-      </entry>     
+      </entry>
     </enum>
     <enum name="MAV_ODID_RADIO_WIFI_SUPPORTED_FREQUENCY_BANDS" bitmask="true">
       <description>Describes the specifications of the WiFi radio(s) (bitmask)</description>
@@ -12553,6 +12552,60 @@
       </entry>
       <entry value="129" name="MAV_FTP_OPCODE_NAK">
         <description>NAK: NAK response</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_ACK">
+      <entry value="0" name="MAV_ODID_ACK_OK">
+        <description>The message has been received ok and has been processed.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_ACK_ERR_FAIL">
+        <description>Generic error message if none of the other reasons fails or if no detailed error reporting is implemented.</description>
+      </entry>
+      <entry value="2" name="MAV_ODID_ACK_ACCESS_DENIED">
+        <description>The system is refusing to accept this message from this source / communication partner.</description>
+      </entry>
+      <entry value="3" name="MAV_ODID_ACK_ERR_NOT_SUPPORTED">
+        <description>Message is not supported, other commands could be accepted.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_TRANSMISSION_MODE">
+      <entry value="0" name="MAV_ODID_TRANSMISSION_MODE_NO_CHANGE">
+        <description>No change in transmission mode of OpenDroneID packets.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_TRANSMISSION_MODE_BLE_LEGACY">
+        <description>Transmit OpenDroneID BLE legacy packets.</description>
+      </entry>
+      <entry value="2" name="MAV_ODID_TRANSMISSION_MODE_BLE_LONG_RANGE">
+        <description>Transmit OpenDroneID BLE long range packets.</description>
+      </entry>
+      <entry value="3" name="MAV_ODID_TRANSMISSION_MODE_BLE_DUAL_MODE">
+        <description>Transmit OpenDroneID BLE legacy and BLE long range packets.</description>
+      </entry>
+      <entry value="4" name="MAV_ODID_TRANSMISSION_MODE_WLAN_NAN">
+        <description>Transmit OpenDroneID WLAN NaN packets.</description>
+      </entry>
+      <entry value="5" name="MAV_ODID_TRANSMISSION_MODE_WLAN_BEACON">
+        <description>Transmit OpenDroneID WLAN beacon packets.</description>
+      </entry>
+      <entry value="6" name="MAV_ODID_TRANSMISSION_MODE_WLAN_DUAL_MODE">
+      <description>Transmit OpenDroneID WLAN NaN and WLAN beacon packets.</description>
+      </entry>
+      <entry value="7" name="MAV_ODID_TRANSMISSION_MODE_ALL">
+      <description>Transmit OpenDroneID packets in all transmission protocols: WiFi Beacon, WiFi NaN, BLE legacy and BLE long range.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_ODID_COMMAND">
+      <entry value="0" name="MAV_ODID_COMMAND_NO_CHANGE">
+        <description>No change in transmission mode of OpenDroneID device.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_COMMAND_START">
+        <description>Start transmitting OpenDroneID packets.</description>
+      </entry>
+      <entry value="2" name="MAV_ODID_COMMAND_STOP">
+        <description>Stop transmitting OpenDroneID packets.</description>
+      </entry>
+      <entry value="3" name="MAV_ODID_COMMAND_RESET">
+        <description>Resets/reboots the OpenDroneID transponder.</description>
       </entry>
     </enum>
   </enums>
@@ -14344,7 +14397,7 @@
         MAV_CMD_REQUEST_MESSAGE.param2 indicates the sequence number the first image to send, or set to -1 to send the message for all sequence numbers.
         MAV_CMD_REQUEST_MESSAGE.param3 is used to specify a range of messages to send:
         set to 0 (default) to send just the the message for the sequence number in param 2,
-        set to -1 to send the message for the sequence number in param 2 and all the following sequence numbers, 
+        set to -1 to send the message for the sequence number in param 2 and all the following sequence numbers,
         set to the sequence number of the final message in the range.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="time_utc" units="us" invalid="0">Timestamp (time since UNIX epoch) in UTC. 0 for unknown.</field>
@@ -14964,14 +15017,14 @@
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>
         Component metadata message, which may be requested using MAV_CMD_REQUEST_MESSAGE.
-        
+
         This contains the MAVLink FTP URI and CRC for the component's general metadata file.
         The file must be hosted on the component, and may be xz compressed.
         The file CRC can be used for file caching.
-        
+
         The general metadata file can be read to get the locations of other metadata files (COMP_METADATA_TYPE) and translations, which may be hosted either on the vehicle or the internet.
         For more information see: https://mavlink.io/en/services/component_information.html.
-        
+
         Note: Camera components should use CAMERA_INFORMATION instead, and autopilots may use both this message and AUTOPILOT_VERSION.
       </description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
@@ -15196,6 +15249,23 @@
       <field type="uint8_t" name="authentication_pages_max">Describes how many Authentication pages the device supports. Maximum value is 16.</field>
     </message>
     <!-- The message ids 12918 - 12919 are reserved for OpenDroneID. -->
+    <message id="12916" name="OPEN_DRONE_ID_ACK">
+      <description>An ACK message to acknowledge that an OpenDroneID message has been received.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint32_t" name="message_id">The ID of the received OpenDroneID MAVLink message.</field>
+      <field type="uint8_t" name="seq_number">The sequence number of the receiced MAVLink packet, included in this ACK message.</field>
+      <field type="uint8_t" name="ack" enum="MAV_ODID_ACK">Indicates the ACK status of the OpenDroneID device.</field>
+    </message>
+
+    <message id="12917" name="OPEN_DRONE_ID_CMD">
+      <description>An CMD message to control the radio transmission of a OpenDroneID transponder.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="uint8_t" name="command" enum="MAV_ODID_COMMAND">Controls the transmission of the OpenDroneID device.</field>
+      <field type="uint8_t" name="transmission_mode" enum="MAV_ODID_TRANSMISSION_MODE">Configure the OpenDroneID transmission mode.</field>
+      <field type="uint16_t" name="transmission_period_ms" units="ms">Configures the OpenDroneID transmission period. Valid values are between 100 and 3000 ms.</field>
+    </message>
     <message id="12920" name="HYGROMETER_SENSOR">
       <description>Temperature and humidity from hygrometer.</description>
       <field type="uint8_t" name="id" instance="true">Hygrometer ID</field>
@@ -15204,4 +15274,3 @@
     </message>
   </messages>
 </mavlink>
->>>>>>> fix CR/LF issue, so only the added lines are shown in the diff
