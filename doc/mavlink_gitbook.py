@@ -41,7 +41,7 @@ index_text="""<!-- THIS FILE IS AUTO-GENERATED (DO NOT UPDATE GITBOOK): https://
 # XML Definition Files & Dialects
 
 MAVLink definitions files can be found in [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/).
-These can roughtly be divided into:
+These can roughly be divided into:
 - [Standard definitions](#standard-definitions) - core definitions shared by many flight stacks
 - [Test definitions](#test-definitions) - definitions to support testing and validation
 - [Dialects](#dialects) - *protocol-* and *vendor-specific* messages, enums and commands
@@ -54,7 +54,7 @@ The following XML definition files are considered standard/core (i.e. not dialec
 - [minimal.xml](minimal.md) - the minimum set of entities (messages, enums, MAV_CMD) required to set up a MAVLink network.
 - [standard.xml](standard.md) - the standard set of entities that are implemented by almost all flight stacks (at least 2, in a compatible way).
   This `includes` [minimal.xml](minimal.md).
-- [common.xml](../messages/common.md) - the set of entitites that have been implemented in at least one core flight stack.
+- [common.xml](../messages/common.md) - the set of entities that have been implemented in at least one core flight stack.
   This `includes` [standard.xml](minimal.md)
 
 > **Note** We are still working towards moving the truly standard entities from **common.xml** to **standard.xml**
