@@ -1086,8 +1086,8 @@
       <entry value="21" name="MAV_CMD_NAV_LAND" hasLocation="true" isDestination="true">
         <description>Land at location.</description>
         <param index="1" label="Abort Alt" units="m">Minimum target altitude if landing is aborted (0 = undefined/use system default).</param>
-        <param index="2" label="Land Mode" enum="PRECISION_LAND_MODE">Precision land mode.</param>
-        <param index="3">Empty.</param>
+        <param index="2" label="Precision land Mode" enum="PRECISION_LAND_MODE">Precision land mode.</param>
+        <param index="3" label="Post landed behavior" enum="POST_LAND_BEHAVIOR">Behavior after being landed (do auto-disarm? or continue onto next mission item? etc.)</param>
         <param index="4" label="Yaw Angle" units="deg">Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5" label="Latitude">Latitude.</param>
         <param index="6" label="Longitude">Longitude.</param>
@@ -3986,6 +3986,12 @@
       </entry>
       <entry value="2" name="PRECISION_LAND_MODE_REQUIRED">
         <description>Use precision landing, searching for beacon if not found when land command accepted (land normally if beacon cannot be found).</description>
+      </entry>
+    </enum>
+    <enum name="POST_LAND_BEHAVIOR" bitmask="true">
+      <description>Configuration for post-landed behavior (bitmask)</description>
+      <entry value="1" name="POST_LAND_BEHAVIOR_DONT_DISARM">
+        <description>Don't disarm automatically after landing (e.g. when the vehicle should land and takeoff automatically to continue mission)</description>
       </entry>
     </enum>
     <!-- parachute action enum -->
