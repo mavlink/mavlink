@@ -21,7 +21,7 @@
  qgroundcontrol are printed by this program along with the heartbeats.
  
  
- I compiled this program sucessfully on Ubuntu 10.04 with the following command
+ I compiled this program successfully on Ubuntu 10.04 with the following command
  
  gcc -I ../../pixhawk/mavlink/include -o udp-server udp-server-test.c
  
