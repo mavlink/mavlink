@@ -4851,20 +4851,6 @@
         <description>NAK: NAK response</description>
       </entry>
     </enum>
-    <enum name="MAV_ODID_ACK">
-      <entry value="0" name="MAV_ODID_ACK_OK">
-        <description>The message has been received ok and has been processed.</description>
-      </entry>
-      <entry value="1" name="MAV_ODID_ACK_ERR_FAIL">
-        <description>Generic error message if none of the other reasons fails or if no detailed error reporting is implemented.</description>
-      </entry>
-      <entry value="2" name="MAV_ODID_ACK_ACCESS_DENIED">
-        <description>The system is refusing to accept this message from this source / communication partner.</description>
-      </entry>
-      <entry value="3" name="MAV_ODID_ACK_ERR_NOT_SUPPORTED">
-        <description>Message is not supported, other commands could be accepted.</description>
-      </entry>
-    </enum>
     <enum name="MAV_ODID_TRANSMISSION_MODE">
       <entry value="0" name="MAV_ODID_TRANSMISSION_MODE_NO_CHANGE">
         <description>No change in transmission mode of OpenDroneID packets.</description>
@@ -7517,17 +7503,7 @@
       <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 9.</field>
       <field type="uint8_t[225]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
-    <message id="12916" name="OPEN_DRONE_ID_ACK">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
-      <description>An ACK message to acknowledge that an OpenDroneID message has been received.</description>
-      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
-      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
-      <field type="uint32_t" name="message_id">The ID of the received OpenDroneID MAVLink message.</field>
-      <field type="uint8_t" name="seq_number">The sequence number of the receiced MAVLink packet, included in this ACK message.</field>
-      <field type="uint8_t" name="ack" enum="MAV_ODID_ACK">Indicates the ACK status of the OpenDroneID device.</field>
-    </message>
-    <message id="12917" name="OPEN_DRONE_ID_CMD">
+    <message id="12916" name="OPEN_DRONE_ID_CMD">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>An CMD message to control the radio transmission of a OpenDroneID transponder.</description>
@@ -7536,7 +7512,9 @@
       <field type="uint8_t" name="command" enum="MAV_ODID_COMMAND">Controls the transmission of the OpenDroneID device.</field>
       <field type="uint8_t" name="transmission_mode" enum="MAV_ODID_TRANSMISSION_MODE">Configure the OpenDroneID transmission mode.</field>
       <field type="uint16_t" name="transmission_period_ms" units="ms">Configures the OpenDroneID transmission period. Valid values are between 100 and 3000 ms.</field>
+      <field type="uint8_t" name="transmission_wlan_channel">Configures the WLAN channel that is used for transmission (in WLAN mode). Valid channels are defined here: https://en.wikipedia.org/wiki/List_of_WLAN_channels</field>
     </message>
+    <!-- The message ids 12917 - 12919 are reserved for OpenDroneID. -->
     <message id="12920" name="HYGROMETER_SENSOR">
       <description>Temperature and humidity from hygrometer.</description>
       <field type="uint8_t" name="id" instance="true">Hygrometer ID</field>
