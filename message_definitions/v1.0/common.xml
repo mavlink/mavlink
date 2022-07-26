@@ -4851,43 +4851,43 @@
         <description>NAK: NAK response</description>
       </entry>
     </enum>
-    <enum name="MAV_ODID_TRANSMISSION_MODE">
-      <entry value="0" name="MAV_ODID_TRANSMISSION_MODE_NO_CHANGE">
-        <description>No change in transmission mode of OpenDroneID packets.</description>
+    <enum name="MAV_ODID_BROADCAST_MODE">
+      <entry value="0" name="MAV_ODID_BROADCAST_MODE_NO_CHANGE">
+        <description>No change in broadcast mode of OpenDroneID packets.</description>
       </entry>
-      <entry value="1" name="MAV_ODID_TRANSMISSION_MODE_BLE_LEGACY">
-        <description>Transmit OpenDroneID BLE legacy packets.</description>
+      <entry value="1" name="MAV_ODID_BROADCAST_MODE_BLE_LEGACY">
+        <description>Broadcast OpenDroneID BLE legacy packets.</description>
       </entry>
-      <entry value="2" name="MAV_ODID_TRANSMISSION_MODE_BLE_LONG_RANGE">
-        <description>Transmit OpenDroneID BLE long range packets.</description>
+      <entry value="2" name="MAV_ODID_BROADCAST_MODE_BLE_LONG_RANGE">
+        <description>Broadcast OpenDroneID BLE long range packets.</description>
       </entry>
-      <entry value="3" name="MAV_ODID_TRANSMISSION_MODE_BLE_DUAL_MODE">
-        <description>Transmit OpenDroneID BLE legacy and BLE long range packets.</description>
+      <entry value="3" name="MAV_ODID_BROADCAST_MODE_BLE_DUAL_MODE">
+        <description>Broadcast OpenDroneID BLE legacy and BLE long range packets.</description>
       </entry>
-      <entry value="4" name="MAV_ODID_TRANSMISSION_MODE_WLAN_NAN">
-        <description>Transmit OpenDroneID WLAN NaN packets.</description>
+      <entry value="4" name="MAV_ODID_BROADCAST_MODE_WLAN_NAN">
+        <description>Broadcast OpenDroneID WLAN NaN packets.</description>
       </entry>
-      <entry value="5" name="MAV_ODID_TRANSMISSION_MODE_WLAN_BEACON">
-        <description>Transmit OpenDroneID WLAN beacon packets.</description>
+      <entry value="5" name="MAV_ODID_BROADCAST_MODE_WLAN_BEACON">
+        <description>Broadcast OpenDroneID WLAN beacon packets.</description>
       </entry>
-      <entry value="6" name="MAV_ODID_TRANSMISSION_MODE_WLAN_DUAL_MODE">
-      <description>Transmit OpenDroneID WLAN NaN and WLAN beacon packets.</description>
+      <entry value="6" name="MAV_ODID_BROADCAST_MODE_WLAN_DUAL_MODE">
+      <description>Broadcast OpenDroneID WLAN NaN and WLAN beacon packets.</description>
       </entry>
-      <entry value="7" name="MAV_ODID_TRANSMISSION_MODE_ALL">
-      <description>Transmit OpenDroneID packets in all transmission protocols: WiFi Beacon, WiFi NaN, BLE legacy and BLE long range.</description>
+      <entry value="7" name="MAV_ODID_BROADCAST_MODE_ALL">
+      <description>Broadcast OpenDroneID packets in all transmission protocols: WiFi Beacon, WiFi NaN, BLE legacy and BLE long range.</description>
       </entry>
     </enum>
-    <enum name="MAV_ODID_COMMAND">
-      <entry value="0" name="MAV_ODID_COMMAND_NO_CHANGE">
-        <description>No change in transmission mode of OpenDroneID device.</description>
+    <enum name="MAV_ODID_BROADCAST_COMMAND">
+      <entry value="0" name="MAV_ODID_BROADCAST_COMMAND_NO_CHANGE">
+        <description>No change in broadcast mode of OpenDroneID device.</description>
       </entry>
-      <entry value="1" name="MAV_ODID_COMMAND_START">
-        <description>Start transmitting OpenDroneID packets.</description>
+      <entry value="1" name="MAV_ODID_BROADCAST_COMMAND_START">
+        <description>Start broadcasting OpenDroneID packets.</description>
       </entry>
-      <entry value="2" name="MAV_ODID_COMMAND_STOP">
-        <description>Stop transmitting OpenDroneID packets.</description>
+      <entry value="2" name="MAV_ODID_BROADCAST_COMMAND_STOP">
+        <description>Stop broadcasting OpenDroneID packets.</description>
       </entry>
-      <entry value="3" name="MAV_ODID_COMMAND_RESET">
+      <entry value="3" name="MAV_ODID_BROADCAST_COMMAND_RESET">
         <description>Resets/reboots the OpenDroneID transponder.</description>
       </entry>
     </enum>
@@ -7503,16 +7503,16 @@
       <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 9.</field>
       <field type="uint8_t[225]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
-    <message id="12916" name="OPEN_DRONE_ID_CMD">
+    <message id="12916" name="OPEN_DRONE_ID_BROADCAST_CONTROL">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>An CMD message to control the radio transmission of a OpenDroneID transponder.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
-      <field type="uint8_t" name="command" enum="MAV_ODID_COMMAND">Controls the transmission of the OpenDroneID device.</field>
-      <field type="uint8_t" name="transmission_mode" enum="MAV_ODID_TRANSMISSION_MODE">Configure the OpenDroneID transmission mode.</field>
-      <field type="uint16_t" name="transmission_period_ms" units="ms">Configures the OpenDroneID transmission period. Valid values are between 100 and 3000 ms.</field>
-      <field type="uint8_t" name="transmission_wlan_channel">Configures the WLAN channel that is used for transmission (in WLAN mode). Valid channels are defined here: https://en.wikipedia.org/wiki/List_of_WLAN_channels</field>
+      <field type="uint8_t" name="command" enum="MAV_ODID_BROADCAST_COMMAND">Controls the broadcast of the OpenDroneID device.</field>
+      <field type="uint8_t" name="broadcast_mode" enum="MAV_ODID_BROADCAST_MODE">Configure the OpenDroneID broadcast mode.</field>
+      <field type="uint16_t" name="broadcast_period_ms" units="ms">Configures the OpenDroneID broadcast period. Valid values are between 100 and 3000 ms.</field>
+      <field type="uint8_t" name="broadcast_wlan_channel">Configures the WLAN channel that is used for broadcast (in WLAN mode). Valid channels are defined here: https://en.wikipedia.org/wiki/List_of_WLAN_channels</field>
     </message>
     <!-- The message ids 12917 - 12919 are reserved for OpenDroneID. -->
     <message id="12920" name="HYGROMETER_SENSOR">
