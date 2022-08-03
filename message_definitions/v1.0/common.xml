@@ -4851,6 +4851,27 @@
         <description>NAK: NAK response</description>
       </entry>
     </enum>
+    <enum name="MISSION_STATUS">
+      <description>Status of a mission.</description>
+      <entry value="0" name="MISSION_STATUS_UNKNOWN">
+        <description>The mission status is not supported.</description>
+      </entry>
+      <entry value="1" name="MISSION_STATUS_NOT_STARTED">
+        <description>The mission has not been started yet. This is the case after upload when there is no active mission.</description>
+      </entry>
+      <entry value="2" name="MISSION_STATUS_ACTIVE">
+        <description>The mission is running and active.</description>
+      </entry>
+      <entry value="3" name="MISSION_STATUS_ACTIVE_NOT_IN_MISSION_MODE">
+        <description>The mission would be running but we're not in mission mode.</description>
+      </entry>
+      <entry value="4" name="MISSION_STATUS_PAUSED">
+        <description>The mission has been paused with autocontinue=false.</description>
+      </entry>
+      <entry value="5" name="MISSION_STATUS_FINISHED">
+        <description>The Mission has been finished.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -5189,6 +5210,9 @@
     <message id="42" name="MISSION_CURRENT">
       <description>Message that announces the sequence number of the current active mission item. The MAV will fly towards this mission item.</description>
       <field type="uint16_t" name="seq">Sequence</field>
+      <extensions/>
+      <field type="uint16_t" name="total">Total number of mission items</field>
+      <field type="uint8_t" name="status" enum="MISSION_STATUS">Mission status</field>
     </message>
     <message id="43" name="MISSION_REQUEST_LIST">
       <description>Request the overall list of mission items from the system/component.</description>
