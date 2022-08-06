@@ -240,6 +240,17 @@
         <param index="7" reserved="true" default="NaN"/>
       </entry>
     </enum>
+    <enum name="DIST_BOTTOM_SENSOR_TYPE">
+      <entry value="0" name="DIST_BOTTOM_SENSOR_NONE">
+        <description>No sensor to estimate distance to bottom</description>
+      </entry>
+      <entry value="1" name="DIST_BOTTOM_SENSOR_RANGE">
+        <description>A range sensor is used to estimate the dist_bottom field</description>
+      </entry>
+      <entry value="2" name="DIST_BOTTOM_SENSOR_FLOW">
+        <description>A flow sensor is used to estimat the dist_bottom field</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
@@ -355,5 +366,58 @@
       <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
     </message>
+        <!-- Vehicle local position message-->
+    <message id="437" name="VEHICLE_LOCAL_POSITION">
+      <description>Vehicle local position</description>
+      <field type="uint64_t" name="timestamp">Time since system start (us)</field>
+      <field type="uint64_t" name="timestamp_sample">Timestamp of the raw data (us)</field>
+      <!-- Note: bunch of fields regarding validity of info left out as it will gate sending instead-->
+      <!-- Position fields -->
+      <field type="float" name="x">North in NED earth-fixed frame(m)</field>
+      <field type="float" name="y">East in NED earth-fixed frame(m)</field>
+      <field type="float" name="z">Down position (-ve altitude in NED earth-fixed frame(m))</field>
+      <!-- Position reset delta -->
+      <field type="float[2]" name="delta_xy" />
+      <field type="uint8_t" name="xy_reset_counter" />
+      <field type="float" name="delta_z" />
+      <field type="uint8_t" name="z_reset_counter" />
+      <!-- Velocity fields-->
+      <field type="float" name="vx">North velocity in NED (m/s)</field>
+      <field type="float" name="vy">East velocity in NED earth-fixed frame(m/s)</field>
+      <field type="float" name="vz">Down velocity in NED earth-fixed frame(m/s))</field>
+      <field type="float" name="z_deriv">Down velocity in NED earth-fixed frame(m/s))</field>
+      <!-- Velocity reset delta -->
+      <field type="float[2]" name="delta_vxy" />
+      <field type="uint8_t" name="vxy_reset_counter" />
+      <field type="float" name="delta_vz" />
+      <field type="uint8_t" name="vz_reset_counter" />
+      <!-- Acceleration fields -->
+      <field type="float" name="ax">North acceleration in NED earth-fixed frame(m/s^2)</field>
+      <field type="float" name="ay">East acceleration in NED earth-fixed frame(m/s^2)</field>
+      <field type="float" name="az">Down acceleration position (-ve altitude) in NED earth-fixed frame(m/s^2)</field>
+      <!-- Heading for control -->
+      <field type="float" name="heading">Euler yaw angle transforming tangent plane relative to NED earth fixed, [-pi, pi] (rad)</field>
+      <field type="float" name="delta_heading" />
+      <field type="uint8_t" name="heading_reset_counter" />
+      <field type="uint8_t" name="heading_good_for_control">1 if heading can be used for control</field>
+      <!-- Position of reference point (local NED frame origin) in global (GPS/WGS84)frame -->
+      <field type="uint8_t" name="xy_global">1 if position (x,y) has valid global reference (ref_lat, ref_lon)</field>
+      <field type="uint8_t" name="z_global">1 if z has valid global reference (ref_alt)</field>
+      <field type="uint64_t" name="ref_timestamp">Time when reference position was set (since system start) (us)</field>
+      <field type="double" name="ref_lat">Ref point lat(deg)</field>
+      <field type="double" name="ref_lon">Ref point long(deg)</field>
+      <field type="float" name="ref_alt">Ref altitude AMSL (m)</field>
+      <!-- Distance to surface-->
+      <field type="float" name="dist_bottom">Distance from bottom surface to ground (m)</field>
+      <field type="uint8_t" name="dist_bottom_valid">(Boolean) 1 if distance to bottom surface is valid</field>
+      <field type="uint8_t" name="dist_bottom_sensor_bitfield" enum="DIST_SENSOR_TYPE">Bitfield indicating type of sensor used to estimate dist_bottom</field>
+      <!--- Estimator specified vehicle limits -->
+      <field type="float" name="vxy_max">Maximum horizontal speed - set 0 when limiting not required (m/s)</field>
+      <field type="float" name="vz_max">Maximum vertical speed - set to 0 when limiting not required (m/s)</field>
+      <field type="float" name="hagl_min">Minimum height above ground level - set to 0 when limiting not required (m)</field>
+      <field type="float" name="hagl_max">Maximum height above ground level - set to 0 when limiting not required (m)</field>
+
+    </message>
+
   </messages>
 </mavlink>
