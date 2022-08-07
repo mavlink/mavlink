@@ -3602,6 +3602,14 @@
         <description>CAA (Civil Aviation Authority) registered operator ID.</description>
       </entry>
     </enum>
+    <enum name="MAV_ODID_ARM_STATUS">
+      <entry value="0" name="MAV_ODID_GOOD_TO_ARM">
+        <description>Passing arming checks.</description>
+      </entry>
+      <entry value="1" name="MAV_ODID_PRE_ARM_FAIL_GENERIC">
+        <description>Generic arming failure, see error string for details.</description>
+      </entry>
+    </enum>
     <!-- AIS related enums-->
     <enum name="AIS_TYPE">
       <description>Type of AIS vessel, enum duplicated from AIS standard, https://gpsd.gitlab.io/gpsd/AIVDM.html</description>
@@ -6021,6 +6029,11 @@
       <field type="uint8_t[20]" name="id_or_mac">Only used for drone ID data received from other UAs. See detailed description at https://mavlink.io/en/services/opendroneid.html. </field>
       <field type="uint8_t" name="operator_id_type" enum="MAV_ODID_OPERATOR_ID_TYPE">Indicates the type of the operator_id field.</field>
       <field type="char[20]" name="operator_id">Text description or numeric value expressed as ASCII characters. Shall be filled with nulls in the unused portion of the field.</field>
+    </message>
+    <message id="12918" name="OPEN_DRONE_ID_ARM_STATUS">
+      <description>Status from the transmitter telling the flight controller if the remote ID system is ready for arming.</description>
+      <field type="uint8_t" name="status" enum="MAV_ODID_ARM_STATUS">Status level indicating if arming is allowed.</field>
+      <field type="char[50]" name="error">Text error message, should be empty if status is good to arm. Fill with nulls in unused portion.</field>
     </message>
     <!-- The message ids 12906 - 12914 are reserved for OpenDroneID. -->
     <message id="12915" name="OPEN_DRONE_ID_MESSAGE_PACK">
