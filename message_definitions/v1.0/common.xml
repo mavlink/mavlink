@@ -1217,14 +1217,14 @@
         <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
       </entry>
       <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF" hasLocation="true" isDestination="true">
-        <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading. The command should be ignored by vehicles that dont support both VTOL and fixed-wing flight (multicopters, boats,etc.).</description>
-        <param index="1">Empty</param>
+        <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading. Upon transition completion proceed navigation according to VTOL_TAKEOFF_WAYPOINT_ROLE. The command should be ignored by vehicles that dont support both VTOL and fixed-wing flight (multicopters, boats,etc.).</description>
+        <param index="1" label="Altitude" units="m" > Target altitude after the front transition. NAN: Transition altitude is used to define waypoint altitude. </param>
         <param index="2" label="Transition Heading" enum="VTOL_TRANSITION_HEADING">Front transition heading.</param>
-        <param index="3">Empty</param>
+        <param index="3" label="Waypoint Role" enum="VTOL_TAKEOFF_WAYPOINT_ROLE"> Role of the VTOL Takeoff Waypoint. </param>
         <param index="4" label="Yaw Angle" units="deg">Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="7" label="Transition Altitude" units="m">Altitude</param>
       </entry>
       <entry value="85" name="MAV_CMD_NAV_VTOL_LAND" hasLocation="true" isDestination="true">
         <description>Land using VTOL mode</description>
@@ -3606,6 +3606,18 @@
       </entry>
       <entry value="4" name="VTOL_TRANSITION_HEADING_ANY">
         <description>Use the current heading when reaching takeoff altitude (potentially facing the wind when weather-vaning is active).</description>
+      </entry>
+    </enum>
+    <enum name="VTOL_TAKEOFF_WAYPOINT_ROLE">
+      <description>Role of the VTOL Takeoff Waypoint</description>
+      <entry value="0" name="VTOL_TAKEOFF_WAYPOINT_ROLE_IGNORE_POSITION">
+        <description> Upon completion of the front transition accept the waypoint immediately.</description>
+      </entry>
+      <entry value="1" name="VTOL_TAKEOFF_WAYPOINT_ROLE_FLYTHROUGH">
+        <description> Upon completion of the front transition treat the waypoint as a standard flythrough waypoint.</description>
+      </entry>
+      <entry value="2" name="VTOL_TAKEOFF_WAYPOINT_ROLE_LOITER_ONCE">
+        <description> Upon completion of the front transition navigate to the waypoint and complete one loiter circle before accepting the waypoint.</description>
       </entry>
     </enum>
     <enum name="CAMERA_CAP_FLAGS" bitmask="true">
