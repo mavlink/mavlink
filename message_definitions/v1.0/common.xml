@@ -1186,7 +1186,13 @@
         <param index="7" label="Altitude/Z">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude.</param>
       </entry>
       <entry value="36" name="MAV_CMD_DO_PRECISION_HOLD" hasLocation="true" isDestination="true">
-        <description>Vehicle moves to specified location and engages Precison Hold mode which allows the vehicle to hover precisely above a LANDING_TARGET. If Latitude/Longitude are FLT_MAX (COMMAND_LONG) or INT32_MAX (COMMAND_INT) the current position will be used instead. If Altitude is FLT_MAX (COMMAND_LONG) or INT32_MAX (COMMAND_INT) the current altitude will be used instead </description>
+        <description>
+          Vehicle moves to specified location (lat/lon/alt) and engages Precision Hold mode.
+          If it gets LANDING_TARGET messages for the indicated landing target it adjusts its horizontal position to align precisely above the target (and maintains altitude).
+          If the specified target is not found the vehicle holds the specified lat/lon/alt and enters normal Position Hold mode (the timeout for entering position hold is flight-stack specific).
+          If Latitude/Longitude are NaN (COMMAND_LONG) or INT32_MAX (COMMAND_INT) the current position will be used.
+          If Altitude is NaN the vehicle altitude when the message is received will be used.
+        </description>
         <param index="1" label="Target number">The ID of the target (LANDING_TARGET.target_num) if multiple targets are present. If the specified target is not found the vehicle will use normal Position Hold mode.</param>
         <param index="2" label="Use Heading">Set to 1 if the drone should align it's heading with the target heading.</param>
         <param index="3" label="Height above target" units="m">Set to NaN to maintain current altitude.</param>
