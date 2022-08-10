@@ -1756,9 +1756,17 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="224" name="MAV_CMD_DO_SET_MISSION_CURRENT" hasLocation="false" isDestination="false">
-        <description>Set the mission item with sequence number seq as current item. This means that the MAV will continue to this mission item on the shortest path (not following the mission items in-between).</description>
+        <description>
+          Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (whether or not the mission number changed).
+          If the mission is running, the system will continue to this mission item on the shortest path, skipping any intermediate mission items.
+          If the mission is paused it will remain paused until restarted.
+          If the mission is complete it remain complete unless param2 is set to true, in which case it will become paused.
+          If param2 is true the mission will be reset.
+	  The command will ACK with MAV_RESULT_FAILED if the sequence number is out of range (including if there is no mission item).
+	      
+        </description>
         <param index="1" label="Number" minValue="0" increment="1">Mission sequence value to set</param>
-        <param index="2" label="Reset Mission" minValue="0" maxValue="0" increment="1">Resets mission. 1: true, 0: false. Resetting unsets mission completion (a completed mission is now active/paused) and resets jump counters to initial values. Resetting does not affect pause/active state.</param>
+        <param index="2" label="Reset Mission" minValue="0" maxValue="0" increment="1">Resets mission. 1: true, 0: false. Resetting unsets mission completion (a completed mission is now active/paused) and resets jump counters to initial values. Paused missions will remain paused. Completed missions will become paused missions.</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
