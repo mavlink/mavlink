@@ -4862,13 +4862,16 @@
       <entry value="2" name="MISSION_STATUS_ACTIVE">
         <description>The mission is running and active.</description>
       </entry>
-      <entry value="3" name="MISSION_STATUS_ACTIVE_NOT_IN_MISSION_MODE">
-        <description>The mission would be running but we're not in mission mode.</description>
+      <entry value="3" name="MISSION_STATUS_PAUSED_MANUAL">
+        <description>The mission has been paused by the a user command or by changing the flight mode.</description>
       </entry>
-      <entry value="4" name="MISSION_STATUS_PAUSED">
-        <description>The mission has been paused with autocontinue=false.</description>
+      <entry value="4" name="MISSION_STATUS_PAUSED_AUTO">
+        <description>The mission has been automatically paused due to completion of an item with autocontinue=false.</description>
       </entry>
       <entry value="5" name="MISSION_STATUS_FINISHED">
+        <description>The Mission has been finished.</description>
+      </entry>
+      <entry value="6" name="MISSION_STATUS_NO_MISSION_UPLOADED">
         <description>The Mission has been finished.</description>
       </entry>
     </enum>
@@ -5208,10 +5211,14 @@
       <field type="uint16_t" name="seq">Sequence</field>
     </message>
     <message id="42" name="MISSION_CURRENT">
-      <description>Message that announces the sequence number of the current active mission item. The MAV will fly towards this mission item.</description>
+      <description>
+        Message that announces the sequence number of the current target mission item (that the system will fly towards/execute when the mission is running).
+        This message should be streamed all the time (nominally at 1Hz).
+        This message should be emitted following a call to MAV_CMD_DO_SET_MISSION_CURRENT or SET_MISSION_CURRENT.
+      </description>
       <field type="uint16_t" name="seq">Sequence</field>
       <extensions/>
-      <field type="uint16_t" name="total">Total number of mission items</field>
+      <field type="uint16_t" name="total">Total number of mission items. 0 if no mission is present on the vehicle.</field>
       <field type="uint8_t" name="status" enum="MISSION_STATUS">Mission status</field>
     </message>
     <message id="43" name="MISSION_REQUEST_LIST">
