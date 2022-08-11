@@ -179,6 +179,7 @@ set(v1.0Definitions
     minimal.xml
     paparazzi.xml
     python_array_test.xml
+    ras_a.xml
     test.xml
     ualberta.xml
     )
