@@ -6047,6 +6047,15 @@
       <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 9.</field>
       <field type="uint8_t[225]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
+    <message id="12919" name="OPEN_DRONE_ID_SYSTEM_UPDATE">
+      <description>Update the data in the OPEN_DRONE_ID_SYSTEM message with new location information. This can be sent to update the location information for the operator when no other information in the SYSTEM message has changed. This message allows for efficient operation on radio links which have limited uplink bandwidth while meeting requirements for update frequency of the operator location.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="int32_t" name="operator_latitude" units="degE7" invalid="0">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
+      <field type="int32_t" name="operator_longitude" units="degE7" invalid="0">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
+      <field type="float" name="operator_altitude_geo" units="m" invalid="-1000">Geodetic altitude of the operator relative to WGS84. If unknown: -1000 m.</field>
+      <field type="uint32_t" name="timestamp" units="s">32 bit Unix Timestamp in seconds since 00:00:00 01/01/2019.</field>
+    </message>
     <message id="12920" name="HYGROMETER_SENSOR">
       <description>Temperature and humidity from hygrometer.</description>
       <field type="uint8_t" name="id" instance="true">Hygrometer ID</field>
