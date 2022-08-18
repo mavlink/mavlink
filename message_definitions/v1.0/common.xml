@@ -5181,11 +5181,7 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
     <message id="41" name="MISSION_SET_CURRENT">
-      <description>
-        Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (whether or not the mission number changed).
-        The system will continue to this mission item on the shortest path, skipping any intermediate mission items.
-        If the mission is paused, it may need to be resumed before continuing.
-      </description>
+      <description>Set the mission item with sequence number seq as current item. This means that the MAV will continue to this mission item on the shortest path (not following the mission items in-between).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
