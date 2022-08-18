@@ -4865,6 +4865,31 @@
         <description>NAK: NAK response</description>
       </entry>
     </enum>
+    <enum name="MISSION_STATE">
+      <description>
+        States of the mission state machine.
+        Note that these states are independent of whether the mission is in a mode that can execute mission items or not (is suspended).
+        They may not all be relevant on all vehicles.
+      </description>
+      <entry value="0" name="MISSION_STATE_UNKNOWN">
+        <description>The mission status reporting is not supported.</description>
+      </entry>
+      <entry value="1" name="MISSION_STATE_NO_MISSION">
+        <description>No mission on the vehicle.</description>
+      </entry>
+      <entry value="2" name="MISSION_STATE_NOT_STARTED">
+        <description>Mission has not started. This is the case after a mission has uploaded but not yet started executing.</description>
+      </entry>
+      <entry value="3" name="MISSION_STATE_ACTIVE">
+        <description>Mission is active, and will execute mission items when in auto mode.</description>
+      </entry>
+      <entry value="4" name="MISSION_STATE_PAUSED">
+        <description>Mission is paused when in auto mode.</description>
+      </entry>
+      <entry value="5" name="MISSION_STATE_COMPLETE">
+        <description>Mission has executed all mission items.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -5174,7 +5199,7 @@
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint.</field>
       <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint.</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
-      <field type="uint8_t" name="autocontinue">Autocontinue to next waypoint</field>
+      <field type="uint8_t" name="autocontinue">Autocontinue to next waypoint. 0: false, 1: true. Set false to pause mission after the item completes.</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
       <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
       <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
@@ -5201,8 +5226,16 @@
       <field type="uint16_t" name="seq">Sequence</field>
     </message>
     <message id="42" name="MISSION_CURRENT">
-      <description>Message that announces the sequence number of the current active mission item. The MAV will fly towards this mission item.</description>
+      <description>
+        Message that announces the sequence number of the current target mission item (that the system will fly towards/execute when the mission is running).
+        This message should be streamed all the time (nominally at 1Hz).
+        This message should be emitted following a call to MAV_CMD_DO_SET_MISSION_CURRENT or SET_MISSION_CURRENT.
+      </description>
       <field type="uint16_t" name="seq">Sequence</field>
+      <extensions/>
+      <field type="uint16_t" name="total" invalid="UINT16_MAX">Total number of mission items. 0: Not supported, UINT16_MAX if no mission is present on the vehicle.</field>
+      <field type="uint8_t" name="mission_state" enum="MISSION_STATE" invalid="0">Mission state machine state. MISSION_STATE_UNKNOWN if state reporting not supported.</field>
+      <field type="uint8_t" name="mission_mode" invalid="0">Vehicle is in a mode that can execute mission items or suspended. 0: Unknown, 1: In mission mode, 2: Suspended (not in mission mode).</field>
     </message>
     <message id="43" name="MISSION_REQUEST_LIST">
       <description>Request the overall list of mission items from the system/component.</description>
@@ -5275,7 +5308,7 @@
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
-    <!-- Note, id 52 reserved for MISSION_CHANGED message (development.xml) -->
+    <!-- Note, id 53 reserved for MISSION_CHECKSUM message (development.xml) -->
     <message id="54" name="SAFETY_SET_ALLOWED_AREA">
       <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/waypoints to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -5433,7 +5466,7 @@
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint.</field>
       <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint.</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
-      <field type="uint8_t" name="autocontinue">Autocontinue to next waypoint</field>
+      <field type="uint8_t" name="autocontinue">Autocontinue to next waypoint. 0: false, 1: true. Set false to pause mission after the item completes.</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
       <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
       <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>

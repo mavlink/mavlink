@@ -282,14 +282,6 @@
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
     </message>
     <!-- mission protocol enhancements -->
-    <message id="52" name="MISSION_CHANGED">
-      <description>A broadcast message to notify any ground station or SDK if a mission, geofence or safe points have changed on the vehicle.</description>
-      <field type="int16_t" name="start_index">Start index for partial mission change (-1 for all items).</field>
-      <field type="int16_t" name="end_index">End index of a partial mission change. -1 is a synonym for the last mission item (i.e. selects all items from start_index). Ignore field if start_index=-1.</field>
-      <field type="uint8_t" name="origin_sysid">System ID of the author of the new mission.</field>
-      <field type="uint8_t" name="origin_compid" enum="MAV_COMPONENT">Component ID of the author of the new mission.</field>
-      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
-    </message>
     <message id="53" name="MISSION_CHECKSUM">
       <description>Checksum for the current mission, rally point or geofence plan, or for the "combined" plan (a GCS can use these checksums to determine if it has matching plans).
         This message must be broadcast with the appropriate checksum following any change to a mission, geofence or rally point definition
