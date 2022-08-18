@@ -1758,16 +1758,21 @@
       <entry value="224" name="MAV_CMD_DO_SET_MISSION_CURRENT" hasLocation="false" isDestination="false">
         <description>
           Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (whether or not the mission number changed).
-          If the mission is running, the system will continue to this mission item on the shortest path, skipping any intermediate mission items.
-          If the mission is paused it may remain paused until resumed.
-          If the mission is complete it remains complete unless param2 is set.
+          If a mission is currently being executed, the system will continue to this new mission item on the shortest path, skipping any intermediate mission items.
+	  Note that mission jump repeat counters are not reset unless param2 is set (see MAV_CMD_DO_JUMP param2).
+
+          This command may trigger a mission state-machine change on some systems: for example from MISSION_STATE_NOT_STARTED or MISSION_STATE_PAUSED to MISSION_STATE_ACTIVE.
+          If the system is in mission mode, on those systems this command might therefore start, restart or resume the mission.
+          If the system is not in mission mode this command must not trigger a switch to mission mode.
+
           The mission may be "reset" using param2.
-          Resetting sets jump counters to initial values and unsets the "completed" mission state (if set), moving it to the "paused" state; it does not resume a paused mission.
-          To reset counters without changing the current mission item you should set the current item to `-1` .
+          Resetting sets jump counters to initial values (to reset counters without changing the current mission item set the param1 to `-1`).
+          Resetting also explicitly changes a mission state of MISSION_STATE_COMPLETE to MISSION_STATE_PAUSED or MISSION_STATE_ACTIVE, allowing it to resume.
+
 	  The command will ACK with MAV_RESULT_FAILED if the sequence number is out of range (including if there is no mission item).
         </description>
         <param index="1" label="Number" minValue="-1" increment="1">Mission sequence value to set. -1 for the current mission item (use to reset mission without changing current mission item).</param>
-        <param index="2" label="Reset Mission" minValue="0" maxValue="1" increment="1">Resets mission. 1: true, 0: false. Resets jump counters to initial values and moves competed missions to the paused state.</param>
+        <param index="2" label="Reset Mission" minValue="0" maxValue="1" increment="1">Resets mission. 1: true, 0: false. Resets jump counters to initial values and changes mission state "completed" to be "active" or "paused".</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
@@ -5190,7 +5195,16 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
     <message id="41" name="MISSION_SET_CURRENT">
-      <description>Set the mission item with sequence number seq as current item. This means that the MAV will continue to this mission item on the shortest path (not following the mission items in-between).</description>
+      <deprecated since="2022-08" replaced_by="MAV_CMD_DO_SET_MISSION_CURRENT"/>
+      <description>     
+        Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (whether or not the mission number changed).
+        If a mission is currently being executed, the system will continue to this new mission item on the shortest path, skipping any intermediate mission items.
+        Note that mission jump repeat counters are not reset (see MAV_CMD_DO_JUMP param2).
+
+        This message may trigger a mission state-machine change on some systems: for example from MISSION_STATE_NOT_STARTED or MISSION_STATE_PAUSED to MISSION_STATE_ACTIVE.
+        If the system is in mission mode, on those systems this command might therefore start, restart or resume the mission.
+        If the system is not in mission mode this message must not trigger a switch to mission mode.
+      </description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
