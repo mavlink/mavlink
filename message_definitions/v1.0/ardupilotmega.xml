@@ -347,6 +347,32 @@
         <description>Stop execution of scripts and restart.</description>
       </entry>
     </enum>
+    <enum name="SECURE_COMMAND_OP">
+      <entry value="0" name="SECURE_COMMAND_GET_SESSION_KEY">
+        <description>Get an 8 byte session key which is used for remote secure updates which operate on flight controller data such as bootloader public keys. Return data will be 8 bytes on success. The session key remains valid until either the flight controller reboots or another SECURE_COMMAND_GET_SESSION_KEY is run.</description>
+      </entry>
+      <entry value="1" name="SECURE_COMMAND_GET_REMOTEID_SESSION_KEY">
+        <description>Get an 8 byte session key which is used for remote secure updates which operate on RemoteID module data. Return data will be 8 bytes on success. The session key remains valid until either the remote ID module reboots or another SECURE_COMMAND_GET_REMOTEID_SESSION_KEY is run.</description>
+      </entry>
+      <entry value="2" name="SECURE_COMMAND_REMOVE_PUBLIC_KEYS">
+        <description>Remove range of public keys from the bootloader. Command data consists of two bytes, first byte if index of first public key to remove. Second byte is the number of keys to remove. If all keys are removed then secure boot is disabled and insecure firmware can be loaded.</description>
+      </entry>
+      <entry value="3" name="SECURE_COMMAND_GET_PUBLIC_KEYS">
+        <description>Get current public keys from the bootloader. Command data consists of two bytes, first byte is index of first public key to fetch, 2nd byte is number of keys to fetch. Total data needs to fit in data portion of reply (max 6 keys for 32 byte keys). Reply data has the index of the first key in the first byte, followed by the keys. Returned keys may be less than the number of keys requested if there are less keys installed than requested.</description>
+      </entry>
+      <entry value="4" name="SECURE_COMMAND_SET_PUBLIC_KEYS">
+        <description>Set current public keys in the bootloader. Data consists of a one byte public key index followed by the public keys. With 32 byte keys this allows for up to 6 keys to be set in one request. Keys outside of the range that is being set will remain unchanged.</description>
+      </entry>
+      <entry value="5" name="SECURE_COMMAND_GET_REMOTEID_CONFIG">
+        <description>Get config data for remote ID module. This command should be sent to the component ID of the flight controller which will forward it to the RemoteID module either over mavlink or DroneCAN. Data format is specific to the RemoteID implementation, see RemoteID firmware documentation for details.</description>
+      </entry>
+      <entry value="6" name="SECURE_COMMAND_SET_REMOTEID_CONFIG">
+        <description>Set config data for remote ID module. This command should be sent to the component ID of the flight controller which will forward it to the RemoteID module either over mavlink or DroneCAN. Data format is specific to the RemoteID implementation, see RemoteID firmware documentation for details.</description>
+      </entry>
+      <entry value="7" name="SECURE_COMMAND_FLASH_BOOTLOADER">
+        <description>Flash bootloader from local storage. Data is the filename to use for the bootloader. This is intended to be used with MAVFtp to upload a new bootloader to a microSD before flashing.</description>
+      </entry>
+    </enum>
     <!-- AP_Limits Enums -->
     <enum name="LIMITS_STATE">
       <entry value="0" name="LIMITS_INIT">
@@ -1641,6 +1667,24 @@
       <description>Write registers reply.</description>
       <field type="uint32_t" name="request_id">Request ID - copied from request.</field>
       <field type="uint8_t" name="result">0 for success, anything else is failure code.</field>
+    </message>
+    <message id="11004" name="SECURE_COMMAND">
+      <description>Send a secure command. Data should be signed with a private key corresponding with a public key known to the recipient. Signature should be over the concatenation of the sequence number (little-endian format), the operation (little-endian format) the data and the session key. For SECURE_COMMAND_GET_SESSION_KEY the session key should be zero length. The data array consists of the data followed by the signature. The sum of the data_length and the sig_length cannot be more than 220. The format of the data is command specific.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint32_t" name="sequence">Sequence ID for tagging reply.</field>
+      <field type="uint32_t" name="operation" enum="SECURE_COMMAND_OP">Operation being requested.</field>
+      <field type="uint8_t" name="data_length">Data length.</field>
+      <field type="uint8_t" name="sig_length">Signature length.</field>
+      <field type="uint8_t[220]" name="data">Signed data.</field>
+    </message>
+    <message id="11005" name="SECURE_COMMAND_REPLY">
+      <description>Reply from secure command.</description>
+      <field type="uint32_t" name="sequence">Sequence ID from request.</field>
+      <field type="uint32_t" name="operation" enum="SECURE_COMMAND_OP">Operation that was requested.</field>
+      <field type="uint8_t" name="result" enum="MAV_RESULT">Result of command.</field>
+      <field type="uint8_t" name="data_length">Data length.</field>
+      <field type="uint8_t[220]" name="data">Reply data.</field>
     </message>
     <!-- realtime Adaptive Controller tuning message -->
     <message id="11010" name="ADAP_TUNING">
