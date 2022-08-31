@@ -7404,8 +7404,6 @@
       <field type="uint32_t" name="status" display="bitmask" enum="MAV_WINCH_STATUS_FLAG">Status flags</field>
     </message>
     <message id="12900" name="OPEN_DRONE_ID_BASIC_ID">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. These messages are compatible with the ASTM F3411 Remote ID standard and the ASD-STAN prEN 4709-002 Direct Remote ID standard. Additional information and usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
@@ -7415,8 +7413,6 @@
       <field type="uint8_t[20]" name="uas_id">UAS (Unmanned Aircraft System) ID following the format specified by id_type. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
     <message id="12901" name="OPEN_DRONE_ID_LOCATION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Location message. The float data types are 32-bit IEEE 754. The Location message provides the location, altitude, direction and speed of the aircraft.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
@@ -7439,8 +7435,6 @@
       <field type="uint8_t" name="timestamp_accuracy" enum="MAV_ODID_TIME_ACC">The accuracy of the timestamps.</field>
     </message>
     <message id="12902" name="OPEN_DRONE_ID_AUTHENTICATION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field that can provide a means of authenticity for the identity of the UAS (Unmanned Aircraft System). The Authentication message can have two different formats. For data page 0, the fields PageCount, Length and TimeStamp are present and AuthData is only 17 bytes. For data page 1 through 15, PageCount, Length and TimeStamp are not present and the size of AuthData is 23 bytes.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
@@ -7453,8 +7447,6 @@
       <field type="uint8_t[23]" name="authentication_data">Opaque authentication data. For page 0, the size is only 17 bytes. For other pages, the size is 23 bytes. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
     <message id="12903" name="OPEN_DRONE_ID_SELF_ID">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Self ID message. The Self ID Message is an opportunity for the operator to (optionally) declare their identity and purpose of the flight. This message can provide additional information that could reduce the threat profile of a UA (Unmanned Aircraft) flying in a particular area or manner. This message can also be used to provide optional additional clarification in an emergency/remote ID system failure situation.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
@@ -7463,8 +7455,6 @@
       <field type="char[23]" name="description">Text description or numeric value expressed as ASCII characters. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
     <message id="12904" name="OPEN_DRONE_ID_SYSTEM">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID System message. The System Message contains general system information including the operator location/altitude and possible aircraft group and/or category/class information.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
@@ -7483,8 +7473,6 @@
       <field type="uint32_t" name="timestamp" units="s">32 bit Unix Timestamp in seconds since 00:00:00 01/01/2019.</field>
     </message>
     <message id="12905" name="OPEN_DRONE_ID_OPERATOR_ID">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Data for filling the OpenDroneID Operator ID message, which contains the CAA (Civil Aviation Authority) issued operator ID.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
@@ -7494,8 +7482,6 @@
     </message>
     <!-- The message ids 12906 - 12914 are reserved for OpenDroneID. -->
     <message id="12915" name="OPEN_DRONE_ID_MESSAGE_PACK">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>An OpenDroneID message pack is a container for multiple encoded OpenDroneID messages (i.e. not in the format given for the above message descriptions but after encoding into the compressed OpenDroneID byte format). Used e.g. when transmitting on Bluetooth 5.0 Long Range/Extended Advertising or on WiFi Neighbor Aware Networking or on WiFi Beacon.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
@@ -7504,16 +7490,13 @@
       <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 9.</field>
       <field type="uint8_t[225]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
+    <!-- The message ids 12916 - 12917 are reserved for OpenDroneID. -->
     <message id="12918" name="OPEN_DRONE_ID_ARM_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Transmitter (remote ID system) is enabled and ready to start sending location and other required information. This is streamed by transmitter. A flight controller uses it as a condition to arm.</description>
       <field type="uint8_t" name="status" enum="MAV_ODID_ARM_STATUS">Status level indicating if arming is allowed.</field>
       <field type="char[50]" name="error">Text error message, should be empty if status is good to arm. Fill with nulls in unused portion.</field>
     </message>
     <message id="12919" name="OPEN_DRONE_ID_SYSTEM_UPDATE">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Update the data in the OPEN_DRONE_ID_SYSTEM message with new location information. This can be sent to update the location information for the operator when no other information in the SYSTEM message has changed. This message allows for efficient operation on radio links which have limited uplink bandwidth while meeting requirements for update frequency of the operator location.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
