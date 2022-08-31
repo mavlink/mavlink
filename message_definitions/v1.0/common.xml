@@ -1187,19 +1187,17 @@
       </entry>
       <entry value="36" name="MAV_CMD_DO_PRECISION_HOLD" hasLocation="true" isDestination="true">
         <description>
-          Vehicle moves to specified location (lat/lon/alt) and engages Precision Hold mode.
-          If it gets LANDING_TARGET messages for the indicated landing target it adjusts its horizontal position to align precisely above the target (and maintains altitude).
+          Vehicle moves to specified location (lat/lon/alt) and engages Precision Hold mode (NaN/INT32_MAX may be used to set the current location when the message is received).
+          If it gets LANDING_TARGET messages for the indicated landing target it: adjusts its horizontal position to align precisely above the target, adjusts its altitude to the Hold altitude (param3), and then holds the position. 
           If the specified target is not found the vehicle holds the specified lat/lon/alt and enters normal Position Hold mode (the timeout for entering position hold is flight-stack specific).
-          If Latitude/Longitude are NaN (COMMAND_LONG) or INT32_MAX (COMMAND_INT) the current position will be used.
-          If Altitude is NaN the vehicle altitude when the message is received will be used.
         </description>
         <param index="1" label="Target number">The ID of the target (LANDING_TARGET.target_num) if multiple targets are present. If the specified target is not found the vehicle will use normal Position Hold mode.</param>
         <param index="2" label="Use Heading">Set to 1 if the drone should align it's heading with the target heading.</param>
-        <param index="3" label="Height above target" units="m">Set to NaN to maintain current altitude.</param>
+        <param index="3" label="Hold altitude" units="m">Altitude above target to hold position. Set to NaN to use current altitude as the Hold altitude.</param>
         <param index="4">Empty</param>
-        <param index="5" label="Latitude/X">Latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME</param>
-        <param index="6" label="Longitude/Y">Longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME</param>
-        <param index="7" label="Altitude/Z">Altitude (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME</param>
+        <param index="5" label="Latitude/X">Latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN (COMMAND_LONG) or INT32_MAX (COMMAND_INT) to use current latitude.</param>
+        <param index="6" label="Longitude/Y">Longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN (COMMAND_LONG) or INT32_MAX (COMMAND_INT) to use current longitude.</param>
+        <param index="7" label="Altitude/Z">Altitude (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN to use current altitude.</param>
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false">
         <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
