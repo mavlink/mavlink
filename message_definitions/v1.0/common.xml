@@ -1187,17 +1187,19 @@
       </entry>
       <entry value="36" name="MAV_CMD_DO_PRECISION_HOLD" hasLocation="true" isDestination="true">
         <description>
-          Vehicle moves to location (if specified) and descends above a target. It will hold its position above the target at a fixed distance, specified in the param "Hold distance".
-          If it gets LANDING_TARGET messages for the indicated landing target it: adjusts its horizontal position to align precisely above the target, descends to above the target, and then hold the position at "Hold distance" from the target.
-          If the specified target is not found the vehicle holds the specified lat/lon/alt and enters normal Position Hold mode (the timeout for entering position hold is flight-stack specific).
+          Precision hold precisely over the 3d position defined in a particular LANDING_TARGET message (param1) at a hold altitude (param3) relative to the target.
+          The vehicle first moves to the initial location (param5, 6, 7) and then engages Precision Hold mode (Set initial location to NaN/INT32_MAX to engage Precision Hold at the current position).
+          The vehicle waits at the initial location for LANDING_TARGET messages with the indicated id (param1).
+          If found, it then aligns with the horizontal position defined in the LANDING_TARGET at a target-relative altitude specified in the Hold altitude field (param3).
+          If the specified target is not found within a timeout the vehicle enters normal Position Hold mode and holds its current position (the timeout is flight-stack specific).
         </description>
-        <param index="1" label="Target number">The ID of the target (LANDING_TARGET.target_num) if multiple targets are present. If the specified target is not found the vehicle will use normal Position Hold mode. 0 to use first target found.</param>
+        <param index="1" label="Target number">The ID of the target (LANDING_TARGET.target_num). 0 to use first target found. If the specified target is not found the vehicle will use normal Position Hold mode.</param>
         <param index="2" label="Use Heading">Set to 1 if the drone should align it's heading with the target heading.</param>
-        <param index="3" label="Hold distance" units="m">Distance above target to hold position. NaN to use current altitude.</param>
+        <param index="3" label="Hold altitude" units="m">Altitude above target to hold position. NaN to hold at current altitude.</param>
         <param index="4">Empty</param>
-        <param index="5" label="Latitude/X">Latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN (COMMAND_LONG) or INT32_MAX (COMMAND_INT) to use current latitude.</param>
-        <param index="6" label="Longitude/Y">Longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN (COMMAND_LONG) or INT32_MAX (COMMAND_INT) to use current longitude.</param>
-        <param index="7" label="Altitude/Z">Altitude (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN to use current altitude.</param>
+        <param index="5" label="Initial Latitude/X">Latitude before entering Position Hold mode (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN (COMMAND_LONG) or INT32_MAX (COMMAND_INT) to use current latitude.</param>
+        <param index="6" label="Longitude/Y">Longitude before entering Position Hold mode (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN (COMMAND_LONG) or INT32_MAX (COMMAND_INT) to use current longitude.</param>
+        <param index="7" label="Initial Altitude/Z">Altitude before entering Position Hold mode (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN to use current altitude.</param>
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false">
         <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
