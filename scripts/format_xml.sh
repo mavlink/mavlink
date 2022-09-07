@@ -6,7 +6,7 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 # Initialize variables
 mode="format"
-xml_dir="."
+xml_dir="message_definitions"
 keep_old=0
 
 while getopts "h?cd:o" opt; do
