@@ -6,7 +6,7 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 # Initialize variables
 mode="format"
-xml_dir="."
+xml_dir="message_definitions"
 keep_old=0
 
 while getopts "h?cd:o" opt; do
@@ -34,7 +34,8 @@ then
 else
     xml_files="$xml_dir/$xml_file"
 fi
-echo "processing file(s) $xml_files"
+echo "processing file(s):"
+echo "$xml_files"
 
 ret=0
 for f in $xml_files
