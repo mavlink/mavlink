@@ -34,7 +34,8 @@ then
 else
     xml_files="$xml_dir/$xml_file"
 fi
-echo "processing file(s) $xml_files"
+echo "processing file(s):"
+echo "$xml_files"
 
 ret=0
 for f in $xml_files
