@@ -5821,7 +5821,7 @@
       <field type="float" name="distance" units="m">Distance to the center of the flow field. Positive value (including zero): distance known. Negative value: Unknown distance.</field>
     </message>
     <message id="107" name="HIL_SENSOR">
-      <description>The IMU readings in SI units in NED body frame</description>
+      <description>The mininal set of sensors readings in SI units for various vehicles autonomous flight</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="float" name="xacc" units="m/s/s">X acceleration</field>
       <field type="float" name="yacc" units="m/s/s">Y acceleration</field>
@@ -5836,6 +5836,8 @@
       <field type="float" name="diff_pressure" units="hPa">Differential pressure (airspeed)</field>
       <field type="float" name="pressure_alt">Altitude calculated from pressure</field>
       <field type="float" name="temperature" units="degC">Temperature</field>
+      <field type="float" name="wind_speed" units="m/s">Wind Speed</field>
+      <field type="float" name="wind_direction" units="rad">Wind Direction</field>
       <field type="uint32_t" name="fields_updated" enum="HIL_SENSOR_UPDATED_FLAGS" display="bitmask">Bitmap for fields that have updated since last message</field>
       <extensions/>
       <field type="uint8_t" name="id">Sensor ID (zero indexed). Used for multiple sensor inputs</field>
