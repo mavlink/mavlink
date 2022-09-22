@@ -226,9 +226,9 @@
     </enum>
     <enum name="MAV_FRAME">
       <description>Coordinate frames used by MAVLink. Not all frames are supported by all commands, messages, or vehicles.
-      
+
       Global frames use the following naming conventions:
-      - "GLOBAL": Global coordinate frame with WGS84 latitude/longitude and altitude positive over mean sea level (MSL) by default. 
+      - "GLOBAL": Global coordinate frame with WGS84 latitude/longitude and altitude positive over mean sea level (MSL) by default.
         The following modifiers may be used with "GLOBAL":
         - "RELATIVE_ALT": Altitude is relative to the vehicle home position rather than MSL.
         - "TERRAIN_ALT": Altitude is relative to ground level rather than MSL.
@@ -1365,7 +1365,7 @@
           Sets the home position to either to the current position or a specified position.
           The home position is the default position that the system will return to and land on.
           The position is set automatically by the system during the takeoff (and may also be set using this command).
-          Note: the current home position may be emitted in a HOME_POSITION message on request (using MAV_CMD_REQUEST_MESSAGE with param1=242).      
+          Note: the current home position may be emitted in a HOME_POSITION message on request (using MAV_CMD_REQUEST_MESSAGE with param1=242).
         </description>
         <param index="1" label="Use Current" minValue="0" maxValue="1" increment="1">Use current (1=use current location, 0=use specified location)</param>
         <param index="2">Empty</param>
@@ -5233,7 +5233,7 @@
     </message>
     <message id="41" name="MISSION_SET_CURRENT">
       <deprecated since="2022-08" replaced_by="MAV_CMD_DO_SET_MISSION_CURRENT"/>
-      <description>     
+      <description>
         Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (whether or not the mission number changed).
         If a mission is currently being executed, the system will continue to this new mission item on the shortest path, skipping any intermediate mission items.
         Note that mission jump repeat counters are not reset (see MAV_CMD_DO_JUMP param2).
@@ -6720,7 +6720,7 @@
         MAV_CMD_REQUEST_MESSAGE.param2 indicates the sequence number the first image to send, or set to -1 to send the message for all sequence numbers.
         MAV_CMD_REQUEST_MESSAGE.param3 is used to specify a range of messages to send:
         set to 0 (default) to send just the the message for the sequence number in param 2,
-        set to -1 to send the message for the sequence number in param 2 and all the following sequence numbers, 
+        set to -1 to send the message for the sequence number in param 2 and all the following sequence numbers,
         set to the sequence number of the final message in the range.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="time_utc" units="us" invalid="0">Timestamp (time since UNIX epoch) in UTC. 0 for unknown.</field>
@@ -7340,14 +7340,14 @@
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>
         Component metadata message, which may be requested using MAV_CMD_REQUEST_MESSAGE.
-        
+
         This contains the MAVLink FTP URI and CRC for the component's general metadata file.
         The file must be hosted on the component, and may be xz compressed.
         The file CRC can be used for file caching.
-        
+
         The general metadata file can be read to get the locations of other metadata files (COMP_METADATA_TYPE) and translations, which may be hosted either on the vehicle or the internet.
         For more information see: https://mavlink.io/en/services/component_information.html.
-        
+
         Note: Camera components should use CAMERA_INFORMATION instead, and autopilots may use both this message and AUTOPILOT_VERSION.
       </description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
@@ -7502,10 +7502,10 @@
       <field type="uint8_t" name="classification_type" enum="MAV_ODID_CLASSIFICATION_TYPE">Specifies the classification type of the UA.</field>
       <field type="int32_t" name="operator_latitude" units="degE7" invalid="0">Latitude of the operator. If unknown: 0 (both Lat/Lon).</field>
       <field type="int32_t" name="operator_longitude" units="degE7" invalid="0">Longitude of the operator. If unknown: 0 (both Lat/Lon).</field>
-      <field type="uint16_t" name="area_count">Number of aircraft in the area, group or formation (default 1).</field>
-      <field type="uint16_t" name="area_radius" units="m">Radius of the cylindrical area of the group or formation (default 0).</field>
-      <field type="float" name="area_ceiling" units="m" invalid="-1000">Area Operations Ceiling relative to WGS84. If unknown: -1000 m.</field>
-      <field type="float" name="area_floor" units="m" invalid="-1000">Area Operations Floor relative to WGS84. If unknown: -1000 m.</field>
+      <field type="uint16_t" name="area_count">Number of aircraft in the area, group or formation (default 1). Used only for swarms/multiple UA.</field>
+      <field type="uint16_t" name="area_radius" units="m">Radius of the cylindrical area of the group or formation (default 0). Used only for swarms/multiple UA.</field>
+      <field type="float" name="area_ceiling" units="m" invalid="-1000">Area Operations Ceiling relative to WGS84. If unknown: -1000 m. Used only for swarms/multiple UA.</field>
+      <field type="float" name="area_floor" units="m" invalid="-1000">Area Operations Floor relative to WGS84. If unknown: -1000 m. Used only for swarms/multiple UA.</field>
       <field type="uint8_t" name="category_eu" enum="MAV_ODID_CATEGORY_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the category of the UA.</field>
       <field type="uint8_t" name="class_eu" enum="MAV_ODID_CLASS_EU">When classification_type is MAV_ODID_CLASSIFICATION_TYPE_EU, specifies the class of the UA.</field>
       <field type="float" name="operator_altitude_geo" units="m" invalid="-1000">Geodetic altitude of the operator relative to WGS84. If unknown: -1000 m.</field>
