@@ -4908,27 +4908,6 @@
         <description>T-Motor</description>
       </entry>
     </enum>
-    <enum name="MOTOR_FAILURE_FLAGS" bitmask="true">
-      <description>Flags to report Motor failures.</description>
-      <entry value="0" name="MOTOR_FAILURE_NONE">
-        <description>No Motor failures.</description>
-      </entry>
-      <entry value="1" name="MOTOR_WARNING_TEMPERATURE_FAULT">
-        <description>Motor has reached a dangerous temperature.</description>
-      </entry>
-      <entry value="2" name="MOTOR_CRITICAL_TEMPERATURE_FAULT">
-        <description>Motor has reached the critical temperature which can lead to compoment breakdown.</description>
-      </entry>
-      <entry value="4" name="MOTOR_OVER_RPM_FAULT">
-        <description>Over RPM failure.</description>
-      </entry>
-      <entry value="8" name="MOTOR_STALL_FAULT">
-        <description>Load applied on the motor is exceeding the breakdown torque.</description>
-      </entry>
-      <entry value="16" name="MOTOR_GENERIC_FAULT">
-        <description>Generic Motor failure.</description>
-      </entry>
-    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -7034,10 +7013,8 @@
       <description> Contains information about a motor. </description>
       <field type="uint8_t" name="number"> The motor number; index 1, 0 if unknown</field>
       <field type="uint8_t" name="type"> The MOTOR_TYPE of motor </field>
-      <field type="int16_t" name="temperature" units="cdegC"> Temperature of the motor</field>
       <field type="uint32_t" name="accumulated_time" units="s"> Total accumulated usage time. UINT32_MAX if unknown</field>
       <field type="uint32_t" name="serial_number"> Manufacturer serial number. 0 if unknown</field>
-      <field type="uint16_t" name="failure_flags" enum="MOTOR_FAILURE_FLAGS" display="bitmask"> Bitmask of motor failure flags.</field>
     </message>
     <!-- id 295 reserved for AIRSPEED message (development.xml). -->
     <message id="299" name="WIFI_CONFIG_AP">
