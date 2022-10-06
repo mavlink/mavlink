@@ -22,5 +22,13 @@
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
       <field type="uint32_t" name="checksum">CRC32 checksum of current plan for specified type.</field>
     </message>
+    <message id="295" name="AIRSPEED">
+      <description>Airspeed information from a sensor.</description>
+      <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
+      <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS).</field>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature. INT16_MAX for value unknown/not supplied.</field>
+      <field type="float" name="raw_press" units="hPa">Raw differential pressure. NaN for value unknown/not supplied.</field>
+      <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
+    </message>
   </messages>
 </mavlink>
