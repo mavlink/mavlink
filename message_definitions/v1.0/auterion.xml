@@ -23,6 +23,34 @@
       <field type="uint8_t" name="queue_size"> Local (message sender) number of packets in buffer.</field>
       <field type="uint8_t" name="air_time" units="%">Local (message sender) percentage of time the radio is transmitting.</field>
     </message>
+    <message id="460" name="RADIATION_DETECTOR_COUNTS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Radiation Detector counts/sec</description>
+      <field type="uint32_t" name="serial_no">Detector serial number</field>
+      <field type="double" name="timestamp" units="s">Timestamp of measurement(UNIX Epoch time or time since detector boot)</field>
+      <field type="uint64_t" name="counts">Accumulated detector counts</field>
+      <field type="uint32_t" name="rate"> Detector count in the current dt integration period.</field>
+      <field type="uint64_t" name="integration_time_usec" units="us">Integration period</field>
+    </message>
+    <message id="461" name="RADIATION_DETECTOR_SPECTRUM">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Radiation Detector Energy Spectrum</description>
+      <field type="uint32_t" name="serial_no">Detector serial number</field>
+      <field type="uint8_t" name="msg_no">Message number [0;255]</field>
+      <field type="uint8_t" name="seq_no">Sequence number [0;127]</field>
+      <field type="uint8_t[249]" name="segment">One segment of a spectrum PDU</field>
+    </message>
+    <message id="462" name="RADIATION_DETECTOR_CPS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Radiation Detector counts/sec</description>
+      <field type="uint32_t" name="serial_no">Detector serial number</field>
+      <field type="double" name="timestamp" units="s">Time of data measurement</field>
+      <field type="uint32_t" name="cps">Detector value scaled by factor</field>
+      <field type="float" name="dt" units="s">delta-t integration period</field>
+    </message>
     <message id="500" name="TRACKER_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
