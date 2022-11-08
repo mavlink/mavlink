@@ -508,6 +508,13 @@
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
       <field type="uint32_t" name="intended_custom_mode" invalid="0">The custom_mode of the mode that was last commanded by the user (for example, with MAV_CMD_DO_SET_STANDARD_MODE, MAV_CMD_DO_SET_MODE or via RC). This should usually be the same as custom_mode. It will be different if the vehicle is unable to enter the intended mode, or has left that mode due to a failsafe condition. 0 indicates the intended custom mode is unknown/not supplied</field>
     </message>
+    <message id="437" name="AVAILABLE_MODES_MONITOR">
+      <description>A change to the sequence number indicates that the set of AVAILABLE_MODES has changed.
+        A receiver must re-request all available modes whenever the sequence number changes.
+        This is only emitted after the first change and should then be broadcast at low rate (nominally 0.3 Hz) and on change.
+      </description>
+      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically).</field>
+    </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
       <description>Current motion information from sensors on a target</description>
