@@ -425,39 +425,39 @@
       </entry>
     </enum>
     <enum name="GIMBAL_DEVICE_CAP_FLAGS" bitmask="true">
-      <description>Gimbal device (low level) capability flags (bitmap)</description>
+      <description>Gimbal device (low level) capability flags (bitmap).</description>
       <entry value="1" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT">
-        <description>Gimbal device supports a retracted position</description>
+        <description>Gimbal device supports a retracted position.</description>
       </entry>
       <entry value="2" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_NEUTRAL">
-        <description>Gimbal device supports a horizontal, forward looking position, stabilized</description>
+        <description>Gimbal device supports a horizontal, forward looking position, stabilized.</description>
       </entry>
       <entry value="4" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_AXIS">
         <description>Gimbal device supports rotating around roll axis.</description>
       </entry>
       <entry value="8" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_FOLLOW">
-        <description>Gimbal device supports to follow a roll angle relative to the vehicle</description>
+        <description>Gimbal device supports to follow a roll angle relative to the vehicle.</description>
       </entry>
       <entry value="16" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_LOCK">
-        <description>Gimbal device supports locking to an roll angle (generally that's the default with roll stabilized)</description>
+        <description>Gimbal device supports locking to a roll angle (generally that's the default with roll stabilized).</description>
       </entry>
       <entry value="32" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_AXIS">
         <description>Gimbal device supports rotating around pitch axis.</description>
       </entry>
       <entry value="64" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_FOLLOW">
-        <description>Gimbal device supports to follow a pitch angle relative to the vehicle</description>
+        <description>Gimbal device supports to follow a pitch angle relative to the vehicle.</description>
       </entry>
       <entry value="128" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_LOCK">
-        <description>Gimbal device supports locking to an pitch angle (generally that's the default with pitch stabilized)</description>
+        <description>Gimbal device supports locking to a pitch angle (generally that's the default with pitch stabilized).</description>
       </entry>
       <entry value="256" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_AXIS">
         <description>Gimbal device supports rotating around yaw axis.</description>
       </entry>
       <entry value="512" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_FOLLOW">
-        <description>Gimbal device supports to follow a yaw angle relative to the vehicle (generally that's the default)</description>
+        <description>Gimbal device supports to follow a yaw angle relative to the vehicle (generally that's the default).</description>
       </entry>
       <entry value="1024" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_LOCK">
-        <description>Gimbal device supports locking to an absolute heading (often this is an option available)</description>
+        <description>Gimbal device supports locking to an absolute heading, i.e., yaw angle relative to North (earth frame, often this is an option available).</description>
       </entry>
       <entry value="2048" name="GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_INFINITE_YAW">
         <description>Gimbal device supports yawing/panning infinetely (e.g. using slip disk).</description>
@@ -514,16 +514,16 @@
         <description>Set to retracted safe position (no stabilization), takes presedence over all other flags.</description>
       </entry>
       <entry value="2" name="GIMBAL_DEVICE_FLAGS_NEUTRAL">
-        <description>Set to neutral/default position, taking precedence over all other flags except RETRACT. Neutral is commonly forward-facing and horizontal (pitch=yaw=0) but may be any orientation.</description>
+        <description>Set to neutral/default position, taking precedence over all other flags except RETRACT. Neutral is commonly forward-facing and horizontal (roll=pitch=yaw=0) but may be any orientation.</description>
       </entry>
       <entry value="4" name="GIMBAL_DEVICE_FLAGS_ROLL_LOCK">
-        <description>Lock roll angle to absolute angle relative to horizon (not relative to drone). This is generally the default with a stabilizing gimbal.</description>
+        <description>Lock roll angle to absolute angle relative to horizon (not relative to vehicle). This is generally the default with a stabilizing gimbal.</description>
       </entry>
       <entry value="8" name="GIMBAL_DEVICE_FLAGS_PITCH_LOCK">
-        <description>Lock pitch angle to absolute angle relative to horizon (not relative to drone). This is generally the default.</description>
+        <description>Lock pitch angle to absolute angle relative to horizon (not relative to vehicle). This is generally the default with a stabilizing gimbal.</description>
       </entry>
       <entry value="16" name="GIMBAL_DEVICE_FLAGS_YAW_LOCK">
-        <description>Lock yaw angle to absolute angle relative to North (not relative to drone). If this flag is set, the quaternion is in the Earth frame with the x-axis pointing North (yaw absolute). If this flag is not set, the quaternion frame is in the Earth frame rotated so that the x-axis is pointing forward (yaw relative to vehicle).</description>
+        <description>Lock yaw angle to absolute angle relative to North (not relative to vehicle). If this flag is set, the yaw angle and z component of angular velocity are relative to North (earth frame, x-axis pointing North), else they are relative to the vehicle heading (vehicle frame, earth frame rotated so that the x-axis is pointing forward).</description>
       </entry>
     </enum>
     <enum name="GIMBAL_MANAGER_FLAGS" bitmask="true">
@@ -6917,29 +6917,29 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Low level gimbal flags.</field>
-      <field type="float[4]" name="q" invalid="[NaN]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, set all fields to NaN if only angular velocity should be used)</field>
-      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
-      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
+      <field type="float[4]" name="q" invalid="[NaN]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation). The frame depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set. Set fields to NaN to be ignored (only angular velocity should be used).</field>
+      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (positive: rolling to the right). NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (positive: pitching up). NaN to be ignored.</field>
+      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: yawing to the right). NaN to be ignored.</field>
     </message>
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Message reporting the status of a gimbal device. This message should be broadcasted by a gimbal device component. The angles encoded in the quaternion are relative to absolute North if the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set (roll: positive is rolling to the right, pitch: positive is pitching up, yaw is turn to the right) or relative to the vehicle heading if the flag is not set. This message should be broadcast at a low regular rate (e.g. 10Hz).</description>
+      <description>Message reporting the status of a gimbal device. This message should be broadcast by a gimbal device component at a low regular rate (e.g. 5 Hz). The angles encoded in the quaternion and the angular velocities are relative to North if the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set or relative to the vehicle heading if the flag is not set.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Current gimbal flags set.</field>
-      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set)</field>
-      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (NaN if unknown)</field>
-      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (NaN if unknown)</field>
-      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (NaN if unknown)</field>
-      <field type="uint32_t" name="failure_flags" display="bitmask" enum="GIMBAL_DEVICE_ERROR_FLAGS">Failure flags (0 for no failure)</field>
+      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation). The frame depends on whether the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set.</field>
+      <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (positive: rolling to the right). The frame is as for the quaternion. NaN if unknown.</field>
+      <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (positive: pitching up). The frame is as for the quaternion. NaN if unknown.</field>
+      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: yawing to the right). The frame is as for the quaternion. NaN if unknown.</field>
+      <field type="uint32_t" name="failure_flags" display="bitmask" enum="GIMBAL_DEVICE_ERROR_FLAGS">Failure flags (0 for no failure).</field>
     </message>
     <message id="286" name="AUTOPILOT_STATE_FOR_GIMBAL_DEVICE">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Low level message containing autopilot state relevant for a gimbal device. This message is to be sent from the gimbal manager to the gimbal device component. The data of this message server for the gimbal's estimator corrections in particular horizon compensation, as well as the autopilot's control intention e.g. feed forward angular control in z-axis.</description>
+      <description>Low level message containing autopilot state relevant for a gimbal device. This message is to be sent from the autopilot to the gimbal device component. The data of this message are for the gimbal device's estimator corrections, in particular horizon compensation, as well as indicates autopilot control intentions, e.g. feed forward angular control in the z-axis.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint64_t" name="time_boot_us" units="us">Timestamp (time since system boot).</field>
@@ -6949,7 +6949,7 @@
       <field type="float" name="vy" units="m/s">Y Speed in NED (North, East, Down).</field>
       <field type="float" name="vz" units="m/s">Z Speed in NED (North, East, Down).</field>
       <field type="uint32_t" name="v_estimated_delay_us" units="us">Estimated delay of the speed data.</field>
-      <field type="float" name="feed_forward_angular_velocity_z" units="rad/s" invalid="NaN">Feed forward Z component of angular velocity, positive is yawing to the right, NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
+      <field type="float" name="feed_forward_angular_velocity_z" units="rad/s" invalid="NaN">Feed forward Z component of angular velocity (positive: yawing to the right). NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
       <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Bitmap indicating which estimator outputs are valid.</field>
       <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE" invalid="MAV_LANDED_STATE_UNDEFINED">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
     </message>
