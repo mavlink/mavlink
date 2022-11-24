@@ -3755,7 +3755,7 @@
         <description>Continuous zoom up/down until stopped (-1 for wide, 1 for tele, 0 to stop zooming)</description>
       </entry>
       <entry value="2" name="ZOOM_TYPE_RANGE">
-        <description>Zoom value as proportion of full camera range (a value between 0.0 and 100.0)</description>
+        <description>Zoom value as proportion of full camera range (a percentage value between 0.0 and 100.0)</description>
       </entry>
       <entry value="3" name="ZOOM_TYPE_FOCAL_LENGTH">
         <description>Zoom value/variable focal length in millimetres. Note that there is no message to get the valid zoom range of the camera, so this can type can only be used for cameras where the zoom range is known (implying that this cannot reliably be used in a GCS for an arbitrary camera)</description>
@@ -6711,8 +6711,8 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="mode_id" enum="CAMERA_MODE">Camera mode</field>
       <extensions/>
-      <field type="float" name="zoomLevel" invalid="NaN">Current zoom level (0.0 to 100.0, NaN if not known)</field>
-      <field type="float" name="focusLevel" invalid="NaN">Current focus level (0.0 to 100.0, NaN if not known)</field>
+      <field type="float" name="zoomLevel" invalid="NaN">Current zoom level as a percentage of the full range (0.0 to 100.0, NaN if not known)</field>
+      <field type="float" name="focusLevel" invalid="NaN">Current focus level as a percentage of the full range (0.0 to 100.0, NaN if not known)</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
       <description>Information about a storage medium. This message is sent in response to a request with MAV_CMD_REQUEST_MESSAGE and whenever the status of the storage changes (STORAGE_STATUS). Use MAV_CMD_REQUEST_MESSAGE.param2 to indicate the index/id of requested storage: 0 for all, 1 for first, 2 for second, etc.</description>
