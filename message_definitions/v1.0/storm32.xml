@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!--
 Contact:
+  - github user name: @olliw42 (to ping)
   - send a PM to user OlliW at https://www.rcgroups.com (most quick)
   - raise an issue in the https://github.com/olliw42/storm32bgc github repository
-  - send a message to user olliw at https://discuss.px4.io/ (may take a while to respond)
 Range of IDs:
   messages: 60000 - 60049
   commands: 60000 - 60049
@@ -16,8 +16,6 @@ Documentation:
   http://www.olliw.eu/2020/mavlink-gimbal-protocol-v2/
 -->
 <mavlink>
-  <!-- For ArduPilot, comment out the <include> and include storm32.xml in ardupilotmega.xml (common.xml doesn't yet work in stable branches)
-    This makes it possible that ArduPilot's build system can handle it without modifications. -->
   <include>ardupilotmega.xml</include>
   <version>1</version>
   <dialect>0</dialect>
@@ -191,7 +189,7 @@ Documentation:
         <description>RC control. The RC input signal fed to the gimbal device exclusively controls the gimbal's orientation. Overrides RC_MIXED flag if that is also set.</description>
       </entry>
       <entry value="2048" name="MAV_STORM32_GIMBAL_DEVICE_FLAGS_RC_MIXED">
-        <description>RC control. The RC input signal fed to the gimbal device is mixed into the gimbal's orientation. Is overriden by RC_EXCLUSIVE flag if that is also set.</description>
+        <description>RC control. The RC input signal fed to the gimbal device is mixed into the gimbal's orientation. Is overridden by RC_EXCLUSIVE flag if that is also set.</description>
       </entry>
       <entry value="65535" name="MAV_STORM32_GIMBAL_DEVICE_FLAGS_NONE">
         <description>UINT16_MAX = ignore.</description>
@@ -246,7 +244,7 @@ Documentation:
     </enum>
     <enum name="MAV_STORM32_GIMBAL_MANAGER_FLAGS" bitmask="true">
       <!-- Quite stable -->
-      <description>Flags for gimbal manager operation. Used for setting and reporting, unless specified otherwise. If a setting is accepted by the gimbal manger, is reported in the STORM32_GIMBAL_MANAGER_STATUS message.</description>
+      <description>Flags for gimbal manager operation. Used for setting and reporting, unless specified otherwise. If a setting is accepted by the gimbal manager, is reported in the STORM32_GIMBAL_MANAGER_STATUS message.</description>
       <entry value="0" name="MAV_STORM32_GIMBAL_MANAGER_FLAGS_NONE">
         <description>0 = ignore.</description>
       </entry>
@@ -370,7 +368,7 @@ Documentation:
         <description>Undefined shot mode. Can be used to determine if qshots should be used or not.</description>
       </entry>
       <entry value="1" name="MAV_QSHOT_MODE_DEFAULT">
-        <description>Start normal gimbal operation. Is usally used to return back from a shot.</description>
+        <description>Start normal gimbal operation. Is usually used to return back from a shot.</description>
       </entry>
       <entry value="2" name="MAV_QSHOT_MODE_GIMBAL_RETRACT">
         <description>Load and keep safe gimbal position and stop stabilization.</description>

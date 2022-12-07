@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <mavlink>
-  <!-- XML file for prototyping definitions for standard.xml  -->
-  <include>standard.xml</include>
+  <!-- XML file for prototyping definitions for common.xml -->
+  <include>common.xml</include>
   <version>0</version>
   <dialect>0</dialect>
   <enums>
@@ -157,6 +157,29 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <entry value="35" name="MAV_CMD_DO_FIGURE_EIGHT" hasLocation="true" isDestination="true">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Fly a figure eight path as defined by the parameters.
+          Set parameters to NaN/INT32_MAX (as appropriate) to use system-default values.
+          The command is intended for fixed wing vehicles (and VTOL hybrids flying in fixed-wing mode), allowing POI tracking for gimbals that don't support infinite rotation.
+          This command only defines the flight path. Speed should be set independently (use e.g. MAV_CMD_DO_CHANGE_SPEED).
+          Yaw and other degrees of freedom are not specified, and will be flight-stack specific (on vehicles where they can be controlled independent of the heading).
+        </description>
+        <param index="1" label="Major Radius" units="m">Major axis radius of the figure eight. Positive: orbit the north circle clockwise. Negative: orbit the north circle counter-clockwise.
+        NaN: The radius will be set to 2.5 times the minor radius and direction is clockwise.
+        Must be greater or equal to two times the minor radius for feasible values.</param>
+        <param index="2" label="Minor Radius" units="m">Minor axis radius of the figure eight. Defines the radius of the two circles that make up the figure. Negative value has no effect.
+        NaN: The radius will be set to the default loiter radius.</param>
+        <param index="3" reserved="true" default="NaN"/>
+        <param index="4" label="Orientation" units="rad">Orientation of the figure eight major axis with respect to true north (range: [-pi,pi]). NaN: use default orientation aligned to true north.</param>
+        <param index="5" label="Latitude/X">Center point latitude/X coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
+        INT32_MAX or NaN: Use current vehicle position, or current center if already loitering.</param>
+        <param index="6" label="Longitude/Y">Center point longitude/Y coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
+        INT32_MAX or NaN: Use current vehicle position, or current center if already loitering.</param>
+        <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
+        INT32_MAX or NaN: Use current vehicle altitude.</param>
+      </entry>
       <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
         <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
         <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
@@ -172,6 +195,112 @@
           Note: The flight stack should reject a plan or command that uses a geofence action that it does not support and send a STATUSTEXT with the reason.
         </description>
         <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
+      </entry>
+    </enum>
+    <enum name="MAV_BATTERY_STATUS_FLAGS" bitmask="true">
+      <description>Battery status flags for fault, health and state indication.</description>
+      <entry value="1" name="MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE">
+        <description>
+          The battery is not ready to use (fly).
+          Set if the battery has faults or other conditions that make it unsafe to fly with.
+          Note: It will be the logical OR of other status bits (chosen by the manufacturer/integrator).
+        </description>
+      </entry>
+      <entry value="2" name="MAV_BATTERY_STATUS_FLAGS_CHARGING">
+        <description>
+          Battery is charging.
+        </description>
+      </entry>
+      <entry value="4" name="MAV_BATTERY_STATUS_FLAGS_CELL_BALANCING">
+        <description>
+          Battery is cell balancing (during charging).
+          Not ready to use (MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE may be set).
+        </description>
+      </entry>
+      <entry value="8" name="MAV_BATTERY_STATUS_FLAGS_FAULT_CELL_IMBALANCE">
+        <description>
+          Battery cells are not balanced.
+          Not ready to use.
+        </description>
+      </entry>
+      <entry value="16" name="MAV_BATTERY_STATUS_FLAGS_AUTO_DISCHARGING">
+        <description>
+          Battery is auto discharging (towards storage level).
+          Not ready to use (MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE would be set).
+        </description>
+      </entry>
+      <entry value="32" name="MAV_BATTERY_STATUS_FLAGS_REQUIRES_SERVICE">
+        <description>
+          Battery requires service (not safe to fly). 
+          This is set at vendor discretion.
+          It is likely to be set for most faults, and may also be set according to a maintenance schedule (such as age, or number of recharge cycles, etc.).
+        </description>
+      </entry>
+      <entry value="64" name="MAV_BATTERY_STATUS_FLAGS_BAD_BATTERY">
+        <description>
+          Battery is faulty and cannot be repaired (not safe to fly). 
+          This is set at vendor discretion.
+          The battery should be disposed of safely.
+        </description>
+      </entry>
+      <entry value="128" name="MAV_BATTERY_STATUS_FLAGS_PROTECTIONS_ENABLED">
+        <description>
+          Automatic battery protection monitoring is enabled.
+          When enabled, the system will monitor for certain kinds of faults, such as cells being over-voltage.
+          If a fault is triggered then and protections are enabled then a safety fault (MAV_BATTERY_STATUS_FLAGS_FAULT_PROTECTION_SYSTEM) will be set and power from the battery will be stopped.
+          Note that battery protection monitoring should only be enabled when the vehicle is landed. Once the vehicle is armed, or starts moving, the protections should be disabled to prevent false positives from disabling the output.
+        </description>
+      </entry>
+      <entry value="256" name="MAV_BATTERY_STATUS_FLAGS_FAULT_PROTECTION_SYSTEM">
+        <description>
+          The battery fault protection system had detected a fault and cut all power from the battery.
+          This will only trigger if MAV_BATTERY_STATUS_FLAGS_PROTECTIONS_ENABLED is set.
+          Other faults like MAV_BATTERY_STATUS_FLAGS_FAULT_OVER_VOLT may also be set, indicating the cause of the protection fault.
+        </description>
+      </entry>
+      <entry value="512" name="MAV_BATTERY_STATUS_FLAGS_FAULT_OVER_VOLT">
+        <description>One or more cells are above their maximum voltage rating.</description>
+      </entry>
+      <entry value="1024" name="MAV_BATTERY_STATUS_FLAGS_FAULT_UNDER_VOLT">
+        <description>
+          One or more cells are below their minimum voltage rating.
+          A battery that had deep-discharged might be irrepairably damaged, and set both MAV_BATTERY_STATUS_FLAGS_FAULT_UNDER_VOLT and MAV_BATTERY_STATUS_FLAGS_BAD_BATTERY.
+        </description>
+      </entry>
+      <entry value="2048" name="MAV_BATTERY_STATUS_FLAGS_FAULT_OVER_TEMPERATURE">
+        <description>Over-temperature fault.</description>
+      </entry>
+      <entry value="4096" name="MAV_BATTERY_STATUS_FLAGS_FAULT_UNDER_TEMPERATURE">
+        <description>Under-temperature fault.</description>
+      </entry>
+      <entry value="8192" name="MAV_BATTERY_STATUS_FLAGS_FAULT_OVER_CURRENT">
+        <description>Over-current fault.</description>
+      </entry>
+      <entry value="16384" name="MAV_BATTERY_STATUS_FLAGS_FAULT_SHORT_CIRCUIT">
+        <description>
+          Short circuit event detected.
+          The battery may or may not be safe to use (check other flags).
+        </description>
+      </entry>
+      <entry value="32768" name="MAV_BATTERY_STATUS_FLAGS_FAULT_INCOMPATIBLE_VOLTAGE">
+        <description>Voltage not compatible with power rail voltage (batteries on same power rail should have similar voltage).</description>
+      </entry>
+      <entry value="65536" name="MAV_BATTERY_STATUS_FLAGS_FAULT_INCOMPATIBLE_FIRMWARE">
+        <description>Battery firmware is not compatible with current autopilot firmware.</description>
+      </entry>
+      <entry value="131072" name="MAV_BATTERY_STATUS_FLAGS_FAULT_INCOMPATIBLE_CELLS_CONFIGURATION">
+        <description>Battery is not compatible due to cell configuration (e.g. 5s1p when vehicle requires 6s).</description>
+      </entry>
+      <entry value="262144" name="MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL">
+        <description>
+          Battery capacity_consumed and capacity_remaining values are relative to a full battery (they sum to the total capacity of the battery).
+          This flag would be set for a smart battery that can accurately determine its remaining charge across vehicle reboots and discharge/recharge cycles.
+          If unset the capacity_consumed indicates the consumption since vehicle power-on, as measured using a power monitor. The capacity_remaining, if provided, indicates the estimated remaining capacity on the assumption that the battery was full on vehicle boot.
+          If unset a GCS is recommended to advise that users fully charge the battery on power on.
+        </description>
+      </entry>
+      <entry value="4294967295" name="MAV_BATTERY_STATUS_FLAGS_EXTENDED">
+        <description>Reserved (not used). If set, this will indicate that an additional status field exists for higher status values.</description>
       </entry>
     </enum>
     <enum name="MAV_CMD">
@@ -230,14 +359,6 @@
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
     </message>
     <!-- mission protocol enhancements -->
-    <message id="52" name="MISSION_CHANGED">
-      <description>A broadcast message to notify any ground station or SDK if a mission, geofence or safe points have changed on the vehicle.</description>
-      <field type="int16_t" name="start_index">Start index for partial mission change (-1 for all items).</field>
-      <field type="int16_t" name="end_index">End index of a partial mission change. -1 is a synonym for the last mission item (i.e. selects all items from start_index). Ignore field if start_index=-1.</field>
-      <field type="uint8_t" name="origin_sysid">System ID of the author of the new mission.</field>
-      <field type="uint8_t" name="origin_compid" enum="MAV_COMPONENT">Compnent ID of the author of the new mission.</field>
-      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
-    </message>
     <message id="53" name="MISSION_CHECKSUM">
       <description>Checksum for the current mission, rally point or geofence plan, or for the "combined" plan (a GCS can use these checksums to determine if it has matching plans).
         This message must be broadcast with the appropriate checksum following any change to a mission, geofence or rally point definition
@@ -269,6 +390,38 @@
       <field type="uint8_t" name="signal_quality" units="%">WiFi network signal quality.</field>
       <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
       <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
+    </message>
+    <message id="361" name="FIGURE_EIGHT_EXECUTION_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>
+        Vehicle status report that is sent out while figure eight execution is in progress (see MAV_CMD_DO_FIGURE_EIGHT).
+        This may typically send at low rates: of the order of 2Hz.
+      </description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="float" name="major_radius" units="m">Major axis radius of the figure eight. Positive: orbit the north circle clockwise. Negative: orbit the north circle counter-clockwise.</field>
+      <field type="float" name="minor_radius" units="m">Minor axis radius of the figure eight. Defines the radius of two circles that make up the figure.</field>
+      <field type="float" name="orientation" units="rad">Orientation of the figure eight major axis with respect to true north in [-pi,pi).</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the fields: x, y, z.</field>
+      <field type="int32_t" name="x">X coordinate of center point. Coordinate system depends on frame field.</field>
+      <field type="int32_t" name="y">Y coordinate of center point. Coordinate system depends on frame field.</field>
+      <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
+    </message>
+    <message id="369" name="BATTERY_STATUS_V2">
+      <description>Battery dynamic information.
+        This should be streamed (nominally at 1Hz).
+        Static/invariant battery information is sent in SMART_BATTERY_INFO.
+        Note that smart batteries should set the MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL bit to indicate that supplied capacity values are relative to a battery that is known to be full.
+        Power monitors would not set this bit, indicating that capacity_consumed is relative to drone power-on, and that other values are estimated based on the assumption that the battery was full on power-on.
+      </description>
+      <field type="uint8_t" name="id" instance="true">Battery ID</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of the whole battery pack (not internal electronics). INT16_MAX field not provided.</field>
+      <field type="float" name="voltage" units="V" invalid="NaN">Battery voltage (total). NaN: field not provided.</field>
+      <field type="float" name="current" units="A" invalid="NaN">Battery current (through all cells/loads). Positive value when discharging and negative if charging. NaN: field not provided.</field>
+      <field type="float" name="capacity_consumed" units="Ah" invalid="NaN">Consumed charge. NaN: field not provided. This is either the consumption since power-on or since the battery was full, depending on the value of MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL.</field>
+      <field type="float" name="capacity_remaining" units="Ah" invalid="NaN">Remaining charge (until empty). UINT32_MAX: field not provided. Note: If MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL is unset, this value is based on the assumption the battery was full when the system was powered.</field>
+      <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Remaining battery energy. Values: [0-100], UINT8_MAX: field not provided.</field>
+      <field type="uint32_t" name="status_flags" display="bitmask" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
     </message>
     <message id="396" name="COMPONENT_INFORMATION_BASIC">
       <description>Basic component information data. Should be requested using MAV_CMD_REQUEST_MESSAGE on startup, or when required.</description>

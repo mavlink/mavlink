@@ -23,6 +23,7 @@ option(USE_SYSTEM_PYMAVLINK "Generate mavlink files with system-wide installed m
 option(WITH_TESTS "Build test programs." OFF)
 option(WITH_BUILD_DEPS "Build dependencies." OFF) # no deps currently to build
 option(WITH_BUILD_STATIC "Build preferring static linking." ON)
+option(INSTALL_PYMAVLINK "Install pymavlink." ON)
 
 # variables
 set(ROOT_THREAD TRUE CACHE INTERNAL "Is this the top level of the recursion?")
@@ -196,11 +197,13 @@ endif()
 install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION include/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.h*")
 install(DIRECTORY ${CMAKE_BINARY_DIR}/src/ DESTINATION share/${PROJECT_NAME} COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
 install(DIRECTORY ${MAVLINK_SOURCE_DIR}/share/${PROJECT_NAME} DESTINATION share COMPONENT Dev FILES_MATCHING PATTERN "*.c*")
-if (UNIX)
-    install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION ${PYTHON_SITELIB} COMPONENT Dev)
-else ()
-    install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION "share/pyshared" COMPONENT Dev)
-endif ()
+if (INSTALL_PYMAVLINK)
+    if (UNIX)
+        install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION ${PYTHON_SITELIB} COMPONENT Dev)
+    else ()
+        install(DIRECTORY ${MAVLINK_SOURCE_DIR}/pymavlink DESTINATION "share/pyshared" COMPONENT Dev)
+    endif ()
+endif()
 
 configure_file(pc.in ${PROJECT_NAME}.pc)
 install(FILES
