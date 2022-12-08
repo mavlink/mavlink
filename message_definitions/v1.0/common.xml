@@ -6948,12 +6948,12 @@
       <field type="uint64_t" name="uid" invalid="0">UID of gimbal hardware (0 if unknown).</field>
       <field type="uint16_t" name="cap_flags" enum="GIMBAL_DEVICE_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
       <field type="uint16_t" name="custom_cap_flags" display="bitmask">Bitmap for use for gimbal-specific capability flags.</field>
-      <field type="float" name="roll_min" units="rad">Minimum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
-      <field type="float" name="roll_max" units="rad">Maximum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
-      <field type="float" name="pitch_min" units="rad">Minimum hardware pitch angle (positive: up, negative: down)</field>
-      <field type="float" name="pitch_max" units="rad">Maximum hardware pitch angle (positive: up, negative: down)</field>
-      <field type="float" name="yaw_min" units="rad">Minimum hardware yaw angle (positive: to the right, negative: to the left)</field>
-      <field type="float" name="yaw_max" units="rad">Maximum hardware yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="roll_min" units="rad" invalid="NaN">Minimum hardware roll angle (positive: rolling to the right, negative: rolling to the left). NAN if unknown.</field>
+      <field type="float" name="roll_max" units="rad" invalid="NaN">Maximum hardware roll angle (positive: rolling to the right, negative: rolling to the left). NAN if unknown.</field>
+      <field type="float" name="pitch_min" units="rad" invalid="NaN">Minimum hardware pitch angle (positive: up, negative: down). NAN if unknown.</field>
+      <field type="float" name="pitch_max" units="rad" invalid="NaN">Maximum hardware pitch angle (positive: up, negative: down). NAN if unknown.</field>
+      <field type="float" name="yaw_min" units="rad" invalid="NaN">Minimum hardware yaw angle (positive: to the right, negative: to the left). NAN if unknown.</field>
+      <field type="float" name="yaw_max" units="rad" invalid="NaN">Maximum hardware yaw angle (positive: to the right, negative: to the left). NAN if unknown.</field>
     </message>
     <message id="284" name="GIMBAL_DEVICE_SET_ATTITUDE">
       <wip/>
@@ -6972,7 +6972,7 @@
 	  New implementations should always set either GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME or GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Low level gimbal flags.</field>
+      <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS" display="bitmask">Low level gimbal flags.</field>
       <field type="float[4]" name="q" invalid="[NaN]">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation). The frame is described in the message description. Set fields to NaN to be ignored.</field>
       <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (positive: rolling to the right). The frame is described in the message description. NaN to be ignored.</field>
       <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (positive: pitching up). The frame is described in the message description. NaN to be ignored.</field>
@@ -6999,12 +6999,12 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS">Current gimbal flags set.</field>
+      <field type="uint16_t" name="flags" enum="GIMBAL_DEVICE_FLAGS" display="bitmask">Current gimbal flags set.</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation). The frame is described in the message description.</field>
       <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity (positive: rolling to the right). The frame is described in the message description. NaN if unknown.</field>
       <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity (positive: pitching up). The frame is described in the message description. NaN if unknown.</field>
       <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: yawing to the right). The frame is described in the message description. NaN if unknown.</field>
-      <field type="uint32_t" name="failure_flags" display="bitmask" enum="GIMBAL_DEVICE_ERROR_FLAGS">Failure flags (0 for no failure)</field>
+      <field type="uint32_t" name="failure_flags" enum="GIMBAL_DEVICE_ERROR_FLAGS" display="bitmask">Failure flags (0 for no failure)</field>
       <extensions/>
       <field type="float" name="delta_yaw" units="rad" invalid="NAN">Yaw angle relating the quaternions in earth and body frames (see message description). NaN if unknown.</field>
       <field type="float" name="delta_yaw_velocity" units="rad/s" invalid="NAN">Yaw angular velocity relating the angular velocities in earth and body frames (see message description). NaN if unknown.</field>
@@ -7017,11 +7017,11 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint64_t" name="time_boot_us" units="us">Timestamp (time since system boot).</field>
       <field type="float[4]" name="q">Quaternion components of autopilot attitude: w, x, y, z (1 0 0 0 is the null-rotation, Hamilton convention).</field>
-      <field type="uint32_t" name="q_estimated_delay_us" units="us">Estimated delay of the attitude data.</field>
-      <field type="float" name="vx" units="m/s">X Speed in NED (North, East, Down).</field>
-      <field type="float" name="vy" units="m/s">Y Speed in NED (North, East, Down).</field>
-      <field type="float" name="vz" units="m/s">Z Speed in NED (North, East, Down).</field>
-      <field type="uint32_t" name="v_estimated_delay_us" units="us">Estimated delay of the speed data.</field>
+      <field type="uint32_t" name="q_estimated_delay_us" units="us" invalid="0">Estimated delay of the attitude data. 0 if unknown.</field>
+      <field type="float" name="vx" units="m/s" invalid="NaN">X Speed in NED (North, East, Down). NAN if unknown.</field>
+      <field type="float" name="vy" units="m/s" invalid="NaN">Y Speed in NED (North, East, Down). NAN if unknown.</field>
+      <field type="float" name="vz" units="m/s" invalid="NaN">Z Speed in NED (North, East, Down). NAN if unknown.</field>
+      <field type="uint32_t" name="v_estimated_delay_us" units="us" invalid="0">Estimated delay of the speed data. 0 if unknown.</field>
       <field type="float" name="feed_forward_angular_velocity_z" units="rad/s" invalid="NaN">Feed forward Z component of angular velocity (positive: yawing to the right). NaN to be ignored. This is to indicate if the autopilot is actively yawing.</field>
       <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS" display="bitmask">Bitmap indicating which estimator outputs are valid.</field>
       <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE" invalid="MAV_LANDED_STATE_UNDEFINED">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
