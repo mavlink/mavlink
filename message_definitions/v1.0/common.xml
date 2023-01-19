@@ -322,6 +322,9 @@
       <entry value="21" name="MAV_FRAME_LOCAL_FLU">
         <description>FLU local tangent frame (x: Forward, y: Left, z: Up) with origin fixed relative to earth. The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
       </entry>
+      <entry value="22" name="MAV_FRAME_SENSOR">
+        <description>Generic sensor frame for target observations (e.g. fiducial markers).</description>
+      </entry>
     </enum>
     <enum name="MAVLINK_DATA_STREAM_TYPE">
       <entry value="0" name="MAVLINK_DATA_STREAM_IMG_JPEG">
@@ -6310,10 +6313,10 @@
       <field type="float" name="x" units="m">X Position of the landing target in MAV_FRAME</field>
       <field type="float" name="y" units="m">Y Position of the landing target in MAV_FRAME</field>
       <field type="float" name="z" units="m">Z Position of the landing target in MAV_FRAME</field>
-      <field type="float[6]" name="pos_unc">Covariance of landing target position in MAV_FRAME (var_x, cov_xy, cov_xz, var_y, cov_yz, var_z)</field>
+      <field type="float[3]" name="pos_unc">Variance of landing target position in MAV_FRAME (var_x, var_y, var_z)</field>
       <field type="float" name="target_yaw_unc" units="rad^2">Variance of landing target's orientation in MAV_FRAME</field>
       <field type="float[4]" name="q">Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
-      <field type="float[4]" name="q_att">Quaternion of sensor's orientation from MAV_FRAME to NED (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="float[4]" name="q_att">Quaternion of the sensor's orientation from MAV_FRAME to vehicle-carried NED. (Note used if MAV_FRAME is MAV_FRAME_LOCAL_NED) (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of landing target</field>
       <field type="uint8_t" name="position_valid" invalid="0">Boolean indicating whether the position fields (x, y, z, q, type) contain valid target position information (valid: 1, invalid: 0). Default is 0 (invalid).</field>
     </message>
