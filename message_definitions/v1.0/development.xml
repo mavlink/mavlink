@@ -261,6 +261,21 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
     </message>
+    <!-- mission protocol enhancements -->
+    <message id="53" name="MISSION_CHECKSUM">
+      <description>Checksum for the current mission, rally point or geofence plan, or for the "combined" plan (a GCS can use these checksums to determine if it has matching plans).
+        This message must be broadcast with the appropriate checksum following any change to a mission, geofence or rally point definition
+        (immediately after the MISSION_ACK that completes the upload sequence).
+        It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the checksum is required.
+        The checksum must be calculated on the autopilot, but may also be calculated by the GCS.
+        The checksum uses the same CRC32 algorithm as MAVLink FTP (https://mavlink.io/en/services/ftp.html#crc32-implementation).
+        The checksum for a mission, geofence or rally point definition is run over each item in the plan in seq order (excluding the home location if present in the plan), and covers the following fields (in order):
+        frame, command, autocontinue, param1, param2, param3, param4, param5, param6, param7.
+        The checksum for the whole plan (MAV_MISSION_TYPE_ALL) is calculated using the same approach, running over each sub-plan in the following order: mission, geofence then rally point.
+      </description>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+      <field type="uint32_t" name="checksum">CRC32 checksum of current plan for specified type.</field>
+    </message>
     <!-- Target info from a sensor on the target -->
     <message id="145" name="ABSOLUTE_TARGET">
       <description>Current motion information from sensors on a target</description>
@@ -296,21 +311,6 @@
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of landing target</field>
       <field type="uint8_t" name="task" enum="TARGET_TASK">Type of task associated with the target measurement (e.g. follow or land)</field>
       <field type="uint8_t" name="position_valid" invalid="0">Boolean indicating whether the position fields (x, y, z, q, type) contain valid target position information (valid: 1, invalid: 0). Default is 0 (invalid).</field>
-    </message>
-    <!-- mission protocol enhancements -->
-    <message id="53" name="MISSION_CHECKSUM">
-      <description>Checksum for the current mission, rally point or geofence plan, or for the "combined" plan (a GCS can use these checksums to determine if it has matching plans).
-        This message must be broadcast with the appropriate checksum following any change to a mission, geofence or rally point definition
-        (immediately after the MISSION_ACK that completes the upload sequence).
-        It may also be requested using MAV_CMD_REQUEST_MESSAGE, where param 2 indicates the plan type for which the checksum is required.
-        The checksum must be calculated on the autopilot, but may also be calculated by the GCS.
-        The checksum uses the same CRC32 algorithm as MAVLink FTP (https://mavlink.io/en/services/ftp.html#crc32-implementation).
-        The checksum for a mission, geofence or rally point definition is run over each item in the plan in seq order (excluding the home location if present in the plan), and covers the following fields (in order):
-        frame, command, autocontinue, param1, param2, param3, param4, param5, param6, param7.
-        The checksum for the whole plan (MAV_MISSION_TYPE_ALL) is calculated using the same approach, running over each sub-plan in the following order: mission, geofence then rally point.
-      </description>
-      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
-      <field type="uint32_t" name="checksum">CRC32 checksum of current plan for specified type.</field>
     </message>
     <message id="295" name="AIRSPEED">
       <description>Airspeed information from a sensor.</description>
