@@ -240,6 +240,15 @@
         <param index="7" reserved="true" default="NaN"/>
       </entry>
     </enum>
+    <enum name="TARGET_TASK">
+      <description>Type of task associated with the target measurement</description>
+      <entry value="0" name="TARGET_TASK_FOLLOW">
+        <description>Follow the target from a given distance</description>
+      </entry>
+      <entry value="1" name="TARGET_TASK_LAND">
+        <description>Land on the target</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
@@ -251,6 +260,42 @@
       <field type="float" name="param_value">Parameter value (new value if PARAM_ACCEPTED, current value otherwise)</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
+    </message>
+    <!-- Target info from a sensor on the target -->
+    <message id="145" name="ABSOLUTE_TARGET">
+      <description>Current motion information from sensors on a target</description>
+      <field type="uint64_t" name="timestamp" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="est_capabilities">bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3)</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
+      <field type="float" name="alt" units="m">Altitude (MSL)</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame used for following fields.</field>
+      <field type="float[3]" name="vel" units="m/s" invalid="[0]">target velocity in MAV_FRAME (0,0,0) for unknown</field>
+      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">linear target acceleration in MAV_FRAME (0,0,0) for unknown</field>
+      <field type="float[4]" name="attitude_q" invalid="[0]">Quaternion of the target's orientation from MAV_FRAME to vehicle-carried NED. (Not used if MAV_FRAME is MAV_FRAME_LOCAL_NED). (0 0 0 0 for unknown)</field>
+      <field type="float[3]" name="rates" invalid="[0]">(0 0 0 for unknown)</field>
+      <field type="float[2]" name="position_cov">eph epv</field>
+      <field type="float[3]" name="vel_var" units="[m/s]^2">Variance of the target's velocity in MAV_FRAME</field>
+      <field type="float[3]" name="acc_var" units="[m/s/s]^2">Variance of the target's acceleration in MAV_FRAME</field>
+      <field type="uint64_t" name="custom_state">button states or switches of a tracker device</field>
+      <field type="uint8_t" name="task" enum="TARGET_TASK">Type of task associated with the target measurement (e.g. follow or land)</field>
+    </message>
+    <!-- Target info from an onboard sensor -->
+    <message id="150" name="RELATIVE_TARGET">
+      <description>The location of a target from an onboard sensor. </description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (time since system boot)</field>
+      <field type="uint8_t" name="target_num">The ID of the target if multiple targets are present</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame used for following fields.</field>
+      <field type="float" name="x" units="m">X Position of the landing target in MAV_FRAME</field>
+      <field type="float" name="y" units="m">Y Position of the landing target in MAV_FRAME</field>
+      <field type="float" name="z" units="m">Z Position of the landing target in MAV_FRAME</field>
+      <field type="float[3]" name="pos_var" units="m^2">Variance of landing target position in MAV_FRAME (var_x, var_y, var_z)</field>
+      <field type="float" name="target_yaw_unc" units="rad^2">Variance of landing target's orientation in MAV_FRAME</field>
+      <field type="float[4]" name="q">Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="float[4]" name="q_sensor_att">Quaternion of the sensor's orientation from MAV_FRAME to vehicle-carried NED. (Not used if MAV_FRAME is already MAV_FRAME_LOCAL_NED) (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of landing target</field>
+      <field type="uint8_t" name="task" enum="TARGET_TASK">Type of task associated with the target measurement (e.g. follow or land)</field>
+      <field type="uint8_t" name="position_valid" invalid="0">Boolean indicating whether the position fields (x, y, z, q, type) contain valid target position information (valid: 1, invalid: 0). Default is 0 (invalid).</field>
     </message>
     <!-- mission protocol enhancements -->
     <message id="53" name="MISSION_CHECKSUM">
