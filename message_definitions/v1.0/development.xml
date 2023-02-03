@@ -240,15 +240,6 @@
         <param index="7" reserved="true" default="NaN"/>
       </entry>
     </enum>
-    <enum name="TARGET_TASK">
-      <description>Type of task associated with the target measurement</description>
-      <entry value="0" name="TARGET_TASK_FOLLOW">
-        <description>Follow the target from a given distance</description>
-      </entry>
-      <entry value="1" name="TARGET_TASK_LAND">
-        <description>Land on the target</description>
-      </entry>
-    </enum>
     <enum name="TARGET_OBS_FRAME">
       <description>The frame of a target observation from an onboard sensor.</description>
       <entry value="0" name="LOCAL_NED">
@@ -377,15 +368,13 @@
       <field type="int32_t" name="lat" units="degE7">Target's latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Target's longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Target's altitude (AMSL)</field>
-      <field type="float[3]" name="vel" units="m/s" invalid="[0]">target's velocity in its body frame (0,0,0) for unknown</field>
-      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">linear target's acceleration in its body frame (0,0,0) for unknown</field>
-      <field type="float[4]" name="q_target" invalid="[0]">Quaternion of the target's orientation from its body frame to NED. (0 0 0 0 for unknown)</field>
-      <field type="float[3]" name="rates" invalid="[0]">(0 0 0 for unknown)</field>
+      <field type="float[3]" name="vel" units="m/s" invalid="[0]">target's velocity in its body frame</field>
+      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">linear target's acceleration in its body frame</field>
+      <field type="float[4]" name="q_target" invalid="[0]">Quaternion of the target's orientation from its body frame to NED.</field>
+      <field type="float[3]" name="rates" units="rad/s" invalid="[0]">Target's roll, pitch and yaw rates</field>
       <field type="float[2]" name="position_std" units="[m]">Standard deviation of horizontal (eph) and vertical (epv) position errors</field>
       <field type="float[3]" name="vel_var" units="[m/s]^2">Variance of the target's velocity in its body frame</field>
       <field type="float[3]" name="acc_var" units="[m/s/s]^2">Variance of the target's acceleration in its body frame</field>
-      <field type="uint64_t" name="custom_state">button states or switches of a tracker device</field>
-      <field type="uint8_t" name="task" enum="TARGET_TASK">Type of task associated with the target observation (e.g. FOLLOW or LAND)</field>
     </message>
     <!-- Target info from an onboard sensor -->
     <message id="511" name="TARGET_RELATIVE">
@@ -401,7 +390,6 @@
       <field type="float[4]" name="q_target">Quaternion of the target's orientation from the target's frame to the TARGET_OBS_FRAME (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float[4]" name="q_sensor">Quaternion of the sensor's orientation from TARGET_OBS_FRAME to vehicle-carried NED. (Not used if TARGET_OBS_FRAME is in LOCAL_NED) (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of target</field>
-      <field type="uint8_t" name="task" enum="TARGET_TASK">Type of task associated with the target observation (e.g. FOLLOW or LAND)</field>
     </message>
   </messages>
 </mavlink>
