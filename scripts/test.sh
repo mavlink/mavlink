@@ -65,7 +65,8 @@ test_node() {
         ln -sf /usr/bin/nodejs ~/bin/node
         . ~/.bashrc
     fi
-    cd "$SRC_DIR/pymavlink/generator/javascript" && npm test
+    (cd "$SRC_DIR/pymavlink/generator/javascript" && npm install)
+    (cd "$SRC_DIR/pymavlink/generator/javascript" && npm test)
 }
 
 if [ "$#" -eq 1 ]; then
