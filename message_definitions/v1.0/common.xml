@@ -5031,7 +5031,7 @@
       <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -&gt; value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also https://mavlink.io/en/services/parameter.html for a full documentation of QGroundControl and IMU code.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="char[16]" name="param_id">Onboard parameter id. If the parameter ID is less than 16 human-readable chars, zero-fill the remaining chars in the array (terminate with NULL bytes). Applications have to provide 16+1 bytes storage if the ID is stored as a string.</field>
       <field type="int16_t" name="param_index" invalid="-1">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
     </message>
     <message id="21" name="PARAM_REQUEST_LIST">
@@ -5041,7 +5041,7 @@
     </message>
     <message id="22" name="PARAM_VALUE">
       <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
-      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="char[16]" name="param_id">Onboard parameter id. If the parameter ID is less than 16 human-readable chars, zero-fill the remaining chars in the array (terminate with NULL bytes). Applications have to provide 16+1 bytes storage if the ID is stored as a string.</field>
       <field type="float" name="param_value">Onboard parameter value</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
       <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
@@ -5053,7 +5053,7 @@
         PARAM_SET may also be called within the context of a transaction (started with MAV_CMD_PARAM_TRANSACTION). Within a transaction the receiving component should respond with PARAM_ACK_TRANSACTION to the setter component (instead of broadcasting PARAM_VALUE), and PARAM_SET should be re-sent if this is ACK not received.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="char[16]" name="param_id">Onboard parameter id. If the parameter ID is less than 16 human-readable chars, zero-fill the remaining chars in the array (terminate with NULL bytes). Applications have to provide 16+1 bytes storage if the ID is stored as a string.</field>
       <field type="float" name="param_value">Onboard parameter value</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
     </message>
