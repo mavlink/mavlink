@@ -7612,7 +7612,6 @@
       <field type="uint16_t" name="mnc" invalid="UINT16_MAX">Mobile network code. If unknown, set to UINT16_MAX</field>
       <field type="uint16_t" name="lac" invalid="0">Location area code. If unknown, set to 0</field>
       <extensions/>
-      <field type="char[9]" name="cell_tower_id" invalid="0">ID of the currently connected cell tower. NULL terminated if ID string is less than 9 chars.</field>
       <field type="uint8_t" name="band_number" invalid="0">LTE frequency band number.</field>
       <field type="float" name="band_frequency" units="MHz" invalid="0">LTE radio frequency.</field>
       <field type="uint16_t" name="arfcn" invalid="0">Absolute radio-frequency channel number.</field>
@@ -7625,6 +7624,7 @@
       <field type="uint32_t" name="link_rx_rate" units="KiB/s" invalid="0">Upload rate.</field>
       <field type="uint16_t" name="ber" invalid="0">The bit error rate (BER) is determined by comparing the erroneous bits received with the total number of bits received. It is a ratio.</field>
       <field type="uint8_t" name="id" instance="true">Cellular instance number. Indexed from 1. Matches index in corresponding CELLULAR_MODEM_INFORMATION message.</field>
+      <field type="char[9]" name="cell_tower_id" invalid="0">ID of the currently connected cell tower. Zero-fill the unused characters at the end of the array if the ID string is less than 9 chars.</field>
     </message>
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
