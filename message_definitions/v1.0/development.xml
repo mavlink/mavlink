@@ -240,6 +240,14 @@
         <param index="7" reserved="true" default="NaN"/>
       </entry>
     </enum>
+    <enum name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" bitmask="true">
+      <description>These flags indicate the sensor reporting capabilities for TARGET_ABSOLUTE.</description>
+      <entry value="1" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_POSITION"/>
+      <entry value="2" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_VELOCITY"/>
+      <entry value="4" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_ACCELERATION"/>
+      <entry value="8" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_ATTITUDE"/>
+      <entry value="16" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_RATES"/>
+    </enum>
     <enum name="TARGET_OBS_FRAME">
       <description>The frame of a target observation from an onboard sensor.</description>
       <entry value="0" name="TARGET_OBS_FRAME_LOCAL_NED">
@@ -367,12 +375,12 @@
       <description>Current motion information from sensors on a target</description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time).</field>
       <field type="uint8_t" name="id">The ID of the target if multiple targets are present</field>
-      <field type="uint8_t" name="sensor_capabilities">bit positions for the sensor's reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT = 3, RATES = 4)</field>
+      <field type="uint8_t" name="sensor_capabilities" enum="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" display="bitmask">Bitmap to indicate the sensor's reporting capabilities</field>
       <field type="int32_t" name="lat" units="degE7">Target's latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Target's longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Target's altitude (AMSL)</field>
-      <field type="float[3]" name="vel" units="m/s" invalid="[0]">target's velocity in its body frame</field>
-      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">linear target's acceleration in its body frame</field>
+      <field type="float[3]" name="vel" units="m/s" invalid="[0]">Target's velocity in its body frame</field>
+      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">Linear target's acceleration in its body frame</field>
       <field type="float[4]" name="q_target" invalid="[0]">Quaternion of the target's orientation from its body frame to the vehicle's NED frame.</field>
       <field type="float[3]" name="rates" units="rad/s" invalid="[0]">Target's roll, pitch and yaw rates</field>
       <field type="float[2]" name="position_std" units="[m]">Standard deviation of horizontal (eph) and vertical (epv) position errors</field>
