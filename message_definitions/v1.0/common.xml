@@ -1504,6 +1504,22 @@
         <param index="4" reserved="true" default="NaN"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
+      <entry value="531" name="MAV_CMD_SET_CAMERA_ZOOM" hasLocation="false" isDestination="false">
+        <description>Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
+        <param index="1" label="Zoom Type" enum="CAMERA_ZOOM_TYPE">Zoom type</param>
+        <param index="2" label="Zoom Value">Zoom value. The range of valid values depend on the zoom type.</param>
+        <param index="3" reserved="true" default="NaN"/>
+        <param index="4" reserved="true" default="NaN"/>
+        <param index="7" reserved="true" default="NaN"/>
+      </entry>
+      <entry value="532" name="MAV_CMD_SET_CAMERA_FOCUS" hasLocation="false" isDestination="false">
+        <description>Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
+        <param index="1" label="Focus Type" enum="SET_FOCUS_TYPE">Focus type</param>
+        <param index="2" label="Focus Value">Focus value</param>
+        <param index="3" reserved="true" default="NaN"/>
+        <param index="4" reserved="true" default="NaN"/>
+        <param index="7" reserved="true" default="NaN"/>
+      </entry>
       <entry value="600" name="MAV_CMD_JUMP_TAG" hasLocation="false" isDestination="false">
         <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
         <param index="1" label="Tag" minValue="0" increment="1">Tag.</param>
@@ -1548,6 +1564,22 @@
         <param index="1" label="Enable" minValue="-1" maxValue="1" increment="1">Trigger enable/disable (0 for disable, 1 for start), -1 to ignore</param>
         <param index="2" label="Reset" minValue="-1" maxValue="1" increment="1">1 to reset the trigger sequence, -1 or 0 to ignore</param>
         <param index="3" label="Pause" minValue="-1" maxValue="1" increment="2">1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore</param>
+      </entry>
+      <entry value="2004" name="MAV_CMD_CAMERA_TRACK_POINT" hasLocation="false" isDestination="false">
+        <description>If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking.</description>
+        <param index="1" label="Point x" minValue="0" maxValue="1">Point to track x value (normalized 0..1, 0 is left, 1 is right).</param>
+        <param index="2" label="Point y" minValue="0" maxValue="1">Point to track y value (normalized 0..1, 0 is top, 1 is bottom).</param>
+        <param index="3" label="Radius" minValue="0" maxValue="1">Point radius (normalized 0..1, 0 is image left, 1 is image right).</param>
+      </entry>
+      <entry value="2005" name="MAV_CMD_CAMERA_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
+        <description>If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking.</description>
+        <param index="1" label="Top left corner x" minValue="0" maxValue="1">Top left corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
+        <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
+        <param index="3" label="Bottom right corner x" minValue="0" maxValue="1">Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
+        <param index="4" label="Bottom right corner y" minValue="0" maxValue="1">Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
+      </entry>
+      <entry value="2010" name="MAV_CMD_CAMERA_STOP_TRACKING" hasLocation="false" isDestination="false">
+        <description>Stops ongoing tracking.</description>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Starts video capture (recording).</description>
@@ -3075,6 +3107,84 @@
       </entry>
       <entry value="3" name="VIDEO_STREAM_TYPE_MPEG_TS_H264">
         <description>Stream is h.264 on MPEG TS (URI gives the port number)</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_TRACKING_STATUS_FLAGS">
+      <description>Camera tracking status flags</description>
+      <entry value="0" name="CAMERA_TRACKING_STATUS_FLAGS_IDLE">
+        <description>Camera is not tracking</description>
+      </entry>
+      <entry value="1" name="CAMERA_TRACKING_STATUS_FLAGS_ACTIVE">
+        <description>Camera is tracking</description>
+      </entry>
+      <entry value="2" name="CAMERA_TRACKING_STATUS_FLAGS_ERROR">
+        <description>Camera tracking in error state</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_TRACKING_MODE">
+      <description>Camera tracking modes</description>
+      <entry value="0" name="CAMERA_TRACKING_MODE_NONE">
+        <description>Not tracking</description>
+      </entry>
+      <entry value="1" name="CAMERA_TRACKING_MODE_POINT">
+        <description>Target is a point</description>
+      </entry>
+      <entry value="2" name="CAMERA_TRACKING_MODE_RECTANGLE">
+        <description>Target is a rectangle</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_TRACKING_TARGET_DATA" bitmask="true">
+      <description>Camera tracking target data (shows where tracked target is within image)</description>
+      <entry value="0" name="CAMERA_TRACKING_TARGET_DATA_NONE">
+        <description>No target data</description>
+      </entry>
+      <entry value="1" name="CAMERA_TRACKING_TARGET_DATA_EMBEDDED">
+        <description>Target data embedded in image data (proprietary)</description>
+      </entry>
+      <entry value="2" name="CAMERA_TRACKING_TARGET_DATA_RENDERED">
+        <description>Target data rendered in image</description>
+      </entry>
+      <entry value="4" name="CAMERA_TRACKING_TARGET_DATA_IN_STATUS">
+        <description>Target data within status message (Point or Rectangle)</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_ZOOM_TYPE">
+      <description>Zoom types for MAV_CMD_SET_CAMERA_ZOOM</description>
+      <entry value="0" name="ZOOM_TYPE_STEP">
+        <description>Zoom one step increment (-1 for wide, 1 for tele)</description>
+      </entry>
+      <entry value="1" name="ZOOM_TYPE_CONTINUOUS">
+        <description>Continuous zoom up/down until stopped (-1 for wide, 1 for tele, 0 to stop zooming)</description>
+      </entry>
+      <entry value="2" name="ZOOM_TYPE_RANGE">
+        <description>Zoom value as proportion of full camera range (a percentage value between 0.0 and 100.0)</description>
+      </entry>
+      <entry value="3" name="ZOOM_TYPE_FOCAL_LENGTH">
+        <description>Zoom value/variable focal length in millimetres. Note that there is no message to get the valid zoom range of the camera, so this can type can only be used for cameras where the zoom range is known (implying that this cannot reliably be used in a GCS for an arbitrary camera)</description>
+      </entry>
+    </enum>
+    <enum name="SET_FOCUS_TYPE">
+      <description>Focus types for MAV_CMD_SET_CAMERA_FOCUS</description>
+      <entry value="0" name="FOCUS_TYPE_STEP">
+        <description>Focus one step increment (-1 for focusing in, 1 for focusing out towards infinity).</description>
+      </entry>
+      <entry value="1" name="FOCUS_TYPE_CONTINUOUS">
+        <description>Continuous focus up/down until stopped (-1 for focusing in, 1 for focusing out towards infinity, 0 to stop focusing)</description>
+      </entry>
+      <entry value="2" name="FOCUS_TYPE_RANGE">
+        <description>Focus value as proportion of full camera focus range (a value between 0.0 and 100.0)</description>
+      </entry>
+      <entry value="3" name="FOCUS_TYPE_METERS">
+        <description>Focus value in metres. Note that there is no message to get the valid focus range of the camera, so this can type can only be used for cameras where the range is known (implying that this cannot reliably be used in a GCS for an arbitrary camera).</description>
+      </entry>
+      <entry value="4" name="FOCUS_TYPE_AUTO">
+        <description>Focus automatically.</description>
+      </entry>
+      <entry value="5" name="FOCUS_TYPE_AUTO_SINGLE">
+        <description>Single auto focus. Mainly used for still pictures. Usually abbreviated as AF-S.</description>
+      </entry>
+      <entry value="6" name="FOCUS_TYPE_AUTO_CONTINUOUS">
+        <description>Continuous auto focus. Mainly used for dynamic scenes. Abbreviated as AF-C.</description>
       </entry>
     </enum>
     <enum name="PARAM_ACK">
@@ -5635,6 +5745,48 @@
       <field type="uint32_t" name="bitrate" units="bits/s">Bit rate</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
+    </message>
+    <message id="271" name="CAMERA_FOV_STATUS">
+      <description>Information about the field of view of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="int32_t" name="lat_camera" units="degE7" invalid="INT32_MAX">Latitude of camera (INT32_MAX if unknown).</field>
+      <field type="int32_t" name="lon_camera" units="degE7" invalid="INT32_MAX">Longitude of camera (INT32_MAX if unknown).</field>
+      <field type="int32_t" name="alt_camera" units="mm" invalid="INT32_MAX">Altitude (MSL) of camera (INT32_MAX if unknown).</field>
+      <field type="int32_t" name="lat_image" units="degE7" invalid="INT32_MAX">Latitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
+      <field type="int32_t" name="lon_image" units="degE7" invalid="INT32_MAX">Longitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
+      <field type="int32_t" name="alt_image" units="mm" invalid="INT32_MAX">Altitude (MSL) of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
+      <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="float" name="hfov" units="deg" invalid="NaN">Horizontal field of view (NaN if unknown).</field>
+      <field type="float" name="vfov" units="deg" invalid="NaN">Vertical field of view (NaN if unknown).</field>
+    </message>
+    <message id="275" name="CAMERA_TRACKING_IMAGE_STATUS">
+      <description>Camera tracking status, sent while in active tracking. Use MAV_CMD_SET_MESSAGE_INTERVAL to define message interval.</description>
+      <field type="uint8_t" name="tracking_status" enum="CAMERA_TRACKING_STATUS_FLAGS">Current tracking status</field>
+      <field type="uint8_t" name="tracking_mode" enum="CAMERA_TRACKING_MODE">Current tracking mode</field>
+      <field type="uint8_t" name="target_data" enum="CAMERA_TRACKING_TARGET_DATA">Defines location of target data</field>
+      <field type="float" name="point_x" invalid="NaN">Current tracked point x value if CAMERA_TRACKING_MODE_POINT (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
+      <field type="float" name="point_y" invalid="NaN">Current tracked point y value if CAMERA_TRACKING_MODE_POINT (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+      <field type="float" name="radius" invalid="NaN">Current tracked radius if CAMERA_TRACKING_MODE_POINT (normalized 0..1, 0 is image left, 1 is image right), NAN if unknown</field>
+      <field type="float" name="rec_top_x" invalid="NaN">Current tracked rectangle top x value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
+      <field type="float" name="rec_top_y" invalid="NaN">Current tracked rectangle top y value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+      <field type="float" name="rec_bottom_x" invalid="NaN">Current tracked rectangle bottom x value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
+      <field type="float" name="rec_bottom_y" invalid="NaN">Current tracked rectangle bottom y value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+    </message>
+    <message id="276" name="CAMERA_TRACKING_GEO_STATUS">
+      <description>Camera tracking status, sent while in active tracking. Use MAV_CMD_SET_MESSAGE_INTERVAL to define message interval.</description>
+      <field type="uint8_t" name="tracking_status" enum="CAMERA_TRACKING_STATUS_FLAGS">Current tracking status</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude of tracked object</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude of tracked object</field>
+      <field type="float" name="alt" units="m">Altitude of tracked object(AMSL, WGS84)</field>
+      <field type="float" name="h_acc" units="m" invalid="NaN">Horizontal accuracy. NAN if unknown</field>
+      <field type="float" name="v_acc" units="m" invalid="NaN">Vertical accuracy. NAN if unknown</field>
+      <field type="float" name="vel_n" units="m/s" invalid="NaN">North velocity of tracked object. NAN if unknown</field>
+      <field type="float" name="vel_e" units="m/s" invalid="NaN">East velocity of tracked object. NAN if unknown</field>
+      <field type="float" name="vel_d" units="m/s" invalid="NaN">Down velocity of tracked object. NAN if unknown</field>
+      <field type="float" name="vel_acc" units="m/s" invalid="NaN">Velocity accuracy. NAN if unknown</field>
+      <field type="float" name="dist" units="m" invalid="NaN">Distance between camera and tracked object. NAN if unknown</field>
+      <field type="float" name="hdg" units="rad" invalid="NaN">Heading in radians, in NED. NAN if unknown</field>
+      <field type="float" name="hdg_acc" units="rad" invalid="NaN">Accuracy of heading, in NED. NAN if unknown</field>
     </message>
     <message id="283" name="GIMBAL_DEVICE_INFORMATION">
       <description>Information about a low level gimbal. This message should be requested by the gimbal manager or a ground station using MAV_CMD_REQUEST_MESSAGE. The maximum angles and rates are the limits by hardware. However, the limits by software used are likely different/smaller and dependent on mode/settings/etc..</description>
