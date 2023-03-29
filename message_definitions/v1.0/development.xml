@@ -583,8 +583,8 @@
       <field type="uint8_t" name="request_priority" default="0">Priority of the control request. If the priority is higher than the priority
         of the current control entity, control is given without handoff request. 
         The priority request should be authenticated on the target system before granting this privilegs. Default value of 0.</field>
-      <field type="char[10]" name="requester_id">Identification of the control entity requesting ownership.</field>
-      <field type="char[50]" name="reason">Reason for taking ownership.</field>
+      <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
+      <field type="char[100]" name="reason">Reason for taking ownership.</field>
     </message>
     <message id="443" name="REQUEST_CONTROL_ACK">
       <description>Error code response of the target system to the control ownership request.
@@ -604,8 +604,8 @@
         This message is send from the system to the current active control entity to request the handoff of the control target to another GCS.
       </description>
       <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff control ownership.</field>
-      <field type="char[10]" name="requester_id">Identification of the control entity requesting ownership.</field>
-      <field type="char[50]" name="reason">Reason from the control entity requesting ownership.</field>
+      <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
+      <field type="char[100]" name="reason">Reason from the control entity requesting ownership.</field>
     </message>
     <message id="446" name="HANDOFF_RESPOND">
       <description>Handoff response to handoff request. 
