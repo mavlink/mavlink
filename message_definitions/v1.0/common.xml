@@ -438,6 +438,57 @@
         <description>Gimbal device supports yawing/panning infinetely (e.g. using slip disk).</description>
       </entry>
     </enum>
+    <enum name="GIMBAL_MANAGER_CAP_FLAGS" bitmask="true">
+      <description>Gimbal manager high level capability flags (bitmap). The first 16 bits are identical to the GIMBAL_DEVICE_CAP_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
+      <entry value="1" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_RETRACT">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT.</description>
+      </entry>
+      <entry value="2" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_NEUTRAL">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_NEUTRAL.</description>
+      </entry>
+      <entry value="4" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_ROLL_AXIS">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_AXIS.</description>
+      </entry>
+      <entry value="8" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_ROLL_FOLLOW">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_FOLLOW.</description>
+      </entry>
+      <entry value="16" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_ROLL_LOCK">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_LOCK.</description>
+      </entry>
+      <entry value="32" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_PITCH_AXIS">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_AXIS.</description>
+      </entry>
+      <entry value="64" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_PITCH_FOLLOW">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_FOLLOW.</description>
+      </entry>
+      <entry value="128" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_PITCH_LOCK">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_LOCK.</description>
+      </entry>
+      <entry value="256" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_YAW_AXIS">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_AXIS.</description>
+      </entry>
+      <entry value="512" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_YAW_FOLLOW">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_FOLLOW.</description>
+      </entry>
+      <entry value="1024" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_YAW_LOCK">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_LOCK.</description>
+      </entry>
+      <entry value="2048" name="GIMBAL_MANAGER_CAP_FLAGS_SUPPORTS_INFINITE_YAW">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_INFINITE_YAW.</description>
+      </entry>
+      <entry value="4096" name="GIMBAL_MANAGER_CAP_FLAGS_SUPPORTS_YAW_IN_EARTH_FRAME">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_YAW_IN_EARTH_FRAME.</description>
+      </entry>
+      <entry value="8192" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_RC_INPUTS">
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RC_INPUTS.</description>
+      </entry>
+      <entry value="65536" name="GIMBAL_MANAGER_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL">
+        <description>Gimbal manager supports to point to a local position.</description>
+      </entry>
+      <entry value="131072" name="GIMBAL_MANAGER_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
+        <description>Gimbal manager supports to point to a global latitude, longitude, altitude position.</description>
+      </entry>
+    </enum>
     <enum name="GIMBAL_DEVICE_FLAGS" bitmask="true">
       <description>Flags for gimbal device (lower level) operation.</description>
       <entry value="1" name="GIMBAL_DEVICE_FLAGS_RETRACT">
@@ -5786,6 +5837,32 @@
       <field type="float" name="dist" units="m" invalid="NaN">Distance between camera and tracked object. NAN if unknown</field>
       <field type="float" name="hdg" units="rad" invalid="NaN">Heading in radians, in NED. NAN if unknown</field>
       <field type="float" name="hdg_acc" units="rad" invalid="NaN">Accuracy of heading, in NED. NAN if unknown</field>
+    </message>
+    <message id="280" name="GIMBAL_MANAGER_INFORMATION">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Information about a high level gimbal manager. This message should be requested by a ground station using MAV_CMD_REQUEST_MESSAGE.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint32_t" name="cap_flags" enum="GIMBAL_MANAGER_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Gimbal device ID that this gimbal manager is responsible for.</field>
+      <field type="float" name="roll_min" units="rad">Minimum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
+      <field type="float" name="roll_max" units="rad">Maximum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
+      <field type="float" name="pitch_min" units="rad">Minimum pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="pitch_max" units="rad">Maximum pitch angle (positive: up, negative: down)</field>
+      <field type="float" name="yaw_min" units="rad">Minimum yaw angle (positive: to the right, negative: to the left)</field>
+      <field type="float" name="yaw_max" units="rad">Maximum yaw angle (positive: to the right, negative: to the left)</field>
+    </message>
+    <message id="281" name="GIMBAL_MANAGER_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Current status about a high level gimbal manager. This message should be broadcast at a low regular rate (e.g. 5Hz).</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags currently applied.</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Gimbal device ID that this gimbal manager is responsible for.</field>
+      <field type="uint8_t" name="primary_control_sysid">System ID of MAVLink component with primary control, 0 for none.</field>
+      <field type="uint8_t" name="primary_control_compid">Component ID of MAVLink component with primary control, 0 for none.</field>
+      <field type="uint8_t" name="secondary_control_sysid">System ID of MAVLink component with secondary control, 0 for none.</field>
+      <field type="uint8_t" name="secondary_control_compid">Component ID of MAVLink component with secondary control, 0 for none.</field>
     </message>
     <message id="283" name="GIMBAL_DEVICE_INFORMATION">
       <description>Information about a low level gimbal. This message should be requested by the gimbal manager or a ground station using MAV_CMD_REQUEST_MESSAGE. The maximum angles and rates are the limits by hardware. However, the limits by software used are likely different/smaller and dependent on mode/settings/etc..</description>
