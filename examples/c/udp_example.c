@@ -12,7 +12,7 @@
 #include <sys/socket.h>
 #include <time.h>
 
-#include <mavlink/v2.0/common/mavlink.h>
+#include <mavlink/common/mavlink.h>
 
 
 void receive_some(int socket_fd, struct sockaddr_in* src_addr, socklen_t* src_addr_len, bool* src_addr_set);

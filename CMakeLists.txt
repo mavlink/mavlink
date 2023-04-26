@@ -14,14 +14,14 @@ if (NOT MAVLINK_VERSION)
 endif()
 message(STATUS "MAVLink version: ${MAVLINK_VERSION}")
 
-set(EXAMPLE_HEADER ${CMAKE_CURRENT_BINARY_DIR}/include/mavlink/v${MAVLINK_VERSION}/${MAVLINK_DIALECT}/mavlink.h)
+set(EXAMPLE_HEADER ${CMAKE_CURRENT_BINARY_DIR}/include/mavlink/${MAVLINK_DIALECT}/mavlink.h)
 
 add_custom_command(OUTPUT ${EXAMPLE_HEADER}
     COMMAND Python3::Interpreter
         -m pymavlink.tools.mavgen
         --lang=C
         --wire-protocol=${MAVLINK_VERSION}
-        --output ${CMAKE_CURRENT_BINARY_DIR}/include/mavlink/v${MAVLINK_VERSION}/
+        --output ${CMAKE_CURRENT_BINARY_DIR}/include/mavlink/
         message_definitions/v1.0/${MAVLINK_DIALECT}.xml
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     DEPENDS message_definitions/v1.0/${MAVLINK_DIALECT}.xml
