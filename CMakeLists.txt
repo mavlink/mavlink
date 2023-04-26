@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 project(mavlink)
 
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
+find_package(Python COMPONENTS Interpreter REQUIRED)
 
 if (NOT MAVLINK_DIALECT)
     set(MAVLINK_DIALECT common)
@@ -17,7 +17,7 @@ message(STATUS "MAVLink version: ${MAVLINK_VERSION}")
 set(EXAMPLE_HEADER ${CMAKE_CURRENT_BINARY_DIR}/include/mavlink/${MAVLINK_DIALECT}/mavlink.h)
 
 add_custom_command(OUTPUT ${EXAMPLE_HEADER}
-    COMMAND Python3::Interpreter
+    COMMAND Python::Interpreter
         -m pymavlink.tools.mavgen
         --lang=C
         --wire-protocol=${MAVLINK_VERSION}
