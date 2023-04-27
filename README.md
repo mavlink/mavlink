@@ -52,6 +52,7 @@ target_link_libraries(my_program PRIVATE MAVLink::mavlink)
 ```
 
 And pass the local install directory to cmake (adapt to your directory structure):
+
 ```
 cd ../my_program
 cmake -Bbuild -H. -DCMAKE_PREFIX_PATH=../mavlink/install
