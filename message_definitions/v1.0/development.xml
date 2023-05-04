@@ -433,6 +433,29 @@
         <description>Decision to deny the handoff request and keep control ownership.</description>
       </entry>
     </enum>
+    <enum name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" bitmask="true">
+      <description>These flags indicate the sensor reporting capabilities for TARGET_ABSOLUTE.</description>
+      <entry value="1" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_POSITION"/>
+      <entry value="2" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_VELOCITY"/>
+      <entry value="4" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_ACCELERATION"/>
+      <entry value="8" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_ATTITUDE"/>
+      <entry value="16" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_RATES"/>
+    </enum>
+    <enum name="TARGET_OBS_FRAME">
+      <description>The frame of a target observation from an onboard sensor.</description>
+      <entry value="0" name="TARGET_OBS_FRAME_LOCAL_NED">
+        <description>NED local tangent frame (x: North, y: East, z: Down) with origin fixed relative to earth.</description>
+      </entry>
+      <entry value="1" name="TARGET_OBS_FRAME_BODY_FRD">
+        <description>FRD local frame aligned to the vehicle's attitude (x: Forward, y: Right, z: Down) with an origin that travels with vehicle.</description>
+      </entry>
+      <entry value="2" name="TARGET_OBS_FRAME_LOCAL_OFFSET_NED">
+        <description>NED local tangent frame (x: North, y: East, z: Down) with an origin that travels with vehicle.</description>
+      </entry>
+      <entry value="3" name="TARGET_OBS_FRAME_OTHER">
+        <description>Other sensor frame for target observations neither in local NED nor in body FRD.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
@@ -619,6 +642,38 @@
       Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=470.
       </description>
       <field type="char[32]" name="uuid">uuid of the sender.</field>
+    </message>
+    <!-- Target info from a sensor on the target -->
+    <message id="510" name="TARGET_ABSOLUTE">
+      <description>Current motion information from sensors on a target</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time).</field>
+      <field type="uint8_t" name="id">The ID of the target if multiple targets are present</field>
+      <field type="uint8_t" name="sensor_capabilities" enum="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" display="bitmask">Bitmap to indicate the sensor's reporting capabilities</field>
+      <field type="int32_t" name="lat" units="degE7">Target's latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7">Target's longitude (WGS84)</field>
+      <field type="float" name="alt" units="m">Target's altitude (AMSL)</field>
+      <field type="float[3]" name="vel" units="m/s" invalid="[0]">Target's velocity in its body frame</field>
+      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">Linear target's acceleration in its body frame</field>
+      <field type="float[4]" name="q_target" invalid="[0]">Quaternion of the target's orientation from its body frame to the vehicle's NED frame.</field>
+      <field type="float[3]" name="rates" units="rad/s" invalid="[0]">Target's roll, pitch and yaw rates</field>
+      <field type="float[2]" name="position_std" units="m">Standard deviation of horizontal (eph) and vertical (epv) position errors</field>
+      <field type="float[3]" name="vel_std" units="m/s">Standard deviation of the target's velocity in its body frame</field>
+      <field type="float[3]" name="acc_std" units="m/s/s">Standard deviation of the target's acceleration in its body frame</field>
+    </message>
+    <!-- Target info measured by MAV's onboard sensors -->
+    <message id="511" name="TARGET_RELATIVE">
+      <description>The location of a target measured by MAV's onboard sensors. </description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time)</field>
+      <field type="uint8_t" name="id" instance="true">The ID of the target if multiple targets are present</field>
+      <field type="uint8_t" name="frame" enum="TARGET_OBS_FRAME">Coordinate frame used for following fields.</field>
+      <field type="float" name="x" units="m">X Position of the target in TARGET_OBS_FRAME</field>
+      <field type="float" name="y" units="m">Y Position of the target in TARGET_OBS_FRAME</field>
+      <field type="float" name="z" units="m">Z Position of the target in TARGET_OBS_FRAME</field>
+      <field type="float[3]" name="pos_std" units="m">Standard deviation of the target's position in TARGET_OBS_FRAME</field>
+      <field type="float" name="yaw_std" units="rad">Standard deviation of the target's orientation in TARGET_OBS_FRAME</field>
+      <field type="float[4]" name="q_target">Quaternion of the target's orientation from the target's frame to the TARGET_OBS_FRAME (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="float[4]" name="q_sensor">Quaternion of the sensor's orientation from TARGET_OBS_FRAME to vehicle-carried NED. (Ignored if set to (0,0,0,0)) (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of target</field>
     </message>
   </messages>
 </mavlink>

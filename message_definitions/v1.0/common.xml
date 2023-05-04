@@ -2266,7 +2266,9 @@
         <param index="2" label="Immediate">Force immediate transition to the specified MAV_VTOL_STATE. 1: Force immediate, 0: normal transition. Can be used, for example, to trigger an emergency "Quadchute". Caution: Can be dangerous/damage vehicle, depending on autopilot implementation of this command.</param>
       </entry>
       <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST" hasLocation="false" isDestination="false">
-        <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
+        <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request.
+		If approved the COMMAND_ACK message progress field should be set with period of time that this authorization is valid in seconds.
+		If the authorization is denied COMMAND_ACK.result_param2 should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
         </description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle</param>
       </entry>
@@ -2646,36 +2648,6 @@
       </entry>
       <entry value="4" name="MAV_ROI_TARGET">
         <description>Point toward of given id.</description>
-      </entry>
-    </enum>
-    <enum name="MAV_CMD_ACK">
-      <description>ACK / NACK / ERROR values as a result of MAV_CMDs and for mission item transmission.</description>
-      <entry value="0" name="MAV_CMD_ACK_OK">
-        <description>Command / mission item is ok.</description>
-      </entry>
-      <entry value="1" name="MAV_CMD_ACK_ERR_FAIL">
-        <description>Generic error message if none of the other reasons fails or if no detailed error reporting is implemented.</description>
-      </entry>
-      <entry value="2" name="MAV_CMD_ACK_ERR_ACCESS_DENIED">
-        <description>The system is refusing to accept this command from this source / communication partner.</description>
-      </entry>
-      <entry value="3" name="MAV_CMD_ACK_ERR_NOT_SUPPORTED">
-        <description>Command or mission item is not supported, other commands would be accepted.</description>
-      </entry>
-      <entry value="4" name="MAV_CMD_ACK_ERR_COORDINATE_FRAME_NOT_SUPPORTED">
-        <description>The coordinate frame of this command / mission item is not supported.</description>
-      </entry>
-      <entry value="5" name="MAV_CMD_ACK_ERR_COORDINATES_OUT_OF_RANGE">
-        <description>The coordinate frame of this command is ok, but he coordinate values exceed the safety limits of this system. This is a generic error, please use the more specific error messages below if possible.</description>
-      </entry>
-      <entry value="6" name="MAV_CMD_ACK_ERR_X_LAT_OUT_OF_RANGE">
-        <description>The X or latitude value is out of range.</description>
-      </entry>
-      <entry value="7" name="MAV_CMD_ACK_ERR_Y_LON_OUT_OF_RANGE">
-        <description>The Y or longitude value is out of range.</description>
-      </entry>
-      <entry value="8" name="MAV_CMD_ACK_ERR_Z_ALT_OUT_OF_RANGE">
-        <description>The Z or altitude value is out of range.</description>
       </entry>
     </enum>
     <enum name="MAV_PARAM_TYPE">
@@ -3786,6 +3758,9 @@
       </entry>
       <entry value="3" name="ZOOM_TYPE_FOCAL_LENGTH">
         <description>Zoom value/variable focal length in millimetres. Note that there is no message to get the valid zoom range of the camera, so this can type can only be used for cameras where the zoom range is known (implying that this cannot reliably be used in a GCS for an arbitrary camera)</description>
+      </entry>
+      <entry value="4" name="ZOOM_TYPE_HORIZONTAL_FOV">
+        <description>Zoom value as horizontal field of view in degrees.</description>
       </entry>
     </enum>
     <enum name="SET_FOCUS_TYPE">
@@ -5308,7 +5283,7 @@
       </description>
       <field type="uint16_t" name="seq">Sequence</field>
       <extensions/>
-      <field type="uint16_t" name="total" invalid="UINT16_MAX">Total number of mission items. 0: Not supported, UINT16_MAX if no mission is present on the vehicle.</field>
+      <field type="uint16_t" name="total" invalid="UINT16_MAX">Total number of mission items on vehicle (on last item, sequence == total). If the autopilot stores its home location as part of the mission this will be excluded from the total. 0: Not supported, UINT16_MAX if no mission is present on the vehicle.</field>
       <field type="uint8_t" name="mission_state" enum="MISSION_STATE" invalid="0">Mission state machine state. MISSION_STATE_UNKNOWN if state reporting not supported.</field>
       <field type="uint8_t" name="mission_mode" invalid="0">Vehicle is in a mode that can execute mission items or suspended. 0: Unknown, 1: In mission mode, 2: Suspended (not in mission mode).</field>
     </message>
@@ -5562,7 +5537,7 @@
       <field type="float" name="climb" units="m/s">Current climb rate.</field>
     </message>
     <message id="75" name="COMMAND_INT">
-      <description>Send a command with up to seven parameters to the MAV, where params 5 and 6 are integers and the other values are floats. This is preferred over COMMAND_LONG when sending positional data in params 5 and 6, as it allows for greater precision when sending latitudes/longitudes. Param 5 and 6 encode positional data as scaled integers, where the scaling depends on the actual command value. NaN or INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current latitude, yaw rather than a specific value). The command microservice is documented at https://mavlink.io/en/services/command.html</description>
+      <description>Send a command with up to seven parameters to the MAV, where params 5 and 6 are integers and the other values are floats. This is preferred over COMMAND_LONG as it allows the MAV_FRAME to be specified for interpreting positional information, such as altitude. COMMAND_INT is also preferred when sending latitude and longitude data in params 5 and 6, as it allows for greater precision. Param 5 and 6 encode positional data as scaled integers, where the scaling depends on the actual command value. NaN or INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current latitude, yaw rather than a specific value). The command microservice is documented at https://mavlink.io/en/services/command.html</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the COMMAND.</field>
@@ -5578,7 +5553,7 @@
       <field type="float" name="z" invalid="NaN">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame).</field>
     </message>
     <message id="76" name="COMMAND_LONG">
-      <description>Send a command with up to seven parameters to the MAV. COMMAND_INT is generally preferred when sending MAV_CMD commands where param 5 and param 6 contain latitude/longitude data, as sending these in floats can result in a significant loss of precision. COMMAND_LONG is required for commands that mandate float values in params 5 and 6. The command microservice is documented at https://mavlink.io/en/services/command.html</description>
+      <description>Send a command with up to seven parameters to the MAV. COMMAND_INT is generally preferred when sending MAV_CMD commands that include positional information; it offers higher precision and allows the MAV_FRAME to be specified (which may otherwise be ambiguous, particularly for altitude). The command microservice is documented at https://mavlink.io/en/services/command.html</description>
       <field type="uint8_t" name="target_system">System which should execute the command</field>
       <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
       <field type="uint16_t" name="command" enum="MAV_CMD">Command ID (of command to send).</field>
@@ -6943,8 +6918,6 @@
       <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
     </message>
     <message id="283" name="GIMBAL_DEVICE_INFORMATION">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about a low level gimbal. This message should be requested by the gimbal manager or a ground station using MAV_CMD_REQUEST_MESSAGE. The maximum angles and rates are the limits by hardware. However, the limits by software used are likely different/smaller and dependent on mode/settings/etc..</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="char[32]" name="vendor_name">Name of the gimbal vendor.</field>
@@ -6963,8 +6936,6 @@
       <field type="float" name="yaw_max" units="rad" invalid="NaN">Maximum hardware yaw angle (positive: to the right, negative: to the left). NAN if unknown.</field>
     </message>
     <message id="284" name="GIMBAL_DEVICE_SET_ATTITUDE">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Low level message to control a gimbal device's attitude. 
 	  This message is to be sent from the gimbal manager to the gimbal device component. 
 	  The quaternion and angular velocities can be set to NaN according to use case. 
@@ -6986,8 +6957,6 @@
       <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: yawing to the right). The frame is described in the message description. NaN to be ignored.</field>
     </message>
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Message reporting the status of a gimbal device. 
 	  This message should be broadcast by a gimbal device component at a low regular rate (e.g. 5 Hz). 
 	  For the angles encoded in the quaternion and the angular velocities holds: 
@@ -7017,8 +6986,6 @@
       <field type="float" name="delta_yaw_velocity" units="rad/s" invalid="NAN">Yaw angular velocity relating the angular velocities in earth and body frames (see message description). NaN if unknown.</field>
     </message>
     <message id="286" name="AUTOPILOT_STATE_FOR_GIMBAL_DEVICE">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Low level message containing autopilot state relevant for a gimbal device. This message is to be sent from the autopilot to the gimbal device component. The data of this message are for the gimbal device's estimator corrections, in particular horizon compensation, as well as indicates autopilot control intentions, e.g. feed forward angular control in the z-axis.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -7501,6 +7468,7 @@
       <field type="uint16_t" name="sequence_oldest_available">Oldest Sequence number that is still available after the sequence set in REQUEST_EVENT.</field>
       <field type="uint8_t" name="reason" enum="MAV_EVENT_ERROR_REASON">Error reason.</field>
     </message>
+    <!-- The message ids 510 and 511 are reserved for ABSOLUTE_TARGET and RELATIVE_TARGET, currently in development.xml. -->
     <message id="387" name="CANFD_FRAME">
       <description>A forwarded CANFD frame as requested by MAV_CMD_CAN_FORWARD. These are separated from CAN_FRAME as they need different handling (eg. TAO handling)</description>
       <field type="uint8_t" name="target_system">System ID.</field>
