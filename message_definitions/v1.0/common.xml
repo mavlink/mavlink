@@ -5966,6 +5966,19 @@
       <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity, positive is yawing to the right, NaN to be ignored.</field>
     </message>
+    <message id="287" name="GIMBAL_MANAGER_SET_PITCHYAW">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>High level message to control a gimbal's pitch and yaw angles. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
+      <field type="float" name="pitch" units="rad" invalid="NaN">Pitch angle (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw" units="rad" invalid="NaN">Yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
+      <field type="float" name="pitch_rate" units="rad/s" invalid="NaN">Pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
+      <field type="float" name="yaw_rate" units="rad/s" invalid="NaN">Yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).</field>
+    </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
       <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>
