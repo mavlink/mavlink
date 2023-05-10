@@ -4,6 +4,17 @@ project(mavlink)
 
 find_package(Python COMPONENTS Interpreter REQUIRED)
 
+# We automatically install the pip dependencies locally below.
+# Therefore, we check whether pip is available here.
+execute_process(
+    COMMAND ${Python_EXECUTABLE} -m pip -V
+    RESULT_VARIABLE EXIT_CODE
+    OUTPUT_QUIET
+)
+if (NOT ${EXIT_CODE} EQUAL 0)
+    message(FATAL_ERROR "Python pip not found, pip is required")
+endif()
+
 if (NOT MAVLINK_DIALECT)
     set(MAVLINK_DIALECT common)
 endif()
@@ -17,7 +28,9 @@ message(STATUS "MAVLink version: ${MAVLINK_VERSION}")
 set(EXAMPLE_HEADER ${CMAKE_CURRENT_BINARY_DIR}/include/mavlink/${MAVLINK_DIALECT}/mavlink.h)
 
 add_custom_command(OUTPUT ${EXAMPLE_HEADER}
-    COMMAND Python::Interpreter
+    COMMAND ${Python_EXECUTABLE}
+        -m pip install -r pymavlink/requirements.txt --upgrade -t ${CMAKE_CURRENT_BINARY_DIR}/pip-dependencies/
+        COMMAND ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/pip-dependencies/" ${Python_EXECUTABLE}
         -m pymavlink.tools.mavgen
         --lang=C
         --wire-protocol=${MAVLINK_VERSION}
