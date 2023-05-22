@@ -132,7 +132,9 @@
       <xsl:apply-templates select="deprecated" />
       <xsl:apply-templates select="wip" />
       <p><a href="#mav_commands">[Command]</a><xsl:value-of select="description" /> </p> <!-- mavlink_comment -->
-
+      <xsl:if test='@hasLocation = "true" or @isDestination = "true"'>
+        <p>Send in COMMAND_INT (not COMMAND_LONG).</p>
+      </xsl:if>
 
    <table class="sortable">
    <thead>
