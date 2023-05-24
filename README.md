@@ -23,7 +23,7 @@ sudo apt install python3-pip
 git clone https://github.com/mavlink/mavlink.git --recursive
 cd mavlink
 
-python3 -m pip install pymavlink/requirements.txt
+python3 -m pip install -r pymavlink/requirements.txt
 ```
 
 You can then build the MAVLink2 C-library for `message_definitions/v1.0/common.xml` from the `/mavlink` directory as shown:

@@ -163,6 +163,21 @@
         </description>
       </entry>
     </enum>
+    <enum name="MAV_MODE_PROPERTY" bitmask="true">
+      <description>Mode properties.
+      </description>
+      <entry value="1" name="MAV_MODE_PROPERTY_ADVANCED">
+        <description>If set, this mode is an advanced mode.
+          For example a rate-controlled manual mode might be advanced, whereas a position-controlled manual mode is not.
+          A GCS can optionally use this flag to configure the UI for its intended users.
+        </description>
+      </entry>
+      <entry value="2" name="MAV_MODE_PROPERTY_NOT_USER_SELECTABLE">
+        <description>If set, this mode should not be added to the list of selectable modes.
+          The mode might still be selected by the FC directly (for example as part of a failsafe).
+        </description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -578,9 +593,9 @@
       <field type="uint8_t" name="number_modes">The total number of available modes for the current vehicle type.</field>
       <field type="uint8_t" name="mode_index">The current mode index within number_modes, indexed from 1.</field>
       <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
-      <field type="char[50]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
+      <field type="uint32_t" name="properties" enum="MAV_MODE_PROPERTY">Mode properties.</field>
+      <field type="char[35]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
     </message>
     <message id="436" name="CURRENT_MODE">
       <description>Get the current mode.
@@ -588,8 +603,8 @@
         It may be requested using MAV_CMD_REQUEST_MESSAGE.
       </description>
       <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="uint32_t" name="intended_custom_mode" invalid="0">The custom_mode of the mode that was last commanded by the user (for example, with MAV_CMD_DO_SET_STANDARD_MODE, MAV_CMD_DO_SET_MODE or via RC). This should usually be the same as custom_mode. It will be different if the vehicle is unable to enter the intended mode, or has left that mode due to a failsafe condition. 0 indicates the intended custom mode is unknown/not supplied</field>
     </message>
     <message id="441" name="CONTROL_STATUS">
       <description>Status message indicating the currently active flight control and payload control entity.
