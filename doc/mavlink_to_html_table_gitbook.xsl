@@ -133,7 +133,7 @@
       <xsl:apply-templates select="wip" />
       <p><a href="#mav_commands">[Command]</a><xsl:value-of select="description" /> </p> <!-- mavlink_comment -->
       <xsl:if test='@hasLocation = "true" or @isDestination = "true"'>
-        <p>Send in COMMAND_INT (not COMMAND_LONG).</p>
+        <p>Send in COMMAND_INT for commands that specify a position, if supported by your flight stack (frame of reference cannot be set in COMMAND_LONG, and lat/lon in param 5/6 are less precise if sent in floats).</p>
       </xsl:if>
 
    <table class="sortable">
