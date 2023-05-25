@@ -3096,8 +3096,8 @@
       <entry value="512" name="MAV_PROTOCOL_CAPABILITY_TERRAIN">
         <description>Autopilot supports terrain protocol / data handling.</description>
       </entry>
-      <entry value="1024" name="MAV_PROTOCOL_CAPABILITY_SET_ACTUATOR_TARGET">
-        <description>Autopilot supports direct actuator control.</description>
+      <entry value="1024" name="MAV_PROTOCOL_CAPABILITY_RESERVED3">
+        <description>Reserved for future use.</description>
       </entry>
       <entry value="2048" name="MAV_PROTOCOL_CAPABILITY_FLIGHT_TERMINATION">
         <description>Autopilot supports the MAV_CMD_DO_FLIGHTTERMINATION command (flight termination).</description>
@@ -6551,7 +6551,11 @@
       <field type="float" name="x" units="m">Local X position of this position in the local coordinate frame (NED)</field>
       <field type="float" name="y" units="m">Local Y position of this position in the local coordinate frame (NED)</field>
       <field type="float" name="z" units="m">Local Z position of this position in the local coordinate frame (NED: positive "down")</field>
-      <field type="float[4]" name="q">World to surface normal and heading transformation of the takeoff position. Used to indicate the heading and slope of the ground</field>
+      <field type="float[4]" name="q" invalid="[NaN]">
+        Quaternion indicating world-to-surface-normal and heading transformation of the takeoff position.
+        Used to indicate the heading and slope of the ground.
+        All fields should be set to NaN if an accurate quaternion for both heading and surface slope cannot be supplied.
+      </field>
       <field type="float" name="approach_x" units="m">Local X position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
       <field type="float" name="approach_y" units="m">Local Y position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
       <field type="float" name="approach_z" units="m">Local Z position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
