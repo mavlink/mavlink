@@ -5,6 +5,27 @@
   <version>0</version>
   <dialect>0</dialect>
   <enums>
+    <enum name="COMPONENT_CONTROL">
+      <description>Type of controls or state changes for system components.</description>
+      <entry value="1" name="COMPONENT_CONTROL_START">
+        <description>Start/turn-on system component.</description>
+      </entry>
+      <entry value="2" name="COMPONENT_CONTROL_STOP">
+        <description>Stop/turn-off system component.</description>
+      </entry>
+      <entry value="3" name="COMPONENT_CONTROL_RESTART">
+        <description>Restart/reboot system component.</description>
+      </entry>
+      <entry value="4" name="COMPONENT_CONTROL_RESTART_AND_KEEP_BL">
+        <description>Restart/reboot system component and keep it in the bootloader until upgraded.</description>
+      </entry>
+      <entry value="5" name="COMPONENT_CONTROL_ENABLE">
+        <description>Enable system component. Used to switch a system component from an idle state to an active state.</description>
+      </entry>
+      <entry value="6" name="COMPONENT_CONTROL_DISABLE">
+        <description>Disable system component. Used to switch a system component from an active state to an idle state.</description>
+      </entry>
+    </enum>
     <enum name="WIFI_NETWORK_SECURITY">
       <description>WiFi wireless security protocols.</description>
       <entry value="0" name="WIFI_NETWORK_SECURITY_UNDEFINED">
@@ -186,22 +207,6 @@
         <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
         INT32_MAX or NaN: Use current vehicle altitude.</param>
       </entry>
-      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
-        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
-        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
-        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
-        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
-      </entry>
-      <entry value="5010" name="MAV_CMD_SET_FENCE_BREACH_ACTION" hasLocation="false" isDestination="false">
-        <description>Sets the action on geofence breach.
-          If sent using the command protocol this sets the system-default geofence action.
-          As part of a mission protocol plan it sets the fence action for the next complete geofence definition *after* the command.
-          Note: A fence action defined in a plan will override the default system setting (even if the system-default is `FENCE_ACTION_NONE`).
-          Note: Every geofence in a plan can have its own action; if no fence action is defined for a particular fence the system-default will be used.
-          Note: The flight stack should reject a plan or command that uses a geofence action that it does not support and send a STATUSTEXT with the reason.
-        </description>
-        <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
-      </entry>
     </enum>
     <enum name="MAV_BATTERY_STATUS_FLAGS" bitmask="true">
       <description>Battery status flags for fault, health and state indication.</description>
@@ -323,6 +328,28 @@
         <param index="6">Reserved</param>
         <param index="7">WIP: upgrade progress report rate (can be used for more granular control).</param>
       </entry>
+      <entry value="248" name="MAV_CMD_COMPONENT_CONTROL" hasLocation="false" isDestination="false">
+        <description>Control the state or functionality of system components.</description>
+        <param index="1" label="Component ID" enum="MAV_COMPONENT">Component ID of the system component to be controlled.</param>
+        <param index="2" label="Component Control Type" enum="COMPONENT_CONTROL">Control command type being sent to the system component.</param>
+        <param index="3" label="Component Instance ID" minValue="0" maxValue="1" increment="1">Component instance, when there is more than one instance per component.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
+      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" hasLocation="false" isDestination="false">
+        <description>Enable the specified standard MAVLink mode.
+          If the mode is not supported the vehicle should ACK with MAV_RESULT_FAILED.
+        </description>
+        <param index="1" label="Standard Mode" enum="MAV_STANDARD_MODE">The mode to set.</param>
+        <param index="2" reserved="true" default="0"/>
+        <param index="3" reserved="true" default="0"/>
+        <param index="4" reserved="true" default="0"/>
+        <param index="5" reserved="true" default="0"/>
+        <param index="6" reserved="true" default="0"/>
+        <param index="7" reserved="true" default="NaN"/>
+      </entry>
       <entry value="301" name="MAV_CMD_GROUP_START" hasLocation="false" isDestination="false">
         <description>Define start of a group of mission items. When control reaches this command a GROUP_START message is emitted.
           The end of a group is marked using MAV_CMD_GROUP_END with the same group id.
@@ -339,17 +366,21 @@
         <param index="1" label="Group ID" minValue="0" maxValue="16777216" increment="1">Mission-unique group id.
           Group id is limited because only 24 bit integer can be stored in 32 bit float.</param>
       </entry>
-      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" hasLocation="false" isDestination="false">
-        <description>Enable the specified standard MAVLink mode.
-          If the mode is not supported the vehicle should ACK with MAV_RESULT_FAILED.
+      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
+        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
+        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
+        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
+        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
+      </entry>
+      <entry value="5010" name="MAV_CMD_SET_FENCE_BREACH_ACTION" hasLocation="false" isDestination="false">
+        <description>Sets the action on geofence breach.
+          If sent using the command protocol this sets the system-default geofence action.
+          As part of a mission protocol plan it sets the fence action for the next complete geofence definition *after* the command.
+          Note: A fence action defined in a plan will override the default system setting (even if the system-default is `FENCE_ACTION_NONE`).
+          Note: Every geofence in a plan can have its own action; if no fence action is defined for a particular fence the system-default will be used.
+          Note: The flight stack should reject a plan or command that uses a geofence action that it does not support and send a STATUSTEXT with the reason.
         </description>
-        <param index="1" label="Standard Mode" enum="MAV_STANDARD_MODE">The mode to set.</param>
-        <param index="2" reserved="true" default="0"/>
-        <param index="3" reserved="true" default="0"/>
-        <param index="4" reserved="true" default="0"/>
-        <param index="5" reserved="true" default="0"/>
-        <param index="6" reserved="true" default="0"/>
-        <param index="7" reserved="true" default="NaN"/>
+        <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
       </entry>
       <entry value="550" name="MAV_CMD_SET_AT_S_PARAM" hasLocation="false" isDestination="false">
         <description>Allows setting an AT S command of an SiK radio.
@@ -361,6 +392,60 @@
         <param index="5" reserved="true"/>
         <param index="6" reserved="true"/>
         <param index="7" reserved="true"/>
+      </entry>
+    </enum>
+    <enum name="CURRENT_CONTROL_ENTITY">
+      <description>List of the currently active control entity.</description>
+      <entry value="0" name="CURRENT_CONTROL_ENTITY_NONE">
+        <description>Setting if no entity has control ownership.</description>
+      </entry>
+      <entry value="1" name="CURRENT_CONTROL_ENTITY_OWNER">
+        <description>Setting if the receiving GCS is the control entity.</description>
+      </entry>
+      <entry value="2" name="CURRENT_CONTROL_ENTITY_OTHER">
+        <description>Setting if a GCS other than the receiving GCS is the control entity.</description>
+      </entry>
+    </enum>
+    <enum name="CONTROL_TARGET_REQUEST">
+      <description>Selection of control target for changing ownership.</description>
+      <entry value="0" name="CONTROL_TARGET_ALL">
+        <description>Request change control ownership of both flight control and payload control.</description>
+      </entry>
+      <entry value="1" name="CONTROL_TARGET_FLIGHT">
+        <description>Request change control ownership of the flight control.</description>
+      </entry>
+      <entry value="2" name="CONTROL_TARGET_PAYLOAD">
+        <description>Request change control ownership of the payload control.</description>
+      </entry>
+    </enum>
+    <enum name="CONTROL_REQUEST_ERROR_CODE">
+      <description>Error code for the control request response.</description>
+      <entry value="0" name="CONTROL_REQUEST_PROCESSED">
+        <description>Code indicating successful processing of the request.</description>
+      </entry>
+      <entry value="1" name="CONTROL_REQUEST_DENIED">
+        <description>Error code indicating that the control request has been denied by the target system.</description>
+      </entry>
+      <entry value="2" name="CONTROL_REQUEST_HANDOFF_TIMEOUT">
+        <description>Error Code indicating timeout on the handoff request.</description>
+      </entry>
+      <entry value="3" name="CONTROL_REQUEST_DENIED_CONCURRENT">
+        <description>Error Code indicating another control request is in process.</description>
+      </entry>
+      <entry value="4" name="CONTROL_REQUEST_NO_CONTROL_AUTHORITY">
+        <description>Error Code indicating no enough authority to take control ownership.</description>
+      </entry>
+      <entry value="5" name="CONTROL_REQUEST_NO_PRIORITY_AUTHORITY">
+        <description>Error Code indicating no enough priority authority control ownership.</description>
+      </entry>
+    </enum>
+    <enum name="HANDOFF_DECISION">
+      <description>Decision of the GCS to a handoff request.</description>
+      <entry value="0" name="HANDOFF_DECISION_ACCEPT">
+        <description>Decision to accept the handoff and release control ownership.</description>
+      </entry>
+      <entry value="1" name="HANDOFF_DECISION_DENIED">
+        <description>Decision to deny the handoff request and keep control ownership.</description>
       </entry>
     </enum>
     <enum name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" bitmask="true">
@@ -428,6 +513,19 @@
       <field type="uint8_t" name="signal_quality" units="%">WiFi network signal quality.</field>
       <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
       <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
+    </message>
+    <message id="337" name="CELLULAR_MODEM_INFORMATION">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description> This message is still WIP, but was tentatively accepted upstream: https://github.com/mavlink/mavlink/pull/1945.
+                    Cellular modem device information. This contains static information about a modem and should be sent at low rate. Note that the dynamic information about the connection is provided in an associated CELLULAR_STATUS message.</description>
+      <field type="uint8_t" name="id" instance="true">Modem instance number. Indexed from 1. Matches index in corresponding CELLULAR_STATUS message.</field>
+      <field type="uint64_t" name="imei" invalid="NULL">Unique Modem International Mobile Equipment Identity Number.</field>
+      <field type="uint64_t" name="imsi" invalid="NULL">Current SIM International mobile subscriber identity.</field>
+      <field type="char[10]" name="modem_id" invalid="[0]">Unique id for modem. This must be NULL terminated if the length is less than 10 human-readable chars, and without the null termination (NULL) byte if the length is exactly 10 chars.</field>
+      <field type="char[20]" name="iccid" invalid="[0]">Integrated Circuit Card Identification Number of SIM Card.  This must be NULL terminated if the length is less than 20 human-readable chars, and without the null termination (NULL) byte if the length is exactly 20 chars.</field>
+      <field type="char[24]" name="firmware" invalid="[0]">The firmware version installed on the modem. This must be NULL terminated if the length is less than 24 human-readable chars, and without the null termination (NULL) byte if the length is exactly 24 chars. The format is not intended for display.</field>
+      <field type="char[50]" name="modem_model" invalid="[0]">Modem model name.  This must be NULL terminated if the length is less than 50 human-readable chars, and without the null termination (NULL) byte if the length is exactly 50 chars.</field>
     </message>
     <message id="361" name="FIGURE_EIGHT_EXECUTION_STATUS">
       <wip/>
@@ -507,6 +605,58 @@
       <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
       <field type="uint32_t" name="intended_custom_mode" invalid="0">The custom_mode of the mode that was last commanded by the user (for example, with MAV_CMD_DO_SET_STANDARD_MODE, MAV_CMD_DO_SET_MODE or via RC). This should usually be the same as custom_mode. It will be different if the vehicle is unable to enter the intended mode, or has left that mode due to a failsafe condition. 0 indicates the intended custom mode is unknown/not supplied</field>
+    </message>
+    <message id="441" name="CONTROL_STATUS">
+      <description>Status message indicating the currently active flight control and payload control entity.
+        This message should typically be send from the system at a low frequency as well as after a control ownership change to all connected GCS. 
+      </description>
+      <field type="uint8_t" name="current_flight_controller" enum="CURRENT_CONTROL_ENTITY">Current flight control entity.</field>
+      <field type="uint8_t" name="current_payload_controller" enum="CURRENT_CONTROL_ENTITY">Current payload control entity.</field>
+    </message>
+    <message id="442" name="REQUEST_CONTROL">
+      <description>Request the flight control and/or the payload control of the target system by a GCS.
+        The message can be used in a multi GCS environment. A GCS can request the control ownership of the target system. 
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to change to own ownership.</field>
+      <field type="uint8_t" name="request_priority" default="0">Priority of the control request. If the priority is higher than the priority
+        of the current control entity, control is given without handoff request. 
+        The priority request should be authenticated on the target system before granting this privilegs. Default value of 0.</field>
+      <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
+      <field type="char[100]" name="reason">Reason for taking ownership.</field>
+    </message>
+    <message id="443" name="REQUEST_CONTROL_ACK">
+      <description>Error code response of the target system to the control ownership request.
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target which was processed.</field>
+      <field type="uint8_t" name="error_code" enum="CONTROL_REQUEST_ERROR_CODE">Error code response.</field>
+    </message>
+    <message id="444" name="RELEASE_CONTROL">
+      <description>Release the previously aquired control. 
+        The message can be used in a multi GCS environment to release the control of the target system. 
+        This message is ignored when the GCS is not the current active control entity of the control target.
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to release own ownership.</field>
+    </message>
+    <message id="445" name="REQUEST_HANDOFF">
+      <description>Request handoff of current control entity.
+        This message is send from the system to the current active control entity to request the handoff of the control target to another GCS.
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff control ownership.</field>
+      <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
+      <field type="char[100]" name="reason">Reason from the control entity requesting ownership.</field>
+    </message>
+    <message id="446" name="HANDOFF_RESPOND">
+      <description>Handoff response to handoff request. 
+        This message is the response from the GCS in control to the handoff request.
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff.</field>
+      <field type="uint8_t" name="handoff_decision" enum="HANDOFF_DECISION">Control target decision.</field>
+    </message>
+    <message id="470" name="UNIQUE_IDENTIFIER">
+      <description>Unique identifier message to uniquely identify different GCS and systems using an 256 bit uuid. The uuid can be randomly generated an stored for the relevant systems.
+      Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=470.
+      </description>
+      <field type="char[32]" name="uuid">uuid of the sender.</field>
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
