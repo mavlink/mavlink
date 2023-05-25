@@ -12,6 +12,9 @@ on:
 # - "*"
 # - "!README.md" <-- don't rebuild on doc change
 
+permissions:
+  contents: read
+
 jobs:
   format:
     name: Formatting check
@@ -33,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [2.7, 3.6, 3.7, 3.8]
+        python-version: ['2.7', '3.7', '3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v2
         with:
@@ -48,6 +51,27 @@ jobs:
       - name : Test Python generator
         run: |
           ./scripts/test.sh py
+
+  build-cmake-c-example:
+    name: Build cmake C example
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3 python3-pip
+      - name: Install MAVLink headers
+        run: |
+          cmake -Bbuild -H. -DCMAKE_INSTALL_PREFIX=install
+          cmake --build build --target install
+      - name: Build example
+        run: |
+          cd examples/c
+          cmake -Bbuild -H. -DCMAKE_PREFIX_PATH=$(pwd)/../../install
+          cmake --build build
 
   node-tests:
     name: Node ${{ matrix.node-version }} test

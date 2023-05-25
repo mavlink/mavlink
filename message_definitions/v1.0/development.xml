@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <mavlink>
-  <!-- XML file for prototyping definitions for standard.xml  -->
-  <include>standard.xml</include>
+  <!-- XML file for prototyping definitions for common.xml -->
+  <include>common.xml</include>
   <version>0</version>
   <dialect>0</dialect>
   <enums>
@@ -26,22 +26,13 @@
         <description>WPA3.</description>
       </entry>
     </enum>
-    <enum name="AIRSPEED_SENSOR_TYPE">
-      <description>Types of airspeed sensor/data. May be be used in AIRSPEED message to estimate accuracy of indicated speed.</description>
-      <entry value="0" name="AIRSPEED_SENSOR_TYPE_UNKNOWN">
-        <description>Airspeed sensor type unknown/not supplied.</description>
+    <enum name="AIRSPEED_SENSOR_FLAGS" bitmask="true">
+      <description>Airspeed sensor flags</description>
+      <entry value="0" name="AIRSPEED_SENSOR_UNHEALTHY">
+        <description>Airspeed sensor is unhealthy</description>
       </entry>
-      <entry value="1" name="AIRSPEED_SENSOR_TYPE_DIFFERENTIAL">
-        <description>Differential airspeed sensor</description>
-      </entry>
-      <entry value="2" name="AIRSPEED_SENSOR_TYPE_MASS_FLOW">
-        <description>Mass-flow airspeed sensor.</description>
-      </entry>
-      <entry value="3" name="AIRSPEED_SENSOR_TYPE_WINDVANE">
-        <description>Windvane airspeed sensor.</description>
-      </entry>
-      <entry value="4" name="AIRSPEED_SENSOR_TYPE_SYNTHETIC">
-        <description>Synthetic/calculated airspeed.</description>
+      <entry value="1" name="AIRSPEED_SENSOR_USING">
+        <description>True if the data from this sensor is being actively used by the flight controller for guidance, navigation or control.</description>
       </entry>
     </enum>
     <!-- Transactions for parameter protocol -->
@@ -151,6 +142,21 @@
         </description>
       </entry>
     </enum>
+    <enum name="MAV_MODE_PROPERTY" bitmask="true">
+      <description>Mode properties.
+      </description>
+      <entry value="1" name="MAV_MODE_PROPERTY_ADVANCED">
+        <description>If set, this mode is an advanced mode.
+          For example a rate-controlled manual mode might be advanced, whereas a position-controlled manual mode is not.
+          A GCS can optionally use this flag to configure the UI for its intended users.
+        </description>
+      </entry>
+      <entry value="2" name="MAV_MODE_PROPERTY_NOT_USER_SELECTABLE">
+        <description>If set, this mode should not be added to the list of selectable modes.
+          The mode might still be selected by the FC directly (for example as part of a failsafe).
+        </description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -197,6 +203,112 @@
         <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
       </entry>
     </enum>
+    <enum name="MAV_BATTERY_STATUS_FLAGS" bitmask="true">
+      <description>Battery status flags for fault, health and state indication.</description>
+      <entry value="1" name="MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE">
+        <description>
+          The battery is not ready to use (fly).
+          Set if the battery has faults or other conditions that make it unsafe to fly with.
+          Note: It will be the logical OR of other status bits (chosen by the manufacturer/integrator).
+        </description>
+      </entry>
+      <entry value="2" name="MAV_BATTERY_STATUS_FLAGS_CHARGING">
+        <description>
+          Battery is charging.
+        </description>
+      </entry>
+      <entry value="4" name="MAV_BATTERY_STATUS_FLAGS_CELL_BALANCING">
+        <description>
+          Battery is cell balancing (during charging).
+          Not ready to use (MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE may be set).
+        </description>
+      </entry>
+      <entry value="8" name="MAV_BATTERY_STATUS_FLAGS_FAULT_CELL_IMBALANCE">
+        <description>
+          Battery cells are not balanced.
+          Not ready to use.
+        </description>
+      </entry>
+      <entry value="16" name="MAV_BATTERY_STATUS_FLAGS_AUTO_DISCHARGING">
+        <description>
+          Battery is auto discharging (towards storage level).
+          Not ready to use (MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE would be set).
+        </description>
+      </entry>
+      <entry value="32" name="MAV_BATTERY_STATUS_FLAGS_REQUIRES_SERVICE">
+        <description>
+          Battery requires service (not safe to fly). 
+          This is set at vendor discretion.
+          It is likely to be set for most faults, and may also be set according to a maintenance schedule (such as age, or number of recharge cycles, etc.).
+        </description>
+      </entry>
+      <entry value="64" name="MAV_BATTERY_STATUS_FLAGS_BAD_BATTERY">
+        <description>
+          Battery is faulty and cannot be repaired (not safe to fly). 
+          This is set at vendor discretion.
+          The battery should be disposed of safely.
+        </description>
+      </entry>
+      <entry value="128" name="MAV_BATTERY_STATUS_FLAGS_PROTECTIONS_ENABLED">
+        <description>
+          Automatic battery protection monitoring is enabled.
+          When enabled, the system will monitor for certain kinds of faults, such as cells being over-voltage.
+          If a fault is triggered then and protections are enabled then a safety fault (MAV_BATTERY_STATUS_FLAGS_FAULT_PROTECTION_SYSTEM) will be set and power from the battery will be stopped.
+          Note that battery protection monitoring should only be enabled when the vehicle is landed. Once the vehicle is armed, or starts moving, the protections should be disabled to prevent false positives from disabling the output.
+        </description>
+      </entry>
+      <entry value="256" name="MAV_BATTERY_STATUS_FLAGS_FAULT_PROTECTION_SYSTEM">
+        <description>
+          The battery fault protection system had detected a fault and cut all power from the battery.
+          This will only trigger if MAV_BATTERY_STATUS_FLAGS_PROTECTIONS_ENABLED is set.
+          Other faults like MAV_BATTERY_STATUS_FLAGS_FAULT_OVER_VOLT may also be set, indicating the cause of the protection fault.
+        </description>
+      </entry>
+      <entry value="512" name="MAV_BATTERY_STATUS_FLAGS_FAULT_OVER_VOLT">
+        <description>One or more cells are above their maximum voltage rating.</description>
+      </entry>
+      <entry value="1024" name="MAV_BATTERY_STATUS_FLAGS_FAULT_UNDER_VOLT">
+        <description>
+          One or more cells are below their minimum voltage rating.
+          A battery that had deep-discharged might be irrepairably damaged, and set both MAV_BATTERY_STATUS_FLAGS_FAULT_UNDER_VOLT and MAV_BATTERY_STATUS_FLAGS_BAD_BATTERY.
+        </description>
+      </entry>
+      <entry value="2048" name="MAV_BATTERY_STATUS_FLAGS_FAULT_OVER_TEMPERATURE">
+        <description>Over-temperature fault.</description>
+      </entry>
+      <entry value="4096" name="MAV_BATTERY_STATUS_FLAGS_FAULT_UNDER_TEMPERATURE">
+        <description>Under-temperature fault.</description>
+      </entry>
+      <entry value="8192" name="MAV_BATTERY_STATUS_FLAGS_FAULT_OVER_CURRENT">
+        <description>Over-current fault.</description>
+      </entry>
+      <entry value="16384" name="MAV_BATTERY_STATUS_FLAGS_FAULT_SHORT_CIRCUIT">
+        <description>
+          Short circuit event detected.
+          The battery may or may not be safe to use (check other flags).
+        </description>
+      </entry>
+      <entry value="32768" name="MAV_BATTERY_STATUS_FLAGS_FAULT_INCOMPATIBLE_VOLTAGE">
+        <description>Voltage not compatible with power rail voltage (batteries on same power rail should have similar voltage).</description>
+      </entry>
+      <entry value="65536" name="MAV_BATTERY_STATUS_FLAGS_FAULT_INCOMPATIBLE_FIRMWARE">
+        <description>Battery firmware is not compatible with current autopilot firmware.</description>
+      </entry>
+      <entry value="131072" name="MAV_BATTERY_STATUS_FLAGS_FAULT_INCOMPATIBLE_CELLS_CONFIGURATION">
+        <description>Battery is not compatible due to cell configuration (e.g. 5s1p when vehicle requires 6s).</description>
+      </entry>
+      <entry value="262144" name="MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL">
+        <description>
+          Battery capacity_consumed and capacity_remaining values are relative to a full battery (they sum to the total capacity of the battery).
+          This flag would be set for a smart battery that can accurately determine its remaining charge across vehicle reboots and discharge/recharge cycles.
+          If unset the capacity_consumed indicates the consumption since vehicle power-on, as measured using a power monitor. The capacity_remaining, if provided, indicates the estimated remaining capacity on the assumption that the battery was full on vehicle boot.
+          If unset a GCS is recommended to advise that users fully charge the battery on power on.
+        </description>
+      </entry>
+      <entry value="4294967295" name="MAV_BATTERY_STATUS_FLAGS_EXTENDED">
+        <description>Reserved (not used). If set, this will indicate that an additional status field exists for higher status values.</description>
+      </entry>
+    </enum>
     <enum name="MAV_CMD">
       <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
         <description>Request a target system to start an upgrade of one (or all) of its components.
@@ -239,6 +351,40 @@
         <param index="6" reserved="true" default="0"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
+      <entry value="550" name="MAV_CMD_SET_AT_S_PARAM" hasLocation="false" isDestination="false">
+        <description>Allows setting an AT S command of an SiK radio.
+        </description>
+        <param index="1" label="Radio instance">The radio instance, one-based, 0 for all.</param>
+        <param index="2" label="Index">The Sx index, e.g. 3 for S3 which is NETID.</param>
+        <param index="3" label="Value">The value to set it to, e.g. default 25 for NETID</param>
+        <param index="4" reserved="true"/>
+        <param index="5" reserved="true"/>
+        <param index="6" reserved="true"/>
+        <param index="7" reserved="true"/>
+      </entry>
+    </enum>
+    <enum name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" bitmask="true">
+      <description>These flags indicate the sensor reporting capabilities for TARGET_ABSOLUTE.</description>
+      <entry value="1" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_POSITION"/>
+      <entry value="2" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_VELOCITY"/>
+      <entry value="4" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_ACCELERATION"/>
+      <entry value="8" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_ATTITUDE"/>
+      <entry value="16" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_RATES"/>
+    </enum>
+    <enum name="TARGET_OBS_FRAME">
+      <description>The frame of a target observation from an onboard sensor.</description>
+      <entry value="0" name="TARGET_OBS_FRAME_LOCAL_NED">
+        <description>NED local tangent frame (x: North, y: East, z: Down) with origin fixed relative to earth.</description>
+      </entry>
+      <entry value="1" name="TARGET_OBS_FRAME_BODY_FRD">
+        <description>FRD local frame aligned to the vehicle's attitude (x: Forward, y: Right, z: Down) with an origin that travels with vehicle.</description>
+      </entry>
+      <entry value="2" name="TARGET_OBS_FRAME_LOCAL_OFFSET_NED">
+        <description>NED local tangent frame (x: North, y: East, z: Down) with an origin that travels with vehicle.</description>
+      </entry>
+      <entry value="3" name="TARGET_OBS_FRAME_OTHER">
+        <description>Other sensor frame for target observations neither in local NED nor in body FRD.</description>
+      </entry>
     </enum>
   </enums>
   <messages>
@@ -253,14 +399,6 @@
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
     </message>
     <!-- mission protocol enhancements -->
-    <message id="52" name="MISSION_CHANGED">
-      <description>A broadcast message to notify any ground station or SDK if a mission, geofence or safe points have changed on the vehicle.</description>
-      <field type="int16_t" name="start_index">Start index for partial mission change (-1 for all items).</field>
-      <field type="int16_t" name="end_index">End index of a partial mission change. -1 is a synonym for the last mission item (i.e. selects all items from start_index). Ignore field if start_index=-1.</field>
-      <field type="uint8_t" name="origin_sysid">System ID of the author of the new mission.</field>
-      <field type="uint8_t" name="origin_compid" enum="MAV_COMPONENT">Compnent ID of the author of the new mission.</field>
-      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
-    </message>
     <message id="53" name="MISSION_CHECKSUM">
       <description>Checksum for the current mission, rally point or geofence plan, or for the "combined" plan (a GCS can use these checksums to determine if it has matching plans).
         This message must be broadcast with the appropriate checksum following any change to a mission, geofence or rally point definition
@@ -278,12 +416,10 @@
     <message id="295" name="AIRSPEED">
       <description>Airspeed information from a sensor.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
-      <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS) if available, otherwise indicated airspeed (IAS).</field>
+      <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS).</field>
       <field type="int16_t" name="temperature" units="cdegC">Temperature. INT16_MAX for value unknown/not supplied.</field>
-      <field type="float" name="press_diff" units="hPa">Differential pressure. NaN for value unknown/not supplied.</field>
-      <field type="float" name="press_static" units="hPa">Static pressure. NaN for value unknown/not supplied.</field>
-      <field type="float" name="error" units="m/s">Error/accuracy. NaN for value unknown/not supplied.</field>
-      <field type="uint8_t" name="type" enum="AIRSPEED_SENSOR_TYPE">Airspeed sensor type. NaN for value unknown/not supplied. Used to estimate accuracy (i.e. as an alternative to using the error field).</field>
+      <field type="float" name="raw_press" units="hPa">Raw differential pressure. NaN for value unknown/not supplied.</field>
+      <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
     </message>
     <message id="298" name="WIFI_NETWORK_INFO">
       <description>Detected WiFi network status information. This message is sent per each WiFi network detected in range with known SSID and general status parameters.</description>
@@ -309,14 +445,31 @@
       <field type="int32_t" name="y">Y coordinate of center point. Coordinate system depends on frame field.</field>
       <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
     </message>
+    <message id="369" name="BATTERY_STATUS_V2">
+      <description>Battery dynamic information.
+        This should be streamed (nominally at 1Hz).
+        Static/invariant battery information is sent in SMART_BATTERY_INFO.
+        Note that smart batteries should set the MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL bit to indicate that supplied capacity values are relative to a battery that is known to be full.
+        Power monitors would not set this bit, indicating that capacity_consumed is relative to drone power-on, and that other values are estimated based on the assumption that the battery was full on power-on.
+      </description>
+      <field type="uint8_t" name="id" instance="true">Battery ID</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of the whole battery pack (not internal electronics). INT16_MAX field not provided.</field>
+      <field type="float" name="voltage" units="V" invalid="NaN">Battery voltage (total). NaN: field not provided.</field>
+      <field type="float" name="current" units="A" invalid="NaN">Battery current (through all cells/loads). Positive value when discharging and negative if charging. NaN: field not provided.</field>
+      <field type="float" name="capacity_consumed" units="Ah" invalid="NaN">Consumed charge. NaN: field not provided. This is either the consumption since power-on or since the battery was full, depending on the value of MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL.</field>
+      <field type="float" name="capacity_remaining" units="Ah" invalid="NaN">Remaining charge (until empty). UINT32_MAX: field not provided. Note: If MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL is unset, this value is based on the assumption the battery was full when the system was powered.</field>
+      <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Remaining battery energy. Values: [0-100], UINT8_MAX: field not provided.</field>
+      <field type="uint32_t" name="status_flags" display="bitmask" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
+    </message>
     <message id="396" name="COMPONENT_INFORMATION_BASIC">
-      <description>Basic component information data.</description>
+      <description>Basic component information data. Should be requested using MAV_CMD_REQUEST_MESSAGE on startup, or when required.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t[32]" name="vendor_name">Name of the component vendor</field>
-      <field type="uint8_t[32]" name="model_name">Name of the component model</field>
-      <field type="char[24]" name="software_version">Sofware version. The version format can be custom, recommended is SEMVER 'major.minor.patch'.</field>
-      <field type="char[24]" name="hardware_version">Hardware version. The version format can be custom, recommended is SEMVER 'major.minor.patch'.</field>
       <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY" display="bitmask">Component capability flags</field>
+      <field type="char[32]" name="vendor_name">Name of the component vendor. Needs to be zero terminated. The field is optional and can be empty/all zeros.</field>
+      <field type="char[32]" name="model_name">Name of the component model. Needs to be zero terminated. The field is optional and can be empty/all zeros.</field>
+      <field type="char[24]" name="software_version">Software version. The recommended format is SEMVER: 'major.minor.patch'  (any format may be used). The field must be zero terminated if it has a value. The field is optional and can be empty/all zeros.</field>
+      <field type="char[24]" name="hardware_version">Hardware version. The recommended format is SEMVER: 'major.minor.patch'  (any format may be used). The field must be zero terminated if it has a value. The field is optional and can be empty/all zeros.</field>
+      <field type="char[32]" name="serial_number">Hardware serial number. The field must be zero terminated if it has a value. The field is optional and can be empty/all zeros.</field>
     </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
@@ -342,9 +495,9 @@
       <field type="uint8_t" name="number_modes">The total number of available modes for the current vehicle type.</field>
       <field type="uint8_t" name="mode_index">The current mode index within number_modes, indexed from 1.</field>
       <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
-      <field type="char[50]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
+      <field type="uint32_t" name="properties" enum="MAV_MODE_PROPERTY">Mode properties.</field>
+      <field type="char[35]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
     </message>
     <message id="436" name="CURRENT_MODE">
       <description>Get the current mode.
@@ -352,8 +505,40 @@
         It may be requested using MAV_CMD_REQUEST_MESSAGE.
       </description>
       <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="uint32_t" name="intended_custom_mode" invalid="0">The custom_mode of the mode that was last commanded by the user (for example, with MAV_CMD_DO_SET_STANDARD_MODE, MAV_CMD_DO_SET_MODE or via RC). This should usually be the same as custom_mode. It will be different if the vehicle is unable to enter the intended mode, or has left that mode due to a failsafe condition. 0 indicates the intended custom mode is unknown/not supplied</field>
+    </message>
+    <!-- Target info from a sensor on the target -->
+    <message id="510" name="TARGET_ABSOLUTE">
+      <description>Current motion information from sensors on a target</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time).</field>
+      <field type="uint8_t" name="id">The ID of the target if multiple targets are present</field>
+      <field type="uint8_t" name="sensor_capabilities" enum="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" display="bitmask">Bitmap to indicate the sensor's reporting capabilities</field>
+      <field type="int32_t" name="lat" units="degE7">Target's latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7">Target's longitude (WGS84)</field>
+      <field type="float" name="alt" units="m">Target's altitude (AMSL)</field>
+      <field type="float[3]" name="vel" units="m/s" invalid="[0]">Target's velocity in its body frame</field>
+      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">Linear target's acceleration in its body frame</field>
+      <field type="float[4]" name="q_target" invalid="[0]">Quaternion of the target's orientation from its body frame to the vehicle's NED frame.</field>
+      <field type="float[3]" name="rates" units="rad/s" invalid="[0]">Target's roll, pitch and yaw rates</field>
+      <field type="float[2]" name="position_std" units="m">Standard deviation of horizontal (eph) and vertical (epv) position errors</field>
+      <field type="float[3]" name="vel_std" units="m/s">Standard deviation of the target's velocity in its body frame</field>
+      <field type="float[3]" name="acc_std" units="m/s/s">Standard deviation of the target's acceleration in its body frame</field>
+    </message>
+    <!-- Target info measured by MAV's onboard sensors -->
+    <message id="511" name="TARGET_RELATIVE">
+      <description>The location of a target measured by MAV's onboard sensors. </description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time)</field>
+      <field type="uint8_t" name="id" instance="true">The ID of the target if multiple targets are present</field>
+      <field type="uint8_t" name="frame" enum="TARGET_OBS_FRAME">Coordinate frame used for following fields.</field>
+      <field type="float" name="x" units="m">X Position of the target in TARGET_OBS_FRAME</field>
+      <field type="float" name="y" units="m">Y Position of the target in TARGET_OBS_FRAME</field>
+      <field type="float" name="z" units="m">Z Position of the target in TARGET_OBS_FRAME</field>
+      <field type="float[3]" name="pos_std" units="m">Standard deviation of the target's position in TARGET_OBS_FRAME</field>
+      <field type="float" name="yaw_std" units="rad">Standard deviation of the target's orientation in TARGET_OBS_FRAME</field>
+      <field type="float[4]" name="q_target">Quaternion of the target's orientation from the target's frame to the TARGET_OBS_FRAME (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="float[4]" name="q_sensor">Quaternion of the sensor's orientation from TARGET_OBS_FRAME to vehicle-carried NED. (Ignored if set to (0,0,0,0)) (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of target</field>
     </message>
   </messages>
 </mavlink>

@@ -57,7 +57,7 @@ else
 <br />
 
 <p>
-Messages are defined by the <a href="https://raw.github.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml">common.xml</a> file. The C packing/unpacking code is generated from this specification, as well as the HTML documentaiton in the section above.<br />
+Messages are defined by the <a href="https://raw.github.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml">common.xml</a> file. The C packing/unpacking code is generated from this specification, as well as the HTML documentation in the section above.<br />
 <br />
 <i>The XML displayed here is updated on every commit and therefore up-to-date.</i>
 </p>

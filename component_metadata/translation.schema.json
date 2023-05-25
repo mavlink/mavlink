@@ -1,0 +1,94 @@
+{
+    "$id":          "https://mavlink.io/translation.schema.json",
+    "$schema":      "http://json-schema.org/draft-07/schema",
+    "description":  "Schema for translations (*.translation.json)",
+    "type":         "object",
+
+    "definitions": {
+        "items": {
+            "type": "object",
+
+            "patternProperties": {
+                "^(\\*|[0-9a-zA-Z-_]+)$": {
+                    "comment": "Select individual attributes by name, or use '*' to match all",
+                    "type": "object",
+                    "properties": {
+                        "items": {
+                            "type": "object",
+                            "$ref": "#/definitions/items"
+                        },
+                        "$ref": {
+                            "type": "string",
+                            "comment": "Reference to one of the items in $defs (see below)",
+                            "pattern": "^#/\\$defs/"
+                        },
+                        "translate": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Object attribute to be translated. Might refer to a string or a list of strings."
+                            }
+                        },
+                        "translate-global": {
+                            "description": "Translate globally: this can be used for repeated strings, such as a category, which is then deduplicated and thus needs to be translated only once.",
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Object attribute to be translated. Might refer to a string or a list of strings."
+                            }
+                        },
+                        "list": {
+                            "type": "object",
+                            "properties": {
+                                "key": {
+                                    "type": "string",
+                                    "description": "Optionally specify a string/integer attribute that exists in each object of the list and uniquely identifies that object. If possible, specify a key. If not is specified, list indexes will be used (which may cause translation mismatch if elements are added/removed from the list)."
+                                },
+                                "items": {
+                                    "type": "object",
+                                    "$ref": "#/definitions/items"
+                                },
+                                "translate": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "description": "See above."
+                                    }
+                                },
+                                "translate-global": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "description": "See above."
+                                    }
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+
+    "properties": {
+        "translation": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "object",
+                    "$ref": "#/definitions/items"
+                },
+                "$defs": {
+                    "comment": "Custom references (for recursive definitions). The keys in this dict can be used in a '$ref' as '#/$defs/<key>'",
+                    "$ref": "#/definitions/items"
+                }
+            },
+            "required":             [ "items" ],
+            "additionalProperties": false
+        }
+    },
+    "required":             [ "translation" ]
+}
