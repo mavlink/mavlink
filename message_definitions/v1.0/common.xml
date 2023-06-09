@@ -1082,7 +1082,7 @@
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
       <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true">
-        <description>Navigate to waypoint.</description>
+        <description>Navigate to waypoint. This is intended for use in missions (for guided commands outside of missions use MAV_CMD_DO_REPOSITION).</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2" label="Accept Radius" units="m" minValue="0">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
         <param index="3" label="Pass Radius" units="m">0 to pass through the WP, if &gt; 0 radius to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.</param>
@@ -1544,7 +1544,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="192" name="MAV_CMD_DO_REPOSITION" hasLocation="true" isDestination="true">
-        <description>Reposition the vehicle to a specific WGS84 global position.</description>
+        <description>Reposition the vehicle to a specific WGS84 global position. This command is intended for guided commands (for missions use MAV_CMD_NAV_WAYPOINT instead).</description>
         <param index="1" label="Speed" units="m/s" minValue="-1">Ground speed, less than 0 (-1) for default</param>
         <param index="2" label="Bitmask" enum="MAV_DO_REPOSITION_FLAGS">Bitmask of option flags.</param>
         <param index="3" label="Radius" units="m">Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. </param>
@@ -2122,8 +2122,8 @@
         <param index="2" label="Interval" units="s" minValue="0">Desired elapsed time between two consecutive pictures (in seconds). Minimum values depend on hardware (typically greater than 2 seconds).</param>
         <param index="3" label="Total Images" minValue="0" increment="1">Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE.</param>
         <param index="4" label="Sequence Number" minValue="1" increment="1">Capture sequence number starting from 1. This is only valid for single-capture (param3 == 1), otherwise set to 0. Increment the capture ID for each capture command to prevent double captures when a command is re-transmitted.</param>
-        <param index="5" reserved="true" default="NaN"/>
-        <param index="6" reserved="true" default="NaN"/>
+        <param index="5" reserved="true"/>
+        <param index="6" reserved="true"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE" hasLocation="false" isDestination="false">
@@ -2132,6 +2132,8 @@
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
+        <param index="5" reserved="true"/>
+        <param index="6" reserved="true"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="2002" name="MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE" hasLocation="false" isDestination="false">
@@ -2141,6 +2143,8 @@
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
+        <param index="5" reserved="true"/>
+        <param index="6" reserved="true"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="2003" name="MAV_CMD_DO_TRIGGER_CONTROL" hasLocation="false" isDestination="false">
@@ -2177,8 +2181,8 @@
         <param index="2" label="Status Frequency" minValue="0" units="Hz">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency)</param>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
-        <param index="5" reserved="true" default="NaN"/>
-        <param index="6" reserved="true" default="NaN"/>
+        <param index="5" reserved="true"/>
+        <param index="6" reserved="true"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE" hasLocation="false" isDestination="false">
@@ -2187,8 +2191,8 @@
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
-        <param index="5" reserved="true" default="NaN"/>
-        <param index="6" reserved="true" default="NaN"/>
+        <param index="5" reserved="true"/>
+        <param index="6" reserved="true"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="2502" name="MAV_CMD_VIDEO_START_STREAMING" hasLocation="false" isDestination="false">
@@ -2235,8 +2239,8 @@
         <param index="2" label="Landing Gear Position">Landing gear position (Down: 0, Up: 1, NaN for no change)</param>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
-        <param index="5" reserved="true" default="NaN"/>
-        <param index="6" reserved="true" default="NaN"/>
+        <param index="5" reserved="true"/>
+        <param index="6" reserved="true"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="2600" name="MAV_CMD_CONTROL_HIGH_LATENCY" hasLocation="false" isDestination="false">
@@ -2392,8 +2396,8 @@
         <param index="2" label="Approach Vector" units="deg" minValue="-1" maxValue="360">Desired approach vector in compass heading. A negative value indicates the system can define the approach vector at will.</param>
         <param index="3" label="Ground Speed" minValue="-1">Desired ground speed at release time. This can be overridden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will.</param>
         <param index="4" label="Altitude Clearance" units="m" minValue="-1">Minimum altitude clearance to the release position. A negative value indicates the system can define the clearance at will.</param>
-        <param index="5" label="Latitude" units="degE7">Latitude. Note, if used in MISSION_ITEM (deprecated) the units are degrees (unscaled)</param>
-        <param index="6" label="Longitude" units="degE7">Longitude. Note, if used in MISSION_ITEM (deprecated) the units are degrees (unscaled)</param>
+        <param index="5" label="Latitude" units="degE7">Latitude.</param>
+        <param index="6" label="Longitude" units="degE7">Longitude.</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
       <entry value="30002" name="MAV_CMD_PAYLOAD_CONTROL_DEPLOY" hasLocation="false" isDestination="false">
@@ -2408,7 +2412,7 @@
         <param index="7">Reserved</param>
       </entry>
       <!-- from ardupilotmega.xml (hence ID is in that range) -->
-      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW" hasLocation="true" isDestination="false">
+      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW">
         <description>Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM field tables in the vehicle, given only the known yaw of the vehicle. If Latitude and longitude are both zero then use the current vehicle location.</description>
         <param index="1" label="Yaw" units="deg">Yaw of vehicle in earth frame.</param>
         <param index="2" label="CompassMask">CompassMask, 0 for all.</param>
@@ -2743,6 +2747,9 @@
       </entry>
       <entry value="8" name="MAV_RESULT_COMMAND_INT_ONLY">
         <description>Command is valid, but it is only accepted when sent as a COMMAND_INT (as it encodes a location in params 5, 6 and 7, and hence requires a reference MAV_FRAME).</description>
+      </entry>
+      <entry value="9" name="MAV_RESULT_COMMAND_UNSUPPORTED_MAV_FRAME">
+        <description>Command is invalid because a frame is required and the specified frame is not supported.</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
