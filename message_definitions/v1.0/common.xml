@@ -6937,17 +6937,17 @@
       <field type="float" name="yaw_max" units="rad" invalid="NaN">Maximum hardware yaw angle (positive: to the right, negative: to the left). NAN if unknown.</field>
     </message>
     <message id="284" name="GIMBAL_DEVICE_SET_ATTITUDE">
-      <description>Low level message to control a gimbal device's attitude. 
-	  This message is to be sent from the gimbal manager to the gimbal device component. 
-	  The quaternion and angular velocities can be set to NaN according to use case. 
-	  For the angles encoded in the quaternion and the angular velocities holds: 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME is set, then they are relative to the vehicle heading (vehicle frame). 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is set, then they are relative to absolute North (earth frame). 
-	  If neither of these flags are set, then (for backwards compatibility) it holds: 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, then they are relative to absolute North (earth frame), 
-	  else they are relative to the vehicle heading (vehicle frame). 
-	  Setting both GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME and GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is not allowed. 
-	  These rules are to ensure backwards compatibility. 
+      <description>Low level message to control a gimbal device's attitude.
+	  This message is to be sent from the gimbal manager to the gimbal device component.
+	  The quaternion and angular velocities can be set to NaN according to use case.
+	  For the angles encoded in the quaternion and the angular velocities holds:
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME is set, then they are relative to the vehicle heading (vehicle frame).
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is set, then they are relative to absolute North (earth frame).
+	  If neither of these flags are set, then (for backwards compatibility) it holds:
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, then they are relative to absolute North (earth frame),
+	  else they are relative to the vehicle heading (vehicle frame).
+	  Setting both GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME and GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is not allowed.
+	  These rules are to ensure backwards compatibility.
 	  New implementations should always set either GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME or GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -6958,20 +6958,20 @@
       <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: yawing to the right). The frame is described in the message description. NaN to be ignored.</field>
     </message>
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
-      <description>Message reporting the status of a gimbal device. 
-	  This message should be broadcast by a gimbal device component at a low regular rate (e.g. 5 Hz). 
-	  For the angles encoded in the quaternion and the angular velocities holds: 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME is set, then they are relative to the vehicle heading (vehicle frame). 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is set, then they are relative to absolute North (earth frame). 
-	  If neither of these flags are set, then (for backwards compatibility) it holds: 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, then they are relative to absolute North (earth frame), 
-	  else they are relative to the vehicle heading (vehicle frame). 
-	  Other conditions of the flags are not allowed. 
-	  The quaternion and angular velocities in the other frame can be calculated from delta_yaw and delta_yaw_velocity as 
+      <description>Message reporting the status of a gimbal device.
+	  This message should be broadcast by a gimbal device component at a low regular rate (e.g. 5 Hz).
+	  For the angles encoded in the quaternion and the angular velocities holds:
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME is set, then they are relative to the vehicle heading (vehicle frame).
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is set, then they are relative to absolute North (earth frame).
+	  If neither of these flags are set, then (for backwards compatibility) it holds:
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, then they are relative to absolute North (earth frame),
+	  else they are relative to the vehicle heading (vehicle frame).
+	  Other conditions of the flags are not allowed.
+	  The quaternion and angular velocities in the other frame can be calculated from delta_yaw and delta_yaw_velocity as
 	  q_earth = q_delta_yaw * q_vehicle and w_earth = w_delta_yaw_velocity + w_vehicle (if not NaN).
-	  If neither the GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME nor the GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME flag is set, 
+	  If neither the GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME nor the GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME flag is set,
 	  then (for backwards compatibility) the data in the delta_yaw and delta_yaw_velocity fields are to be ignored.
-	  New implementations should always set either GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME or GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME, 
+	  New implementations should always set either GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME or GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME,
 	  and always should set delta_yaw and delta_yaw_velocity either to the proper value or NaN.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
