@@ -6711,16 +6711,16 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the camera model</field>
-      <field type="uint32_t" name="firmware_version">Version of the camera firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff)</field>
-      <field type="float" name="focal_length" units="mm">Focal length</field>
-      <field type="float" name="sensor_size_h" units="mm">Image sensor size horizontal</field>
-      <field type="float" name="sensor_size_v" units="mm">Image sensor size vertical</field>
-      <field type="uint16_t" name="resolution_h" units="pix">Horizontal image resolution</field>
-      <field type="uint16_t" name="resolution_v" units="pix">Vertical image resolution</field>
-      <field type="uint8_t" name="lens_id">Reserved for a lens ID</field>
+      <field type="uint32_t" name="firmware_version" invalid="0">Version of the camera firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff). Use 0 if not known.</field>
+      <field type="float" name="focal_length" units="mm" invalid="NaN">Focal length. Use NaN if not known.</field>
+      <field type="float" name="sensor_size_h" units="mm" invalid="NaN">Image sensor size horizontal. Use NaN if not known.</field>
+      <field type="float" name="sensor_size_v" units="mm" invalid="NaN">Image sensor size vertical. Use NaN if not known.</field>
+      <field type="uint16_t" name="resolution_h" units="pix" invalid="0">Horizontal image resolution. Use 0 if not known.</field>
+      <field type="uint16_t" name="resolution_v" units="pix" invalid="0">Vertical image resolution. Use 0 if not known.</field>
+      <field type="uint8_t" name="lens_id" invalid="0">Reserved for a lens ID.  Use 0 if not known.</field>
       <field type="uint32_t" name="flags" enum="CAMERA_CAP_FLAGS" display="bitmask">Bitmap of camera capability flags.</field>
-      <field type="uint16_t" name="cam_definition_version">Camera definition version (iteration)</field>
-      <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available). HTTP- (http://) and MAVLink FTP- (mavlinkftp://) formatted URIs are allowed (and both must be supported by any GCS that implements the Camera Protocol). The definition file may be xz compressed, which will be indicated by the file extension .xml.xz (a GCS that implements the protocol must support decompressing the file). The string needs to be zero terminated.</field>
+      <field type="uint16_t" name="cam_definition_version">Camera definition version (iteration).  Use 0 if not known.</field>
+      <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available). HTTP- (http://) and MAVLink FTP- (mavlinkftp://) formatted URIs are allowed (and both must be supported by any GCS that implements the Camera Protocol). The definition file may be xz compressed, which will be indicated by the file extension .xml.xz (a GCS that implements the protocol must support decompressing the file). The string needs to be zero terminated.  Use a zero-length string if not known.</field>
     </message>
     <message id="260" name="CAMERA_SETTINGS">
       <description>Settings of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
