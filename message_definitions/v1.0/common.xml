@@ -4927,19 +4927,6 @@
         <description>Mission has executed all mission items.</description>
       </entry>
     </enum>
-    <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-    <enum name="VELOCITY_LIMITS_MASK" bitmask="true">
-      <description>These encode velocity setpoints that are currently enabled.</description>
-      <entry value="1" name="VELOCITY_LIMITS_MASK_HORIZONTAL">
-        <description>Accept horizontal speed setpoint</description>
-      </entry>
-      <entry value="2" name="VELOCITY_LIMITS_MASK_VERTICAL">
-        <description>Accept vertical speed setpoint</description>
-      </entry>
-      <entry value="4" name="VELOCITY_LIMITS_MASK_YAW">
-        <description>Accept yaw rate setpoint</description>
-      </entry>
-    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -7268,15 +7255,13 @@
       <extensions/>
       <field type="float[58]" name="data">data</field>
     </message>
-    <wip/>
-    <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-    <!-- TODO: Make sure the ID and naming are appropiate -->
     <message id="354" name="VELOCITY_LIMITS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Temporary limits for horizontal speed, vertical speed and yaw rate to slow down the vehicle from the default configuration during operation. This message should be streamed at 1Hz while the lower limits apply. The consumer implements a timeout and returns to default limits in case the stream is lost. Accelerations are automatically adjusted accordingly.</description>
-      <field type="float" name="horizontal_speed" units="m/s">Horizontal speed in m/s</field>
-      <field type="float" name="vertical_speed" units="m/s">Vertical speed in m/s</field>
-      <field type="float" name="yaw_rate" units="rad/s">Yaw rate in rad/s</field>
-      <field type="uint8_t" name="type_mask" enum="VELOCITY_LIMITS_MASK" display="bitmask">Bitmap to indicate which velocity setpoint should be considered.</field>
+      <field type="float" name="horizontal_velocity_limit" default="NaN" units="m/s">Limit for horizontal movement in local inertial north east frame. NaN: Use vehicle default speed</field>
+      <field type="float" name="vertical_velocity_limit" default="NaN" units="m/s">Limit for vertical movement in local inertial down frame. NaN: Use vehicle default speed</field>
+      <field type="float" name="yaw_rate_limit" default="NaN" units="rad/s">Limit for vehicle turn rate around its yaw axis. NaN: Use vehicle default rate</field>
     </message>
     <message id="360" name="ORBIT_EXECUTION_STATUS">
       <wip/>
