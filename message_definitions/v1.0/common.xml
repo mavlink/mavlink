@@ -6895,7 +6895,7 @@
       <description>Information about a high level gimbal manager. This message should be requested by a ground station using MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="cap_flags" enum="GIMBAL_MANAGER_CAP_FLAGS" display="bitmask">Bitmap of gimbal capability flags.</field>
-      <field type="uint8_t" name="gimbal_device_id" instance="true">Gimbal device ID that this gimbal manager is responsible for. This should be a MAVLink component ID.</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Gimbal device ID that this gimbal manager is responsible for. Component ID of gimbal device (or 1-6 for non-MAVLink gimbal).</field>
       <field type="float" name="roll_min" units="rad">Minimum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
       <field type="float" name="roll_max" units="rad">Maximum hardware roll angle (positive: rolling to the right, negative: rolling to the left)</field>
       <field type="float" name="pitch_min" units="rad">Minimum pitch angle (positive: up, negative: down)</field>
@@ -6907,7 +6907,7 @@
       <description>Current status about a high level gimbal manager. This message should be broadcast at a low regular rate (e.g. 5Hz).</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags currently applied.</field>
-      <field type="uint8_t" name="gimbal_device_id" instance="true">Gimbal device ID that this gimbal manager is responsible for. This should be a MAVLink component ID.</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Gimbal device ID that this gimbal manager is responsible for. Component ID of gimbal device (or 1-6 for non-MAVLink gimbal).</field>
       <field type="uint8_t" name="primary_control_sysid">System ID of MAVLink component with primary control, 0 for none.</field>
       <field type="uint8_t" name="primary_control_compid">Component ID of MAVLink component with primary control, 0 for none.</field>
       <field type="uint8_t" name="secondary_control_sysid">System ID of MAVLink component with secondary control, 0 for none.</field>
@@ -6941,19 +6941,21 @@
       <field type="float" name="pitch_max" units="rad" invalid="NaN">Maximum hardware pitch angle (positive: up, negative: down). NAN if unknown.</field>
       <field type="float" name="yaw_min" units="rad" invalid="NaN">Minimum hardware yaw angle (positive: to the right, negative: to the left). NAN if unknown.</field>
       <field type="float" name="yaw_max" units="rad" invalid="NaN">Maximum hardware yaw angle (positive: to the right, negative: to the left). NAN if unknown.</field>
+      <extensions/>
+      <field type="uint8_t" name="gimbal_device_id" invalid="0">This field is to be used if the gimbal manager and the gimbal device are the same component and hence have the same component ID. This field is then set to a number between 1-6. If the component ID is separate, this field is not required and must be set to 0.</field>
     </message>
     <message id="284" name="GIMBAL_DEVICE_SET_ATTITUDE">
-      <description>Low level message to control a gimbal device's attitude. 
-	  This message is to be sent from the gimbal manager to the gimbal device component. 
-	  The quaternion and angular velocities can be set to NaN according to use case. 
-	  For the angles encoded in the quaternion and the angular velocities holds: 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME is set, then they are relative to the vehicle heading (vehicle frame). 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is set, then they are relative to absolute North (earth frame). 
-	  If neither of these flags are set, then (for backwards compatibility) it holds: 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, then they are relative to absolute North (earth frame), 
-	  else they are relative to the vehicle heading (vehicle frame). 
-	  Setting both GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME and GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is not allowed. 
-	  These rules are to ensure backwards compatibility. 
+      <description>Low level message to control a gimbal device's attitude.
+	  This message is to be sent from the gimbal manager to the gimbal device component.
+	  The quaternion and angular velocities can be set to NaN according to use case.
+	  For the angles encoded in the quaternion and the angular velocities holds:
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME is set, then they are relative to the vehicle heading (vehicle frame).
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is set, then they are relative to absolute North (earth frame).
+	  If neither of these flags are set, then (for backwards compatibility) it holds:
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, then they are relative to absolute North (earth frame),
+	  else they are relative to the vehicle heading (vehicle frame).
+	  Setting both GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME and GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is not allowed.
+	  These rules are to ensure backwards compatibility.
 	  New implementations should always set either GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME or GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -6964,20 +6966,20 @@
       <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity (positive: yawing to the right). The frame is described in the message description. NaN to be ignored.</field>
     </message>
     <message id="285" name="GIMBAL_DEVICE_ATTITUDE_STATUS">
-      <description>Message reporting the status of a gimbal device. 
-	  This message should be broadcast by a gimbal device component at a low regular rate (e.g. 5 Hz). 
-	  For the angles encoded in the quaternion and the angular velocities holds: 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME is set, then they are relative to the vehicle heading (vehicle frame). 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is set, then they are relative to absolute North (earth frame). 
-	  If neither of these flags are set, then (for backwards compatibility) it holds: 
-	  If the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, then they are relative to absolute North (earth frame), 
-	  else they are relative to the vehicle heading (vehicle frame). 
-	  Other conditions of the flags are not allowed. 
-	  The quaternion and angular velocities in the other frame can be calculated from delta_yaw and delta_yaw_velocity as 
+      <description>Message reporting the status of a gimbal device.
+	  This message should be broadcast by a gimbal device component at a low regular rate (e.g. 5 Hz).
+	  For the angles encoded in the quaternion and the angular velocities holds:
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME is set, then they are relative to the vehicle heading (vehicle frame).
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME is set, then they are relative to absolute North (earth frame).
+	  If neither of these flags are set, then (for backwards compatibility) it holds:
+	  If the flag GIMBAL_DEVICE_FLAGS_YAW_LOCK is set, then they are relative to absolute North (earth frame),
+	  else they are relative to the vehicle heading (vehicle frame).
+	  Other conditions of the flags are not allowed.
+	  The quaternion and angular velocities in the other frame can be calculated from delta_yaw and delta_yaw_velocity as
 	  q_earth = q_delta_yaw * q_vehicle and w_earth = w_delta_yaw_velocity + w_vehicle (if not NaN).
-	  If neither the GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME nor the GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME flag is set, 
+	  If neither the GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME nor the GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME flag is set,
 	  then (for backwards compatibility) the data in the delta_yaw and delta_yaw_velocity fields are to be ignored.
-	  New implementations should always set either GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME or GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME, 
+	  New implementations should always set either GIMBAL_DEVICE_FLAGS_YAW_IN_VEHICLE_FRAME or GIMBAL_DEVICE_FLAGS_YAW_IN_EARTH_FRAME,
 	  and always should set delta_yaw and delta_yaw_velocity either to the proper value or NaN.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -6991,6 +6993,7 @@
       <extensions/>
       <field type="float" name="delta_yaw" units="rad" invalid="NAN">Yaw angle relating the quaternions in earth and body frames (see message description). NaN if unknown.</field>
       <field type="float" name="delta_yaw_velocity" units="rad/s" invalid="NAN">Yaw angular velocity relating the angular velocities in earth and body frames (see message description). NaN if unknown.</field>
+      <field type="uint8_t" name="gimbal_device_id" invalid="0">This field is to be used if the gimbal manager and the gimbal device are the same component and hence have the same component ID. This field is then set a number between 1-6. If the component ID is separate, this field is not required and must be set to 0.</field>
     </message>
     <message id="286" name="AUTOPILOT_STATE_FOR_GIMBAL_DEVICE">
       <description>Low level message containing autopilot state relevant for a gimbal device. This message is to be sent from the autopilot to the gimbal device component. The data of this message are for the gimbal device's estimator corrections, in particular horizon compensation, as well as indicates autopilot control intentions, e.g. feed forward angular control in the z-axis.</description>
