@@ -3912,8 +3912,8 @@
       <entry value="4" name="ATTITUDE_TARGET_TYPEMASK_BODY_YAW_RATE_IGNORE">
         <description>Ignore body yaw rate</description>
       </entry>
-      <entry value="16" name="ATTITUDE_TARGET_TYPEMASK_IGNORE_QUATERNION_YAW">
-        <description>Ignore yaw in attitude quaternion. Use yaw rate instead</description>
+      <entry value="16" name="ATTITUDE_TARGET_TYPEMASK_BODY_QUATERNION_IGNORE_YAW">
+          <description>Treat attitude in level body frame FRD. Ignore Yaw Component. Pitch and Roll are valid</description>
       </entry>
       <entry value="32" name="ATTITUDE_TARGET_TYPEMASK_THRUST_BODY_SET">
         <description>Use 3D body thrust setpoint instead of throttle</description>
@@ -5621,7 +5621,6 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="frame_mask" enum="MAV_FRAME">Mav Frame for attitude</field> 
       <field type="uint8_t" name="type_mask" enum="ATTITUDE_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float" name="body_roll_rate" units="rad/s">Body roll rate</field>
