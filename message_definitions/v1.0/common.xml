@@ -5289,9 +5289,9 @@
       <field type="uint16_t" name="total" invalid="UINT16_MAX">Total number of mission items on vehicle (on last item, sequence == total). If the autopilot stores its home location as part of the mission this will be excluded from the total. 0: Not supported, UINT16_MAX if no mission is present on the vehicle.</field>
       <field type="uint8_t" name="mission_state" enum="MISSION_STATE" invalid="0">Mission state machine state. MISSION_STATE_UNKNOWN if state reporting not supported.</field>
       <field type="uint8_t" name="mission_mode" invalid="0">Vehicle is in a mode that can execute mission items or suspended. 0: Unknown, 1: In mission mode, 2: Suspended (not in mission mode).</field>
-      <field type="uint32_t" name="mission_id" invalid="0">Id of current on-vehicle mission plan, or 0 if IDs are not supported. GCS can use this to track changes to the mission plan type. The same value is returned on mission upload (in the MISSION_ACK).</field>
-      <field type="uint32_t" name="fence_id" invalid="0">Id of current on-vehicle fence plan, or 0 if  IDs are not supported. GCS can use this to track changes to the plan type. The same value is returned on fence upload (in the MISSION_ACK).</field>
-      <field type="uint32_t" name="rally_point" invalid="0">Id of current on-vehicle rally point plan, or 0 if IDs are not supported. GCS can use this to track changes to the mission plan type. The same value is returned on rally point upload (in the MISSION_ACK).</field>
+      <field type="uint32_t" name="mission_id" invalid="0">Id of current on-vehicle mission plan, or 0 if IDs are not supported or there is no mission loaded. GCS can use this to track changes to the mission plan type. The same value is returned on mission upload (in the MISSION_ACK).</field>
+      <field type="uint32_t" name="fence_id" invalid="0">Id of current on-vehicle fence plan, or 0 if IDs are not supported or there is no fence loaded. GCS can use this to track changes to the fence plan type. The same value is returned on fence upload (in the MISSION_ACK).</field>
+      <field type="uint32_t" name="rally_point" invalid="0">Id of current on-vehicle rally point plan, or 0 if IDs are not supported or there are no rally points loaded. GCS can use this to track changes to the rally point plan type. The same value is returned on rally point upload (in the MISSION_ACK).</field>
 
 	    
     </message>
