@@ -7583,7 +7583,11 @@
     </message>
     <!-- The message ids 12916 - 12917 are reserved for OpenDroneID. -->
     <message id="12918" name="OPEN_DRONE_ID_ARM_STATUS">
-      <description>Transmitter (remote ID system) is enabled and ready to start sending location and other required information. This is streamed by transmitter. A flight controller uses it as a condition to arm.</description>
+      <description>Transmitter (remote ID system) is enabled and ready to start sending location and other required information. This is streamed by transmitter.
+        The flight controller must required a status of MAV_ODID_ARM_STATUS_GOOD_TO_ARM as an arming condition.
+        During flight, any other status indicates the Remote ID is unhealthy, and should be reported in OPEN_DRONE_ID_LOCATION by setting its status to MAV_ODID_STATUS_REMOTE_ID_SYSTEM_FAILURE
+        The message should be forwarded to ground stations if present.
+      </description>
       <field type="uint8_t" name="status" enum="MAV_ODID_ARM_STATUS">Status level indicating if arming is allowed.</field>
       <field type="char[50]" name="error">Text error message, should be empty if status is good to arm. Fill with nulls in unused portion.</field>
     </message>
