@@ -6195,6 +6195,12 @@
       <field type="uint32_t" name="active" display="bitmask">Active outputs</field>
       <field type="float[32]" name="actuator">Servo / motor output array values. Zero values indicate unused channels.</field>
     </message>
+    <message id="376" name="RELAY_STATUS">
+      <description>Reports the on/off state of relays, as controlled by MAV_CMD_DO_SET_RELAY.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint16_t" name="on" display="bitmask">Relay states.  Relay instance numbers are represented as individual bits in this mask by offset.</field>
+      <field type="uint16_t" name="present" display="bitmask">Relay present.  Relay instance numbers are represented as individual bits in this mask by offset.  Bits will be true if a relay instance is configured.</field>
+    </message>
     <message id="385" name="TUNNEL">
       <description>Message for transporting "arbitrary" variable-length data from one component to another (broadcast is not forbidden, but discouraged). The encoding of the data is usually extension specific, i.e. determined by the source, and is usually not documented as part of the MAVLink specification.</description>
       <field type="uint8_t" name="target_system">System ID (can be 0 for broadcast, but this is discouraged)</field>
