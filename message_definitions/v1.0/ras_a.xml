@@ -1,9 +1,18 @@
 <?xml version="1.0"?>
 <mavlink>
+  <!-- Contact: Nuno Marques <n.marques21@hotmail.com> | Github: TSC21 -->
+  <!-- message ID range: 51000 - 51999 -->
+  <!-- command ID range: 51000 - 51999 -->
   <include>development.xml</include>
   <version>0</version>
   <dialect>0</dialect>
   <enums>
+    <enum name="MAV_TYPE">
+      <description>MAVLINK component type reported in HEARTBEAT message.</description>
+      <entry value="43" name="MAV_TYPE_GENERIC_COMPONENT">
+        <description>Generic component which implements the generic component attribute discovery and control interface through mavlink parameter exchange.</description>
+      </entry>
+    </enum>
     <enum name="MAV_AUTOPILOT">
       <description>Micro air vehicle / autopilot classes. This identifies the individual model.</description>
       <entry value="21" name="MAV_AUTOPILOT_SKYDIO">
@@ -11,6 +20,18 @@
       </entry>
       <entry value="22" name="MAV_AUTOPILOT_SHIELD_AI">
         <description>Shield AI - https://shield.ai/</description>
+      </entry>
+    </enum>
+    <enum name="MAV_COMPONENT">
+      <description>Component ids (values) for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.).
+      Components must use the appropriate ID in their source address when sending messages. Components can also use IDs to determine if they are the intended recipient of an incoming message. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components.
+      When creating new entries, components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequential values. An appropriate number of values should be left free after these components to allow the number of instances to be expanded.</description>
+      <!-- Component ids from 25-99 are reserved for private OEM component definitions (and may be incompatible with other private components). Note that if this range is later reduced, higher ids will be reallocated first. -->
+      <entry value="199" name="MAV_COMP_ID_AUTONOMY_ENGINE">
+        <description>Component that manages autonomy behaviors/subsystems above and beyond those implemented by the autopilot (MAV_COMP_ID_AUTOPILOT1). Managed subsystems could include Kalman Filters integrating sensors not interfaced to the autopilot, obstacle avoidance, path planning, vision systems and other sensors. The autonomy engine may implement a superset of the functionality available from other seldom-used components such as MAV_COMP_ID_OBSTACLE_AVOIDANCE, MAV_COMP_ID_PATHPLANNER, MAV_COMP_ID_OBSTACLE_AVOIDANCE, and MAV_COMP_ID_ONBOARD_COMPUTER.</description>
+      </entry>
+      <entry value="254" name="MAV_COMP_ID_MONOLITHIC">
+        <description>A single component which presents many attributes and capabilities which prevent it from being binned into any of the other IDs in this enum. For context, refer to the monolithic generic component example in air-iop documentation release 1.2</description>
       </entry>
     </enum>
     <enum name="MAV_PROTOCOL_CAPABILITY" bitmask="true">
@@ -34,7 +55,7 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="40500" name="MAV_CMD_GO_THROUGH_PORTAL" hasLocation="true" isDestination="false">
+      <entry value="51000" name="MAV_CMD_GO_THROUGH_PORTAL" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
@@ -43,7 +64,7 @@
           COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates used for the portal position (MAV_FRAME_GLOBAL means global coordinates are being used,
           while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
-        <param index="1" label="Portal ID" minValue="0" maxValue="4294967295" increment="1">ID of the portal. If the ID is unknown or not deterministic, set it to UINT32_MAX and use params 5, 6 and 7 to define the local or global position of the portal.</param>
+        <param index="1" label="Portal ID" minValue="0" maxValue="2147483647" increment="1">ID of the portal. If the ID is unknown or not deterministic, set it to UINT32_MAX and use params 5, 6 and 7 to define the local or global position of the portal.</param>
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
@@ -51,7 +72,7 @@
         <param index="6" label="Position Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the portal position. INT32_MAX if unknown (or if using param 1 to set the portal).</param>
         <param index="7" label="Position Z or Altitude (MSL)">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the portal position. NaN when unknown or when using param 1 to set the portal.</param>
       </entry>
-      <entry value="40501" name="MAV_CMD_SET_INGRESS_PORTAL" hasLocation="true" isDestination="false">
+      <entry value="51001" name="MAV_CMD_SET_INGRESS_PORTAL" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
@@ -59,7 +80,7 @@
           COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates used for the approach vector (MAV_FRAME_GLOBAL means global coordinates are being used,
           while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
-        <param index="1" label="Portal ID" minValue="0" maxValue="4294967295" increment="1">ID of the portal to be set as an ingress point.</param>
+        <param index="1" label="Portal ID" minValue="0" maxValue="2147483647" increment="1">ID of the portal to be set as an ingress point.</param>
         <param index="2" label="Approach vector initial point X or Latitude">X (m) or Latitude (deg) (WGS84) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
         <param index="3" label="Approach vector initial point Y or Longitude">Y (m) or Longitude (deg) (WGS84) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
         <param index="4" label="Approach vector initial point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
@@ -67,7 +88,7 @@
         <param index="6" label="Approach vector final point Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. INT32_MAX if unknown.</param>
         <param index="7" label="Approach vector final point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. NaN if unknown.</param>
       </entry>
-      <entry value="40502" name="MAV_CMD_SET_EGRESS_PORTAL" hasLocation="true" isDestination="false">
+      <entry value="51002" name="MAV_CMD_SET_EGRESS_PORTAL" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
@@ -75,7 +96,7 @@
           COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates used for the approach vector (MAV_FRAME_GLOBAL means global coordinates are being used,
           while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
-        <param index="1" label="Portal ID" minValue="0" maxValue="4294967295" increment="1">ID of the portal to be set as an egress point.</param>
+        <param index="1" label="Portal ID" minValue="0" maxValue="2147483647" increment="1">ID of the portal to be set as an egress point.</param>
         <param index="2" label="Approach vector initial point X or Latitude">X (m) or Latitude (deg) (WGS84) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
         <param index="3" label="Approach vector initial point Y or Longitude">Y (m) or Longitude (deg) (WGS84) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
         <param index="4" label="Approach vector initial point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the initial point of the approach vector to the portal. NaN if unknown.</param>
@@ -83,7 +104,7 @@
         <param index="6" label="Approach vector final point Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. INT32_MAX if unknown.</param>
         <param index="7" label="Approach vector final point Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the final point of the approach vector to the portal. NaN if unknown.</param>
       </entry>
-      <entry value="40510" name="MAV_CMD_DO_EXPLORATION" hasLocation="true" isDestination="false">
+      <entry value="51010" name="MAV_CMD_DO_EXPLORATION" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
@@ -97,12 +118,12 @@
         <param index="1" label="Exploration task ID" minValue="0" maxValue="255" increment="1">Sets the ID of the exploration task to start. If the ID already exists, it resumes that (queued/listed) exploration task. Set to UINT8_MAX if one wants to resume the last exploration task.</param>
         <param index="2" label="Time limit" units="s" minValue="0">Time limit to execute the exploration. Reaching this time triggers the behavior defined in param 4. Set to 0 when there is no time limit.</param>
         <param index="3" label="Behavior after finishing" minValue="0" maxValue="2" increment="1">The behavior after finishing the exploration task. 0: Hold, 1: Land, 2: Return to position.</param>
-        <param index="4" label="Ingress Portal ID" minValue="0" maxValue="4294967295" increment="1">ID of the ingress portal. If the ID is unknown, not deterministic, or when already in the area to explore after going through a portal, set it to UINT32_MAX and use params 5, 6 and 7 to define the local or global position of the portal. Note that an egress portal is not defined by this command but can be consequently set either by the vehicle autonomy engine or by an operator/external controller using MAV_CMD_SET_EGRESS_PORTAL.</param>
+        <param index="4" label="Ingress Portal ID" minValue="0" maxValue="2147483647" increment="1">ID of the ingress portal. If the ID is unknown, not deterministic, or when already in the area to explore after going through a portal, set it to UINT32_MAX and use params 5, 6 and 7 to define the local or global position of the portal. Note that an egress portal is not defined by this command but can be consequently set either by the vehicle autonomy engine or by an operator/external controller using MAV_CMD_SET_EGRESS_PORTAL.</param>
         <param index="5" label="Position X or Latitude">X (mE4) or Latitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the portal position. INT32_MAX if unknown (or if using param 4 to set the portal).</param>
         <param index="6" label="Position Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the portal position. INT32_MAX if unknown (or if using param 4 to set the portal).</param>
         <param index="7" label="Position Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the portal position. NaN when unknown or when using param 4 to set the portal ID.</param>
       </entry>
-      <entry value="40511" name="MAV_CMD_STOP_EXPLORATION" hasLocation="false" isDestination="false">
+      <entry value="51011" name="MAV_CMD_STOP_EXPLORATION" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
@@ -110,7 +131,7 @@
           Return to position should take the vehicle to the defined exit portal first, and then to the return post-exploration point (accessible through EXPLORATION_RETURN_POSITION).
           If the passed exploration ID does not exist or is not listed as a valid exploration ID in the vehicle autonomy engine, then this command should be rejected.
         </description>
-        <param index="1" label="Exploration task ID" minValue="0" maxValue="4294967295" increment="1">Sets the ID of the (current or queued) exploration task to stop. Set to UINT32_MAX if one wants to stop the current exploration task.</param>
+        <param index="1" label="Exploration task ID" minValue="0" maxValue="2147483647" increment="1">Sets the ID of the (current or queued) exploration task to stop. Set to UINT32_MAX if one wants to stop the current exploration task.</param>
         <param index="2" label="Behavior after stopping" minValue="0" maxValue="2" increment="1">The behavior after stopping the exploration task. 0: Hold, 1: Land, 2: Return to position.</param>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
@@ -118,7 +139,7 @@
         <param index="6" reserved="true" default="0"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
-      <entry value="40512" name="MAV_CMD_SET_EXPLORATION_RETURN_POS" hasLocation="true" isDestination="false">
+      <entry value="51012" name="MAV_CMD_SET_EXPLORATION_RETURN_POS" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
@@ -126,7 +147,7 @@
           COMMAND_INT should be used with its MAV_FRAME set appropriately. This will affect the coordinates used for the position (MAV_FRAME_GLOBAL means global coordinates are being used,
           while MAV_FRAME_LOCAL_NED means local NED coordinates are being used).
         </description>
-        <param index="1" label="Exploration task ID" minValue="0" maxValue="4294967295" increment="1">ID of the exploration to set the return position to. Set to UINT32_MAX if one wants to set it to the current exploration task.</param>
+        <param index="1" label="Exploration task ID" minValue="0" maxValue="2147483647" increment="1">ID of the exploration to set the return position to. Set to UINT32_MAX if one wants to set it to the current exploration task.</param>
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" label="Yaw or Heading" units="rad">Yaw or heading of the return position. NaN if unknown.</param>
@@ -134,7 +155,7 @@
         <param index="6" label="Position Y or Longitude">Y (mE4) or Longitude (degE7) (WGS84) coordinate (depending on MAV_FRAME) of the return position. INT32_MAX if unknown.</param>
         <param index="7" label="Position Z or Altitude (MSL)" units="m">Z or Altitude (MSL) coordinate (depending on MAV_FRAME) of the return position. NaN if unknown.</param>
       </entry>
-      <entry value="40513" name="MAV_CMD_DO_EXPLORATION_RETURN" hasLocation="false" isDestination="false">
+      <entry value="51013" name="MAV_CMD_DO_EXPLORATION_RETURN" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Return to a system-defined position after exploration.</description>
@@ -146,7 +167,7 @@
         <param index="6" reserved="true" default="0"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
-      <entry value="40514" name="MAV_CMD_SET_EXPLORATION_BOUNDARIES" hasLocation="true" isDestination="false">
+      <entry value="51014" name="MAV_CMD_SET_EXPLORATION_BOUNDARIES" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
@@ -166,13 +187,35 @@
         <param index="6" label="Y2 or Longitude 2">Local Y (mE4) or Longitude (degE7) (WGS84) (depending on MAV_FRAME) of point 2 of the exploration 3D space boundaries cuboid. INT32_MAX if not applicable.</param>
         <param index="7" label="Z3 or Altitude 3" units="m">Local Z or Altitude (MSL) (depending on MAV_FRAME) point 3 of the exploration 3D space boundaries cuboid. This also represents the height of the bottom plane of the cuboid. NaN if not applicable.</param>
       </entry>
-      <entry value="41050" name="MAV_CMD_SET_POI_FOCUS" hasLocation="false" isDestination="false">
+      <entry value="51020" name="MAV_CMD_SET_POI_FOCUS" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Sets a POI at the current focus point of the camera frame. This assumes that the camera system has the ability to geo-locate the current focus point.</description>
         <param index="1" label="Operation mode" minValue="0" maxValue="1" increment="1">Operation mode. 0 = set POI at current location; 1 = set POI at current location and track it.</param>
         <param index="2" label="X Position in the camera frame" minValue="0" increment="1">Position given by the number of pixels in X direction of the camera frame. Origin on the bottom left corner of the camera frame.</param>
         <param index="3" label="Y Position in the camera frame" minValue="0" increment="1">Position given by the number of pixels in Y direction of the camera frame. Origin on the bottom left corner of the camera frame.</param>
+      </entry>
+      <entry value="51021" name="MAV_CMD_DO_FOLLOW_POI" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Invoke platform to begin following a POI as a subject</description>
+        <param index="1" label="POI UID" minValue="0" maxValue="2147483647" increment="1">UID of the POI to follow</param>
+        <param index="2" label="Follow Mode" minValue="0" increment="1" enum="FOLLOW_MODE">Mode by which to follow the POI</param>
+        <param index="3" label="Relative Follow Altitude" units="m">The desired vertical offset in meters to attempt to maintain relative to the altitude of the subject.  Positive if following from above.  NaN if no preference.</param>
+        <param index="4" label="Subject Follow Distance" units="m">Distance in 3D meters to attempt to maintain from target subject</param>
+        <param index="5" label="Subject Follow Bearing" units="deg">Bearing in degrees from POI to attempt to maintain</param>
+      </entry>
+      <entry value="51050" name="MAV_CMD_COMPONENT_CONTROL" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Control the state or functionality of system components.</description>
+        <param index="1" label="Component ID" enum="MAV_COMPONENT">Component ID of the system component to be controlled.</param>
+        <param index="2" label="Component Control Type" enum="COMPONENT_CONTROL">Control command type being sent to the system component.</param>
+        <param index="3" label="Component Instance ID" minValue="0" maxValue="255" increment="1">Identifier for the component instance. It matches an internal mapping on the system to a component/service/process ID. This is applicable when there exists a system/service manager that handles this command and interfaces with components and its instances, or when the component itself is aware of its instance number (when the target component of the command is the component to control). If there is only one instance of the component, or when one wants to control all the instances of the component, set the field to 0.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
       </entry>
     </enum>
     <enum name="POI_GEOMETRY_TYPE">
@@ -357,9 +400,45 @@
         <description>Exploration task fault caused by a navigation problem.</description>
       </entry>
     </enum>
+    <enum name="FOLLOW_MODE">
+      <description>These values define various methods of following a subject</description>
+      <entry value="0" name="MOTION_FOLLOW">
+        <description>Platform moves in whatever method it can to best follow a subject using subject_follow_dist and subject_follow_bearing as suggestions</description>
+      </entry>
+      <entry value="1" name="FIXED_FOLLOW">
+        <description>Platform maintains a fixed range (subject_follow_dist) and bearing (subject_follow_bearing) to the subject</description>
+      </entry>
+      <entry value="2" name="ORBIT">
+        <description>Platform continually orbits the moving subject at subject_follow_dist radius. Ignores subject_follow_bearing</description>
+      </entry>
+      <entry value="3" name="TRIPOD">
+        <description>Platform stays stationary but its sensors follow the subject.  Ignores subject_follow_dist and subject_follow_bearing</description>
+      </entry>
+    </enum>
+    <enum name="COMPONENT_CONTROL">
+      <description>Type of controls or state changes for system components.</description>
+      <entry value="1" name="COMPONENT_CONTROL_START">
+        <description>Start/turn-on system component.</description>
+      </entry>
+      <entry value="2" name="COMPONENT_CONTROL_STOP">
+        <description>Stop/turn-off system component.</description>
+      </entry>
+      <entry value="3" name="COMPONENT_CONTROL_RESTART">
+        <description>Restart/reboot system component.</description>
+      </entry>
+      <entry value="4" name="COMPONENT_CONTROL_RESTART_AND_KEEP_BL">
+        <description>Restart/reboot system component and keep it in the bootloader until upgraded.</description>
+      </entry>
+      <entry value="5" name="COMPONENT_CONTROL_ENABLE">
+        <description>Enable system component. Used to switch a system component from an idle state to an active state.</description>
+      </entry>
+      <entry value="6" name="COMPONENT_CONTROL_DISABLE">
+        <description>Disable system component. Used to switch a system component from an active state to an idle state.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
-    <message id="238" name="POI_REPORT">
+    <message id="51000" name="POI_REPORT">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Reports information for a detected Point-of-Interest (POI).
@@ -368,11 +447,11 @@
         Detection time happens once for the same UID, while time of update changes when a specific metadata of that POI gets changed (e.g. position).
         The time of update should be changed on the sending system, based on the determined data in regards to that specific POI.
         So, POIs that are received again should be updated if the time of update has changed.
-        Note: The sending system should repeat the current POIs at a fixed default rate of at 2Hz to keep the protocol stateless.
+        Note: The sending system should repeat the current POIs at a max rate of 5Hz, in order to conserve bandwidth.
         The fixed rate though can be set by the receiver using MAV_CMD_SET_MESSAGE_INTERVAL, which is advised for POIs that are not static or for which
         the state updates are high - decision on the rates of some specific POIs is at the implementers consideration.
       </description>
-      <field type="uint64_t" name="uid" invalid="0">Unique ID for a given POI. Updates to a POIs information should use the same uid. 0 means unknown.</field>
+      <field type="uint32_t" name="uid" invalid="0">Unique ID for a given POI. Updates to a POIs information should use the same uid. Maximum integer to use is 2,147,483,647 (for the purposes of type-safety when converting back and forth to floating-point fields). 0 means unknown.</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="time_utc_detected" units="ms" invalid="0">Timestamp (time since UNIX epoch) of the POI detection, in UTC. 0 for unknown.</field>
       <field type="uint64_t" name="time_utc_updated" units="ms" invalid="0">Timestamp (time since UNIX epoch) of the last POI update, in UTC. 0 for unknown.</field>
@@ -397,17 +476,8 @@
       <field type="float" name="vel_e" units="m/s" invalid="NaN">East velocity of the POI. NAN if unknown.</field>
       <field type="float" name="vel_d" units="m/s" invalid="NaN">Down velocity of the POI. NAN if unknown.</field>
       <field type="float" name="hdg" units="rad" invalid="NaN">Heading of the POI in the NED frame. NAN if unknown.</field>
-      <field type="float" name="height" units="m" invalid="NaN">Height of the POI shape. When the geometry is a circle, sphere or cylinder, represents the radius. NAN if unknown.</field>
-      <field type="float" name="width" units="m" invalid="NaN">Width of the POI shape. NAN if unknown.</field>
-      <field type="float" name="depth" units="m" invalid="NaN">Depth of the POI shape. NAN if unknown.</field>
-      <field type="uint8_t" name="geometry" enum="POI_GEOMETRY_TYPE">POI geometry type.</field>
-      <field type="float[3]" name="approach_vector_start" units="m" invalid="[NaN]">Recommended vector start point, in the NED frame, for vehicle approach to the POI. This can either be determined by the end system where the POI was detected or by a system forwarding the information to another vehicle. Unknown is NaN, NaN, NaN.</field>
-      <field type="float[3]" name="approach_vector_end" units="m" invalid="[NaN]">Recommended vector end point, in the NED frame, for vehicle approach to the POI. This can either be determined by the end system where the POI was detected or by a system forwarding the information to another vehicle. Unknown is NaN, NaN, NaN.</field>
-      <field type="float[3]" name="approach_velocity" units="m/s" invalid="[NaN]">Recommended NED velocity for vehicle approach to the POI. This can either be determined by the end system where the POI was detected ir by a system forwarding the information to another vehicle. Unknown is NaN, NaN, NaN.</field>
-      <field type="char[32]" name="name">Name of the POI, if the system provides one. NULL terminated string.</field>
-      <field type="char[31]" name="app6_symbol">APP-6(D) standard symbol 30-digit Symbol Identification Code (SIDC) that provides the necessary information to display a tactical symbol. The SIDC is formed with eleven elements which are presented in two sets of ten digits and an additional set of ten digits composed of three elements, which are optional. Any unspecified element should be set to '0'. The way these codes are built can be checked on the Annex A to the APP-6 - NATO Joint Military Symbology, version D. NULL terminated string.</field>
     </message>
-    <message id="450" name="EXPLORATION_STATUS">
+    <message id="51100" name="EXPLORATION_STATUS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Provides status over an exploration task. The message should, by default, be streamed at 1Hz.</description>
@@ -419,7 +489,7 @@
       <field type="uint16_t" name="flags" enum="MAV_EXPLORATION_STATUS_FLAGS">Bitmap of the exploration task status flags.</field>
       <field type="int8_t" name="level" invalid="INT8_MAX">In an indoor exploration task, it indicates the floor/level of the structure that is currently being explored. The level where the vehicle started the exploration is considered the level 0. INT8_MAX when unknown, not capable to provide or not applicable.</field>
     </message>
-    <message id="451" name="EXPLORATION_INFO">
+    <message id="51101" name="EXPLORATION_INFO">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Provides configuration information about an exploration task.
@@ -450,7 +520,7 @@
       <field type="int32_t" name="egress_portal_lon" units="degE7" invalid="INT32_MAX">Currently defined egress portal Longitude (WGS84). INT32_MAX if unknown, not applicable or when egress_portal_id is set and different from UINT32_MAX.</field>
       <field type="float" name="egress_portal_alt" units="m" invalid="NaN">Currently defined egress portal Altitude (MSL). NaN if unknown, not applicable or when egress_portal_id is set and different from UINT32_MAX.</field>
     </message>
-    <message id="452" name="EXPLORATION_RETURN_POSITION">
+    <message id="51102" name="EXPLORATION_RETURN_POSITION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Provides the return-from-exploration position when an exploration is completed (e.g. volume set by the exploration boundaries does not have new open areas for
