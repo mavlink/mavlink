@@ -363,18 +363,6 @@
         <param index="7" reserved="true"/>
       </entry>
     </enum>
-    <enum name="CURRENT_CONTROL_ENTITY">
-      <description>List of the currently active control entity.</description>
-      <entry value="0" name="CURRENT_CONTROL_ENTITY_NONE">
-        <description>Setting if no entity has control ownership.</description>
-      </entry>
-      <entry value="1" name="CURRENT_CONTROL_ENTITY_OWNER">
-        <description>Setting if the receiving GCS is the control entity.</description>
-      </entry>
-      <entry value="2" name="CURRENT_CONTROL_ENTITY_OTHER">
-        <description>Setting if a GCS other than the receiving GCS is the control entity.</description>
-      </entry>
-    </enum>
     <enum name="CONTROL_TARGET_REQUEST">
       <description>Selection of control target for changing ownership.</description>
       <entry value="0" name="CONTROL_TARGET_ALL">
@@ -553,58 +541,6 @@
         This is only emitted after the first change and should then be broadcast at low rate (nominally 0.3 Hz) and on change.
       </description>
       <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically).</field>
-    </message>
-    <message id="441" name="CONTROL_STATUS">
-      <description>Status message indicating the currently active flight control and payload control entity.
-        This message should typically be send from the system at a low frequency as well as after a control ownership change to all connected GCS. 
-      </description>
-      <field type="uint8_t" name="current_flight_controller" enum="CURRENT_CONTROL_ENTITY">Current flight control entity.</field>
-      <field type="uint8_t" name="current_payload_controller" enum="CURRENT_CONTROL_ENTITY">Current payload control entity.</field>
-    </message>
-    <message id="442" name="REQUEST_CONTROL">
-      <description>Request the flight control and/or the payload control of the target system by a GCS.
-        The message can be used in a multi GCS environment. A GCS can request the control ownership of the target system. 
-      </description>
-      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to change to own ownership.</field>
-      <field type="uint8_t" name="request_priority" default="0">Priority of the control request. If the priority is higher than the priority
-        of the current control entity, control is given without handoff request. 
-        The priority request should be authenticated on the target system before granting this privilegs. Default value of 0.</field>
-      <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
-      <field type="char[100]" name="reason">Reason for taking ownership.</field>
-    </message>
-    <message id="443" name="REQUEST_CONTROL_ACK">
-      <description>Error code response of the target system to the control ownership request.
-      </description>
-      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target which was processed.</field>
-      <field type="uint8_t" name="error_code" enum="CONTROL_REQUEST_ERROR_CODE">Error code response.</field>
-    </message>
-    <message id="444" name="RELEASE_CONTROL">
-      <description>Release the previously aquired control. 
-        The message can be used in a multi GCS environment to release the control of the target system. 
-        This message is ignored when the GCS is not the current active control entity of the control target.
-      </description>
-      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to release own ownership.</field>
-    </message>
-    <message id="445" name="REQUEST_HANDOFF">
-      <description>Request handoff of current control entity.
-        This message is send from the system to the current active control entity to request the handoff of the control target to another GCS.
-      </description>
-      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff control ownership.</field>
-      <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
-      <field type="char[100]" name="reason">Reason from the control entity requesting ownership.</field>
-    </message>
-    <message id="446" name="HANDOFF_RESPOND">
-      <description>Handoff response to handoff request. 
-        This message is the response from the GCS in control to the handoff request.
-      </description>
-      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff.</field>
-      <field type="uint8_t" name="handoff_decision" enum="HANDOFF_DECISION">Control target decision.</field>
-    </message>
-    <message id="470" name="UNIQUE_IDENTIFIER">
-      <description>Unique identifier message to uniquely identify different GCS and systems using an 256 bit uuid. The uuid can be randomly generated an stored for the relevant systems.
-      Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=470.
-      </description>
-      <field type="char[32]" name="uuid">uuid of the sender.</field>
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
