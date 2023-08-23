@@ -48,6 +48,48 @@
         <description>Setting if a GCS other than the receiving GCS is the control entity.</description>
       </entry>
     </enum>
+    <enum name="CONTROL_TARGET_REQUEST">
+      <description>Selection of control target for changing ownership.</description>
+      <entry value="0" name="CONTROL_TARGET_ALL">
+        <description>Request change control ownership of both flight control and payload control.</description>
+      </entry>
+      <entry value="1" name="CONTROL_TARGET_FLIGHT">
+        <description>Request change control ownership of the flight control.</description>
+      </entry>
+      <entry value="2" name="CONTROL_TARGET_PAYLOAD">
+        <description>Request change control ownership of the payload control.</description>
+      </entry>
+    </enum>
+    <enum name="CONTROL_REQUEST_ERROR_CODE">
+      <description>Error code for the control request response.</description>
+      <entry value="0" name="CONTROL_REQUEST_PROCESSED">
+        <description>Code indicating successful processing of the request.</description>
+      </entry>
+      <entry value="1" name="CONTROL_REQUEST_DENIED">
+        <description>Error code indicating that the control request has been denied by the target system.</description>
+      </entry>
+      <entry value="2" name="CONTROL_REQUEST_HANDOFF_TIMEOUT">
+        <description>Error Code indicating timeout on the handoff request.</description>
+      </entry>
+      <entry value="3" name="CONTROL_REQUEST_DENIED_CONCURRENT">
+        <description>Error Code indicating another control request is in process.</description>
+      </entry>
+      <entry value="4" name="CONTROL_REQUEST_NO_CONTROL_AUTHORITY">
+        <description>Error Code indicating no enough authority to take control ownership.</description>
+      </entry>
+      <entry value="5" name="CONTROL_REQUEST_NO_PRIORITY_AUTHORITY">
+        <description>Error Code indicating no enough priority authority control ownership.</description>
+      </entry>
+    </enum>
+    <enum name="HANDOFF_DECISION">
+      <description>Decision of the GCS to a handoff request.</description>
+      <entry value="0" name="HANDOFF_DECISION_ACCEPT">
+        <description>Decision to accept the handoff and release control ownership.</description>
+      </entry>
+      <entry value="1" name="HANDOFF_DECISION_DENIED">
+        <description>Decision to deny the handoff request and keep control ownership.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="VELOCITY_LIMITS">
