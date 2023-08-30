@@ -1083,7 +1083,7 @@
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
       <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true">
         <description>Navigate to waypoint. This is intended for use in missions (for guided commands outside of missions use MAV_CMD_DO_REPOSITION).
-          MISSION_CURRENT should report the progress and progress_final fields as a distance in metres.
+          MISSION_CURRENT should report the item_progress_units as a distance in metres (and set other item_progress fields appropriately).
 	</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2" label="Accept Radius" units="m" minValue="0">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
@@ -1095,7 +1095,7 @@
       </entry>
       <entry value="17" name="MAV_CMD_NAV_LOITER_UNLIM" hasLocation="true" isDestination="true">
         <description>Loiter around this waypoint an unlimited amount of time.
-          MISSION_CURRENT should report the progress and progress_final fields as 0.
+          MISSION_CURRENT can report the fields item_progress_* fields as 0.
 	</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
@@ -1107,7 +1107,7 @@
       </entry>
       <entry value="18" name="MAV_CMD_NAV_LOITER_TURNS" hasLocation="true" isDestination="true">
         <description>Loiter around this waypoint for X turns.
-          MISSION_CURRENT should report the progress and progress_final fields as number of turns completed, and total number of turns.
+          MISSION_CURRENT should report the item_progress_* fields as turns/laps.
         </description>
         <param index="1" label="Turns" minValue="0">Number of turns.</param>
         <param index="2" label="Heading Required" minValue="0" maxValue="1" increment="1">Leave loiter circle only once heading towards the next waypoint (0 = False)</param>
@@ -1122,7 +1122,7 @@
           Multicopter vehicles stop at the point (within a vehicle-specific acceptance radius).
           Forward-only moving vehicles (e.g. fixed-wing) circle the point with the specified radius/direction.
           If the Heading Required parameter (2) is non-zero forward moving aircraft will only leave the loiter circle once heading towards the next waypoint.
-          MISSION_CURRENT should report the progress and progress_final fields 0.
+          MISSION_CURRENT should report item_progress_* fields as time in seconds.
 	</description>
         <param index="1" label="Time" units="s" minValue="0">Loiter time (only starts once Lat, Lon and Alt is reached).</param>
         <param index="2" label="Heading Required" minValue="0" maxValue="1" increment="1">Leave loiter circle only once heading towards the next waypoint (0 = False)</param>
@@ -1310,7 +1310,9 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="93" name="MAV_CMD_NAV_DELAY" hasLocation="false" isDestination="false">
-        <description>Delay the next navigation command a number of seconds or until a specified time</description>
+        <description>Delay the next navigation command a number of seconds or until a specified time
+	  MISSION_CURRENT should report item_progress_* fields as time in seconds.
+	</description>
         <param index="1" label="Delay" units="s" minValue="-1" increment="1">Delay (-1 to enable time-of-day fields)</param>
         <param index="2" label="Hour" minValue="-1" maxValue="23" increment="1">hour (24h format, UTC, -1 to ignore)</param>
         <param index="3" label="Minute" minValue="-1" maxValue="59" increment="1">minute (24h format, UTC, -1 to ignore)</param>
@@ -1340,7 +1342,9 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="112" name="MAV_CMD_CONDITION_DELAY" hasLocation="false" isDestination="false">
-        <description>Delay mission state machine.</description>
+        <description>Delay mission state machine.
+	  MISSION_CURRENT should report item_progress_* fields as time in seconds.
+	</description>
         <param index="1" label="Delay" units="s" minValue="0">Delay</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
