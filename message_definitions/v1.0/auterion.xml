@@ -159,6 +159,18 @@
       <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff.</field>
       <field type="uint8_t" name="handoff_decision" enum="HANDOFF_DECISION">Control target decision.</field>
     </message>
+    <message id="445" name="BEACON_POSITION">
+      <description>Position of and distance to a Beacon.
+      </description>
+      <field type="uint32_t" name="beacon_id">Unique Beacon ID</field>
+      <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84), in degrees * 1E7</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84), in degrees * 1E7</field>
+      <field type="float" name="altitude" units="m">Altitude (MSL), in meters</field>
+      <field type="float" name="distance" units="m">Distance to the Beacon, in meters</field>
+      <field type="int32_t" name="delay" units="ms">Time between generating the value and request, in milliseconds</field>
+      <field type="uint8_t" name="gps_status">Status indicating the quality of the GPS Data. 0=invalid 1=lat long valid, alt invalid 2=valid</field>
+      <field type="int32_t" name="link_quality">Value indicating the Signal to noise ratio (in units of dB)</field>
+    </message>
     <message id="460" name="RADIATION_DETECTOR_COUNTS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
