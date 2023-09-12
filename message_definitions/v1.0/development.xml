@@ -237,14 +237,14 @@
       </entry>
       <entry value="32" name="MAV_BATTERY_STATUS_FLAGS_REQUIRES_SERVICE">
         <description>
-          Battery requires service (not safe to fly). 
+          Battery requires service (not safe to fly).
           This is set at vendor discretion.
           It is likely to be set for most faults, and may also be set according to a maintenance schedule (such as age, or number of recharge cycles, etc.).
         </description>
       </entry>
       <entry value="64" name="MAV_BATTERY_STATUS_FLAGS_BAD_BATTERY">
         <description>
-          Battery is faulty and cannot be repaired (not safe to fly). 
+          Battery is faulty and cannot be repaired (not safe to fly).
           This is set at vendor discretion.
           The battery should be disposed of safely.
         </description>
@@ -433,6 +433,8 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Set temporary limits for horizontal speed, vertical speed and yaw rate to slow down the vehicle from the default configuration during operation. The consumer implements a timeout and returns to default limits in case the stream is lost. Accelerations are automatically adjusted accordingly.</description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="float" name="horizontal_speed_limit" default="NaN" units="m/s">Limit for horizontal movement in MAV_FRAME_LOCAL_NED. NaN: Field not used (ignore)</field>
       <field type="float" name="vertical_speed_limit" default="NaN" units="m/s">Limit for vertical movement in MAV_FRAME_LOCAL_NED. NaN: Field not used (ignore)</field>
       <field type="float" name="yaw_rate_limit" default="NaN" units="rad/s">Limit for vehicle turn rate around its yaw axis. NaN: Field not used (ignore)</field>
