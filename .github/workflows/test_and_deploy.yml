@@ -4,6 +4,8 @@ on:
   push:
     branches:
     - 'master'
+    tags:
+    - 'v*'
   pull_request:
     branches:
     - '*'
@@ -119,3 +121,27 @@ jobs:
       - name: Run deploy script
         run: |
           ./scripts/update_generated_repos.sh
+
+  debian-packaging:
+    name: Ubuntu/Debian .deb packaging (Ubuntu 20.04)
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install -y build-essential debhelper fakeroot cmake
+      - name: Generate changelog
+        run: ./scripts/generate_debian_changelog.sh > debian/changelog
+      - name: Build package
+        run: dpkg-buildpackage -us -uc -b
+      - name: Publish package
+        if: github.ref == 'refs/heads/master'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: '../*.deb'
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true

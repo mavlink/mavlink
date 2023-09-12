@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+%:
+	dh $@ --without=build-stamp --builddirectory=build
+
+override_dh_auto_configure:
+	dh_auto_configure -O--buildsystem=cmake -O--builddirectory=build -- \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr
+
+override_dh_auto_build:
+	dh_auto_build -O--buildsystem=cmake
+
+override_dh_auto_install:
+	dh_auto_install -O--buildsystem=cmake

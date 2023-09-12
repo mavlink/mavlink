@@ -81,7 +81,15 @@ configure_file(MAVLinkConfig.cmake.in
 configure_file(MAVLinkConfig.cmake.in
     "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/MAVLinkConfig.cmake" @ONLY)
 
+# For pkgconfig
+configure_file(mavlink.pc.in
+    "${PROJECT_BINARY_DIR}/mavlink.pc" @ONLY)
+
 install(FILES
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/MAVLinkConfig.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/MAVLink
 )
+
+install(FILES
+    "${PROJECT_BINARY_DIR}/mavlink.pc"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
