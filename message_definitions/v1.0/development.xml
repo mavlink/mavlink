@@ -237,14 +237,14 @@
       </entry>
       <entry value="32" name="MAV_BATTERY_STATUS_FLAGS_REQUIRES_SERVICE">
         <description>
-          Battery requires service (not safe to fly). 
+          Battery requires service (not safe to fly).
           This is set at vendor discretion.
           It is likely to be set for most faults, and may also be set according to a maintenance schedule (such as age, or number of recharge cycles, etc.).
         </description>
       </entry>
       <entry value="64" name="MAV_BATTERY_STATUS_FLAGS_BAD_BATTERY">
         <description>
-          Battery is faulty and cannot be repaired (not safe to fly). 
+          Battery is faulty and cannot be repaired (not safe to fly).
           This is set at vendor discretion.
           The battery should be disposed of safely.
         </description>
@@ -413,6 +413,27 @@
       <field type="uint8_t" name="signal_quality" units="%">WiFi network signal quality.</field>
       <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
       <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
+    </message>
+    <message id="354" name="SET_VELOCITY_LIMITS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Set temporary maximum limits for horizontal speed, vertical speed and yaw rate.
+        The consumer must stream the current limits in VELOCITY_LIMITS at 1 Hz or more (when limits are being set).
+        The consumer should latch the limits until a new limit is received or the mode is changed.
+      </description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="float" name="horizontal_speed_limit" default="NaN" units="m/s">Limit for horizontal movement in MAV_FRAME_LOCAL_NED. NaN: Field not used (ignore)</field>
+      <field type="float" name="vertical_speed_limit" default="NaN" units="m/s">Limit for vertical movement in MAV_FRAME_LOCAL_NED. NaN: Field not used (ignore)</field>
+      <field type="float" name="yaw_rate_limit" default="NaN" units="rad/s">Limit for vehicle turn rate around its yaw axis. NaN: Field not used (ignore)</field>
+    </message>
+    <message id="355" name="VELOCITY_LIMITS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Current limits for horizontal speed, vertical speed and yaw rate, as set by SET_VELOCITY_LIMITS.</description>
+      <field type="float" name="horizontal_speed_limit" default="NaN" units="m/s">Limit for horizontal movement in MAV_FRAME_LOCAL_NED. NaN: No limit applied</field>
+      <field type="float" name="vertical_speed_limit" default="NaN" units="m/s">Limit for vertical movement in MAV_FRAME_LOCAL_NED. NaN: No limit applied</field>
+      <field type="float" name="yaw_rate_limit" default="NaN" units="rad/s">Limit for vehicle turn rate around its yaw axis. NaN: No limit applied</field>
     </message>
     <message id="361" name="FIGURE_EIGHT_EXECUTION_STATUS">
       <wip/>
