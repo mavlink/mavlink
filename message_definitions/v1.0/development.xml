@@ -432,7 +432,10 @@
     <message id="354" name="SET_VELOCITY_LIMITS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Set temporary limits for horizontal speed, vertical speed and yaw rate to slow down the vehicle from the default configuration during operation. The consumer implements a timeout and returns to default limits in case the stream is lost. Accelerations are automatically adjusted accordingly.</description>
+      <description>Set temporary maximum limits for horizontal speed, vertical speed and yaw rate.
+        The consumer must stream the current limits in VELOCITY_LIMITS at 1 Hz or more (when limits are being set).
+        The consumer should latch the limits until a new limit is received or the mode is changed.
+      </description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
       <field type="float" name="horizontal_speed_limit" default="NaN" units="m/s">Limit for horizontal movement in MAV_FRAME_LOCAL_NED. NaN: Field not used (ignore)</field>
