@@ -1967,10 +1967,15 @@
         </description>
       </entry>
       <entry value="405" name="MAV_CMD_ILLUMINATOR_ON_OFF" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
         <param index="1" label="Enable" minValue="0" maxValue="1" increment="1">0: Illuminators OFF, 1: Illuminators ON</param>
+      </entry>
+      <entry value="406" name="MAV_CMD_DO_ILLUMINATOR_CONFIGURE" hasLocation="false" isDestination="false">
+        <description>Configures illuminator settings. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
+        <param index="1" label="Mode" enum="ILLUMINATOR_MODE">Mode</param>
+        <param index="2" label="Brightness" units="%" minValue="0" maxValue="100">0%: Off, 100%: Max Brightness</param>
+        <param index="3" label="Strobe Period" units="s">Strobe period in seconds</param>
+        <param index="4" label="Strobe Duty" units="%" minValue="1" maxValue="100">Strobe duty cycle where 100% means it is on constantly</param>
       </entry>
       <entry value="410" name="MAV_CMD_GET_HOME_POSITION" hasLocation="false" isDestination="false">
         <deprecated since="2022-04" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
@@ -5047,6 +5052,18 @@
         <description>Safety switch is NOT engaged and motors, propellers and other actuators should be considered active.</description>
       </entry>
     </enum>
+    <enum name="ILLUMINATOR_MODE">
+      <description>Modes of illuminator</description>
+      <entry value="0" name="ILLUMINATOR_MODE_UNKNOWN">
+        <description>Illuminator mode is not specified/unknown</description>
+      </entry>
+      <entry value="1" name="ILLUMINATOR_MODE_INTERNAL_CONTROL">
+        <description>Illuminator behavior is controlled by MAV_CMD_DO_ILLUMINATOR_CONFIGURE settings</description>
+      </entry>
+      <entry value="2" name="ILLUMINATOR_MODE_EXTERNAL_SYNC">
+        <description>Illuminator behavior is controlled by external factors: e.g. an external hardware signal</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -7604,6 +7621,25 @@
       <field type="uint16_t" name="sequence">Sequence number.</field>
       <field type="uint16_t" name="sequence_oldest_available">Oldest Sequence number that is still available after the sequence set in REQUEST_EVENT.</field>
       <field type="uint8_t" name="reason" enum="MAV_EVENT_ERROR_REASON">Error reason.</field>
+    </message>
+    <message id="420" name="ILLUMINATOR_STATUS">
+      <description>Illuminator status</description>
+      <field type="uint32_t" name="time_boot_us" units="us">Uptime in us</field>
+      <field type="uint32_t" name="error_status">Error</field>
+      <field type="uint8_t" name="mode" enum="ILLUMINATOR_MODE">Illuminator mode</field>
+      <field type="float" name="brightness" units="%">Illuminator brightness</field>
+      <field type="float" name="strobe_period" units="s">Illuminator strobing period in seconds</field>
+      <field type="float" name="strobe_duty_cycle" units="%">Illuminator strobing duty cycle</field>
+      <field type="float" name="temp_c">Temperature in Celsius</field>
+    </message>
+    <message id="421" name="ILLUMINATOR_INFORMATION">
+      <description>Illuminator information</description>
+      <field type="uint16_t" name="vendor_id">Vendor ID</field>
+      <field type="uint16_t" name="product_id">Product ID</field>
+      <field type="char[16]" name="serial_number">Serial Number</field>
+      <field type="float" name="min_strobe_period" units="s">Minimum strobing period in seconds</field>
+      <field type="float" name="max_strobe_period" units="s">Maximum strobing period in seconds</field>
+      <field type="uint8_t" name="mode_bitmask" enum="ILLUMINATOR_MODE" display="bitmask">Supported illuminator modes</field>
     </message>
     <!-- The message ids 510 and 511 are reserved for ABSOLUTE_TARGET and RELATIVE_TARGET, currently in development.xml. -->
     <message id="387" name="CANFD_FRAME">
