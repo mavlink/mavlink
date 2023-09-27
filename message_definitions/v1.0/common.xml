@@ -1808,6 +1808,14 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
+      <entry value="215" name="MAV_CMD_DO_PARACHUTE_SHUTDOWN" hasLocation="false" isDestination="false">
+        <description>Command to shutdown the parachute module</description>
+      </entry>
+      <entry value="216" name="MAV_CMD_SET_PARACHUTE_ARM" hasLocation="false" isDestination="false">
+        <description>Command to arm/disarm parachute module</description>
+        <param index="1" label="Arm Flags" enum="PARACHUTE_ARM_FLAGS" >Arm Flags</param>
+        <param index="2" label="Bitmask" enum="PARACHUTE_ARM_FLAGS">Bitmask of arm flags (in param1) that should be modified</param>
+      </entry>
       <entry value="220" name="MAV_CMD_DO_MOUNT_CONTROL_QUAT" hasLocation="false" isDestination="false">
         <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW"/>
         <description>Mission command to control a camera or antenna mount, using a quaternion as reference.</description>
@@ -5102,6 +5110,93 @@
         <description>Illuminator thermistor failure.</description>
       </entry>
     </enum>
+    <enum name="PARACHUTE_ARM_FLAGS">
+      <description>Parachute module arming flags (bitmap, 0 means no arming enabled)</description>
+      <entry value="1" name="PARACHUTE_ARM_FLAGS_DRONE_TRIGGER_METHOD">
+        <description>Arming parachute's drone trigger method</description>
+      </entry>
+      <entry value="2" name="PARACHUTE_ARM_FLAGS_AUTOMATIC_TRIGGER_SYSTEM">
+        <description>Arming parachute's automatic trigger system</description>
+      </entry>
+      <entry value="4" name="PARACHUTE_ARM_FLAGS_AUTO_ARM_ATS">
+        <description>Arming parachute's auto-arming its automatic trigger system capability</description>
+      </entry>
+      <entry value="8" name="PARACHUTE_ARM_FLAGS_AUTO_DISARM_ATS">
+        <description>Arming parachute's auto-disarming its automatic trigger system capability</description>
+      </entry>
+      <entry value="16" name="PARACHUTE_ARM_FLAGS_MANUAL_TRIGGER_DEVICE">
+        <description>Arming parachute's manual trigger device method</description>
+      </entry>
+      <entry value="32" name="PARACHUTE_ARM_FLAGS_OBC_TRIGGER_METHOD">
+        <description>Arming parachute's onboard computer trigger method</description>
+      </entry>
+      <entry value="64" name="PARACHUTE_ARM_FLAGS_GEOFENCE_TRIGGER_METHOD">
+        <description>Arming parachute's geofence trigger method</description>
+      </entry>
+    </enum>
+    <enum name="PARACHUTE_DEPLOYMENT_STATUS">
+      <description>Parachute module deployment flags (bitmap, 0 means no deployment)</description>
+      <entry value="0" name="PARACHUTE_DEPLOYMENT_STATUS_NONE">
+        <description>Parachute has not deployed</description>
+      </entry>
+      <entry value="1" name="PARACHUTE_DEPLOYMENT_STATUS_MANUAL_TRIGGER_DEVICE">
+        <description>Parachute deployed by manual trigger device</description>
+      </entry>
+      <entry value="2" name="PARACHUTE_DEPLOYMENT_STATUS_AUTOMATIC_TRIGGER_SYSTEM">
+        <description>Parachute deployed by automatic trigger system</description>
+      </entry>
+      <entry value="3" name="PARACHUTE_DEPLOYMENT_STATUS_DRONE_TRIGGER_METHOD">
+        <description>Parachute deployed by drone</description>
+      </entry>
+      <entry value="4" name="PARACHUTE_DEPLOYMENT_STATUS_OBC_TRIGGER_METHOD">
+        <description>Parachute deployed by onboard computer</description>
+      </entry>
+      <entry value="5" name="PARACHUTE_DEPLOYMENT_STATUS_GEOFENCE">
+        <description>Parachute deployed by geofence method</description>
+      </entry>
+    </enum>
+    <enum name="PARACHUTE_ERROR_FLAGS">
+      <description>Parachute module error flags (bitmap, 0 means no error)</description>
+      <entry value="1" name="PARACHUTE_ERROR_FLAGS_BAROMETER_ERROR">
+        <description>There is an error with the parachute barometer</description>
+      </entry>
+      <entry value="2" name="PARACHUTE_ERROR_FLAGS_IMU_ERROR">
+        <description>There is an error with the parachute IMU</description>
+      </entry>
+      <entry value="4" name="PARACHUTE_ERROR_FLAGS_RF_ERROR">
+        <description>There is an error with the parachute RF</description>
+      </entry>
+      <entry value="8" name="PARACHUTE_ERROR_FLAGS_LOW_POWER">
+        <description>Parachute module has low power</description>
+      </entry>
+      <entry value="16" name="PARACHUTE_ERROR_FLAGS_FC_CONNECTION_ERROR">
+        <description>There is an error with the parachute and FC (flight controller) connection</description>
+      </entry>
+      <entry value="32" name="PARACHUTE_ERROR_FLAGS_POD_ERROR">
+        <description>There is an error with the parachute pod</description>
+      </entry>
+      <entry value="64" name="PARACHUTE_ERROR_FLAGS_EFTS_ERROR">
+        <description>There is an error with the parachute electrical/external FTS (flight termination system)</description>
+      </entry>
+      <entry value="128" name="PARACHUTE_ERROR_FLAGS_CHARGING_FAILED">
+        <description>Parachute module charging failed</description>
+      </entry>
+      <entry value="256" name="PARACHUTE_ERROR_FLAGS_LOGGING_ERROR">
+        <description>There is an error with the parachute module's logging</description>
+      </entry>
+      <entry value="512" name="PARACHUTE_ERROR_FLAGS_MODULE_RETIRED">
+        <description>This parachute module is retired (too many deployments)</description>
+      </entry>
+      <entry value="1024" name="PARACHUTE_ERROR_FLAGS_EXTERNAL_POWER_ERROR">
+        <description>There is an error with the parachute external power source</description>
+      </entry>
+      <entry value="2048" name="PARACHUTE_ERROR_FLAGS_OBC_CONNECTION_ERROR">
+        <description>There is an error with the parachute and OBC (onboard computer) connection</description>
+      </entry>
+      <entry value="4096" name="PARACHUTE_ERROR_FLAGS_GPS_ERROR">
+        <description>There is an error with the parachute GPS</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -7670,6 +7765,28 @@
       <field type="uint16_t" name="sequence">Sequence number.</field>
       <field type="uint16_t" name="sequence_oldest_available">Oldest Sequence number that is still available after the sequence set in REQUEST_EVENT.</field>
       <field type="uint8_t" name="reason" enum="MAV_EVENT_ERROR_REASON">Error reason.</field>
+    </message>
+    <message id="430" name="PARACHUTE_STATUS">
+      <description>Parachute system status</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Uptime in ms</field>
+      <field type="uint32_t" name="error_status" enum="PARACHUTE_ERROR_FLAGS" display="bitmask">Errors</field>
+      <field type="uint8_t" name="battery_status" units="%">Parachute battery percentage</field>
+      <field type="uint8_t" name="arm_status" enum="PARACHUTE_ARM_FLAGS" display="bitmask">Parachute arming status</field>
+      <field type="uint8_t" name="charge_status">Boolean indicating charging (1) or not (0)</field>
+      <field type="uint8_t" name="deployment_status" enum="PARACHUTE_DEPLOYMENT_STATUS">Parachute deployment_status</field>
+      <field type="uint8_t" name="ats_arm_altitude" units="m">Parachute ATS auto-arming/disarming altitude in meters</field>
+    </message>
+    <message id="431" name="PARACHUTE_INFORMATION">
+      <description>Parachute information</description>
+      <field type="uint16_t" name="vendor_id">Vendor ID</field>
+      <field type="uint16_t" name="product_id">Product ID</field>
+      <field type="char[16]" name="serial_number">Serial number in ASCII characters, null terminated. All 0: field not provided.</field>
+      <field type="uint32_t" name="main_system_fw_version">Parachute main system firmware version, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff). Use 0 if not known.</field>
+      <field type="uint32_t" name="main_system_hw_version">Parachute main system hardware version, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff). Use 0 if not known.</field>
+      <field type="uint32_t" name="subsystem_fw_version">Parachute subsystem firmware version, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff). Use 0 if not known.</field>
+      <field type="uint32_t" name="subsystem_hw_version">Parachute subsystem hardware version, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff). Use 0 if not known.</field>
+      <field type="char[11]" name="parachute_packed_date">Parachute packed date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
+      <field type="char[11]" name="manufacture_date">Manufacture date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
     </message>
     <message id="440" name="ILLUMINATOR_STATUS">
       <description>Illuminator status</description>
