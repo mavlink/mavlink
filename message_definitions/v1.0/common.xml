@@ -1399,8 +1399,8 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="178" name="MAV_CMD_DO_CHANGE_SPEED" hasLocation="false" isDestination="false">
-        <description>Change speed and/or throttle set points. The value persists until it is overridden or there is a mode change.</description>
-        <param index="1" label="Speed Type" minValue="0" maxValue="3" increment="1">Speed type (0=Airspeed, 1=Ground Speed, 2=Climb Speed, 3=Descent Speed)</param>
+        <description>Change speed and/or throttle set points. The value persists until it is overridden or there is a mode change</description>
+        <param index="1" label="Speed Type" enum="SPEED_TYPE">Speed type of value set in param2 (such as airspeed, ground speed, and so on)</param>
         <param index="2" label="Speed" units="m/s" minValue="-2">Speed (-1 indicates no change, -2 indicates return to default vehicle speed)</param>
         <param index="3" label="Throttle" units="%" minValue="-2">Throttle (-1 indicates no change, -2 indicates return to default vehicle throttle value)</param>
         <param index="4" reserved="true" default="0"/>
@@ -3457,6 +3457,21 @@
       <description>Bitmap of options for the MAV_CMD_DO_REPOSITION</description>
       <entry value="1" name="MAV_DO_REPOSITION_FLAGS_CHANGE_MODE">
         <description>The aircraft should immediately transition into guided. This should not be set for follow me applications</description>
+      </entry>
+    </enum>
+    <enum name="SPEED_TYPE">
+      <description>Speed setpoint types used in MAV_CMD_DO_CHANGE_SPEED</description>
+      <entry value="0" name="SPEED_TYPE_AIRSPEED">
+        <description>Airspeed</description>
+      </entry>
+      <entry value="1" name="SPEED_TYPE_GROUND_SPEED">
+        <description>Groundspeed</description>
+      </entry>
+      <entry value="2" name="SPEED_TYPE_CLIMB_SPEED">
+        <description>Climb speed</description>
+      </entry>
+      <entry value="3" name="SPEED_TYPE_DESCENT_SPEED">
+        <description>Descent speed</description>
       </entry>
     </enum>
     <!-- ESTIMATOR_STATUS_FLAGS - these values should be bit-and with the messages flags field to know if flag has been set -->
