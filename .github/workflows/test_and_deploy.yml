@@ -79,7 +79,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['12', '14'] # 15 fails for some weird reason
+        node-version: ['14','15','16','17','18']
     steps:
       - uses: actions/checkout@v2
         with:
@@ -91,10 +91,9 @@ jobs:
       - name: Install dependencies
         run: |
           pip install future lxml
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
       - name : Test mavlink
         run: |
           ./scripts/test.sh node
