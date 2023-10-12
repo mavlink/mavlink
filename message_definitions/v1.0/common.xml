@@ -23,7 +23,7 @@
       </entry>
     </enum>
     <enum name="HL_FAILURE_FLAG" bitmask="true">
-      <description>Flags to report failure cases over the high latency telemtry.</description>
+      <description>Flags to report failure cases over the high latency telemetry.</description>
       <entry value="1" name="HL_FAILURE_FLAG_GPS">
         <description>GPS failure.</description>
       </entry>
@@ -49,7 +49,7 @@
         <description>Battery failure/critical low battery.</description>
       </entry>
       <entry value="256" name="HL_FAILURE_FLAG_RC_RECEIVER">
-        <description>RC receiver failure/no rc connection.</description>
+        <description>RC receiver failure/no RC connection.</description>
       </entry>
       <entry value="512" name="HL_FAILURE_FLAG_OFFBOARD_LINK">
         <description>Offboard link failure.</description>
@@ -170,7 +170,7 @@
         <description>0x8000 motor outputs / control</description>
       </entry>
       <entry value="65536" name="MAV_SYS_STATUS_SENSOR_RC_RECEIVER">
-        <description>0x10000 rc receiver</description>
+        <description>0x10000 RC receiver</description>
       </entry>
       <entry value="131072" name="MAV_SYS_STATUS_SENSOR_3D_GYRO2">
         <description>0x20000 2nd 3D gyro</description>
@@ -403,7 +403,7 @@
       <deprecated since="2020-01" replaced_by="GIMBAL_MANAGER_FLAGS"/>
       <description>Enumeration of possible mount operation modes. This message is used by obsolete/deprecated gimbal messages.</description>
       <entry value="0" name="MAV_MOUNT_MODE_RETRACT">
-        <description>Load and keep safe position (Roll,Pitch,Yaw) from permant memory and stop stabilization</description>
+        <description>Load and keep safe position (Roll,Pitch,Yaw) from permanent memory and stop stabilization</description>
       </entry>
       <entry value="1" name="MAV_MOUNT_MODE_NEUTRAL">
         <description>Load and keep neutral position (Roll,Pitch,Yaw) from permanent memory.</description>
@@ -460,7 +460,7 @@
         <description>Gimbal device supports locking to an absolute heading, i.e., yaw angle relative to North (earth frame, often this is an option available).</description>
       </entry>
       <entry value="2048" name="GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_INFINITE_YAW">
-        <description>Gimbal device supports yawing/panning infinetely (e.g. using slip disk).</description>
+        <description>Gimbal device supports yawing/panning infinitely (e.g. using slip disk).</description>
       </entry>
       <entry value="4096" name="GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_YAW_IN_EARTH_FRAME">
         <description>Gimbal device supports yaw angles and angular velocities relative to North (earth frame). This usually requires support by an autopilot via AUTOPILOT_STATE_FOR_GIMBAL_DEVICE. Support can go on and off during runtime, which is reported by the flag GIMBAL_DEVICE_FLAGS_CAN_ACCEPT_YAW_IN_EARTH_FRAME.</description>
@@ -523,7 +523,7 @@
     <enum name="GIMBAL_DEVICE_FLAGS" bitmask="true">
       <description>Flags for gimbal device (lower level) operation.</description>
       <entry value="1" name="GIMBAL_DEVICE_FLAGS_RETRACT">
-        <description>Set to retracted safe position (no stabilization), takes presedence over all other flags.</description>
+        <description>Set to retracted safe position (no stabilization), takes precedence over all other flags.</description>
       </entry>
       <entry value="2" name="GIMBAL_DEVICE_FLAGS_NEUTRAL">
         <description>Set to neutral/default position, taking precedence over all other flags except RETRACT. Neutral is commonly forward-facing and horizontal (roll=pitch=yaw=0) but may be any orientation.</description>
@@ -1399,8 +1399,8 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="178" name="MAV_CMD_DO_CHANGE_SPEED" hasLocation="false" isDestination="false">
-        <description>Change speed and/or throttle set points. The value persists until it is overridden or there is a mode change.</description>
-        <param index="1" label="Speed Type" minValue="0" maxValue="3" increment="1">Speed type (0=Airspeed, 1=Ground Speed, 2=Climb Speed, 3=Descent Speed)</param>
+        <description>Change speed and/or throttle set points. The value persists until it is overridden or there is a mode change</description>
+        <param index="1" label="Speed Type" enum="SPEED_TYPE">Speed type of value set in param2 (such as airspeed, ground speed, and so on)</param>
         <param index="2" label="Speed" units="m/s" minValue="-2">Speed (-1 indicates no change, -2 indicates return to default vehicle speed)</param>
         <param index="3" label="Throttle" units="%" minValue="-2">Throttle (-1 indicates no change, -2 indicates return to default vehicle throttle value)</param>
         <param index="4" reserved="true" default="0"/>
@@ -1475,7 +1475,7 @@
       </entry>
       <entry value="185" name="MAV_CMD_DO_FLIGHTTERMINATION" hasLocation="false" isDestination="false">
         <description>Terminate flight immediately.
-          Flight termination immediately and irreversably terminates the current flight, returning the vehicle to ground.
+          Flight termination immediately and irreversibly terminates the current flight, returning the vehicle to ground.
           The vehicle will ignore RC or other input until it has been power-cycled.
           Termination may trigger safety measures, including: disabling motors and deployment of parachute on multicopters, and setting flight surfaces to initiate a landing pattern on fixed-wing).
           On multicopters without a parachute it may trigger a crash landing.
@@ -1951,7 +1951,7 @@
       <entry value="405" name="MAV_CMD_ILLUMINATOR_ON_OFF" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting up dark areas external to the sytstem: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
+        <description>Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
         <param index="1" label="Enable" minValue="0" maxValue="1" increment="1">0: Illuminators OFF, 1: Illuminators ON</param>
       </entry>
       <entry value="410" name="MAV_CMD_GET_HOME_POSITION" hasLocation="false" isDestination="false">
@@ -2117,8 +2117,21 @@
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
       </entry>
       <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" hasLocation="false" isDestination="false">
-        <description>Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.</description>
-        <param index="1">Reserved (Set to 0)</param>
+        <description>Start image capture sequence. CAMERA_IMAGE_CAPTURED must be emitted after each capture.
+
+          Param1 (id) may be used to specify the target camera: 0: all cameras, 1 to 6: autopilot-connected cameras, 7-255: MAVLink camera component ID.
+          It is needed in order to target specific cameras connected to the autopilot, or specific sensors in a multi-sensor camera (neither of which have a distinct MAVLink component ID).
+          It is also needed to specify the target camera in missions.
+
+          When used in a mission, an autopilot should execute the MAV_CMD for a specified local camera (param1 = 1-6), or resend it as a command if it is intended for a MAVLink camera (param1 = 7 - 255), setting the command's target_component as the param1 value (and setting param1 in the command to zero).
+          If the param1 is 0 the autopilot should do both.
+          
+          When sent in a command the target MAVLink address is set using target_component.
+          If addressed specifically to an autopilot: param1 should be used in the same way as it is for missions (though command should NACK with MAV_RESULT_DENIED if a specified local camera does not exist).
+          If addressed to a MAVLink camera, param 1 can be used to address all cameras (0), or to separately address 1 to 7 individual sensors. Other values should be NACKed with MAV_RESULT_DENIED.
+          If the command is broadcast (target_component is 0) then param 1 should be set to 0 (any other value should be NACKED with MAV_RESULT_DENIED). An autopilot would trigger any local cameras and forward the command to all channels.
+        </description>
+        <param index="1" label="id" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras that don't have a distinct component id (such as autopilot-attached cameras). 0: all cameras. This is used to specifically target autopilot-connected cameras or individual sensors in a multi-sensor MAVLink camera. It is also used to target specific cameras when the MAV_CMD is used in a mission</param>
         <param index="2" label="Interval" units="s" minValue="0">Desired elapsed time between two consecutive pictures (in seconds). Minimum values depend on hardware (typically greater than 2 seconds).</param>
         <param index="3" label="Total Images" minValue="0" increment="1">Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE.</param>
         <param index="4" label="Sequence Number" minValue="1" increment="1">Capture sequence number starting from 1. This is only valid for single-capture (param3 == 1), otherwise set to 0. Increment the capture ID for each capture command to prevent double captures when a command is re-transmitted.</param>
@@ -2127,8 +2140,21 @@
         <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE" hasLocation="false" isDestination="false">
-        <description>Stop image capture sequence Use NaN for reserved values.</description>
-        <param index="1">Reserved (Set to 0)</param>
+        <description>Stop image capture sequence.
+        
+          Param1 (id) may be used to specify the target camera: 0: all cameras, 1 to 6: autopilot-connected cameras, 7-255: MAVLink camera component ID.
+          It is needed in order to target specific cameras connected to the autopilot, or specific sensors in a multi-sensor camera (neither of which have a distinct MAVLink component ID).
+          It is also needed to specify the target camera in missions.
+
+          When used in a mission, an autopilot should execute the MAV_CMD for a specified local camera (param1 = 1-6), or resend it as a command if it is intended for a MAVLink camera (param1 = 7 - 255), setting the command's target_component as the param1 value (and setting param1 in the command to zero).
+          If the param1 is 0 the autopilot should do both.
+
+          When sent in a command the target MAVLink address is set using target_component.
+          If addressed specifically to an autopilot: param1 should be used in the same way as it is for missions (though command should NACK with MAV_RESULT_DENIED if a specified local camera does not exist).
+          If addressed to a MAVLink camera, param1 can be used to address all cameras (0), or to separately address 1 to 7 individual sensors. Other values should be NACKed with MAV_RESULT_DENIED.
+          If the command is broadcast (target_component is 0) then param 1 should be set to 0 (any other value should be NACKED with MAV_RESULT_DENIED). An autopilot would trigger any local cameras and forward the command to all channels.
+        </description>
+        <param index="1" label="id" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras that don't have a distinct component id (such as autopilot-attached cameras). 0: all cameras. This is used to specifically target autopilot-connected cameras or individual sensors in a multi-sensor MAVLink camera. It is also used to target specific cameras when the MAV_CMD is used in a mission</param>
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
@@ -3431,6 +3457,21 @@
       <description>Bitmap of options for the MAV_CMD_DO_REPOSITION</description>
       <entry value="1" name="MAV_DO_REPOSITION_FLAGS_CHANGE_MODE">
         <description>The aircraft should immediately transition into guided. This should not be set for follow me applications</description>
+      </entry>
+    </enum>
+    <enum name="SPEED_TYPE">
+      <description>Speed setpoint types used in MAV_CMD_DO_CHANGE_SPEED</description>
+      <entry value="0" name="SPEED_TYPE_AIRSPEED">
+        <description>Airspeed</description>
+      </entry>
+      <entry value="1" name="SPEED_TYPE_GROUNDSPEED">
+        <description>Groundspeed</description>
+      </entry>
+      <entry value="2" name="SPEED_TYPE_CLIMB_SPEED">
+        <description>Climb speed</description>
+      </entry>
+      <entry value="3" name="SPEED_TYPE_DESCENT_SPEED">
+        <description>Descent speed</description>
       </entry>
     </enum>
     <!-- ESTIMATOR_STATUS_FLAGS - these values should be bit-and with the messages flags field to know if flag has been set -->
