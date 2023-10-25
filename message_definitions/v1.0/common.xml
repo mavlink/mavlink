@@ -6828,8 +6828,8 @@
         This can be requested using MAV_CMD_REQUEST_MESSAGE.
       </description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint64_t" name="arming_time_utc" units="us" invalid="0">Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown</field>
-      <field type="uint64_t" name="takeoff_time_utc" units="us" invalid="0">Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown</field>
+      <field type="uint64_t" name="arming_time_utc" units="us" invalid="0">Timestamp at arming (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. Set to 0 if unknown or not armed.</field>
+      <field type="uint64_t" name="takeoff_time_utc" units="us" invalid="0">Timestamp at takeoff (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. Set to 0 if unknown or not flying.</field>
       <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of log files</field>
     </message>
     <message id="265" name="MOUNT_ORIENTATION">
