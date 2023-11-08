@@ -414,6 +414,19 @@
       <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
       <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
     </message>
+    <message id="337" name="CELLULAR_MODEM_INFORMATION">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description> This message is still WIP, but was tentatively accepted upstream: https://github.com/mavlink/mavlink/pull/1945.
+                    Cellular modem device information. This contains static information about a modem and should be sent at low rate. Note that the dynamic information about the connection is provided in an associated CELLULAR_STATUS message.</description>
+      <field type="uint8_t" name="id" instance="true">Modem instance number. Indexed from 1. Matches index in corresponding CELLULAR_STATUS message.</field>
+      <field type="uint64_t" name="imei" invalid="NULL">Unique Modem International Mobile Equipment Identity Number.</field>
+      <field type="uint64_t" name="imsi" invalid="NULL">Current SIM International mobile subscriber identity.</field>
+      <field type="char[10]" name="modem_id" invalid="[0]">Unique id for modem. This must be NULL terminated if the length is less than 10 human-readable chars, and without the null termination (NULL) byte if the length is exactly 10 chars.</field>
+      <field type="char[20]" name="iccid" invalid="[0]">Integrated Circuit Card Identification Number of SIM Card.  This must be NULL terminated if the length is less than 20 human-readable chars, and without the null termination (NULL) byte if the length is exactly 20 chars.</field>
+      <field type="char[24]" name="firmware" invalid="[0]">The firmware version installed on the modem. This must be NULL terminated if the length is less than 24 human-readable chars, and without the null termination (NULL) byte if the length is exactly 24 chars. The format is not intended for display.</field>
+      <field type="char[50]" name="modem_model" invalid="[0]">Modem model name.  This must be NULL terminated if the length is less than 50 human-readable chars, and without the null termination (NULL) byte if the length is exactly 50 chars.</field>
+    </message>
     <message id="354" name="SET_VELOCITY_LIMITS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
