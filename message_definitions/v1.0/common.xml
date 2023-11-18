@@ -1974,8 +1974,8 @@
         <description>Configures illuminator settings. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
         <param index="1" label="Mode" enum="ILLUMINATOR_MODE">Mode</param>
         <param index="2" label="Brightness" units="%" minValue="0" maxValue="100">0%: Off, 100%: Max Brightness</param>
-        <param index="3" label="Strobe Period" units="s">Strobe period in seconds</param>
-        <param index="4" label="Strobe Duty" units="%" minValue="1" maxValue="100">Strobe duty cycle where 100% means it is on constantly</param>
+        <param index="3" label="Strobe Period" units="s" minValue="0">Strobe period in seconds where 0 means strobing is not used</param>
+        <param index="4" label="Strobe Duty" units="%" minValue="0" maxValue="100">Strobe duty cycle where 100% means it is on constantly and 0 means strobing is not used</param>
       </entry>
       <entry value="410" name="MAV_CMD_GET_HOME_POSITION" hasLocation="false" isDestination="false">
         <deprecated since="2022-04" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
@@ -7625,6 +7625,7 @@
     <message id="420" name="ILLUMINATOR_STATUS">
       <description>Illuminator status</description>
       <field type="uint32_t" name="time_boot_us" units="us">Uptime in us</field>
+      <field type="uint8_t" name="enable">0: Illuminators OFF, 1: Illuminators ON</field>      
       <field type="uint32_t" name="error_status">Error</field>
       <field type="uint8_t" name="mode" enum="ILLUMINATOR_MODE">Illuminator mode</field>
       <field type="float" name="brightness" units="%">Illuminator brightness</field>
