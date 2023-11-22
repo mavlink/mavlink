@@ -192,16 +192,6 @@
         <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
         <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
       </entry>
-      <entry value="5010" name="MAV_CMD_SET_FENCE_BREACH_ACTION" hasLocation="false" isDestination="false">
-        <description>Sets the action on geofence breach.
-          If sent using the command protocol this sets the system-default geofence action.
-          As part of a mission protocol plan it sets the fence action for the next complete geofence definition *after* the command.
-          Note: A fence action defined in a plan will override the default system setting (even if the system-default is `FENCE_ACTION_NONE`).
-          Note: Every geofence in a plan can have its own action; if no fence action is defined for a particular fence the system-default will be used.
-          Note: The flight stack should reject a plan or command that uses a geofence action that it does not support and send a STATUSTEXT with the reason.
-        </description>
-        <param index="1" label="Action" enum="FENCE_ACTION">Fence action on breach.</param>
-      </entry>
     </enum>
     <enum name="MAV_BATTERY_STATUS_FLAGS" bitmask="true">
       <description>Battery status flags for fault, health and state indication.</description>
