@@ -1082,7 +1082,9 @@
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
       <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true">
-        <description>Navigate to waypoint. This is intended for use in missions (for guided commands outside of missions use MAV_CMD_DO_REPOSITION).</description>
+        <description>Navigate to waypoint. This is intended for use in missions (for guided commands outside of missions use MAV_CMD_DO_REPOSITION).		
+          MISSION_CURRENT should set the item_progress_remaining field as remaining hold time (s) if holding at waypoint.
+	</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2" label="Accept Radius" units="m" minValue="0">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
         <param index="3" label="Pass Radius" units="m">0 to pass through the WP, if &gt; 0 radius to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.</param>
@@ -1092,7 +1094,9 @@
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
       <entry value="17" name="MAV_CMD_NAV_LOITER_UNLIM" hasLocation="true" isDestination="true">
-        <description>Loiter around this waypoint an unlimited amount of time</description>
+        <description>Loiter around this waypoint an unlimited amount of time.
+          MISSION_CURRENT should set the item_progress_ fields to 0 (not report progress).
+	</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
         <param index="3" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise</param>
@@ -1102,7 +1106,9 @@
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
       <entry value="18" name="MAV_CMD_NAV_LOITER_TURNS" hasLocation="true" isDestination="true">
-        <description>Loiter around this waypoint for X turns</description>
+        <description>Loiter around this waypoint for X turns.
+          MISSION_CURRENT should set the item_progress_remaining field to the number of remaining turns once loitering.
+        </description>
         <param index="1" label="Turns" minValue="0">Number of turns.</param>
         <param index="2" label="Heading Required" minValue="0" maxValue="1" increment="1">Leave loiter circle only once heading towards the next waypoint (0 = False)</param>
         <param index="3" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise</param>
@@ -1112,7 +1118,12 @@
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
       <entry value="19" name="MAV_CMD_NAV_LOITER_TIME" hasLocation="true" isDestination="true">
-        <description>Loiter at the specified latitude, longitude and altitude for a certain amount of time. Multicopter vehicles stop at the point (within a vehicle-specific acceptance radius). Forward-only moving vehicles (e.g. fixed-wing) circle the point with the specified radius/direction. If the Heading Required parameter (2) is non-zero forward moving aircraft will only leave the loiter circle once heading towards the next waypoint.</description>
+        <description>Loiter at the specified latitude, longitude and altitude for a certain amount of time.
+          Multicopter vehicles stop at the point (within a vehicle-specific acceptance radius).
+          Forward-only moving vehicles (e.g. fixed-wing) circle the point with the specified radius/direction.
+          If the Heading Required parameter (2) is non-zero forward moving aircraft will only leave the loiter circle once heading towards the next waypoint.
+          MISSION_CURRENT should set the item_progress_remaining field to the remaining loiter time (s) once loitering.
+	</description>
         <param index="1" label="Time" units="s" minValue="0">Loiter time (only starts once Lat, Lon and Alt is reached).</param>
         <param index="2" label="Heading Required" minValue="0" maxValue="1" increment="1">Leave loiter circle only once heading towards the next waypoint (0 = False)</param>
         <param index="3" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise.</param>
@@ -1299,7 +1310,9 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="93" name="MAV_CMD_NAV_DELAY" hasLocation="false" isDestination="false">
-        <description>Delay the next navigation command a number of seconds or until a specified time</description>
+        <description>Delay the next navigation command a number of seconds or until a specified time.
+          MISSION_CURRENT should set the item_progress_remaining field as remaining delay time (s) while waiting.
+	</description>
         <param index="1" label="Delay" units="s" minValue="-1" increment="1">Delay (-1 to enable time-of-day fields)</param>
         <param index="2" label="Hour" minValue="-1" maxValue="23" increment="1">hour (24h format, UTC, -1 to ignore)</param>
         <param index="3" label="Minute" minValue="-1" maxValue="59" increment="1">minute (24h format, UTC, -1 to ignore)</param>
@@ -1329,7 +1342,9 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="112" name="MAV_CMD_CONDITION_DELAY" hasLocation="false" isDestination="false">
-        <description>Delay mission state machine.</description>
+        <description>Delay mission state machine.
+          MISSION_CURRENT should set the item_progress_remaining field to the remaining delay time (s).
+	</description>
         <param index="1" label="Delay" units="s" minValue="0">Delay</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -4986,6 +5001,24 @@
         <description>Mission has executed all mission items.</description>
       </entry>
     </enum>
+    <enum name="MISSION_ITEM_PROGRESS_UNITS">
+      <description>
+        Units for reporting progress of the current mission item in MISSION_CURRENT.
+        This is set in the field item_progress_units and defines the units in item_progress_remaining.
+      </description>
+      <entry value="0" name="MISSION_ITEM_PROGRESS_UNITS_NOT_USED">
+        <description>Not used/not reporting progress.</description>
+      </entry>
+      <entry value="1" name="MISSION_ITEM_PROGRESS_UNITS_DISTANCE">
+        <description>Distance in metres.</description>
+      </entry>
+      <entry value="2" name="MISSION_ITEM_PROGRESS_UNITS_TIME">
+        <description>Time in seconds.</description>
+      </entry>
+      <entry value="3" name="MISSION_ITEM_PROGRESS_UNITS_COUNT">
+        <description>Count (unitless). This is used (for example), to indicate remaining turns in a MAV_CMD_NAV_LOITER_TURNS mission item.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -5335,12 +5368,19 @@
         Message that announces the sequence number of the current target mission item (that the system will fly towards/execute when the mission is running).
         This message should be streamed all the time (nominally at 1Hz).
         This message should be emitted following a call to MAV_CMD_DO_SET_MISSION_CURRENT or SET_MISSION_CURRENT.
+        The item_progress_percentage and item_progress_remaining fields provide a countdown of progress through the current mission item, for item states when the progress cannot be inferred from telemetry.
+        For example, you would report the remaining time or turns if loitering at a waypoint, but not the time travelling towards a waypoint.
+        The progress units, such as distance, time, count (for example, of "remaining turns"), must be defined in the mission item.
+        If progress is not being reported then all the item_progress fields should be set to 0.	
       </description>
       <field type="uint16_t" name="seq">Sequence</field>
       <extensions/>
       <field type="uint16_t" name="total" invalid="UINT16_MAX">Total number of mission items on vehicle (on last item, sequence == total). If the autopilot stores its home location as part of the mission this will be excluded from the total. 0: Not supported, UINT16_MAX if no mission is present on the vehicle.</field>
       <field type="uint8_t" name="mission_state" enum="MISSION_STATE" invalid="0">Mission state machine state. MISSION_STATE_UNKNOWN if state reporting not supported.</field>
       <field type="uint8_t" name="mission_mode" invalid="0">Vehicle is in a mode that can execute mission items or suspended. 0: Unknown, 1: In mission mode, 2: Suspended (not in mission mode).</field>
+      <field type="uint8_t" name="item_progress_units" enum="MISSION_ITEM_PROGRESS_UNITS">Units for remaining/original progress fields. MISSION_ITEM_PROGRESS_UNITS_NOT_USED (0) if not reporting progress. Units depend on particular mission item.</field>
+      <field type="uint8_t" name="item_progress_percentage" units="%" invalid="UINT8_MAX">0-100: Percentage remaining (countdown). 0 if progress not being reported (item_progress_units is MISSION_ITEM_PROGRESS_UNITS_NOT_USED).</field>
+      <field type="uint16_t" name="item_progress_remaining" invalid="0">Remaining time/distance/count to complete current mission item (units in item_progress_units). 0: progress not reported or item complete.</field>
     </message>
     <message id="43" name="MISSION_REQUEST_LIST">
       <description>Request the overall list of mission items from the system/component.</description>
