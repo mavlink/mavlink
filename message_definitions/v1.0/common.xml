@@ -1360,9 +1360,9 @@
       </entry>
       <entry value="115" name="MAV_CMD_CONDITION_YAW" hasLocation="false" isDestination="false">
         <description>Reach a certain target angle.</description>
-        <param index="1" label="Angle" units="deg">target angle, 0 is north</param>
-        <param index="2" label="Angular Speed" units="deg/s">angular speed</param>
-        <param index="3" label="Direction" minValue="-1" maxValue="1" increment="2">direction: -1: counter clockwise, 1: clockwise</param>
+        <param index="1" label="Angle" units="deg" minValue="0" maxValue="360">target angle [0-360]. Absolute angles: 0 is north. Relative angle: 0 is initial yaw. Direction set by param3.</param>
+        <param index="2" label="Angular Speed" units="deg/s" minValue="0">angular speed</param>
+        <param index="3" label="Direction" minValue="-1" maxValue="1" increment="1">direction: -1: counter clockwise, 0: shortest direction, 1: clockwise</param>
         <param index="4" label="Relative" minValue="0" maxValue="1" increment="1">0: absolute angle, 1: relative offset</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
@@ -2774,10 +2774,10 @@
         <description>Command has been cancelled (as a result of receiving a COMMAND_CANCEL message).</description>
       </entry>
       <entry value="7" name="MAV_RESULT_COMMAND_LONG_ONLY">
-        <description>Command is valid, but it is only accepted when sent as a COMMAND_LONG (as it has float values for params 5 and 6).</description>
+        <description>Command is only accepted when sent as a COMMAND_LONG.</description>
       </entry>
       <entry value="8" name="MAV_RESULT_COMMAND_INT_ONLY">
-        <description>Command is valid, but it is only accepted when sent as a COMMAND_INT (as it encodes a location in params 5, 6 and 7, and hence requires a reference MAV_FRAME).</description>
+        <description>Command is only accepted when sent as a COMMAND_INT.</description>
       </entry>
       <entry value="9" name="MAV_RESULT_COMMAND_UNSUPPORTED_MAV_FRAME">
         <description>Command is invalid because a frame is required and the specified frame is not supported.</description>
@@ -5341,6 +5341,9 @@
       <field type="uint16_t" name="total" invalid="UINT16_MAX">Total number of mission items on vehicle (on last item, sequence == total). If the autopilot stores its home location as part of the mission this will be excluded from the total. 0: Not supported, UINT16_MAX if no mission is present on the vehicle.</field>
       <field type="uint8_t" name="mission_state" enum="MISSION_STATE" invalid="0">Mission state machine state. MISSION_STATE_UNKNOWN if state reporting not supported.</field>
       <field type="uint8_t" name="mission_mode" invalid="0">Vehicle is in a mode that can execute mission items or suspended. 0: Unknown, 1: In mission mode, 2: Suspended (not in mission mode).</field>
+      <field type="uint32_t" name="mission_id" invalid="0">Id of current on-vehicle mission plan, or 0 if IDs are not supported or there is no mission loaded. GCS can use this to track changes to the mission plan type. The same value is returned on mission upload (in the MISSION_ACK).</field>
+      <field type="uint32_t" name="fence_id" invalid="0">Id of current on-vehicle fence plan, or 0 if IDs are not supported or there is no fence loaded. GCS can use this to track changes to the fence plan type. The same value is returned on fence upload (in the MISSION_ACK).</field>
+      <field type="uint32_t" name="rally_points_id" invalid="0">Id of current on-vehicle rally point plan, or 0 if IDs are not supported or there are no rally points loaded. GCS can use this to track changes to the rally point plan type. The same value is returned on rally point upload (in the MISSION_ACK).</field>
     </message>
     <message id="43" name="MISSION_REQUEST_LIST">
       <description>Request the overall list of mission items from the system/component.</description>
@@ -5356,6 +5359,13 @@
       <field type="uint16_t" name="count">Number of mission items in the sequence</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+      <field type="uint32_t" name="opaque_id" invalid="0">Id of current on-vehicle mission, fence, or rally point plan (on download from vehicle).
+        This field is used when downloading a plan from a vehicle to a GCS.
+        0 on upload to the vehicle from GCS.
+        0 if plan ids are not supported.
+        The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.
+        The ids are recalculated by the vehicle when any part of the on-vehicle plan changes (when a new plan is uploaded, the vehicle returns the new id to the GCS in MISSION_ACK).
+      </field>
     </message>
     <message id="45" name="MISSION_CLEAR_ALL">
       <description>Delete all mission items at once.</description>
@@ -5375,6 +5385,13 @@
       <field type="uint8_t" name="type" enum="MAV_MISSION_RESULT">Mission result.</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+      <field type="uint32_t" name="opaque_id" invalid="0">Id of new on-vehicle mission, fence, or rally point plan (on upload to vehicle).
+        The id is calculated and returned by a vehicle when a new plan is uploaded by a GCS.
+        The only requirement on the id is that it must change when there is any change to the on-vehicle plan type (there is no requirement that the id be globally unique).
+        0 on download from the vehicle to the GCS (on download the ID is set in MISSION_COUNT).
+        0 if plan ids are not supported.
+        The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.
+      </field>
     </message>
     <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
       <description>Sets the GPS coordinates of the vehicle local origin (0,0,0) position. Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed. This enables transform between the local coordinate frame and the global (GPS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
