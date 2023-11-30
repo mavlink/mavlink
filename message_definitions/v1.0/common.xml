@@ -5064,6 +5064,15 @@
         <description>Illuminator behavior is controlled by external factors: e.g. an external hardware signal</description>
       </entry>
     </enum>
+    <enum name="ILLUMINATOR_ERROR_FLAGS" bitmask="true">
+      <description>Illuminator module error flags (bitmap, 0 means no error)</description>
+      <entry value="1" name="ILLUMINATOR_ERROR_FLAGS_THERMAL_THROTTLING">
+        <description>Illuminator thermal throttling error.</description>
+      </entry>
+      <entry value="2" name="ILLUMINATOR_ERROR_FLAGS_OVER_TEMPERATURE_SHUTDOWN">
+        <description>Illuminator over temperature shutdown error.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -7626,7 +7635,7 @@
       <description>Illuminator status</description>
       <field type="uint32_t" name="uptime_ms" units="us">Time since the start-up of the illuminator in ms</field>
       <field type="uint8_t" name="enable">0: Illuminators OFF, 1: Illuminators ON</field>
-      <field type="uint32_t" name="error_status">Error</field>
+      <field type="uint32_t" name="error_status" enum="ILLUMINATOR_ERROR_FLAGS" display="bitmask">Errors</field>
       <field type="uint8_t" name="mode" enum="ILLUMINATOR_MODE">Illuminator mode</field>
       <field type="float" name="brightness" units="%">Illuminator brightness</field>
       <field type="float" name="strobe_period" units="s">Illuminator strobing period in seconds</field>
@@ -7635,9 +7644,8 @@
     </message>
     <message id="421" name="ILLUMINATOR_INFORMATION">
       <description>Illuminator information</description>
-      <field type="uint16_t" name="vendor_id">Vendor ID</field>
-      <field type="uint16_t" name="product_id">Product ID</field>
       <field type="char[16]" name="serial_number">Serial Number</field>
+      <field type="uint32_t" name="firmware_version">Version of the illuminator firmware, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff).</field>
       <field type="float" name="min_strobe_period" units="s">Minimum strobing period in seconds</field>
       <field type="float" name="max_strobe_period" units="s">Maximum strobing period in seconds</field>
       <field type="uint8_t" name="mode_bitmask" enum="ILLUMINATOR_MODE" display="bitmask">Supported illuminator modes</field>
