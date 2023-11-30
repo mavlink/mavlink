@@ -1813,8 +1813,12 @@
       </entry>
       <entry value="216" name="MAV_CMD_SET_PARACHUTE_ARM" hasLocation="false" isDestination="false">
         <description>Command to arm/disarm parachute module</description>
-        <param index="1" label="Arm Flags" enum="PARACHUTE_ARM_FLAGS" >Arm Flags</param>
+        <param index="1" label="Arm Flags" enum="PARACHUTE_ARM_FLAGS">Arm Flags</param>
         <param index="2" label="Bitmask" enum="PARACHUTE_ARM_FLAGS">Bitmask of arm flags (in param1) that should be modified</param>
+      </entry>
+      <entry value="217" name="MAV_CMD_SET_PARACHUTE_ARM_ALTI" hasLocation="false" isDestination="false">
+        <description>Command to set the parachute's automatic trigger system arming altitude in meters. </description>
+        <param index="1" label="Altitude" units="m">Parachute automatic trigger system arming altitude</param>
       </entry>
       <entry value="220" name="MAV_CMD_DO_MOUNT_CONTROL_QUAT" hasLocation="false" isDestination="false">
         <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW"/>
@@ -5118,40 +5122,40 @@
       <entry value="2" name="PARACHUTE_ARM_FLAGS_AUTOMATIC_TRIGGER_SYSTEM">
         <description>Arming parachute's automatic trigger system</description>
       </entry>
-      <entry value="4" name="PARACHUTE_ARM_FLAGS_AUTO_ARM_ATS">
-        <description>Arming parachute's auto-arming its automatic trigger system capability</description>
-      </entry>
-      <entry value="8" name="PARACHUTE_ARM_FLAGS_AUTO_DISARM_ATS">
-        <description>Arming parachute's auto-disarming its automatic trigger system capability</description>
-      </entry>
-      <entry value="16" name="PARACHUTE_ARM_FLAGS_MANUAL_TRIGGER_DEVICE">
+      <entry value="4" name="PARACHUTE_ARM_FLAGS_MANUAL_TRIGGER_DEVICE">
         <description>Arming parachute's manual trigger device method</description>
       </entry>
-      <entry value="32" name="PARACHUTE_ARM_FLAGS_OBC_TRIGGER_METHOD">
+      <entry value="8" name="PARACHUTE_ARM_FLAGS_OBC_TRIGGER_METHOD">
         <description>Arming parachute's onboard computer trigger method</description>
       </entry>
-      <entry value="64" name="PARACHUTE_ARM_FLAGS_GEOFENCE_TRIGGER_METHOD">
+      <entry value="16" name="PARACHUTE_ARM_FLAGS_GEOFENCE_TRIGGER_METHOD">
         <description>Arming parachute's geofence trigger method</description>
       </entry>
+      <entry value="32" name="PARACHUTE_ARM_FLAGS_RESERVED">
+        <description>Reserved for future use.</description>
+      </entry>
+      <entry value="64" name="PARACHUTE_ARM_FLAGS_AUTO_ARM_ATS">
+        <description>Arming parachute's auto-arming its automatic trigger system capability</description>
+      </entry>
+      <entry value="128" name="PARACHUTE_ARM_FLAGS_AUTO_DISARM_ATS">
+        <description>Arming parachute's auto-disarming its automatic trigger system capability</description>
+      </entry>
     </enum>
-    <enum name="PARACHUTE_DEPLOYMENT_STATUS">
+    <enum name="PARACHUTE_DEPLOYMENT_FLAGS">
       <description>Parachute module deployment flags (bitmap, 0 means no deployment)</description>
-      <entry value="0" name="PARACHUTE_DEPLOYMENT_STATUS_NONE">
-        <description>Parachute has not deployed</description>
-      </entry>
-      <entry value="1" name="PARACHUTE_DEPLOYMENT_STATUS_MANUAL_TRIGGER_DEVICE">
-        <description>Parachute deployed by manual trigger device</description>
-      </entry>
-      <entry value="2" name="PARACHUTE_DEPLOYMENT_STATUS_AUTOMATIC_TRIGGER_SYSTEM">
-        <description>Parachute deployed by automatic trigger system</description>
-      </entry>
-      <entry value="3" name="PARACHUTE_DEPLOYMENT_STATUS_DRONE_TRIGGER_METHOD">
+      <entry value="1" name="PARACHUTE_DEPLOYMENT_FLAGS_DRONE_TRIGGER_METHOD">
         <description>Parachute deployed by drone</description>
       </entry>
-      <entry value="4" name="PARACHUTE_DEPLOYMENT_STATUS_OBC_TRIGGER_METHOD">
+      <entry value="2" name="PARACHUTE_DEPLOYMENT_FLAGS_AUTOMATIC_TRIGGER_SYSTEM">
+        <description>Parachute deployed by automatic trigger system</description>
+      </entry>
+      <entry value="4" name="PARACHUTE_DEPLOYMENT_FLAGS_MANUAL_TRIGGER_DEVICE">
+        <description>Parachute deployed by manual trigger device</description>
+      </entry>
+      <entry value="8" name="PARACHUTE_DEPLOYMENT_FLAGS_OBC_TRIGGER_METHOD">
         <description>Parachute deployed by onboard computer</description>
       </entry>
-      <entry value="5" name="PARACHUTE_DEPLOYMENT_STATUS_GEOFENCE">
+      <entry value="16" name="PARACHUTE_DEPLOYMENT_FLAGS_GEOFENCE">
         <description>Parachute deployed by geofence method</description>
       </entry>
     </enum>
@@ -5195,6 +5199,12 @@
       </entry>
       <entry value="4096" name="PARACHUTE_ERROR_FLAGS_GPS_ERROR">
         <description>There is an error with the parachute GPS</description>
+      </entry>
+      <entry value="8192" name="PARACHUTE_ERROR_FLAGS_GS_ERROR">
+        <description>There is an error with the parachute and GS (ground station) connection</description>
+      </entry>
+      <entry value="16384" name="PARACHUTE_ERROR_FLAGS_SUBSYSTEM_ERROR">
+        <description>There is an error with the parachute and subsystem connection</description>
       </entry>
     </enum>
   </enums>
@@ -7773,7 +7783,7 @@
       <field type="uint8_t" name="battery_status" units="%">Parachute battery percentage</field>
       <field type="uint8_t" name="arm_status" enum="PARACHUTE_ARM_FLAGS" display="bitmask">Parachute arming status</field>
       <field type="uint8_t" name="charge_status">Boolean indicating charging (1) or not (0)</field>
-      <field type="uint8_t" name="deployment_status" enum="PARACHUTE_DEPLOYMENT_STATUS">Parachute deployment_status</field>
+      <field type="uint8_t" name="deployment_status" enum="PARACHUTE_DEPLOYMENT_FLAGS" display="bitmask">Parachute deployment_status</field>
       <field type="uint8_t" name="ats_arm_altitude" units="m">Parachute ATS auto-arming/disarming altitude in meters</field>
     </message>
     <message id="431" name="PARACHUTE_INFORMATION">
