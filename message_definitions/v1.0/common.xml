@@ -5114,7 +5114,7 @@
         <description>Illuminator thermistor failure.</description>
       </entry>
     </enum>
-    <enum name="PARACHUTE_ARM_FLAGS">
+    <enum name="PARACHUTE_ARM_FLAGS" bitmask="true">
       <description>Parachute module arming flags (bitmap, 0 means no arming enabled)</description>
       <entry value="1" name="PARACHUTE_ARM_FLAGS_DRONE_TRIGGER_METHOD">
         <description>Arming parachute's drone trigger method</description>
@@ -5141,7 +5141,7 @@
         <description>Arming parachute's auto-disarming its automatic trigger system capability</description>
       </entry>
     </enum>
-    <enum name="PARACHUTE_DEPLOYMENT_FLAGS">
+    <enum name="PARACHUTE_DEPLOYMENT_FLAGS" bitmask="true">
       <description>Parachute module deployment flags (bitmap, 0 means no deployment)</description>
       <entry value="1" name="PARACHUTE_DEPLOYMENT_FLAGS_DRONE_TRIGGER_METHOD">
         <description>Parachute deployed by drone</description>
@@ -5159,7 +5159,7 @@
         <description>Parachute deployed by geofence method</description>
       </entry>
     </enum>
-    <enum name="PARACHUTE_ERROR_FLAGS">
+    <enum name="PARACHUTE_ERROR_FLAGS" bitmask="true">
       <description>Parachute module error flags (bitmap, 0 means no error)</description>
       <entry value="1" name="PARACHUTE_ERROR_FLAGS_BAROMETER_ERROR">
         <description>There is an error with the parachute barometer</description>
@@ -7788,8 +7788,6 @@
     </message>
     <message id="431" name="PARACHUTE_INFORMATION">
       <description>Parachute information</description>
-      <field type="uint16_t" name="vendor_id">Vendor ID</field>
-      <field type="uint16_t" name="product_id">Product ID</field>
       <field type="char[16]" name="serial_number">Serial number in ASCII characters, null terminated. All 0: field not provided.</field>
       <field type="uint32_t" name="main_system_fw_version">Parachute main system firmware version, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff). Use 0 if not known.</field>
       <field type="uint32_t" name="main_system_hw_version">Parachute main system hardware version, encoded as: (Dev &amp; 0xff) &lt;&lt; 24 | (Patch &amp; 0xff) &lt;&lt; 16 | (Minor &amp; 0xff) &lt;&lt; 8 | (Major &amp; 0xff). Use 0 if not known.</field>
