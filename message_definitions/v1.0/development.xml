@@ -14,6 +14,15 @@
         <description>True if the data from this sensor is being actively used by the flight controller for guidance, navigation or control.</description>
       </entry>
     </enum>
+    <enum name="RADIO_RC_CHANNELS_FLAGS" bitmask="true">
+      <description>RADIO_RC_CHANNELS flags (bitmask).</description>
+      <entry value="1" name="RADIO_RC_CHANNELS_FLAGS_FAILSAFE">
+        <description>Failsafe is active.</description>
+      </entry>
+      <entry value="2" name="RADIO_RC_CHANNELS_FLAGS_FRAME_MISSED">
+        <description>Indicates that the current frame has not been received. Channel values are frozen.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="53" name="MISSION_CHECKSUM">
@@ -37,6 +46,16 @@
       <field type="int16_t" name="temperature" units="cdegC">Temperature. INT16_MAX for value unknown/not supplied.</field>
       <field type="float" name="raw_press" units="hPa">Raw differential pressure. NaN for value unknown/not supplied.</field>
       <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
+    </message>
+    <message id="420" name="RADIO_RC_CHANNELS">
+      <description>Radio channels. Supports up to 32 channels. Channel values are in centered 13 bit format. Range is [-4096,4096], center is 0. Conversion to PWM is x * 5/32 + 1500. 
+	    Should be emitted only by components with component id MAV_COMP_ID_TELEMETRY_RADIO.
+		The message should be handled, e.g. by routers, as if it had target fields with target_system = system id of system the radio receiver is connected to and target_component = 0. 
+		</description>
+      <field type="uint8_t" name="count">Total number of RC channels being received. This can be larger than 24, indicating that more channels are available but not given in this message.</field>
+      <field type="uint16_t" name="flags" enum="RADIO_RC_CHANNELS_FLAGS" display="bitmask">Radio rc channels status flags.</field>
+      <extensions/>
+      <field type="int16_t[32]" name="channels">RC channels. Channels above count should be set to 0, to benefit from MAVLink's zero padding.</field>
     </message>
   </messages>
 </mavlink>
