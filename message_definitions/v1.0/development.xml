@@ -394,29 +394,6 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type.</field>
       <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
     </message>
-    <message id="96" name="RADIO_LINK_STATS">
-      <description>Radio link statistics. 
-		Per default, rssi values are in MAVLink units: 0 represents weakest signal or no connection, 254 represents maximum signal.
-		Can be changed to dBm with the flag RADIO_LINK_STATS_FLAGS_RSSI_DBM. Then rssi values of 1..254 correspond to -1..-254 dBm, 0 represents no connection.   
-	    Should be emitted only by components with component id MAV_COMP_ID_TELEMETRY_RADIO.
-		The message should be handled, e.g. by routers, as if it had target fields with target_system = system id of system the radio receiver is connected to and target_component = 0. 
-		</description>
-      <field type="uint8_t" name="flags" enum="RADIO_LINK_STATS_FLAGS" display="bitmask">Radio link statistics flags.</field>
-      <field type="uint8_t" name="rx_LQ" units="c%" invalid="UINT8_MAX">Values: 0..100. 0: no connection, UINT8_MAX: invalid/unknown.</field>
-      <field type="uint8_t" name="rx_rssi1" invalid="UINT8_MAX">Rssi of antenna1. 0: no connection, UINT8_MAX: invalid/unknown.</field>
-      <field type="int8_t" name="rx_snr1" invalid="INT8_MAX">Noise on antenna1. Radio dependent. INT8_MAX: invalid/unknown.</field>
-      <field type="uint8_t" name="rx_rssi2" invalid="UINT8_MAX">Rssi of antenna2. UINT8_MAX: ignore, use rx_rssi1.</field>
-      <field type="int8_t" name="rx_snr2" invalid="INT8_MAX">Noise on antenna2. Radio dependent. INT8_MAX: ignore, use rx_snr1.</field>
-      <field type="uint8_t" name="rx_receive_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore, use rx_rssi1 and rx_snr1.</field>
-      <field type="uint8_t" name="rx_transmit_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore.</field>
-      <field type="uint8_t" name="tx_LQ" units="c%" invalid="UINT8_MAX">Values: 0..100. 0: no connection, UINT8_MAX: invalid/unknown.</field>
-      <field type="uint8_t" name="tx_rssi1" invalid="UINT8_MAX">Rssi of antenna1. 0: no connection, UINT8_MAX: invalid/unknown.</field>
-      <field type="int8_t" name="tx_snr1" invalid="INT8_MAX">Noise on antenna1. Radio dependent. INT8_MAX: invalid/unknown.</field>
-      <field type="uint8_t" name="tx_rssi2" invalid="UINT8_MAX">Rssi of antenna2. UINT8_MAX: ignore, use tx_rssi1.</field>
-      <field type="int8_t" name="tx_snr2" invalid="INT8_MAX">Noise on antenna2. Radio dependent. INT8_MAX: ignore, use tx_snr1.</field>
-      <field type="uint8_t" name="tx_receive_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore, use tx_rssi1 and tx_snr1.</field>
-      <field type="uint8_t" name="tx_transmit_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore.</field>
-    </message>
     <message id="295" name="AIRSPEED">
       <description>Airspeed information from a sensor.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
@@ -509,6 +486,31 @@
       <field type="uint32_t" name="mission_checksum">CRC32 checksum of current plan for MAV_MISSION_TYPE_ALL. As defined in MISSION_CHECKSUM message.</field>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot).
         The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+    </message>
+    <message id="421" name="RADIO_LINK_STATS">
+      <description>Radio link statistics. rx refers to the receiver, tx to the transmitter.
+        Per default, rssi values are in MAVLink units: 0 represents weakest signal or no connection, 254 represents maximum signal.
+        Can be changed to dBm with the flag RADIO_LINK_STATS_FLAGS_RSSI_DBM. Then rssi values of 1..254 correspond to -1..-254 dBm, 0 represents no connection.   
+        Should be emitted only by components with component id MAV_COMP_ID_TELEMETRY_RADIO.
+        The message should be handled, e.g. by routers, as if it had target fields with target_system = system id of system the radio receiver is connected to and target_component = 0. 
+        </description>
+      <field type="uint8_t" name="flags" enum="RADIO_LINK_STATS_FLAGS" display="bitmask">Radio link statistics flags.</field>
+      <field type="uint8_t" name="rx_LQ" units="c%" invalid="UINT8_MAX">Values: 0..100. 0: no connection, UINT8_MAX: invalid/unknown.</field>
+      <field type="uint8_t" name="rx_rssi1" invalid="UINT8_MAX">Rssi of antenna1. 0: no connection, UINT8_MAX: invalid/unknown.</field>
+      <field type="int8_t" name="rx_snr1" invalid="INT8_MAX">Noise on antenna1. Radio dependent. INT8_MAX: invalid/unknown.</field>
+      <field type="uint8_t" name="rx_rssi2" invalid="UINT8_MAX">Rssi of antenna2. UINT8_MAX: ignore, use rx_rssi1.</field>
+      <field type="int8_t" name="rx_snr2" invalid="INT8_MAX">Noise on antenna2. Radio dependent. INT8_MAX: ignore, use rx_snr1.</field>
+      <field type="uint8_t" name="rx_receive_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore, use rx_rssi1 and rx_snr1.</field>
+      <field type="uint8_t" name="rx_transmit_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore.</field>
+      <field type="int8_t" name="rx_power" invalid="INT8_MAX">Transmit power in dBm. INT8_MAX: unknown.</field>
+      <field type="uint8_t" name="tx_LQ" units="c%" invalid="UINT8_MAX">Values: 0..100. 0: no connection, UINT8_MAX: invalid/unknown.</field>
+      <field type="uint8_t" name="tx_rssi1" invalid="UINT8_MAX">Rssi of antenna1. 0: no connection, UINT8_MAX: invalid/unknown.</field>
+      <field type="int8_t" name="tx_snr1" invalid="INT8_MAX">Noise on antenna1. Radio dependent. INT8_MAX: invalid/unknown.</field>
+      <field type="uint8_t" name="tx_rssi2" invalid="UINT8_MAX">Rssi of antenna2. UINT8_MAX: ignore, use tx_rssi1.</field>
+      <field type="int8_t" name="tx_snr2" invalid="INT8_MAX">Noise on antenna2. Radio dependent. INT8_MAX: ignore, use tx_snr1.</field>
+      <field type="uint8_t" name="tx_receive_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore, use tx_rssi1 and tx_snr1.</field>
+      <field type="uint8_t" name="tx_transmit_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore.</field>
+      <field type="int8_t" name="tx_power" invalid="INT8_MAX">Transmit power in dBm. INT8_MAX: unknown.</field>
     </message>
     <message id="435" name="AVAILABLE_MODES">
       <description>Get information about a particular flight modes.
