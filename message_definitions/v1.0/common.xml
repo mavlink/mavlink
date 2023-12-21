@@ -6852,13 +6852,18 @@
       <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
     </message>
     <message id="264" name="FLIGHT_INFORMATION">
-      <description>Information about flight since last arming.
+      <description>Flight information.
+        This includes time since boot for arm, takeoff, and land, and a flight sequence number.
+        Takeoff and landing values reset to zero on arm.
         This can be requested using MAV_CMD_REQUEST_MESSAGE.
+        Note, some fields are misnamed - timestamps are from boot (not UTC) and the flight_uuid is a sequence number.
       </description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint64_t" name="arming_time_utc" units="us" invalid="0">Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown</field>
-      <field type="uint64_t" name="takeoff_time_utc" units="us" invalid="0">Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown</field>
-      <field type="uint64_t" name="flight_uuid">Universally unique identifier (UUID) of flight, should correspond to name of log files</field>
+      <field type="uint64_t" name="arming_time_utc" units="us" invalid="0">Timestamp at arming (since system boot). Set to 0 on boot. Set value on arming. Note, field is misnamed UTC.</field>
+      <field type="uint64_t" name="takeoff_time_utc" units="us" invalid="0">Timestamp at takeoff (since system boot). Set to 0 at boot and on arming. Note, field is misnamed UTC.</field>
+      <field type="uint64_t" name="flight_uuid">Flight sequence number (incremented for each flight). Note, field is misnamed UUID.</field>
+      <extensions/>
+      <field type="uint32_t" name="landing_time"units="ms" invalid="0">Timestamp at landing (in ms since system boot). Set to 0 at boot and on arming.</field>
     </message>
     <message id="265" name="MOUNT_ORIENTATION">
       <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">This message is being superseded by MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
