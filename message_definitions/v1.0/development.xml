@@ -48,10 +48,11 @@
       <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
     </message>
     <message id="420" name="RADIO_RC_CHANNELS">
-      <description>Radio channels. Supports up to 32 channels. Channel values are in centered 13 bit format. Range is [-4096,4096], center is 0. Conversion to PWM is x * 5/32 + 1500. 
-	    Should be emitted only by components with component id MAV_COMP_ID_TELEMETRY_RADIO.
-		The message should be handled, e.g. by routers, as if it had target fields with target_system = system id of system the radio receiver is connected to and target_component = 0. 
+      <description>Radio channels. Supports up to 32 channels. Channel values are in centered 13 bit format. Range is [-4096,4096], center is 0. Conversion to PWM is x * 5/32 + 1500.  
+		The target_system field should normally be set to the system id of system the radio receiver is connected to, the target_component field can be normally set to 0. 
 		</description>
+      <field type="uint8_t" name="target_system">System ID (can be 0 for broadcast, but this is discouraged).</field>
+      <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
       <field type="uint8_t" name="count">Total number of RC channels being received. This can be larger than 24, indicating that more channels are available but not given in this message.</field>
       <field type="uint16_t" name="flags" enum="RADIO_RC_CHANNELS_FLAGS" display="bitmask">Radio rc channels status flags.</field>
       <extensions/>
