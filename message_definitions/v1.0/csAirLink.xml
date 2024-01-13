@@ -14,6 +14,23 @@
         <description>Auth successful</description>
       </entry>
     </enum>
+    <enum name="AIRLINK_EYE_GS_HOLE_PUSH_RESP_TYPE">
+      <entry value="0" name="AIRLINK_HPR_PARTNER_NOT_READY"/>
+      <entry value="1" name="AIRLINK_HPR_PARTNER_READY"/>
+    </enum>
+    <enum name="AIRLINK_EYE_IP_VERSION">
+      <entry value="0" name="AIRLINK_IP_V4"/>
+      <entry value="1" name="AIRLINK_IP_V6"/>
+    </enum>
+    <enum name="AIRLINK_EYE_HOLE_PUSH_TYPE">
+      <entry value="0" name="AIRLINK_HP_NOT_PENETRATED"/>
+      <entry value="1" name="AIRLINK_HP_BROKEN"/>
+    </enum>
+    <enum name="AIRLINK_EYE_TURN_INIT_TYPE">
+      <entry value="0" name="AIRLINK_TURN_INIT_START"/>
+      <entry value="1" name="AIRLINK_TURN_INIT_OK"/>
+      <entry value="2" name="AIRLINK_TURN_INIT_BAD"/>
+    </enum>
   </enums>
   <messages>
     <message id="52000" name="AIRLINK_AUTH">
@@ -24,6 +41,26 @@
     <message id="52001" name="AIRLINK_AUTH_RESPONSE">
       <description>Response to the authorization request</description>
       <field type="uint8_t" name="resp_type" enum="AIRLINK_AUTH_RESPONSE_TYPE">Response type</field>
+    </message>
+    <message id="52002" name="AIRLINK_EYE_GS_HOLE_PUSH_REQUEST">
+      <description>Request to hole punching</description>
+      <field type="uint8_t" name="resp_type" enum="AIRLINK_EYE_GS_HOLE_PUSH_RESP_TYPE">Hole push response type</field>
+    </message>
+    <message id="52003" name="AIRLINK_EYE_GS_HOLE_PUSH_RESPONSE">
+      <description>Response information about the connected device</description>
+      <field type="uint8_t" name="resp_type" enum="AIRLINK_EYE_GS_HOLE_PUSH_RESP_TYPE">Hole push response type</field>
+      <field type="uint8_t" name="ip_version" enum="AIRLINK_EYE_IP_VERSION">ip version</field>
+      <field type="uint8_t[4]" name="ip_address_4">ip 4 address</field>
+      <field type="uint8_t[16]" name="ip_address_6">ip 6 address</field>
+      <field type="uint32_t" name="ip_port">port</field>
+    </message>
+    <message id="52004" name="AIRLINK_EYE_HP">
+      <description>A package with information about the hole punching status. It is used for constant sending to avoid NAT closing timeout.</description>
+      <field type="uint8_t" name="resp_type" enum="AIRLINK_EYE_HOLE_PUSH_TYPE">Hole push response type</field>
+    </message>
+    <message id="52005" name="AIRLINK_EYE_TURN_INIT">
+      <description>Initializing the TURN protocol</description>
+      <field type="uint8_t" name="resp_type" enum="AIRLINK_EYE_TURN_INIT_TYPE">Turn init type</field>
     </message>
   </messages>
 </mavlink>
