@@ -19,9 +19,6 @@
       <entry value="1" name="RADIO_RC_CHANNELS_FLAGS_FAILSAFE">
         <description>Failsafe is active.</description>
       </entry>
-      <entry value="2" name="RADIO_RC_CHANNELS_FLAGS_FRAME_MISSED">
-        <description>Indicates that the current frame has not been received. Channel values are frozen.</description>
-      </entry>
     </enum>
   </enums>
   <messages>
@@ -48,15 +45,24 @@
       <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
     </message>
     <message id="420" name="RADIO_RC_CHANNELS">
-      <description>Radio channels. Supports up to 32 channels. Channel values are in centered 13 bit format. Range is [-4096,4096], center is 0. Conversion to PWM is x * 5/32 + 1500.  
-		The target_system field should normally be set to the system id of system the radio receiver is connected to, the target_component field can be normally set to 0. 
-		</description>
+      <description>RC channel inputs for a flight controller and associated components; the message does not replace the RC_CHANNELS and similar output messages.
+        Supports up to 32 channels. Channel values are in centered 13 bit format. Range is -4096 to 4096, center is 0. Conversion to PWM is x * 5/32 + 1500.
+        The target_system field should normally be set to the system id of the system to control, typically the flight controller.
+        The target_component field can normally be set to 0, so that all components of the system can receive the message.
+        The time_last_update_ms field indicates the time, in the sender's time domain, when the RC channels data were last updated. If this time is significantly shorter
+        than the expected update time for this message, then the RC channels data can be considered invalid, and the RC channels data should carry the last valid data.
+        In the case of a failsafe (when the RADIO_RC_CHANNELS_FLAGS_FAILSAFE bit set in the flags field), the RC channels data can be frozen and carried forward, e.g.,
+        the last valid data or failsafe values configured in the sender of the message. The exact behavior is not defined by the protocol but up to the implementation
+        of the sender; the default is to carry the last valid data.
+        Note: The RC channels fields are extensions to ensure that they are located at the end of the serialized payload and subject to MAVLink's trailing-zero trimming.
+        </description>
       <field type="uint8_t" name="target_system">System ID (can be 0 for broadcast, but this is discouraged).</field>
       <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
-      <field type="uint8_t" name="count">Total number of RC channels being received. This can be larger than 24, indicating that more channels are available but not given in this message.</field>
-      <field type="uint16_t" name="flags" enum="RADIO_RC_CHANNELS_FLAGS" display="bitmask">Radio rc channels status flags.</field>
+      <field type="uint32_t" name="time_last_update_ms" units="ms">Time when RC channels were last updated (time since boot in the sender's time domain).</field>
+      <field type="uint16_t" name="flags" enum="RADIO_RC_CHANNELS_FLAGS" display="bitmask">Radio RC channels status flags.</field>
+      <field type="uint8_t" name="count">Total number of RC channels being received. This can be larger than 32, indicating that more channels are available but not given in this message.</field>
       <extensions/>
-      <field type="int16_t[32]" name="channels">RC channels. Channels above count should be set to 0, to benefit from MAVLink's zero padding.</field>
+      <field type="int16_t[32]" name="channels">RC channels. Channels that are above the field count should be set to 0, to benefit from MAVLink's trailing-zero trimming.</field>
     </message>
   </messages>
 </mavlink>
