@@ -732,6 +732,21 @@
         <description>Storage type is other, not listed type.</description>
       </entry>
     </enum>
+    <enum name="STORAGE_USAGE_FLAG">
+      <description>Flags to indicate usage for a particular storage (see STORAGE_INFORMATION.storage_usage and MAV_CMD_SET_STORAGE_USAGE).</description>
+      <entry value="1" name="STORAGE_USAGE_FLAG_SET">
+        <description>Always set to 1 (indicates STORAGE_INFORMATION.storage_usage is supported).</description>
+      </entry>
+      <entry value="2" name="STORAGE_USAGE_FLAG_PHOTO">
+        <description>Storage for saving photos.</description>
+      </entry>
+      <entry value="4" name="STORAGE_USAGE_FLAG_VIDEO">
+        <description>Storage for saving videos.</description>
+      </entry>
+      <entry value="8" name="STORAGE_USAGE_FLAG_LOGS">
+        <description>Storage for saving logs.</description>
+      </entry>
+    </enum>
     <enum name="AUTOTUNE_AXIS" bitmask="true">
       <description>Enable axes that will be tuned via autotuning. Used in MAV_CMD_DO_AUTOTUNE_ENABLE.</description>
       <entry value="0" name="AUTOTUNE_AXIS_DEFAULT">
@@ -1656,6 +1671,15 @@
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
         <param index="7" reserved="true" default="NaN"/>
+      </entry>
+      <entry value="533" name="MAV_CMD_SET_STORAGE_USAGE" hasLocation="false" isDestination="false">
+        <description>Set that a particular storage is the preferred location for saving photos, videos, and/or other media (e.g. to set that an SD card is used for storing videos).
+          There can only be one preferred save location for each particular media type: setting a media usage flag will clear/reset that same flag if set on any other storage.
+          If no flag is set the system should use its default storage.
+          A target system can choose to always use default storage, in which case it should ACK the command with MAV_RESULT_UNSUPPORTED.
+          A target system can choose to not allow a particular storage to be set as preferred storage, in which case it should ACK the command with MAV_RESULT_DENIED.</description>
+        <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
+        <param index="2" label="Usage" enum="STORAGE_USAGE_FLAG">Usage flags</param>
       </entry>
       <entry value="600" name="MAV_CMD_JUMP_TAG" hasLocation="false" isDestination="false">
         <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
