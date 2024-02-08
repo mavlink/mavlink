@@ -1808,15 +1808,6 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="215" name="MAV_CMD_SET_PARACHUTE_ARM" hasLocation="false" isDestination="false">
-        <description>Command to arm/disarm parachute module</description>
-        <param index="1" label="Arm Flags" enum="PARACHUTE_ARM_FLAGS">Arm Flags</param>
-        <param index="2" label="Bitmask" enum="PARACHUTE_ARM_FLAGS">Bitmask of arm flags (in param1) that should be modified</param>
-      </entry>
-      <entry value="216" name="MAV_CMD_SET_PARACHUTE_ARM_ALTI" hasLocation="false" isDestination="false">
-        <description>Command to set the parachute's automatic trigger system arming altitude in meters. </description>
-        <param index="1" label="Altitude" units="m">Parachute automatic trigger system arming altitude</param>
-      </entry>
       <entry value="220" name="MAV_CMD_DO_MOUNT_CONTROL_QUAT" hasLocation="false" isDestination="false">
         <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW"/>
         <description>Mission command to control a camera or antenna mount, using a quaternion as reference.</description>
@@ -1881,6 +1872,15 @@
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
+      </entry>
+      <entry value="225" name="MAV_CMD_SET_PARACHUTE_ARM" hasLocation="false" isDestination="false">
+        <description>Command to arm/disarm parachute module</description>
+        <param index="1" label="Arm Flags" enum="PARACHUTE_ARM_FLAGS">Arm Flags</param>
+        <param index="2" label="Bitmask" enum="PARACHUTE_ARM_FLAGS">Bitmask of arm flags (in param1) that should be modified</param>
+      </entry>
+      <entry value="226" name="MAV_CMD_SET_PARACHUTE_ARM_ALTI" hasLocation="false" isDestination="false">
+        <description>Command to set the parachute's automatic trigger system arming altitude in meters.</description>
+        <param index="1" label="Altitude" units="m">Parachute automatic trigger system arming altitude</param>
       </entry>
       <entry value="240" name="MAV_CMD_DO_LAST" hasLocation="false" isDestination="false">
         <description>NOP - This command is only used to mark the upper limit of the DO commands in the enumeration</description>
@@ -7780,7 +7780,7 @@
       <field type="uint8_t" name="arm_status" enum="PARACHUTE_ARM_FLAGS" display="bitmask">Parachute arming status</field>
       <field type="uint8_t" name="charge_status">Boolean indicating charging (1) or not (0)</field>
       <field type="uint8_t" name="deployment_status" enum="PARACHUTE_DEPLOYMENT_FLAGS" display="bitmask">Parachute deployment_status</field>
-      <field type="uint8_t" name="ats_arm_altitude" units="m">Parachute ATS auto-arming/disarming altitude in meters</field>
+      <field type="uint8_t" name="ats_arm_altitude" units="m">Parachute Automatic Trigger System (ATS) auto-arming/disarming altitude in meters</field>
       <field type="char[11]" name="parachute_packed_date">Parachute packed date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
     </message>
     <message id="440" name="ILLUMINATOR_STATUS">
