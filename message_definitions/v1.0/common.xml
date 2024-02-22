@@ -1919,6 +1919,16 @@
         <param index="7">Reserved (set to 0)</param>
       </entry>
       <!-- END of UAVCAN range -->
+      <entry value="5300" name="MAV_CMD_DO_SET_SAFETY_SWITCH_STATE" hasLocation="false" isDestination="false">
+        <description>Change state of safety switch.</description>
+        <param index="1" label="Desired State" enum="SAFETY_SWITCH_STATE">New safety switch state.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
       <entry value="10001" name="MAV_CMD_DO_ADSB_OUT_IDENT" hasLocation="false" isDestination="false">
         <description>Trigger the start of an ADSB-out IDENT. This should only be used when requested to do so by an Air Traffic Controller in controlled airspace. This starts the IDENT which is then typically held for 18 seconds by the hardware per the Mode A, C, and S transponder spec.</description>
         <param index="1">Reserved (set to 0)</param>
@@ -4121,6 +4131,17 @@
       </entry>
       <entry value="5" name="MISSION_STATE_COMPLETE">
         <description>Mission has executed all mission items.</description>
+      </entry>
+    </enum>
+    <enum name="SAFETY_SWITCH_STATE">
+      <description>
+	Possible safety switch states.
+      </description>
+      <entry value="0" name="SAFETY_SWITCH_STATE_SAFE">
+        <description>Safety switch is engaged and vehicle should be safe to approach.</description>
+      </entry>
+      <entry value="1" name="SAFETY_SWITCH_STATE_DANGEROUS">
+        <description>Safety switch is NOT engaged and motors, propellers and other actuators should be considered active.</description>
       </entry>
     </enum>
   </enums>
