@@ -350,6 +350,17 @@
         <param index="6" reserved="true"/>
         <param index="7" reserved="true"/>
       </entry>
+      <entry value="610" name="MAV_CMD_DO_SET_SYS_CMP_ID" hasLocation="false" isDestination="false">
+        <description>
+          Set system and component id.
+          This allows moving of a system and all its components to a new system id, or moving a particular component to a new system/component id.
+          Recipients must reject command addressed to broadcast system ID.
+        </description>
+        <param index="1" label="System ID" minValue="1" maxValue="255" increment="1">New system ID for target component(s). 0: ignore and reject command (broadcast system ID not allowed).</param>
+        <param index="2" label="Component ID" minValue="0" maxValue="255" increment="1">New component ID for target component(s). 0: ignore (component IDs don't change).</param>
+        <param index="3" label="Reboot">Reboot components after ID change. Any non-zero value triggers the reboot.</param>
+        <param index="4" reserved="true" default="NaN"/>
+      </entry>
       <entry value="12900" name="MAV_CMD_ODID_SET_EMERGENCY" hasLocation="false" isDestination="false">
         <description>Used to manually set/unset emergency status for remote id.
           This is for compliance with MOC ASTM docs, specifically F358 section 7.7: "Emergency Status Indicator".
