@@ -1681,6 +1681,12 @@
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
         <param index="2" label="Usage" enum="STORAGE_USAGE_FLAG">Usage flags</param>
       </entry>
+      <entry value="534" name="MAV_CMD_SET_CAMERA_SOURCE" hasLocation="false" isDestination="false">
+        <description>Set camera source. Changes the camera's active sources on cameras with multiple image sensors.</description>
+        <param index="1" label="device id">Component Id of camera to address or 1-6 for non-MAVLink cameras, 0 for all cameras.</param>
+        <param index="2" label="primary source" enum="CAMERA_SOURCE">Primary Source</param>
+        <param index="3" label="secondary source" enum="CAMERA_SOURCE">Secondary Source. If non-zero the second source will be displayed as picture-in-picture.</param>
+      </entry>
       <entry value="600" name="MAV_CMD_JUMP_TAG" hasLocation="false" isDestination="false">
         <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
         <param index="1" label="Tag" minValue="0" increment="1">Tag.</param>
@@ -3379,6 +3385,21 @@
       </entry>
       <entry value="6" name="FOCUS_TYPE_AUTO_CONTINUOUS">
         <description>Continuous auto focus. Mainly used for dynamic scenes. Abbreviated as AF-C.</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_SOURCE">
+      <description>Camera sources for MAV_CMD_SET_CAMERA_SOURCE</description>
+      <entry value="0" name="CAMERA_SOURCE_DEFAULT">
+        <description>Default camera source.</description>
+      </entry>
+      <entry value="1" name="CAMERA_SOURCE_RGB">
+        <description>RGB camera source.</description>
+      </entry>
+      <entry value="2" name="CAMERA_SOURCE_IR">
+        <description>IR camera source.</description>
+      </entry>
+      <entry value="3" name="CAMERA_SOURCE_NDVI">
+        <description>NDVI camera source.</description>
       </entry>
     </enum>
     <enum name="PARAM_ACK">
