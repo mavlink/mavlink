@@ -2149,7 +2149,7 @@
 
           When used in a mission, an autopilot should execute the MAV_CMD for a specified local camera (param1 = 1-6), or resend it as a command if it is intended for a MAVLink camera (param1 = 7 - 255), setting the command's target_component as the param1 value (and setting param1 in the command to zero).
           If the param1 is 0 the autopilot should do both.
-          
+
           When sent in a command the target MAVLink address is set using target_component.
           If addressed specifically to an autopilot: param1 should be used in the same way as it is for missions (though command should NACK with MAV_RESULT_DENIED if a specified local camera does not exist).
           If addressed to a MAVLink camera, param 1 can be used to address all cameras (0), or to separately address 1 to 7 individual sensors. Other values should be NACKed with MAV_RESULT_DENIED.
@@ -2165,7 +2165,7 @@
       </entry>
       <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE" hasLocation="false" isDestination="false">
         <description>Stop image capture sequence.
-        
+
           Param1 (id) may be used to specify the target camera: 0: all cameras, 1 to 6: autopilot-connected cameras, 7-255: MAVLink camera component ID.
           It is needed in order to target specific cameras connected to the autopilot, or specific sensors in a multi-sensor camera (neither of which have a distinct MAVLink component ID).
           It is also needed to specify the target camera in missions.
@@ -2207,7 +2207,7 @@
         <description>If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking.</description>
         <param index="1" label="Point x" minValue="0" maxValue="1">Point to track x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="2" label="Point y" minValue="0" maxValue="1">Point to track y value (normalized 0..1, 0 is top, 1 is bottom).</param>
-        <param index="3" label="Radius" minValue="0" maxValue="1">Point radius (normalized 0..1, 0 is image left, 1 is image right).</param>
+        <param index="3" label="Radius" minValue="0" maxValue="1">Point radius (normalized 0..1, 0 is one pixel, 1 is full image width).</param>
       </entry>
       <entry value="2005" name="MAV_CMD_CAMERA_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
         <description>If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking.</description>
