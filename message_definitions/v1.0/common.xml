@@ -5072,6 +5072,9 @@
       <entry value="2" name="ILLUMINATOR_ERROR_FLAGS_OVER_TEMPERATURE_SHUTDOWN">
         <description>Illuminator over temperature shutdown error.</description>
       </entry>
+      <entry value="3" name="ILLUMINATOR_ERROR_FLAGS_THERMISTOR_FAILURE">
+        <description>Illuminator thermistor failure.</description>
+      </entry>
     </enum>
   </enums>
   <messages>
@@ -7642,9 +7645,9 @@
       <field type="uint16_t" name="sequence_oldest_available">Oldest Sequence number that is still available after the sequence set in REQUEST_EVENT.</field>
       <field type="uint8_t" name="reason" enum="MAV_EVENT_ERROR_REASON">Error reason.</field>
     </message>
-    <message id="420" name="ILLUMINATOR_STATUS">
+    <message id="440" name="ILLUMINATOR_STATUS">
       <description>Illuminator status</description>
-      <field type="uint32_t" name="uptime_ms" units="us">Time since the start-up of the illuminator in ms</field>
+      <field type="uint32_t" name="uptime_ms" units="ms">Time since the start-up of the illuminator in ms</field>
       <field type="uint8_t" name="enable">0: Illuminators OFF, 1: Illuminators ON</field>
       <field type="uint8_t" name="mode_bitmask" enum="ILLUMINATOR_MODE" display="bitmask">Supported illuminator modes</field>
       <field type="uint32_t" name="error_status" enum="ILLUMINATOR_ERROR_FLAGS" display="bitmask">Errors</field>
