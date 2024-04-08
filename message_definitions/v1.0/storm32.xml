@@ -10,7 +10,7 @@ Range of IDs:
 Documentation:
   STORM32 and QSHOT additions
   with mLRS additions merged
-  3. Feb. 2023
+  29. Feb. 2024
   All messages are technically WIP, but some are quite stable now.
   Quite stable means that it is in practical use, but may see extension.
   A more detailed description of the concept underlying the STORM32 and QSHOT messages can be found here:
@@ -278,24 +278,6 @@ Documentation:
         <param index="2" label="Shot state or command">Set shot state or command. The allowed values are specific to the selected shot mode.</param>
       </entry>
     </enum>
-    <!-- #############################
-    mLRS enums
-    ############################# -->
-    <enum name="RADIO_RC_CHANNELS_FLAGS" bitmask="true">
-      <description>RADIO_RC_CHANNELS flags (bitmask).</description>
-      <entry value="1" name="RADIO_RC_CHANNELS_FLAGS_FAILSAFE">
-        <description>Failsafe is active.</description>
-      </entry>
-      <entry value="2" name="RADIO_RC_CHANNELS_FLAGS_FRAME_MISSED">
-        <description>Indicates that the current frame has not been received. Channel values are frozen.</description>
-      </entry>
-    </enum>
-    <enum name="RADIO_LINK_STATS_FLAGS" bitmask="true">
-      <description>RADIO_LINK_STATS flags (bitmask).</description>
-      <entry value="1" name="RADIO_LINK_STATS_FLAGS_RSSI_DBM">
-        <description>Rssi are in negative dBm. Values 0..254 corresponds to 0..-254 dBm.</description>
-      </entry>
-    </enum>
   </enums>
   <messages>
     <!-- #############################
@@ -384,34 +366,6 @@ Documentation:
     General messages
     COMPONENT_PREARM_STATUS deprecated 7.Dez.2022, replaced by events micro service, removed to force migration
     *************************** -->
-    <!-- #############################
-    mLRS messages
-    ############################# -->
-    <message id="60045" name="RADIO_RC_CHANNELS">
-      <description>Radio channels. Supports up to 24 channels. Channel values are in centerd 13 bit format. Range is [-4096,4096], center is 0. Conversion to PWM is x * 5/32 + 1500. Should be emitted only by components with component id MAV_COMP_ID_TELEMETRY_RADIO.</description>
-      <field type="uint8_t" name="count">Total number of RC channels being received. This can be larger than 24, indicating that more channels are available but not given in this message.</field>
-      <field type="uint8_t" name="flags" enum="RADIO_RC_CHANNELS_FLAGS" display="bitmask">Radio channels status flags.</field>
-      <extensions/>
-      <field type="int16_t[24]" name="channels">RC channels. Channels above count should be set to 0, to benefit from MAVLink's zero padding.</field>
-    </message>
-    <message id="60046" name="RADIO_LINK_STATS">
-      <description>Radio link statistics. Should be emitted only by components with component id MAV_COMP_ID_TELEMETRY_RADIO. Per default, rssi values are in MAVLink units: 0 represents weakest signal, 254 represents maximum signal; can be changed to dBm with the flag RADIO_LINK_STATS_FLAGS_RSSI_DBM.</description>
-      <field type="uint8_t" name="flags" enum="RADIO_LINK_STATS_FLAGS" display="bitmask">Radio link statistics flags.</field>
-      <field type="uint8_t" name="rx_LQ" units="c%" invalid="UINT8_MAX">Values: 0..100. UINT8_MAX: invalid/unknown.</field>
-      <field type="uint8_t" name="rx_rssi1" invalid="UINT8_MAX">Rssi of antenna1. UINT8_MAX: invalid/unknown.</field>
-      <field type="int8_t" name="rx_snr1" invalid="INT8_MAX">Noise on antenna1. Radio dependent. INT8_MAX: invalid/unknown.</field>
-      <field type="uint8_t" name="rx_rssi2" invalid="UINT8_MAX">Rssi of antenna2. UINT8_MAX: ignore/unknown, use rx_rssi1.</field>
-      <field type="int8_t" name="rx_snr2" invalid="INT8_MAX">Noise on antenna2. Radio dependent. INT8_MAX: ignore/unknown, use rx_snr1.</field>
-      <field type="uint8_t" name="rx_receive_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore, no Rx receive diversity, use rx_rssi1, rx_snr1.</field>
-      <field type="uint8_t" name="rx_transmit_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore, no Rx transmit diversity.</field>
-      <field type="uint8_t" name="tx_LQ" units="c%" invalid="UINT8_MAX">Values: 0..100. UINT8_MAX: invalid/unknown.</field>
-      <field type="uint8_t" name="tx_rssi1" invalid="UINT8_MAX">Rssi of antenna1. UINT8_MAX: invalid/unknown.</field>
-      <field type="int8_t" name="tx_snr1" invalid="INT8_MAX">Noise on antenna1. Radio dependent. INT8_MAX: invalid/unknown.</field>
-      <field type="uint8_t" name="tx_rssi2" invalid="UINT8_MAX">Rssi of antenna2. UINT8_MAX: ignore/unknown, use tx_rssi1.</field>
-      <field type="int8_t" name="tx_snr2" invalid="INT8_MAX">Noise on antenna2. Radio dependent. INT8_MAX: ignore/unknown, use tx_snr1.</field>
-      <field type="uint8_t" name="tx_receive_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore, no Tx receive diversity, use tx_rssi1, tx_snr1.</field>
-      <field type="uint8_t" name="tx_transmit_antenna" invalid="UINT8_MAX">0: antenna1, 1: antenna2, UINT8_MAX: ignore, no Tx transmit diversity.</field>
-    </message>
     <!-- ********** -->
     <message id="60040" name="FRSKY_PASSTHROUGH_ARRAY">
       <description>Frsky SPort passthrough multi packet container.</description>

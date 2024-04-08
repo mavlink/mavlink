@@ -157,42 +157,6 @@
         </description>
       </entry>
     </enum>
-    <!-- The MAV_CMD enum entries describe either: -->
-    <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
-    <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
-    <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
-    <enum name="MAV_CMD">
-      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="35" name="MAV_CMD_DO_FIGURE_EIGHT" hasLocation="true" isDestination="true">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Fly a figure eight path as defined by the parameters.
-          Set parameters to NaN/INT32_MAX (as appropriate) to use system-default values.
-          The command is intended for fixed wing vehicles (and VTOL hybrids flying in fixed-wing mode), allowing POI tracking for gimbals that don't support infinite rotation.
-          This command only defines the flight path. Speed should be set independently (use e.g. MAV_CMD_DO_CHANGE_SPEED).
-          Yaw and other degrees of freedom are not specified, and will be flight-stack specific (on vehicles where they can be controlled independent of the heading).
-        </description>
-        <param index="1" label="Major Radius" units="m">Major axis radius of the figure eight. Positive: orbit the north circle clockwise. Negative: orbit the north circle counter-clockwise.
-        NaN: The radius will be set to 2.5 times the minor radius and direction is clockwise.
-        Must be greater or equal to two times the minor radius for feasible values.</param>
-        <param index="2" label="Minor Radius" units="m">Minor axis radius of the figure eight. Defines the radius of the two circles that make up the figure. Negative value has no effect.
-        NaN: The radius will be set to the default loiter radius.</param>
-        <param index="3" reserved="true" default="NaN"/>
-        <param index="4" label="Orientation" units="rad">Orientation of the figure eight major axis with respect to true north (range: [-pi,pi]). NaN: use default orientation aligned to true north.</param>
-        <param index="5" label="Latitude/X">Center point latitude/X coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
-        INT32_MAX or NaN: Use current vehicle position, or current center if already loitering.</param>
-        <param index="6" label="Longitude/Y">Center point longitude/Y coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
-        INT32_MAX or NaN: Use current vehicle position, or current center if already loitering.</param>
-        <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
-        INT32_MAX or NaN: Use current vehicle altitude.</param>
-      </entry>
-      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
-        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
-        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
-        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
-        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
-      </entry>
-    </enum>
     <enum name="MAV_BATTERY_STATUS_FLAGS" bitmask="true">
       <description>Battery status flags for fault, health and state indication.</description>
       <entry value="1" name="MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE">
@@ -299,7 +263,41 @@
         <description>Reserved (not used). If set, this will indicate that an additional status field exists for higher status values.</description>
       </entry>
     </enum>
+    <!-- The MAV_CMD enum entries describe either: -->
+    <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
+    <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
+    <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <entry value="35" name="MAV_CMD_DO_FIGURE_EIGHT" hasLocation="true" isDestination="true">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Fly a figure eight path as defined by the parameters.
+          Set parameters to NaN/INT32_MAX (as appropriate) to use system-default values.
+          The command is intended for fixed wing vehicles (and VTOL hybrids flying in fixed-wing mode), allowing POI tracking for gimbals that don't support infinite rotation.
+          This command only defines the flight path. Speed should be set independently (use e.g. MAV_CMD_DO_CHANGE_SPEED).
+          Yaw and other degrees of freedom are not specified, and will be flight-stack specific (on vehicles where they can be controlled independent of the heading).
+        </description>
+        <param index="1" label="Major Radius" units="m">Major axis radius of the figure eight. Positive: orbit the north circle clockwise. Negative: orbit the north circle counter-clockwise.
+        NaN: The radius will be set to 2.5 times the minor radius and direction is clockwise.
+        Must be greater or equal to two times the minor radius for feasible values.</param>
+        <param index="2" label="Minor Radius" units="m">Minor axis radius of the figure eight. Defines the radius of the two circles that make up the figure. Negative value has no effect.
+        NaN: The radius will be set to the default loiter radius.</param>
+        <param index="3" reserved="true" default="NaN"/>
+        <param index="4" label="Orientation" units="rad">Orientation of the figure eight major axis with respect to true north (range: [-pi,pi]). NaN: use default orientation aligned to true north.</param>
+        <param index="5" label="Latitude/X">Center point latitude/X coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
+        INT32_MAX or NaN: Use current vehicle position, or current center if already loitering.</param>
+        <param index="6" label="Longitude/Y">Center point longitude/Y coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
+        INT32_MAX or NaN: Use current vehicle position, or current center if already loitering.</param>
+        <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
+        INT32_MAX or NaN: Use current vehicle altitude.</param>
+      </entry>
+      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
+        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
+        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
+        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
+        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
+      </entry>
       <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
         <description>Request a target system to start an upgrade of one (or all) of its components.
           For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller.
@@ -352,6 +350,32 @@
         <param index="6" reserved="true"/>
         <param index="7" reserved="true"/>
       </entry>
+      <entry value="610" name="MAV_CMD_DO_SET_SYS_CMP_ID" hasLocation="false" isDestination="false">
+        <description>
+          Set system and component id.
+          This allows moving of a system and all its components to a new system id, or moving a particular component to a new system/component id.
+          Recipients must reject command addressed to broadcast system ID.
+        </description>
+        <param index="1" label="System ID" minValue="1" maxValue="255" increment="1">New system ID for target component(s). 0: ignore and reject command (broadcast system ID not allowed).</param>
+        <param index="2" label="Component ID" minValue="0" maxValue="255" increment="1">New component ID for target component(s). 0: ignore (component IDs don't change).</param>
+        <param index="3" label="Reboot">Reboot components after ID change. Any non-zero value triggers the reboot.</param>
+        <param index="4" reserved="true" default="NaN"/>
+      </entry>
+      <entry value="12900" name="MAV_CMD_ODID_SET_EMERGENCY" hasLocation="false" isDestination="false">
+        <description>Used to manually set/unset emergency status for remote id.
+          This is for compliance with MOC ASTM docs, specifically F358 section 7.7: "Emergency Status Indicator".
+          The requirement can also be satisfied by automatic setting of the emergency status by flight stack, and that approach is preferred.
+          See https://mavlink.io/en/services/opendroneid.html for more information.
+	</description>
+        <param index="1" label="Number" minValue="0" increment="1">Set/unset emergency 0: unset, 1: set</param>
+        <param index="2" reserved="true" default="NaN"/>
+        <param index="3" reserved="true" default="NaN"/>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
     </enum>
     <enum name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" bitmask="true">
       <description>These flags indicate the sensor reporting capabilities for TARGET_ABSOLUTE.</description>
@@ -374,6 +398,15 @@
       </entry>
       <entry value="3" name="TARGET_OBS_FRAME_OTHER">
         <description>Other sensor frame for target observations neither in local NED nor in body FRD.</description>
+      </entry>
+    </enum>
+    <enum name="RADIO_RC_CHANNELS_FLAGS" bitmask="true">
+      <description>RADIO_RC_CHANNELS flags (bitmask).</description>
+      <entry value="1" name="RADIO_RC_CHANNELS_FLAGS_FAILSAFE">
+        <description>Failsafe is active. The content of the RC channels data in the RADIO_RC_CHANNELS message is implementation dependent.</description>
+      </entry>
+      <entry value="2" name="RADIO_RC_CHANNELS_FLAGS_OUTDATED">
+        <description>Channel data may be out of date. This is set when the receiver is unable to validate incoming data from the transmitter and has therefore resent the last valid data it received.</description>
       </entry>
     </enum>
   </enums>
@@ -474,6 +507,7 @@
       <description>Basic component information data. Should be requested using MAV_CMD_REQUEST_MESSAGE on startup, or when required.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY" display="bitmask">Component capability flags</field>
+      <field type="uint32_t" name="time_manufacture_s" units="s" invalid="0">Date of manufacture as a UNIX Epoch time (since 1.1.1970) in seconds.</field>
       <field type="char[32]" name="vendor_name">Name of the component vendor. Needs to be zero terminated. The field is optional and can be empty/all zeros.</field>
       <field type="char[32]" name="model_name">Name of the component model. Needs to be zero terminated. The field is optional and can be empty/all zeros.</field>
       <field type="char[24]" name="software_version">Software version. The recommended format is SEMVER: 'major.minor.patch'  (any format may be used). The field must be zero terminated if it has a value. The field is optional and can be empty/all zeros.</field>
@@ -493,6 +527,30 @@
       <field type="uint32_t" name="mission_checksum">CRC32 checksum of current plan for MAV_MISSION_TYPE_ALL. As defined in MISSION_CHECKSUM message.</field>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot).
         The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+    </message>
+    <message id="420" name="RADIO_RC_CHANNELS">
+      <description>RC channel outputs from a MAVLink RC receiver for input to a flight controller or other components (allows an RC receiver to connect via MAVLink instead of some other protocol such as PPM-Sum or S.BUS).
+        Note that this is not intended to be an over-the-air format, and does not replace RC_CHANNELS and similar messages reported by the flight controller.
+        The target_system field should normally be set to the system id of the system to control, typically the flight controller.
+        The target_component field can normally be set to 0, so that all components of the system can receive the message.
+        The channels array field can publish up to 32 channels; the number of channel items used in the array is specified in the count field.
+        The time_last_update_ms field contains the timestamp of the last received valid channels data in the receiver's time domain.
+        The count field indicates the first index of the channel array that is not used for channel data (this and later indexes are zero-filled).
+        The RADIO_RC_CHANNELS_FLAGS_OUTDATED flag is set by the receiver if the channels data is not up-to-date (for example, if new data from the transmitter could not be validated so the last valid data is resent).
+        The RADIO_RC_CHANNELS_FLAGS_FAILSAFE failsafe flag is set by the receiver if the receiver's failsafe condition is met (implementation dependent, e.g., connection to the RC radio is lost).
+        In this case time_last_update_ms still contains the timestamp of the last valid channels data, but the content of the channels data is not defined by the protocol (it is up to the implementation of the receiver).
+        For instance, the channels data could contain failsafe values configured in the receiver; the default is to carry the last valid data.
+        Note: The RC channels fields are extensions to ensure that they are located at the end of the serialized payload and subject to MAVLink's trailing-zero trimming.
+      </description>
+      <field type="uint8_t" name="target_system">System ID (ID of target system, normally flight controller).</field>
+      <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
+      <field type="uint32_t" name="time_last_update_ms" units="ms">Time when the data in the channels field were last updated (time since boot in the receiver's time domain).</field>
+      <field type="uint16_t" name="flags" enum="RADIO_RC_CHANNELS_FLAGS" display="bitmask">Radio RC channels status flags.</field>
+      <field type="uint8_t" name="count">Total number of RC channels being received. This can be larger than 32, indicating that more channels are available but not given in this message.</field>
+      <extensions/>
+      <field type="int16_t[32]" name="channels" minValue="-4096" maxValue="4096">RC channels.
+        Channel values are in centered 13 bit format. Range is -4096 to 4096, center is 0. Conversion to PWM is x * 5/32 + 1500.
+        Channels with indexes equal or above count should be set to 0, to benefit from MAVLink's trailing-zero trimming.</field>
     </message>
     <message id="435" name="AVAILABLE_MODES">
       <description>Get information about a particular flight modes.
