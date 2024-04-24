@@ -85,7 +85,7 @@ void receive_some(int socket_fd, struct sockaddr_in* src_addr, socklen_t* src_ad
     } else if (ret == 0) {
         // peer has done an orderly shutdown
         return;
-    } 
+    }
 
     *src_addr_set = true;
 

@@ -59,7 +59,7 @@
    <p>
    The <a href="https://mavlink.io/en/messages/common.html">Official MAVLink message documentation</a> contains additional information, including field units and enum values.
    </p>
-   
+
    <h2>MAVLink Protocol Version</h2>
    <p>The current MAVLink version is 2.<xsl:value-of select="." />. The minor version numbers (after the dot) range from 1-255. </p>
 </xsl:template>
