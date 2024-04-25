@@ -409,6 +409,18 @@
         <description>Channel data may be out of date. This is set when the receiver is unable to validate incoming data from the transmitter and has therefore resent the last valid data it received.</description>
       </entry>
     </enum>
+    <enum name="MAV_FUEL_TYPE">
+      <description>Fuel types for use in FUEL_TYPE. Fuel types specify the units for the maximum, available and consumed fuel, and for the flow rates.</description>
+      <entry value="0" name="MAV_FUEL_TYPE_UNKNOWN">
+        <description>Not specified. Fuel levels are normalized (i.e. maximum is 1, and other levels are relative to 1.</description>
+      </entry>
+      <entry value="1" name="MAV_FUEL_TYPE_BATTERY">
+        <description>A battery. Fuel levels are in Ampere-hours (Ah), and flow rates are in Amps (A)</description>
+      </entry>
+      <entry value="2" name="MAV_FUEL_TYPE_LIQUID">
+        <description>A generic liquid fuel. Fuel levels are in millilitres (ml). Fuel rates are in millilitres/second.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
@@ -489,6 +501,29 @@
       <field type="float" name="capacity_remaining" units="Ah" invalid="NaN">Remaining charge (until empty). UINT32_MAX: field not provided. Note: If MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL is unset, this value is based on the assumption the battery was full when the system was powered.</field>
       <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Remaining battery energy. Values: [0-100], UINT8_MAX: field not provided.</field>
       <field type="uint32_t" name="status_flags" display="bitmask" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
+    </message>
+    <message id="369" name="FUEL_STATUS">
+      <description>Fuel status.
+        This message provides "generic" fuel level information for display in a GCS and for triggering failsafes in an autopilot.
+	The fuel type and associated units for fields in this message are defined in the enum MAV_FUEL_TYPE.
+
+	The reported `consumed_fuel` and `remaining_fuel` must only be supplied if measured: they must not be inferred from the `maximum_fuel` and the other value.
+        A recipient can assume that if these fields are supplied they are accurate.
+        If not provided, the recipient can infer `remaining_fuel` from `maximum_fuel` and `consumed_fuel` on the assumption that the fuel was initially at its maximum (this is what battery monitors assume).
+	Note however that this is an assumption, and the UI should prompt the user appropriately (i.e. notify user that they should fill the tank before boot).
+
+	This kind of information may also be sent in fuel-specific messages such as BATTERY_STATUS_V2.
+	If both messages are sent for the same fuel system, the ids and corresponding information must match.
+
+	This should be streamed (nominally at 0.1 Hz).
+      </description>
+      <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as BATTERY_STATUS_V2.</field>
+      <field type="float" name="maximum_fuel">Capacity when full. Must be provided.</field>
+      <field type="float" name="consumed_fuel" invalid="NaN">Consumed fuel (measured). This value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="float" name="remaining_fuel" invalid="NaN">Remaining fuel until empty (measured). The value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Percentage of remaining fuel, relative to full. Values: [0-100], UINT8_MAX: field not provided.</field>
+      <field type="float" name="flow_rate" invalid="NaN">Positive value when emptying/using, and negative if filling/replacing. NaN: field not provided.</field>
+      <field type="uint32_t" enum="MAV_FUEL_TYPE">Fuel type. Defines units for fuel capacity and consumption fields above.</field>
     </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
