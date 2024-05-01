@@ -13,4 +13,4 @@ Files:
 
 For more information, please visit: https://mavlink.io/en/
 
-(c) 2009-2010 Lorenz Meier / PIXHAWK Team 
+(c) 2009-2010 Lorenz Meier / PIXHAWK Team

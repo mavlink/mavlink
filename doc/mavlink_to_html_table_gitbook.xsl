@@ -47,7 +47,7 @@
      <xsl:if test='*/@units'>
       <th>Units</th>
      </xsl:if>
-     
+
      <xsl:if test='*/@enum'>
       <th>Values</th>
      </xsl:if>
@@ -56,7 +56,7 @@
    </tr>
    </thead>
    <tbody>
-   <xsl:apply-templates select="field" /> 
+   <xsl:apply-templates select="field" />
   </tbody>
   </table>
 </xsl:template>
@@ -72,20 +72,20 @@
        <td><xsl:value-of select="@name" /></td> <!-- mavlink_name -->
      </xsl:otherwise>
    </xsl:choose>
-  
+
    <td><xsl:value-of select="@type" /></td> <!-- mavlink_type -->
-   
+
    <xsl:if test='../*/@units'>
      <td><xsl:value-of select="@units" /></td> <!-- mavlink_units -->
    </xsl:if>
-   
+
    <xsl:if test='../*/@enum'>
    <td><xsl:if test='@enum'>
       <a><xsl:attribute name="href">#<xsl:value-of select="@enum" /></xsl:attribute><xsl:value-of select="@enum" /></a>
       </xsl:if>
    </td> <!-- mavlink_value -->
    </xsl:if>
-     
+
    <td><xsl:value-of select="." /></td> <!-- mavlink_comment -->
    </tr>
 </xsl:template>
@@ -104,7 +104,7 @@
    <h3> <!-- mavlink_enum_name -->
      <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
      <xsl:value-of select="@name" /></h3>
-   <xsl:apply-templates select="deprecated" />  
+   <xsl:apply-templates select="deprecated" />
    <p><a href="#enums">[Enum]</a><xsl:value-of select="description" /></p> <!-- description -->
    <table class="sortable">
    <thead>
@@ -154,7 +154,7 @@
    </tr>
    </thead>
    <tbody>
-    <xsl:apply-templates select="param" mode="params" /> 
+    <xsl:apply-templates select="param" mode="params" />
    </tbody>
   </table>
 
@@ -165,7 +165,7 @@
    <tr id="{@name}"> <!-- mavlink_field -->
    <td><xsl:value-of select="@value" /></td>  <!-- mavlink_type -->
    <td>
-      <a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute><xsl:value-of select="@name" /></a> 
+      <a><xsl:attribute name="href">#<xsl:value-of select="@name"/></xsl:attribute><xsl:value-of select="@name" /></a>
       <xsl:apply-templates select="deprecated" />
       <xsl:apply-templates select="wip" />
    </td> <!-- mavlink_name -->
@@ -188,7 +188,7 @@
 
 <xsl:template match="//param" mode="params">
     <tr>
-        <td><xsl:value-of select="@index" /> 
+        <td><xsl:value-of select="@index" />
         <xsl:if test='@label'>: <xsl:value-of select="@label" /></xsl:if>
         </td> <!-- mission_param -->
 
@@ -214,11 +214,11 @@
       </xsl:choose>
   </td>
    </xsl:if>
-      
+
    <xsl:if test='../*/@units'>
      <td><xsl:value-of select="@units" /></td> <!-- mavlink_units -->
    </xsl:if>
-       
+
    </tr>
 </xsl:template>
 
