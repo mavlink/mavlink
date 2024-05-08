@@ -5151,6 +5151,21 @@
         <description>The GPS receiver detected signal spoofing and can't provide a fix.</description>
       </entry>
     </enum>
+    <enum name="GPS_RAIM_STATE">
+      <description>State of RAIM processing.</description>
+      <entry value="0" name="GPS_RAIM_STATE_UNKNOWN">
+        <description>RAIM capability is unknown.</description>
+      </entry>
+      <entry value="1" name="GPS_RAIM_STATE_DISABLED">
+        <description>RAIM is disabled.</description>
+      </entry>
+      <entry value="2" name="GPS_RAIM_STATE_OK">
+        <description>RAIM integrity check was successful.</description>
+      </entry>
+      <entry value="3" name="GPS_RAIM_STATE_FAILED">
+        <description>RAIM integrity check failed.</description>
+      </entry>
+    </enum>
     <enum name="ILLUMINATOR_MODE">
       <description>Modes of illuminator</description>
       <entry value="0" name="ILLUMINATOR_MODE_UNKNOWN">
@@ -7765,6 +7780,9 @@
       <field type="uint8_t" name="authentication_state" enum="GPS_AUTHENTICATION_STATE">Signal authentication state of the GPS system</field>
       <field type="uint8_t" name="jamming_state" enum="GPS_JAMMING_STATE">Signal jamming state of the GPS system</field>
       <field type="uint8_t" name="spoofing_state" enum="GPS_SPOOFING_STATE">Signal spoofing state of the GPS system</field>
+      <field type="uint8_t" name="raim_state" enum="GPS_RAIM_STATE">The state of the RAIM processing</field>
+      <field type="uint16_t" name="raim_hfom">Horizontal expected accuracy using satellites successfully validated using RAIM</field>
+      <field type="uint16_t" name="raim_vfom">Vertical expected accuracy using satellites successfully validated using RAIM</field>
     </message>
     <!-- The message ids 510 and 511 are reserved for ABSOLUTE_TARGET and RELATIVE_TARGET, currently in development.xml. -->
     <message id="387" name="CANFD_FRAME">
