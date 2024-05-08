@@ -5081,9 +5081,6 @@
     </enum>
     <enum name="GPS_SYSTEM_ERROR_FLAGS" bitmask="true">
       <description>Flags indicating errors in a GPS receiver.</description>
-      <entry value="0" name="GPS_SYSTEM_ERROR_NONE">
-        <description>There are no errors in the GPS receiver.</description>
-      </entry>
       <entry value="1" name="GPS_SYSTEM_ERROR_INCOMING_CORRECTIONS">
         <description>There are problems with incoming correction streams.</description>
       </entry>
@@ -5144,11 +5141,14 @@
       <entry value="1" name="GPS_SPOOFING_STATE_OK">
         <description>The GPS receiver detected no signal spoofing.</description>
       </entry>
-      <entry value="2" name="GPS_SPOOFING_STATE_DETECTED">
-        <description>The GPS receiver detected signal spoofing.</description>
-      </entry>
-      <entry value="3" name="GPS_SPOOFING_STATE_MITIGATED">
+      <entry value="2" name="GPS_SPOOFING_STATE_MITIGATED">
         <description>The GPS receiver detected and mitigated signal spoofing.</description>
+      </entry>
+      <entry value="3" name="GPS_SPOOFING_STATE_DETECTED">
+        <description>The GPS receiver detected signal spoofing but still has a fix.</description>
+      </entry>
+      <entry value="4" name="GPS_SPOOFING_STATE_CRITICAL">
+        <description>The GPS receiver detected signal spoofing and can't provide a fix.</description>
       </entry>
     </enum>
     <enum name="ILLUMINATOR_MODE">
@@ -5302,10 +5302,6 @@
       <field type="uint32_t" name="vel_acc" units="mm">Speed uncertainty.</field>
       <field type="uint32_t" name="hdg_acc" units="degE5">Heading / track uncertainty</field>
       <field type="uint16_t" name="yaw" units="cdeg" invalid="0">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use UINT16_MAX if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
-      <field type="uint32_t" name="system_errors" enum="GPS_SYSTEM_ERROR_FLAGS" display="bitmask">Errors in the GPS system</field>
-      <field type="uint8_t" name="authentication_state" enum="GPS_AUTHENTICATION_STATE">Signal authentication state of the GPS system</field>
-      <field type="uint8_t" name="jamming_state" enum="GPS_JAMMING_STATE">Signal jamming state of the GPS system</field>
-      <field type="uint8_t" name="spoofing_state" enum="GPS_SPOOFING_STATE">Signal spoofing state of the GPS system</field>
     </message>
     <message id="25" name="GPS_STATUS">
       <description>The positioning status, as reported by GPS. This message is intended to display status information about each satellite visible to the receiver. See message GLOBAL_POSITION_INT for the global position estimate. This message can contain information for up to 20 satellites.</description>
@@ -7761,6 +7757,14 @@
       <field type="float" name="temp_c">Temperature in Celsius</field>
       <field type="float" name="min_strobe_period" units="s">Minimum strobing period in seconds</field>
       <field type="float" name="max_strobe_period" units="s">Maximum strobing period in seconds</field>
+    </message>
+    <message id="441" name="GNSS_INTEGRITY">
+      <description>Information about key components of GNSS receivers, like signal authentication, interference and system errors.</description>
+      <field type="uint8_t" name="instance">Identifier for the GNSS receiver</field>
+      <field type="uint32_t" name="system_errors" enum="GPS_SYSTEM_ERROR_FLAGS" display="bitmask">Errors in the GPS system</field>
+      <field type="uint8_t" name="authentication_state" enum="GPS_AUTHENTICATION_STATE">Signal authentication state of the GPS system</field>
+      <field type="uint8_t" name="jamming_state" enum="GPS_JAMMING_STATE">Signal jamming state of the GPS system</field>
+      <field type="uint8_t" name="spoofing_state" enum="GPS_SPOOFING_STATE">Signal spoofing state of the GPS system</field>
     </message>
     <!-- The message ids 510 and 511 are reserved for ABSOLUTE_TARGET and RELATIVE_TARGET, currently in development.xml. -->
     <message id="387" name="CANFD_FRAME">
