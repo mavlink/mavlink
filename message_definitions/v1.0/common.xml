@@ -1875,12 +1875,8 @@
       </entry>
       <entry value="225" name="MAV_CMD_SET_PARACHUTE_ARM" hasLocation="false" isDestination="false">
         <description>Command to arm/disarm parachute module</description>
-        <param index="1" label="Arm Flags" enum="PARACHUTE_ARM_FLAGS">Arm Flags</param>
-        <param index="2" label="Bitmask" enum="PARACHUTE_ARM_FLAGS">Bitmask of arm flags (in param1) that should be modified</param>
-      </entry>
-      <entry value="226" name="MAV_CMD_SET_PARACHUTE_ARM_ALTI" hasLocation="false" isDestination="false">
-        <description>Command to set the parachute's automatic trigger system arming altitude in meters.</description>
-        <param index="1" label="Altitude" units="m">Parachute automatic trigger system arming altitude</param>
+        <param index="1" label="Arm Flags" enum="PARACHUTE_TRIGGER_FLAGS">Arm flags of parachute trigger sources</param>
+        <param index="2" label="Bitmask" enum="PARACHUTE_TRIGGER_FLAGS">Bitmask of arm flags (in param1) that should be modified</param>
       </entry>
       <entry value="240" name="MAV_CMD_DO_LAST" hasLocation="false" isDestination="false">
         <description>NOP - This command is only used to mark the upper limit of the DO commands in the enumeration</description>
@@ -5111,49 +5107,67 @@
         <description>Illuminator thermistor failure.</description>
       </entry>
     </enum>
-    <enum name="PARACHUTE_ARM_FLAGS" bitmask="true">
-      <description>Parachute module arming flags (bitmap, 0 means no arming enabled)</description>
-      <entry value="1" name="PARACHUTE_ARM_FLAGS_DRONE_TRIGGER_METHOD">
-        <description>Arming parachute's drone trigger method</description>
+    <enum name="PARACHUTE_TRIGGER_FLAGS" bitmask="true">
+      <description>Parachute trigger sources.</description>
+      <entry value="1" name="PARACHUTE_TRIGGER_FLAGS_MANUAL">
+        <description>Manual trigger (ground based control via parachute-specific RF channel)</description>
       </entry>
-      <entry value="2" name="PARACHUTE_ARM_FLAGS_AUTOMATIC_TRIGGER_SYSTEM">
-        <description>Arming parachute's automatic trigger system</description>
+      <entry value="2" name="PARACHUTE_TRIGGER_FLAGS_ATS">
+        <description>Automatic trigger system (ATS)</description>
       </entry>
-      <entry value="4" name="PARACHUTE_ARM_FLAGS_MANUAL_TRIGGER_DEVICE">
-        <description>Arming parachute's manual trigger device method</description>
+      <entry value="4" name="PARACHUTE_TRIGGER_FLAGS_FC">
+        <description>Flight controller trigger (e.g. MAVLink from FC, PWM, DroneCan, RC Control)</description>
       </entry>
-      <entry value="8" name="PARACHUTE_ARM_FLAGS_OBC_TRIGGER_METHOD">
-        <description>Arming parachute's onboard computer trigger method</description>
+      <entry value="8" name="PARACHUTE_TRIGGER_FLAGS_OFFBOARD">
+        <description>Offboard computer trigger (via MAVLink)</description>
       </entry>
-      <entry value="16" name="PARACHUTE_ARM_FLAGS_GEOFENCE_TRIGGER_METHOD">
-        <description>Arming parachute's geofence trigger method</description>
+      <entry value="16" name="PARACHUTE_TRIGGER_FLAGS_GEOFENCE">
+        <description>Geofence trigger (by parachute). Parachute uses MAVLink mission protocol to fetch geofence.</description>
       </entry>
-      <entry value="32" name="PARACHUTE_ARM_FLAGS_RESERVED">
-        <description>Reserved for future use.</description>
+      <entry value="32" name="PARACHUTE_TRIGGER_FLAGS_FTS_PRECHECKING">
+        <description>FTS (flight termination system) pre-checking protocol trigger</description>
       </entry>
-      <entry value="64" name="PARACHUTE_ARM_FLAGS_AUTO_ARM_ATS">
-        <description>Arming parachute's auto-arming its automatic trigger system capability</description>
+      <entry value="64" name="PARACHUTE_TRIGGER_FLAGS_ATS_AUTO_ARM">
+        <description>Auto-arming of parachute automatic trigger system (ATS). This allows a parachute to enable ATS after detecting that it has reached a desired altitude.</description>
       </entry>
-      <entry value="128" name="PARACHUTE_ARM_FLAGS_AUTO_DISARM_ATS">
-        <description>Arming parachute's auto-disarming its automatic trigger system capability</description>
+      <entry value="128" name="PARACHUTE_TRIGGER_FLAGS_ATS_AUTO_DISARM">
+        <description>Auto-disarming of parachute automatic trigger system (ATS). This allows a parachute to disable ATS after detecting that it is below a desired altitude.</description>
       </entry>
     </enum>
-    <enum name="PARACHUTE_DEPLOYMENT_FLAGS" bitmask="true">
-      <description>Parachute module deployment flags (bitmap, 0 means no deployment)</description>
-      <entry value="1" name="PARACHUTE_DEPLOYMENT_FLAGS_DRONE_TRIGGER_METHOD">
-        <description>Parachute deployed by drone</description>
+    <enum name="PARACHUTE_DEPLOYMENT_TRIGGER">
+      <description>Parachute deployment trigger source</description>
+      <entry value="0" name="PARACHUTE_DEPLOYMENT_TRIGGER_NONE">
+        <description>None (not triggered)</description>
       </entry>
-      <entry value="2" name="PARACHUTE_DEPLOYMENT_FLAGS_AUTOMATIC_TRIGGER_SYSTEM">
-        <description>Parachute deployed by automatic trigger system</description>
+      <entry value="1" name="PARACHUTE_DEPLOYMENT_TRIGGER_MANUAL">
+        <description>Manual</description>
       </entry>
-      <entry value="4" name="PARACHUTE_DEPLOYMENT_FLAGS_MANUAL_TRIGGER_DEVICE">
-        <description>Parachute deployed by manual trigger device</description>
+      <entry value="2" name="PARACHUTE_DEPLOYMENT_TRIGGER_ATS">
+        <description>Automatic trigger system (ATS)</description>
       </entry>
-      <entry value="8" name="PARACHUTE_DEPLOYMENT_FLAGS_OBC_TRIGGER_METHOD">
-        <description>Parachute deployed by onboard computer</description>
+      <entry value="3" name="PARACHUTE_DEPLOYMENT_TRIGGER_DRONE">
+        <description>Drone</description>
       </entry>
-      <entry value="16" name="PARACHUTE_DEPLOYMENT_FLAGS_GEOFENCE">
-        <description>Parachute deployed by geofence method</description>
+      <entry value="4" name="PARACHUTE_DEPLOYMENT_TRIGGER_MAVLINK">
+        <description>MAVLink (offboard computer)</description>
+      </entry>
+      <entry value="5" name="PARACHUTE_DEPLOYMENT_TRIGGER_GEOFENCE">
+        <description>Geofence</description>
+      </entry>
+      <entry value="6" name="PARACHUTE_DEPLOYMENT_TRIGGER_FTS_PRECHECKING">
+        <description>FTS (flight termination system) pre-checking protocol</description>
+      </entry>
+    </enum>
+    <enum name="PARACHUTE_SAFETY_FLAGS" bitmask="true">
+      <description>Parachute module safety-related flags.</description>
+      <entry value="1" name="PARACHUTE_SAFETY_FLAGS_GROUND_CLEARED">
+        <description>This is used to indicate that the parachute module has cleared a safe distance from the ground for deployment.</description>
+      </entry>
+      <entry value="2" name="PARACHUTE_SAFETY_FLAGS_ON_GROUND">
+        <description>This is used to indicate that the parachute's own sensor has confirmed it is stably on the ground.</description>
+      </entry>
+      <entry value="4" name="PARACHUTE_SAFETY_FLAGS_GEOFENCE_MISSION_SET">
+        <description>This is used to indicate that the parachute module has downloaded geofence mission successfully and can be triggered by geofence source.</description>
       </entry>
     </enum>
     <enum name="PARACHUTE_ERROR_FLAGS" bitmask="true">
@@ -5164,8 +5178,8 @@
       <entry value="2" name="PARACHUTE_ERROR_FLAGS_IMU_ERROR">
         <description>There is an error with the parachute IMU</description>
       </entry>
-      <entry value="4" name="PARACHUTE_ERROR_FLAGS_RF_ERROR">
-        <description>There is an error with the parachute RF</description>
+      <entry value="4" name="PARACHUTE_ERROR_FLAGS_RF_CONNECTION_ERROR">
+        <description>There is an error with the parachute RF (used for manual control)</description>
       </entry>
       <entry value="8" name="PARACHUTE_ERROR_FLAGS_LOW_POWER">
         <description>Parachute module has low power</description>
@@ -5173,35 +5187,53 @@
       <entry value="16" name="PARACHUTE_ERROR_FLAGS_FC_CONNECTION_ERROR">
         <description>There is an error with the parachute and FC (flight controller) connection</description>
       </entry>
-      <entry value="32" name="PARACHUTE_ERROR_FLAGS_POD_ERROR">
-        <description>There is an error with the parachute pod</description>
-      </entry>
-      <entry value="64" name="PARACHUTE_ERROR_FLAGS_EFTS_ERROR">
+      <entry value="32" name="PARACHUTE_ERROR_FLAGS_EFTS_CONNECTION_ERROR">
         <description>There is an error with the parachute electrical/external FTS (flight termination system)</description>
       </entry>
-      <entry value="128" name="PARACHUTE_ERROR_FLAGS_CHARGING_FAILED">
+      <entry value="64" name="PARACHUTE_ERROR_FLAGS_POD_CONNECTION_ERROR">
+        <description>There is an error with the parachute pod</description>
+      </entry>
+      <entry value="128" name="PARACHUTE_ERROR_FLAGS_EFTS_DIAGNOSE">
+        <description>Parachute electrical/external FTS (flight termination system) diagnosis failed</description>
+      </entry>
+      <entry value="256" name="PARACHUTE_ERROR_FLAGS_CHARGING_FAILED">
         <description>Parachute module charging failed</description>
       </entry>
-      <entry value="256" name="PARACHUTE_ERROR_FLAGS_LOGGING_ERROR">
-        <description>There is an error with the parachute module's logging</description>
-      </entry>
-      <entry value="512" name="PARACHUTE_ERROR_FLAGS_MODULE_RETIRED">
-        <description>This parachute module is retired (too many deployments)</description>
-      </entry>
-      <entry value="1024" name="PARACHUTE_ERROR_FLAGS_EXTERNAL_POWER_ERROR">
+      <entry value="512" name="PARACHUTE_ERROR_FLAGS_EXTERNAL_POWER_ERROR">
         <description>There is an error with the parachute external power source</description>
       </entry>
-      <entry value="2048" name="PARACHUTE_ERROR_FLAGS_OBC_CONNECTION_ERROR">
-        <description>There is an error with the parachute and OBC (onboard computer) connection</description>
-      </entry>
-      <entry value="4096" name="PARACHUTE_ERROR_FLAGS_GPS_ERROR">
-        <description>There is an error with the parachute GPS</description>
-      </entry>
-      <entry value="8192" name="PARACHUTE_ERROR_FLAGS_GS_ERROR">
+      <entry value="1024" name="PARACHUTE_ERROR_FLAGS_GS_CONNECTION_ERROR">
         <description>There is an error with the parachute and GS (ground station) connection</description>
       </entry>
-      <entry value="16384" name="PARACHUTE_ERROR_FLAGS_SUBSYSTEM_ERROR">
+      <entry value="2048" name="PARACHUTE_ERROR_FLAGS_GPS_ERROR">
+        <description>There is an error with the parachute GPS</description>
+      </entry>
+      <entry value="4096" name="PARACHUTE_ERROR_FLAGS_SUBSYSTEM_CONNECTION_ERROR">
         <description>There is an error with the parachute and subsystem connection</description>
+      </entry>
+      <entry value="8192" name="PARACHUTE_ERROR_FLAGS_SUBSYSTEM_FW_ERROR">
+        <description>There is an error with the parachute subsystem firmware</description>
+      </entry>
+      <entry value="16384" name="PARACHUTE_ERROR_FLAGS_RESERVED_1">
+        <description>Reserved for future use</description>
+      </entry>
+      <entry value="32768" name="PARACHUTE_ERROR_FLAGS_RESERVED_2">
+        <description>Reserved for future use</description>
+      </entry>
+      <entry value="65536" name="PARACHUTE_ERROR_FLAGS_LOGGING_ERROR">
+        <description>There is an error with the parachute module's logging</description>
+      </entry>
+      <entry value="131072" name="PARACHUTE_ERROR_FLAGS_MODULE_RETIRED">
+        <description>This parachute module is retired (too many deployments)</description>
+      </entry>
+      <entry value="262144" name="PARACHUTE_ERROR_FLAGS_GLOW_WIRE_ERROR">
+        <description>There is an error with the parachute glow wire</description>
+      </entry>
+      <entry value="524288" name="PARACHUTE_ERROR_FLAGS_OFFBOARD_CONNECTION_ERROR">
+        <description>There is an error with the parachute and offboard computer MAVLink connection</description>
+      </entry>
+      <entry value="1048576" name="PARACHUTE_ERROR_FLAGS_IMU_CALIBRATION_ERROR">
+        <description>Parachute module IMU calibration failed</description>
       </entry>
     </enum>
   </enums>
@@ -7777,9 +7809,9 @@
       <description>Parachute system status</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Uptime in ms</field>
       <field type="uint32_t" name="error_status" enum="PARACHUTE_ERROR_FLAGS" display="bitmask">Errors</field>
-      <field type="uint8_t" name="arm_status" enum="PARACHUTE_ARM_FLAGS" display="bitmask">Parachute arming status</field>
-      <field type="uint8_t" name="charge_status">Boolean indicating charging (1) or not (0)</field>
-      <field type="uint8_t" name="deployment_status" enum="PARACHUTE_DEPLOYMENT_FLAGS" display="bitmask">Parachute deployment_status</field>
+      <field type="uint8_t" name="arm_status" enum="PARACHUTE_TRIGGER_FLAGS" display="bitmask">Parachute arming status</field>
+      <field type="uint8_t" name="deployment_status" enum="PARACHUTE_DEPLOYMENT_TRIGGER">Parachute deployment status</field>
+      <field type="uint8_t" name="safety_status" enum="PARACHUTE_SAFETY_FLAGS" display="bitmask">Parachute safety status</field>
       <field type="uint8_t" name="ats_arm_altitude" units="m">Parachute Automatic Trigger System (ATS) auto-arming/disarming altitude in meters</field>
       <field type="char[11]" name="parachute_packed_date">Parachute packed date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
     </message>
