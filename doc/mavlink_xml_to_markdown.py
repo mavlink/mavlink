@@ -885,8 +885,8 @@ class MAVCommand(object):
                     if param.minValue:
                         valString += f"min: {param.minValue}"
                     if param.maxValue:
-                        valString += f" min: {param.maxValue}"
-                    if param.maxValue:
+                        valString += f" max: {param.maxValue}"
+                    if param.increment:
                         valString += f" inc: {param.increment}"
                     valString = valString.strip()
                 row.append(valString)
