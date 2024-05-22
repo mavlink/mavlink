@@ -205,27 +205,40 @@ class MAVXML(object):
             markdownText += " None\n"
         markdownText += "\n"
 
-        # Get just the messages defined in this file
-        entity_summary = "## Summary\n\nXML entities defined in this file (not included):\n\n"
-        matching_names = [f"[{message.name}](#{message.name})" for message in self.messages.values(
-        ) if message.basename == self.basename]
-        # Join the matching names with a separator (e.g., comma)
-        result_string = ", ".join(matching_names) if matching_names else 'None'
-        result_string = f"- Messages: {result_string}\n\n"
+        # Get counts of entities
+        entity_summary = "## Summary\n\n"
+        entity_summary += "Type | Defined | Included\n"
+        entity_summary += "--- | --- | ---\n"
+
+
+        matching_count = 0
+        non_matching_count = 0
+        for message in self.messages.values():
+            if message.basename == self.basename:
+                matching_count += 1
+            else:
+                non_matching_count += 1
+        result_string = result_string = f"{'[Messages](#messages)' if matching_count + non_matching_count > 0 else 'Messages'} | {matching_count} | {non_matching_count}\n"
         entity_summary += result_string
 
-        # Get just the enums defined in this file
-        matching_names = [f"[{enum.name}](#{enum.name})" for enum in self.enums.values(
-        ) if enum.basename == self.basename]
-        result_string = ", ".join(matching_names) if matching_names else 'None'
-        result_string = f"- Enums: {result_string}\n\n"
+        matching_count = 0
+        non_matching_count = 0
+        for enum in self.enums.values():
+            if enum.basename == self.basename:
+                matching_count += 1
+            else:
+                non_matching_count += 1
+        result_string = result_string = f"{'[Enums](#enumerated-types)' if matching_count + non_matching_count > 0 else 'Enums'} | {matching_count} | {non_matching_count}\n"
         entity_summary += result_string
 
-        # Get just the commands defined in this file
-        matching_names = [f"[{command.name}](#{command.name})" for command in self.commands.values(
-        ) if command.basename == self.basename]
-        result_string = ", ".join(matching_names) if matching_names else 'None'
-        result_string = f"- Commands: {result_string}\n\n"
+        matching_count = 0
+        non_matching_count = 0
+        for commands in self.commands.values():
+            if commands.basename == commands.basename:
+                matching_count += 1
+            else:
+                non_matching_count += 1
+        result_string = result_string = f"{'[Commands](#mav_commands)' if matching_count + non_matching_count > 0 else 'Commands'} | {matching_count} | {non_matching_count}\n\n"
         entity_summary += result_string
 
         entity_summary += "The following sections list all entities in the dialect (both included and defined in this file).\n\n"
