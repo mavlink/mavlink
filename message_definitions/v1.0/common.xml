@@ -5149,13 +5149,13 @@
         <description>Drone</description>
       </entry>
       <entry value="4" name="PARACHUTE_DEPLOYMENT_TRIGGER_MAVLINK">
-        <description>MAVLink (offboard computer)</description>
+        <description>MAVLink, e.g. from an offboard computer</description>
       </entry>
       <entry value="5" name="PARACHUTE_DEPLOYMENT_TRIGGER_GEOFENCE">
         <description>Geofence</description>
       </entry>
       <entry value="6" name="PARACHUTE_DEPLOYMENT_TRIGGER_FTS_PRECHECKING">
-        <description>FTS (flight termination system) pre-checking protocol</description>
+        <description>Flight Termination System (FTS) pre-checking protocol</description>
       </entry>
     </enum>
     <enum name="PARACHUTE_SAFETY_FLAGS" bitmask="true">
@@ -5179,22 +5179,22 @@
         <description>There is an error with the parachute IMU</description>
       </entry>
       <entry value="4" name="PARACHUTE_ERROR_FLAGS_RF_CONNECTION_ERROR">
-        <description>There is an error with the parachute RF (used for manual control)</description>
+        <description>There is an error with the parachute's RF that is used for manual control</description>
       </entry>
       <entry value="8" name="PARACHUTE_ERROR_FLAGS_LOW_POWER">
         <description>Parachute module has low power</description>
       </entry>
       <entry value="16" name="PARACHUTE_ERROR_FLAGS_FC_CONNECTION_ERROR">
-        <description>There is an error with the parachute and FC (flight controller) connection</description>
+        <description>There is an error with the connection between parachute and flight controller (FC)</description>
       </entry>
       <entry value="32" name="PARACHUTE_ERROR_FLAGS_EFTS_CONNECTION_ERROR">
-        <description>There is an error with the parachute electrical/external FTS (flight termination system)</description>
+        <description>There is an error with the connection between parachute and Electrical Flight Termination System (EFTS)</description>
       </entry>
       <entry value="64" name="PARACHUTE_ERROR_FLAGS_POD_CONNECTION_ERROR">
         <description>There is an error with the parachute pod</description>
       </entry>
       <entry value="128" name="PARACHUTE_ERROR_FLAGS_EFTS_DIAGNOSE">
-        <description>Parachute electrical/external FTS (flight termination system) diagnosis failed</description>
+        <description>Parachute Electrical Flight Termination System (EFTS) diagnosis failed</description>
       </entry>
       <entry value="256" name="PARACHUTE_ERROR_FLAGS_CHARGING_FAILED">
         <description>Parachute module charging failed</description>
@@ -5203,16 +5203,16 @@
         <description>There is an error with the parachute external power source</description>
       </entry>
       <entry value="1024" name="PARACHUTE_ERROR_FLAGS_GS_CONNECTION_ERROR">
-        <description>There is an error with the parachute and GS (ground station) connection</description>
+        <description>There is an error with the connection between parachute and Ground Station (GS)</description>
       </entry>
       <entry value="2048" name="PARACHUTE_ERROR_FLAGS_GPS_ERROR">
-        <description>There is an error with the parachute GPS</description>
+        <description>There is an error with the parachute's GPS</description>
       </entry>
       <entry value="4096" name="PARACHUTE_ERROR_FLAGS_SUBSYSTEM_CONNECTION_ERROR">
-        <description>There is an error with the parachute and subsystem connection</description>
+        <description>There is an error with the connection between parachute and subsystem (e.g. remote controller, expansion board, etc.)</description>
       </entry>
       <entry value="8192" name="PARACHUTE_ERROR_FLAGS_SUBSYSTEM_FW_ERROR">
-        <description>There is an error with the parachute subsystem firmware</description>
+        <description>There is an error with the parachute subsystem firmware (e.g. wrong firmware version)</description>
       </entry>
       <entry value="16384" name="PARACHUTE_ERROR_FLAGS_RESERVED_1">
         <description>Reserved for future use</description>
@@ -5221,19 +5221,19 @@
         <description>Reserved for future use</description>
       </entry>
       <entry value="65536" name="PARACHUTE_ERROR_FLAGS_LOGGING_ERROR">
-        <description>There is an error with the parachute module's logging</description>
+        <description>There is an error with the parachute's internal logging system</description>
       </entry>
       <entry value="131072" name="PARACHUTE_ERROR_FLAGS_MODULE_RETIRED">
-        <description>This parachute module is retired (too many deployments)</description>
+        <description>This parachute module is retired (i.e. too many deployments)</description>
       </entry>
       <entry value="262144" name="PARACHUTE_ERROR_FLAGS_GLOW_WIRE_ERROR">
         <description>There is an error with the parachute glow wire</description>
       </entry>
       <entry value="524288" name="PARACHUTE_ERROR_FLAGS_OFFBOARD_CONNECTION_ERROR">
-        <description>There is an error with the parachute and offboard computer MAVLink connection</description>
+        <description>There is an error with the MAVLink connection between parachute and offboard computer</description>
       </entry>
       <entry value="1048576" name="PARACHUTE_ERROR_FLAGS_IMU_CALIBRATION_ERROR">
-        <description>Parachute module IMU calibration failed</description>
+        <description>Parachute's internal IMU calibration failed</description>
       </entry>
     </enum>
   </enums>
@@ -7813,7 +7813,7 @@
       <field type="uint8_t" name="deployment_status" enum="PARACHUTE_DEPLOYMENT_TRIGGER">Parachute deployment status</field>
       <field type="uint8_t" name="safety_status" enum="PARACHUTE_SAFETY_FLAGS" display="bitmask">Parachute safety status</field>
       <field type="uint8_t" name="ats_arm_altitude" units="m">Parachute Automatic Trigger System (ATS) auto-arming/disarming altitude in meters</field>
-      <field type="char[11]" name="parachute_packed_date">Parachute packed date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
+      <field type="char[11]" name="parachute_packed_date">Parachute packed date (YYYY-MM-DD) in ASCII characters, 0 terminated. All 0: field not provided.</field>
     </message>
     <message id="440" name="ILLUMINATOR_STATUS">
       <description>Illuminator status</description>
