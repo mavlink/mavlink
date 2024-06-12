@@ -48,6 +48,93 @@
         <param index="7">Empty</param>
       </entry>
     </enum>
+    <enum name="GPS_SYSTEM_ERROR_FLAGS" bitmask="true">
+      <description>Flags indicating errors in a GPS receiver.</description>
+      <entry value="1" name="GPS_SYSTEM_ERROR_INCOMING_CORRECTIONS">
+        <description>There are problems with incoming correction streams.</description>
+      </entry>
+      <entry value="2" name="GPS_SYSTEM_ERROR_CONFIGURATION">
+        <description>There are problems with the configuration.</description>
+      </entry>
+      <entry value="4" name="GPS_SYSTEM_ERROR_SOFTWARE">
+        <description>There are problems with the software on the GPS receiver.</description>
+      </entry>
+      <entry value="8" name="GPS_SYSTEM_ERROR_ANTENNA">
+        <description>There are problems with an antenna connected to the GPS receiver.</description>
+      </entry>
+      <entry value="16" name="GPS_SYSTEM_ERROR_EVENT_CONGESTION">
+        <description>There are problems handling all incoming events.</description>
+      </entry>
+      <entry value="32" name="GPS_SYSTEM_ERROR_CPU_OVERLOAD">
+        <description>The GPS receiver CPU is overloaded.</description>
+      </entry>
+      <entry value="64" name="GPS_SYSTEM_ERROR_OUTPUT_CONGESTION">
+        <description>The GPS receiver is experiencing output congestion.</description>
+      </entry>
+    </enum>
+    <enum name="GPS_AUTHENTICATION_STATE">
+      <description>Signal authentication state in a GPS receiver.</description>
+      <entry value="0" name="GPS_AUTHENTICATION_STATE_UNKNOWN">
+        <description>The GPS receiver does not provide GPS signal authentication info.</description>
+      </entry>
+      <entry value="1" name="GPS_AUTHENTICATION_STATE_INITIALIZING">
+        <description>The GPS receiver is initializing signal authentication.</description>
+      </entry>
+      <entry value="2" name="GPS_AUTHENTICATION_STATE_ERROR">
+        <description>The GPS receiver encountered an error while initializing signal authentication.</description>
+      </entry>
+      <entry value="3" name="GPS_AUTHENTICATION_STATE_OK">
+        <description>The GPS receiver has correctly authenticated all signals.</description>
+      </entry>
+      <entry value="4" name="GPS_AUTHENTICATION_STATE_DISABLED">
+        <description>GPS signal authentication is disabled on the receiver.</description>
+      </entry>
+    </enum>
+    <enum name="GPS_JAMMING_STATE">
+      <description>Signal jamming state in a GPS receiver.</description>
+      <entry value="0" name="GPS_JAMMING_STATE_UNKNOWN">
+        <description>The GPS receiver does not provide GPS signal jamming info.</description>
+      </entry>
+      <entry value="1" name="GPS_JAMMING_STATE_OK">
+        <description>The GPS receiver detected no signal jamming.</description>
+      </entry>
+      <entry value="2" name="GPS_JAMMING_STATE_MITIGATED">
+        <description>The GPS receiver detected and mitigated signal jamming.</description>
+      </entry>
+      <entry value="3" name="GPS_JAMMING_STATE_DETECTED">
+        <description>The GPS receiver detected signal jamming.</description>
+      </entry>
+    </enum>
+    <enum name="GPS_SPOOFING_STATE">
+      <description>Signal spoofing state in a GPS receiver.</description>
+      <entry value="0" name="GPS_SPOOFING_STATE_UNKNOWN">
+        <description>The GPS receiver does not provide GPS signal spoofing info.</description>
+      </entry>
+      <entry value="1" name="GPS_SPOOFING_STATE_OK">
+        <description>The GPS receiver detected no signal spoofing.</description>
+      </entry>
+      <entry value="2" name="GPS_SPOOFING_STATE_MITIGATED">
+        <description>The GPS receiver detected and mitigated signal spoofing.</description>
+      </entry>
+      <entry value="3" name="GPS_SPOOFING_STATE_DETECTED">
+        <description>The GPS receiver detected signal spoofing but still has a fix.</description>
+      </entry>
+    </enum>
+    <enum name="GPS_RAIM_STATE">
+      <description>State of RAIM processing.</description>
+      <entry value="0" name="GPS_RAIM_STATE_UNKNOWN">
+        <description>RAIM capability is unknown.</description>
+      </entry>
+      <entry value="1" name="GPS_RAIM_STATE_DISABLED">
+        <description>RAIM is disabled.</description>
+      </entry>
+      <entry value="2" name="GPS_RAIM_STATE_OK">
+        <description>RAIM integrity check was successful.</description>
+      </entry>
+      <entry value="3" name="GPS_RAIM_STATE_FAILED">
+        <description>RAIM integrity check failed.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="53" name="MISSION_CHECKSUM">
@@ -95,6 +182,21 @@
       <field type="int16_t[32]" name="channels" minValue="-4096" maxValue="4096">RC channels.
         Channel values are in centered 13 bit format. Range is -4096 to 4096, center is 0. Conversion to PWM is x * 5/32 + 1500.
         Channels with indexes equal or above count should be set to 0, to benefit from MAVLink's trailing-zero trimming.</field>
+    </message>
+    <message id="441" name="GNSS_INTEGRITY">
+      <description>Information about key components of GNSS receivers, like signal authentication, interference and system errors.</description>
+      <field type="uint8_t" name="id" instance="true">GNSS receiver id. Must match instance ids of other messages from same receiver.</field>
+      <field type="uint32_t" name="system_errors" enum="GPS_SYSTEM_ERROR_FLAGS" display="bitmask">Errors in the GPS system.</field>
+      <field type="uint8_t" name="authentication_state" enum="GPS_AUTHENTICATION_STATE">Signal authentication state of the GPS system.</field>
+      <field type="uint8_t" name="jamming_state" enum="GPS_JAMMING_STATE">Signal jamming state of the GPS system.</field>
+      <field type="uint8_t" name="spoofing_state" enum="GPS_SPOOFING_STATE">Signal spoofing state of the GPS system.</field>
+      <field type="uint8_t" name="raim_state" enum="GPS_RAIM_STATE">The state of the RAIM processing.</field>
+      <field type="uint16_t" name="raim_hfom" units="cm" invalid="UINT16_MAX">Horizontal expected accuracy using satellites successfully validated using RAIM.</field>
+      <field type="uint16_t" name="raim_vfom" units="cm" invalid="UINT16_MAX">Vertical expected accuracy using satellites successfully validated using RAIM.</field>
+      <field type="uint8_t" name="corrections_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the estimated quality of incoming corrections, or 255 if not available.</field>
+      <field type="uint8_t" name="system_status_summary" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the overall status of the receiver, or 255 if not available.</field>
+      <field type="uint8_t" name="gnss_signal_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the quality of incoming GNSS signals, or 255 if not available.</field>
+      <field type="uint8_t" name="post_processing_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the estimated PPK quality, or 255 if not available.</field>
     </message>
   </messages>
 </mavlink>
