@@ -409,6 +409,105 @@
         <description>Channel data may be out of date. This is set when the receiver is unable to validate incoming data from the transmitter and has therefore resent the last valid data it received.</description>
       </entry>
     </enum>
+    <enum name="MAV_FUEL_TYPE">
+      <description>Fuel types for use in FUEL_TYPE. Fuel types specify the units for the maximum, available and consumed fuel, and for the flow rates.</description>
+      <entry value="0" name="MAV_FUEL_TYPE_UNKNOWN">
+        <description>Not specified. Fuel levels are normalized (i.e. maximum is 1, and other levels are relative to 1.</description>
+      </entry>
+      <entry value="1" name="MAV_FUEL_TYPE_LIQUID">
+        <description>A generic liquid fuel. Fuel levels are in millilitres (ml). Fuel rates are in millilitres/second.</description>
+      </entry>
+      <entry value="2" name="MAV_FUEL_TYPE_GAS">
+        <description>A gas tank. Fuel levels are in kilo-Pascal (kPa), and flow rates are in milliliters per second (ml/s).</description>
+      </entry>
+    </enum>
+    <enum name="GPS_SYSTEM_ERROR_FLAGS" bitmask="true">
+      <description>Flags indicating errors in a GPS receiver.</description>
+      <entry value="1" name="GPS_SYSTEM_ERROR_INCOMING_CORRECTIONS">
+        <description>There are problems with incoming correction streams.</description>
+      </entry>
+      <entry value="2" name="GPS_SYSTEM_ERROR_CONFIGURATION">
+        <description>There are problems with the configuration.</description>
+      </entry>
+      <entry value="4" name="GPS_SYSTEM_ERROR_SOFTWARE">
+        <description>There are problems with the software on the GPS receiver.</description>
+      </entry>
+      <entry value="8" name="GPS_SYSTEM_ERROR_ANTENNA">
+        <description>There are problems with an antenna connected to the GPS receiver.</description>
+      </entry>
+      <entry value="16" name="GPS_SYSTEM_ERROR_EVENT_CONGESTION">
+        <description>There are problems handling all incoming events.</description>
+      </entry>
+      <entry value="32" name="GPS_SYSTEM_ERROR_CPU_OVERLOAD">
+        <description>The GPS receiver CPU is overloaded.</description>
+      </entry>
+      <entry value="64" name="GPS_SYSTEM_ERROR_OUTPUT_CONGESTION">
+        <description>The GPS receiver is experiencing output congestion.</description>
+      </entry>
+    </enum>
+    <enum name="GPS_AUTHENTICATION_STATE">
+      <description>Signal authentication state in a GPS receiver.</description>
+      <entry value="0" name="GPS_AUTHENTICATION_STATE_UNKNOWN">
+        <description>The GPS receiver does not provide GPS signal authentication info.</description>
+      </entry>
+      <entry value="1" name="GPS_AUTHENTICATION_STATE_INITIALIZING">
+        <description>The GPS receiver is initializing signal authentication.</description>
+      </entry>
+      <entry value="2" name="GPS_AUTHENTICATION_STATE_ERROR">
+        <description>The GPS receiver encountered an error while initializing signal authentication.</description>
+      </entry>
+      <entry value="3" name="GPS_AUTHENTICATION_STATE_OK">
+        <description>The GPS receiver has correctly authenticated all signals.</description>
+      </entry>
+      <entry value="4" name="GPS_AUTHENTICATION_STATE_DISABLED">
+        <description>GPS signal authentication is disabled on the receiver.</description>
+      </entry>
+    </enum>
+    <enum name="GPS_JAMMING_STATE">
+      <description>Signal jamming state in a GPS receiver.</description>
+      <entry value="0" name="GPS_JAMMING_STATE_UNKNOWN">
+        <description>The GPS receiver does not provide GPS signal jamming info.</description>
+      </entry>
+      <entry value="1" name="GPS_JAMMING_STATE_OK">
+        <description>The GPS receiver detected no signal jamming.</description>
+      </entry>
+      <entry value="2" name="GPS_JAMMING_STATE_MITIGATED">
+        <description>The GPS receiver detected and mitigated signal jamming.</description>
+      </entry>
+      <entry value="3" name="GPS_JAMMING_STATE_DETECTED">
+        <description>The GPS receiver detected signal jamming.</description>
+      </entry>
+    </enum>
+    <enum name="GPS_SPOOFING_STATE">
+      <description>Signal spoofing state in a GPS receiver.</description>
+      <entry value="0" name="GPS_SPOOFING_STATE_UNKNOWN">
+        <description>The GPS receiver does not provide GPS signal spoofing info.</description>
+      </entry>
+      <entry value="1" name="GPS_SPOOFING_STATE_OK">
+        <description>The GPS receiver detected no signal spoofing.</description>
+      </entry>
+      <entry value="2" name="GPS_SPOOFING_STATE_MITIGATED">
+        <description>The GPS receiver detected and mitigated signal spoofing.</description>
+      </entry>
+      <entry value="3" name="GPS_SPOOFING_STATE_DETECTED">
+        <description>The GPS receiver detected signal spoofing but still has a fix.</description>
+      </entry>
+    </enum>
+    <enum name="GPS_RAIM_STATE">
+      <description>State of RAIM processing.</description>
+      <entry value="0" name="GPS_RAIM_STATE_UNKNOWN">
+        <description>RAIM capability is unknown.</description>
+      </entry>
+      <entry value="1" name="GPS_RAIM_STATE_DISABLED">
+        <description>RAIM is disabled.</description>
+      </entry>
+      <entry value="2" name="GPS_RAIM_STATE_OK">
+        <description>RAIM integrity check was successful.</description>
+      </entry>
+      <entry value="3" name="GPS_RAIM_STATE_FAILED">
+        <description>RAIM integrity check failed.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
@@ -490,7 +589,7 @@
     <message id="369" name="BATTERY_STATUS_V2">
       <description>Battery dynamic information.
         This should be streamed (nominally at 1Hz).
-        Static/invariant battery information is sent in SMART_BATTERY_INFO.
+        Static/invariant battery information is sent in BATTERY_INFO.
         Note that smart batteries should set the MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL bit to indicate that supplied capacity values are relative to a battery that is known to be full.
         Power monitors would not set this bit, indicating that capacity_consumed is relative to drone power-on, and that other values are estimated based on the assumption that the battery was full on power-on.
       </description>
@@ -499,20 +598,33 @@
       <field type="float" name="voltage" units="V" invalid="NaN">Battery voltage (total). NaN: field not provided.</field>
       <field type="float" name="current" units="A" invalid="NaN">Battery current (through all cells/loads). Positive value when discharging and negative if charging. NaN: field not provided.</field>
       <field type="float" name="capacity_consumed" units="Ah" invalid="NaN">Consumed charge. NaN: field not provided. This is either the consumption since power-on or since the battery was full, depending on the value of MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL.</field>
-      <field type="float" name="capacity_remaining" units="Ah" invalid="NaN">Remaining charge (until empty). UINT32_MAX: field not provided. Note: If MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL is unset, this value is based on the assumption the battery was full when the system was powered.</field>
+      <field type="float" name="capacity_remaining" units="Ah" invalid="NaN">Remaining charge (until empty). NaN: field not provided. Note: If MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL is unset, this value is based on the assumption the battery was full when the system was powered.</field>
       <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Remaining battery energy. Values: [0-100], UINT8_MAX: field not provided.</field>
       <field type="uint32_t" name="status_flags" display="bitmask" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
     </message>
-    <message id="396" name="COMPONENT_INFORMATION_BASIC">
-      <description>Basic component information data. Should be requested using MAV_CMD_REQUEST_MESSAGE on startup, or when required.</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY" display="bitmask">Component capability flags</field>
-      <field type="uint32_t" name="time_manufacture_s" units="s" invalid="0">Date of manufacture as a UNIX Epoch time (since 1.1.1970) in seconds.</field>
-      <field type="char[32]" name="vendor_name">Name of the component vendor. Needs to be zero terminated. The field is optional and can be empty/all zeros.</field>
-      <field type="char[32]" name="model_name">Name of the component model. Needs to be zero terminated. The field is optional and can be empty/all zeros.</field>
-      <field type="char[24]" name="software_version">Software version. The recommended format is SEMVER: 'major.minor.patch'  (any format may be used). The field must be zero terminated if it has a value. The field is optional and can be empty/all zeros.</field>
-      <field type="char[24]" name="hardware_version">Hardware version. The recommended format is SEMVER: 'major.minor.patch'  (any format may be used). The field must be zero terminated if it has a value. The field is optional and can be empty/all zeros.</field>
-      <field type="char[32]" name="serial_number">Hardware serial number. The field must be zero terminated if it has a value. The field is optional and can be empty/all zeros.</field>
+    <message id="371" name="FUEL_STATUS">
+      <description>Fuel status.
+        This message provides "generic" fuel level information for display in a GCS and for triggering failsafes in an autopilot.
+	The fuel type and associated units for fields in this message are defined in the enum MAV_FUEL_TYPE.
+
+	The reported `consumed_fuel` and `remaining_fuel` must only be supplied if measured: they must not be inferred from the `maximum_fuel` and the other value.
+        A recipient can assume that if these fields are supplied they are accurate.
+        If not provided, the recipient can infer `remaining_fuel` from `maximum_fuel` and `consumed_fuel` on the assumption that the fuel was initially at its maximum (this is what battery monitors assume).
+	Note however that this is an assumption, and the UI should prompt the user appropriately (i.e. notify user that they should fill the tank before boot).
+
+	This kind of information may also be sent in fuel-specific messages such as BATTERY_STATUS_V2.
+	If both messages are sent for the same fuel system, the ids and corresponding information must match.
+
+	This should be streamed (nominally at 0.1 Hz).
+      </description>
+      <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as BATTERY_STATUS_V2.</field>
+      <field type="float" name="maximum_fuel">Capacity when full. Must be provided.</field>
+      <field type="float" name="consumed_fuel" invalid="NaN">Consumed fuel (measured). This value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="float" name="remaining_fuel" invalid="NaN">Remaining fuel until empty (measured). The value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Percentage of remaining fuel, relative to full. Values: [0-100], UINT8_MAX: field not provided.</field>
+      <field type="float" name="flow_rate" invalid="NaN">Positive value when emptying/using, and negative if filling/replacing. NaN: field not provided.</field>
+      <field type="float" name="temperature" units="K" invalid="NaN">Fuel temperature. NaN: field not provided.</field>
+      <field type="uint32_t" name="fuel_type" enum="MAV_FUEL_TYPE">Fuel type. Defines units for fuel capacity and consumption fields above.</field>
     </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
@@ -581,6 +693,21 @@
         This is only emitted after the first change and should then be broadcast at low rate (nominally 0.3 Hz) and on change.
       </description>
       <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically).</field>
+    </message>
+    <message id="441" name="GNSS_INTEGRITY">
+      <description>Information about key components of GNSS receivers, like signal authentication, interference and system errors.</description>
+      <field type="uint8_t" name="id" instance="true">GNSS receiver id. Must match instance ids of other messages from same receiver.</field>
+      <field type="uint32_t" name="system_errors" enum="GPS_SYSTEM_ERROR_FLAGS" display="bitmask">Errors in the GPS system.</field>
+      <field type="uint8_t" name="authentication_state" enum="GPS_AUTHENTICATION_STATE">Signal authentication state of the GPS system.</field>
+      <field type="uint8_t" name="jamming_state" enum="GPS_JAMMING_STATE">Signal jamming state of the GPS system.</field>
+      <field type="uint8_t" name="spoofing_state" enum="GPS_SPOOFING_STATE">Signal spoofing state of the GPS system.</field>
+      <field type="uint8_t" name="raim_state" enum="GPS_RAIM_STATE">The state of the RAIM processing.</field>
+      <field type="uint16_t" name="raim_hfom" units="cm" invalid="UINT16_MAX">Horizontal expected accuracy using satellites successfully validated using RAIM.</field>
+      <field type="uint16_t" name="raim_vfom" units="cm" invalid="UINT16_MAX">Vertical expected accuracy using satellites successfully validated using RAIM.</field>
+      <field type="uint8_t" name="corrections_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the estimated quality of incoming corrections, or 255 if not available.</field>
+      <field type="uint8_t" name="system_status_summary" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the overall status of the receiver, or 255 if not available.</field>
+      <field type="uint8_t" name="gnss_signal_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the quality of incoming GNSS signals, or 255 if not available.</field>
+      <field type="uint8_t" name="post_processing_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the estimated PPK quality, or 255 if not available.</field>
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">

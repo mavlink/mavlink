@@ -1,9 +1,9 @@
 #! /usr/bin/python
 
 """
-This script generates markdown files for all the MAVLink message definition XML at: 
+This script generates markdown files for all the MAVLink message definition XML at:
 https://github.com/mavlink/mavlink/tree/master/message_definitions/v1.0
-  
+
 The files can be imported into a gitbook to display the messages as HTML
 
 The script runs on both Python2 and Python 3. The following libraries must be imported: lxml, requests, bs4.
@@ -36,7 +36,7 @@ with open(xsl_file_name, 'r') as content_file:
     xsl_file = content_file.read()
 xslt = ET.fromstring(xsl_file)
 
-#initialise text for index file. 
+#initialise text for index file.
 index_text="""<!-- THIS FILE IS AUTO-GENERATED (DO NOT UPDATE GITBOOK): https://github.com/mavlink/mavlink/blob/master/doc/mavlink_gitbook.py -->
 # XML Definition Files & Dialects
 
@@ -59,7 +59,7 @@ The following XML definition files are considered standard/core (i.e. not dialec
 
 > **Note** We are still working towards moving the truly standard entities from **common.xml** to **standard.xml**
   Currently you should include [common.xml](../messages/common.md)
-  
+
  In addition:
  - [development.xml](development.md) - XML definitions that are _proposed_ for inclusion in the standard definitions.
    These are work in progress.
@@ -89,7 +89,7 @@ index_text_trailer="""
 """
 
 #Fix up the BeautifulSoup output so to fix build-link errors in the generated gitbook.
-## BS puts each tag/content in its own line. Gitbook generates anchors using the spaces/newlines. 
+## BS puts each tag/content in its own line. Gitbook generates anchors using the spaces/newlines.
 ## This puts displayed text content immediately within tags so that anchors/links generate properly
 def fix_content_in_tags(input_html):
     #print("fix_content_in_tags was called")
@@ -99,7 +99,7 @@ def fix_content_in_tags(input_html):
 
     input_html=re.sub(r'\>(\s+?\w+?.*?)\<', remove_space_between_content_tags, input_html,flags=re.DOTALL)
     return input_html
-    
+
 def fix_external_dialect_link(input_html):
     #print("fix_external_dialect_link was called")
     def fixupexternaldialecturls(matchobj):
@@ -123,9 +123,9 @@ def strip_text_before_string(original_text,strip_text):
     index=original_text.find(strip_text)
     stripped_string=original_text
     if index !=-1 :
-        stripped_string = stripped_string[index:] 
+        stripped_string = stripped_string[index:]
     return stripped_string
-    
+
 def fix_add_implicit_links_items(input_html):
     # Makes screaming snake case into anchors. Special fix for MAV_CMD.
     #print("fix_add_implicit_link was called")
@@ -141,8 +141,8 @@ def fix_add_implicit_links_items(input_html):
 
     input_html=re.sub(r'([\`\(\s,]|^)([A-Z]{2,}(?:_[A-Z0-9]+)+)([\`\)\s\.,:]|$)', make_text_to_link, input_html,flags=re.DOTALL)
     return input_html
-    
-    
+
+
 def inject_top_level_docs(input_html,filename):
     #Inject top level heading and other details.
     print('FILENAME (prefix): %s' % filename)
@@ -204,7 +204,7 @@ This ensure that:
 
 > **Warning** New dialect files in the official repository must be added to **all.xml** and restrict themselves to using ids in their own allocated range.
   A few older dialects are not included because these operate in completely closed networks or because they are only used for tests.
-  
+
 This topic is a human-readable form of the XML definition file: [all.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
 """
     else:
@@ -238,12 +238,12 @@ These are listed below.
 
 {% include "_html/minimal.html" %}"""
 
-    
+
     #print(input_html)
     return input_html
-    
+
 dialect_files = set()
-all_files = set()    
+all_files = set()
 
 for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
     #Generate html for all the XML files
@@ -265,7 +265,7 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
             #Strip out text before <html> tag in XSLT output
             prettyHTML=strip_text_before_string(prettyHTML,'<html>')
             prettyHTML = fix_content_in_tags(prettyHTML)
-            
+
             #Replace invalid file extensions (workaround for xslt)
             prettyHTML = fix_include_file_extension(prettyHTML)
 
@@ -274,11 +274,11 @@ for subdir, dirs, files in os.walk(xml_message_definitions_dir_name):
 
             #Fix up links to external dialects to not be links
             prettyHTML = fix_external_dialect_link(prettyHTML)
-            
+
             #Fix up plain text mav symbols to be internal links
-            prettyHTML = fix_add_implicit_links_items(prettyHTML)     
-            
-            
+            prettyHTML = fix_add_implicit_links_items(prettyHTML)
+
+
             #Write output html file
             output_file_name_html = file.rsplit('.',1)[0]+".html"
 
@@ -309,12 +309,12 @@ for file_prefix in all_files:
     with open(output_file_name_md_withdir, 'w') as out:
         out.write(markdown_text)
 
-            
+
 for the_file in sorted(dialect_files):
     index_text+='\n* [%s.xml](%s.md)' % (the_file,the_file)
 index_text+='\n\n'
 index_text+=index_text_trailer
-            
+
 #Write the index
 with open(index_file_name, 'w') as content_file:
     content_file.write(index_text)
