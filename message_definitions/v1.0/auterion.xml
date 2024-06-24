@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <mavlink>
+  <!-- message ID range: 13000 - 13999 -->
+  <!-- command ID range: 13000 - 13999 -->
   <include>ras_a.xml</include>
   <version>0</version>
   <dialect>0</dialect>
@@ -92,14 +94,21 @@
     </enum>
   </enums>
   <messages>
-    <message id="441" name="CONTROL_STATUS">
+    <message id="13000" name="MOTOR_INFO">
+      <description> Contains information about a motor. </description>
+      <field type="uint8_t" name="index"> Motor index number starting with index 1. 0 if unknown. </field>
+      <field type="uint8_t" name="type"> The type of motor, TODO: define an enum </field>
+      <field type="uint64_t" name="total_time" units="s"> Total accumulated usage time</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of motor. INT16_MAX if unknown.</field>
+    </message>
+    <message id="13441" name="CONTROL_STATUS">
       <description>Status message indicating the currently active flight control and payload control entity.
         This message should typically be send from the system at a low frequency as well as after a control ownership change to all connected GCS. 
       </description>
       <field type="uint8_t" name="current_flight_controller" enum="CURRENT_CONTROL_ENTITY">Current flight control entity.</field>
       <field type="uint8_t" name="current_payload_controller" enum="CURRENT_CONTROL_ENTITY">Current payload control entity.</field>
     </message>
-    <message id="442" name="REQUEST_CONTROL">
+    <message id="13442" name="REQUEST_CONTROL">
       <description>Request the flight control and/or the payload control of the target system by a GCS.
         The message can be used in a multi GCS environment. A GCS can request the control ownership of the target system. 
       </description>
@@ -110,20 +119,20 @@
       <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
       <field type="char[100]" name="reason">Reason for taking ownership.</field>
     </message>
-    <message id="443" name="REQUEST_CONTROL_ACK">
+    <message id="13443" name="REQUEST_CONTROL_ACK">
       <description>Error code response of the target system to the control ownership request.
       </description>
       <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target which was processed.</field>
       <field type="uint8_t" name="error_code" enum="CONTROL_REQUEST_ERROR_CODE">Error code response.</field>
     </message>
-    <message id="444" name="RELEASE_CONTROL">
+    <message id="13444" name="RELEASE_CONTROL">
       <description>Release the previously aquired control. 
         The message can be used in a multi GCS environment to release the control of the target system. 
         This message is ignored when the GCS is not the current active control entity of the control target.
       </description>
       <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to release own ownership.</field>
     </message>
-    <message id="445" name="REQUEST_HANDOFF">
+    <message id="13445" name="REQUEST_HANDOFF">
       <description>Request handoff of current control entity.
         This message is send from the system to the current active control entity to request the handoff of the control target to another GCS.
       </description>
@@ -131,7 +140,7 @@
       <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
       <field type="char[100]" name="reason">Reason from the control entity requesting ownership.</field>
     </message>
-    <message id="446" name="HANDOFF_RESPOND">
+    <message id="13446" name="HANDOFF_RESPOND">
       <description>Handoff response to handoff request. 
         This message is the response from the GCS in control to the handoff request.
       </description>
@@ -178,9 +187,9 @@
       <field type="uint32_t" name="cps">Detector value scaled by factor</field>
       <field type="float" name="dt" units="s">delta-t integration period</field>
     </message>
-    <message id="470" name="UNIQUE_IDENTIFIER">
+    <message id="13470" name="UNIQUE_IDENTIFIER">
       <description>Unique identifier message to uniquely identify different GCS and systems using an 256 bit uuid. The uuid can be randomly generated an stored for the relevant systems.
-      Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=470.
+      Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=13470.
       </description>
       <field type="char[32]" name="uuid">uuid of the sender.</field>
     </message>
@@ -221,13 +230,6 @@
       <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc.), MAV_TYPE_JOYSTICK = 43</field>
       <field type="uint16_t[10]" name="axis_value" invalid="[UINT16_MAX]">Value of each joystick axis</field>
       <field type="uint8_t[20]" name="button_value" invalid="[UINT8_MAX]">Value of each joystick button</field>
-    </message>
-    <message id="13000" name="MOTOR_INFO">
-      <description> Contains information about a motor. </description>
-      <field type="uint8_t" name="index"> Motor index number starting with index 1. 0 if unknown. </field>
-      <field type="uint8_t" name="type"> The type of motor, TODO: define an enum </field>
-      <field type="uint64_t" name="total_time" units="s"> Total accumulated usage time</field>
-      <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of motor. INT16_MAX if unknown.</field>
     </message>
   </messages>
 </mavlink>
