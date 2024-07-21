@@ -27,9 +27,11 @@
 # cd /tmp/mavlink && ./scripts/update_c_library.sh &> /dev/null
 
 function generate_headers() {
+lang=C
+[[ $2 == 2 ]] && lang=C++11
 python pymavlink/tools/mavgen.py \
     --output $CLIBRARY_PATH \
-    --lang C \
+    --lang $lang \
     --wire-protocol $2.0 \
     message_definitions/v1.0/$1.xml
 }
