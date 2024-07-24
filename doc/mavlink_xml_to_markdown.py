@@ -417,6 +417,7 @@ class MAVField(object):
         self.default = None
         self.minValue = None
         self.maxValue = None
+        self.multiplier = None
         self.extension = extension
         for attr, value in soup.attrs.items():
             # We do it this way to catch all of them. New additions will throw debug
@@ -442,6 +443,8 @@ class MAVField(object):
                 self.minValue = value
             elif attr == 'maxValue':
                 self.maxValue = value
+            elif attr == 'multiplier':
+                self.multiplier = value
             else:
                 print(
                     f"Debug: MAVField: Unexpected attribute: {attr}, Value: {value}")
@@ -481,12 +484,13 @@ class MAVField(object):
             parent.fieldnames.add('default')
         if self.invalid:
             parent.fieldnames.add('invalid')
-
+        if self.multiplier:
+            parent.fieldnames.add('multiplier')
         # self.debug()
 
     def debug(self):
         print(
-            f"Debug_Field- name ({self.name}), type ({self.type}), desc({self.description}), units({self.units}), display({self.display}), instance({self.instance})")
+            f"Debug_Field- name ({self.name}), type ({self.type}), desc({self.description}), units({self.units}), display({self.display}), instance({self.instance}), multiplier({self.multiplier})")
         # TODO - display, instance, are not output.
 
 
@@ -579,9 +583,13 @@ class MAVMessage(object):
         tableHeadings.append('Type')
         valueHeading = False
         unitsHeading = False
+        multiplierHeading = False
         if any(field in self.fieldnames for field in ('units',)):
             unitsHeading = True
             tableHeadings.append('Units')
+        if any(field in self.fieldnames for field in ('multiplier',)):
+            multiplierHeading = True
+            tableHeadings.append('Multiplier')
         if any(field in self.fieldnames for field in ('enum', 'invalid, maxValue, minValue, default')):
             valueHeading = True
             tableHeadings.append('Values')
@@ -595,7 +603,8 @@ class MAVMessage(object):
             row.append(f"`{field.type}`")
             if unitsHeading:
                 row.append(f"{field.units if field.units else ''}")
-
+            if multiplierHeading:
+                row.append(f"{field.multiplier if field.multiplier else ''}")
             if valueHeading:
                 # Values: #invalid, default, minValue, maxValue.
                 values = []
@@ -767,6 +776,7 @@ class MAVCommandParam(object):
         self.description = None
         self.reserved = None
         self.default = None
+        self.multiplier = None
 
         for attr, value in soup.attrs.items():
             # We do it this way to catch all of them. New additions will throw debug
@@ -788,6 +798,8 @@ class MAVCommandParam(object):
                 self.reserved = True  # TODO is it ever reserved by default, and if so make happen
             elif attr == 'default':
                 self.default = value  # TODO is it ever default by default, and if so make happen?
+            elif attr == 'multiplier':
+                self.multiplier = value
             else:
                 print(
                     f"Debug: MAVCommandParam: Unexpected attribute: {attr}, Value: {value}")
@@ -813,7 +825,8 @@ class MAVCommandParam(object):
             parent.param_fieldnames.add('increment')
         if self.enum:
             parent.param_fieldnames.add('enum')
-
+        if self.multiplier:
+            parent.param_fieldnames.add('multiplier')
 
 class MAVCommand(object):
     def __init__(self, soup, basename):
@@ -876,12 +889,16 @@ class MAVCommand(object):
         tableHeadings.append('Description')
         valueHeading = False
         unitsHeading = False
+        multiplierHeading = False
         if any(field in self.param_fieldnames for field in ('enum', 'minValue', 'maxValue', 'increment')):
             valueHeading = True
             tableHeadings.append('Values')
         if 'units' in self.param_fieldnames:
             unitsHeading = True
             tableHeadings.append('Units')
+        if 'multiplier' in self.param_fieldnames:
+            multiplierHeading = True
+            tableHeadings.append('Multiplier')
         tableRows = []
 
         for param in self.params:
@@ -909,6 +926,12 @@ class MAVCommand(object):
                 if param.units:
                     unitsString = param.units
                 row.append(unitsString)
+
+            if multiplierHeading:
+                multiplierString = " "
+                if param.multiplier:
+                    multiplierString = param.multiplier
+                row.append(multiplierString)
 
             tableRows.append(row)
 
