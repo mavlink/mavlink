@@ -600,8 +600,11 @@ class MAVMessage(object):
             # message+=f"Included from [{self.basename}](../messages/{self.basename}.md#{self.name})\n\n"  # With basename (dialect name) test
         message += ' {#' + self.name + '}\n\n'
 
-        # If dialect, that's it. After this is assuming current dialect
-        if self.basename is not currentDialect:
+        # If it is common we include everything.
+        # But for any other dialect we don't include the reset of the message
+        if currentDialect == 'common':
+            pass
+        elif self.basename is not currentDialect:
             return message
 
         if self.deprecated:
@@ -768,8 +771,11 @@ class MAVEnum(object):
             # message+=f"Included from [{self.basename}](../messages/{self.basename}.md#{self.name})\n\n"  # With basename (dialect name) test
         string += ' {#' + self.name + '}\n\n'
 
-        # If dialect, that's it. After this is assuming current dialect
-        if self.basename is not currentDialect:
+        # If it is common we include everything.
+        # But for any other dialect we don't include the reset of the message
+        if currentDialect == 'common':
+            pass
+        elif self.basename is not currentDialect:
             return string
 
         if self.deprecated:
@@ -910,9 +916,13 @@ class MAVCommand(object):
             string += " [WIP]"
         string += ' {#' + self.name + '}\n\n'
 
-        # If dialect, that's it. After this is assuming current dialect
-        if self.basename is not currentDialect:
+        # If it is common we include everything.
+        # But for any other dialect we don't include the reset of the message
+        if currentDialect == 'common':
+            pass
+        elif self.basename is not currentDialect:
             return string
+
 
         if self.deprecated:
             string += self.deprecated.getMarkdown() + "\n\n"
