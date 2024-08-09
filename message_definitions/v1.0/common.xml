@@ -2121,9 +2121,8 @@
         <description>Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
         <param index="1" label="Zoom Type" enum="CAMERA_ZOOM_TYPE">Zoom type</param>
         <param index="2" label="Zoom Value">Zoom value. The range of valid values depend on the zoom type.</param>
-        <param index="3" reserved="true" default="NaN"/>
+        <param index="3" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="4" reserved="true" default="NaN"/>
-        <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="532" name="MAV_CMD_SET_CAMERA_FOCUS" hasLocation="false" isDestination="false">
         <description>Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
