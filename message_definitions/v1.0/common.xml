@@ -3310,6 +3310,9 @@
       <entry value="2048" name="CAMERA_CAP_FLAGS_HAS_TRACKING_GEO_STATUS">
         <description>Camera supports tracking geo status (CAMERA_TRACKING_GEO_STATUS).</description>
       </entry>
+      <entry value="4096" name="CAMERA_CAP_FLAGS_HAS_THERMAL_RANGE">
+        <description>Camera supports absolute thermal range (request CAMERA_THERMAL_RANGE with MAV_CMD_REQUEST_MESSAGE).</description>
+      </entry>
     </enum>
     <enum name="VIDEO_STREAM_STATUS_FLAGS" bitmask="true">
       <description>Stream status flags (Bitmap)</description>
@@ -3318,6 +3321,9 @@
       </entry>
       <entry value="2" name="VIDEO_STREAM_STATUS_FLAGS_THERMAL">
         <description>Stream is thermal imaging</description>
+      </entry>
+      <entry value="4" name="VIDEO_STREAM_STATUS_FLAGS_THERMAL_RANGE_ENABLED">
+        <description>Stream can report absolute thermal range (see CAMERA_THERMAL_RANGE)</description>
       </entry>
     </enum>
     <enum name="VIDEO_STREAM_TYPE">
@@ -6104,6 +6110,18 @@
       <field type="float" name="dist" units="m" invalid="NaN">Distance between camera and tracked object. NAN if unknown</field>
       <field type="float" name="hdg" units="rad" invalid="NaN">Heading in radians, in NED. NAN if unknown</field>
       <field type="float" name="hdg_acc" units="rad" invalid="NaN">Accuracy of heading, in NED. NAN if unknown</field>
+    </message>
+    <message id="277" name="CAMERA_THERMAL_RANGE">
+      <description>Camera absolute thermal range.  This can be streamed when the associated `VIDEO_STREAM_STATUS.flag` bit `VIDEO_STREAM_STATUS_FLAGS_THERMAL_RANGE_ENABLED` is set, but a GCS may choose to only request it for the current active stream.  Use MAV_CMD_SET_MESSAGE_INTERVAL to define message interval (param3 indicates the stream id of the current camera, or 0 for all streams, param4 indicates the target camera_device_id for autopilot-attached cameras or 0 for MAVLink cameras).</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="stream_id" invalid="0" instance="true">Video Stream ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="camera_device_id" invalid="0">Camera id of a camera associated with this component. This is the component id of a proxied MAVLink camera, or 1-6 for a non-MAVLink camera attached to the component. Use 0 if the component is a camera (not something else providing access to a camera).</field>
+      <field type="float" name="max" units="degC">Temperature max.</field>
+      <field type="float" name="max_point_x" invalid="NaN">Temperature max point x value (normalized 0..1, 0 is left, 1 is right), NAN if unknown.</field>
+      <field type="float" name="max_point_y" invalid="NaN">Temperature max point y value (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown.</field>
+      <field type="float" name="min" units="degC">Temperature min.</field>
+      <field type="float" name="min_point_x" invalid="NaN">Temperature min point x value (normalized 0..1, 0 is left, 1 is right), NAN if unknown.</field>
+      <field type="float" name="min_point_y" invalid="NaN">Temperature min point y value (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown.</field>
     </message>
     <message id="280" name="GIMBAL_MANAGER_INFORMATION">
       <description>Information about a high level gimbal manager. This message should be requested by a ground station using MAV_CMD_REQUEST_MESSAGE.</description>
