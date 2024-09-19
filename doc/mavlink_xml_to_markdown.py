@@ -700,7 +700,7 @@ class MAVEnumEntry(object):
 
     def getMarkdown(self, currentDialect):
         """Return markdown for an enum entry"""
-        deprString = f"<b>{self.deprecated.getMarkdown()}" if self.deprecated else ""
+        deprString = f"{self.deprecated.getMarkdown()}" if self.deprecated else ""
         if self.wip:
             print(f"TODO: WIP in Enum Entry: {self.name}")
         importedNote = ""
