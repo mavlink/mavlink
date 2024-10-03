@@ -7171,7 +7171,7 @@
       <description>High level message to control a gimbal's attitude. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS" display="bitmask">High level gimbal manager flags to use.</field>
       <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_MANAGER_FLAGS_YAW_LOCK is set)</field>
       <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
@@ -7270,7 +7270,7 @@
       <description>Set gimbal manager pitch and yaw angles (high rate message). This message is to be sent to the gimbal manager (e.g. from a ground station) and will be ignored by gimbal devices. Angles and rates can be set to NaN according to use case. Use MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW for low-rate adjustments that require confirmation.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS" display="bitmask">High level gimbal manager flags to use.</field>
       <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float" name="pitch" units="rad" invalid="NaN">Pitch angle (positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="yaw" units="rad" invalid="NaN">Yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
@@ -7281,7 +7281,7 @@
       <description>High level message to control a gimbal manually. The angles or angular rates are unitless; the actual rates will depend on internal gimbal manager settings/configuration (e.g. set by parameters). This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags.</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS" display="bitmask">High level gimbal manager flags.</field>
       <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float" name="pitch" invalid="NaN">Pitch angle unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="yaw" invalid="NaN">Yaw angle unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
