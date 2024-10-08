@@ -6425,14 +6425,23 @@
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
     </message>
     <message id="136" name="TERRAIN_REPORT">
-      <description>Streamed from drone to report progress of terrain map download (initiated by TERRAIN_REQUEST), or sent as a response to a TERRAIN_CHECK request. See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
-      <field type="int32_t" name="lat" units="degE7">Latitude</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude</field>
-      <field type="uint16_t" name="spacing">grid spacing (zero if terrain at this location unavailable)</field>
-      <field type="float" name="terrain_height" units="m">Terrain height MSL</field>
-      <field type="float" name="current_height" units="m">Current vehicle height above lat/lon terrain height</field>
-      <field type="uint16_t" name="pending">Number of 4x4 terrain blocks waiting to be received or read from disk</field>
-      <field type="uint16_t" name="loaded">Number of 4x4 terrain blocks in memory</field>
+      <description>Report progress of terrain map download (initiated by TERRAIN_REQUEST), and/or confirm that a particular tile is stored in memory (as a response to a TERRAIN_CHECK request).
+
+        The message should be streamed from the drone in order to report how much of the tile map specified in the previous TERRAIN_REQUEST has been downloaded, using the pending and loaded fields.
+        When streamed, the lat, lon, terrain_height, and current_height fields are optional, but if supplied must reflect the tile at the current vehicle position.
+
+        The message should be emitted in response to a TERRAIN_CHECK request in order to confirm that a particular tile at a lat/lon is present in UAV memory.
+        In this case the lat, lon, and terrain_height reflect the values for the requested tile, or NaN if the tile is not present in UAV memory.
+        Note that the current_height is always relative to the terrain height at the current vehicle location (not at the specified tile).
+
+        See terrain protocol docs: https://mavlink.io/en/services/terrain.html.</description>
+      <field type="int32_t" name="lat" units="degE7">Latitude. When streamed, of the tile at the current vehicle position. When requested, of the tile specified in the corresponding TERRAIN_CHECK.</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude. When streamed, of the tile at the current vehicle position. When requested, of the tile specified in the corresponding TERRAIN_CHECK.</field>
+      <field type="uint16_t" name="spacing" invalid="0">Grid spacing. 0 if terrain at this location unavailable.</field>
+      <field type="float" name="terrain_height" units="m" invalid="NaN">Terrain height MSL. NaN if terrain at this location unavailable.</field>
+      <field type="float" name="current_height" units="m" invalid="NaN">Current vehicle height above ground relative to lat/lon terrain height. NaN if height not supplied.</field>
+      <field type="uint16_t" name="pending">Number of 4x4 terrain blocks waiting to be received or read from disk. The set of all terrain blocks is defined by the previous TERRAIN_REQUEST.</field>
+      <field type="uint16_t" name="loaded">Number of 4x4 terrain blocks in memory. The set of all terrain blocks is defined by the previous TERRAIN_REQUEST.</field>
     </message>
     <message id="137" name="SCALED_PRESSURE2">
       <description>Barometer readings for 2nd barometer</description>
