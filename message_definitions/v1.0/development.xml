@@ -406,7 +406,7 @@
           In this case the command should be sent to the specific component, which should also emit CONTROL_STATUS to indicate its owner (this component would ignore the CONTROL_STATUS set by the autopilot).
           The flow is otherwise the same.
         </description>
-        <param index="1" label="Sysid requesting control">System ID of GCS requesting control. It is only needed when an autopilot is forwarding the control request to the current GCS in control. Otherwise, from GCS to autopilot, it should be 0 as it can be deducted from the sender system ID</param>
+        <param index="1" label="Sysid requesting control">System ID of GCS requesting control. 0 when command sent from GCS to autopilot (autopilot determines requesting GCS sysid from message header). Sysid of GCS requesting control when command sent by autopilot to controlling GCS.</param>
         <param index="2" label="Action">0: Release control, 1: Request control.</param>
         <param index="3" label="Allow takeover">Enable automatic granting of ownership on request (by default reject request and notify current owner). 0: Ask current owner and reject request, 1: Allow automatic takeover.</param>
         <param index="4">Empty</param>
