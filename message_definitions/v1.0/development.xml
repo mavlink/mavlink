@@ -392,19 +392,19 @@
         <description>Request control of a system.
         
           A controlled vehicle should only accept MAVLink commands (or command-like messages) that are sent by the controlling GCS, or from other components with the same system id. Commands from other system should be rejected with MAV_RESULT_PERMISSION_DENIED (except for this command, which may be acknowledged with MAV_RESULT_ACCEPTED if control is granted).
-        
-           The command is sent by a GCS to the autopilot component to request or release control of a system, specifying whether subsequent takeover requests from another GCS are automatically granted, or require permission.
-           The autopilot should grant control to the GCS the system does not require takeover permission or is uncontrolled and ACK the request with MAV_RESULT_ACCEPTED.
-           The autopilot should stream CONTROL_STATUS indicating its controlling system: all other components with the same system id should monitor this message and set their own owner to match that of the autopilot.
+
+          The command is sent by a GCS to the autopilot component to request or release control of a system, specifying whether subsequent takeover requests from another GCS are automatically granted, or require permission.
+          The autopilot should grant control to the GCS if the system does not require takeover permission (or is uncontrolled) and ACK the request with MAV_RESULT_ACCEPTED.
+          The autopilot should stream CONTROL_STATUS indicating its controlling system: all other components with the same system id should monitor this message and set their own owner to match that of the autopilot.
 
           If the autopilot cannot grant control (because takeover requires permission), the request should be rejected with MAV_RESULT_PERMISSION_DENIED.
           The autopilot should then send this same command to the current owning GCS in order to notify of the request.
-          The owning GCS would then ACK with MAV_RESULT_ACCEPTED, and might choose to release ownership of the vehicle, or re-request ownership with the takeover bit set to allow permission. 
+          The owning GCS would ACK with MAV_RESULT_ACCEPTED, and might choose to release ownership of the vehicle, or re-request ownership with the takeover bit set to allow permission. 
           Note that the pilots of both GCS should co-ordinate safe handover offline.
-           
-           It is also possible for a GCS to request control of a specific component rather than the whole system (though this is not recommended).
-           In this case the command should be sent to the specific component, which should also emit CONTROL_STATUS to indicate its owner (this component would ignore the CONTROL_STATUS set by the autopilot).
-           The flow is otherwise the same.
+
+          It is also possible for a GCS to request control of a specific component rather than the whole system (though this is not recommended).
+          In this case the command should be sent to the specific component, which should also emit CONTROL_STATUS to indicate its owner (this component would ignore the CONTROL_STATUS set by the autopilot).
+          The flow is otherwise the same.
         </description>
         <param index="1" label="Sysid requesting control">System ID of GCS requesting control. It is only needed when an autopilot is forwarding the control request to the current GCS in control. Otherwise, from GCS to autopilot, it should be 0 as it can be deducted from the sender system ID</param>
         <param index="2" label="Action">0: Release control, 1: Request control.</param>
