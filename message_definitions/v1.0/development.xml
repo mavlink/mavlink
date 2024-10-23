@@ -770,7 +770,7 @@
     <message id="512" name="CONTROL_STATUS">
       <description>Information about GCS in control of this MAV. This should be broadcast at low rate (nominally 1 Hz) and emitted when ownership or takeover status change. Control over MAV is requested using MAV_CMD_REQUEST_OPERATOR_CONTROL.</description>
       <field type="uint8_t" name="sysid_in_control">System ID of GCS MAVLink component in control (0: no one in control)</field>
-      <field type="uint8_t" name="takeover_allowed">1: Requests for control will be granted. 0: Requests for control will be rejected, but the controlling GCS will be notified (and may release control or allow takeover).</field>
+      <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS" display="bitmask">Control status. For example, whether takeover is allowed, and whether this component defines the default GCS controller for the whole system</field>
     </message>
   </messages>
 </mavlink>
