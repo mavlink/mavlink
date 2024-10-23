@@ -416,6 +416,15 @@
         <param index="7">Empty</param>
       </entry>
     </enum>
+    <enum name="GCS_CONTROL_STATUS_FLAGS" bitmask="true">
+      <description>CONTROL_STATUS flags.</description>
+      <entry value="1" name="GCS_CONTROL_STATUS_FLAGS_MASTER_COMPID">
+        <description>When a GCS sends MAV_CMD_REQUEST_OPERATOR_CONTROL to acquire control of a whole system it needs to address the component emitting this flag. Should be set by only one component in the system, normally an autopilot.</description>
+      </entry>
+      <entry value="2" name="GCS_CONTROL_STATUS_FLAGS_TAKEOVER_ALLOWED">
+        <description>Takeover allowed (requests for control will be granted). If not set requests for control will be rejected, but the controlling GCS will be notified (and may release control or allow takeover).</description>
+      </entry>
+    </enum>
     <enum name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" bitmask="true">
       <description>These flags indicate the sensor reporting capabilities for TARGET_ABSOLUTE.</description>
       <entry value="1" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_POSITION"/>
