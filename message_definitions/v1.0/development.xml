@@ -394,6 +394,7 @@
           A controlled vehicle should only accept MAVLink commands (or command-like messages) that are sent by the controlling GCS, or from other components with the same system id. Commands from other system should be rejected with MAV_RESULT_PERMISSION_DENIED (except for this command, which may be acknowledged with MAV_RESULT_ACCEPTED if control is granted).
 
           The command is sent by a GCS to the autopilot component to request or release control of a system, specifying whether subsequent takeover requests from another GCS are automatically granted, or require permission.
+          It is important to remember targeting a particular component, and avoiding using 0 targetting (all components). Only components emitting CONTROL_STATUS should be targeted, usually these will be autopilots, but could be other components like onboard computers.
           The autopilot should grant control to the GCS if the system does not require takeover permission (or is uncontrolled) and ACK the request with MAV_RESULT_ACCEPTED.
           The autopilot should stream CONTROL_STATUS indicating its controlling system: all other components with the same system id should monitor this message and set their own owner to match that of the autopilot.
 
