@@ -6386,6 +6386,33 @@
       <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Type of estimator that is providing the odometry.</field>
       <field type="int8_t" name="quality" units="%" invalid="0">Optional odometry quality metric as a percentage. -1 = odometry has failed, 0 = unknown/unset quality, 1 = worst quality, 100 = best quality</field>
     </message>
+    <message id="332" name="TRAJECTORY_REPRESENTATION_WAYPOINTS">
+      <description>Describe a trajectory using an array of up-to 5 waypoints in the local frame (MAV_FRAME_LOCAL_NED).</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="valid_points">Number of valid points (up-to 5 waypoints are possible)</field>
+      <field type="float[5]" name="pos_x" units="m" invalid="[NaN]">X-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_y" units="m" invalid="[NaN]">Y-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_z" units="m" invalid="[NaN]">Z-coordinate of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_x" units="m/s" invalid="[NaN]">X-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_y" units="m/s" invalid="[NaN]">Y-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_z" units="m/s" invalid="[NaN]">Z-velocity of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_x" units="m/s/s" invalid="[NaN]">X-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_y" units="m/s/s" invalid="[NaN]">Y-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="acc_z" units="m/s/s" invalid="[NaN]">Z-acceleration of waypoint, set to NaN if not being used</field>
+      <field type="float[5]" name="pos_yaw" units="rad" invalid="[NaN]">Yaw angle, set to NaN if not being used</field>
+      <field type="float[5]" name="vel_yaw" units="rad/s" invalid="[NaN]">Yaw rate, set to NaN if not being used</field>
+      <field type="uint16_t[5]" name="command" enum="MAV_CMD" invalid="[UINT16_MAX]">MAV_CMD command id of waypoint, set to UINT16_MAX if not being used.</field>
+    </message>
+    <message id="333" name="TRAJECTORY_REPRESENTATION_BEZIER">
+      <description>Describe a trajectory using an array of up-to 5 bezier control points in the local frame (MAV_FRAME_LOCAL_NED).</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="valid_points">Number of valid control points (up-to 5 points are possible)</field>
+      <field type="float[5]" name="pos_x" units="m" invalid="[NaN]">X-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="pos_y" units="m" invalid="[NaN]">Y-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="pos_z" units="m" invalid="[NaN]">Z-coordinate of bezier control points. Set to NaN if not being used</field>
+      <field type="float[5]" name="delta" units="s" invalid="[NaN]">Bezier time horizon. Set to NaN if velocity/acceleration should not be incorporated</field>
+      <field type="float[5]" name="pos_yaw" units="rad" invalid="[NaN]">Yaw. Set to NaN for unchanged</field>
+    </message>
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
