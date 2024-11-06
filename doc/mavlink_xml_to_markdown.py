@@ -582,6 +582,13 @@ class MAVMessage(object):
         """
         Return markdown for a message.
         """
+        # If it is common we include everything.
+        # But for any other dialect don't include the entity
+        if currentDialect == 'common':
+            pass
+        elif self.basename is not currentDialect:
+            return ""
+
         message = f"### {self.name} ({self.id})"
 
         # Add marker after name if there are additions
@@ -599,13 +606,6 @@ class MAVMessage(object):
             message += " [WIP]"
             # message+=f"Included from [{self.basename}](../messages/{self.basename}.md#{self.name})\n\n"  # With basename (dialect name) test
         message += ' {#' + self.name + '}\n\n'
-
-        # If it is common we include everything.
-        # But for any other dialect we don't include the reset of the message
-        if currentDialect == 'common':
-            pass
-        elif self.basename is not currentDialect:
-            return message
 
         if self.deprecated:
             message += self.deprecated.getMarkdown()+"\n\n"
@@ -754,6 +754,13 @@ class MAVEnum(object):
     def getMarkdown(self, currentDialect):
         """Return markdown for a whole enum"""
 
+        # If it is common we include everything.
+        # But for any other dialect don't include the entity
+        if currentDialect == 'common':
+            pass
+        elif self.basename is not currentDialect:
+            return ""
+
         string = f"### {self.name}"
 
         # Add marker after name if there are additions
@@ -770,13 +777,6 @@ class MAVEnum(object):
             string += " [WIP]"
             # message+=f"Included from [{self.basename}](../messages/{self.basename}.md#{self.name})\n\n"  # With basename (dialect name) test
         string += ' {#' + self.name + '}\n\n'
-
-        # If it is common we include everything.
-        # But for any other dialect we don't include the reset of the message
-        if currentDialect == 'common':
-            pass
-        elif self.basename is not currentDialect:
-            return string
 
         if self.deprecated:
             string += self.deprecated.getMarkdown()+"\n\n"
@@ -900,6 +900,13 @@ class MAVCommand(object):
     def getMarkdown(self, currentDialect):
         """Return markdown for a command (entry)"""
 
+        # If it is common we include everything.
+        # But for any other dialect don't include the entity
+        if currentDialect == 'common':
+            pass
+        elif self.basename is not currentDialect:
+            return ""
+
         string = f"### {self.name} ({self.value})"
 
         # Add marker after name if there are additions
@@ -915,14 +922,6 @@ class MAVCommand(object):
         elif self.wip:
             string += " [WIP]"
         string += ' {#' + self.name + '}\n\n'
-
-        # If it is common we include everything.
-        # But for any other dialect we don't include the reset of the message
-        if currentDialect == 'common':
-            pass
-        elif self.basename is not currentDialect:
-            return string
-
 
         if self.deprecated:
             string += self.deprecated.getMarkdown() + "\n\n"
