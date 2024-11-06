@@ -5,27 +5,6 @@
   <version>0</version>
   <dialect>0</dialect>
   <enums>
-    <enum name="WIFI_NETWORK_SECURITY">
-      <description>WiFi wireless security protocols.</description>
-      <entry value="0" name="WIFI_NETWORK_SECURITY_UNDEFINED">
-        <description>Undefined or unknown security protocol.</description>
-      </entry>
-      <entry value="1" name="WIFI_NETWORK_SECURITY_OPEN">
-        <description>Open network, no security.</description>
-      </entry>
-      <entry value="2" name="WIFI_NETWORK_SECURITY_WEP">
-        <description>WEP.</description>
-      </entry>
-      <entry value="3" name="WIFI_NETWORK_SECURITY_WPA1">
-        <description>WPA1.</description>
-      </entry>
-      <entry value="4" name="WIFI_NETWORK_SECURITY_WPA2">
-        <description>WPA2.</description>
-      </entry>
-      <entry value="5" name="WIFI_NETWORK_SECURITY_WPA3">
-        <description>WPA3.</description>
-      </entry>
-    </enum>
     <enum name="AIRSPEED_SENSOR_FLAGS" bitmask="true">
       <description>Airspeed sensor flags</description>
       <entry value="0" name="AIRSPEED_SENSOR_UNHEALTHY">
@@ -539,14 +518,6 @@
       <field type="int16_t" name="temperature" units="cdegC">Temperature. INT16_MAX for value unknown/not supplied.</field>
       <field type="float" name="raw_press" units="hPa">Raw differential pressure. NaN for value unknown/not supplied.</field>
       <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
-    </message>
-    <message id="298" name="WIFI_NETWORK_INFO">
-      <description>Detected WiFi network status information. This message is sent per each WiFi network detected in range with known SSID and general status parameters.</description>
-      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID).</field>
-      <field type="uint8_t" name="channel_id">WiFi network operating channel ID. Set to 0 if unknown or unidentified.</field>
-      <field type="uint8_t" name="signal_quality" units="%">WiFi network signal quality.</field>
-      <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
-      <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
     </message>
     <message id="354" name="SET_VELOCITY_LIMITS">
       <wip/>
