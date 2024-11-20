@@ -3401,6 +3401,18 @@
         <description>Battery is not compatible due to cell configuration (e.g. 5s1p when vehicle requires 6s).</description>
       </entry>
     </enum>
+    <enum name="MAV_FUEL_TYPE">
+      <description>Fuel types for use in FUEL_TYPE. Fuel types specify the units for the maximum, available and consumed fuel, and for the flow rates.</description>
+      <entry value="0" name="MAV_FUEL_TYPE_UNKNOWN">
+        <description>Not specified. Fuel levels are normalized (i.e. maximum is 1, and other levels are relative to 1).</description>
+      </entry>
+      <entry value="1" name="MAV_FUEL_TYPE_LIQUID">
+        <description>A generic liquid fuel. Fuel levels are in millilitres (ml). Fuel rates are in millilitres/second.</description>
+      </entry>
+      <entry value="2" name="MAV_FUEL_TYPE_GAS">
+        <description>A gas tank. Fuel levels are in kilo-Pascal (kPa), and flow rates are in milliliters per second (ml/s).</description>
+      </entry>
+    </enum>
     <enum name="MAV_GENERATOR_STATUS_FLAG" bitmask="true">
       <description>Flags to report status/failure cases for a power generator (used in GENERATOR_STATUS). Note that FAULTS are conditions that cause the generator to fail. Warnings are conditions that require attention before the next use (they indicate the system is not operating properly).</description>
       <entry value="1" name="MAV_GENERATOR_STATUS_FLAG_OFF">
@@ -7582,7 +7594,30 @@
       <field type="uint32_t" name="discharge_maximum_burst_current" units="mA" invalid="0">Maximum pack discharge burst current. 0: field not provided.</field>
       <field type="char[11]" name="manufacture_date" invalid="[0]">Manufacture date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
     </message>
-    <!-- id 371 reserved for FUEL_STATUS in development.xml -->
+    <message id="371" name="FUEL_STATUS">
+      <description>Fuel status.
+        This message provides "generic" fuel level information for display in a GCS and for triggering failsafes in an autopilot.
+        The fuel type and associated units for fields in this message are defined in the enum MAV_FUEL_TYPE.
+
+        The reported `consumed_fuel` and `remaining_fuel` must only be supplied if measured: they must not be inferred from the `maximum_fuel` and the other value.
+        A recipient can assume that if these fields are supplied they are accurate.
+        If not provided, the recipient can infer `remaining_fuel` from `maximum_fuel` and `consumed_fuel` on the assumption that the fuel was initially at its maximum (this is what battery monitors assume).
+        Note however that this is an assumption, and the UI should prompt the user appropriately (i.e. notify user that they should fill the tank before boot).
+
+        This kind of information may also be sent in fuel-specific messages such as BATTERY_STATUS_V2.
+        If both messages are sent for the same fuel system, the ids and corresponding information must match.
+
+        This should be streamed (nominally at 0.1 Hz).
+      </description>
+      <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as BATTERY_STATUS_V2.</field>
+      <field type="float" name="maximum_fuel">Capacity when full. Must be provided.</field>
+      <field type="float" name="consumed_fuel" invalid="NaN">Consumed fuel (measured). This value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="float" name="remaining_fuel" invalid="NaN">Remaining fuel until empty (measured). The value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Percentage of remaining fuel, relative to full. Values: [0-100], UINT8_MAX: field not provided.</field>
+      <field type="float" name="flow_rate" invalid="NaN">Positive value when emptying/using, and negative if filling/replacing. NaN: field not provided.</field>
+      <field type="float" name="temperature" units="K" invalid="NaN">Fuel temperature. NaN: field not provided.</field>
+      <field type="uint32_t" name="fuel_type" enum="MAV_FUEL_TYPE">Fuel type. Defines units for fuel capacity and consumption fields above.</field>
+    </message>
     <message id="372" name="BATTERY_INFO">
       <wip/>
       <description>
