@@ -1,0 +1,33 @@
+name: Fetch ardupilotmega.xml from downstream
+on:
+  workflow_dispatch:
+
+jobs:
+  copy_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          repository: mavlink/mavlink
+
+      - name: Download source file
+        run: |
+          curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/ardupilotmega.xml -o ardupilotmega.xml
+      - name: Copy file
+        run: ls
+      - name: Copy file
+        run: mv -f ardupilotmega.xml message_definitions/v1.0/
+      - name: Add and commit changes
+        run: |
+          git config --global user.name "${{ secrets.PX4BUILDBOT_USER }}"
+          git config --global user.email "${{ secrets.PX4BUILDBOT_EMAIL }}"
+          git add message_definitions/v1.0/ardupilotmega.xml
+          git commit -a -m "ardupilotmega.xml from ArduPilot/mavlink: `date`"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "[BOT] Fetch ardupilotmega.xml from ArduPilot/mavlink"
+          body: "ardupilotmega.xml copied from the ArduPilot/mavlink repository."
+          target: master
