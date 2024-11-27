@@ -14,20 +14,33 @@ jobs:
       - name: Download source file
         run: |
           curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/ardupilotmega.xml -o ardupilotmega.xml
-      - name: Copy file
-        run: ls
-      - name: Copy file
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          git status --porcelain | grep -q "^??"  # Check for untracked files
+          if [ $? -eq 0 ]; then
+            echo "No changes detected in the repository. Skipping commit and PR creation."
+          else
+            echo "Changes detected. Proceeding with commit and PR creation."
+          fi
+
+      - name: Copy file (if changes detected)
         run: mv -f ardupilotmega.xml message_definitions/v1.0/
-      - name: Add and commit changes
+        if: steps.check-changes.conclusion == 'success'  # Check for success in previous step
+
+      - name: Add and commit changes (if changes detected)
         run: |
           git config --global user.name "${{ secrets.PX4BUILDBOT_USER }}"
           git config --global user.email "${{ secrets.PX4BUILDBOT_EMAIL }}"
           git add message_definitions/v1.0/ardupilotmega.xml
           git commit -a -m "ardupilotmega.xml from ArduPilot/mavlink: `date`"
+        if: steps.check-changes.conclusion == 'success'  # Check for success in previous step
 
-      - name: Create Pull Request
+      - name: Create Pull Request (if changes detected)
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[BOT] Fetch ardupilotmega.xml from ArduPilot/mavlink"
           body: "ardupilotmega.xml copied from the ArduPilot/mavlink repository."
           target: master
+        if: steps.check-changes.conclusion == 'success'  # Check for success in previous step
