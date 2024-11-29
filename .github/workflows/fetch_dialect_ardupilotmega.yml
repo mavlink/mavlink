@@ -17,8 +17,10 @@ jobs:
           curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/loweheiser.xml -o loweheiser.xml
       - name: Copy file
         run: ls
-      - name: Copy file
-        run: mv -f ardupilotmega.xml message_definitions/v1.0/
+      - name: Copy files
+        run: |
+          mv -f ardupilotmega.xml message_definitions/v1.0/
+          mv -f loweheiser.xml message_definitions/v1.0/     
       - name: Add and commit changes
         run: |
           git config --global user.name "${{ secrets.PX4BUILDBOT_USER }}"
