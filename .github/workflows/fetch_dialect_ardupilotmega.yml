@@ -1,4 +1,4 @@
-name: Fetch ardupilotmega.xml from downstream
+name: Fetch ardupilotmega dialects from downstream
 on:
   workflow_dispatch:
 
@@ -14,6 +14,7 @@ jobs:
       - name: Download source file
         run: |
           curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/ardupilotmega.xml -o ardupilotmega.xml
+          curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/loweheiser.xml -o loweheiser.xml
       - name: Copy file
         run: ls
       - name: Copy file
@@ -23,11 +24,12 @@ jobs:
           git config --global user.name "${{ secrets.PX4BUILDBOT_USER }}"
           git config --global user.email "${{ secrets.PX4BUILDBOT_EMAIL }}"
           git add message_definitions/v1.0/ardupilotmega.xml
-          git commit -a -m "ardupilotmega.xml from ArduPilot/mavlink: `date`"
+          git add message_definitions/v1.0/loweheiser.xml
+          git commit -a -m "ardupilotmega dialects from ArduPilot/mavlink: `date`"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[BOT] Fetch ardupilotmega.xml from ArduPilot/mavlink"
-          body: "ardupilotmega.xml copied from the ArduPilot/mavlink repository."
+          body: "ardupilotmega.xml / loweheiser.xml copied from the ArduPilot/mavlink repository."
           target: master
