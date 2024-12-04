@@ -228,7 +228,7 @@
       <description>Coordinate frames used by MAVLink. Not all frames are supported by all commands, messages, or vehicles.
 
       Global frames use the following naming conventions:
-      - "GLOBAL": Global coordinate frame with WGS84 latitude/longitude and altitude positive over mean sea level (MSL) by default.
+      - "GLOBAL": Global coordinate frame with WGS84 latitude/longitude and altitude positive over GNSS-specific mean sea level (MSL) by default.
         The following modifiers may be used with "GLOBAL":
         - "RELATIVE_ALT": Altitude is relative to the vehicle home position rather than MSL.
         - "TERRAIN_ALT": Altitude is relative to ground level rather than MSL.
@@ -242,7 +242,7 @@
       Some deprecated frames do not follow these conventions (e.g. MAV_FRAME_BODY_NED and MAV_FRAME_BODY_OFFSET_NED).
  </description>
       <entry value="0" name="MAV_FRAME_GLOBAL">
-        <description>Global (WGS84) coordinate frame + altitude relative to mean sea level (MSL).</description>
+        <description>Global (WGS84) coordinate frame + altitude relative to GNSS-specific mean sea level (MSL).</description>
       </entry>
       <entry value="1" name="MAV_FRAME_LOCAL_NED">
         <description>NED local tangent frame (x: North, y: East, z: Down) with origin fixed relative to earth.</description>
@@ -260,7 +260,7 @@
       </entry>
       <entry value="5" name="MAV_FRAME_GLOBAL_INT">
         <deprecated since="2024-03" replaced_by="MAV_FRAME_GLOBAL">Use MAV_FRAME_GLOBAL in COMMAND_INT (and elsewhere) as a synonymous replacement.</deprecated>
-        <description>Global (WGS84) coordinate frame (scaled) + altitude relative to mean sea level (MSL).</description>
+        <description>Global (WGS84) coordinate frame (scaled) + altitude relative to GNSS-specific mean sea level (MSL).</description>
       </entry>
       <entry value="6" name="MAV_FRAME_GLOBAL_RELATIVE_ALT_INT">
         <deprecated since="2024-03" replaced_by="MAV_FRAME_GLOBAL_RELATIVE_ALT">Use MAV_FRAME_GLOBAL_RELATIVE_ALT in COMMAND_INT (and elsewhere) as a synonymous replacement.</deprecated>
@@ -1251,7 +1251,7 @@
         <param index="4" label="Orbits" units="rad" minValue="0" default="0">Orbit around the centre point for this many radians (i.e. for a three-quarter orbit set 270*Pi/180). 0: Orbit forever. NaN: Use vehicle default, or current value if already orbiting.</param>
         <param index="5" label="Latitude/X">Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. INT32_MAX (or NaN if sent in COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
         <param index="6" label="Longitude/Y">Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. INT32_MAX (or NaN if sent in COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
-        <param index="7" label="Altitude/Z">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude.</param>
+        <param index="7" label="Altitude/Z">Center point altitude (GNSS-specific MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude.</param>
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false">
         <deprecated since="2018-01" replaced_by="`MAV_CMD_DO_SET_ROI_*`"/>
@@ -1836,8 +1836,8 @@
       <entry value="222" name="MAV_CMD_DO_GUIDED_LIMITS" hasLocation="false" isDestination="false">
         <description>Set limits for external control</description>
         <param index="1" label="Timeout" units="s" minValue="0">Timeout - maximum time that external controller will be allowed to control vehicle. 0 means no timeout.</param>
-        <param index="2" label="Min Altitude" units="m">Altitude (MSL) min - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit.</param>
-        <param index="3" label="Max Altitude" units="m">Altitude (MSL) max - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit.</param>
+        <param index="2" label="Min Altitude" units="m">Altitude (GNSS-specific MSL) min - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit.</param>
+        <param index="3" label="Max Altitude" units="m">Altitude (GNSS-specific MSL) max - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit.</param>
         <param index="4" label="Horiz. Move Limit" units="m" minValue="0">Horizontal move limit - if vehicle moves more than this distance from its location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal move limit.</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
@@ -2496,7 +2496,7 @@
         <param index="4" label="Altitude Clearance" units="m" minValue="-1">Minimum altitude clearance to the release position. A negative value indicates the system can define the clearance at will.</param>
         <param index="5" label="Latitude" units="degE7">Latitude.</param>
         <param index="6" label="Longitude" units="degE7">Longitude.</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="30002" name="MAV_CMD_PAYLOAD_CONTROL_DEPLOY" hasLocation="false" isDestination="false">
         <deprecated since="2021-06" replaced_by=""/>
@@ -2551,7 +2551,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31001" name="MAV_CMD_WAYPOINT_USER_2" hasLocation="true" isDestination="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
@@ -2561,7 +2561,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31002" name="MAV_CMD_WAYPOINT_USER_3" hasLocation="true" isDestination="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
@@ -2571,7 +2571,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31003" name="MAV_CMD_WAYPOINT_USER_4" hasLocation="true" isDestination="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
@@ -2581,7 +2581,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31004" name="MAV_CMD_WAYPOINT_USER_5" hasLocation="true" isDestination="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
@@ -2591,7 +2591,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31005" name="MAV_CMD_SPATIAL_USER_1" hasLocation="true" isDestination="false">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
@@ -2601,7 +2601,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31006" name="MAV_CMD_SPATIAL_USER_2" hasLocation="true" isDestination="false">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
@@ -2611,7 +2611,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31007" name="MAV_CMD_SPATIAL_USER_3" hasLocation="true" isDestination="false">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
@@ -2621,7 +2621,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31008" name="MAV_CMD_SPATIAL_USER_4" hasLocation="true" isDestination="false">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
@@ -2631,7 +2631,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31009" name="MAV_CMD_SPATIAL_USER_5" hasLocation="true" isDestination="false">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
@@ -2641,7 +2641,7 @@
         <param index="4">User defined</param>
         <param index="5" label="Latitude">Latitude unscaled</param>
         <param index="6" label="Longitude">Longitude unscaled</param>
-        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+        <param index="7" label="Altitude" units="m">Altitude (GNSS-specific MSL)</param>
       </entry>
       <entry value="31010" name="MAV_CMD_USER_1" hasLocation="false" isDestination="false">
         <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
@@ -5278,7 +5278,7 @@
       <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84, EGM96 ellipsoid)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84, EGM96 ellipsoid)</field>
-      <field type="int32_t" name="alt" units="mm">Altitude (MSL). Positive for up. Note that virtually all GPS modules provide the MSL altitude in addition to the WGS84 altitude.</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (GNSS-specific MSL). Positive for up. Note the MSL output from different GNSS modules may not be the same at a particular position.</field>
       <field type="uint16_t" name="eph" invalid="UINT16_MAX" multiplier="1E-2">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="epv" invalid="UINT16_MAX" multiplier="1E-2">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="vel" units="cm/s" invalid="UINT16_MAX">GPS ground speed. If unknown, set to: UINT16_MAX</field>
@@ -5388,7 +5388,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="int32_t" name="lat" units="degE7">Latitude, expressed</field>
       <field type="int32_t" name="lon" units="degE7">Longitude, expressed</field>
-      <field type="int32_t" name="alt" units="mm">Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (GNSS-specific MSL).</field>
       <field type="int32_t" name="relative_alt" units="mm">Altitude above home</field>
       <field type="int16_t" name="vx" units="cm/s">Ground X Speed (Latitude, positive north)</field>
       <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude, positive east)</field>
@@ -5576,7 +5576,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
-      <field type="int32_t" name="altitude" units="mm">Altitude (MSL). Positive for up.</field>
+      <field type="int32_t" name="altitude" units="mm">Altitude (GNSS-specific MSL). Positive for up.</field>
       <extensions/>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
     </message>
@@ -5584,7 +5584,7 @@
       <description>Publishes the GPS coordinates of the vehicle local origin (0,0,0) position. Emitted whenever a new GPS-Local position mapping is requested or set - e.g. following SET_GPS_GLOBAL_ORIGIN message.</description>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
-      <field type="int32_t" name="altitude" units="mm">Altitude (MSL). Positive for up.</field>
+      <field type="int32_t" name="altitude" units="mm">Altitude (GNSS-specific MSL). Positive for up.</field>
       <extensions/>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
     </message>
@@ -5657,7 +5657,7 @@
       <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Class id of the estimator this estimate originated from.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
-      <field type="int32_t" name="alt" units="mm">Altitude in meters above MSL</field>
+      <field type="int32_t" name="alt" units="mm">Altitude in meters above GNSS-specific MSL</field>
       <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
       <field type="float" name="vx" units="m/s">Ground X Speed (Latitude)</field>
       <field type="float" name="vy" units="m/s">Ground Y Speed (Longitude)</field>
@@ -5789,7 +5789,7 @@
       <field type="float" name="groundspeed" units="m/s">Current ground speed.</field>
       <field type="int16_t" name="heading" units="deg">Current heading in compass units (0-360, 0=north).</field>
       <field type="uint16_t" name="throttle" units="%">Current throttle setting (0 to 100).</field>
-      <field type="float" name="alt" units="m">Current altitude (MSL).</field>
+      <field type="float" name="alt" units="m">Current altitude (GNSS-specific MSL).</field>
       <field type="float" name="climb" units="m/s">Current climb rate.</field>
     </message>
     <message id="75" name="COMMAND_INT">
@@ -5919,7 +5919,7 @@
       <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="int32_t" name="lat_int" units="degE7">Latitude in WGS84 frame</field>
       <field type="int32_t" name="lon_int" units="degE7">Longitude in WGS84 frame</field>
-      <field type="float" name="alt" units="m">Altitude (MSL, Relative to home, or AGL - depending on frame)</field>
+      <field type="float" name="alt" units="m">Altitude (GNSS-specific MSL, Relative to home, or AGL - depending on frame)</field>
       <field type="float" name="vx" units="m/s">X velocity in NED frame</field>
       <field type="float" name="vy" units="m/s">Y velocity in NED frame</field>
       <field type="float" name="vz" units="m/s">Z velocity in NED frame</field>
@@ -5936,7 +5936,7 @@
       <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="int32_t" name="lat_int" units="degE7">Latitude in WGS84 frame</field>
       <field type="int32_t" name="lon_int" units="degE7">Longitude in WGS84 frame</field>
-      <field type="float" name="alt" units="m">Altitude (MSL, AGL or relative to home altitude, depending on frame)</field>
+      <field type="float" name="alt" units="m">Altitude (GNSS-specific MSL, AGL or relative to home altitude, depending on frame)</field>
       <field type="float" name="vx" units="m/s">X velocity in NED frame</field>
       <field type="float" name="vy" units="m/s">Y velocity in NED frame</field>
       <field type="float" name="vz" units="m/s">Z velocity in NED frame</field>
@@ -6204,7 +6204,7 @@
       <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value of this field unless it is at least two, so always correctly fill in the fix.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
-      <field type="int32_t" name="alt" units="mm">Altitude (MSL). Positive for up.</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (GNSS-specific MSL). Positive for up.</field>
       <field type="uint16_t" name="eph" invalid="UINT16_MAX" multiplier="1E-2">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="epv" invalid="UINT16_MAX" multiplier="1E-2">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="vel" units="cm/s" invalid="UINT16_MAX">GPS ground speed. If unknown, set to: UINT16_MAX</field>
@@ -6320,7 +6320,7 @@
       <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
-      <field type="int32_t" name="alt" units="mm">Altitude (MSL). Positive for up.</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (GNSS-specific MSL). Positive for up.</field>
       <field type="uint16_t" name="eph" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="epv" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="vel" units="cm/s" invalid="UINT16_MAX">GPS ground speed. If unknown, set to: UINT16_MAX</field>
@@ -6445,7 +6445,7 @@
       <field type="int32_t" name="lon" units="degE7">Longitude of SW corner of first grid</field>
       <field type="uint16_t" name="grid_spacing" units="m">Grid spacing</field>
       <field type="uint8_t" name="gridbit">bit within the terrain request mask</field>
-      <field type="int16_t[16]" name="data" units="m">Terrain data MSL</field>
+      <field type="int16_t[16]" name="data" units="m">Terrain data (GNSS-specific MSL)</field>
     </message>
     <message id="135" name="TERRAIN_CHECK">
       <description>Request that the vehicle report terrain height at the given location (expected response is a TERRAIN_REPORT). Used by GCS to check if vehicle has all terrain data needed for a mission.</description>
@@ -6457,7 +6457,7 @@
       <field type="int32_t" name="lat" units="degE7">Latitude</field>
       <field type="int32_t" name="lon" units="degE7">Longitude</field>
       <field type="uint16_t" name="spacing">grid spacing (zero if terrain at this location unavailable)</field>
-      <field type="float" name="terrain_height" units="m">Terrain height MSL</field>
+      <field type="float" name="terrain_height" units="m">Terrain height (GNSS-specific MSL)</field>
       <field type="float" name="current_height" units="m">Current vehicle height above lat/lon terrain height</field>
       <field type="uint16_t" name="pending">Number of 4x4 terrain blocks waiting to be received or read from disk</field>
       <field type="uint16_t" name="loaded">Number of 4x4 terrain blocks in memory</field>
@@ -6499,7 +6499,7 @@
       <description>The current system altitude.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="float" name="altitude_monotonic" units="m">This altitude measure is initialized on system boot and monotonic (it is never reset, but represents the local altitude change). The only guarantee on this field is that it will never be reset and is consistent within a flight. The recommended value for this field is the uncorrected barometric altitude at boot time. This altitude will also drift and vary between flights.</field>
-      <field type="float" name="altitude_amsl" units="m">This altitude measure is strictly above mean sea level and might be non-monotonic (it might reset on events like GPS lock or when a new QNH value is set). It should be the altitude to which global altitude waypoints are compared to. Note that it is *not* the GPS altitude, however, most GPS modules already output MSL by default and not the WGS84 altitude.</field>
+      <field type="float" name="altitude_amsl" units="m">This altitude measure is strictly above mean sea level and might be non-monotonic (it might reset on events like GPS lock or when a new QNH value is set). It should be the altitude to which global altitude waypoints are compared to.</field>
       <field type="float" name="altitude_local" units="m">This is the local altitude in the local coordinate frame. It is not the altitude above home, but in reference to the coordinate origin (0, 0, 0). It is up-positive.</field>
       <field type="float" name="altitude_relative" units="m">This is the altitude above the home position. It resets on each change of the current home position.</field>
       <field type="float" name="altitude_terrain" units="m">This is the altitude above terrain. It might be fed by a terrain database or an altimeter. Values smaller than -1000 should be interpreted as unknown.</field>
@@ -6688,7 +6688,7 @@
       <field type="float" name="wind_z" units="m/s" invalid="NaN">Wind in down (NED) direction (NAN if unknown)</field>
       <field type="float" name="var_horiz" units="m/s" invalid="NaN">Variability of wind in XY, 1-STD estimated from a 1 Hz lowpassed wind estimate (NAN if unknown)</field>
       <field type="float" name="var_vert" units="m/s" invalid="NaN">Variability of wind in Z, 1-STD estimated from a 1 Hz lowpassed wind estimate (NAN if unknown)</field>
-      <field type="float" name="wind_alt" units="m" invalid="NaN">Altitude (MSL) that this measurement was taken at (NAN if unknown)</field>
+      <field type="float" name="wind_alt" units="m" invalid="NaN">Altitude (GNSS-specific MSL) that this measurement was taken at (NAN if unknown)</field>
       <field type="float" name="horiz_accuracy" units="m/s" invalid="0">Horizontal speed 1-STD accuracy (0 if unknown)</field>
       <field type="float" name="vert_accuracy" units="m/s" invalid="0">Vertical speed 1-STD accuracy (0 if unknown)</field>
     </message>
@@ -6702,7 +6702,7 @@
       <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
-      <field type="float" name="alt" units="m">Altitude (MSL). Positive for up.</field>
+      <field type="float" name="alt" units="m">Altitude (GNSS-specific MSL). Positive for up.</field>
       <field type="float" name="hdop" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
       <field type="float" name="vdop" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX</field>
       <field type="float" name="vn" units="m/s">GPS velocity in north direction in earth-fixed NED frame</field>
@@ -6734,7 +6734,7 @@
       <field type="int16_t" name="heading_sp" units="cdeg">heading setpoint</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude</field>
-      <field type="int16_t" name="altitude_amsl" units="m">Altitude above mean sea level</field>
+      <field type="int16_t" name="altitude_amsl" units="m">Altitude above mean sea level (GNSS-specific MSL)</field>
       <field type="int16_t" name="altitude_sp" units="m">Altitude setpoint relative to the home position</field>
       <field type="uint8_t" name="airspeed" units="m/s">airspeed</field>
       <field type="uint8_t" name="airspeed_sp" units="m/s">airspeed setpoint</field>
@@ -6801,7 +6801,7 @@
       </description>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
-      <field type="int32_t" name="altitude" units="mm">Altitude (MSL). Positive for up.</field>
+      <field type="int32_t" name="altitude" units="mm">Altitude (GNSS-specific MSL). Positive for up.</field>
       <field type="float" name="x" units="m">Local X position of this position in the local coordinate frame (NED)</field>
       <field type="float" name="y" units="m">Local Y position of this position in the local coordinate frame (NED)</field>
       <field type="float" name="z" units="m">Local Z position of this position in the local coordinate frame (NED: positive "down")</field>
@@ -6830,7 +6830,7 @@
       <field type="uint8_t" name="target_system">System ID.</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
-      <field type="int32_t" name="altitude" units="mm">Altitude (MSL). Positive for up.</field>
+      <field type="int32_t" name="altitude" units="mm">Altitude (GNSS-specific MSL). Positive for up.</field>
       <field type="float" name="x" units="m">Local X position of this position in the local coordinate frame (NED)</field>
       <field type="float" name="y" units="m">Local Y position of this position in the local coordinate frame (NED)</field>
       <field type="float" name="z" units="m">Local Z position of this position in the local coordinate frame (NED: positive "down")</field>
@@ -7025,7 +7025,7 @@
       <field type="uint8_t" name="camera_id">Deprecated/unused. Component IDs are used to differentiate multiple cameras.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude where image was taken</field>
       <field type="int32_t" name="lon" units="degE7">Longitude where capture was taken</field>
-      <field type="int32_t" name="alt" units="mm">Altitude (MSL) where image was taken</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (GNSS-specific MSL) where image was taken</field>
       <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="int32_t" name="image_index">Zero based index of this image (i.e. a new image will have index CAMERA_CAPTURE_STATUS.image count -1)</field>
@@ -7116,10 +7116,10 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="int32_t" name="lat_camera" units="degE7" invalid="INT32_MAX">Latitude of camera (INT32_MAX if unknown).</field>
       <field type="int32_t" name="lon_camera" units="degE7" invalid="INT32_MAX">Longitude of camera (INT32_MAX if unknown).</field>
-      <field type="int32_t" name="alt_camera" units="mm" invalid="INT32_MAX">Altitude (MSL) of camera (INT32_MAX if unknown).</field>
+      <field type="int32_t" name="alt_camera" units="mm" invalid="INT32_MAX">Altitude (GNSS-specific MSL) of camera (INT32_MAX if unknown).</field>
       <field type="int32_t" name="lat_image" units="degE7" invalid="INT32_MAX">Latitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
       <field type="int32_t" name="lon_image" units="degE7" invalid="INT32_MAX">Longitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
-      <field type="int32_t" name="alt_image" units="mm" invalid="INT32_MAX">Altitude (MSL) of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
+      <field type="int32_t" name="alt_image" units="mm" invalid="INT32_MAX">Altitude (GNSS-specific MSL) of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).</field>
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float" name="hfov" units="deg" invalid="NaN">Horizontal field of view (NaN if unknown).</field>
       <field type="float" name="vfov" units="deg" invalid="NaN">Vertical field of view (NaN if unknown).</field>
@@ -7146,7 +7146,7 @@
       <field type="uint8_t" name="tracking_status" enum="CAMERA_TRACKING_STATUS_FLAGS">Current tracking status</field>
       <field type="int32_t" name="lat" units="degE7">Latitude of tracked object</field>
       <field type="int32_t" name="lon" units="degE7">Longitude of tracked object</field>
-      <field type="float" name="alt" units="m">Altitude of tracked object(AMSL, WGS84)</field>
+      <field type="float" name="alt" units="m">Altitude of tracked object(MSL, WGS84)</field>
       <field type="float" name="h_acc" units="m" invalid="NaN">Horizontal accuracy. NAN if unknown</field>
       <field type="float" name="v_acc" units="m" invalid="NaN">Vertical accuracy. NAN if unknown</field>
       <field type="float" name="vel_n" units="m/s" invalid="NaN">North velocity of tracked object. NAN if unknown</field>
