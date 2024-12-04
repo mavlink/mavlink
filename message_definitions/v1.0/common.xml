@@ -5276,8 +5276,8 @@
                 NOT the global position estimate of the system, but rather a RAW sensor value. See message GLOBAL_POSITION_INT for the global position estimate.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type.</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84, EGM96 ellipsoid)</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84, EGM96 ellipsoid)</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="int32_t" name="alt" units="mm">Altitude (GNSS-specific MSL). Positive for up. Note the MSL output from different GNSS modules may not be the same at a particular position.</field>
       <field type="uint16_t" name="eph" invalid="UINT16_MAX" multiplier="1E-2">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
       <field type="uint16_t" name="epv" invalid="UINT16_MAX" multiplier="1E-2">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
@@ -5285,7 +5285,7 @@
       <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
       <field type="uint8_t" name="satellites_visible" invalid="UINT8_MAX">Number of satellites visible. If unknown, set to UINT8_MAX</field>
       <extensions/>
-      <field type="int32_t" name="alt_ellipsoid" units="mm">Altitude (above WGS84, EGM96 ellipsoid). Positive for up.</field>
+      <field type="int32_t" name="alt_ellipsoid" units="mm">Altitude (positive above WGS84 ellipsoid).</field>
       <field type="uint32_t" name="h_acc" units="mm">Position uncertainty.</field>
       <field type="uint32_t" name="v_acc" units="mm">Altitude uncertainty.</field>
       <field type="uint32_t" name="vel_acc" units="mm/s">Speed uncertainty.</field>
@@ -6330,7 +6330,7 @@
       <field type="uint32_t" name="dgps_age" units="ms">Age of DGPS info</field>
       <extensions/>
       <field type="uint16_t" name="yaw" units="cdeg" invalid="0">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use UINT16_MAX if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
-      <field type="int32_t" name="alt_ellipsoid" units="mm">Altitude (above WGS84, EGM96 ellipsoid). Positive for up.</field>
+      <field type="int32_t" name="alt_ellipsoid" units="mm">Altitude (positive above WGS84 ellipsoid).</field>
       <field type="uint32_t" name="h_acc" units="mm">Position uncertainty.</field>
       <field type="uint32_t" name="v_acc" units="mm">Altitude uncertainty.</field>
       <field type="uint32_t" name="vel_acc" units="mm/s">Speed uncertainty.</field>
@@ -7146,7 +7146,7 @@
       <field type="uint8_t" name="tracking_status" enum="CAMERA_TRACKING_STATUS_FLAGS">Current tracking status</field>
       <field type="int32_t" name="lat" units="degE7">Latitude of tracked object</field>
       <field type="int32_t" name="lon" units="degE7">Longitude of tracked object</field>
-      <field type="float" name="alt" units="m">Altitude of tracked object(MSL, WGS84)</field>
+      <field type="float" name="alt" units="m">Altitude of tracked object (MSL, WGS84)</field>
       <field type="float" name="h_acc" units="m" invalid="NaN">Horizontal accuracy. NAN if unknown</field>
       <field type="float" name="v_acc" units="m" invalid="NaN">Vertical accuracy. NAN if unknown</field>
       <field type="float" name="vel_n" units="m/s" invalid="NaN">North velocity of tracked object. NAN if unknown</field>
