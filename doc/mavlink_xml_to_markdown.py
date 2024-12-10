@@ -710,9 +710,8 @@ class MAVEnumEntry(object):
 
     def getMarkdown(self, currentDialect):
         """Return markdown for an enum entry"""
-        deprString = f"{self.deprecated.getMarkdown()}" if self.deprecated else ""
-        if self.wip:
-            print(f"TODO: WIP in Enum Entry: {self.name}")
+        deprString = f"<br>{self.deprecated.getMarkdown()}" if self.deprecated else ""
+        wipString = f"<br>{self.wip.getMarkdown()}" if self.wip else ""
         importedNote = ""
         if self.basename is not currentDialect:
             importedNote = " — \[from: [{self.basename}](../messages/{self.basename}.md#{self.name})\]"
@@ -721,7 +720,7 @@ class MAVEnumEntry(object):
                 f"TODO/Debug: Check rendering - imported merged enum value {self.name}")
         desc = fix_add_implicit_links_items(tidyDescription(
             self.description, 'table')) if self.description else ""
-        string = f"<a id='{self.name}'></a>{self.value} | [{self.name}](#{self.name}) | {desc}{importedNote}{deprString} \n"
+        string = f"<a id='{self.name}'></a>{self.value} | [{self.name}](#{self.name}) | {desc}{importedNote}{wipString}{deprString} \n"
         return string
 
 
