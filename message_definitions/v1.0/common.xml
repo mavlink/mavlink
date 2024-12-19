@@ -1400,7 +1400,7 @@
       </entry>
       <entry value="176" name="MAV_CMD_DO_SET_MODE" hasLocation="false" isDestination="false">
         <description>Set system mode.</description>
-        <param index="1" label="Mode" enum="MAV_MODE">Mode</param>
+        <param index="1" label="Mode" enum="MAV_MODE_FLAG">Mode flags.</param>
         <param index="2" label="Custom Mode">Custom mode - this is system specific, please refer to the individual autopilot specifications for details.</param>
         <param index="3" label="Custom Submode">Custom sub mode - this is system specific, please refer to the individual autopilot specifications for details.</param>
         <param index="4">Empty</param>
@@ -5235,7 +5235,7 @@
       <deprecated since="2015-12" replaced_by="MAV_CMD_DO_SET_MODE">Use COMMAND_LONG with MAV_CMD_DO_SET_MODE instead</deprecated>
       <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
       <field type="uint8_t" name="target_system">The system setting the mode</field>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE">The new base mode.</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG">The new base mode.</field>
       <field type="uint32_t" name="custom_mode">The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
     </message>
     <!-- IDs 15-17 reserved for PARAM_VALUE_UNION and other param messages -->
@@ -5985,8 +5985,8 @@
       <field type="float" name="aux2">Aux 2, -1 .. 1</field>
       <field type="float" name="aux3">Aux 3, -1 .. 1</field>
       <field type="float" name="aux4">Aux 4, -1 .. 1</field>
-      <field type="uint8_t" name="mode" enum="MAV_MODE">System mode.</field>
-      <field type="uint8_t" name="nav_mode">Navigation mode (MAV_NAV_MODE)</field>
+      <field type="uint8_t" name="mode" enum="MAV_MODE_FLAG">System mode.</field>
+      <field type="uint8_t" name="nav_mode">Navigation mode.</field>
     </message>
     <message id="92" name="HIL_RC_INPUTS_RAW">
       <description>Sent from simulation to autopilot. The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.</description>
