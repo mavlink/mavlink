@@ -7,6 +7,12 @@
   <dialect>0</dialect>
   <enums>
     <enum name="MAV_CMD">
+      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
+        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
+        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
+        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
+        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
+      </entry>
       <entry value="2006" name="MAV_CMD_CAMERA_TRACK_OBJECT" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
@@ -88,8 +94,118 @@
         <description>Decision to deny the handoff request and keep control ownership.</description>
       </entry>
     </enum>
+    <!-- Transactions for parameter protocol -->
+    <enum name="PARAM_TRANSACTION_TRANSPORT">
+      <description>Possible transport layers to set and get parameters via mavlink during a parameter transaction.</description>
+      <entry value="0" name="PARAM_TRANSACTION_TRANSPORT_PARAM">
+        <description>Transaction over param transport.</description>
+      </entry>
+      <entry value="1" name="PARAM_TRANSACTION_TRANSPORT_PARAM_EXT">
+        <description>Transaction over param_ext transport.</description>
+      </entry>
+    </enum>
+    <enum name="PARAM_TRANSACTION_ACTION">
+      <description>Possible parameter transaction actions.</description>
+      <entry value="0" name="PARAM_TRANSACTION_ACTION_START">
+        <description>Commit the current parameter transaction.</description>
+      </entry>
+      <entry value="1" name="PARAM_TRANSACTION_ACTION_COMMIT">
+        <description>Commit the current parameter transaction.</description>
+      </entry>
+      <entry value="2" name="PARAM_TRANSACTION_ACTION_CANCEL">
+        <description>Cancel the current parameter transaction.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
+    <!-- Transactions for parameter protocol -->
+    <message id="19" name="PARAM_ACK_TRANSACTION">
+      <description>Response from a PARAM_SET message when it is used in a transaction.</description>
+      <field type="uint8_t" name="target_system">Id of system that sent PARAM_SET message.</field>
+      <field type="uint8_t" name="target_component">Id of system that sent PARAM_SET message.</field>
+      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Parameter value (new value if PARAM_ACCEPTED, current value otherwise)</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type.</field>
+      <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
+    </message>
+    <message id="447" name="BEACON_POSITION">
+      <description>Position of and distance to a Beacon.
+      </description>
+      <field type="uint32_t" name="beacon_id">Unique Beacon ID</field>
+      <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84), in degrees * 1E7</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84), in degrees * 1E7</field>
+      <field type="float" name="altitude" units="m">Altitude (MSL), in meters</field>
+      <field type="float" name="distance" units="m">Distance to the Beacon, in meters</field>
+      <field type="int32_t" name="delay" units="ms">Time between generating the value and request, in milliseconds</field>
+      <field type="uint8_t" name="gps_status">Status indicating the quality of the GPS Data. 0=invalid 1=lat long valid, alt invalid 2=valid</field>
+      <field type="int32_t" name="link_quality">Value indicating the Signal to noise ratio (in units of dB)</field>
+    </message>
+    <message id="460" name="RADIATION_DETECTOR_COUNTS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Radiation Detector counts/sec</description>
+      <field type="uint32_t" name="serial_no">Detector serial number</field>
+      <field type="double" name="timestamp" units="s">Timestamp of measurement(UNIX Epoch time or time since detector boot)</field>
+      <field type="uint64_t" name="counts">Accumulated detector counts</field>
+      <field type="uint32_t" name="rate"> Detector count in the current dt integration period.</field>
+      <field type="uint64_t" name="integration_time_usec" units="us">Integration period</field>
+    </message>
+    <message id="461" name="RADIATION_DETECTOR_SPECTRUM">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Radiation Detector Energy Spectrum</description>
+      <field type="uint32_t" name="serial_no">Detector serial number</field>
+      <field type="uint8_t" name="msg_no">Message number [0;255]</field>
+      <field type="uint8_t" name="seq_no">Sequence number [0;127]</field>
+      <field type="uint8_t[249]" name="segment">One segment of a spectrum PDU</field>
+    </message>
+    <message id="462" name="RADIATION_DETECTOR_CPS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Radiation Detector counts/sec</description>
+      <field type="uint32_t" name="serial_no">Detector serial number</field>
+      <field type="double" name="timestamp" units="s">Time of data measurement</field>
+      <field type="uint32_t" name="cps">Detector value scaled by factor</field>
+      <field type="float" name="dt" units="s">delta-t integration period</field>
+    </message>
+    <message id="500" name="TRACKER_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Current status of the tracker. This message should be broadcast a low regular rate e.g. 1 Hz.</description>
+      <field type="uint8_t" name="tracker_status"> </field>
+      <field type="uint16_t" name="number_objects_detected"> Number of objects currently detected.</field>
+      <field type="uint32_t" name="tracked_object_id"> The UID of the object currently being tracked.</field>
+    </message>
+    <message id="501" name="TRACKER_DETECTION_2D">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Contains information on an object detection in a video stream. Note that the video frame (image) ID must uniquely identify the same frame on all receiving devices. </description>
+      <field type="uint64_t" name="img_ts" units="us"> Time stamp of the image.</field>
+      <field type="uint64_t" name="img_id"> Unique ID specifiying the video frame (image) in the message sender video stream.</field>
+      <field type="uint32_t" name="object_id"> Unique ID representing the object. </field>
+      <field type="uint32_t" name="class_id"> Unique ID specifiying the class of the object.</field>
+      <field type="uint8_t" name="tracking_status"> 0: not tracked, 1: tracked.</field>
+      <field type="uint8_t" name="confidence" units="%"> Confidence score in the range of [0, 100] for the classifcation.</field>
+      <field type="uint16_t" name="bbox_top_left_x" units="c%"> Relative image x coordinate (left to right axis) in the range of [0.00, 100.00] describing the top left corner of the bounding box .</field>
+      <field type="uint16_t" name="bbox_top_left_y" units="c%"> Relative image y coordinate (top to bottom axis) in the range of [0.00, 100.00] describing the top left corner of the bounding box.</field>
+      <field type="uint16_t" name="bbox_bot_right_x" units="c%"> Relative image x coordinate (left to right axis) in the range of [0.00, 100.00] describing the bottom right corner of the bounding box.</field>
+      <field type="uint16_t" name="bbox_bot_right_y" units="c%"> Relative image y coordinate (top to bottom axis) in the range of [0.00, 100.00] describing the bottom left corner of the bounding box.</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="UINT32_MAX"> Latitude in WGS84 coordinate frame of the detected object. NAN if unknown.</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="UINT32_MAX"> Longitude in WGS84 coordinate frame of the detected object. NAN if unknown.</field>
+      <field type="float" name="alt" units="m" invalid="[NaN:]"> Altitude in EGM96 coordiante frame of the detected object. NAN if unknown.</field>
+      <field type="float" name="vel_n" units="m/s" invalid="[NaN:]"> North velocity of the object in global frame. NAN if unknown.</field>
+      <field type="float" name="vel_e" units="m/s" invalid="[NaN:]"> East velocity of the object in global frame. NAN if unknown.</field>
+      <field type="float" name="vel_up" units="m/s" invalid="[NaN:]"> Up velocity of the object in global frame. NAN if unknown.</field>
+    </message>
+    <message id="513" name="JOYSTICK_STATE">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>State of all axes and buttons of a mavlink joystick</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc.), MAV_TYPE_JOYSTICK = 43</field>
+      <field type="uint16_t[10]" name="axis_value" invalid="[UINT16_MAX]">Value of each joystick axis</field>
+      <field type="uint8_t[20]" name="button_value" invalid="[UINT8_MAX]">Value of each joystick button</field>
+    </message>
     <message id="13000" name="MOTOR_INFO">
       <description> Contains information about a motor. </description>
       <field type="uint8_t" name="index"> Motor index number starting with index 1. 0 if unknown. </field>
@@ -143,89 +259,11 @@
       <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff.</field>
       <field type="uint8_t" name="handoff_decision" enum="HANDOFF_DECISION">Control target decision.</field>
     </message>
-    <message id="447" name="BEACON_POSITION">
-      <description>Position of and distance to a Beacon.
-      </description>
-      <field type="uint32_t" name="beacon_id">Unique Beacon ID</field>
-      <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84), in degrees * 1E7</field>
-      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84), in degrees * 1E7</field>
-      <field type="float" name="altitude" units="m">Altitude (MSL), in meters</field>
-      <field type="float" name="distance" units="m">Distance to the Beacon, in meters</field>
-      <field type="int32_t" name="delay" units="ms">Time between generating the value and request, in milliseconds</field>
-      <field type="uint8_t" name="gps_status">Status indicating the quality of the GPS Data. 0=invalid 1=lat long valid, alt invalid 2=valid</field>
-      <field type="int32_t" name="link_quality">Value indicating the Signal to noise ratio (in units of dB)</field>
-    </message>
-    <message id="460" name="RADIATION_DETECTOR_COUNTS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Radiation Detector counts/sec</description>
-      <field type="uint32_t" name="serial_no">Detector serial number</field>
-      <field type="double" name="timestamp" units="s">Timestamp of measurement(UNIX Epoch time or time since detector boot)</field>
-      <field type="uint64_t" name="counts">Accumulated detector counts</field>
-      <field type="uint32_t" name="rate"> Detector count in the current dt integration period.</field>
-      <field type="uint64_t" name="integration_time_usec" units="us">Integration period</field>
-    </message>
-    <message id="461" name="RADIATION_DETECTOR_SPECTRUM">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Radiation Detector Energy Spectrum</description>
-      <field type="uint32_t" name="serial_no">Detector serial number</field>
-      <field type="uint8_t" name="msg_no">Message number [0;255]</field>
-      <field type="uint8_t" name="seq_no">Sequence number [0;127]</field>
-      <field type="uint8_t[249]" name="segment">One segment of a spectrum PDU</field>
-    </message>
-    <message id="462" name="RADIATION_DETECTOR_CPS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Radiation Detector counts/sec</description>
-      <field type="uint32_t" name="serial_no">Detector serial number</field>
-      <field type="double" name="timestamp" units="s">Time of data measurement</field>
-      <field type="uint32_t" name="cps">Detector value scaled by factor</field>
-      <field type="float" name="dt" units="s">delta-t integration period</field>
-    </message>
     <message id="13470" name="UNIQUE_IDENTIFIER">
       <description>Unique identifier message to uniquely identify different GCS and systems using an 256 bit uuid. The uuid can be randomly generated an stored for the relevant systems.
       Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=13470.
       </description>
       <field type="char[32]" name="uuid">uuid of the sender.</field>
-    </message>
-    <message id="500" name="TRACKER_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Current status of the tracker. This message should be broadcast a low regular rate e.g. 1 Hz.</description>
-      <field type="uint8_t" name="tracker_status"> </field>
-      <field type="uint16_t" name="number_objects_detected"> Number of objects currently detected.</field>
-      <field type="uint32_t" name="tracked_object_id"> The UID of the object currently being tracked.</field>
-    </message>
-    <message id="501" name="TRACKER_DETECTION_2D">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Contains information on an object detection in a video stream. Note that the video frame (image) ID must uniquely identify the same frame on all receiving devices. </description>
-      <field type="uint64_t" name="img_ts" units="us"> Time stamp of the image.</field>
-      <field type="uint64_t" name="img_id"> Unique ID specifiying the video frame (image) in the message sender video stream.</field>
-      <field type="uint32_t" name="object_id"> Unique ID representing the object. </field>
-      <field type="uint32_t" name="class_id"> Unique ID specifiying the class of the object.</field>
-      <field type="uint8_t" name="tracking_status"> 0: not tracked, 1: tracked.</field>
-      <field type="uint8_t" name="confidence" units="%"> Confidence score in the range of [0, 100] for the classifcation.</field>
-      <field type="uint16_t" name="bbox_top_left_x" units="c%"> Relative image x coordinate (left to right axis) in the range of [0.00, 100.00] describing the top left corner of the bounding box .</field>
-      <field type="uint16_t" name="bbox_top_left_y" units="c%"> Relative image y coordinate (top to bottom axis) in the range of [0.00, 100.00] describing the top left corner of the bounding box.</field>
-      <field type="uint16_t" name="bbox_bot_right_x" units="c%"> Relative image x coordinate (left to right axis) in the range of [0.00, 100.00] describing the bottom right corner of the bounding box.</field>
-      <field type="uint16_t" name="bbox_bot_right_y" units="c%"> Relative image y coordinate (top to bottom axis) in the range of [0.00, 100.00] describing the bottom left corner of the bounding box.</field>
-      <field type="int32_t" name="lat" units="degE7" invalid="UINT32_MAX"> Latitude in WGS84 coordinate frame of the detected object. NAN if unknown.</field>
-      <field type="int32_t" name="lon" units="degE7" invalid="UINT32_MAX"> Longitude in WGS84 coordinate frame of the detected object. NAN if unknown.</field>
-      <field type="float" name="alt" units="m" invalid="[NaN:]"> Altitude in EGM96 coordiante frame of the detected object. NAN if unknown.</field>
-      <field type="float" name="vel_n" units="m/s" invalid="[NaN:]"> North velocity of the object in global frame. NAN if unknown.</field>
-      <field type="float" name="vel_e" units="m/s" invalid="[NaN:]"> East velocity of the object in global frame. NAN if unknown.</field>
-      <field type="float" name="vel_up" units="m/s" invalid="[NaN:]"> Up velocity of the object in global frame. NAN if unknown.</field>
-    </message>
-    <message id="513" name="JOYSTICK_STATE">
-      <wip/>
-      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>State of all axes and buttons of a mavlink joystick</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc.), MAV_TYPE_JOYSTICK = 43</field>
-      <field type="uint16_t[10]" name="axis_value" invalid="[UINT16_MAX]">Value of each joystick axis</field>
-      <field type="uint8_t[20]" name="button_value" invalid="[UINT8_MAX]">Value of each joystick button</field>
     </message>
   </messages>
 </mavlink>
