@@ -1553,9 +1553,15 @@
         <param index="7" label="Altitude" units="m">Altitudee. 0: not used.</param>
       </entry>
       <entry value="189" name="MAV_CMD_DO_LAND_START" hasLocation="true" isDestination="false">
-        <description>Mission command to perform a landing. This is used as a marker in a mission to tell the autopilot where a sequence of mission items that represents a landing starts.
-	  It may also be sent via a COMMAND_LONG to trigger a landing, in which case the nearest (geographically) landing sequence in the mission will be used.
-	  The Latitude/Longitude/Altitude is optional, and may be set to 0 if not needed. If specified then it will be used to help find the closest landing sequence.
+        <description>Command to perform a landing defined in a mission and/or mission command to mark the start of a sequence of mission items that represents a landing.
+
+	  As a mission command this is purely a marker for the start of the landing sequence: the lat/lon/altitude are ignored.
+	  Note that starting point of the landing sequence is defined by the navigation item that follows this item.
+
+	  As a command it can be sent in a COMMAND_INT to trigger a mission landing.
+	  The Latitude/Longitude/Altitude can be used to select a particular mission landing sequence if multiple landing sequences are present in the mission.
+	  If set, the flight stack will select the landing sequence that starts closest to the indicated point.
+	  If set to 0, the flight stack will select the closest landing sequence to the vehicle.
 	</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
