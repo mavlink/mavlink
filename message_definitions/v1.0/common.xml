@@ -1960,7 +1960,7 @@
       </entry>
       <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" hasLocation="false" isDestination="false">
         <description>Enable the specified standard MAVLink mode.
-          If the mode is not supported the vehicle should ACK with MAV_RESULT_FAILED.
+          If the specified mode is not supported, the vehicle should ACK with MAV_RESULT_FAILED.
         </description>
         <param index="1" label="Standard Mode" enum="MAV_STANDARD_MODE">The mode to set.</param>
         <param index="2" reserved="true" default="0"/>
@@ -5178,7 +5178,8 @@
     <enum name="MAV_STANDARD_MODE">
       <description>Standard modes with a well understood meaning across flight stacks and vehicle types.
         For example, most flight stack have the concept of a "return" or "RTL" mode that takes a vehicle to safety, even though the precise mechanics of this mode may differ.
-        Modes may be set using MAV_CMD_DO_SET_STANDARD_MODE.
+        The modes supported by a flight stack can be queried using AVAILABLE_MODES and set using MAV_CMD_DO_SET_STANDARD_MODE.
+        The current mode is streamed in CURRENT_MODE.
       </description>
       <entry value="0" name="MAV_STANDARD_MODE_NON_STANDARD">
         <description>Non standard mode.
