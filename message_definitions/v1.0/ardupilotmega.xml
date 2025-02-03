@@ -4,6 +4,7 @@
   <!-- Vendors -->
   <include>uAvionix.xml</include>
   <include>icarous.xml</include>
+  <include>loweheiser.xml</include>
   <include>cubepilot.xml</include>
   <include>csAirLink.xml</include>
   <dialect>2</dialect>
@@ -22,6 +23,7 @@
     <enum name="HEADING_TYPE">
       <entry value="0" name="HEADING_TYPE_COURSE_OVER_GROUND"/>
       <entry value="1" name="HEADING_TYPE_HEADING"/>
+      <entry value="2" name="HEADING_TYPE_DEFAULT"/>
     </enum>
     <!-- ardupilot specific MAV_CMD_* commands -->
     <enum name="MAV_CMD">
@@ -285,8 +287,8 @@
         <param index="2" label="timeout" units="s">timeout for operation in seconds. Zero means no timeout (0 to 255)</param>
         <param index="3" label="arg1">argument1.</param>
         <param index="4" label="arg2">argument2.</param>
-        <param index="5">Empty</param>
-        <param index="6">Empty</param>
+        <param index="5" label="arg3">argument3.</param>
+        <param index="6" label="arg4">argument4.</param>
         <param index="7">Empty</param>
       </entry>
       <entry value="42703" name="MAV_CMD_NAV_ATTITUDE_TIME" hasLocation="false" isDestination="false">
@@ -313,7 +315,7 @@
         <description>Change target altitude at a given rate. This slews the vehicle at a controllable rate between it's previous altitude and the new one. (affects GUIDED only. Outside GUIDED, aircraft ignores these commands. Designed for onboard companion-computer command-and-control, not normally operator/GCS control.)</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
-        <param index="3" label="alt rate-of-change" units="m/s/s" minValue="0">Rate of change, toward new altitude. 0 for maximum rate change. Positive numbers only, as negative numbers will not converge on the new target alt.</param>
+        <param index="3" label="alt rate-of-change" units="m/s" minValue="0">Rate of change, toward new altitude. 0 for maximum rate change. Positive numbers only, as negative numbers will not converge on the new target alt.</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
@@ -330,6 +332,16 @@
         <param index="7">Empty</param>
       </entry>
       <!-- 43003 MAV_CMD_EXTERNAL_POSITION_ESTIMATE moved to common.xml -->
+      <entry value="43005" name="MAV_CMD_SET_HAGL" hasLocation="false" isDestination="false">
+        <description>Provide a value for height above ground level. This can be used for things like fixed wing and VTOL landing.</description>
+        <param index="1" label="hagl" units="m">Height above ground level.</param>
+        <param index="2" label="accuracy" units="m">estimated one standard deviation accuracy of the measurement. Set to NaN if not known.</param>
+        <param index="3" label="timeout" units="s">Timeout for this data. The flight controller should only consider this data valid within the timeout window.</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
     </enum>
     <enum name="SCRIPTING_CMD">
       <entry value="0" name="SCRIPTING_CMD_REPL_START">
@@ -343,6 +355,32 @@
       </entry>
       <entry value="3" name="SCRIPTING_CMD_STOP_AND_RESTART">
         <description>Stop execution of scripts and restart.</description>
+      </entry>
+    </enum>
+    <enum name="SECURE_COMMAND_OP">
+      <entry value="0" name="SECURE_COMMAND_GET_SESSION_KEY">
+        <description>Get an 8 byte session key which is used for remote secure updates which operate on flight controller data such as bootloader public keys. Return data will be 8 bytes on success. The session key remains valid until either the flight controller reboots or another SECURE_COMMAND_GET_SESSION_KEY is run.</description>
+      </entry>
+      <entry value="1" name="SECURE_COMMAND_GET_REMOTEID_SESSION_KEY">
+        <description>Get an 8 byte session key which is used for remote secure updates which operate on RemoteID module data. Return data will be 8 bytes on success. The session key remains valid until either the remote ID module reboots or another SECURE_COMMAND_GET_REMOTEID_SESSION_KEY is run.</description>
+      </entry>
+      <entry value="2" name="SECURE_COMMAND_REMOVE_PUBLIC_KEYS">
+        <description>Remove range of public keys from the bootloader. Command data consists of two bytes, first byte if index of first public key to remove. Second byte is the number of keys to remove. If all keys are removed then secure boot is disabled and insecure firmware can be loaded.</description>
+      </entry>
+      <entry value="3" name="SECURE_COMMAND_GET_PUBLIC_KEYS">
+        <description>Get current public keys from the bootloader. Command data consists of two bytes, first byte is index of first public key to fetch, 2nd byte is number of keys to fetch. Total data needs to fit in data portion of reply (max 6 keys for 32 byte keys). Reply data has the index of the first key in the first byte, followed by the keys. Returned keys may be less than the number of keys requested if there are less keys installed than requested.</description>
+      </entry>
+      <entry value="4" name="SECURE_COMMAND_SET_PUBLIC_KEYS">
+        <description>Set current public keys in the bootloader. Data consists of a one byte public key index followed by the public keys. With 32 byte keys this allows for up to 6 keys to be set in one request. Keys outside of the range that is being set will remain unchanged.</description>
+      </entry>
+      <entry value="5" name="SECURE_COMMAND_GET_REMOTEID_CONFIG">
+        <description>Get config data for remote ID module. This command should be sent to the component ID of the flight controller which will forward it to the RemoteID module either over mavlink or DroneCAN. Data format is specific to the RemoteID implementation, see RemoteID firmware documentation for details.</description>
+      </entry>
+      <entry value="6" name="SECURE_COMMAND_SET_REMOTEID_CONFIG">
+        <description>Set config data for remote ID module. This command should be sent to the component ID of the flight controller which will forward it to the RemoteID module either over mavlink or DroneCAN. Data format is specific to the RemoteID implementation, see RemoteID firmware documentation for details.</description>
+      </entry>
+      <entry value="7" name="SECURE_COMMAND_FLASH_BOOTLOADER">
+        <description>Flash bootloader from local storage. Data is the filename to use for the bootloader. This is intended to be used with MAVFtp to upload a new bootloader to a microSD before flashing.</description>
       </entry>
     </enum>
     <!-- AP_Limits Enums -->
@@ -386,6 +424,12 @@
       </entry>
       <entry value="2" name="LAND_IMMEDIATELY">
         <description>Flag set when plane is to immediately descend to break altitude and land without GCS intervention. Flag not set when plane is to loiter at Rally point until commanded to land.</description>
+      </entry>
+      <entry value="4" name="ALT_FRAME_VALID">
+        <description>True if the following altitude frame value is valid.</description>
+      </entry>
+      <entry value="24" name="ALT_FRAME">
+        <description>2 bit value representing altitude frame. 0: absolute, 1: relative home, 2: relative origin, 3: relative terrain</description>
       </entry>
     </enum>
     <!-- Camera event types -->
@@ -946,6 +990,9 @@
       <entry value="512" name="EKF_PRED_POS_HORIZ_ABS">
         <description>Set if EKF's predicted horizontal position (absolute) estimate is good.</description>
       </entry>
+      <entry value="32768" name="EKF_GPS_GLITCHING">
+        <description>Set if EKF believes the GPS input data is faulty.</description>
+      </entry>
       <entry value="1024" name="EKF_UNINITIALIZED">
         <description>Set if EKF has never been healthy.</description>
       </entry>
@@ -1126,6 +1173,7 @@
   </enums>
   <messages>
     <message id="150" name="SENSOR_OFFSETS">
+      <deprecated since="2022-02" replaced_by="MAG_CAL_REPORT, Accel Parameters, and Gyro Parameters"/>
       <description>Offsets and calibrations values for hardware sensors. This makes it easier to debug the calibration process.</description>
       <field type="int16_t" name="mag_ofs_x">Magnetometer X offset.</field>
       <field type="int16_t" name="mag_ofs_y">Magnetometer Y offset.</field>
@@ -1639,6 +1687,24 @@
       <field type="uint32_t" name="request_id">Request ID - copied from request.</field>
       <field type="uint8_t" name="result">0 for success, anything else is failure code.</field>
     </message>
+    <message id="11004" name="SECURE_COMMAND">
+      <description>Send a secure command. Data should be signed with a private key corresponding with a public key known to the recipient. Signature should be over the concatenation of the sequence number (little-endian format), the operation (little-endian format) the data and the session key. For SECURE_COMMAND_GET_SESSION_KEY the session key should be zero length. The data array consists of the data followed by the signature. The sum of the data_length and the sig_length cannot be more than 220. The format of the data is command specific.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint32_t" name="sequence">Sequence ID for tagging reply.</field>
+      <field type="uint32_t" name="operation" enum="SECURE_COMMAND_OP">Operation being requested.</field>
+      <field type="uint8_t" name="data_length">Data length.</field>
+      <field type="uint8_t" name="sig_length">Signature length.</field>
+      <field type="uint8_t[220]" name="data">Signed data.</field>
+    </message>
+    <message id="11005" name="SECURE_COMMAND_REPLY">
+      <description>Reply from secure command.</description>
+      <field type="uint32_t" name="sequence">Sequence ID from request.</field>
+      <field type="uint32_t" name="operation" enum="SECURE_COMMAND_OP">Operation that was requested.</field>
+      <field type="uint8_t" name="result" enum="MAV_RESULT">Result of command.</field>
+      <field type="uint8_t" name="data_length">Data length.</field>
+      <field type="uint8_t[220]" name="data">Reply data.</field>
+    </message>
     <!-- realtime Adaptive Controller tuning message -->
     <message id="11010" name="ADAP_TUNING">
       <description>Adaptive Controller tuning information.</description>
@@ -1736,7 +1802,6 @@
       <field type="float" name="increment">OSD parameter increment.</field>
     </message>
     <message id="11037" name="OBSTACLE_DISTANCE_3D">
-      <wip/>
       <!-- This message is work-in-progress and it can therefore change, and should NOT be used in stable production environments -->
       <description>Obstacle located as a 3D vector.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
@@ -1770,6 +1835,51 @@
       <field type="uint16_t" name="MCU_voltage" units="mV">MCU voltage</field>
       <field type="uint16_t" name="MCU_voltage_min" units="mV">MCU voltage minimum</field>
       <field type="uint16_t" name="MCU_voltage_max" units="mV">MCU voltage maximum</field>
+    </message>
+    <message id="11040" name="ESC_TELEMETRY_13_TO_16">
+      <description>ESC Telemetry Data for ESCs 13 to 16, matching data sent by BLHeli ESCs.</description>
+      <field type="uint8_t[4]" name="temperature" units="degC">Temperature.</field>
+      <field type="uint16_t[4]" name="voltage" units="cV">Voltage.</field>
+      <field type="uint16_t[4]" name="current" units="cA">Current.</field>
+      <field type="uint16_t[4]" name="totalcurrent" units="mAh">Total current.</field>
+      <field type="uint16_t[4]" name="rpm" units="rpm">RPM (eRPM).</field>
+      <field type="uint16_t[4]" name="count">count of telemetry packets received (wraps at 65535).</field>
+    </message>
+    <message id="11041" name="ESC_TELEMETRY_17_TO_20">
+      <description>ESC Telemetry Data for ESCs 17 to 20, matching data sent by BLHeli ESCs.</description>
+      <field type="uint8_t[4]" name="temperature" units="degC">Temperature.</field>
+      <field type="uint16_t[4]" name="voltage" units="cV">Voltage.</field>
+      <field type="uint16_t[4]" name="current" units="cA">Current.</field>
+      <field type="uint16_t[4]" name="totalcurrent" units="mAh">Total current.</field>
+      <field type="uint16_t[4]" name="rpm" units="rpm">RPM (eRPM).</field>
+      <field type="uint16_t[4]" name="count">count of telemetry packets received (wraps at 65535).</field>
+    </message>
+    <message id="11042" name="ESC_TELEMETRY_21_TO_24">
+      <description>ESC Telemetry Data for ESCs 21 to 24, matching data sent by BLHeli ESCs.</description>
+      <field type="uint8_t[4]" name="temperature" units="degC">Temperature.</field>
+      <field type="uint16_t[4]" name="voltage" units="cV">Voltage.</field>
+      <field type="uint16_t[4]" name="current" units="cA">Current.</field>
+      <field type="uint16_t[4]" name="totalcurrent" units="mAh">Total current.</field>
+      <field type="uint16_t[4]" name="rpm" units="rpm">RPM (eRPM).</field>
+      <field type="uint16_t[4]" name="count">count of telemetry packets received (wraps at 65535).</field>
+    </message>
+    <message id="11043" name="ESC_TELEMETRY_25_TO_28">
+      <description>ESC Telemetry Data for ESCs 25 to 28, matching data sent by BLHeli ESCs.</description>
+      <field type="uint8_t[4]" name="temperature" units="degC">Temperature.</field>
+      <field type="uint16_t[4]" name="voltage" units="cV">Voltage.</field>
+      <field type="uint16_t[4]" name="current" units="cA">Current.</field>
+      <field type="uint16_t[4]" name="totalcurrent" units="mAh">Total current.</field>
+      <field type="uint16_t[4]" name="rpm" units="rpm">RPM (eRPM).</field>
+      <field type="uint16_t[4]" name="count">count of telemetry packets received (wraps at 65535).</field>
+    </message>
+    <message id="11044" name="ESC_TELEMETRY_29_TO_32">
+      <description>ESC Telemetry Data for ESCs 29 to 32, matching data sent by BLHeli ESCs.</description>
+      <field type="uint8_t[4]" name="temperature" units="degC">Temperature.</field>
+      <field type="uint16_t[4]" name="voltage" units="cV">Voltage.</field>
+      <field type="uint16_t[4]" name="current" units="cA">Current.</field>
+      <field type="uint16_t[4]" name="totalcurrent" units="mAh">Total current.</field>
+      <field type="uint16_t[4]" name="rpm" units="rpm">RPM (eRPM).</field>
+      <field type="uint16_t[4]" name="count">count of telemetry packets received (wraps at 65535).</field>
     </message>
   </messages>
 </mavlink>
