@@ -83,6 +83,7 @@
       </entry>
     </enum>
     <enum name="MAV_MODE">
+      <deprecated since="2025-02" replaced_by="MAV_MODE_FLAG">Using MAV_MODE to set modes is less predictable than using standard modes (MAV_STANDARD_MODE) or custom modes (MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).</deprecated>
       <description>Predefined OR-combined MAV_MODE_FLAG values. These can simplify using the flags when setting modes. Note that manual input is enabled in all modes as a safety override.</description>
       <entry value="0" name="MAV_MODE_PREFLIGHT">
         <description>System is not ready to fly, booting, calibrating, etc. No flag is set.</description>
@@ -1399,7 +1400,7 @@
       </entry>
       <entry value="176" name="MAV_CMD_DO_SET_MODE" hasLocation="false" isDestination="false">
         <description>Set system mode.</description>
-        <param index="1" label="Mode" enum="MAV_MODE_FLAG">Mode flags. MAV_MODE values can be used to set useful mode flag combinations.</param>
+        <param index="1" label="Mode" enum="MAV_MODE_FLAG">Mode flags. MAV_MODE values can be used to set some mode flag combinations.</param>
         <param index="2" label="Custom Mode">Custom system-specific mode (see target autopilot specifications for mode information). If MAV_MODE_FLAG_CUSTOM_MODE_ENABLED is set in param1 (mode) this mode is used: otherwise the field is ignored.</param>
         <param index="3" label="Custom Submode">Custom sub mode - this is system specific, please refer to the individual autopilot specifications for details.</param>
         <param index="4">Empty</param>
