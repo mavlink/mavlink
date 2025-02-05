@@ -83,40 +83,39 @@
       </entry>
     </enum>
     <enum name="MAV_MODE">
-      <description>These defines are predefined OR-combined mode flags. There is no need to use values from this enum, but it
-               simplifies the use of the mode flags. Note that manual input is enabled in all modes as a safety override.</description>
+      <description>Predefined OR-combined MAV_MODE_FLAG values. These can simplify using the flags when setting modes. Note that manual input is enabled in all modes as a safety override.</description>
       <entry value="0" name="MAV_MODE_PREFLIGHT">
         <description>System is not ready to fly, booting, calibrating, etc. No flag is set.</description>
       </entry>
       <entry value="80" name="MAV_MODE_STABILIZE_DISARMED">
-        <description>System is allowed to be active, under assisted RC control.</description>
+        <description>System is allowed to be active, under assisted RC control (MAV_MODE_FLAG_SAFETY_ARMED, MAV_MODE_FLAG_STABILIZE_ENABLED)</description>
       </entry>
       <entry value="208" name="MAV_MODE_STABILIZE_ARMED">
-        <description>System is allowed to be active, under assisted RC control.</description>
+        <description>System is allowed to be active, under assisted RC control (MAV_MODE_FLAG_SAFETY_ARMED, MAV_MODE_FLAG_MANUAL_INPUT_ENABLED, MAV_MODE_FLAG_STABILIZE_ENABLED)</description>
       </entry>
       <entry value="64" name="MAV_MODE_MANUAL_DISARMED">
-        <description>System is allowed to be active, under manual (RC) control, no stabilization</description>
+        <description>System is allowed to be active, under manual (RC) control, no stabilization (MAV_MODE_FLAG_MANUAL_INPUT_ENABLED)</description>
       </entry>
       <entry value="192" name="MAV_MODE_MANUAL_ARMED">
-        <description>System is allowed to be active, under manual (RC) control, no stabilization</description>
+        <description>System is allowed to be active, under manual (RC) control, no stabilization (MAV_MODE_FLAG_SAFETY_ARMED, MAV_MODE_FLAG_MANUAL_INPUT_ENABLED)</description>
       </entry>
       <entry value="88" name="MAV_MODE_GUIDED_DISARMED">
-        <description>System is allowed to be active, under autonomous control, manual setpoint</description>
+        <description>System is allowed to be active, under autonomous control, manual setpoint (MAV_MODE_FLAG_SAFETY_ARMED, MAV_MODE_FLAG_STABILIZE_ENABLED, MAV_MODE_FLAG_GUIDED_ENABLED)</description>
       </entry>
       <entry value="216" name="MAV_MODE_GUIDED_ARMED">
-        <description>System is allowed to be active, under autonomous control, manual setpoint</description>
+        <description>System is allowed to be active, under autonomous control, manual setpoint (MAV_MODE_FLAG_SAFETY_ARMED, MAV_MODE_FLAG_MANUAL_INPUT_ENABLED, MAV_MODE_FLAG_STABILIZE_ENABLED, MAV_MODE_FLAG_GUIDED_ENABLED)</description>
       </entry>
       <entry value="92" name="MAV_MODE_AUTO_DISARMED">
-        <description>System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by waypoints)</description>
+        <description>System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by waypoints). (MAV_MODE_FLAG_SAFETY_ARMED, MAV_MODE_FLAG_STABILIZE_ENABLED, MAV_MODE_FLAG_GUIDED_ENABLED, MAV_MODE_FLAG_AUTO_ENABLED).</description>
       </entry>
       <entry value="220" name="MAV_MODE_AUTO_ARMED">
-        <description>System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by waypoints)</description>
+        <description>System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by waypoints). (MAV_MODE_FLAG_SAFETY_ARMED, MAV_MODE_FLAG_MANUAL_INPUT_ENABLED, MAV_MODE_FLAG_STABILIZE_ENABLED, MAV_MODE_FLAG_GUIDED_ENABLED,MAV_MODE_FLAG_AUTO_ENABLED).</description>
       </entry>
       <entry value="66" name="MAV_MODE_TEST_DISARMED">
-        <description>UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only.</description>
+        <description>UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only. (MAV_MODE_FLAG_MANUAL_INPUT_ENABLED, MAV_MODE_FLAG_TEST_ENABLED).</description>
       </entry>
       <entry value="194" name="MAV_MODE_TEST_ARMED">
-        <description>UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only.</description>
+        <description>UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only (MAV_MODE_FLAG_SAFETY_ARMED, MAV_MODE_FLAG_MANUAL_INPUT_ENABLED, MAV_MODE_FLAG_TEST_ENABLED)</description>
       </entry>
     </enum>
     <enum name="MAV_SYS_STATUS_SENSOR" bitmask="true">
