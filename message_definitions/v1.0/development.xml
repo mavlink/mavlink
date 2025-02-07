@@ -389,6 +389,21 @@
       <field type="float" name="raw_press" units="hPa">Raw differential pressure. NaN for value unknown/not supplied.</field>
       <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
     </message>
+    <message id="296" name="EXTERNAL_GLOBAL_POSITION">
+      <description>Global position measurement from an external device.</description>
+      <field type="uint8_t" name="id" instance="true">Sensor ID</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude (WGS84)</field>
+      <field type="float" name="alt" units="m" invalid="[NaN:]">Altitude (MSL)</field>
+      <field type="float" name="vn" units="m/s" invalid="[NaN:]">GPS velocity in north direction in earth-fixed NED frame. NaN is unused</field>
+      <field type="float" name="ve" units="m/s" invalid="[NaN:]">GPS velocity in east direction in earth-fixed NED frame</field>
+      <field type="float" name="vd" units="m/s" invalid="[NaN:]">GPS velocity in down direction in earth-fixed NED frame</field>
+      <field type="float" name="eph" units="m" invalid="[NaN:]">Standard deviation of horizontal position error</field>
+      <field type="float" name="epv" units="m" invalid="[NaN:]">Standard deviation of vertical position error</field>
+      <field type="float" name="evh" units="m" invalid="[NaN:]">Standard deviation of horizontal velocity error</field>
+      <field type="float" name="evv" units="m" invalid="[NaN:]">Standard deviation of vertical velocity error</field>
+    </message>
     <message id="337" name="CELLULAR_MODEM_INFORMATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
