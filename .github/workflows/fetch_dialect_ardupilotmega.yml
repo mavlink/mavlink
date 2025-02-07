@@ -1,0 +1,50 @@
+name: Fetch ardupilotmega dialects from downstream
+on:
+  workflow_dispatch:
+
+jobs:
+  copy_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          repository: mavlink/mavlink
+
+      - name: Download source file(s)
+        run: |
+          curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/ardupilotmega.xml -o ardupilotmega.xml
+          curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/loweheiser.xml -o loweheiser.xml
+          
+      - name: Check for changes
+        id: check-changes
+        run: |
+          git status --porcelain | grep -q "^??"  # Check for untracked files
+          if [ $? -eq 0 ]; then
+            echo "No changes detected in the repository. Skipping commit and PR creation."
+          else
+            echo "Changes detected. Proceeding with commit and PR creation."
+          fi
+
+      - name: Copy file (if changes detected)
+        run: |
+          mv -f ardupilotmega.xml message_definitions/v1.0/
+          mv -f loweheiser.xml message_definitions/v1.0/
+        if: steps.check-changes.conclusion == 'success'  # Check for success in previous step
+
+      - name: Add and commit changes (if changes detected)
+        run: |
+          git config --global user.name "${{ secrets.PX4BUILDBOT_USER }}"
+          git config --global user.email "${{ secrets.PX4BUILDBOT_EMAIL }}"
+          git add message_definitions/v1.0/ardupilotmega.xml
+          git add message_definitions/v1.0/loweheiser.xml
+          git commit -a -m "ardupilotmega dialects from ArduPilot/mavlink: `date`"
+        if: steps.check-changes.conclusion == 'success'  # Check for success in previous step
+
+      - name: Create Pull Request (if changes detected)
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "[BOT] Add ardupilotmega dialects from ArduPilot/mavlink"
+          body: "ardupilotmega.xml / loweheiser.xml copied from the ArduPilot/mavlink repository."
+          target: master
+        if: steps.check-changes.conclusion == 'success'  # Check for success in previous step

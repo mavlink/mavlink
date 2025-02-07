@@ -5,27 +5,6 @@
   <version>0</version>
   <dialect>0</dialect>
   <enums>
-    <enum name="WIFI_NETWORK_SECURITY">
-      <description>WiFi wireless security protocols.</description>
-      <entry value="0" name="WIFI_NETWORK_SECURITY_UNDEFINED">
-        <description>Undefined or unknown security protocol.</description>
-      </entry>
-      <entry value="1" name="WIFI_NETWORK_SECURITY_OPEN">
-        <description>Open network, no security.</description>
-      </entry>
-      <entry value="2" name="WIFI_NETWORK_SECURITY_WEP">
-        <description>WEP.</description>
-      </entry>
-      <entry value="3" name="WIFI_NETWORK_SECURITY_WPA1">
-        <description>WPA1.</description>
-      </entry>
-      <entry value="4" name="WIFI_NETWORK_SECURITY_WPA2">
-        <description>WPA2.</description>
-      </entry>
-      <entry value="5" name="WIFI_NETWORK_SECURITY_WPA3">
-        <description>WPA3.</description>
-      </entry>
-    </enum>
     <enum name="AIRSPEED_SENSOR_FLAGS" bitmask="true">
       <description>Airspeed sensor flags</description>
       <entry value="0" name="AIRSPEED_SENSOR_UNHEALTHY">
@@ -33,106 +12,6 @@
       </entry>
       <entry value="1" name="AIRSPEED_SENSOR_USING">
         <description>True if the data from this sensor is being actively used by the flight controller for guidance, navigation or control.</description>
-      </entry>
-    </enum>
-    <enum name="MAV_STANDARD_MODE">
-      <description>Standard modes with a well understood meaning across flight stacks and vehicle types.
-        For example, most flight stack have the concept of a "return" or "RTL" mode that takes a vehicle to safety, even though the precise mechanics of this mode may differ.
-        Modes may be set using MAV_CMD_DO_SET_STANDARD_MODE.
-      </description>
-      <entry value="0" name="MAV_STANDARD_MODE_NON_STANDARD">
-        <description>Non standard mode.
-          This may be used when reporting the mode if the current flight mode is not a standard mode.
-        </description>
-      </entry>
-      <entry value="1" name="MAV_STANDARD_MODE_POSITION_HOLD">
-        <description>Position mode (manual).
-          Position-controlled and stabilized manual mode.
-          When sticks are released vehicles return to their level-flight orientation and hold both position and altitude against wind and external forces.
-          This mode can only be set by vehicles that can hold a fixed position.
-          Multicopter (MC) vehicles actively brake and hold both position and altitude against wind and external forces.
-          Hybrid MC/FW ("VTOL") vehicles first transition to multicopter mode (if needed) but otherwise behave in the same way as MC vehicles.
-          Fixed-wing (FW) vehicles must not support this mode.
-          Other vehicle types must not support this mode (this may be revisited through the PR process).
-        </description>
-      </entry>
-      <entry value="2" name="MAV_STANDARD_MODE_ORBIT">
-        <description>Orbit (manual).
-          Position-controlled and stabilized manual mode.
-          The vehicle circles around a fixed setpoint in the horizontal plane at a particular radius, altitude, and direction.
-          Flight stacks may further allow manual control over the setpoint position, radius, direction, speed, and/or altitude of the circle, but this is not mandated.
-          Flight stacks may support the [MAV_CMD_DO_ORBIT](https://mavlink.io/en/messages/common.html#MAV_CMD_DO_ORBIT) for changing the orbit parameters.
-          MC and FW vehicles may support this mode.
-          Hybrid MC/FW ("VTOL") vehicles may support this mode in MC/FW or both modes; if the mode is not supported by the current configuration the vehicle should transition to the supported configuration.
-          Other vehicle types must not support this mode (this may be revisited through the PR process).
-        </description>
-      </entry>
-      <entry value="3" name="MAV_STANDARD_MODE_CRUISE">
-        <description>Cruise mode (manual).
-          Position-controlled and stabilized manual mode.
-          When sticks are released vehicles return to their level-flight orientation and hold their original track against wind and external forces.
-          Fixed-wing (FW) vehicles level orientation and maintain current track and altitude against wind and external forces.
-          Hybrid MC/FW ("VTOL") vehicles first transition to FW mode (if needed) but otherwise behave in the same way as MC vehicles.
-          Multicopter (MC) vehicles must not support this mode.
-          Other vehicle types must not support this mode (this may be revisited through the PR process).
-        </description>
-      </entry>
-      <entry value="4" name="MAV_STANDARD_MODE_ALTITUDE_HOLD">
-        <description>Altitude hold (manual).
-          Altitude-controlled and stabilized manual mode.
-          When sticks are released vehicles return to their level-flight orientation and hold their altitude.
-          MC vehicles continue with existing momentum and may move with wind (or other external forces).
-          FW vehicles continue with current heading, but may be moved off-track by wind.
-          Hybrid MC/FW ("VTOL") vehicles behave according to their current configuration/mode (FW or MC).
-          Other vehicle types must not support this mode (this may be revisited through the PR process).
-        </description>
-      </entry>
-      <entry value="5" name="MAV_STANDARD_MODE_RETURN_HOME">
-        <description>Return home mode (auto).
-          Automatic mode that returns vehicle to home via a safe flight path.
-          It may also automatically land the vehicle (i.e. RTL).
-          The precise flight path and landing behaviour depend on vehicle configuration and type.
-        </description>
-      </entry>
-      <entry value="6" name="MAV_STANDARD_MODE_SAFE_RECOVERY">
-        <description>Safe recovery mode (auto).
-          Automatic mode that takes vehicle to a predefined safe location via a safe flight path (rally point or mission defined landing) .
-          It may also automatically land the vehicle.
-          The precise return location, flight path, and landing behaviour depend on vehicle configuration and type.
-        </description>
-      </entry>
-      <entry value="7" name="MAV_STANDARD_MODE_MISSION">
-        <description>Mission mode (automatic).
-          Automatic mode that executes MAVLink missions.
-          Missions are executed from the current waypoint as soon as the mode is enabled.
-        </description>
-      </entry>
-      <entry value="8" name="MAV_STANDARD_MODE_LAND">
-        <description>Land mode (auto).
-          Automatic mode that lands the vehicle at the current location.
-          The precise landing behaviour depends on vehicle configuration and type.
-        </description>
-      </entry>
-      <entry value="9" name="MAV_STANDARD_MODE_TAKEOFF">
-        <description>Takeoff mode (auto).
-          Automatic takeoff mode.
-          The precise takeoff behaviour depends on vehicle configuration and type.
-        </description>
-      </entry>
-    </enum>
-    <enum name="MAV_MODE_PROPERTY" bitmask="true">
-      <description>Mode properties.
-      </description>
-      <entry value="1" name="MAV_MODE_PROPERTY_ADVANCED">
-        <description>If set, this mode is an advanced mode.
-          For example a rate-controlled manual mode might be advanced, whereas a position-controlled manual mode is not.
-          A GCS can optionally use this flag to configure the UI for its intended users.
-        </description>
-      </entry>
-      <entry value="2" name="MAV_MODE_PROPERTY_NOT_USER_SELECTABLE">
-        <description>If set, this mode should not be added to the list of selectable modes.
-          The mode might still be selected by the FC directly (for example as part of a failsafe).
-        </description>
       </entry>
     </enum>
     <enum name="MAV_BATTERY_STATUS_FLAGS" bitmask="true">
@@ -283,34 +162,6 @@
         <param index="6">Reserved</param>
         <param index="7">WIP: upgrade progress report rate (can be used for more granular control).</param>
       </entry>
-      <entry value="301" name="MAV_CMD_GROUP_START" hasLocation="false" isDestination="false">
-        <description>Define start of a group of mission items. When control reaches this command a GROUP_START message is emitted.
-          The end of a group is marked using MAV_CMD_GROUP_END with the same group id.
-          Group ids are expected, but not required, to iterate sequentially.
-          Groups can be nested.</description>
-        <param index="1" label="Group ID" minValue="0" maxValue="16777216" increment="1">Mission-unique group id.
-          Group id is limited because only 24 bit integer can be stored in 32 bit float.</param>
-      </entry>
-      <entry value="302" name="MAV_CMD_GROUP_END" hasLocation="false" isDestination="false">
-        <description>Define end of a group of mission items. When control reaches this command a GROUP_END message is emitted.
-          The start of the group is marked is marked using MAV_CMD_GROUP_START with the same group id.
-          Group ids are expected, but not required, to iterate sequentially.
-          Groups can be nested.</description>
-        <param index="1" label="Group ID" minValue="0" maxValue="16777216" increment="1">Mission-unique group id.
-          Group id is limited because only 24 bit integer can be stored in 32 bit float.</param>
-      </entry>
-      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" hasLocation="false" isDestination="false">
-        <description>Enable the specified standard MAVLink mode.
-          If the mode is not supported the vehicle should ACK with MAV_RESULT_FAILED.
-        </description>
-        <param index="1" label="Standard Mode" enum="MAV_STANDARD_MODE">The mode to set.</param>
-        <param index="2" reserved="true" default="0"/>
-        <param index="3" reserved="true" default="0"/>
-        <param index="4" reserved="true" default="0"/>
-        <param index="5" reserved="true" default="0"/>
-        <param index="6" reserved="true" default="0"/>
-        <param index="7" reserved="true" default="NaN"/>
-      </entry>
       <entry value="550" name="MAV_CMD_SET_AT_S_PARAM" hasLocation="false" isDestination="false">
         <description>Allows setting an AT S command of an SiK radio.
         </description>
@@ -360,6 +211,54 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
+      <entry value="32100" name="MAV_CMD_REQUEST_OPERATOR_CONTROL" hasLocation="false" isDestination="false">
+        <description>Request GCS control of a system (or of a specific component in a system).
+
+          A controlled system should only accept MAVLink commands and command-like messages that are sent by its controlling GCS, or from other components with the same system id.
+          Commands from other systems should be rejected with MAV_RESULT_FAILED (except for this command, which may be acknowledged with MAV_RESULT_ACCEPTED if control is granted).
+          Command-like messages should be ignored (or rejected if that is supported by their associated protocol).
+
+          GCS control of the whole system is managed via a single component that we will refer to here as the "system manager component".
+          This component streams the CONTROL_STATUS message and sets the GCS_CONTROL_STATUS_FLAGS_SYSTEM_MANAGER flag.
+          Other components in the system should monitor for the CONTROL_STATUS message with this flag, and set their controlling GCS to match its published system id.
+          A GCS that wants to control the system should also monitor for the same message and flag, and address the MAV_CMD_REQUEST_OPERATOR_CONTROL to its component id.
+          Note that integrators are required to ensure that there is only one system manager component in the system (i.e. one component emitting the message with GCS_CONTROL_STATUS_FLAGS_SYSTEM_MANAGER set).
+
+          The MAV_CMD_REQUEST_OPERATOR_CONTROL command is sent by a GCS to the system manager component to request or release control of a system, specifying whether subsequent takeover requests from another GCS are automatically granted, or require permission.
+
+          The system manager component should grant control to the GCS if the system does not require takeover permission (or is uncontrolled) and ACK the request with MAV_RESULT_ACCEPTED.
+          The system manager component should then stream CONTROL_STATUS indicating its controlling system: all other components with the same system id should monitor this message and set their own controlling GCS to match that of the system manager component.
+
+          If the system manager component cannot grant control (because takeover requires permission), the request should be rejected with MAV_RESULT_FAILED.
+          The system manager component should then send this same command to the current owning GCS in order to notify of the request.
+          The owning GCS would ACK with MAV_RESULT_ACCEPTED, and might choose to release control of the vehicle, or re-request control with the takeover bit set to allow permission.
+          In case it choses to re-request control with takeover bit set to allow permission, requestor GCS will only have 10 seconds to get control, otherwise owning GCS will re-request control with takeover bit set to disallow permission, and requestor GCS will need repeat the request if still interested in getting control.
+          Note that the pilots of both GCS should co-ordinate safe handover offline.
+
+          Note that in most systems the only controlled component will be the "system manager component", and that will be the autopilot.
+          However separate GCS control of a particular component is also permitted, if supported by the component.
+          In this case the GCS will address MAV_CMD_REQUEST_OPERATOR_CONTROL to the specific component it wants to control.
+          The component will then stream CONTROL_STATUS for its controlling GCS (it must not set GCS_CONTROL_STATUS_FLAGS_SYSTEM_MANAGER).
+          The component should fall back to the system GCS (if any) when it is not directly controlled, and may stop emitting CONTROL_STATUS.
+          The flow is otherwise the same as for requesting control over the whole system.
+        </description>
+        <param index="1" label="Sysid requesting control">System ID of GCS requesting control. 0 when command sent from GCS to autopilot (autopilot determines requesting GCS sysid from message header). Sysid of GCS requesting control when command sent by autopilot to controlling GCS.</param>
+        <param index="2" label="Action">0: Release control, 1: Request control.</param>
+        <param index="3" label="Allow takeover">Enable automatic granting of ownership on request (by default reject request and notify current owner). 0: Ask current owner and reject request, 1: Allow automatic takeover.</param>
+        <param index="4" label="Request timeout" units="s" minValue="3" maxValue="60">Timeout in seconds before a request to a GCS to allow takeover is assumed to be rejected. This is used to display the timeout graphically on requestor and GCS in control.</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+    </enum>
+    <enum name="GCS_CONTROL_STATUS_FLAGS" bitmask="true">
+      <description>CONTROL_STATUS flags.</description>
+      <entry value="1" name="GCS_CONTROL_STATUS_FLAGS_SYSTEM_MANAGER">
+        <description>If set, this CONTROL_STATUS publishes the controlling GCS for the whole system. If unset, the CONTROL_STATUS indicates the controlling GCS for just the component emitting the message. Note that to request control of the system a GCS should send MAV_CMD_REQUEST_OPERATOR_CONTROL to the component emitting CONTROL_STATUS with this flag set.</description>
+      </entry>
+      <entry value="2" name="GCS_CONTROL_STATUS_FLAGS_TAKEOVER_ALLOWED">
+        <description>Takeover allowed (requests for control will be granted). If not set requests for control will be rejected, but the controlling GCS will be notified (and may release control or allow takeover).</description>
+      </entry>
     </enum>
     <enum name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" bitmask="true">
       <description>These flags indicate the sensor reporting capabilities for TARGET_ABSOLUTE.</description>
@@ -391,18 +290,6 @@
       </entry>
       <entry value="2" name="RADIO_RC_CHANNELS_FLAGS_OUTDATED">
         <description>Channel data may be out of date. This is set when the receiver is unable to validate incoming data from the transmitter and has therefore resent the last valid data it received.</description>
-      </entry>
-    </enum>
-    <enum name="MAV_FUEL_TYPE">
-      <description>Fuel types for use in FUEL_TYPE. Fuel types specify the units for the maximum, available and consumed fuel, and for the flow rates.</description>
-      <entry value="0" name="MAV_FUEL_TYPE_UNKNOWN">
-        <description>Not specified. Fuel levels are normalized (i.e. maximum is 1, and other levels are relative to 1.</description>
-      </entry>
-      <entry value="1" name="MAV_FUEL_TYPE_LIQUID">
-        <description>A generic liquid fuel. Fuel levels are in millilitres (ml). Fuel rates are in millilitres/second.</description>
-      </entry>
-      <entry value="2" name="MAV_FUEL_TYPE_GAS">
-        <description>A gas tank. Fuel levels are in kilo-Pascal (kPa), and flow rates are in milliliters per second (ml/s).</description>
       </entry>
     </enum>
     <enum name="GPS_SYSTEM_ERROR_FLAGS" bitmask="true">
@@ -502,14 +389,6 @@
       <field type="float" name="raw_press" units="hPa">Raw differential pressure. NaN for value unknown/not supplied.</field>
       <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
     </message>
-    <message id="298" name="WIFI_NETWORK_INFO">
-      <description>Detected WiFi network status information. This message is sent per each WiFi network detected in range with known SSID and general status parameters.</description>
-      <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID).</field>
-      <field type="uint8_t" name="channel_id">WiFi network operating channel ID. Set to 0 if unknown or unidentified.</field>
-      <field type="uint8_t" name="signal_quality" units="%">WiFi network signal quality.</field>
-      <field type="uint16_t" name="data_rate" units="MiB/s">WiFi network data rate. Set to UINT16_MAX if data_rate information is not supplied.</field>
-      <field type="uint8_t" name="security" enum="WIFI_NETWORK_SECURITY">WiFi network security type.</field>
-    </message>
     <message id="337" name="CELLULAR_MODEM_INFORMATION">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
@@ -576,30 +455,6 @@
       <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Remaining battery energy. Values: [0-100], UINT8_MAX: field not provided.</field>
       <field type="uint32_t" name="status_flags" display="bitmask" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
     </message>
-    <message id="371" name="FUEL_STATUS">
-      <description>Fuel status.
-        This message provides "generic" fuel level information for display in a GCS and for triggering failsafes in an autopilot.
-	The fuel type and associated units for fields in this message are defined in the enum MAV_FUEL_TYPE.
-
-	The reported `consumed_fuel` and `remaining_fuel` must only be supplied if measured: they must not be inferred from the `maximum_fuel` and the other value.
-        A recipient can assume that if these fields are supplied they are accurate.
-        If not provided, the recipient can infer `remaining_fuel` from `maximum_fuel` and `consumed_fuel` on the assumption that the fuel was initially at its maximum (this is what battery monitors assume).
-	Note however that this is an assumption, and the UI should prompt the user appropriately (i.e. notify user that they should fill the tank before boot).
-
-	This kind of information may also be sent in fuel-specific messages such as BATTERY_STATUS_V2.
-	If both messages are sent for the same fuel system, the ids and corresponding information must match.
-
-	This should be streamed (nominally at 0.1 Hz).
-      </description>
-      <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as BATTERY_STATUS_V2.</field>
-      <field type="float" name="maximum_fuel">Capacity when full. Must be provided.</field>
-      <field type="float" name="consumed_fuel" invalid="NaN">Consumed fuel (measured). This value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
-      <field type="float" name="remaining_fuel" invalid="NaN">Remaining fuel until empty (measured). The value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
-      <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Percentage of remaining fuel, relative to full. Values: [0-100], UINT8_MAX: field not provided.</field>
-      <field type="float" name="flow_rate" invalid="NaN">Positive value when emptying/using, and negative if filling/replacing. NaN: field not provided.</field>
-      <field type="float" name="temperature" units="K" invalid="NaN">Fuel temperature. NaN: field not provided.</field>
-      <field type="uint32_t" name="fuel_type" enum="MAV_FUEL_TYPE">Fuel type. Defines units for fuel capacity and consumption fields above.</field>
-    </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
       <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_START).</field>
@@ -638,35 +493,20 @@
         Channel values are in centered 13 bit format. Range is -4096 to 4096, center is 0. Conversion to PWM is x * 5/32 + 1500.
         Channels with indexes equal or above count should be set to 0, to benefit from MAVLink's trailing-zero trimming.</field>
     </message>
-    <message id="435" name="AVAILABLE_MODES">
-      <description>Get information about a particular flight modes.
-        The message can be enumerated or requested for a particular mode using MAV_CMD_REQUEST_MESSAGE.
-        Specify 0 in param2 to request that the message is emitted for all available modes or the specific index for just one mode.
-        The modes must be available/settable for the current vehicle/frame type.
-        Each modes should only be emitted once (even if it is both standard and custom).
-      </description>
-      <field type="uint8_t" name="number_modes">The total number of available modes for the current vehicle type.</field>
-      <field type="uint8_t" name="mode_index">The current mode index within number_modes, indexed from 1.</field>
-      <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
-      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
-      <field type="uint32_t" name="properties" enum="MAV_MODE_PROPERTY">Mode properties.</field>
-      <field type="char[35]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
-    </message>
-    <message id="436" name="CURRENT_MODE">
-      <description>Get the current mode.
-        This should be emitted on any mode change, and broadcast at low rate (nominally 0.5 Hz).
-        It may be requested using MAV_CMD_REQUEST_MESSAGE.
-      </description>
-      <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
-      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
-      <field type="uint32_t" name="intended_custom_mode" invalid="0">The custom_mode of the mode that was last commanded by the user (for example, with MAV_CMD_DO_SET_STANDARD_MODE, MAV_CMD_DO_SET_MODE or via RC). This should usually be the same as custom_mode. It will be different if the vehicle is unable to enter the intended mode, or has left that mode due to a failsafe condition. 0 indicates the intended custom mode is unknown/not supplied</field>
-    </message>
-    <message id="437" name="AVAILABLE_MODES_MONITOR">
-      <description>A change to the sequence number indicates that the set of AVAILABLE_MODES has changed.
-        A receiver must re-request all available modes whenever the sequence number changes.
-        This is only emitted after the first change and should then be broadcast at low rate (nominally 0.3 Hz) and on change.
-      </description>
-      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically).</field>
+    <message id="441" name="GNSS_INTEGRITY">
+      <description>Information about key components of GNSS receivers, like signal authentication, interference and system errors.</description>
+      <field type="uint8_t" name="id" instance="true">GNSS receiver id. Must match instance ids of other messages from same receiver.</field>
+      <field type="uint32_t" name="system_errors" enum="GPS_SYSTEM_ERROR_FLAGS" display="bitmask">Errors in the GPS system.</field>
+      <field type="uint8_t" name="authentication_state" enum="GPS_AUTHENTICATION_STATE">Signal authentication state of the GPS system.</field>
+      <field type="uint8_t" name="jamming_state" enum="GPS_JAMMING_STATE">Signal jamming state of the GPS system.</field>
+      <field type="uint8_t" name="spoofing_state" enum="GPS_SPOOFING_STATE">Signal spoofing state of the GPS system.</field>
+      <field type="uint8_t" name="raim_state" enum="GPS_RAIM_STATE">The state of the RAIM processing.</field>
+      <field type="uint16_t" name="raim_hfom" units="cm" invalid="UINT16_MAX">Horizontal expected accuracy using satellites successfully validated using RAIM.</field>
+      <field type="uint16_t" name="raim_vfom" units="cm" invalid="UINT16_MAX">Vertical expected accuracy using satellites successfully validated using RAIM.</field>
+      <field type="uint8_t" name="corrections_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the estimated quality of incoming corrections, or 255 if not available.</field>
+      <field type="uint8_t" name="system_status_summary" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the overall status of the receiver, or 255 if not available.</field>
+      <field type="uint8_t" name="gnss_signal_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the quality of incoming GNSS signals, or 255 if not available.</field>
+      <field type="uint8_t" name="post_processing_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the estimated PPK quality, or 255 if not available.</field>
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
@@ -699,6 +539,11 @@
       <field type="float[4]" name="q_target">Quaternion of the target's orientation from the target's frame to the TARGET_OBS_FRAME (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float[4]" name="q_sensor">Quaternion of the sensor's orientation from TARGET_OBS_FRAME to vehicle-carried NED. (Ignored if set to (0,0,0,0)) (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of target</field>
+    </message>
+    <message id="512" name="CONTROL_STATUS">
+      <description>Information about GCS in control of this MAV. This should be broadcast at low rate (nominally 1 Hz) and emitted when ownership or takeover status change. Control over MAV is requested using MAV_CMD_REQUEST_OPERATOR_CONTROL.</description>
+      <field type="uint8_t" name="sysid_in_control">System ID of GCS MAVLink component in control (0: no GCS in control).</field>
+      <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS" display="bitmask">Control status. For example, whether takeover is allowed, and whether this message instance defines the default controlling GCS for the whole system.</field>
     </message>
   </messages>
 </mavlink>

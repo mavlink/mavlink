@@ -265,7 +265,7 @@ class MAVXML(object):
     def get_top_level_docs(self, filename):
         # Inject top level heading and other details.
         # print('FILENAME (prefix): %s' % filename)
-        insert_text = '<!-- THIS FILE IS AUTO-GENERATED: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_xml_to_markdown.py -->\n\n'
+        insert_text = '<!-- THIS FILE IS AUTO-GENERATED: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_xml_to_markdown.py -->\n'
         if filename == 'common':
             insert_text += """
 # MAVLINK Common Message Set (common.xml)
@@ -284,7 +284,9 @@ The MAVLink *minimal* set contains the minimal set of definitions for a viable M
 
 The message set is defined in [minimal.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/minimal.xml) and is managed by the MAVLink project.
 
-> **Tip** The minimal set is included (imported into) other xml definition files, including the [MAVLink Common Message Set (common.xml)](minimal.md).
+::: tip
+The minimal set is included (imported into) other xml definition files, including the [MAVLink Common Message Set (common.xml)](minimal.md).
+:::
 
 """
         elif filename == 'standard':
@@ -297,16 +299,6 @@ AND are likely to be implemented in a compatible way.
 The original definitions are defined in [standard.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/standard.xml).
     """
 
-        elif filename == 'ardupilotmega':
-            insert_text += """
-# Dialect: ArduPilotMega
-
-These messages define the ArduPilot specific message set, which is custom to [http://ardupilot.org](http://ardupilot.org).
-
-This topic is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).
-
-> **Warning** The ArduPilot MAVLink fork of [ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) may contain messages that have not yet been merged into this documentation.
-    """
         elif filename == 'development':
             insert_text += """
 # Dialect: development
@@ -316,11 +308,19 @@ They should be considered a 'work in progress' and not included in production bu
 
 This topic is a human-readable form of the XML definition file: [development.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/development.xml).
 """
+        elif filename == 'test':
+            insert_text += """
+# Dialect: test
+
+The test dialect is used for testing XML file parsing.
+
+This topic is a human-readable form of the XML definition file: [test.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/test.xml).
+"""
         elif filename == 'all':
             insert_text += """
 # Dialect: all
 
-This dialect is intended to `include` all other [dialects](../messages/README.md) in the mavlink/mavlink repository (including [external dialects](https://github.com/mavlink/mavlink/tree/master/external/dialects#mavlink-external-dialects)).
+This dialect is intended to `include` all other [dialects](../messages/README.md) in the [mavlink/mavlink](https://github.com/mavlink/mavlink) repository (including [external dialects](https://github.com/mavlink/mavlink/tree/master/external/dialects#mavlink-external-dialects)).
 
 Dialects that are in **all.xml** are guaranteed to not have clashes in messages, enums, enum ids, and MAV_CMDs.
 This ensure that:
@@ -328,22 +328,69 @@ This ensure that:
 - Systems based on these dialects can co-exist on the same MAVLink network.
 - A Ground Station might (optionally) use libraries generated from **all.xml** to communicate using any of the dialects.
 
-> **Warning** New dialect files in the official repository must be added to **all.xml** and restrict themselves to using ids in their own allocated range.
+::: warning
+
+- New dialect files in the official repository must be added to **all.xml** and restrict themselves to using ids in their own allocated range.
+- Dialects should push changes to mavlink/mavlink in order to avoid potential clashes from changes to other dialects.
+
 A few older dialects are not included because these operate in completely closed networks or because they are only used for tests.
+:::
 
 This topic is a human-readable form of the XML definition file: [all.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
 """
-        else:
-            insert_text += '\n# Dialect: %s' % filename.rsplit('.', 1)[0]
-            insert_text += '\n\n*This is a human-readable form of the XML definition file: [%s](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/%s).*' % (
-                filename, filename)
-        insert_text += """
 
+        elif filename == 'ardupilotmega':
+            insert_text += """
+# Dialect: ArduPilotMega
+
+::: warning
+[ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) contains the documentation for this dialect as used by the ArduPilot flight stack.
+The documentation here may not be a precise match if, for example, changes have not been pushed by the owner.
+:::
+
+These messages define the [ArduPilot](http://ardupilot.org) specific dialect.
+
+This topic is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).
+    """
+
+        elif filename == 'cubepilot':
+            insert_text += """
+# Dialect: cubepilot
+
+::: warning
+[cubepilot.xml](https://github.com/CubePilot/mavlink/blob/master/message_definitions/v1.0/cubepilot.xml) contains the accurate and up-to-date documentation for this dialect.
+The documentation here may not be a precise match if, for example, changes have not been pushed by the owner.
+:::
+
+These messages define the [CubePilot](http://www.cubepilot.com) specific dialect (as pushed to the [mavlink/mavlink](https://github.com/mavlink/mavlink) GitHub repository by the dialect owner).
+
+This topic is a human-readable form of the XML definition file: [cubepilot.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/cubepilot.xml).
+
+    """
+
+
+        else:
+            dialectName = filename.rsplit('.', 1)[0]
+            filenameXML = f'{dialectName}.xml'
+            insert_text += f"""
+# Dialect: {dialectName}
+
+::: warning
+This topic documents the version of the dialect file in the [mavlink/mavlink](https://github.com/mavlink/mavlink) Github repository, which may not be up to date with the file in the source repository (it is up to the dialect owner to push changes when needed).
+The source repo should be listed in the comments at the top of the XML definition file listed below (but may not be).
+:::
+
+This topic is a human-readable form of the XML definition file: [{filenameXML}](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/{filenameXML}).
+"""
+        insert_text += """
 <span id="mav2_extension_field"></span>
 
-> **Note**
-> - MAVLink 2 [extension fields](../guide/define_xml_element.md#message_extensions) are displayed in blue.
-> - Entities from dialects are displayed only as headings (with link to original)
+::: info
+
+- MAVLink 2 [extension fields](../guide/define_xml_element.md#message_extensions) are displayed in blue.
+- Entities from dialects are displayed only as headings (with link to original)
+
+:::
 
 <style>
 span.ext {
@@ -356,7 +403,6 @@ span.warning {
 """
 
         return insert_text
-
 
 class MAVDeprecated(object):
     def __init__(self, soup):
@@ -546,6 +592,13 @@ class MAVMessage(object):
         """
         Return markdown for a message.
         """
+        # If it is common we include everything.
+        # But for any other dialect don't include the entity
+        if currentDialect == 'common':
+            pass
+        elif self.basename is not currentDialect:
+            return ""
+
         message = f"### {self.name} ({self.id})"
 
         # Add marker after name if there are additions
@@ -563,10 +616,6 @@ class MAVMessage(object):
             message += " [WIP]"
             # message+=f"Included from [{self.basename}](../messages/{self.basename}.md#{self.name})\n\n"  # With basename (dialect name) test
         message += ' {#' + self.name + '}\n\n'
-
-        # If dialect, that's it. After this is assuming current dialect
-        if self.basename is not currentDialect:
-            return message
 
         if self.deprecated:
             message += self.deprecated.getMarkdown()+"\n\n"
@@ -661,9 +710,8 @@ class MAVEnumEntry(object):
 
     def getMarkdown(self, currentDialect):
         """Return markdown for an enum entry"""
-        deprString = f"<b>{self.deprecated.getMarkdown()}" if self.deprecated else ""
-        if self.wip:
-            print(f"TODO: WIP in Enum Entry: {self.name}")
+        deprString = f"<br>{self.deprecated.getMarkdown()}" if self.deprecated else ""
+        wipString = f"<br>{self.wip.getMarkdown()}" if self.wip else ""
         importedNote = ""
         if self.basename is not currentDialect:
             importedNote = " — \[from: [{self.basename}](../messages/{self.basename}.md#{self.name})\]"
@@ -672,7 +720,7 @@ class MAVEnumEntry(object):
                 f"TODO/Debug: Check rendering - imported merged enum value {self.name}")
         desc = fix_add_implicit_links_items(tidyDescription(
             self.description, 'table')) if self.description else ""
-        string = f"<a id='{self.name}'></a>{self.value} | [{self.name}](#{self.name}) | {desc}{importedNote}{deprString} \n"
+        string = f"<a id='{self.name}'></a>{self.value} | [{self.name}](#{self.name}) | {desc}{importedNote}{wipString}{deprString} \n"
         return string
 
 
@@ -715,6 +763,13 @@ class MAVEnum(object):
     def getMarkdown(self, currentDialect):
         """Return markdown for a whole enum"""
 
+        # If it is common we include everything.
+        # But for any other dialect don't include the entity
+        if currentDialect == 'common':
+            pass
+        elif self.basename is not currentDialect:
+            return ""
+
         string = f"### {self.name}"
 
         # Add marker after name if there are additions
@@ -731,10 +786,6 @@ class MAVEnum(object):
             string += " [WIP]"
             # message+=f"Included from [{self.basename}](../messages/{self.basename}.md#{self.name})\n\n"  # With basename (dialect name) test
         string += ' {#' + self.name + '}\n\n'
-
-        # If dialect, that's it. After this is assuming current dialect
-        if self.basename is not currentDialect:
-            return string
 
         if self.deprecated:
             string += self.deprecated.getMarkdown()+"\n\n"
@@ -858,6 +909,13 @@ class MAVCommand(object):
     def getMarkdown(self, currentDialect):
         """Return markdown for a command (entry)"""
 
+        # If it is common we include everything.
+        # But for any other dialect don't include the entity
+        if currentDialect == 'common':
+            pass
+        elif self.basename is not currentDialect:
+            return ""
+
         string = f"### {self.name} ({self.value})"
 
         # Add marker after name if there are additions
@@ -873,10 +931,6 @@ class MAVCommand(object):
         elif self.wip:
             string += " [WIP]"
         string += ' {#' + self.name + '}\n\n'
-
-        # If dialect, that's it. After this is assuming current dialect
-        if self.basename is not currentDialect:
-            return string
 
         if self.deprecated:
             string += self.deprecated.getMarkdown() + "\n\n"
@@ -1072,7 +1126,7 @@ class XMLFiles(object):
 
     def generateIndexDoc(self, output_dir="."):
         # File for index
-        index_file_name = "README.md"
+        index_file_name = "index.md"
 
         # Create outputdir if it does not exist
         if not os.path.exists(output_dir):
@@ -1081,60 +1135,107 @@ class XMLFiles(object):
 
         #initialise text for index file.
         index_text="""<!-- THIS FILE IS AUTO-GENERATED FROM XML: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_xml_to_markdown.py (Do not update mavlink-devguide) -->
-# XML Definition Files & Dialects
 
-MAVLink definitions files can be found in [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/).
-These can roughly be divided into:
+# MAVLink-Standard Definitions
 
-- [Standard definitions](#standard-definitions) - core definitions shared by many flight stacks
-- [Test definitions](#test-definitions) - definitions to support testing and validation
-- [Dialects](#dialects) - *protocol-* and *vendor-specific* messages, enums and commands
+The following XML definition files are part of the standard set that are managed by this project.
+They contain messages, commands, and enums that are expected to be used in multiple flight stacks and ground stations:
 
-## Standard Definitions
+- [common.xml](common.md) - the set of entities that have been implemented in at least one core flight stack (and including those in `standard.xml` and `common.xml`).
 
-The following XML definition files are considered standard/core (i.e. not dialects):
+  ::: tip
+  Most developers should use this set of definitions.
+  :::
 
-- [minimal.xml](minimal.md) - the minimum set of entities (messages, enums, MAV_CMD) required to set up a MAVLink network.
-- [standard.xml](standard.md) - the standard set of entities that are implemented by almost all flight stacks (at least 2, in a compatible way).
-  This `includes` [minimal.xml](minimal.md).
-- [common.xml](common.md) - the set of entities that have been implemented in at least one core flight stack.
-  This `includes` [standard.xml](minimal.md)
+- [standard.xml](standard.md) — the standard set of entities that are implemented by at least two core flight stacks, in a compatible way.
+- [minimal.xml](minimal.md) — the minimum set of entities (messages, enums, MAV_CMD) required to set up a MAVLink network.
 
-> **Note** We are still working towards moving the truly standard entities from **common.xml** to **standard.xml**
-  Currently you should include [common.xml](common.md)
+::: info
+See [Dialects & Test Definitions](dialects.md) for flight-stack specific XML definitions.
+:::
 
-In addition:
+## Development Definitions
 
-- [development.xml](development.md) - XML definitions that are _proposed_ for inclusion in the standard definitions.
-   These are work in progress.
+The following definitions are being considered for inclusion in the standard definitions.
+They are a "work in progress" and should not be used in released software.
 
-## Test Definitions
+- [development.xml](development.md) — XML definitions that are _proposed_ for inclusion in the standard definitions.
+- Any standard definitions that have `<wip />` tags.
 
-The following definitions are used for testing and dialect validation:
+## See Also
 
-- [all.xml](all.md) - This includes all other XML files, and is used to verify that there are no ID clashes (and can potentially be used by GCS to communicate with any core dialect).
-- [test.xml](test.md) - Test XML definition file.
+- [Dialects & Test Definitions](dialects.md)
+- [XSD schema](../guide/xml_schema.md)
+- [mavlink/message_definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/) - Source of all XML definition files
 
-## Dialects  {#dialects}
+"""
+        #Write the index
+        with open(index_file_name, 'w') as content_file:
+            print(f"Generating: {index_file_name}")
+            content_file.write(index_text)
 
-MAVLink *dialects* are XML definition files that define *protocol-* and *vendor-specific* messages, enums and commands.
+    def generateDialectDoc(self, output_dir="."):
+        # File for index
+        file_name = "dialects.md"
 
-> **Note** Vendor forks of MAVLink may contain XML entities that have not yet been pushed into the main repository (and will not be documented).
+        # Create outputdir if it does not exist
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        file_name = f"{output_dir}{file_name}"
 
-Dialects may *include* other MAVLink XML files, which may in turn contain other XML files (up to 5 levels of XML file nesting are allowed - see `MAXIMUM_INCLUDE_FILE_NESTING` in [mavgen.py](https://github.com/ArduPilot/pymavlink/blob/master/generator/mavgen.py#L44)).
-A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the *MAVLink standard definitions*), extending it with vendor or protocol specific messages.
+        #initialise text for index file.
+        dialect_text="""<!-- THIS FILE IS AUTO-GENERATED FROM XML: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_xml_to_markdown.py (Do not update mavlink-devguide) -->
+
+# Dialects & Test Definitions
+
+## Dialects
+
+MAVLink _dialects_ are XML definition files that define _protocol-_ and _vendor-specific_ messages, enums and commands.
+
+::: warning
+Dialects are not managed by this project!
+
+- They are typically used in only one particular flight stack, and are managed by that flight stack.
+  The XML usually includes owner information as a header comment.
+- Vendor forks of MAVLink may contain XML entities that have not yet been pushed into the main repository (and will not be documented).
+
+:::
 
 The dialect definitions are:
 
 """
 
         for xmlfile in self.xml_dialects.keys():
-            index_text+=f"- [{xmlfile}.xml]({xmlfile}.md)\n"
+            if xmlfile not in ['common','standard', 'minimal', 'development', 'all', 'test', 'python_array_test']:
+                # Is a dialect
+                dialect_text+=f"- [{xmlfile}.xml]({xmlfile}.md)\n"
+
+        dialect_text+="""
+Note that dialects may `include` [MAVLink-Standard Definitions](index.md) or other dialects.
+Up to 5 levels of XML file nesting are allowed - see `MAXIMUM_INCLUDE_FILE_NESTING` in [mavgen.py](https://github.com/ArduPilot/pymavlink/blob/master/generator/mavgen.py#L44).
+A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the _MAVLink standard definitions_), extending it with vendor or protocol specific messages.
+
+## Test Definitions
+
+The following definitions are used for testing and dialect validation:
+
+- [all.xml](all.md) — This includes all other XML files, and is used to verify that there are no ID clashes (and can potentially be used by GCS to communicate with any core dialect).
+- [test.xml](test.md) — Test XML definition file.
+- [python_array_test.xml](python_array_test.md) — Test XML definition file for arrays.
+
+## See Also
+
+- [MAVLink-Standard Definitions](index.md)
+- [XSD schema](../guide/xml_schema.md)
+- [mavlink/message_definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/) - Source of all XML definition files
+
+"""
 
         #Write the index
-        with open(index_file_name, 'w') as content_file:
-            print(f"Generating: {index_file_name}")
-            content_file.write(index_text)
+        with open(file_name, 'w') as content_file:
+            print(f"Generating: {file_name}")
+            content_file.write(dialect_text)
+
 
 
     def expand_includes(self):
@@ -1278,7 +1379,7 @@ def main():
 
     files.generateDocs(args.output)
     files.generateIndexDoc(args.output)
-
+    files.generateDialectDoc(args.output)
 
 if __name__ == "__main__":
     main()

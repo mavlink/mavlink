@@ -842,6 +842,9 @@
       <entry value="4" name="ORBIT_YAW_BEHAVIOUR_RC_CONTROLLED">
         <description>Yaw controlled by RC input.</description>
       </entry>
+      <entry value="5" name="ORBIT_YAW_BEHAVIOUR_UNCHANGED">
+        <description>Vehicle uses current yaw behaviour (unchanged). The vehicle-default yaw behaviour is used if this value is specified when orbit is first commanded.</description>
+      </entry>
     </enum>
     <enum name="WIFI_CONFIG_AP_RESPONSE">
       <description>Possible responses from a WIFI_CONFIG_AP message.</description>
@@ -1251,7 +1254,7 @@
         <param index="7" label="Altitude/Z">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude.</param>
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false">
-        <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
+        <deprecated since="2018-01" replaced_by="`MAV_CMD_DO_SET_ROI_*`"/>
         <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1" label="ROI Mode" enum="MAV_ROI">Region of interest mode.</param>
         <param index="2" label="WP Index" minValue="0" increment="1">Waypoint index/ target ID. (see MAV_ROI enum)</param>
@@ -1658,7 +1661,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="201" name="MAV_CMD_DO_SET_ROI" hasLocation="true" isDestination="false">
-        <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
+        <deprecated since="2018-01" replaced_by="`MAV_CMD_DO_SET_ROI_*`"/>
         <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1" label="ROI Mode" enum="MAV_ROI">Region of interest mode.</param>
         <param index="2" label="WP Index" minValue="0" increment="1">Waypoint index/ target ID (depends on param 1).</param>
@@ -1703,7 +1706,7 @@
       </entry>
       <!-- this one is messed up! altitude should be param 7, not param4 -->
       <entry value="205" name="MAV_CMD_DO_MOUNT_CONTROL" hasLocation="false" isDestination="false">
-        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">This message is ambiguous and inconsistent. It has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW and MAV_CMD_DO_SET_ROI_*. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
+        <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">This message is ambiguous and inconsistent. It has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW and `MAV_CMD_DO_SET_ROI_*` variants. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
         <description>Mission command to control a camera or antenna mount</description>
         <param index="1" label="Pitch">pitch depending on mount mode (degrees or degrees/second depending on pitch input).</param>
         <param index="2" label="Roll">roll depending on mount mode (degrees or degrees/second depending on roll input).</param>
@@ -1718,7 +1721,7 @@
         <param index="1" label="Distance" units="m" minValue="0">Camera trigger distance. 0 to stop triggering.</param>
         <param index="2" label="Shutter" units="ms" minValue="-1" increment="1">Camera shutter integration time. -1 or 0 to ignore</param>
         <param index="3" label="Trigger" minValue="0" maxValue="1" increment="1">Trigger camera once immediately. (0 = no trigger, 1 = trigger)</param>
-        <param index="4">Empty</param>
+        <param index="4" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
@@ -1803,7 +1806,7 @@
         <description>Mission command to set camera trigger interval for this flight. If triggering is enabled, the camera is triggered each time this interval expires. This command can also be used to set the shutter integration time for the camera.</description>
         <param index="1" label="Trigger Cycle" units="ms" minValue="-1" increment="1">Camera trigger cycle time. -1 or 0 to ignore.</param>
         <param index="2" label="Shutter Integration" units="ms" minValue="-1" increment="1">Camera shutter integration time. Should be less than trigger cycle time. -1 or 0 to ignore.</param>
-        <param index="3">Empty</param>
+        <param index="3" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
@@ -1955,6 +1958,19 @@
         <param index="6" label="Pitch Angle" units="deg" minValue="-180" maxValue="180" default="0">Fixed pitch angle that the camera will hold in oblique mode if the mount is actuated in the pitch axis.</param>
         <param index="7">Empty</param>
       </entry>
+      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" hasLocation="false" isDestination="false">
+        <description>Enable the specified standard MAVLink mode.
+          If the specified mode is not supported, the vehicle should ACK with MAV_RESULT_FAILED.
+          See https://mavlink.io/en/services/standard_modes.html
+        </description>
+        <param index="1" label="Standard Mode" enum="MAV_STANDARD_MODE">The mode to set.</param>
+        <param index="2" reserved="true" default="0"/>
+        <param index="3" reserved="true" default="0"/>
+        <param index="4" reserved="true" default="0"/>
+        <param index="5" reserved="true" default="0"/>
+        <param index="6" reserved="true" default="0"/>
+        <param index="7" reserved="true" default="NaN"/>
+      </entry>
       <entry value="300" name="MAV_CMD_MISSION_START" hasLocation="false" isDestination="false">
         <description>start running a mission</description>
         <param index="1" label="First Item" minValue="0" increment="1">first_item: the first mission item to run</param>
@@ -2024,8 +2040,8 @@
       </entry>
       <entry value="500" name="MAV_CMD_START_RX_PAIR" hasLocation="false" isDestination="false">
         <description>Starts receiver pairing.</description>
-        <param index="1" label="Spektrum">0:Spektrum.</param>
-        <param index="2" label="RC Type" enum="RC_TYPE">RC type.</param>
+        <param index="1" label="RC Type" enum="RC_TYPE">RC type.</param>
+        <param index="2" label="RC Sub Type" enum="RC_SUB_TYPE">RC sub type.</param>
       </entry>
       <entry value="510" name="MAV_CMD_GET_MESSAGE_INTERVAL" hasLocation="false" isDestination="false">
         <deprecated since="2022-04" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
@@ -2039,6 +2055,10 @@
         <description>Set the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM.</description>
         <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID</param>
         <param index="2" label="Interval" units="us" minValue="-1" increment="1">The interval between two messages. -1: disable. 0: request default rate (which may be zero).</param>
+        <param index="3" label="Req Param 3">Use for index ID, if required. Otherwise, the use of this parameter (if any) must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="4" label="Req Param 4">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="5" label="Req Param 5">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
+        <param index="6" label="Req Param 6">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
         <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address of message stream (if message has target address fields). 0: Flight-stack default (recommended), 1: address of requestor, 2: broadcast.</param>
       </entry>
       <entry value="512" name="MAV_CMD_REQUEST_MESSAGE" hasLocation="false" isDestination="false">
@@ -2104,11 +2124,11 @@
       <entry value="529" name="MAV_CMD_RESET_CAMERA_SETTINGS" hasLocation="false" isDestination="false">
         <description>Reset all camera settings to Factory Default</description>
         <param index="1" label="Reset" minValue="0" maxValue="1" increment="1">0: No Action 1: Reset all settings</param>
-        <param index="2">Reserved (all remaining params)</param>
+        <param index="2" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="530" name="MAV_CMD_SET_CAMERA_MODE" hasLocation="false" isDestination="false">
         <description>Set camera running mode. Use NaN for reserved values. GCS will send a MAV_CMD_REQUEST_VIDEO_STREAM_STATUS command after a mode change if the camera supports video streaming.</description>
-        <param index="1" label="id">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras that don't have a distinct component id (such as autopilot-attached cameras). 0: all cameras. This is used to specifically target autopilot-connected cameras or individual sensors in a multi-sensor MAVLink camera. It is also used to target specific cameras when the MAV_CMD is used in a mission</param>
+        <param index="1" label="id" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="2" label="Camera Mode" enum="CAMERA_MODE">Camera mode</param>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
@@ -2118,17 +2138,15 @@
         <description>Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
         <param index="1" label="Zoom Type" enum="CAMERA_ZOOM_TYPE">Zoom type</param>
         <param index="2" label="Zoom Value">Zoom value. The range of valid values depend on the zoom type.</param>
-        <param index="3" reserved="true" default="NaN"/>
+        <param index="3" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="4" reserved="true" default="NaN"/>
-        <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="532" name="MAV_CMD_SET_CAMERA_FOCUS" hasLocation="false" isDestination="false">
         <description>Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
         <param index="1" label="Focus Type" enum="SET_FOCUS_TYPE">Focus type</param>
         <param index="2" label="Focus Value">Focus value</param>
-        <param index="3" reserved="true" default="NaN"/>
+        <param index="3" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="4" reserved="true" default="NaN"/>
-        <param index="7" reserved="true" default="NaN"/>
       </entry>
       <entry value="533" name="MAV_CMD_SET_STORAGE_USAGE" hasLocation="false" isDestination="false">
         <description>Set that a particular storage is the preferred location for saving photos, videos, and/or other media (e.g. to set that an SD card is used for storing videos).
@@ -2186,7 +2204,7 @@
           If addressed to a MAVLink camera, param 1 can be used to address all cameras (0), or to separately address 1 to 7 individual sensors. Other values should be NACKed with MAV_RESULT_DENIED.
           If the command is broadcast (target_component is 0) then param 1 should be set to 0 (any other value should be NACKED with MAV_RESULT_DENIED). An autopilot would trigger any local cameras and forward the command to all channels.
         </description>
-        <param index="1" label="id" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras that don't have a distinct component id (such as autopilot-attached cameras). 0: all cameras. This is used to specifically target autopilot-connected cameras or individual sensors in a multi-sensor MAVLink camera. It is also used to target specific cameras when the MAV_CMD is used in a mission</param>
+        <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="2" label="Interval" units="s" minValue="0">Desired elapsed time between two consecutive pictures (in seconds). Minimum values depend on hardware (typically greater than 2 seconds).</param>
         <param index="3" label="Total Images" minValue="0" increment="1">Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE.</param>
         <param index="4" label="Sequence Number" minValue="1" increment="1">Capture sequence number starting from 1. This is only valid for single-capture (param3 == 1), otherwise set to 0. Increment the capture ID for each capture command to prevent double captures when a command is re-transmitted.</param>
@@ -2209,7 +2227,7 @@
           If addressed to a MAVLink camera, param1 can be used to address all cameras (0), or to separately address 1 to 7 individual sensors. Other values should be NACKed with MAV_RESULT_DENIED.
           If the command is broadcast (target_component is 0) then param 1 should be set to 0 (any other value should be NACKED with MAV_RESULT_DENIED). An autopilot would trigger any local cameras and forward the command to all channels.
         </description>
-        <param index="1" label="id" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras that don't have a distinct component id (such as autopilot-attached cameras). 0: all cameras. This is used to specifically target autopilot-connected cameras or individual sensors in a multi-sensor MAVLink camera. It is also used to target specific cameras when the MAV_CMD is used in a mission</param>
+        <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
@@ -2233,12 +2251,14 @@
         <param index="1" label="Enable" minValue="-1" maxValue="1" increment="1">Trigger enable/disable (0 for disable, 1 for start), -1 to ignore</param>
         <param index="2" label="Reset" minValue="-1" maxValue="1" increment="1">1 to reset the trigger sequence, -1 or 0 to ignore</param>
         <param index="3" label="Pause" minValue="-1" maxValue="1" increment="2">1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore</param>
+        <param index="4" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="2004" name="MAV_CMD_CAMERA_TRACK_POINT" hasLocation="false" isDestination="false">
         <description>If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking.</description>
         <param index="1" label="Point x" minValue="0" maxValue="1">Point to track x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="2" label="Point y" minValue="0" maxValue="1">Point to track y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="3" label="Radius" minValue="0" maxValue="1">Point radius (normalized 0..1, 0 is one pixel, 1 is full image width).</param>
+        <param index="4" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="2005" name="MAV_CMD_CAMERA_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
         <description>If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking.</description>
@@ -2246,15 +2266,17 @@
         <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="3" label="Bottom right corner x" minValue="0" maxValue="1">Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="4" label="Bottom right corner y" minValue="0" maxValue="1">Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
+        <param index="5" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="2010" name="MAV_CMD_CAMERA_STOP_TRACKING" hasLocation="false" isDestination="false">
         <description>Stops ongoing tracking.</description>
+        <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE" hasLocation="false" isDestination="false">
         <description>Starts video capture (recording).</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams)</param>
         <param index="2" label="Status Frequency" minValue="0" units="Hz">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency)</param>
-        <param index="3" reserved="true" default="NaN"/>
+        <param index="3" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="4" reserved="true" default="NaN"/>
         <param index="5" reserved="true"/>
         <param index="6" reserved="true"/>
@@ -2263,7 +2285,7 @@
       <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE" hasLocation="false" isDestination="false">
         <description>Stop the current video capture (recording).</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams)</param>
-        <param index="2" reserved="true" default="NaN"/>
+        <param index="2" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="3" reserved="true" default="NaN"/>
         <param index="4" reserved="true" default="NaN"/>
         <param index="5" reserved="true"/>
@@ -2273,10 +2295,12 @@
       <entry value="2502" name="MAV_CMD_VIDEO_START_STREAMING" hasLocation="false" isDestination="false">
         <description>Start video streaming</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+        <param index="2" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="2503" name="MAV_CMD_VIDEO_STOP_STREAMING" hasLocation="false" isDestination="false">
         <description>Stop the given video stream</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
+        <param index="2" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="2504" name="MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
@@ -2727,7 +2751,7 @@
       </entry>
     </enum>
     <enum name="MAV_ROI">
-      <deprecated since="2018-01" replaced_by="MAV_CMD_DO_SET_ROI_*"/>
+      <deprecated since="2018-01" replaced_by="`MAV_CMD_DO_SET_ROI_*`"/>
       <description>The ROI (region of interest) for the vehicle. This can be
                 be used by the vehicle for camera/vehicle attitude alignment (see
                 MAV_CMD_NAV_ROI).</description>
@@ -3226,6 +3250,14 @@
           Note that either this flag or MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE should be set if the parameter protocol is supported.
         </description>
       </entry>
+      <entry value="262144" name="MAV_PROTOCOL_CAPABILITY_COMPONENT_IMPLEMENTS_GIMBAL_MANAGER">
+        <description>This component implements/is a gimbal manager. This means the GIMBAL_MANAGER_INFORMATION, and other messages can be requested.
+        </description>
+      </entry>
+      <entry value="524288" name="MAV_PROTOCOL_CAPABILITY_COMPONENT_ACCEPTS_GCS_CONTROL">
+        <wip/>
+        <description>Component supports locking control to a particular GCS independent of its system (via MAV_CMD_REQUEST_OPERATOR_CONTROL).</description>
+      </entry>
     </enum>
     <enum name="MAV_MISSION_TYPE">
       <description>Type of mission items being requested/sent in mission protocol.</description>
@@ -3375,6 +3407,18 @@
       </entry>
       <entry value="256" name="BATTERY_FAULT_INCOMPATIBLE_CELLS_CONFIGURATION">
         <description>Battery is not compatible due to cell configuration (e.g. 5s1p when vehicle requires 6s).</description>
+      </entry>
+    </enum>
+    <enum name="MAV_FUEL_TYPE">
+      <description>Fuel types for use in FUEL_TYPE. Fuel types specify the units for the maximum, available and consumed fuel, and for the flow rates.</description>
+      <entry value="0" name="MAV_FUEL_TYPE_UNKNOWN">
+        <description>Not specified. Fuel levels are normalized (i.e. maximum is 1, and other levels are relative to 1).</description>
+      </entry>
+      <entry value="1" name="MAV_FUEL_TYPE_LIQUID">
+        <description>A generic liquid fuel. Fuel levels are in millilitres (ml). Fuel rates are in millilitres/second.</description>
+      </entry>
+      <entry value="2" name="MAV_FUEL_TYPE_GAS">
+        <description>A gas tank. Fuel levels are in kilo-Pascal (kPa), and flow rates are in milliliters per second (ml/s).</description>
       </entry>
     </enum>
     <enum name="MAV_GENERATOR_STATUS_FLAG" bitmask="true">
@@ -3802,6 +3846,9 @@
       <entry value="2048" name="CAMERA_CAP_FLAGS_HAS_TRACKING_GEO_STATUS">
         <description>Camera supports tracking geo status (CAMERA_TRACKING_GEO_STATUS).</description>
       </entry>
+      <entry value="4096" name="CAMERA_CAP_FLAGS_HAS_THERMAL_RANGE">
+        <description>Camera supports absolute thermal range (request CAMERA_THERMAL_RANGE with MAV_CMD_REQUEST_MESSAGE).</description>
+      </entry>
     </enum>
     <enum name="VIDEO_STREAM_STATUS_FLAGS" bitmask="true">
       <description>Stream status flags (Bitmap)</description>
@@ -3810,6 +3857,9 @@
       </entry>
       <entry value="2" name="VIDEO_STREAM_STATUS_FLAGS_THERMAL">
         <description>Stream is thermal imaging</description>
+      </entry>
+      <entry value="4" name="VIDEO_STREAM_STATUS_FLAGS_THERMAL_RANGE_ENABLED">
+        <description>Stream can report absolute thermal range (see CAMERA_THERMAL_RANGE).</description>
       </entry>
     </enum>
     <enum name="VIDEO_STREAM_TYPE">
@@ -3823,8 +3873,20 @@
       <entry value="2" name="VIDEO_STREAM_TYPE_TCP_MPEG">
         <description>Stream is MPEG on TCP</description>
       </entry>
-      <entry value="3" name="VIDEO_STREAM_TYPE_MPEG_TS_H264">
-        <description>Stream is h.264 on MPEG TS (URI gives the port number)</description>
+      <entry value="3" name="VIDEO_STREAM_TYPE_MPEG_TS">
+        <description>Stream is MPEG TS (URI gives the port number)</description>
+      </entry>
+    </enum>
+    <enum name="VIDEO_STREAM_ENCODING">
+      <description>Video stream encodings</description>
+      <entry value="0" name="VIDEO_STREAM_ENCODING_UNKNOWN">
+        <description>Stream encoding is unknown</description>
+      </entry>
+      <entry value="1" name="VIDEO_STREAM_ENCODING_H264">
+        <description>Stream encoding is H.264</description>
+      </entry>
+      <entry value="2" name="VIDEO_STREAM_ENCODING_H265">
+        <description>Stream encoding is H.265</description>
       </entry>
     </enum>
     <enum name="CAMERA_TRACKING_STATUS_FLAGS">
@@ -3971,12 +4033,24 @@
       </entry>
     </enum>
     <enum name="RC_TYPE">
-      <description>RC type</description>
-      <entry value="0" name="RC_TYPE_SPEKTRUM_DSM2">
+      <description>RC type. Used in MAV_CMD_START_RX_PAIR.</description>
+      <entry value="0" name="RC_TYPE_SPEKTRUM">
+        <description>Spektrum</description>
+      </entry>
+      <entry value="1" name="RC_TYPE_CRSF">
+        <description>CRSF</description>
+      </entry>
+    </enum>
+    <enum name="RC_SUB_TYPE">
+      <description>RC sub-type of types defined in RC_TYPE. Used in MAV_CMD_START_RX_PAIR. Ignored if value does not correspond to the set RC_TYPE.</description>
+      <entry value="0" name="RC_SUB_TYPE_SPEKTRUM_DSM2">
         <description>Spektrum DSM2</description>
       </entry>
-      <entry value="1" name="RC_TYPE_SPEKTRUM_DSMX">
+      <entry value="1" name="RC_SUB_TYPE_SPEKTRUM_DSMX">
         <description>Spektrum DSMX</description>
+      </entry>
+      <entry value="2" name="RC_SUB_TYPE_SPEKTRUM_DSMX8">
+        <description>Spektrum DSMX8</description>
       </entry>
     </enum>
     <enum name="POSITION_TARGET_TYPEMASK" bitmask="true">
@@ -5102,6 +5176,102 @@
         <description>Illuminator thermistor failure.</description>
       </entry>
     </enum>
+    <enum name="MAV_STANDARD_MODE">
+      <description>Standard modes with a well understood meaning across flight stacks and vehicle types.
+        For example, most flight stack have the concept of a "return" or "RTL" mode that takes a vehicle to safety, even though the precise mechanics of this mode may differ.
+        The modes supported by a flight stack can be queried using AVAILABLE_MODES and set using MAV_CMD_DO_SET_STANDARD_MODE.
+        The current mode is streamed in CURRENT_MODE.
+        See https://mavlink.io/en/services/standard_modes.html
+      </description>
+      <entry value="0" name="MAV_STANDARD_MODE_NON_STANDARD">
+        <description>Non standard mode.
+          This may be used when reporting the mode if the current flight mode is not a standard mode.
+        </description>
+      </entry>
+      <entry value="1" name="MAV_STANDARD_MODE_POSITION_HOLD">
+        <description>Position mode (manual).
+          Position-controlled and stabilized manual mode.
+          When sticks are released vehicles return to their level-flight orientation and hold both position and altitude against wind and external forces.
+          This mode can only be set by vehicles that can hold a fixed position.
+          Multicopter (MC) vehicles actively brake and hold both position and altitude against wind and external forces.
+          Hybrid MC/FW ("VTOL") vehicles first transition to multicopter mode (if needed) but otherwise behave in the same way as MC vehicles.
+          Fixed-wing (FW) vehicles must not support this mode.
+          Other vehicle types must not support this mode (this may be revisited through the PR process).
+        </description>
+      </entry>
+      <entry value="2" name="MAV_STANDARD_MODE_ORBIT">
+        <description>Orbit (manual).
+          Position-controlled and stabilized manual mode.
+          The vehicle circles around a fixed setpoint in the horizontal plane at a particular radius, altitude, and direction.
+          Flight stacks may further allow manual control over the setpoint position, radius, direction, speed, and/or altitude of the circle, but this is not mandated.
+          Flight stacks may support the [MAV_CMD_DO_ORBIT](https://mavlink.io/en/messages/common.html#MAV_CMD_DO_ORBIT) for changing the orbit parameters.
+          MC and FW vehicles may support this mode.
+          Hybrid MC/FW ("VTOL") vehicles may support this mode in MC/FW or both modes; if the mode is not supported by the current configuration the vehicle should transition to the supported configuration.
+          Other vehicle types must not support this mode (this may be revisited through the PR process).
+        </description>
+      </entry>
+      <entry value="3" name="MAV_STANDARD_MODE_CRUISE">
+        <description>Cruise mode (manual).
+          Position-controlled and stabilized manual mode.
+          When sticks are released vehicles return to their level-flight orientation and hold their original track against wind and external forces.
+          Fixed-wing (FW) vehicles level orientation and maintain current track and altitude against wind and external forces.
+          Hybrid MC/FW ("VTOL") vehicles first transition to FW mode (if needed) but otherwise behave in the same way as MC vehicles.
+          Multicopter (MC) vehicles must not support this mode.
+          Other vehicle types must not support this mode (this may be revisited through the PR process).
+        </description>
+      </entry>
+      <entry value="4" name="MAV_STANDARD_MODE_ALTITUDE_HOLD">
+        <description>Altitude hold (manual).
+          Altitude-controlled and stabilized manual mode.
+          When sticks are released vehicles return to their level-flight orientation and hold their altitude.
+          MC vehicles continue with existing momentum and may move with wind (or other external forces).
+          FW vehicles continue with current heading, but may be moved off-track by wind.
+          Hybrid MC/FW ("VTOL") vehicles behave according to their current configuration/mode (FW or MC).
+          Other vehicle types must not support this mode (this may be revisited through the PR process).
+        </description>
+      </entry>
+      <entry value="5" name="MAV_STANDARD_MODE_SAFE_RECOVERY">
+        <description>Safe recovery mode (auto).
+          Automatic mode that takes vehicle to a predefined safe location via a safe flight path, and may also automatically land the vehicle.
+          This mode is more commonly referred to as RTL and/or or Smart RTL.
+          The precise return location, flight path, and landing behaviour depend on vehicle configuration and type.
+          For example, the vehicle might return to the home/launch location, a rally point, or the start of a mission landing, it might follow a direct path, mission path, or breadcrumb path, and land using a mission landing pattern or some other kind of descent.
+        </description>
+      </entry>
+      <entry value="6" name="MAV_STANDARD_MODE_MISSION">
+        <description>Mission mode (automatic).
+          Automatic mode that executes MAVLink missions.
+          Missions are executed from the current waypoint as soon as the mode is enabled.
+        </description>
+      </entry>
+      <entry value="7" name="MAV_STANDARD_MODE_LAND">
+        <description>Land mode (auto).
+          Automatic mode that lands the vehicle at the current location.
+          The precise landing behaviour depends on vehicle configuration and type.
+        </description>
+      </entry>
+      <entry value="8" name="MAV_STANDARD_MODE_TAKEOFF">
+        <description>Takeoff mode (auto).
+          Automatic takeoff mode.
+          The precise takeoff behaviour depends on vehicle configuration and type.
+        </description>
+      </entry>
+    </enum>
+    <enum name="MAV_MODE_PROPERTY" bitmask="true">
+      <description>Mode properties.
+      </description>
+      <entry value="1" name="MAV_MODE_PROPERTY_ADVANCED">
+        <description>If set, this mode is an advanced mode.
+          For example a rate-controlled manual mode might be advanced, whereas a position-controlled manual mode is not.
+          A GCS can optionally use this flag to configure the UI for its intended users.
+        </description>
+      </entry>
+      <entry value="2" name="MAV_MODE_PROPERTY_NOT_USER_SELECTABLE">
+        <description>If set, this mode should not be added to the list of selectable modes.
+          The mode might still be selected by the FC directly (for example as part of a failsafe).
+        </description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -5130,7 +5300,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
     </message>
     <message id="4" name="PING">
-      <deprecated since="2011-08" replaced_by="SYSTEM_TIME">to be removed / merged with SYSTEM_TIME</deprecated>
+      <deprecated since="2011-08" replaced_by="TIMESYNC">To be removed / merged with TIMESYNC</deprecated>
       <description>A ping message either requesting or responding to a ping. This allows to measure the system latencies, including serial port, radio modem and UDP connections. The ping microservice is documented at https://mavlink.io/en/services/ping.html</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint32_t" name="seq">PING sequence</field>
@@ -5225,7 +5395,7 @@
       <field type="int32_t" name="alt_ellipsoid" units="mm">Altitude (above WGS84, EGM96 ellipsoid). Positive for up.</field>
       <field type="uint32_t" name="h_acc" units="mm">Position uncertainty.</field>
       <field type="uint32_t" name="v_acc" units="mm">Altitude uncertainty.</field>
-      <field type="uint32_t" name="vel_acc" units="mm">Speed uncertainty.</field>
+      <field type="uint32_t" name="vel_acc" units="mm/s">Speed uncertainty.</field>
       <field type="uint32_t" name="hdg_acc" units="degE5">Heading / track uncertainty</field>
       <field type="uint16_t" name="yaw" units="cdeg" invalid="0">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use UINT16_MAX if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
     </message>
@@ -5326,7 +5496,7 @@
       <field type="int32_t" name="lat" units="degE7">Latitude, expressed</field>
       <field type="int32_t" name="lon" units="degE7">Longitude, expressed</field>
       <field type="int32_t" name="alt" units="mm">Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.</field>
-      <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
+      <field type="int32_t" name="relative_alt" units="mm">Altitude above home</field>
       <field type="int16_t" name="vx" units="cm/s">Ground X Speed (Latitude, positive north)</field>
       <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude, positive east)</field>
       <field type="int16_t" name="vz" units="cm/s">Ground Z Speed (Altitude, positive down)</field>
@@ -6122,6 +6292,7 @@
         If the response has `target_system==target_component==0` the remote system has not been updated to use the component IDs and cannot reliably timesync; the requestor may report an error.
         Timestamps are UNIX Epoch time or time since system boot in nanoseconds (the timestamp format can be inferred by checking for the magnitude of the number; generally it doesn't matter as only the offset is used).
         The message sequence is repeated numerous times with results being filtered/averaged to estimate the offset.
+        See also: https://mavlink.io/en/services/timesync.html.
       </description>
       <field type="int64_t" name="tc1" units="ns">Time sync timestamp 1. Syncing: 0. Responding: Timestamp of responding component.</field>
       <field type="int64_t" name="ts1" units="ns">Time sync timestamp 2. Timestamp of syncing component (mirrored in response).</field>
@@ -6270,7 +6441,7 @@
       <field type="int32_t" name="alt_ellipsoid" units="mm">Altitude (above WGS84, EGM96 ellipsoid). Positive for up.</field>
       <field type="uint32_t" name="h_acc" units="mm">Position uncertainty.</field>
       <field type="uint32_t" name="v_acc" units="mm">Altitude uncertainty.</field>
-      <field type="uint32_t" name="vel_acc" units="mm">Speed uncertainty.</field>
+      <field type="uint32_t" name="vel_acc" units="mm/s">Speed uncertainty.</field>
       <field type="uint32_t" name="hdg_acc" units="degE5">Heading / track uncertainty</field>
     </message>
     <message id="125" name="POWER_STATUS">
@@ -6907,6 +7078,7 @@
       <field type="char[140]" name="cam_definition_uri">Camera definition URI (if any, otherwise only basic functions will be available). HTTP- (http://) and MAVLink FTP- (mavlinkftp://) formatted URIs are allowed (and both must be supported by any GCS that implements the Camera Protocol). The definition file may be xz compressed, which will be indicated by the file extension .xml.xz (a GCS that implements the protocol must support decompressing the file). The string needs to be zero terminated.  Use a zero-length string if not known.</field>
       <extensions/>
       <field type="uint8_t" name="gimbal_device_id" invalid="0">Gimbal id of a gimbal associated with this camera. This is the component id of the gimbal device, or 1-6 for non mavlink gimbals. Use 0 if no gimbal is associated with the camera.</field>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
     </message>
     <message id="260" name="CAMERA_SETTINGS">
       <description>Settings of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
@@ -6915,6 +7087,7 @@
       <extensions/>
       <field type="float" name="zoomLevel" invalid="NaN">Current zoom level as a percentage of the full range (0.0 to 100.0, NaN if not known)</field>
       <field type="float" name="focusLevel" invalid="NaN">Current focus level as a percentage of the full range (0.0 to 100.0, NaN if not known)</field>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
     </message>
     <message id="261" name="STORAGE_INFORMATION">
       <description>Information about a storage medium. This message is sent in response to a request with MAV_CMD_REQUEST_MESSAGE and whenever the status of the storage changes (STORAGE_STATUS). Use MAV_CMD_REQUEST_MESSAGE.param2 to indicate the index/id of requested storage: 0 for all, 1 for first, 2 for second, etc.</description>
@@ -6945,6 +7118,7 @@
       <field type="float" name="available_capacity" units="MiB">Available storage capacity.</field>
       <extensions/>
       <field type="int32_t" name="image_count">Total number of images captured ('forever', or until reset using MAV_CMD_STORAGE_FORMAT).</field>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
     </message>
     <message id="263" name="CAMERA_IMAGE_CAPTURED">
       <description>Information about a captured image. This is emitted every time a message is captured.
@@ -6956,7 +7130,7 @@
         set to the sequence number of the final message in the range.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint64_t" name="time_utc" units="us" invalid="0">Timestamp (time since UNIX epoch) in UTC. 0 for unknown.</field>
-      <field type="uint8_t" name="camera_id">Deprecated/unused. Component IDs are used to differentiate multiple cameras.</field>
+      <field type="uint8_t" name="camera_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id). Field name is usually camera_device_id.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude where image was taken</field>
       <field type="int32_t" name="lon" units="degE7">Longitude where capture was taken</field>
       <field type="int32_t" name="alt" units="mm">Altitude (MSL) where image was taken</field>
@@ -7028,6 +7202,9 @@
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view.</field>
       <field type="char[32]" name="name">Stream name.</field>
       <field type="char[160]" name="uri">Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to).</field>
+      <extensions/>
+      <field type="uint8_t" name="encoding" enum="VIDEO_STREAM_ENCODING">Encoding of stream.</field>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
     </message>
     <message id="270" name="VIDEO_STREAM_STATUS">
       <description>Information about the status of a video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE.</description>
@@ -7039,6 +7216,8 @@
       <field type="uint32_t" name="bitrate" units="bits/s">Bit rate</field>
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view</field>
+      <extensions/>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
     </message>
     <message id="271" name="CAMERA_FOV_STATUS">
       <description>Information about the field of view of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
@@ -7052,6 +7231,8 @@
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="float" name="hfov" units="deg" invalid="NaN">Horizontal field of view (NaN if unknown).</field>
       <field type="float" name="vfov" units="deg" invalid="NaN">Vertical field of view (NaN if unknown).</field>
+      <extensions/>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
     </message>
     <message id="275" name="CAMERA_TRACKING_IMAGE_STATUS">
       <description>Camera tracking status, sent while in active tracking. Use MAV_CMD_SET_MESSAGE_INTERVAL to define message interval.</description>
@@ -7065,6 +7246,8 @@
       <field type="float" name="rec_top_y" invalid="NaN">Current tracked rectangle top y value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
       <field type="float" name="rec_bottom_x" invalid="NaN">Current tracked rectangle bottom x value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is left, 1 is right), NAN if unknown</field>
       <field type="float" name="rec_bottom_y" invalid="NaN">Current tracked rectangle bottom y value if CAMERA_TRACKING_MODE_RECTANGLE (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown</field>
+      <extensions/>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
     </message>
     <message id="276" name="CAMERA_TRACKING_GEO_STATUS">
       <description>Camera tracking status, sent while in active tracking. Use MAV_CMD_SET_MESSAGE_INTERVAL to define message interval.</description>
@@ -7081,6 +7264,20 @@
       <field type="float" name="dist" units="m" invalid="NaN">Distance between camera and tracked object. NAN if unknown</field>
       <field type="float" name="hdg" units="rad" invalid="NaN">Heading in radians, in NED. NAN if unknown</field>
       <field type="float" name="hdg_acc" units="rad" invalid="NaN">Accuracy of heading, in NED. NAN if unknown</field>
+      <extensions/>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
+    </message>
+    <message id="277" name="CAMERA_THERMAL_RANGE">
+      <description>Camera absolute thermal range. This can be streamed when the associated VIDEO_STREAM_STATUS `flag` field bit VIDEO_STREAM_STATUS_FLAGS_THERMAL_RANGE_ENABLED is set, but a GCS may choose to only request it for the current active stream. Use MAV_CMD_SET_MESSAGE_INTERVAL to define message interval (param3 indicates the stream id of the current camera, or 0 for all streams, param4 indicates the target camera_device_id for autopilot-attached cameras or 0 for MAVLink cameras).</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="stream_id" minValue="1" instance="true">Video Stream ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
+      <field type="float" name="max" units="degC">Temperature max.</field>
+      <field type="float" name="max_point_x" invalid="NaN">Temperature max point x value (normalized 0..1, 0 is left, 1 is right), NAN if unknown.</field>
+      <field type="float" name="max_point_y" invalid="NaN">Temperature max point y value (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown.</field>
+      <field type="float" name="min" units="degC">Temperature min.</field>
+      <field type="float" name="min_point_x" invalid="NaN">Temperature min point x value (normalized 0..1, 0 is left, 1 is right), NAN if unknown.</field>
+      <field type="float" name="min_point_y" invalid="NaN">Temperature min point y value (normalized 0..1, 0 is top, 1 is bottom), NAN if unknown.</field>
     </message>
     <message id="280" name="GIMBAL_MANAGER_INFORMATION">
       <description>Information about a high level gimbal manager. This message should be requested by a ground station using MAV_CMD_REQUEST_MESSAGE.</description>
@@ -7108,7 +7305,7 @@
       <description>High level message to control a gimbal's attitude. This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS" display="bitmask">High level gimbal manager flags to use.</field>
       <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_MANAGER_FLAGS_YAW_LOCK is set)</field>
       <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
@@ -7207,7 +7404,7 @@
       <description>Set gimbal manager pitch and yaw angles (high rate message). This message is to be sent to the gimbal manager (e.g. from a ground station) and will be ignored by gimbal devices. Angles and rates can be set to NaN according to use case. Use MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW for low-rate adjustments that require confirmation.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS" display="bitmask">High level gimbal manager flags to use.</field>
       <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float" name="pitch" units="rad" invalid="NaN">Pitch angle (positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="yaw" units="rad" invalid="NaN">Yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
@@ -7218,7 +7415,7 @@
       <description>High level message to control a gimbal manually. The angles or angular rates are unitless; the actual rates will depend on internal gimbal manager settings/configuration (e.g. set by parameters). This message is to be sent to the gimbal manager (e.g. from a ground station). Angles and rates can be set to NaN according to use case.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags.</field>
+      <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS" display="bitmask">High level gimbal manager flags.</field>
       <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float" name="pitch" invalid="NaN">Pitch angle unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="yaw" invalid="NaN">Yaw angle unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
@@ -7490,7 +7687,53 @@
       <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
       <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
     </message>
-    <message id="370" name="BATTERY_INFO">
+    <message id="370" name="SMART_BATTERY_INFO">
+      <deprecated since="2024-02" replaced_by="BATTERY_INFO">The BATTERY_INFO message is better aligned with UAVCAN messages, and in any case is useful even if a battery is not "smart".</deprecated>
+      <description>Smart Battery information (static/infrequent update). Use for updates from: smart battery to flight stack, flight stack to GCS. Use BATTERY_STATUS for the frequent battery updates.</description>
+      <field type="uint8_t" name="id" instance="true">Battery ID</field>
+      <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
+      <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
+      <field type="int32_t" name="capacity_full_specification" units="mAh" invalid="-1">Capacity when full according to manufacturer, -1: field not provided.</field>
+      <field type="int32_t" name="capacity_full" units="mAh" invalid="-1">Capacity when full (accounting for battery degradation), -1: field not provided.</field>
+      <field type="uint16_t" name="cycle_count" invalid="UINT16_MAX">Charge/discharge cycle count. UINT16_MAX: field not provided.</field>
+      <field type="char[16]" name="serial_number" invalid="[0]">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
+      <field type="char[50]" name="device_name" invalid="[0]">Static device name in ASCII characters, 0 terminated. All 0: field not provided. Encode as manufacturer name then product name separated using an underscore.</field>
+      <field type="uint16_t" name="weight" units="g" invalid="0">Battery weight. 0: field not provided.</field>
+      <field type="uint16_t" name="discharge_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when discharging. If not supplied set to UINT16_MAX value.</field>
+      <field type="uint16_t" name="charging_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when charging. If not supplied set to UINT16_MAX value.</field>
+      <field type="uint16_t" name="resting_minimum_voltage" units="mV" invalid="UINT16_MAX">Minimum per-cell voltage when resting. If not supplied set to UINT16_MAX value.</field>
+      <extensions/>
+      <field type="uint16_t" name="charging_maximum_voltage" units="mV" invalid="0">Maximum per-cell voltage when charged. 0: field not provided.</field>
+      <field type="uint8_t" name="cells_in_series" invalid="0">Number of battery cells in series. 0: field not provided.</field>
+      <field type="uint32_t" name="discharge_maximum_current" units="mA" invalid="0">Maximum pack discharge current. 0: field not provided.</field>
+      <field type="uint32_t" name="discharge_maximum_burst_current" units="mA" invalid="0">Maximum pack discharge burst current. 0: field not provided.</field>
+      <field type="char[11]" name="manufacture_date" invalid="[0]">Manufacture date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
+    </message>
+    <message id="371" name="FUEL_STATUS">
+      <description>Fuel status.
+        This message provides "generic" fuel level information for display in a GCS and for triggering failsafes in an autopilot.
+        The fuel type and associated units for fields in this message are defined in the enum MAV_FUEL_TYPE.
+
+        The reported `consumed_fuel` and `remaining_fuel` must only be supplied if measured: they must not be inferred from the `maximum_fuel` and the other value.
+        A recipient can assume that if these fields are supplied they are accurate.
+        If not provided, the recipient can infer `remaining_fuel` from `maximum_fuel` and `consumed_fuel` on the assumption that the fuel was initially at its maximum (this is what battery monitors assume).
+        Note however that this is an assumption, and the UI should prompt the user appropriately (i.e. notify user that they should fill the tank before boot).
+
+        This kind of information may also be sent in fuel-specific messages such as BATTERY_STATUS_V2.
+        If both messages are sent for the same fuel system, the ids and corresponding information must match.
+
+        This should be streamed (nominally at 0.1 Hz).
+      </description>
+      <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as BATTERY_STATUS_V2.</field>
+      <field type="float" name="maximum_fuel">Capacity when full. Must be provided.</field>
+      <field type="float" name="consumed_fuel" invalid="NaN">Consumed fuel (measured). This value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="float" name="remaining_fuel" invalid="NaN">Remaining fuel until empty (measured). The value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Percentage of remaining fuel, relative to full. Values: [0-100], UINT8_MAX: field not provided.</field>
+      <field type="float" name="flow_rate" invalid="NaN">Positive value when emptying/using, and negative if filling/replacing. NaN: field not provided.</field>
+      <field type="float" name="temperature" units="K" invalid="NaN">Fuel temperature. NaN: field not provided.</field>
+      <field type="uint32_t" name="fuel_type" enum="MAV_FUEL_TYPE">Fuel type. Defines units for fuel capacity and consumption fields above.</field>
+    </message>
+    <message id="372" name="BATTERY_INFO">
       <wip/>
       <description>
         Battery information that is static, or requires infrequent update.
@@ -7682,6 +7925,41 @@
       <field type="uint16_t" name="sequence">Sequence number.</field>
       <field type="uint16_t" name="sequence_oldest_available">Oldest Sequence number that is still available after the sequence set in REQUEST_EVENT.</field>
       <field type="uint8_t" name="reason" enum="MAV_EVENT_ERROR_REASON">Error reason.</field>
+    </message>
+    <message id="435" name="AVAILABLE_MODES">
+      <description>Information about a flight mode.
+
+        The message can be enumerated to get information for all modes, or requested for a particular mode, using MAV_CMD_REQUEST_MESSAGE.
+        Specify 0 in param2 to request that the message is emitted for all available modes or the specific index for just one mode.
+        The modes must be available/settable for the current vehicle/frame type.
+        Each mode should only be emitted once (even if it is both standard and custom).
+        Note that the current mode should be emitted in CURRENT_MODE, and that if the mode list can change then AVAILABLE_MODES_MONITOR must be emitted on first change and subsequently streamed.
+        See https://mavlink.io/en/services/standard_modes.html
+      </description>
+      <field type="uint8_t" name="number_modes">The total number of available modes for the current vehicle type.</field>
+      <field type="uint8_t" name="mode_index">The current mode index within number_modes, indexed from 1. The index is not guaranteed to be persistent, and may change between reboots or if the set of modes change.</field>
+      <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
+      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="uint32_t" name="properties" enum="MAV_MODE_PROPERTY">Mode properties.</field>
+      <field type="char[35]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
+    </message>
+    <message id="436" name="CURRENT_MODE">
+      <description>Get the current mode.
+        This should be emitted on any mode change, and broadcast at low rate (nominally 0.5 Hz).
+        It may be requested using MAV_CMD_REQUEST_MESSAGE.
+        See https://mavlink.io/en/services/standard_modes.html
+      </description>
+      <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
+      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="uint32_t" name="intended_custom_mode" invalid="0">The custom_mode of the mode that was last commanded by the user (for example, with MAV_CMD_DO_SET_STANDARD_MODE, MAV_CMD_DO_SET_MODE or via RC). This should usually be the same as custom_mode. It will be different if the vehicle is unable to enter the intended mode, or has left that mode due to a failsafe condition. 0 indicates the intended custom mode is unknown/not supplied</field>
+    </message>
+    <message id="437" name="AVAILABLE_MODES_MONITOR">
+      <description>A change to the sequence number indicates that the set of AVAILABLE_MODES has changed.
+        A receiver must re-request all available modes whenever the sequence number changes.
+        This is only emitted after the first change and should then be broadcast at low rate (nominally 0.3 Hz) and on change.
+        See https://mavlink.io/en/services/standard_modes.html
+      </description>
+      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically).</field>
     </message>
     <message id="440" name="ILLUMINATOR_STATUS">
       <description>Illuminator status</description>
