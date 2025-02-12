@@ -1553,23 +1553,23 @@
         <param index="7" label="Altitude" units="m">Altitudee. 0: not used.</param>
       </entry>
       <entry value="189" name="MAV_CMD_DO_LAND_START" hasLocation="true" isDestination="false">
-        <description>Command to perform a landing defined in a mission and/or mission command to mark the start of a sequence of mission items that represents a landing.
+        <description>Command to perform a landing defined in a mission and/or mission item to mark the start of a sequence of mission items that represents a landing.
 
-	  As a mission command this is purely a marker for the start of the landing sequence: the lat/lon/altitude are ignored.
-	  Note that starting point of the landing sequence is defined by the navigation item that follows this item.
+	  As a mission command this is purely a marker for the start of the landing sequence: the lat/lon/altitude are ignored and should be set to zero.
+	  Note that starting point of the landing sequence is defined by the waypoint/navigation item that follows this item.
 
 	  As a command it can be sent in a COMMAND_INT to trigger a mission landing.
 	  The Latitude/Longitude/Altitude can be used to select a particular mission landing sequence if multiple landing sequences are present in the mission.
-	  If set, the flight stack will select the landing sequence that starts closest to the indicated point.
-	  If set to 0, the flight stack will select the closest landing sequence to the vehicle.
+	  If set, the flight stack will select the landing sequence with a start point that is geographically closest to the indicated point.
+	  If all all the values are set to 0, the flight stack will select the closest landing start point to the vehicle.          
 	</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude">Latitude for selecting target landing sequence in commands (0 to select closest to vehicle). Ignored in missions (set 0).</param>
+        <param index="6" label="Longitude">Longitude for selecting target landing sequence in commands (0 to select closest to vehicle). Ignored in missions (set 0).</param>
+        <param index="7" label="Altitude" units="m">Altitude for selecting target landing sequence in commands. Ignored in missions (set 0).</param>
       </entry>
       <entry value="190" name="MAV_CMD_DO_RALLY_LAND" hasLocation="false" isDestination="false">
         <description>Mission command to perform a landing from a rally point.</description>
