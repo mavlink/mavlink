@@ -1519,9 +1519,9 @@
       <field type="uint32_t" name="last_recovery" units="ms">Time (since boot) of last successful recovery.</field>
       <field type="uint32_t" name="last_clear" units="ms">Time (since boot) of last all-clear.</field>
       <field type="uint16_t" name="breach_count">Number of fence breaches.</field>
-      <field type="uint8_t" name="mods_enabled" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of enabled modules.</field>
-      <field type="uint8_t" name="mods_required" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of required modules.</field>
-      <field type="uint8_t" name="mods_triggered" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of triggered modules.</field>
+      <field type="uint8_t" name="mods_enabled" enum="LIMIT_MODULE">AP_Limit_Module bitfield of enabled modules.</field>
+      <field type="uint8_t" name="mods_required" enum="LIMIT_MODULE">AP_Limit_Module bitfield of required modules.</field>
+      <field type="uint8_t" name="mods_triggered" enum="LIMIT_MODULE">AP_Limit_Module bitfield of triggered modules.</field>
     </message>
     <message id="168" name="WIND">
       <description>Wind estimation.</description>
@@ -1586,7 +1586,7 @@
       <!-- Path planned landings are still in the future, but we want these fields ready: -->
       <field type="int16_t" name="break_alt" units="m">Break altitude relative to home.</field>
       <field type="uint16_t" name="land_dir" units="cdeg">Heading to aim for when landing.</field>
-      <field type="uint8_t" name="flags" enum="RALLY_FLAGS" display="bitmask">Configuration flags.</field>
+      <field type="uint8_t" name="flags" enum="RALLY_FLAGS">Configuration flags.</field>
     </message>
     <message id="176" name="RALLY_FETCH_POINT">
       <description>Request a current rally point from MAV. MAV should respond with a RALLY_POINT message. MAV should not respond if the request is invalid.</description>
@@ -1706,7 +1706,7 @@
     <message id="191" name="MAG_CAL_PROGRESS">
       <description>Reports progress of compass calibration.</description>
       <field type="uint8_t" name="compass_id" instance="true">Compass being calibrated.</field>
-      <field type="uint8_t" name="cal_mask" display="bitmask">Bitmask of compasses being calibrated.</field>
+      <field type="uint8_t" name="cal_mask">Bitmask of compasses being calibrated.</field>
       <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Calibration Status.</field>
       <field type="uint8_t" name="attempt">Attempt number.</field>
       <field type="uint8_t" name="completion_pct" units="%">Completion percentage.</field>
@@ -1719,7 +1719,7 @@
     <!-- EKF status message from autopilot to GCS. -->
     <message id="193" name="EKF_STATUS_REPORT">
       <description>EKF Status message including flags and variances.</description>
-      <field type="uint16_t" name="flags" enum="EKF_STATUS_FLAGS" display="bitmask">Flags.</field>
+      <field type="uint16_t" name="flags" enum="EKF_STATUS_FLAGS">Flags.</field>
       <!-- supported flags see EKF_STATUS_FLAGS enum -->
       <field type="float" name="velocity_variance">Velocity variance.</field>
       <!-- below 0.5 is good, 0.5~0.79 is warning, 0.8 or higher is bad -->
@@ -1793,7 +1793,7 @@
       <description>Heartbeat from a HeroBus attached GoPro.</description>
       <field type="uint8_t" name="status" enum="GOPRO_HEARTBEAT_STATUS">Status.</field>
       <field type="uint8_t" name="capture_mode" enum="GOPRO_CAPTURE_MODE">Current capture mode.</field>
-      <field type="uint8_t" name="flags" enum="GOPRO_HEARTBEAT_FLAGS" display="bitmask">Additional status bits.</field>
+      <field type="uint8_t" name="flags" enum="GOPRO_HEARTBEAT_FLAGS">Additional status bits.</field>
       <!-- see GOPRO_HEARTBEAT_FLAGS -->
     </message>
     <message id="216" name="GOPRO_GET_REQUEST">
