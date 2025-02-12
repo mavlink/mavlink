@@ -13,7 +13,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 # Integer ranges of given types
 types = {
     "int8_t": [-128, 127],
-    "char": [-128, 127], # assume signed char
+    "char": [-128, 127],  # assume signed char
     "uint8_t": [0, 255],
     "uint8_t_mavlink_version": [0, 255],
     "int16_t": [-32768, 32767],
@@ -26,6 +26,7 @@ types = {
 
 global warning_count
 warning_count = 0
+
 
 def check_enum(enum, file_name):
     global warning_count
@@ -49,7 +50,8 @@ def check_enum(enum, file_name):
     # Check for duplicate values
     for a, b in itertools.combinations(values, 2):
         if a == b:
-            raise Exception("%s: Enum: %s duplicate value %i" % (file_name, name, a))
+            raise Exception("%s: Enum: %s duplicate value %i" %
+                            (file_name, name, a))
 
     # Check if should be marked as a bitmask
     contains_zero = 0 in values
@@ -74,14 +76,17 @@ def check_enum(enum, file_name):
                 break
 
         if not bitmask and not overlap:
-            print("%s: Enum: %s should be a marked as bitmask?" % (file_name, name))
+            print("%s: Enum: %s should be a marked as bitmask?" %
+                  (file_name, name))
             warning_count += 1
 
         if bitmask and overlap:
-            print("%s: Enum: %s should be not be a marked as bitmask" % (file_name, name))
+            print("%s: Enum: %s should be not be a marked as bitmask" %
+                  (file_name, name))
             warning_count += 1
 
-    return { "name": name, "bitmask": bitmask, "values": values, "used": False }
+    return {"name": name, "bitmask": bitmask, "values": values, "used": False}
+
 
 def check_field(file_name, msg_name, field, enums):
     global warning_count
@@ -91,13 +96,15 @@ def check_field(file_name, msg_name, field, enums):
 
     # Enum with units doesn't make sense
     if (enum != None) and (units != None):
-        print("%s: Message %s field %s has both units and enum" % (file_name, msg_name, name))
+        print("%s: Message %s field %s has both units and enum" %
+              (file_name, msg_name, name))
         warning_count += 1
 
     if (enum != None):
         # Enum should exist
         if not (enum in enums):
-            print("%s: Message %s field %s enum %s does not exist" % (file_name, msg_name, name, enum))
+            print("%s: Message %s field %s enum %s does not exist" %
+                  (file_name, msg_name, name, enum))
             warning_count += 1
             return
 
@@ -108,21 +115,25 @@ def check_field(file_name, msg_name, field, enums):
             display_bitmask = field.get("display") == "bitmask"
 
             if bitmask and not display_bitmask:
-                print("%s: Message %s field %s enum %s should marked: display=\"bitmask\"" % (file_name, msg_name, name, enum))
+                print("%s: Message %s field %s enum %s should marked: display=\"bitmask\"" % (
+                    file_name, msg_name, name, enum))
                 warning_count += 1
 
             if display_bitmask and not bitmask:
-                print("%s: Message %s field %s enum %s should not marked: display=\"bitmask\"" % (file_name, msg_name, name, enum))
+                print("%s: Message %s field %s enum %s should not marked: display=\"bitmask\"" % (
+                    file_name, msg_name, name, enum))
                 warning_count += 1
 
         # Enum should fit in given type
         type = field.get('type').split('[')[0]
         if not (type in types):
-            print("%s: Message %s field %s enum %s unexpected type: %s" % (file_name, msg_name, name, enum, type))
+            print("%s: Message %s field %s enum %s unexpected type: %s" %
+                  (file_name, msg_name, name, enum, type))
             warning_count += 1
 
         elif (enums[enum]["min"] < types[type][0]) or (enums[enum]["max"] > types[type][1]):
-            print("%s: Message %s field %s enum %s does not fit in type: %s" % (file_name, msg_name, name, enum, type))
+            print("%s: Message %s field %s enum %s does not fit in type: %s" %
+                  (file_name, msg_name, name, enum, type))
             warning_count += 1
 
 
@@ -134,13 +145,15 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
 
     # Enum with units doesn't make sense
     if (enum != None) and (units != None):
-        print("%s: Command %s param %s has both units and enum" % (file_name, cmd_name, index))
+        print("%s: Command %s param %s has both units and enum" %
+              (file_name, cmd_name, index))
         warning_count += 1
 
     if (enum != None):
         # Enum should exist
         if not (enum in enums):
-            print("%s: Command %s param %s enum %s does not exist" % (file_name, cmd_name, index, enum))
+            print("%s: Command %s param %s enum %s does not exist" %
+                  (file_name, cmd_name, index, enum))
             warning_count += 1
             return
 
@@ -148,7 +161,7 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
 
     # There are a huge amount or errors here, commented out for now
     # Should be marked as reserved correctly
-    #if len(entry.contents) > 0:
+    # if len(entry.contents) > 0:
     #    description = entry.contents[0]
     #    reversed_descriptions = ["Empty.", "Empty", "Reserved", "Reserved (all remaining params)", "Reserved (set to 0)"]
     #    if description in reversed_descriptions:
@@ -162,14 +175,18 @@ Checks XML definition files in ../message_definitions/v1.0/.
 Warns on consistency errors such as flag enums that do not include bitmask attributes, and so on.
 """
 
-parser = ArgumentParser(description=description, formatter_class=RawDescriptionHelpFormatter)
+parser = ArgumentParser(description=description,
+                        formatter_class=RawDescriptionHelpFormatter)
 
-parser.add_argument('-f', '--file', default=None, help="File name to check (all xml files checked by default)")
-parser.add_argument('-e', '--exception', action='store_true', help="Throw error if any warnings are found")
+parser.add_argument('-f', '--file', default=None,
+                    help="File name to check (all xml files checked by default)")
+parser.add_argument('-e', '--exception', action='store_true',
+                    help="Throw error if any warnings are found")
 
 args = parser.parse_args()
 
-source_dir = os.path.join(os.path.dirname(__file__), "../message_definitions/v1.0/")
+source_dir = os.path.join(os.path.dirname(
+    __file__), "../message_definitions/v1.0/")
 
 if args.file is None:
     files = list(filter(lambda x: x.endswith('.xml'), os.listdir(source_dir)))
@@ -203,7 +220,8 @@ for key in xml:
 
         else:
             # Create new enum
-            all_enums[name] = { 'name': name, 'file': [key], 'enum': [decoded], 'used': False }
+            all_enums[name] = {'name': name, 'file': [
+                key], 'enum': [decoded], 'used': False}
 
 # Check for enums declared in multiple locations
 for name in all_enums:
@@ -219,23 +237,27 @@ for name in all_enums:
     values_conflict = False
 
     for i in range(1, len(enum['enum'])):
-        bitmask_conflict |= bool(enum['bitmask']) != bool(enum['enum'][i]['bitmask'])
-        values_conflict |= len(list(set(values) & set(enum['enum'][i]['values']))) > 0
+        bitmask_conflict |= bool(enum['bitmask']) != bool(
+            enum['enum'][i]['bitmask'])
+        values_conflict |= len(
+            list(set(values) & set(enum['enum'][i]['values']))) > 0
         values += enum['enum'][i]['values']
 
     enum['min'] = min(values)
     enum['max'] = max(values)
 
     if bitmask_conflict:
-        print("%s: Enum: %s has conflicting bitmask definitions" % ( enum['file'],  name ))
+        print("%s: Enum: %s has conflicting bitmask definitions" %
+              (enum['file'],  name))
         warning_count += 1
 
     if values_conflict:
-        print("%s: Enum: %s has conflicting values" % ( enum['file'],  name ))
+        print("%s: Enum: %s has conflicting values" % (enum['file'],  name))
         warning_count += 1
 
     if (not enum['bitmask'] and len(values) <= 1) or len(values) == 0:
-        print("%s: Enum: %s has only %i items?" % ( enum['file'],  name, len(values) ))
+        print("%s: Enum: %s has only %i items?" %
+              (enum['file'],  name, len(values)))
         warning_count += 1
 
 # Check all fields against enums
@@ -257,7 +279,8 @@ for key in xml:
 # Check for unused enums
 for key in all_enums:
     if all_enums[key]["used"] == False:
-        print("%s: Enum: %s is unused" % (all_enums[key]['file'], all_enums[key]["name"]))
+        print("%s: Enum: %s is unused" %
+              (all_enums[key]['file'], all_enums[key]["name"]))
         warning_count += 1
 
 # Give summary for possible CI usage
