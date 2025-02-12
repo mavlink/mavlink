@@ -2,14 +2,13 @@
 """
 Script to parse all XML definition files in ../message_definitions/v1.0/ for consistency errors.
 These might include flag enums that do not include bitmask attributes, and so on.
-The script must be called from its own directory.
 """
 
 from bs4 import BeautifulSoup as bs
 import os
 import itertools
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 # Integer ranges of given types
 types = {
@@ -156,19 +155,30 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
     #        print("%s: Command %s param %s should be marked reserved=\"true\"" % (file_name, cmd_name, index))
 
 
-parser = ArgumentParser()
-parser.add_argument('-f' '--file', default=None, help="File name to check, if not provided all xml's are checked")
+description = f"""
+XML consistency parser.
+
+Checks XML definition files in ../message_definitions/v1.0/.
+Warns on consistency errors such as flag enums that do not include bitmask attributes, and so on.
+"""
+
+parser = ArgumentParser(description=description, formatter_class=RawDescriptionHelpFormatter)
+
+parser.add_argument('-f', '--file', default=None, help="File name to check (all xml files checked by default)")
 parser.add_argument('-e', '--exception', action='store_true', help="Throw error if any warnings are found")
 
 args = parser.parse_args()
 
-if args.f__file == None:
-    source_dir = os.path.join(os.path.dirname(__file__), "../message_definitions/v1.0/")
-    files = list(filter(lambda x: x.endswith('.xml'), os.listdir(source_dir)))
+source_dir = os.path.join(os.path.dirname(__file__), "../message_definitions/v1.0/")
 
+if args.file is None:
+    files = list(filter(lambda x: x.endswith('.xml'), os.listdir(source_dir)))
 else:
-    source_dir = os.getcwd()
-    files = [args.f__file]
+    if not args.file.endswith('.xml'):
+        args.file += '.xml'
+    files = [args.file]
+
+print(f"Files: {files}")
 
 xml = {}
 for file in files:
@@ -256,4 +266,3 @@ if args.exception and (warning_count > 0):
 
 else:
     print("\nFound %i issues in: %s\n" % (warning_count, files))
-
