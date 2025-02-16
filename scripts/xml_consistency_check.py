@@ -142,6 +142,9 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
     index = entry.get('index')
     enum = entry.get('enum')
     units = entry.get('units')
+    minValue = entry.get('minValue')
+    maxValue = entry.get('maxValue')
+    increment = entry.get('increment')
 
     # Enum with units doesn't make sense
     if (enum != None) and (units != None):
@@ -158,6 +161,30 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
             return
 
         enums[enum]["used"] = True
+
+    if minValue != None and maxValue != None :
+        min = float(minValue)
+        max = float(maxValue)
+        range = max - min
+        if range <= 0:
+            print("%s: Command %s param %s min and max invalid got %f => %f" %
+                  (file_name, cmd_name, index, min, max))
+            warning_count += 1
+            return
+
+        if increment != None:
+            step = float(increment)
+            if range % step != 0:
+                print("%s: Command %s param %s range %f => %f incompatible with increment %f" %
+                    (file_name, cmd_name, index, min, max, step))
+                warning_count += 1
+                return
+
+            if (step == 1) and range <= 20:
+                print("%s: Command %s param %s min, max close and increment of 1, should there be a enum?" %
+                    (file_name, cmd_name, index))
+                warning_count += 1
+                return
 
     # There are a huge amount or errors here, commented out for now
     # Should be marked as reserved correctly
