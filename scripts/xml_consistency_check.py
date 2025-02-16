@@ -237,6 +237,9 @@ for file in files:
 all_enums = {}
 for key in xml:
     for enum in xml[key].find_all('enum'):
+        if enum.find('deprecated', recursive=False) != None:
+            # Skip and deprecated items
+            continue
         decoded = check_enum(enum, key)
         name = decoded["name"]
         if name in all_enums:
@@ -288,6 +291,9 @@ for name in all_enums:
 # Check all fields against enums
 for key in xml:
     for message in xml[key].find_all('message'):
+        if message.find('deprecated', recursive=False) != None:
+            # Skip and deprecated items
+            continue
         name = message.get('name')
         fields = message.find_all('field')
         for field in fields:
@@ -297,6 +303,9 @@ for key in xml:
 for key in xml:
     for enum in xml[key].find_all('enum', {"name": "MAV_CMD"}):
         for entry in enum.find_all('entry'):
+            if entry.find('deprecated', recursive=False) != None:
+                # Skip and deprecated items
+                continue
             name = entry.get('name')
             seen_indices = set()   # Indices seen so far, to check for duplicates
             for param in entry.find_all('param'):
