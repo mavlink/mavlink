@@ -93,10 +93,18 @@ def check_field(file_name, msg_name, field, enums):
     name = field.get('name')
     enum = field.get('enum')
     units = field.get('units')
+    display = field.get('display')
 
     # Enum with units doesn't make sense
     if (enum != None) and (units != None):
         print("%s: Message %s field %s has both units and enum" %
+              (file_name, msg_name, name))
+        warning_count += 1
+
+    # Display bitmask should have a enum
+    display_bitmask = display == "bitmask"
+    if display_bitmask and (enum == None):
+        print("%s: Message %s field %s is marked display=\"bitmask\" with no enum" %
               (file_name, msg_name, name))
         warning_count += 1
 
@@ -112,8 +120,6 @@ def check_field(file_name, msg_name, field, enums):
         bitmask = enums[enum]["bitmask"]
         if bitmask != None:
             # Bitmask should match underlying enum
-            display_bitmask = field.get("display") == "bitmask"
-
             if bitmask and not display_bitmask:
                 print("%s: Message %s field %s enum %s should marked: display=\"bitmask\"" % (
                     file_name, msg_name, name, enum))
