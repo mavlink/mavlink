@@ -206,6 +206,32 @@
       <field type="uint16_t[10]" name="axis_value" invalid="[UINT16_MAX]">Value of each joystick axis</field>
       <field type="uint8_t[20]" name="button_value" invalid="[UINT8_MAX]">Value of each joystick button</field>
     </message>
+    <!-- PIXEL_TO_LLA START -->
+    <message id="600" name="PIXEL_TO_LLA_REQUEST">
+      <description>Request the geographic coordinates (latitude, longitude, and altitude (MSL WGS84)) corresponding to a specific pixel location in an image frame. </description>
+      <field type="uint8_t" name="camera_id"> Camera ID of the image source.</field>
+      <field type="uint64_t" name="uid"> Unique ID of the request.</field>
+      <field type="uint64_t" name="img_unix_ts" units="us"> Unix time stamp of the image.</field>
+      <field type="float" name="img_rel_x"> Relative image x coordinate (left to right axis) in the range of [0.0, 1.0].</field>
+      <field type="float" name="img_rel_y"> Relative image y coordinate (top to bottom axis) in the range of [0.0, 1.0].</field>
+    </message>
+    <message id="601" name="PIXEL_TO_LLA_ACK">
+      <description>ACK response for the REQUEST_PIXEL_TO_LLA message. Indicates whether the request was accepted or rejected.</description>
+      <field type="uint64_t" name="uid"> Unique ID of the request.</field>
+      <field type="uint8_t" name="status">0 = Accepted, 1 = Rejected (with an optional error message).</field>
+      <field type="char[100]" name="error_message"> Optional error message in case of rejection. Max length 100 characters.</field>
+    </message>
+    <message id="602" name="PIXEL_TO_LLA_RESULT">
+      <description>Result of the pixel-to-LLA request. Includes the Unix timestamp, geographic coordinates (LLA), and the 3x3 matrix for the NED homography transform of the image, or an error status if the request failed.</description>
+      <field type="uint64_t" name="uid"> Unique ID of the request.</field>
+      <field type="uint8_t" name="status">0 = Success, 1 = Failure. If failure, error_message will provide details.</field>
+      <field type="double" name="latitude" units="deg">Latitude of the requested pixel (degrees, WGS84).</field>
+      <field type="double" name="longitude" units="deg">Longitude of the requested pixel (degrees, WGS84).</field>
+      <field type="double" name="altitude" units="m">Altitude of the requested pixel (meters, WGS84 ellipsoid).</field>
+      <field type="float[9]" name="ned_homography_matrix">3x3 matrix for NED (North-East-Down) homography transform of the image. Row-major order.</field>
+      <field type="char[100]" name="error_message">Optional error message in case of failure. Max length 100 characters.</field>
+    </message>
+    <!-- PIXEL_TO_LLA END -->
     <message id="13000" name="MOTOR_INFO">
       <description> Contains information about a motor. </description>
       <field type="uint8_t" name="index"> Motor index number starting with index 1. 0 if unknown. </field>
