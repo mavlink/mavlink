@@ -218,13 +218,13 @@
     <message id="601" name="PIXEL_TO_LLA_ACK">
       <description>ACK response for the REQUEST_PIXEL_TO_LLA message. Indicates whether the request was accepted or rejected.</description>
       <field type="uint64_t" name="uid"> Unique ID of the request.</field>
-      <field type="uint8_t" name="status">0 = Accepted, 1 = Rejected (with an optional error message).</field>
+      <field type="uint8_t" name="status">0 = Rejected, 1 = Accepted (with an optional error message).</field>
       <field type="char[100]" name="error_message"> Optional error message in case of rejection. Max length 100 characters.</field>
     </message>
     <message id="602" name="PIXEL_TO_LLA_RESULT">
       <description>Result of the pixel-to-LLA request. Includes the Unix timestamp, geographic coordinates (LLA), and the 3x3 matrix for the NED homography transform of the image, or an error status if the request failed.</description>
       <field type="uint64_t" name="uid"> Unique ID of the request.</field>
-      <field type="uint8_t" name="status">0 = Success, 1 = Failure. If failure, error_message will provide details.</field>
+      <field type="uint8_t" name="status">0 = Failure, 1 = Success. If failure, error_message will provide details.</field>
       <field type="double" name="latitude" units="deg">Latitude of the requested pixel (degrees, WGS84).</field>
       <field type="double" name="longitude" units="deg">Longitude of the requested pixel (degrees, WGS84).</field>
       <field type="double" name="altitude" units="m">Altitude of the requested pixel (meters, WGS84 ellipsoid).</field>
