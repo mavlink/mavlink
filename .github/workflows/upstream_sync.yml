@@ -6,21 +6,33 @@ on:
   workflow_dispatch: # on button click
 
 jobs:
-  sync:
+  merge:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set timestamp
-        id: timestamp
-        run: echo "::set-output name=timestamp::$(date)"
-      - name: Sync with upstream
-        uses: shubhsherl/create-catchup-pr@v0.1.0
+      - name: Determine PR branch name
+        run: |
+          PR_BRANCH_NAME=upstream-merge-$(date '+%Y-%m-%d')
+          echo "pr_branch_name=$PR_BRANCH_NAME" >> $GITHUB_ENV
+          echo "PR branch will be $PR_BRANCH_NAME"
+      - name: Sync upstream/main with PR branch
+        uses: wei/git-sync@v3
         with:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          GITHUB_REPO: ${{ github.repository }}
-          SOURCE_REPO: "mavlink"
-          SOURCE_BRANCH: "master"
-          TARGET_BRANCH: "master"
-          TITLE: Sync with upstream master | ${{ steps.timestamp.outputs.timestamp }}
-          BODY: Sync master with upstream mavlink/mavlink:master
+          source_repo: "mavlink/mavlink"
+          source_branch: master
+          destination_repo: "https://auterion-ci:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY"
+          destination_branch: ${{ env.pr_branch_name }}
+      - name: Open PR to own master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "**Sync time:** $(date '+%Y-%m-%d %H:%M:%S %Z %z')" > pr_body.md
+          echo "> [!IMPORTANT]" >> pr_body.md
+          echo "> ### Merge with a merge commit." >> pr_body.md
+          echo "> Do not rebase." >> pr_body.md
+          gh pr create \
+            --repo $GITHUB_REPOSITORY \
+            --base master \
+            --head ${{ env.pr_branch_name }} \
+            --title "Upstream merge $(date '+%Y-%m-%d')" \
+            --body-file pr_body.md
