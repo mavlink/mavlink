@@ -1974,7 +1974,7 @@
         <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
       </entry>
       <entry value="310" name="MAV_CMD_ACTUATOR_TEST" hasLocation="false" isDestination="false">
-        <description>Actuator testing command. This is similar to MAV_CMD_DO_MOTOR_TEST but operates on the level of output functions, i.e. it is possible to test Motor1 independent from which output it is configured on. Autopilots typically refuse this command while armed.</description>
+        <description>Actuator testing command. This is similar to MAV_CMD_DO_MOTOR_TEST but operates on the level of output functions, i.e. it is possible to test Motor1 independent from which output it is configured on. Autopilots must NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed.</description>
         <param index="1" label="Value" minValue="-1" maxValue="1">Output value: 1 means maximum positive output, 0 to center servos or minimum motor thrust (expected to spin), -1 for maximum negative (if not supported by the motors, i.e. motor is not reversible, smaller than 0 maps to NaN). And NaN maps to disarmed (stop the motors).</param>
         <param index="2" label="Timeout" units="s" minValue="0" maxValue="3">Timeout after which the test command expires and the output is restored to the previous value. A timeout has to be set for safety reasons. A timeout of 0 means to restore the previous value immediately.</param>
         <param index="3" reserved="true" default="0"/>
