@@ -5983,40 +5983,46 @@
       <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse trust)</field>
     </message>
     <message id="84" name="SET_POSITION_TARGET_LOCAL_NED">
-      <description>Sets a desired vehicle position in a local north-east-down coordinate frame. Used by an external controller to command the vehicle (manual controller or other system).</description>
+      <description>Sets a desired vehicle position in a local coordinate frame (north-east-down, front-right-up/down).
+        Used by an external controller to command the vehicle (manual controller or other system).</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
+      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options include all local NED/FRD/FRU frames: 
+        MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9, 
+        MAV_FRAME_BODY_FRD=12, MAV_FRAME_LOCAL_FRD=20, MAV_FRAME_LOCAL_FLU=21</field>
       <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
-      <field type="float" name="x" units="m">X Position in NED frame</field>
-      <field type="float" name="y" units="m">Y Position in NED frame</field>
-      <field type="float" name="z" units="m">Z Position in NED frame (note, altitude is negative in NED)</field>
-      <field type="float" name="vx" units="m/s">X velocity in NED frame</field>
-      <field type="float" name="vy" units="m/s">Y velocity in NED frame</field>
-      <field type="float" name="vz" units="m/s">Z velocity in NED frame</field>
-      <field type="float" name="afx" units="m/s/s">X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
-      <field type="float" name="afy" units="m/s/s">Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
-      <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
+      <field type="float" name="x" units="m">X Position in specified frame</field>
+      <field type="float" name="y" units="m">Y Position in specified frame</field>
+      <field type="float" name="z" units="m">Z Position in specified frame (note, altitude is negative in NED)</field>
+      <field type="float" name="vx" units="m/s">X velocity in specified frame</field>
+      <field type="float" name="vy" units="m/s">Y velocity in specified frame</field>
+      <field type="float" name="vz" units="m/s">Z velocity in specified frame</field>
+      <field type="float" name="afx" units="m/s/s">X acceleration in specified frame in meter / s^2, or force (if bit 10 of type_mask is set) in N</field>
+      <field type="float" name="afy" units="m/s/s">Y acceleration in specified frame in meter / s^2, or force (if bit 10 of type_mask is set) in N</field>
+      <field type="float" name="afz" units="m/s/s">Z acceleration in specified frame in meter / s^2, or force (if bit 10 of type_mask is set) in N</field>
       <field type="float" name="yaw" units="rad">yaw setpoint</field>
       <field type="float" name="yaw_rate" units="rad/s">yaw rate setpoint</field>
     </message>
     <message id="85" name="POSITION_TARGET_LOCAL_NED">
-      <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED if the vehicle is being controlled this way.</description>
+      <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot.
+        This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9</field>
+      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options include all local NED/FRD/FRU frames: 
+        MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9, 
+        MAV_FRAME_BODY_FRD=12, MAV_FRAME_LOCAL_FRD=20, MAV_FRAME_LOCAL_FLU=21</field>
       <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
-      <field type="float" name="x" units="m">X Position in NED frame</field>
-      <field type="float" name="y" units="m">Y Position in NED frame</field>
-      <field type="float" name="z" units="m">Z Position in NED frame (note, altitude is negative in NED)</field>
-      <field type="float" name="vx" units="m/s">X velocity in NED frame</field>
-      <field type="float" name="vy" units="m/s">Y velocity in NED frame</field>
-      <field type="float" name="vz" units="m/s">Z velocity in NED frame</field>
-      <field type="float" name="afx" units="m/s/s">X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
-      <field type="float" name="afy" units="m/s/s">Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
-      <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
-      <field type="float" name="yaw" units="rad">yaw setpoint</field>
-      <field type="float" name="yaw_rate" units="rad/s">yaw rate setpoint</field>
+      <field type="float" name="x" units="m">X Position in specified frame</field>
+      <field type="float" name="y" units="m">Y Position in specified frame</field>
+      <field type="float" name="z" units="m">Z Position in specified frame (note, altitude is negative in NED)</field>
+      <field type="float" name="vx" units="m/s">X velocity in specified frame</field>
+      <field type="float" name="vy" units="m/s">Y velocity in specified frame</field>
+      <field type="float" name="vz" units="m/s">Z velocity in specified frame</field>
+      <field type="float" name="afx" units="m/s/s">X acceleration in specified frame in meter / s^2, or force (if bit 10 of type_mask is set) in N</field>
+      <field type="float" name="afy" units="m/s/s">Y acceleration in specified frame in meter / s^2, or force (if bit 10 of type_mask is set) in N</field>
+      <field type="float" name="afz" units="m/s/s">Z acceleration in specified frame in meter / s^2, or force (if bit 10 of type_mask is set) in N</field>
+      <field type="float" name="yaw" units="rad">Yaw setpoint</field>
+      <field type="float" name="yaw_rate" units="rad/s">Yaw rate setpoint</field>
     </message>
     <message id="86" name="SET_POSITION_TARGET_GLOBAL_INT">
       <description>Sets a desired vehicle position, velocity, and/or acceleration in a global coordinate system (WGS84). Used by an external controller to command the vehicle (manual controller or other system).</description>
@@ -6028,14 +6034,14 @@
       <field type="int32_t" name="lat_int" units="degE7">Latitude in WGS84 frame</field>
       <field type="int32_t" name="lon_int" units="degE7">Longitude in WGS84 frame</field>
       <field type="float" name="alt" units="m">Altitude (MSL, Relative to home, or AGL - depending on frame)</field>
-      <field type="float" name="vx" units="m/s">X velocity in NED frame</field>
-      <field type="float" name="vy" units="m/s">Y velocity in NED frame</field>
-      <field type="float" name="vz" units="m/s">Z velocity in NED frame</field>
-      <field type="float" name="afx" units="m/s/s">X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
-      <field type="float" name="afy" units="m/s/s">Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
-      <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
-      <field type="float" name="yaw" units="rad">yaw setpoint</field>
-      <field type="float" name="yaw_rate" units="rad/s">yaw rate setpoint</field>
+      <field type="float" name="vx" units="m/s">X velocity in specified frame</field>
+      <field type="float" name="vy" units="m/s">Y velocity in specified frame</field>
+      <field type="float" name="vz" units="m/s">Z velocity in specified frame</field>
+      <field type="float" name="afx" units="m/s/s">X acceleration or force (if bit 10 of type_mask is set) in specified frame in meter / s^2 or N</field>
+      <field type="float" name="afy" units="m/s/s">Y acceleration or force (if bit 10 of type_mask is set) in specified frame in meter / s^2 or N</field>
+      <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in specified frame in meter / s^2 or N</field>
+      <field type="float" name="yaw" units="rad">Yaw setpoint</field>
+      <field type="float" name="yaw_rate" units="rad/s">Yaw rate setpoint</field>
     </message>
     <message id="87" name="POSITION_TARGET_GLOBAL_INT">
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_GLOBAL_INT if the vehicle is being controlled this way.</description>
