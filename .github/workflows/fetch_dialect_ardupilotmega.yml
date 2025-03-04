@@ -15,6 +15,10 @@ jobs:
         run: |
           curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/ardupilotmega.xml -o ardupilotmega.xml
           curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/loweheiser.xml -o loweheiser.xml
+          curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/uAvionix.xml -o uAvionix.xml
+          curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/icarous.xml -o icarous.xml
+          curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/cubepilot.xml -o cubepilot.xml
+          curl -L https://raw.githubusercontent.com/ArduPilot/mavlink/master/message_definitions/v1.0/csAirLink.xml -o csAirLink.xml     
           
       - name: Check for changes
         id: check-changes
@@ -45,6 +49,6 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[BOT] Add ardupilotmega dialects from ArduPilot/mavlink"
-          body: "ardupilotmega.xml / loweheiser.xml copied from the ArduPilot/mavlink repository."
+          body: "ardupilotmega.xml and its included XML copied from the ArduPilot/mavlink repository."
           target: master
         if: steps.check-changes.conclusion == 'success'  # Check for success in previous step
