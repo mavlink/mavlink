@@ -34,7 +34,7 @@ jobs:
       - name: Check for changes
         id: check-changes
         run: |
-          if git diff --quiet --exit-code message_definitions/v1.0/; then
+          if git diff --quiet HEAD~ HEAD; then
             echo "No changes detected"
             echo "changes=false" >> $GITHUB_ENV
           else
@@ -48,4 +48,4 @@ jobs:
           title: "[BOT] Add ardupilotmega dialects from ArduPilot/mavlink"
           body: "ardupilotmega.xml and its included XML copied from the ArduPilot/mavlink repository."
           target: master
-        if: env.changes == 'true'
+        #if: env.changes == 'true' # Lets just do it
