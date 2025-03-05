@@ -381,6 +381,18 @@
     </enum>
   </enums>
   <messages>
+    <message id="150" name="LANDING_TARGET_GLOBAL">
+      <description>The location of a landing target on a moving platform.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="target_num">The ID of the target if multiple targets are present</field>
+      <extensions/>
+      <field type="float" name="lat" units="deg">Latitude of landing target</field>
+      <field type="float" name="lon" units="deg">Longitude of landing target</field>
+      <field type="float" name="alt" units="m">Altitude over MSL of landing target</field>
+      <field type="float" name="v_north" units="m/s">Landing target velocity in north direction of NED local tangent frame</field>
+      <field type="float" name="v_east" units="m/s">Landing target velocity in east direction of NED local tangent frame</field>
+      <field type="float" name="v_down" units="m/s">Landing target velocity in down direction of NED local tangent frame</field>
+    </message>
     <message id="295" name="AIRSPEED">
       <description>Airspeed information from a sensor.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
