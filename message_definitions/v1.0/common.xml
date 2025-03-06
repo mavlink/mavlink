@@ -1555,9 +1555,10 @@
       <entry value="189" name="MAV_CMD_DO_LAND_START" hasLocation="true" isDestination="false">
         <description>Mission item to mark the start of a mission landing pattern, or a command to land with a mission landing pattern.
 
-        When used in a mission this is a marker for the start of a sequence of mission items that represent a landing pattern.
+        When used in a mission, this is a marker for the start of a sequence of mission items that represent a landing pattern.
         It should be followed by a navigation item that defines the first waypoint of the landing sequence.
-        In missions that contain multiple landing sequences, the start marker positional params may be used to select a particular landing pattern from among several (for example, by indicating the start point of a safe-path to the first waypoint in the landing sequence).
+        The start marker positional params are used only for selecting what landing pattern to use if several are defined in the mission (the selected pattern will be the one with the marker position that is closest to the vehicle when a landing is commanded).
+        If the marker item position has zero-values for latitude, longitude, and altitude, then landing pattern selection is instead based on the position of the first waypoint in the landing sequence.
 
 	      When sent as a command it triggers a landing using a mission landing pattern.
 	      The location parameters are not used in this case, and should be set to 0.
