@@ -21,7 +21,7 @@ Released under GNU GPL version 3 or later
 
 """
 import os
-import re   
+import re
 import sys
 
 # Python 2.x and 3.x compatibility
@@ -39,7 +39,7 @@ else:
     del tkFileDialog
     tkinter.messagebox = tkMessageBox
     del tkMessageBox
-    
+
 
 from pymavlink.generator import mavgen
 from pymavlink.generator import mavparse

@@ -1,0 +1,51 @@
+name: Fetch ardupilotmega dialects from downstream
+on:
+  workflow_dispatch:
+
+jobs:
+  copy_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          repository: mavlink/mavlink
+
+      - name: Sync ardupilot source file changes(s)
+        run: |
+          git remote add ardupilot https://github.com/ArduPilot/mavlink.git
+          git fetch ardupilot master
+          git sparse-checkout init
+          git sparse-checkout set message_definitions/v1.0/
+          git checkout ardupilot/master -- message_definitions/v1.0/ardupilotmega.xml
+          git checkout ardupilot/master -- message_definitions/v1.0/icarous.xml
+          git checkout ardupilot/master -- message_definitions/v1.0/csAirLink.xml
+          git checkout ardupilot/master -- message_definitions/v1.0/loweheiser.xml
+          git checkout ardupilot/master -- message_definitions/v1.0/uAvionix.xml
+          git checkout ardupilot/master -- message_definitions/v1.0/cubepilot.xml
+
+      - name: Add and commit changes (if changes detected)
+        run: |
+          git config --global user.name "${{ secrets.PX4BUILDBOT_USER }}"
+          git config --global user.email "${{ secrets.PX4BUILDBOT_EMAIL }}"
+          git add message_definitions/v1.0/*
+          git commit -m "ardupilotmega dialects from ArduPilot/mavlink: `date`"
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if git diff --quiet HEAD~ HEAD; then
+            echo "No changes detected"
+            echo "changes=false" >> $GITHUB_ENV
+          else
+            echo "Changes detected"
+            echo "changes=true" >> $GITHUB_ENV
+          fi
+          
+      - name: Create Pull Request (if changes detected)
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "[BOT] Add ardupilotmega dialects from ArduPilot/mavlink"
+          body: "ardupilotmega.xml and its included XML copied from the ArduPilot/mavlink repository."
+          base: master
+        #if: env.changes == 'true' # Lets just do it
