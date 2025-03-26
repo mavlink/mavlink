@@ -77,7 +77,7 @@ class MAVXML(object):
         self.messages.clear()
         self.messages.update(sorted_items)
 
-        # Extact all ENUM except MAV_CMD
+        # Extract all ENUM except MAV_CMD
         # Define a custom filter function to exclude "MAV_CMD"
         def exclude_mav_cmd(tag):
             return tag.name == 'enum' and tag.get('name') != 'MAV_CMD'
@@ -1000,7 +1000,7 @@ class MAVCommand(object):
 
 def tidyDescription(desc_string, type="markdown"):
     """
-    Helper method to remove odd whitepace etc from a description string.
+    Helper method to remove odd whitespace etc from a description string.
     Different behaviour if the string is to be used in normal markdown or in a table.
     """
     if "\n" not in desc_string:
