@@ -754,10 +754,8 @@
       </entry>
     </enum>
     <enum name="AUTOTUNE_AXIS" bitmask="true">
-      <description>Enable axes that will be tuned via autotuning. Used in MAV_CMD_DO_AUTOTUNE_ENABLE.</description>
-      <entry value="0" name="AUTOTUNE_AXIS_DEFAULT">
-        <description>Flight stack tunes axis according to its default settings.</description>
-      </entry>
+      <description>Axes that will be autotuned by MAV_CMD_DO_AUTOTUNE_ENABLE.
+        Note that at least one flag must be set in MAV_CMD_DO_AUTOTUNE_ENABLE.param2: if none are set, the flight stack will tune its default set of axes.</description>
       <entry value="1" name="AUTOTUNE_AXIS_ROLL">
         <description>Autotune roll axis.</description>
       </entry>
@@ -1421,7 +1419,7 @@
       <entry value="212" name="MAV_CMD_DO_AUTOTUNE_ENABLE" hasLocation="false" isDestination="false">
         <description>Enable/disable autotune.</description>
         <param index="1" label="Enable" minValue="0" maxValue="1" increment="1">Enable (1: enable, 0:disable).</param>
-        <param index="2" label="Axis" enum="AUTOTUNE_AXIS">Specify which axes are autotuned. 0 indicates autopilot default settings.</param>
+        <param index="2" label="Axis" enum="AUTOTUNE_AXIS">Specify axes for which autotuning is enabled/disabled. 0 indicates the field is unused (for compatiblity reasons). If 0 the autopilot will follow its default behaviour, which is usually to tune all axes.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
         <param index="5">Empty.</param>
