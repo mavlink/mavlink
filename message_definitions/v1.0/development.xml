@@ -139,6 +139,20 @@
         <param index="3" label="Reboot">Reboot components after ID change. Any non-zero value triggers the reboot.</param>
         <param index="4" reserved="true" default="NaN"/>
       </entry>
+      <entry value="611" name="MAV_CMD_DO_SET_GLOBAL_ORIGIN" hasLocation="true" isDestination="false">
+        <description>Sets the GNSS coordinates of the vehicle local origin (0,0,0) position.
+          Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed.
+          This enables transform between the local coordinate frame and the global (GNSS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.
+          This command supersedes SET_GPS_GLOBAL_ORIGIN.
+        </description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5" label="Latitude" units="degE7">Latitude (WGS84)</param>
+        <param index="6" label="Longitude" units="degE7">Longitude (WGS84)</param>
+        <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
+      </entry>
       <entry value="43004" name="MAV_CMD_EXTERNAL_WIND_ESTIMATE" hasLocation="false" isDestination="false">
         <description>Set an external estimate of wind direction and speed.
           This might be used to provide an initial wind estimate to the estimator (EKF) in the case where the vehicle is wind dead-reckoning, extending the time when operating without GPS before before position drift builds to an unsafe level. For this use case the command might reasonably be sent every few minutes when operating at altitude, and the value is cleared if the estimator resets itself.
