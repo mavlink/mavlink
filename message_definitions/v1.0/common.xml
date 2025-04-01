@@ -343,33 +343,6 @@
       </entry>
     </enum>
     <!-- fenced mode enums -->
-    <enum name="FENCE_ACTION">
-      <description>Actions following geofence breach.</description>
-      <entry value="0" name="FENCE_ACTION_NONE">
-        <description>Disable fenced mode. If used in a plan this would mean the next fence is disabled.</description>
-      </entry>
-      <entry value="1" name="FENCE_ACTION_GUIDED">
-        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
-      </entry>
-      <entry value="2" name="FENCE_ACTION_REPORT">
-        <description>Report fence breach, but don't take action</description>
-      </entry>
-      <entry value="3" name="FENCE_ACTION_GUIDED_THR_PASS">
-        <description>Fly to geofence MAV_CMD_NAV_FENCE_RETURN_POINT with manual throttle control in GUIDED mode. Note: This action is only supported by ArduPlane, and may not be supported in all versions.</description>
-      </entry>
-      <entry value="4" name="FENCE_ACTION_RTL">
-        <description>Return/RTL mode.</description>
-      </entry>
-      <entry value="5" name="FENCE_ACTION_HOLD">
-        <description>Hold at current location.</description>
-      </entry>
-      <entry value="6" name="FENCE_ACTION_TERMINATE">
-        <description>Termination failsafe. Motors are shut down (some flight stacks may trigger other failsafe actions).</description>
-      </entry>
-      <entry value="7" name="FENCE_ACTION_LAND">
-        <description>Land at current location.</description>
-      </entry>
-    </enum>
     <enum name="FENCE_BREACH">
       <entry value="0" name="FENCE_BREACH_NONE">
         <description>No last fence breach</description>
@@ -1042,10 +1015,8 @@
       </entry>
     </enum>
     <enum name="AUTOTUNE_AXIS" bitmask="true">
-      <description>Enable axes that will be tuned via autotuning. Used in MAV_CMD_DO_AUTOTUNE_ENABLE.</description>
-      <entry value="0" name="AUTOTUNE_AXIS_DEFAULT">
-        <description>Flight stack tunes axis according to its default settings.</description>
-      </entry>
+      <description>Axes that will be autotuned by MAV_CMD_DO_AUTOTUNE_ENABLE.
+        Note that at least one flag must be set in MAV_CMD_DO_AUTOTUNE_ENABLE.param2: if none are set, the flight stack will tune its default set of axes.</description>
       <entry value="1" name="AUTOTUNE_AXIS_ROLL">
         <description>Autotune roll axis.</description>
       </entry>
@@ -1788,7 +1759,7 @@
       <entry value="212" name="MAV_CMD_DO_AUTOTUNE_ENABLE" hasLocation="false" isDestination="false">
         <description>Enable/disable autotune.</description>
         <param index="1" label="Enable" enum="BOOL">Enable autotune.</param>
-        <param index="2" label="Axis" enum="AUTOTUNE_AXIS">Specify which axis are autotuned. 0 indicates autopilot default settings.</param>
+        <param index="2" label="Axis" enum="AUTOTUNE_AXIS">Specify axes for which autotuning is enabled/disabled. 0 indicates the field is unused (for compatiblity reasons). If 0 the autopilot will follow its default behaviour, which is usually to tune all axes.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
         <param index="5">Empty.</param>
@@ -2456,7 +2427,6 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7">Reserved</param>
       </entry>
-      <!-- value 5010 reserved for MAV_CMD_SET_FENCE_BREACH_ACTION (see development.xml). -->
       <entry value="5100" name="MAV_CMD_NAV_RALLY_POINT" hasLocation="true" isDestination="false">
         <description>Rally point. You can have multiple rally points defined.
         </description>
@@ -5279,6 +5249,12 @@
         </description>
       </entry>
     </enum>
+    <enum name="HIL_ACTUATOR_CONTROLS_FLAGS" bitmask="true">
+      <description>Flags used in HIL_ACTUATOR_CONTROLS message.</description>
+      <entry value="1" name="HIL_ACTUATOR_CONTROLS_FLAGS_LOCKSTEP">
+        <description>Simulation is using lockstep</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -6125,8 +6101,8 @@
       <description>Sent from autopilot to simulation. Hardware in the loop control outputs. Alternative to HIL_CONTROLS.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="float[16]" name="controls">Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.</field>
-      <field type="uint8_t" name="mode" enum="MAV_MODE_FLAG">System mode. Includes arming state.</field>
-      <field type="uint64_t" name="flags">Flags as bitfield, 1: indicate simulation using lockstep.</field>
+      <field type="uint8_t" name="mode" enum="MAV_MODE_FLAG" display="bitmask">System mode. Includes arming state.</field>
+      <field type="uint64_t" name="flags" enum="HIL_ACTUATOR_CONTROLS_FLAGS" display="bitmask">Flags bitmask.</field>
     </message>
     <message id="100" name="OPTICAL_FLOW">
       <description>Optical flow from a flow sensor (e.g. optical mouse sensor)</description>
