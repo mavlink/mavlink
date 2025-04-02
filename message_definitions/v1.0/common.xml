@@ -361,11 +361,8 @@
         <description>Velocity limiting active to prevent breach</description>
       </entry>
     </enum>
-    <!-- enum of fence types to enable or disable as a bitmask -->
     <enum name="FENCE_TYPE" bitmask="true">
-      <entry value="0" name="FENCE_TYPE_ALL">
-        <description>All fence types</description>
-      </entry>
+      <description>Fence types to enable or disable as a bitmask. Used in MAV_CMD_DO_FENCE_ENABLE.</description>
       <entry value="1" name="FENCE_TYPE_ALT_MAX">
         <description>Maximum altitude fence</description>
       </entry>
@@ -1352,7 +1349,7 @@
           Flight stacks typically reset the setting to system defaults on reboot.
 	</description>
         <param index="1" label="Enable" minValue="0" maxValue="2" increment="1">enable? (0=disable, 1=enable, 2=disable_floor_only)</param>
-        <param index="2" label="Types" enum="FENCE_TYPE">Fence types to enable or disable as a bitmask. A value of 0 indicates that all fences should be enabled or disabled. This parameter is ignored if param 1 has the value 2</param>
+        <param index="2" label="Types" enum="FENCE_TYPE">Fence types to enable or disable as a bitmask. 0: all fences should be enabled or disabled (parameter is ignored, for compatibility reasons).Parameter is ignored if param1=2</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
