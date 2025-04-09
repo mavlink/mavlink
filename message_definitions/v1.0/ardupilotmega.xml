@@ -331,7 +331,6 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <!-- 43003 MAV_CMD_EXTERNAL_POSITION_ESTIMATE moved to common.xml -->
       <entry value="43005" name="MAV_CMD_SET_HAGL" hasLocation="false" isDestination="false">
         <description>Provide a value for height above ground level. This can be used for things like fixed wing and VTOL landing.</description>
         <param index="1" label="hagl" units="m">Height above ground level.</param>
@@ -342,6 +341,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
+      <!-- 43003 MAV_CMD_EXTERNAL_POSITION_ESTIMATE moved to common.xml -->
     </enum>
     <enum name="SCRIPTING_CMD">
       <entry value="0" name="SCRIPTING_CMD_REPL_START">
@@ -1062,94 +1062,270 @@
     </enum>
     <enum name="PLANE_MODE">
       <description>A mapping of plane flight modes for custom_mode field of heartbeat.</description>
-      <entry value="0" name="PLANE_MODE_MANUAL"/>
-      <entry value="1" name="PLANE_MODE_CIRCLE"/>
-      <entry value="2" name="PLANE_MODE_STABILIZE"/>
-      <entry value="3" name="PLANE_MODE_TRAINING"/>
-      <entry value="4" name="PLANE_MODE_ACRO"/>
-      <entry value="5" name="PLANE_MODE_FLY_BY_WIRE_A"/>
-      <entry value="6" name="PLANE_MODE_FLY_BY_WIRE_B"/>
-      <entry value="7" name="PLANE_MODE_CRUISE"/>
-      <entry value="8" name="PLANE_MODE_AUTOTUNE"/>
-      <entry value="10" name="PLANE_MODE_AUTO"/>
-      <entry value="11" name="PLANE_MODE_RTL"/>
-      <entry value="12" name="PLANE_MODE_LOITER"/>
-      <entry value="13" name="PLANE_MODE_TAKEOFF"/>
-      <entry value="14" name="PLANE_MODE_AVOID_ADSB"/>
-      <entry value="15" name="PLANE_MODE_GUIDED"/>
-      <entry value="16" name="PLANE_MODE_INITIALIZING"/>
-      <entry value="17" name="PLANE_MODE_QSTABILIZE"/>
-      <entry value="18" name="PLANE_MODE_QHOVER"/>
-      <entry value="19" name="PLANE_MODE_QLOITER"/>
-      <entry value="20" name="PLANE_MODE_QLAND"/>
-      <entry value="21" name="PLANE_MODE_QRTL"/>
-      <entry value="22" name="PLANE_MODE_QAUTOTUNE"/>
-      <entry value="23" name="PLANE_MODE_QACRO"/>
-      <entry value="24" name="PLANE_MODE_THERMAL"/>
+      <entry value="0" name="PLANE_MODE_MANUAL">
+        <description>MANUAL</description>
+      </entry>
+      <entry value="1" name="PLANE_MODE_CIRCLE">
+        <description>CIRCLE</description>
+      </entry>
+      <entry value="2" name="PLANE_MODE_STABILIZE">
+        <description>STABILIZE</description>
+      </entry>
+      <entry value="3" name="PLANE_MODE_TRAINING">
+        <description>TRAINING</description>
+      </entry>
+      <entry value="4" name="PLANE_MODE_ACRO">
+        <description>ACRO</description>
+      </entry>
+      <entry value="5" name="PLANE_MODE_FLY_BY_WIRE_A">
+        <description>FBWA</description>
+      </entry>
+      <entry value="6" name="PLANE_MODE_FLY_BY_WIRE_B">
+        <description>FBWB</description>
+      </entry>
+      <entry value="7" name="PLANE_MODE_CRUISE">
+        <description>CRUISE</description>
+      </entry>
+      <entry value="8" name="PLANE_MODE_AUTOTUNE">
+        <description>AUTOTUNE</description>
+      </entry>
+      <entry value="10" name="PLANE_MODE_AUTO">
+        <description>AUTO</description>
+      </entry>
+      <entry value="11" name="PLANE_MODE_RTL">
+        <description>RTL</description>
+      </entry>
+      <entry value="12" name="PLANE_MODE_LOITER">
+        <description>LOITER</description>
+      </entry>
+      <entry value="13" name="PLANE_MODE_TAKEOFF">
+        <description>TAKEOFF</description>
+      </entry>
+      <entry value="14" name="PLANE_MODE_AVOID_ADSB">
+        <description>AVOID ADSB</description>
+      </entry>
+      <entry value="15" name="PLANE_MODE_GUIDED">
+        <description>GUIDED</description>
+      </entry>
+      <entry value="16" name="PLANE_MODE_INITIALIZING">
+        <description>INITIALISING</description>
+      </entry>
+      <entry value="17" name="PLANE_MODE_QSTABILIZE">
+        <description>QSTABILIZE</description>
+      </entry>
+      <entry value="18" name="PLANE_MODE_QHOVER">
+        <description>QHOVER</description>
+      </entry>
+      <entry value="19" name="PLANE_MODE_QLOITER">
+        <description>QLOITER</description>
+      </entry>
+      <entry value="20" name="PLANE_MODE_QLAND">
+        <description>QLAND</description>
+      </entry>
+      <entry value="21" name="PLANE_MODE_QRTL">
+        <description>QRTL</description>
+      </entry>
+      <entry value="22" name="PLANE_MODE_QAUTOTUNE">
+        <description>QAUTOTUNE</description>
+      </entry>
+      <entry value="23" name="PLANE_MODE_QACRO">
+        <description>QACRO</description>
+      </entry>
+      <entry value="24" name="PLANE_MODE_THERMAL">
+        <description>THERMAL</description>
+      </entry>
+      <entry value="25" name="PLANE_MODE_LOITER_ALT_QLAND">
+        <description>LOITER2QLAND</description>
+      </entry>
+      <entry value="26" name="PLANE_MODE_AUTOLAND">
+        <description>AUTOLAND</description>
+      </entry>
     </enum>
     <enum name="COPTER_MODE">
       <description>A mapping of copter flight modes for custom_mode field of heartbeat.</description>
-      <entry value="0" name="COPTER_MODE_STABILIZE"/>
-      <entry value="1" name="COPTER_MODE_ACRO"/>
-      <entry value="2" name="COPTER_MODE_ALT_HOLD"/>
-      <entry value="3" name="COPTER_MODE_AUTO"/>
-      <entry value="4" name="COPTER_MODE_GUIDED"/>
-      <entry value="5" name="COPTER_MODE_LOITER"/>
-      <entry value="6" name="COPTER_MODE_RTL"/>
-      <entry value="7" name="COPTER_MODE_CIRCLE"/>
-      <entry value="9" name="COPTER_MODE_LAND"/>
-      <entry value="11" name="COPTER_MODE_DRIFT"/>
-      <entry value="13" name="COPTER_MODE_SPORT"/>
-      <entry value="14" name="COPTER_MODE_FLIP"/>
-      <entry value="15" name="COPTER_MODE_AUTOTUNE"/>
-      <entry value="16" name="COPTER_MODE_POSHOLD"/>
-      <entry value="17" name="COPTER_MODE_BRAKE"/>
-      <entry value="18" name="COPTER_MODE_THROW"/>
-      <entry value="19" name="COPTER_MODE_AVOID_ADSB"/>
-      <entry value="20" name="COPTER_MODE_GUIDED_NOGPS"/>
-      <entry value="21" name="COPTER_MODE_SMART_RTL"/>
-      <entry value="22" name="COPTER_MODE_FLOWHOLD"/>
-      <entry value="23" name="COPTER_MODE_FOLLOW"/>
-      <entry value="24" name="COPTER_MODE_ZIGZAG"/>
-      <entry value="25" name="COPTER_MODE_SYSTEMID"/>
-      <entry value="26" name="COPTER_MODE_AUTOROTATE"/>
-      <entry value="27" name="COPTER_MODE_AUTO_RTL"/>
+      <entry value="0" name="COPTER_MODE_STABILIZE">
+        <description>STABILIZE</description>
+      </entry>
+      <entry value="1" name="COPTER_MODE_ACRO">
+        <description>ACRO</description>
+      </entry>
+      <entry value="2" name="COPTER_MODE_ALT_HOLD">
+        <description>ALT HOLD</description>
+      </entry>
+      <entry value="3" name="COPTER_MODE_AUTO">
+        <description>AUTO</description>
+      </entry>
+      <entry value="4" name="COPTER_MODE_GUIDED">
+        <description>GUIDED</description>
+      </entry>
+      <entry value="5" name="COPTER_MODE_LOITER">
+        <description>LOITER</description>
+      </entry>
+      <entry value="6" name="COPTER_MODE_RTL">
+        <description>RTL</description>
+      </entry>
+      <entry value="7" name="COPTER_MODE_CIRCLE">
+        <description>CIRCLE</description>
+      </entry>
+      <entry value="9" name="COPTER_MODE_LAND">
+        <description>LAND</description>
+      </entry>
+      <entry value="11" name="COPTER_MODE_DRIFT">
+        <description>DRIFT</description>
+      </entry>
+      <entry value="13" name="COPTER_MODE_SPORT">
+        <description>SPORT</description>
+      </entry>
+      <entry value="14" name="COPTER_MODE_FLIP">
+        <description>FLIP</description>
+      </entry>
+      <entry value="15" name="COPTER_MODE_AUTOTUNE">
+        <description>AUTOTUNE</description>
+      </entry>
+      <entry value="16" name="COPTER_MODE_POSHOLD">
+        <description>POSHOLD</description>
+      </entry>
+      <entry value="17" name="COPTER_MODE_BRAKE">
+        <description>BRAKE</description>
+      </entry>
+      <entry value="18" name="COPTER_MODE_THROW">
+        <description>THROW</description>
+      </entry>
+      <entry value="19" name="COPTER_MODE_AVOID_ADSB">
+        <description>AVOID ADSB</description>
+      </entry>
+      <entry value="20" name="COPTER_MODE_GUIDED_NOGPS">
+        <description>GUIDED NOGPS</description>
+      </entry>
+      <entry value="21" name="COPTER_MODE_SMART_RTL">
+        <description>SMARTRTL</description>
+      </entry>
+      <entry value="22" name="COPTER_MODE_FLOWHOLD">
+        <description>FLOWHOLD</description>
+      </entry>
+      <entry value="23" name="COPTER_MODE_FOLLOW">
+        <description>FOLLOW</description>
+      </entry>
+      <entry value="24" name="COPTER_MODE_ZIGZAG">
+        <description>ZIGZAG</description>
+      </entry>
+      <entry value="25" name="COPTER_MODE_SYSTEMID">
+        <description>SYSTEMID</description>
+      </entry>
+      <entry value="26" name="COPTER_MODE_AUTOROTATE">
+        <description>AUTOROTATE</description>
+      </entry>
+      <entry value="27" name="COPTER_MODE_AUTO_RTL">
+        <description>AUTO RTL</description>
+      </entry>
+      <entry value="28" name="COPTER_MODE_TURTLE">
+        <description>TURTLE</description>
+      </entry>
     </enum>
     <enum name="SUB_MODE">
       <description>A mapping of sub flight modes for custom_mode field of heartbeat.</description>
-      <entry value="0" name="SUB_MODE_STABILIZE"/>
-      <entry value="1" name="SUB_MODE_ACRO"/>
-      <entry value="2" name="SUB_MODE_ALT_HOLD"/>
-      <entry value="3" name="SUB_MODE_AUTO"/>
-      <entry value="4" name="SUB_MODE_GUIDED"/>
-      <entry value="7" name="SUB_MODE_CIRCLE"/>
-      <entry value="9" name="SUB_MODE_SURFACE"/>
-      <entry value="16" name="SUB_MODE_POSHOLD"/>
-      <entry value="19" name="SUB_MODE_MANUAL"/>
+      <entry value="0" name="SUB_MODE_STABILIZE">
+        <description>STABILIZE</description>
+      </entry>
+      <entry value="1" name="SUB_MODE_ACRO">
+        <description>ACRO</description>
+      </entry>
+      <entry value="2" name="SUB_MODE_ALT_HOLD">
+        <description>ALT HOLD</description>
+      </entry>
+      <entry value="3" name="SUB_MODE_AUTO">
+        <description>AUTO</description>
+      </entry>
+      <entry value="4" name="SUB_MODE_GUIDED">
+        <description>GUIDED</description>
+      </entry>
+      <entry value="7" name="SUB_MODE_CIRCLE">
+        <description>CIRCLE</description>
+      </entry>
+      <entry value="9" name="SUB_MODE_SURFACE">
+        <description>SURFACE</description>
+      </entry>
+      <entry value="16" name="SUB_MODE_POSHOLD">
+        <description>POSHOLD</description>
+      </entry>
+      <entry value="19" name="SUB_MODE_MANUAL">
+        <description>MANUAL</description>
+      </entry>
+      <entry value="20" name="SUB_MODE_MOTORDETECT">
+        <description>MOTORDETECT</description>
+      </entry>
+      <entry value="21" name="SUB_MODE_SURFTRAK">
+        <description>SURFTRAK</description>
+      </entry>
     </enum>
     <enum name="ROVER_MODE">
       <description>A mapping of rover flight modes for custom_mode field of heartbeat.</description>
-      <entry value="0" name="ROVER_MODE_MANUAL"/>
-      <entry value="1" name="ROVER_MODE_ACRO"/>
-      <entry value="3" name="ROVER_MODE_STEERING"/>
-      <entry value="4" name="ROVER_MODE_HOLD"/>
-      <entry value="5" name="ROVER_MODE_LOITER"/>
-      <entry value="6" name="ROVER_MODE_FOLLOW"/>
-      <entry value="7" name="ROVER_MODE_SIMPLE"/>
-      <entry value="10" name="ROVER_MODE_AUTO"/>
-      <entry value="11" name="ROVER_MODE_RTL"/>
-      <entry value="12" name="ROVER_MODE_SMART_RTL"/>
-      <entry value="15" name="ROVER_MODE_GUIDED"/>
-      <entry value="16" name="ROVER_MODE_INITIALIZING"/>
+      <entry value="0" name="ROVER_MODE_MANUAL">
+        <description>MANUAL</description>
+      </entry>
+      <entry value="1" name="ROVER_MODE_ACRO">
+        <description>ACRO</description>
+      </entry>
+      <entry value="3" name="ROVER_MODE_STEERING">
+        <description>STEERING</description>
+      </entry>
+      <entry value="4" name="ROVER_MODE_HOLD">
+        <description>HOLD</description>
+      </entry>
+      <entry value="5" name="ROVER_MODE_LOITER">
+        <description>LOITER</description>
+      </entry>
+      <entry value="6" name="ROVER_MODE_FOLLOW">
+        <description>FOLLOW</description>
+      </entry>
+      <entry value="7" name="ROVER_MODE_SIMPLE">
+        <description>SIMPLE</description>
+      </entry>
+      <entry value="8" name="ROVER_MODE_DOCK">
+        <description>DOCK</description>
+      </entry>
+      <entry value="9" name="ROVER_MODE_CIRCLE">
+        <description>CIRCLE</description>
+      </entry>
+      <entry value="10" name="ROVER_MODE_AUTO">
+        <description>AUTO</description>
+      </entry>
+      <entry value="11" name="ROVER_MODE_RTL">
+        <description>RTL</description>
+      </entry>
+      <entry value="12" name="ROVER_MODE_SMART_RTL">
+        <description>SMART RTL</description>
+      </entry>
+      <entry value="15" name="ROVER_MODE_GUIDED">
+        <description>GUIDED</description>
+      </entry>
+      <entry value="16" name="ROVER_MODE_INITIALIZING">
+        <description>INITIALISING</description>
+      </entry>
     </enum>
     <enum name="TRACKER_MODE">
       <description>A mapping of antenna tracker flight modes for custom_mode field of heartbeat.</description>
-      <entry value="0" name="TRACKER_MODE_MANUAL"/>
-      <entry value="1" name="TRACKER_MODE_STOP"/>
-      <entry value="2" name="TRACKER_MODE_SCAN"/>
-      <entry value="3" name="TRACKER_MODE_SERVO_TEST"/>
-      <entry value="10" name="TRACKER_MODE_AUTO"/>
-      <entry value="16" name="TRACKER_MODE_INITIALIZING"/>
+      <entry value="0" name="TRACKER_MODE_MANUAL">
+        <description>MANUAL</description>
+      </entry>
+      <entry value="1" name="TRACKER_MODE_STOP">
+        <description>STOP</description>
+      </entry>
+      <entry value="2" name="TRACKER_MODE_SCAN">
+        <description>SCAN</description>
+      </entry>
+      <entry value="3" name="TRACKER_MODE_SERVO_TEST">
+        <description>SERVO TEST</description>
+      </entry>
+      <entry value="4" name="TRACKER_MODE_GUIDED">
+        <description>GUIDED</description>
+      </entry>
+      <entry value="10" name="TRACKER_MODE_AUTO">
+        <description>AUTO</description>
+      </entry>
+      <entry value="16" name="TRACKER_MODE_INITIALIZING">
+        <description>INITIALISING</description>
+      </entry>
     </enum>
     <enum name="OSD_PARAM_CONFIG_TYPE">
       <description>The type of parameter for the OSD parameter editor.</description>
@@ -1334,9 +1510,9 @@
       <field type="uint32_t" name="last_recovery" units="ms">Time (since boot) of last successful recovery.</field>
       <field type="uint32_t" name="last_clear" units="ms">Time (since boot) of last all-clear.</field>
       <field type="uint16_t" name="breach_count">Number of fence breaches.</field>
-      <field type="uint8_t" name="mods_enabled" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of enabled modules.</field>
-      <field type="uint8_t" name="mods_required" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of required modules.</field>
-      <field type="uint8_t" name="mods_triggered" enum="LIMIT_MODULE" display="bitmask">AP_Limit_Module bitfield of triggered modules.</field>
+      <field type="uint8_t" name="mods_enabled" enum="LIMIT_MODULE">AP_Limit_Module bitfield of enabled modules.</field>
+      <field type="uint8_t" name="mods_required" enum="LIMIT_MODULE">AP_Limit_Module bitfield of required modules.</field>
+      <field type="uint8_t" name="mods_triggered" enum="LIMIT_MODULE">AP_Limit_Module bitfield of triggered modules.</field>
     </message>
     <message id="168" name="WIND">
       <description>Wind estimation.</description>
@@ -1401,7 +1577,7 @@
       <!-- Path planned landings are still in the future, but we want these fields ready: -->
       <field type="int16_t" name="break_alt" units="m">Break altitude relative to home.</field>
       <field type="uint16_t" name="land_dir" units="cdeg">Heading to aim for when landing.</field>
-      <field type="uint8_t" name="flags" enum="RALLY_FLAGS" display="bitmask">Configuration flags.</field>
+      <field type="uint8_t" name="flags" enum="RALLY_FLAGS">Configuration flags.</field>
     </message>
     <message id="176" name="RALLY_FETCH_POINT">
       <description>Request a current rally point from MAV. MAV should respond with a RALLY_POINT message. MAV should not respond if the request is invalid.</description>
@@ -1521,7 +1697,7 @@
     <message id="191" name="MAG_CAL_PROGRESS">
       <description>Reports progress of compass calibration.</description>
       <field type="uint8_t" name="compass_id" instance="true">Compass being calibrated.</field>
-      <field type="uint8_t" name="cal_mask" display="bitmask">Bitmask of compasses being calibrated.</field>
+      <field type="uint8_t" name="cal_mask">Bitmask of compasses being calibrated.</field>
       <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Calibration Status.</field>
       <field type="uint8_t" name="attempt">Attempt number.</field>
       <field type="uint8_t" name="completion_pct" units="%">Completion percentage.</field>
@@ -1534,7 +1710,7 @@
     <!-- EKF status message from autopilot to GCS. -->
     <message id="193" name="EKF_STATUS_REPORT">
       <description>EKF Status message including flags and variances.</description>
-      <field type="uint16_t" name="flags" enum="EKF_STATUS_FLAGS" display="bitmask">Flags.</field>
+      <field type="uint16_t" name="flags" enum="EKF_STATUS_FLAGS">Flags.</field>
       <!-- supported flags see EKF_STATUS_FLAGS enum -->
       <field type="float" name="velocity_variance">Velocity variance.</field>
       <!-- below 0.5 is good, 0.5~0.79 is warning, 0.8 or higher is bad -->
@@ -1608,7 +1784,7 @@
       <description>Heartbeat from a HeroBus attached GoPro.</description>
       <field type="uint8_t" name="status" enum="GOPRO_HEARTBEAT_STATUS">Status.</field>
       <field type="uint8_t" name="capture_mode" enum="GOPRO_CAPTURE_MODE">Current capture mode.</field>
-      <field type="uint8_t" name="flags" enum="GOPRO_HEARTBEAT_FLAGS" display="bitmask">Additional status bits.</field>
+      <field type="uint8_t" name="flags" enum="GOPRO_HEARTBEAT_FLAGS">Additional status bits.</field>
       <!-- see GOPRO_HEARTBEAT_FLAGS -->
     </message>
     <message id="216" name="GOPRO_GET_REQUEST">
