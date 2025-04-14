@@ -5,6 +5,69 @@
   <version>0</version>
   <dialect>0</dialect>
   <enums>
+    <enum name="ENGINE_LEG_TRIM_STATE">
+      <description>Defines the position status of a engine leg trim.</description>
+      <entry value="0" name="ENGINE_LEG_TRIM_NONE">
+        <description>ENGINE_LEF_TRIM_NONE indicates no engine leg trim system is present.</description>
+      </entry>
+      <entry value="1" name="ENGINE_LEG_TRIM_STOWED">
+        <description>ENGINE_LEG_TRIM_STOWED means leg is lifted and the engine should not be started.</description>
+      </entry>
+      <entry value="2" name="ENGINE_LEG_TRIM_CRUISE">
+        <description>ENGINE_LEG_TRIM_CRUISE defines the active operational position of the engine leg.</description>
+      </entry>
+      <entry value="3" name="ENGINE_LEG_TRIM_FAULT">
+        <description>ENGINE_LEG_TRIM_FAULT indicates a faulty state in the engine leg trimming system.</description>
+      </entry>
+    </enum>
+    <enum name="RUDDER_STATE">
+      <description>Defines health state of a rudder.</description>
+      <entry value="0" name="RUDDER_NONE">
+        <description>RUDDER_NONE indicates no rudder system is present.</description>
+      </entry>
+      <entry value="1" name="RUDDER_OK">
+        <description>RUDDER_OK indicates the rudder is operating correctly.</description>
+      </entry>
+      <entry value="2" name="RUDDER_FAULT">
+        <description>RUDDER_FAULT indicates a fault in the rudder system.</description>
+      </entry>
+    </enum>
+    <enum name="ENGINE_STATE">
+      <description>Defines the operation state of an engine.</description>
+      <entry value="0" name="ENGINE_NONE">
+        <description>ENGINE_NONE indicates engine is not running and ignition is off.</description>
+      </entry>
+      <entry value="1" name="ENGINE_STOPPED">
+        <description>ENGINE_STOPPED indicates the engine is not running, but ignition is on.</description>
+      </entry>
+      <entry value="2" name="ENGINE_STARTING">
+        <description>ENGINE_STARTING indicates the engine is starting.</description>
+      </entry>
+      <entry value="3" name="ENGINE_RUNNING">
+        <description>ENGINE_RUNNING indicates the engine is running.</description>
+      </entry>
+      <entry value="4" name="ENGINE_FAULT">
+        <description>ENGINE_FAULT indicates a fault in the engine system.</description>
+      </entry>
+    </enum>
+    <enum name="TRANSMISSION_STATE">
+      <description>Defines the operation state of a transmission.</description>
+      <entry value="0" name="TRANSMISSION_NONE">
+        <description>TRANSMISSION_NONE indicates no transmission system is present.</description>
+      </entry>
+      <entry value="1" name="TRANSMISSION_NEUTRAL">
+        <description>TRANSMISSION_NEUTRAL indicates the transmission is in neutral.</description>
+      </entry>
+      <entry value="2" name="TRANSMISSION_FORWARD">
+        <description>TRANSMISSION_FORWARD indicates the transmission is in forward.</description>
+      </entry>
+      <entry value="3" name="TRANSMISSION_REVERSE">
+        <description>TRANSMISSION_REVERSE indicates the transmission is in reverse.</description>
+      </entry>
+      <entry value="4" name="TRANSMISSION_FAULT">
+        <description>TRANSMISSION_FAULT indicates a fault in the transmission system.</description>
+      </entry>
+    </enum>
     <enum name="AIRSPEED_SENSOR_FLAGS" bitmask="true">
       <description>Airspeed sensor flags</description>
       <entry value="1" name="AIRSPEED_SENSOR_UNHEALTHY">
@@ -126,6 +189,42 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <entry value="670" name="MAV_CMD_DO_CONTROL_TAKEOVER" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Commands to take over control from the safety driver. This command cannot give control to safety driver.</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="671" name="MAV_CMD_DO_ENGINE_LEG_TRIM" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Set engine leg trim position. Can execute trim for individual legs or all legs at once.</description>
+        <param index="1" label="Engine bitmask" minValue="0" increment="1" maxValue="255">Engine leg selection bitmask.</param>
+        <param index="2" label="Direction" minValue="0" maxValue="1" increment="1">Executes engine leg trimming for all selected engines(0: Down, 1:up)</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="672" name="MAV_CMD_DO_SET_ENGINE_STATE" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Controls the engine state</description>
+        <param index="1" label="Engine bitmask" minValue="0" increment="1" maxValue="255">Engine selection bitmask.</param>
+        <param index="2" label="Command" minValue="0" increment="1" maxValue="3">Commanded boat engine state.</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
       <entry value="35" name="MAV_CMD_DO_FIGURE_EIGHT" hasLocation="true" isDestination="true">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
@@ -204,7 +303,7 @@
           This is for compliance with MOC ASTM docs, specifically F358 section 7.7: "Emergency Status Indicator".
           The requirement can also be satisfied by automatic setting of the emergency status by flight stack, and that approach is preferred.
           See https://mavlink.io/en/services/opendroneid.html for more information.
-	</description>
+	      </description>
         <param index="1" label="Number" minValue="0" increment="1">Set/unset emergency 0: unset, 1: set</param>
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
@@ -249,7 +348,6 @@
           The owning GCS would ACK with MAV_RESULT_ACCEPTED, and might choose to release control of the vehicle, or re-request control with the takeover bit set to allow permission.
           In case it choses to re-request control with takeover bit set to allow permission, requestor GCS will only have 10 seconds to get control, otherwise owning GCS will re-request control with takeover bit set to disallow permission, and requestor GCS will need repeat the request if still interested in getting control.
           Note that the pilots of both GCS should co-ordinate safe handover offline.
-
           Note that in most systems the only controlled component will be the "system manager component", and that will be the autopilot.
           However separate GCS control of a particular component is also permitted, if supported by the component.
           In this case the GCS will address MAV_CMD_REQUEST_OPERATOR_CONTROL to the specific component it wants to control.
@@ -396,6 +494,31 @@
     </enum>
   </enums>
   <messages>
+
+    <message id="666" name="BOAT_ACTUATOR_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat actuator status reports status and position of all boat control surfaces (currently rudders, engine leg trims).</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t[6]" name="engine_leg_trim_state" enum="ENGINE_LEG_TRIM_STATE">Engine leg trim state.</field>
+      <field type="float[6]" name="engine_leg_trim_position" units="deg">Engine leg trim position.</field>
+      <field type="uint8_t[6]" name="rudder_state" enum="RUDDER_STATE">Rudder state.</field>
+      <field type="float[6]" name="rudder_position" units="deg">Rudder position.</field>
+    </message>
+    <message id="667" name="BOAT_ENGINE_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat engine status reports status and position of all boat engines.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t[6]" name="engine_state" enum="ENGINE_STATE">Engine state.</field>
+      <field type="uint8_t[6]" name="engine_load" units="%">Engine load.</field>
+      <field type="uint16_t[6]" name="engine_rpm" units="rpm">Engine RPM.</field>
+      <field type="float" name="fuel_consumption_rate" units="l/h">Fuel consumption rate.</field>
+      <field type="float[6]" name="oil_pressure" units="kPa">Engine oil pressure.</field>
+      <field type="uint8_t[6]" name="throttle_position" units="%">Throttle position.</field>
+      <field type="float[6]" name="engine_coolant_temperature" units="degC">Engine coolant temperature.</field>
+      <field type="uint8_t[6]" name="transmission_state" enum="TRANSMISSION_STATE">Transmission state.</field>
+    </message>
     <message id="295" name="AIRSPEED">
       <description>Airspeed information from a sensor.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
