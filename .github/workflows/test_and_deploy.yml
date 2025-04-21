@@ -15,7 +15,7 @@ on:
 jobs:
   format:
     name: Formatting check
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -29,7 +29,7 @@ jobs:
 
   python-tests:
     name: Python ${{ matrix.python-version }} tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -51,7 +51,7 @@ jobs:
 
   node-tests:
     name: Node ${{ matrix.node-version }} test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -78,7 +78,7 @@ jobs:
   deploy:
     name: Generate and push C headers
     needs: [format, python-tests, node-tests]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/master'
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
