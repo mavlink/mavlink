@@ -1,0 +1,39 @@
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron: '0 17 * * *' # every day, by the end of the day, trigger the sync
+  workflow_dispatch: # on button click
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Determine PR branch name
+        run: |
+          PR_BRANCH_NAME=upstream-merge-$(date '+%Y-%m-%d')
+          echo "pr_branch_name=$PR_BRANCH_NAME" >> $GITHUB_ENV
+          echo "PR branch will be $PR_BRANCH_NAME"
+      - name: Sync upstream/main with PR branch
+        uses: wei/git-sync@v3
+        with:
+          source_repo: "mavlink/mavlink"
+          source_branch: master
+          destination_repo: "https://auterion-ci:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY"
+          destination_branch: ${{ env.pr_branch_name }}
+      - name: Open PR to own master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "**Sync time:** $(date '+%Y-%m-%d %H:%M:%S %Z %z')" > pr_body.md
+          echo "> [!IMPORTANT]" >> pr_body.md
+          echo "> ### Merge with a merge commit." >> pr_body.md
+          echo "> Do not rebase." >> pr_body.md
+          gh pr create \
+            --repo $GITHUB_REPOSITORY \
+            --base master \
+            --head ${{ env.pr_branch_name }} \
+            --reviewer KonradRudin,sfuhrer \
+            --title "Upstream merge $(date '+%Y-%m-%d')" \
+            --body-file pr_body.md
