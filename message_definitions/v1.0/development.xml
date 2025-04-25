@@ -68,6 +68,63 @@
         <description>TRANSMISSION_FAULT indicates a fault in the transmission system.</description>
       </entry>
     </enum>
+    <enum name="FLUID_TANK_TYPE">
+      <description>Defines the type of fluid contained in a tank.</description>
+      <entry value="0" name="TANK_TYPE_FUEL">
+        <description>TANK_TYPE_FUEL indicates the tank contains fuel.</description>
+      </entry>
+      <entry value="1" name="TANK_TYPE_WATER">
+        <description>TANK_TYPE_WATER indicates the tank contains fresh water.</description>
+      </entry>
+      <entry value="2" name="TANK_TYPE_GRAY_WATER">
+        <description>TANK_TYPE_GRAY_WATER indicates the tank contains gray water.</description>
+      </entry>
+      <entry value="3" name="TANK_TYPE_LIVE_WELL">
+        <description>TANK_TYPE_LIVE_WELL indicates the tank is a live well.</description>
+      </entry>
+      <entry value="4" name="TANK_TYPE_OIL">
+        <description>TANK_TYPE_OIL indicates the tank contains engine or hydraulic oil.</description>
+      </entry>
+      <entry value="5" name="TANK_TYPE_BLACK_WATER">
+        <description>TANK_TYPE_BLACK_WATER indicates the tank contains black water.</description>
+      </entry>
+    </enum>
+    <enum name="SPEED_WATER_REFERENCED_TYPE">
+      <description>Defines the type of sensor used for measuring speed through water.</description>
+      <entry value="0" name="REFERENCED_TYPE_PADDLE_WHEEL">
+        <description>REFERENCED_TYPE_PADDLE_WHEEL indicates speed is measured using a paddle wheel sensor.</description>
+      </entry>
+      <entry value="1" name="REFERENCED_TYPE_PITOT_TUBE">
+        <description>REFERENCED_TYPE_PITOT_TUBE indicates speed is measured using a pitot tube.</description>
+      </entry>
+      <entry value="2" name="REFERENCED_TYPE_DOPPLER">
+        <description>REFERENCED_TYPE_DOPPLER indicates speed is measured using a Doppler-based sensor.</description>
+      </entry>
+      <entry value="3" name="REFERENCED_TYPE_CORRELATION">
+        <description>REFERENCED_TYPE_CORRELATION indicates speed is measured using a correlation-based sensor.</description>
+      </entry>
+      <entry value="4" name="REFERENCED_TYPE_ELECTRO_MAGNETIC">
+        <description>REFERENCED_TYPE_ELECTRO_MAGNETIC indicates speed is measured using an electromagnetic flow sensor.</description>
+      </entry>
+    </enum>
+    <enum name="WIND_REFERENCE">
+      <description>Specifies the frame of reference used for wind direction and speed measurements.</description>
+       <entry value="0" name="REFERENCE_TRUE">
+        <description>REFERENCE_TRUE Wind referenced to geographic (true) North.</description>
+      </entry>
+      <entry value="1" name="REFERENCE_MAGNETIC">
+        <description>REFERENCE_MAGNETIC Wind referenced to magnetic North.</description>
+      </entry>
+      <entry value="2" name="REFERENCE_APPARENT">
+        <description>REFERENCE_APPARENT Apparent wind relative to the vessel.</description>
+      </entry>
+      <entry value="3" name="REFERENCE_TRUE_BOAT_REFERENCED">
+        <description>REFERENCE_TRUE_BOAT_REFERENCED True wind direction relative to the boat's heading, corrected for vessel movement but not Earth-referenced..</description>
+      </entry>
+      <entry value="4" name="REFERENCE_TRUE_WATER_REFERENCED">
+        <description>REFERENCE_TRUE_WATER_REFERENCED True wind direction relative to the water surface.</description>
+      </entry>
+    </enum>
     <enum name="AIRSPEED_SENSOR_FLAGS" bitmask="true">
       <description>Airspeed sensor flags</description>
       <entry value="1" name="AIRSPEED_SENSOR_UNHEALTHY">
@@ -518,6 +575,54 @@
       <field type="uint8_t[6]" name="throttle_position" units="%">Throttle position.</field>
       <field type="float[6]" name="engine_coolant_temperature" units="degC">Engine coolant temperature.</field>
       <field type="uint8_t[6]" name="transmission_state" enum="TRANSMISSION_STATE">Transmission state.</field>
+    </message>
+    <message id="668" name="BOAT_BATTERY_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat battery status reports battery status as interpreted through NMEA2000.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="instance">Battery instance.</field>
+      <field type="float" name="voltage" units="V">Battery voltage.</field>
+      <field type="float" name="current" units="A">Battery current.</field>
+      <field type="float" name="temperature" units="K">Battery temperature.</field>
+    </message>
+    <message id="669" name="BOAT_FLUID_LEVEL">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat fluid level reports fluid levels as interpreted through NMEA2000.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="instance">Fluid tank instance.</field>
+      <field type="uint8_t" name="type" enum="FLUID_TANK_TYPE">Fluid tank type.</field>
+      <field type="float" name="level" units="%">Fuel consumption rate.</field>
+      <field type="float" name="capacity" units="l">Fuel consumption rate.</field>
+    </message>
+    <message id="670" name="BOAT_SPEED">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat speed reports speeds as interpreted through NMEA2000.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="float" name="speed_water_referenced" units="m/s">Speed water referenced.</field>
+      <field type="float" name="speed_ground_referenced" units="m/s">Speed ground referenced.</field>
+      <field type="uint8_t" name="speed_water_referenced_type" enum="SPEED_WATER_REFERENCED_TYPE">Speed water referenced type.</field>
+      <field type="uint8_t" name="speed_direction">Speed direction.</field>
+    </message>
+    <message id="671" name="BOAT_WATER_DEPTH">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat water depth reports water depth as interpreted through NMEA2000..</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="float" name="depth" units="m">Depth below transducer.</field>
+      <field type="float" name="offset" units="m">Distance between transducer and surface (positive) or keel (negative).</field>
+      <field type="float" name="range" units="m">Max measurement range.</field>
+    </message>
+    <message id="672" name="BOAT_WIND_DATA">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat wind data reports wind data as interpreted through NMEA2000..</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="reference" enum="WIND_REFERENCE">Wind reference.</field>
+      <field type="float" name="wind_speed" units="m/s">Wind speed.</field>
+      <field type="float" name="wind_angle" units="rad">Wing_angle.</field>
     </message>
     <message id="295" name="AIRSPEED">
       <description>Airspeed information from a sensor.</description>
