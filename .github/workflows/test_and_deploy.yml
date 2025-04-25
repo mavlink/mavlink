@@ -18,7 +18,7 @@ permissions:
 jobs:
   format:
     name: Formatting check
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -32,11 +32,11 @@ jobs:
 
   python-tests:
     name: Python ${{ matrix.python-version }} tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v2
         with:
@@ -54,7 +54,7 @@ jobs:
 
   build-cmake-c-example:
     name: Build cmake C example
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -75,7 +75,7 @@ jobs:
 
   node-tests:
     name: Node ${{ matrix.node-version }} test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -101,7 +101,7 @@ jobs:
   deploy:
     name: Generate and push C headers
     needs: [format, python-tests, node-tests]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
