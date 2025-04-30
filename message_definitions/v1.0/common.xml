@@ -1063,15 +1063,15 @@
         <description>Erase all mission data stored on the vehicle (both persistent and volatile storage)</description>
       </entry>
     </enum>
-    <enum name="PREFLIGHT_REBOOT_SHUTDOWN_FORCE">
+    <enum name="REBOOT_SHUTDOWN_OPTIONS">
       <description>
-        Defines how the reboot command should be processed depending on safety conditions or system state.
+        Specifies the conditions under which the MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN command should be accepted.
       </description>
-      <entry value="0" name="REBOOT_SHUTDOWN_ALLOWED">
-        <description>Reboot only if allowed by safety checks.</description>
+      <entry value="0" name="REBOOT_SHUTDOWN_CONDITIONS_SAFETY_INERLOCKED">
+        <description>Reboot/Shutdown only if allowed by safety checks, such as being landed.</description>
       </entry>
-      <entry value="20190226" name="REBOOT_SHUTDOWN_FORCE">
-        <description>Force reboot of the autopilot regardless of system state.</description>
+      <entry value="20190226" name="REBOOT_SHUTDOWN_CONDITIONS_FORCE">
+        <description>Force reboot/shutdown of the autopilot/component regardless of system state.</description>
       </entry>
     </enum>
     <!-- The MAV_CMD enum entries describe either: -->
@@ -1919,7 +1919,7 @@
         <param index="3" label="Component action" minValue="0" maxValue="3" increment="1">0: Do nothing for component, 1: Reboot component, 2: Shutdown component, 3: Reboot component and keep it in the bootloader until upgraded</param>
         <param index="4" label="Component ID" minValue="0" maxValue="255" increment="1">MAVLink Component ID targeted in param3 (0 for all components).</param>
         <param index="5">Reserved (set to 0)</param>
-        <param index="6" label="Reboot/Shutdown behavior" enum="PREFLIGHT_REBOOT_SHUTDOWN_FORCE">REBOOT_SHUTDOWN_ALLOWED: reboot only if allowed by safety checks, REBOOT_SHUTDOWN_FORCE: force reboot regardless of system state.</param>
+        <param index="6" label="Conditions" enum="REBOOT_SHUTDOWN_OPTIONS">Conditions under which reboot/shutdown is allowed.</param>
         <param index="7">WIP: ID (e.g. camera ID -1 for all IDs)</param>
       </entry>
       <!-- id "247" reserved for MAV_CMD_DO_UPGRADE in development.xml -->
