@@ -699,12 +699,12 @@ class MAVEnumEntry(object):
         self.value = int(soup.get('value'), base = 0) if soup.get('value') else print(
             f"TODO MISSING VALUE in MAVEnumEntry: {self.name}")
         self.basename = basename
-        self.description = soup.findChild('description', recursive=False)
+        self.description = soup.find('description', recursive=False)
         self.description = self.description.text if self.description else None
-        self.deprecated = soup.findChild('deprecated', recursive=False)
+        self.deprecated = soup.find('deprecated', recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
-        self.wip = soup.findChild('wip', recursive=False)
+        self.wip = soup.find('wip', recursive=False)
         self.wip = MAVWip(self.wip) if self.wip else None
         # self.autovalue = autovalue  # True if value was *not* specified in XML
 
@@ -741,16 +741,16 @@ class MAVEnum(object):
                 print(
                     f"Debug: MAVEnum: Unexpected attribute: {attr}, Value: {value}")
 
-        self.description = soup.findChild('description', recursive=False)
+        self.description = soup.find('description', recursive=False)
         self.description = tidyDescription(
             self.description.text) if self.description else None
-        self.deprecated = soup.findChild('deprecated', recursive=False)
+        self.deprecated = soup.find('deprecated', recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
         if self.basename == 'development':
             self.wip = MAVWip()
         else:
-            self.wip = soup.findChild('wip', recursive=False)
+            self.wip = soup.find('wip', recursive=False)
             self.wip = MAVWip(self.wip) if self.wip else None
         self.bitmask = soup.get('bitmask')
         enumEntries = soup.find_all('entry')
@@ -890,13 +890,13 @@ class MAVCommand(object):
         self.description = soup.description.text if soup.description else None
         if self.description:
             self.description = tidyDescription(self.description)
-        self.deprecated = soup.findChild('deprecated', recursive=False)
+        self.deprecated = soup.find('deprecated', recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
         if self.basename == 'development':
             self.wip = MAVWip()
         else:
-            self.wip = soup.findChild('wip', recursive=False)
+            self.wip = soup.find('wip', recursive=False)
             self.wip = MAVWip(self.wip) if self.wip else None
         # self.autovalue = autovalue  # True if value was *not* specified in XML
         self.param_fieldnames = set()
