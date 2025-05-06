@@ -696,7 +696,7 @@ class MAVEnumEntry(object):
     def __init__(self, soup, basename):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
         self.name = soup['name']
-        self.value = int(soup.get('value')) if soup.get('value') else print(
+        self.value = int(soup.get('value'), base = 0) if soup.get('value') else print(
             f"TODO MISSING VALUE in MAVEnumEntry: {self.name}")
         self.basename = basename
         self.description = soup.findChild('description', recursive=False)
