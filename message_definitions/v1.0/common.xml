@@ -1573,7 +1573,7 @@
         <param index="1" label="Speed" units="m/s" minValue="-1">Ground speed, less than 0 (-1) for default</param>
         <param index="2" label="Bitmask" enum="MAV_DO_REPOSITION_FLAGS">Bitmask of option flags.</param>
         <param index="3" label="Radius" units="m">Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. </param>
-        <param index="4" label="Yaw" units="deg">Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)</param>
+        <param index="4" label="Yaw" units="rad">Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
@@ -3915,7 +3915,7 @@
         <description>Zoom one step increment (-1 for wide, 1 for tele)</description>
       </entry>
       <entry value="1" name="ZOOM_TYPE_CONTINUOUS">
-        <description>Continuous zoom up/down until stopped (-1 for wide, 1 for tele, 0 to stop zooming)</description>
+        <description>Continuous normalized zoom in/out rate until stopped. Range -1..1, negative: wide, positive: narrow/tele, 0 to stop zooming. Other values should be clipped to the range.</description>
       </entry>
       <entry value="2" name="ZOOM_TYPE_RANGE">
         <description>Zoom value as proportion of full camera range (a percentage value between 0.0 and 100.0)</description>
@@ -3933,7 +3933,7 @@
         <description>Focus one step increment (-1 for focusing in, 1 for focusing out towards infinity).</description>
       </entry>
       <entry value="1" name="FOCUS_TYPE_CONTINUOUS">
-        <description>Continuous focus up/down until stopped (-1 for focusing in, 1 for focusing out towards infinity, 0 to stop focusing)</description>
+        <description>Continuous normalized focus in/out rate until stopped. Range -1..1, negative: in, positive: out towards infinity, 0 to stop focusing. Other values should be clipped to the range.</description>
       </entry>
       <entry value="2" name="FOCUS_TYPE_RANGE">
         <description>Focus value as proportion of full camera focus range (a value between 0.0 and 100.0)</description>
