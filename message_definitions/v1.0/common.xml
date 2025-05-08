@@ -5288,9 +5288,10 @@
     </message>
     <message id="2" name="SYSTEM_TIME">
       <description>The system time is the time of the master clock.
-        This should be emitted by only one component in the system, and other components should set their time to match.
-        Note that the master clock depends on the system.
-        This is commonly the autopilot, which might get the time from an attached GNSS, or it could be set from computer clock of the main onboard computer, via some internet clock source.</description>
+        This can be emitted by flight controllers, onboard computers, or other components in the MAVLink network.
+        Components can choose to match their system clock to that of a SYSTEM_TYPE that indicates a more recent than their own.
+        The SYSTEM_TIME is intended to provide a near accurate clock o improve date stamping of logs, and so on.
+        If precise time synchronization is needed then use TIMESYNC</description>
       <field type="uint64_t" name="time_unix_usec" units="us">Timestamp (UNIX epoch time).</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
     </message>
