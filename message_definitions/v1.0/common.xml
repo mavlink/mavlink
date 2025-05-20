@@ -1063,6 +1063,15 @@
         <description>Erase all mission data stored on the vehicle (both persistent and volatile storage)</description>
       </entry>
     </enum>
+    <enum name="REBOOT_SHUTDOWN_CONDITIONS">
+      <description>Specifies the conditions under which the MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN command should be accepted.</description>
+      <entry value="0" name="REBOOT_SHUTDOWN_CONDITIONS_SAFETY_INTERLOCKED">
+        <description>Reboot/Shutdown only if allowed by safety checks, such as being landed.</description>
+      </entry>
+      <entry value="20190226" name="REBOOT_SHUTDOWN_CONDITIONS_FORCE">
+        <description>Force reboot/shutdown of the autopilot/component regardless of system state.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -1564,7 +1573,7 @@
         <param index="1" label="Speed" units="m/s" minValue="-1">Ground speed, less than 0 (-1) for default</param>
         <param index="2" label="Bitmask" enum="MAV_DO_REPOSITION_FLAGS">Bitmask of option flags.</param>
         <param index="3" label="Radius" units="m">Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. </param>
-        <param index="4" label="Yaw" units="deg">Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)</param>
+        <param index="4" label="Yaw" units="rad">Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
@@ -1908,7 +1917,7 @@
         <param index="3" label="Component action" minValue="0" maxValue="3" increment="1">0: Do nothing for component, 1: Reboot component, 2: Shutdown component, 3: Reboot component and keep it in the bootloader until upgraded</param>
         <param index="4" label="Component ID" minValue="0" maxValue="255" increment="1">MAVLink Component ID targeted in param3 (0 for all components).</param>
         <param index="5">Reserved (set to 0)</param>
-        <param index="6">Reserved (set to 0)</param>
+        <param index="6" label="Conditions" enum="REBOOT_SHUTDOWN_CONDITIONS">Conditions under which reboot/shutdown is allowed.</param>
         <param index="7">WIP: ID (e.g. camera ID -1 for all IDs)</param>
       </entry>
       <!-- id "247" reserved for MAV_CMD_DO_UPGRADE in development.xml -->
@@ -3908,7 +3917,7 @@
         <description>Zoom one step increment (-1 for wide, 1 for tele)</description>
       </entry>
       <entry value="1" name="ZOOM_TYPE_CONTINUOUS">
-        <description>Continuous zoom up/down until stopped (-1 for wide, 1 for tele, 0 to stop zooming)</description>
+        <description>Continuous normalized zoom in/out rate until stopped. Range -1..1, negative: wide, positive: narrow/tele, 0 to stop zooming. Other values should be clipped to the range.</description>
       </entry>
       <entry value="2" name="ZOOM_TYPE_RANGE">
         <description>Zoom value as proportion of full camera range (a percentage value between 0.0 and 100.0)</description>
@@ -3926,7 +3935,7 @@
         <description>Focus one step increment (-1 for focusing in, 1 for focusing out towards infinity).</description>
       </entry>
       <entry value="1" name="FOCUS_TYPE_CONTINUOUS">
-        <description>Continuous focus up/down until stopped (-1 for focusing in, 1 for focusing out towards infinity, 0 to stop focusing)</description>
+        <description>Continuous normalized focus in/out rate until stopped. Range -1..1, negative: in, positive: out towards infinity, 0 to stop focusing. Other values should be clipped to the range.</description>
       </entry>
       <entry value="2" name="FOCUS_TYPE_RANGE">
         <description>Focus value as proportion of full camera focus range (a value between 0.0 and 100.0)</description>
@@ -5275,7 +5284,11 @@
       <field type="uint32_t" name="onboard_control_sensors_health_extended" enum="MAV_SYS_STATUS_SENSOR_EXTENDED" print_format="0x%04x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
     </message>
     <message id="2" name="SYSTEM_TIME">
-      <description>The system time is the time of the master clock, typically the computer clock of the main onboard computer.</description>
+      <description>The system time is the time of the master clock.
+        This can be emitted by flight controllers, onboard computers, or other components in the MAVLink network.
+        Components that are using a less reliable time source, such as a battery-backed real time clock, can choose to match their system clock to that of a SYSTEM_TYPE that indicates a more recent time.
+        This allows more broadly accurate date stamping of logs, and so on.
+        If precise time synchronization is needed then use TIMESYNC instead.</description>
       <field type="uint64_t" name="time_unix_usec" units="us">Timestamp (UNIX epoch time).</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
     </message>
@@ -5599,7 +5612,7 @@
       <description>
         Message that announces the sequence number of the current target mission item (that the system will fly towards/execute when the mission is running).
         This message should be streamed all the time (nominally at 1Hz).
-        This message should be emitted following a call to MAV_CMD_DO_SET_MISSION_CURRENT or SET_MISSION_CURRENT.
+        This message should be emitted following a call to MAV_CMD_DO_SET_MISSION_CURRENT or MISSION_SET_CURRENT.
       </description>
       <field type="uint16_t" name="seq">Sequence</field>
       <extensions/>

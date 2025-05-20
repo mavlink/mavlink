@@ -2,15 +2,15 @@
 <!--
 Contact:
   - github user name: @olliw42 (to ping)
-  - send a PM to user OlliW at https://www.rcgroups.com (most quick)
   - raise an issue in the https://github.com/olliw42/storm32bgc github repository
+  - send a PM to user OlliW at https://www.rcgroups.com
 Range of IDs:
   messages: 60000 - 60049
   commands: 60000 - 60049
 Documentation:
-  STORM32 and QSHOT additions
+  STorM32 and QSHOT additions
   with mLRS additions merged
-  29. Feb. 2024
+  7. Mai. 2025
   All messages are technically WIP, but some are quite stable now.
   Quite stable means that it is in practical use, but may see extension.
   A more detailed description of the concept underlying the STORM32 and QSHOT messages can be found here:
@@ -22,10 +22,10 @@ Documentation:
   <dialect>1</dialect>
   <enums>
     <!-- #############################
-    STORM32 enums
+    STorM32 enums
     ############################# -->
     <!-- ***************************
-    STORM32 tunnel enum, this is merely a redefinition for convennience
+    STorM32 tunnel enum, this is merely a redefinition for convennience
     *************************** -->
     <enum name="MAV_STORM32_TUNNEL_PAYLOAD_TYPE">
       <!-- Stable -->
@@ -49,66 +49,17 @@ Documentation:
       </entry>
     </enum>
     <!-- ***************************
-    STORM32 gimbal prearm check flags
-    COMPONENT_PREARM_STATUS deprecated 7.Dez.2022, the PREARM_FLAGS enums are kept however for convenience
+    STorM32 gimbal prearm check flags
+    COMPONENT_PREARM_STATUS deprecated 7.Dez.2022
+    PREARM_FLAGS & CAMERA_PREARM_FLAGS enums removed 3.Mai.2025
     *************************** -->
-    <enum name="MAV_STORM32_GIMBAL_PREARM_FLAGS" bitmask="true">
-      <!-- Stable -->
-      <description>STorM32 gimbal prearm check flags.</description>
-      <entry value="1" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_IS_NORMAL">
-        <description>STorM32 gimbal is in normal state.</description>
-      </entry>
-      <entry value="2" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_IMUS_WORKING">
-        <description>The IMUs are healthy and working normally.</description>
-      </entry>
-      <entry value="4" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_MOTORS_WORKING">
-        <description>The motors are active and working normally.</description>
-      </entry>
-      <entry value="8" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_ENCODERS_WORKING">
-        <description>The encoders are healthy and working normally.</description>
-      </entry>
-      <entry value="16" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_VOLTAGE_OK">
-        <description>A battery voltage is applied and is in range.</description>
-      </entry>
-      <entry value="32" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_VIRTUALCHANNELS_RECEIVING">
-        <description>Virtual input channels are receiving data.</description>
-      </entry>
-      <entry value="64" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_MAVLINK_RECEIVING">
-        <description>Mavlink messages are being received.</description>
-      </entry>
-      <entry value="128" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_STORM32LINK_QFIX">
-        <description>The STorM32Link data indicates QFix.</description>
-      </entry>
-      <entry value="256" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_STORM32LINK_WORKING">
-        <description>The STorM32Link is working.</description>
-      </entry>
-      <entry value="512" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_CAMERA_CONNECTED">
-        <description>The camera has been found and is connected.</description>
-      </entry>
-      <entry value="1024" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_AUX0_LOW">
-        <description>The signal on the AUX0 input pin is low.</description>
-      </entry>
-      <entry value="2048" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_AUX1_LOW">
-        <description>The signal on the AUX1 input pin is low.</description>
-      </entry>
-      <entry value="4096" name="MAV_STORM32_GIMBAL_PREARM_FLAGS_NTLOGGER_WORKING">
-        <description>The NTLogger is working normally.</description>
-      </entry>
-    </enum>
-    <enum name="MAV_STORM32_CAMERA_PREARM_FLAGS" bitmask="true">
-      <!-- Quite stable -->
-      <description>STorM32 camera prearm check flags.</description>
-      <entry value="1" name="MAV_STORM32_CAMERA_PREARM_FLAGS_CONNECTED">
-        <description>The camera has been found and is connected.</description>
-      </entry>
-    </enum>
     <!-- ***************************
-    STORM32 gimbal device enums
+    STorM32 gimbal device enums
     deprecated 21.Nov.2022, replaced by gimbal protocol v2 flags
     removed to force migration
     *************************** -->
     <!-- ***************************
-    STORM32 gimbal manager enums
+    STorM32 gimbal manager enums
     *************************** -->
     <enum name="MAV_STORM32_GIMBAL_MANAGER_CAP_FLAGS" bitmask="true">
       <!-- WIP -->
@@ -120,9 +71,6 @@ Documentation:
     <enum name="MAV_STORM32_GIMBAL_MANAGER_FLAGS" bitmask="true">
       <!-- Stable, may grow however -->
       <description>Flags for gimbal manager operation. Used for setting and reporting, unless specified otherwise. If a setting has been accepted by the gimbal manager is reported in the STORM32_GIMBAL_MANAGER_STATUS message.</description>
-      <entry value="0" name="MAV_STORM32_GIMBAL_MANAGER_FLAGS_NONE">
-        <description>0 = ignore.</description>
-      </entry>
       <entry value="1" name="MAV_STORM32_GIMBAL_MANAGER_FLAGS_RC_ACTIVE">
         <description>Request to set RC input to active, or report RC input is active. Implies RC mixed. RC exclusive is achieved by setting all clients to inactive.</description>
       </entry>
@@ -248,7 +196,7 @@ Documentation:
       </entry>
     </enum>
     <!-- ***************************
-    STORM32 and QSHOT cmds
+    STorM32 and QSHOT cmds
     *************************** -->
     <enum name="MAV_CMD">
       <!-- leave room for 60001 gimbal manager configure -->
@@ -278,21 +226,80 @@ Documentation:
         <param index="2" label="Shot state or command">Set shot state or command. The allowed values are specific to the selected shot mode.</param>
       </entry>
     </enum>
+    <!-- #############################
+    Auxillary enums
+    ############################# -->
+    <enum name="MLRS_RADIO_LINK_STATS_FLAGS" bitmask="true">
+      <!-- Stable -->
+      <description>RADIO_LINK_STATS flags (bitmask).
+        The RX_RECEIVE and TX_RECEIVE flags indicate from which antenna the received data are taken for processing.
+        If a flag is set then the data received on antenna2 is processed, else the data received on antenna1 is used.
+        The RX_TRANSMIT and TX_TRANSMIT flags specify which antenna are transmitting data.
+        Both antenna 1 and antenna 2 transmit flags can be set simultaneously, e.g., in case of dual-band or dual-frequency systems.
+        If neither flag is set then antenna 1 should be assumed.
+      </description>
+      <entry value="0x0001" name="MLRS_RADIO_LINK_STATS_FLAGS_RSSI_DBM">
+        <description>Rssi values are in negative dBm. Values 1..254 corresponds to -1..-254 dBm. 0: no reception, UINT8_MAX: unknown.</description>
+      </entry>
+      <entry value="0x0002" name="MLRS_RADIO_LINK_STATS_FLAGS_RX_RECEIVE_ANTENNA2">
+        <description>Rx receive antenna. When set the data received on antenna 2 are taken, else the data stems from antenna 1.</description>
+      </entry>
+      <entry value="0x0004" name="MLRS_RADIO_LINK_STATS_FLAGS_RX_TRANSMIT_ANTENNA1">
+        <description>Rx transmit antenna. Data are transmitted on antenna 1.</description>
+      </entry>
+      <entry value="0x0008" name="MLRS_RADIO_LINK_STATS_FLAGS_RX_TRANSMIT_ANTENNA2">
+        <description>Rx transmit antenna. Data are transmitted on antenna 2.</description>
+      </entry>
+      <entry value="0x0010" name="MLRS_RADIO_LINK_STATS_FLAGS_TX_RECEIVE_ANTENNA2">
+        <description>Tx receive antenna. When set the data received on antenna 2 are taken, else the data stems from antenna 1.</description>
+      </entry>
+      <entry value="0x0020" name="MLRS_RADIO_LINK_STATS_FLAGS_TX_TRANSMIT_ANTENNA1">
+        <description>Tx transmit antenna. Data are transmitted on antenna 1.</description>
+      </entry>
+      <entry value="0x0040" name="MLRS_RADIO_LINK_STATS_FLAGS_TX_TRANSMIT_ANTENNA2">
+        <description>Tx transmit antenna. Data are transmitted on antenna 2.</description>
+      </entry>
+    </enum>
+    <enum name="MLRS_RADIO_LINK_TYPE">
+      <!-- Stable -->
+      <description>RADIO_LINK_TYPE enum.</description>
+      <entry value="0" name="MLRS_RADIO_LINK_TYPE_GENERIC">
+        <description>Unknown radio link type.</description>
+      </entry>
+      <entry value="1" name="MLRS_RADIO_LINK_TYPE_HERELINK">
+        <description>Radio link is HereLink.</description>
+      </entry>
+      <entry value="2" name="MLRS_RADIO_LINK_TYPE_DRAGONLINK">
+        <description>Radio link is Dragon Link.</description>
+      </entry>
+      <entry value="3" name="MLRS_RADIO_LINK_TYPE_RFD900">
+        <description>Radio link is RFD900.</description>
+      </entry>
+      <entry value="4" name="MLRS_RADIO_LINK_TYPE_CROSSFIRE">
+        <description>Radio link is Crossfire.</description>
+      </entry>
+      <entry value="5" name="MLRS_RADIO_LINK_TYPE_EXPRESSLRS">
+        <description>Radio link is ExpressLRS.</description>
+      </entry>
+      <entry value="6" name="MLRS_RADIO_LINK_TYPE_MLRS">
+        <description>Radio link is mLRS.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <!-- #############################
-    STORM32 messages
+    STorM32 messages
     ############################# -->
     <!-- ***************************
-    STORM32 gimbal device messages
+    STorM32 gimbal device messages
     deprecated 21.Nov.2022, replaced by gimbal protocol v2 gimbal device messages
     removed to force migration
     *************************** -->
     <!-- ***************************
-    STORM32 gimbal manager messages
+    STorM32 gimbal manager messages
     revised 27.Nov.2022, to account for usage of gimbal protocol v2 gimbal device messages/commands/flags
     STORM32_GIMBAL_MANAGER_PROFILE removed, MAV_CMD_STORM32_DO_GIMBAL_MANAGER_SETUP gets the job done
-   *************************** -->
+    *************************** -->
     <message id="60010" name="STORM32_GIMBAL_MANAGER_INFORMATION">
       <!-- Stable, may grow however -->
       <description>Information about a gimbal manager. This message should be requested by a ground station using MAV_CMD_REQUEST_MESSAGE. It mirrors some fields of the GIMBAL_DEVICE_INFORMATION message, but not all. If the additional information is desired, also GIMBAL_DEVICE_INFORMATION should be requested.</description>
@@ -362,19 +369,31 @@ Documentation:
       <field type="uint16_t" name="mode" enum="MAV_QSHOT_MODE">Current shot mode.</field>
       <field type="uint16_t" name="shot_state">Current state in the shot. States are specific to the selected shot mode.</field>
     </message>
+    <!-- #############################
+    Auxillary messages
+    ############################# -->
     <!-- ***************************
-    General messages
-    COMPONENT_PREARM_STATUS deprecated 7.Dez.2022, replaced by events micro service, removed to force migration
+    COMPONENT_PREARM_STATUS deprecated 7.Dez.2022, replaced by 32th bit in HEARTBEAT custom mode
     *************************** -->
-    <!-- ********** -->
+    <message id="60000" name="AUTOPILOT_STATE_FOR_GIMBAL_DEVICE_EXT">
+      <wip/>
+      <description>Addition to message AUTOPILOT_STATE_FOR_GIMBAL_DEVICE.</description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint64_t" name="time_boot_us" units="us">Timestamp (time since system boot).</field>
+      <field type="float" name="wind_x" units="m/s" invalid="NaN">Wind X speed in NED (North,Est, Down). NAN if unknown.</field>
+      <field type="float" name="wind_y" units="m/s" invalid="NaN">Wind Y speed in NED (North, East, Down). NAN if unknown.</field>
+      <field type="float" name="wind_correction_angle" units="rad" invalid="NaN">Correction angle due to wind. NaN if unknown.</field>
+    </message>
     <message id="60040" name="FRSKY_PASSTHROUGH_ARRAY">
+      <!-- Stable -->
       <description>Frsky SPort passthrough multi packet container.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="count">Number of passthrough packets in this message.</field>
       <field type="uint8_t[240]" name="packet_buf">Passthrough packet buffer. A packet has 6 bytes: uint16_t id + uint32_t data. The array has space for 40 packets.</field>
     </message>
-    <!-- ********** -->
     <message id="60041" name="PARAM_VALUE_ARRAY">
+      <wip/>
       <description>Parameter multi param value container.</description>
       <field type="uint16_t" name="param_count">Total number of onboard parameters.</field>
       <field type="uint16_t" name="param_index_first">Index of the first onboard parameter in this array.</field>
@@ -382,6 +401,67 @@ Documentation:
       <field type="uint16_t" name="flags">Flags.</field>
       <field type="uint8_t[248]" name="packet_buf">Parameters buffer. Contains a series of variable length parameter blocks, one per parameter, with format as specified elsewhere.</field>
     </message>
-    <!-- ********** -->
+    <message id="60045" name="MLRS_RADIO_LINK_STATS">
+      <!-- Stable -->
+      <description>Radio link statistics for a MAVLink RC receiver or transmitter and other links. Tx: ground-side device, Rx: vehicle-side device.
+        The message is normally emitted in regular time intervals upon each actual or expected reception of an over-the-air data packet on the link.
+        A MAVLink RC receiver should emit it shortly after it emits a RADIO_RC_CHANNELS message (if it is emitting that message).
+        Per default, rssi values are in MAVLink units: 0 represents weakest signal, 254 represents maximum signal, UINT8_MAX represents unknown.
+        The RADIO_LINK_STATS_FLAGS_RSSI_DBM flag is set if the rssi units are negative dBm: 1..254 correspond to -1..-254 dBm, 0 represents no reception, UINT8_MAX represents unknown.
+        The target_system field should normally be set to the system id of the system the link is connected to, typically the flight controller.
+        The target_component field can normally be set to 0, so that all components of the system can receive the message.
+        Note: The frequency fields are extensions to ensure that they are located at the end of the serialized payload and subject to MAVLink's trailing-zero trimming.
+      </description>
+      <field type="uint8_t" name="target_system">System ID (ID of target system, normally flight controller).</field>
+      <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
+      <field type="uint16_t" name="flags" enum="MLRS_RADIO_LINK_STATS_FLAGS" display="bitmask">Radio link statistics flags.</field>
+      <field type="uint8_t" name="rx_LQ_rc" units="c%" invalid="UINT8_MAX">Link quality of RC data stream from Tx to Rx. Values: 1..100, 0: no link connection, UINT8_MAX: unknown.</field>
+      <field type="uint8_t" name="rx_LQ_ser" units="c%" invalid="UINT8_MAX">Link quality of serial MAVLink data stream from Tx to Rx. Values: 1..100, 0: no link connection, UINT8_MAX: unknown.</field>
+      <field type="uint8_t" name="rx_rssi1" invalid="UINT8_MAX">Rssi of antenna 1. 0: no reception, UINT8_MAX: unknown.</field>
+      <field type="int8_t" name="rx_snr1" invalid="INT8_MAX">Noise on antenna 1. Radio link dependent. INT8_MAX: unknown.</field>
+      <field type="uint8_t" name="tx_LQ_ser" units="c%" invalid="UINT8_MAX">Link quality of serial MAVLink data stream from Rx to Tx. Values: 1..100, 0: no link connection, UINT8_MAX: unknown.</field>
+      <field type="uint8_t" name="tx_rssi1" invalid="UINT8_MAX">Rssi of antenna 1. 0: no reception. UINT8_MAX: unknown.</field>
+      <field type="int8_t" name="tx_snr1" invalid="INT8_MAX">Noise on antenna 1. Radio link dependent. INT8_MAX: unknown.</field>
+      <field type="uint8_t" name="rx_rssi2" invalid="UINT8_MAX">Rssi of antenna 2. 0: no reception, UINT8_MAX: use rx_rssi1 if it is known else unknown.</field>
+      <field type="int8_t" name="rx_snr2" invalid="INT8_MAX">Noise on antenna 2. Radio link dependent. INT8_MAX: use rx_snr1 if it is known else unknown.</field>
+      <field type="uint8_t" name="tx_rssi2" invalid="UINT8_MAX">Rssi of antenna 2. 0: no reception. UINT8_MAX: use tx_rssi1 if it is known else unknown.</field>
+      <field type="int8_t" name="tx_snr2" invalid="INT8_MAX">Noise on antenna 2. Radio link dependent. INT8_MAX: use tx_snr1 if it is known else unknown.</field>
+      <extensions/>
+      <field type="float" name="frequency1" units="Hz" invalid="0">Frequency on antenna1 in Hz. 0: unknown.</field>
+      <field type="float" name="frequency2" units="Hz" invalid="0">Frequency on antenna2 in Hz. 0: unknown.</field>
+    </message>
+    <message id="60046" name="MLRS_RADIO_LINK_INFORMATION">
+      <!-- Stable -->
+      <description>Radio link information. Tx: ground-side device, Rx: vehicle-side device.
+        The values of the fields in this message do normally not or only slowly change with time, and for most times the message can be send at a low rate, like 0.2 Hz.
+        If values change then the message should temporarily be send more often to inform the system about the changes.
+        The target_system field should normally be set to the system id of the system the link is connected to, typically the flight controller.
+        The target_component field can normally be set to 0, so that all components of the system can receive the message.
+      </description>
+      <field type="uint8_t" name="target_system">System ID (ID of target system, normally flight controller).</field>
+      <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
+      <field type="uint8_t" name="type" enum="MLRS_RADIO_LINK_TYPE" invalid="0">Radio link type. 0: unknown/generic type.</field>
+      <field type="uint8_t" name="mode" invalid="UINT8_MAX">Operation mode. Radio link dependent. UINT8_MAX: ignore/unknown.</field>
+      <field type="int8_t" name="tx_power" units="dBm" invalid="INT8_MAX">Tx transmit power in dBm. INT8_MAX: unknown.</field>
+      <field type="int8_t" name="rx_power" units="dBm" invalid="INT8_MAX">Rx transmit power in dBm. INT8_MAX: unknown.</field>
+      <field type="uint16_t" name="tx_frame_rate" units="Hz" invalid="0">Frame rate in Hz (frames per second) for Tx to Rx transmission. 0: unknown.</field>
+      <field type="uint16_t" name="rx_frame_rate" units="Hz" invalid="0">Frame rate in Hz (frames per second) for Rx to Tx transmission. Normally equal to tx_packet_rate. 0: unknown.</field>
+      <field type="char[6]" name="mode_str">Operation mode as human readable string. Radio link dependent. Terminated by NULL if the string length is less than 6 chars and WITHOUT NULL termination if the length is exactly 6 chars - applications have to provide 6+1 bytes storage if the mode is stored as string. Use a zero-length string if not known.</field>
+      <field type="char[6]" name="band_str">Frequency band as human readable string. Radio link dependent. Terminated by NULL if the string length is less than 6 chars and WITHOUT NULL termination if the length is exactly 6 chars - applications have to provide 6+1 bytes storage if the mode is stored as string. Use a zero-length string if not known.</field>
+      <field type="uint16_t" name="tx_ser_data_rate" invalid="0">Maximum data rate of serial stream in bytes/s for Tx to Rx transmission. 0: unknown. UINT16_MAX: data rate is 64 KBytes/s or larger.</field>
+      <field type="uint16_t" name="rx_ser_data_rate" invalid="0">Maximum data rate of serial stream in bytes/s for Rx to Tx transmission. 0: unknown. UINT16_MAX: data rate is 64 KBytes/s or larger.</field>
+      <field type="uint8_t" name="tx_receive_sensitivity" invalid="0">Receive sensitivity of Tx in inverted dBm. 1..255 represents -1..-255 dBm, 0: unknown.</field>
+      <field type="uint8_t" name="rx_receive_sensitivity" invalid="0">Receive sensitivity of Rx in inverted dBm. 1..255 represents -1..-255 dBm, 0: unknown.</field>
+    </message>
+    <message id="60047" name="MLRS_RADIO_LINK_FLOW_CONTROL">
+      <wip/>
+      <!-- WIP -->
+      <description>Injected by a radio link endpoint into the MAVLink stream for purposes of flow control. Should be emitted only by components with component id MAV_COMP_ID_TELEMETRY_RADIO.</description>
+      <field type="uint16_t" name="tx_ser_rate" units="bytes/s" invalid="UINT16_MAX">Transmitted bytes per second, UINT16_MAX: invalid/unknown.</field>
+      <field type="uint16_t" name="rx_ser_rate" units="bytes/s" invalid="UINT16_MAX">Recieved bytes per second, UINT16_MAX: invalid/unknown.</field>
+      <field type="uint8_t" name="tx_used_ser_bandwidth" units="c%" invalid="UINT8_MAX">Transmit bandwidth consumption. Values: 0..100, UINT8_MAX: invalid/unknown.</field>
+      <field type="uint8_t" name="rx_used_ser_bandwidth" units="c%" invalid="UINT8_MAX">Receive bandwidth consumption. Values: 0..100, UINT8_MAX: invalid/unknown.</field>
+      <field type="uint8_t" name="txbuf" units="c%" invalid="UINT8_MAX">For compatibility with legacy method. UINT8_MAX: unknown.</field>
+    </message>
   </messages>
 </mavlink>
