@@ -404,6 +404,34 @@
       <field type="float" name="raw_press" units="hPa">Raw differential pressure. NaN for value unknown/not supplied.</field>
       <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
     </message>
+    <message id="296" name="EXTERNAL_GLOBAL_POSITION">
+      <description>Global position measurement from an external device.</description>
+      <field type="uint8_t" name="id" instance="true">Sensor ID</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude (WGS84)</field>
+      <field type="float" name="alt" units="m" invalid="[NaN:]">Altitude (MSL)</field>
+      <field type="float" name="vn" units="m/s" invalid="[NaN:]">GPS velocity in north direction in earth-fixed NED frame. NaN is unused</field>
+      <field type="float" name="ve" units="m/s" invalid="[NaN:]">GPS velocity in east direction in earth-fixed NED frame</field>
+      <field type="float" name="vd" units="m/s" invalid="[NaN:]">GPS velocity in down direction in earth-fixed NED frame</field>
+      <field type="float" name="eph" units="m" invalid="[NaN:]">Standard deviation of horizontal position error</field>
+      <field type="float" name="epv" units="m" invalid="[NaN:]">Standard deviation of vertical position error</field>
+      <field type="float" name="evh" units="m" invalid="[NaN:]">Standard deviation of horizontal velocity error</field>
+      <field type="float" name="evv" units="m" invalid="[NaN:]">Standard deviation of vertical velocity error</field>
+    </message>
+    <message id="337" name="CELLULAR_MODEM_INFORMATION">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description> This message is still WIP, but was tentatively accepted upstream: https://github.com/mavlink/mavlink/pull/1945.
+                    Cellular modem device information. This contains static information about a modem and should be sent at low rate. Note that the dynamic information about the connection is provided in an associated CELLULAR_STATUS message.</description>
+      <field type="uint8_t" name="id" instance="true">Modem instance number. Indexed from 1. Matches index in corresponding CELLULAR_STATUS message.</field>
+      <field type="uint64_t" name="imei" invalid="NULL">Unique Modem International Mobile Equipment Identity Number.</field>
+      <field type="uint64_t" name="imsi" invalid="NULL">Current SIM International mobile subscriber identity.</field>
+      <field type="char[10]" name="modem_id" invalid="[0]">Unique id for modem. This must be NULL terminated if the length is less than 10 human-readable chars, and without the null termination (NULL) byte if the length is exactly 10 chars.</field>
+      <field type="char[20]" name="iccid" invalid="[0]">Integrated Circuit Card Identification Number of SIM Card.  This must be NULL terminated if the length is less than 20 human-readable chars, and without the null termination (NULL) byte if the length is exactly 20 chars.</field>
+      <field type="char[24]" name="firmware" invalid="[0]">The firmware version installed on the modem. This must be NULL terminated if the length is less than 24 human-readable chars, and without the null termination (NULL) byte if the length is exactly 24 chars. The format is not intended for display.</field>
+      <field type="char[50]" name="modem_model" invalid="[0]">Modem model name.  This must be NULL terminated if the length is less than 50 human-readable chars, and without the null termination (NULL) byte if the length is exactly 50 chars.</field>
+    </message>
     <message id="354" name="SET_VELOCITY_LIMITS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->

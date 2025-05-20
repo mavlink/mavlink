@@ -1,4 +1,4 @@
-name: Build markdown from XML and deploy
+name: Build markdown from XML
 
 on:
   push:
@@ -41,29 +41,3 @@ jobs:
           name: xml_file_markdown_docs
           path: doc/messages/
           retention-days: 1
-
-  deploy:
-    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged) }}
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Download Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: xml_file_markdown_docs
-        path: ~/_messages
-
-    # TBD - copy https://github.com/PX4/PX4-user_guide/blob/main/.github/workflows/docs_deploy.yml
-    - name: Deploy
-      run: |
-           git clone --single-branch --branch master https://${{ secrets.PX4BUILTBOT_PERSONAL_ACCESS_TOKEN }}@github.com/mavlink/mavlink-devguide.git
-           rm -rf mavlink-devguide/en/messages
-           mkdir -p mavlink-devguide/en/messages
-           cp -r ~/_messages/* mavlink-devguide/en/messages/
-           cd mavlink-devguide
-           git config --global user.name "${{ secrets.PX4BUILDBOT_USER }}"
-           git config --global user.email "${{ secrets.PX4BUILDBOT_EMAIL }}"
-           git add en/messages/*
-           git commit -a -m "MAVLink messages update `date`"
-           git push origin master

@@ -2237,19 +2237,21 @@
         <param index="4" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="2004" name="MAV_CMD_CAMERA_TRACK_POINT" hasLocation="false" isDestination="false">
-        <description>If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking.</description>
+        <description>If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), initiate tracking at a point in an image.</description>
         <param index="1" label="Point x" minValue="0" maxValue="1">Point to track x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="2" label="Point y" minValue="0" maxValue="1">Point to track y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="3" label="Radius" minValue="0" maxValue="1">Point radius (normalized 0..1, 0 is one pixel, 1 is full image width).</param>
         <param index="4" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
+        <param index="5" label="Frame ID" minValue="0" maxValue="65535" increment="1">Identifier of the frame on which to initiate tracking.</param>
       </entry>
       <entry value="2005" name="MAV_CMD_CAMERA_TRACK_RECTANGLE" hasLocation="false" isDestination="false">
-        <description>If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking.</description>
+        <description>If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), initiate tracking of a rectangular area in an image.</description>
         <param index="1" label="Top left corner x" minValue="0" maxValue="1">Top left corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="3" label="Bottom right corner x" minValue="0" maxValue="1">Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="4" label="Bottom right corner y" minValue="0" maxValue="1">Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="5" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
+        <param index="6" label="Frame ID" minValue="0" maxValue="65535" increment="1">Identifier of the frame on which to initiate tracking.</param>
       </entry>
       <entry value="2010" name="MAV_CMD_CAMERA_STOP_TRACKING" hasLocation="false" isDestination="false">
         <description>Stops ongoing tracking.</description>
@@ -5238,6 +5240,12 @@
         </description>
       </entry>
     </enum>
+    <enum name="HIL_ACTUATOR_CONTROLS_FLAGS" bitmask="true">
+      <description>Flags used in HIL_ACTUATOR_CONTROLS message.</description>
+      <entry value="1" name="HIL_ACTUATOR_CONTROLS_FLAGS_LOCKSTEP">
+        <description>Simulation is using lockstep</description>
+      </entry>
+    </enum>
     <enum name="MAV_MODE_PROPERTY" bitmask="true">
       <description>Mode properties.
       </description>
@@ -5251,17 +5259,6 @@
         <description>If set, this mode should not be added to the list of selectable modes.
           The mode might still be selected by the FC directly (for example as part of a failsafe).
         </description>
-      </entry>
-      <entry value="4" name="MAV_MODE_PROPERTY_AUTO_MODE">
-        <description>If set, this mode is automatically controlled (it may use but does not require a manual controller).
-          If unset the mode is a assumed to require user input (be a manual mode).
-        </description>
-      </entry>
-    </enum>
-    <enum name="HIL_ACTUATOR_CONTROLS_FLAGS" bitmask="true">
-      <description>Flags used in HIL_ACTUATOR_CONTROLS message.</description>
-      <entry value="1" name="HIL_ACTUATOR_CONTROLS_FLAGS_LOCKSTEP">
-        <description>Simulation is using lockstep</description>
       </entry>
     </enum>
   </enums>
@@ -7595,14 +7592,27 @@
     </message>
     <!-- cellular status information -->
     <message id="334" name="CELLULAR_STATUS">
-      <description>Report current used cellular network status</description>
+      <description>Report current used cellular network status.
+                   Note that the extensions are still an open PR here and subject to change slightly: https://github.com/mavlink/mavlink/pull/1945</description>
       <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
       <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLULAR_STATUS_FLAG_FAILED</field>
       <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
-      <field type="uint8_t" name="quality" invalid="UINT8_MAX">Signal quality in percent. If unknown, set to UINT8_MAX</field>
+      <field type="uint8_t" name="quality" invalid="UINT8_MAX">Signal quality in percent. May be used for Received Signal Strength Indicator (RSSI). If unknown, set to UINT8_MAX</field>
       <field type="uint16_t" name="mcc" invalid="UINT16_MAX">Mobile country code. If unknown, set to UINT16_MAX</field>
       <field type="uint16_t" name="mnc" invalid="UINT16_MAX">Mobile network code. If unknown, set to UINT16_MAX</field>
       <field type="uint16_t" name="lac" invalid="0">Location area code. If unknown, set to 0</field>
+      <extensions/>
+      <field type="uint8_t" name="band_number" invalid="0">(WIP) LTE frequency band number.</field>
+      <field type="float" name="band_frequency" units="MHz" invalid="0">(WIP) LTE radio frequency.</field>
+      <field type="uint16_t" name="channel_number" invalid="0">(WIP) The channel number (CN). Absolute radio-frequency (ARFCN) / E-UTRA (EARFCN) / UTRA (UARFCN) / New radio (NR_CH).</field>
+      <field type="float" name="rx_level" units="dBm" invalid="0">(WIP) On 3G is Received Signal Code Power (RSCP). On LTE Reference Signal Received Power (RSRP). On 5G  is New Radio Reference Signal Received Power (NR_RSRQ).</field>
+      <field type="float" name="tx_level" units="dBm" invalid="0">(WIP) Transmitter (modem) signal absolute power level.</field>
+      <field type="float" name="rx_quality" units="dBm" invalid="0">(WIP) On 3G is Receiver Quality (RxQual). On LTE is Reference Signal Received Quality (RSRQ). On 5G is New radio Reference Signal Received Quality (NR_RSRQ).</field>
+      <field type="uint32_t" name="link_tx_rate" units="KiB/s" invalid="0">(WIP) Download rate.</field>
+      <field type="uint32_t" name="link_rx_rate" units="KiB/s" invalid="0">(WIP) Upload rate.</field>
+      <field type="uint16_t" name="ber" invalid="0">(WIP) The bit error rate (BER) is determined by comparing the erroneous bits received with the total number of bits received. It is a ratio.</field>
+      <field type="uint8_t" name="id" instance="true" invalid="0">(WIP) Cellular instance number. Indexed from 1. Matches index in corresponding CELLULAR_MODEM_INFORMATION message.</field>
+      <field type="char[9]" name="cell_tower_id" invalid="0">(WIP) ID of the currently connected cell tower. This must be NULL terminated if the length is less than 9 human-readable chars, and without the null termination (NULL) byte if the length is exactly 9 chars.</field>
     </message>
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
