@@ -299,7 +299,7 @@
     <enum name="MAV_COMPONENT">
       <description>Default component ids (values) for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.).
       Components use ids to determine if they are the intended recipient of an incoming message. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components.
-      Each component must have a system-unique id, which takes precedence over using values defined here. New code should not depend on these values, but use appropriate MAV_TYPE in the HEARTBEAT message instead.
+      Each component must have a unique id within its system, which takes precedence over using values defined here. New code should not depend on MAV_COMPONENT, but use an appropriate MAV_TYPE in the HEARTBEAT message instead.
       When creating new entries, components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequential values. An appropriate number of values should be left free after these components to allow the number of instances to be expanded.</description>
       <entry value="0" name="MAV_COMP_ID_ALL">
         <description>Target id (target_component) used to broadcast messages to all components of the receiving system. Components should attempt to process messages with this component ID and forward to components on any other interfaces. Note: This is not a valid *source* component id for a message.</description>
