@@ -39,8 +39,7 @@ jobs:
 
       - name: Update mrtmavlink-go
         run: |
-          CONAN_VERSION=$(grep "version =" conanfile.py | awk -F'"' '{print $2}')
-          MAJOR_VERSION=$(echo $CONAN_VERSION | awk '{print substr($0,2)}')
+          MAJOR_VERSION=26 # ensure this matches the version in conanfile.py in conan-recipes repo - improve this by moving the conan recipe to this repo
           PKG_VERSION="v1.$MAJOR_VERSION"
           echo PKG_VERSION= $PKG_VERSION
           rm -fr mrtmavlink-go/magothy
