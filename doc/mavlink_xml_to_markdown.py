@@ -525,7 +525,7 @@ class MAVField(object):
         if self.minValue:
             parent.fieldnames.add('minValue')
         if self.maxValue:
-            parent.fieldnames.add('minValue')
+            parent.fieldnames.add('maxValue')
         if self.default:
             parent.fieldnames.add('default')
         if self.invalid:
