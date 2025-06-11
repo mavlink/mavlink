@@ -1757,7 +1757,7 @@
       </entry>
       <entry value="211" name="MAV_CMD_DO_GRIPPER" hasLocation="false" isDestination="false">
         <description>Mission command to operate a gripper.</description>
-        <param index="1" label="Instance" minValue="1" increment="1">Gripper instance number.</param>
+        <param index="1" label="Instance" minValue="1" increment="1">Gripper number. 1-6 for an autopilot connnected gripper. In missions this may be set to 1-6 for an autopilot gripper, or the gripper component id for a MAVLink gripper. 0 targets all grippers.</param>
         <param index="2" label="Action" enum="GRIPPER_ACTIONS">Gripper action to perform.</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -3242,6 +3242,10 @@
         <wip/>
         <description>Component supports locking control to a particular GCS independent of its system (via MAV_CMD_REQUEST_OPERATOR_CONTROL).</description>
       </entry>
+      <entry value="1048576" name="MAV_PROTOCOL_CAPABILITY_GRIPPER">
+        <wip/>
+        <description>Autopilot has a connected gripper. MAVLink Grippers would set MAV_TYPE_GRIPPER instead.</description>
+      </entry>      
     </enum>
     <enum name="MAV_MISSION_TYPE">
       <description>Type of mission items being requested/sent in mission protocol.</description>
