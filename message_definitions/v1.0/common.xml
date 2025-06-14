@@ -6157,6 +6157,7 @@
       <extensions/>
       <field type="float[21]" name="covariance" invalid="[NaN:]">Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
+      <field type="uint8_t" name="latency" units="ms">Vision positioning system latency. This represents the processing time from image acquisition to position estimation.</field>
     </message>
     <message id="103" name="VISION_SPEED_ESTIMATE">
       <description>Speed estimate from a vision source.</description>
@@ -6167,6 +6168,7 @@
       <extensions/>
       <field type="float[9]" name="covariance" invalid="[NaN:]">Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.</field>
       <field type="uint8_t" name="reset_counter">Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.</field>
+      <field type="uint8_t" name="latency" units="ms">Vision positioning system latency. This represents the processing time from image acquisition to velocity estimation.</field>
     </message>
     <message id="104" name="VICON_POSITION_ESTIMATE">
       <description>Global position estimate from a Vicon motion system source.</description>
@@ -6585,6 +6587,7 @@
       <field type="float" name="z" units="m">Z position (NED)</field>
       <extensions/>
       <field type="float[21]" name="covariance" invalid="[NaN:]">Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.</field>
+      <field type="uint8_t" name="latency" units="ms">Vision positioning system latency. This represents the processing time from image acquisition to position estimation.</field>
     </message>
     <message id="139" name="SET_ACTUATOR_CONTROL_TARGET">
       <description>Set the vehicle attitude and body angular rates.</description>
