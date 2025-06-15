@@ -109,20 +109,6 @@ def check_field(file_name, msg_name, field, enums):
             return
 
         enums[enum]["used"] = True
-        bitmask = enums[enum]["bitmask"]
-        if bitmask != None:
-            # Bitmask should match underlying enum
-            display_bitmask = field.get("display") == "bitmask"
-
-            if bitmask and not display_bitmask:
-                print("%s: Message %s field %s enum %s should marked: display=\"bitmask\"" % (
-                    file_name, msg_name, name, enum))
-                warning_count += 1
-
-            if display_bitmask and not bitmask:
-                print("%s: Message %s field %s enum %s should not marked: display=\"bitmask\"" % (
-                    file_name, msg_name, name, enum))
-                warning_count += 1
 
         # Enum should fit in given type
         type = field.get('type').split('[')[0]
