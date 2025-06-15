@@ -94,6 +94,13 @@ def check_field(file_name, msg_name, field, enums):
     enum = field.get('enum')
     units = field.get('units')
 
+    # Display property has been removed
+    display = field.get('display')
+    if display != None:
+        print("%s: Message %s field %s display=\"%s\" is deprecated" %
+              (file_name, msg_name, name, display))
+        warning_count += 1
+
     # Enum with units doesn't make sense
     if (enum != None) and (units != None):
         print("%s: Message %s field %s has both units and enum" %
