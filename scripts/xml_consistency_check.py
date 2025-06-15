@@ -45,7 +45,7 @@ def check_enum(enum, file_name):
     values = []
     enumEntries = enum.find_all('entry')
     for entry in enumEntries:
-        values.append(int(entry.get('value')))
+        values.append(int(entry.get('value'), 0))
 
     # Check for duplicate values
     for a, b in itertools.combinations(values, 2):
@@ -94,6 +94,13 @@ def check_field(file_name, msg_name, field, enums):
     enum = field.get('enum')
     units = field.get('units')
 
+    # Display property has been removed
+    display = field.get('display')
+    if display != None:
+        print("%s: Message %s field %s display=\"%s\" is deprecated" %
+              (file_name, msg_name, name, display))
+        warning_count += 1
+
     # Enum with units doesn't make sense
     if (enum != None) and (units != None):
         print("%s: Message %s field %s has both units and enum" %
@@ -109,20 +116,6 @@ def check_field(file_name, msg_name, field, enums):
             return
 
         enums[enum]["used"] = True
-        bitmask = enums[enum]["bitmask"]
-        if bitmask != None:
-            # Bitmask should match underlying enum
-            display_bitmask = field.get("display") == "bitmask"
-
-            if bitmask and not display_bitmask:
-                print("%s: Message %s field %s enum %s should marked: display=\"bitmask\"" % (
-                    file_name, msg_name, name, enum))
-                warning_count += 1
-
-            if display_bitmask and not bitmask:
-                print("%s: Message %s field %s enum %s should not marked: display=\"bitmask\"" % (
-                    file_name, msg_name, name, enum))
-                warning_count += 1
 
         # Enum should fit in given type
         type = field.get('type').split('[')[0]
@@ -142,6 +135,9 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
     index = entry.get('index')
     enum = entry.get('enum')
     units = entry.get('units')
+    minValue = entry.get('minValue')
+    maxValue = entry.get('maxValue')
+    increment = entry.get('increment')
 
     # Enum with units doesn't make sense
     if (enum != None) and (units != None):
@@ -158,6 +154,30 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
             return
 
         enums[enum]["used"] = True
+
+    if minValue != None and maxValue != None :
+        min = float(minValue)
+        max = float(maxValue)
+        range = max - min
+        if range <= 0:
+            print("%s: Command %s param %s min and max invalid got %f => %f" %
+                  (file_name, cmd_name, index, min, max))
+            warning_count += 1
+            return
+
+        if increment != None:
+            step = float(increment)
+            if range % step != 0:
+                print("%s: Command %s param %s range %f => %f incompatible with increment %f" %
+                    (file_name, cmd_name, index, min, max, step))
+                warning_count += 1
+                return
+
+            if (step == 1) and range <= 20:
+                print("%s: Command %s param %s min, max close and increment of 1, should there be a enum?" %
+                    (file_name, cmd_name, index))
+                warning_count += 1
+                return
 
     # There are a huge amount or errors here, commented out for now
     # Should be marked as reserved correctly
@@ -211,6 +231,9 @@ for file in files:
 all_enums = {}
 for key in xml:
     for enum in xml[key].find_all('enum'):
+        if enum.find('deprecated', recursive=False) != None:
+            # Skip and deprecated items
+            continue
         decoded = check_enum(enum, key)
         name = decoded["name"]
         if name in all_enums:
@@ -263,6 +286,9 @@ for name in all_enums:
 # Check all fields against enums
 for key in xml:
     for message in xml[key].find_all('message'):
+        if message.find('deprecated', recursive=False) != None:
+            # Skip and deprecated items
+            continue
         name = message.get('name')
         fields = message.find_all('field')
         for field in fields:
@@ -272,6 +298,9 @@ for key in xml:
 for key in xml:
     for enum in xml[key].find_all('enum', {"name": "MAV_CMD"}):
         for entry in enum.find_all('entry'):
+            if entry.find('deprecated', recursive=False) != None:
+                # Skip and deprecated items
+                continue
             name = entry.get('name')
             for param in entry.find_all('param'):
                 check_cmd_param(key, name, param, all_enums)
