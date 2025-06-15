@@ -45,7 +45,7 @@ def check_enum(enum, file_name):
     values = []
     enumEntries = enum.find_all('entry')
     for entry in enumEntries:
-        values.append(int(entry.get('value')))
+        values.append(int(entry.get('value'), 0))
 
     # Check for duplicate values
     for a, b in itertools.combinations(values, 2):
