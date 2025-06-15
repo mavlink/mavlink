@@ -102,9 +102,18 @@ def check_enum(enum, file_name):
 
 
 def check_field(file_name, msg_name, field, enums):
+    global warning_count
+
     name = field.get('name')
     enum = field.get('enum')
     units = field.get('units')
+
+    # Display property has been removed
+    display = field.get('display')
+    if display != None:
+        print("%s: Message %s field %s display=\"%s\" is deprecated" %
+              (file_name, msg_name, name, display))
+        warning_count += 1
 
     # Enum with units doesn't make sense
     if enum is not None and units is not None:
@@ -137,6 +146,8 @@ def check_field(file_name, msg_name, field, enums):
 
 
 def check_cmd_param(file_name, cmd_name, entry, enums):
+    global warning_count
+
     index = entry.get('index')
     enum = entry.get('enum')
     units = entry.get('units')
