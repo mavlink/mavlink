@@ -118,6 +118,15 @@
         <description>Reserved (not used). If set, this will indicate that an additional status field exists for higher status values.</description>
       </entry>
     </enum>
+
+    <enum name="STATE_SHARING_CONTROL_COMMAND">
+      <description>Commands for StateSharingControl message</description>
+      <entry value="0" name="COMMAND_NONE"/>
+      <entry value="1" name="COMMAND_START"/>
+      <entry value="2" name="COMMAND_STOP"/>
+      <entry value="3" name="COMMAND_UPDATE_PARAMS"/>
+    </enum>
+
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -633,6 +642,22 @@
       <description>Information about GCS in control of this MAV. This should be broadcast at low rate (nominally 1 Hz) and emitted when ownership or takeover status change. Control over MAV is requested using MAV_CMD_REQUEST_OPERATOR_CONTROL.</description>
       <field type="uint8_t" name="sysid_in_control">System ID of GCS MAVLink component in control (0: no GCS in control).</field>
       <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS">Control status. For example, whether takeover is allowed, and whether this message instance defines the default controlling GCS for the whole system.</field>
+    </message>
+    <message id="42000" name="STATE_SHARING_CONTROL">
+      <description>PX4 State Sharing Control message for runtime control of state sharing module.</description>
+      <field type="uint64_t" name="timestamp">Timestamp (microseconds since boot or Unix epoch)</field>
+      <field type="uint8_t" name="command" enum="STATE_SHARING_CONTROL_COMMAND">Control command</field>
+      <field type="char[128]" name="args">Optional arguments (e.g., key-value pairs: "DELAY=1.0;PERIOD=0.5")</field>
+    </message>
+    <message id="42001" name="STATE_SHARING">
+      <description>PX4 State Sharing message for multi-agent state exchange.</description>
+      <field type="uint64_t" name="timestamp">Timestamp (microseconds since boot or Unix epoch)</field>
+      <field type="uint64_t" name="timestamp_drone">Timestamp from the drone (microseconds)</field>
+      <field type="uint16_t" name="frame_id">Agent identification</field>
+      <field type="float" name="global_position_lon">Longitude [deg]</field>
+      <field type="float" name="global_position_lat">Latitude [deg]</field>
+      <field type="float" name="global_position_alt">Altitude [m]</field>
+      <field type="float[4]" name="q">Quaternion (w, x, y, z)</field>
     </message>
   </messages>
 </mavlink>
