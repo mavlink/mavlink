@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.x']
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install future lxml
-      - name : Test Python generator
+      - name: Test Python generator
         run: |
           ./scripts/test.sh py
 
@@ -79,7 +79,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['14','15','16','17','18']
+        node-version: ['14', '15', '16',' 17', '18', 'lts/*']
     steps:
       - uses: actions/checkout@v4
         with:
@@ -94,7 +94,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name : Test mavlink
+      - name: Test mavlink
         run: |
           ./scripts/test.sh node
 
