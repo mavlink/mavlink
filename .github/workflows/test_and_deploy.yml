@@ -30,6 +30,13 @@ jobs:
         run: |
           ./scripts/test.sh format
 
+  python-lint:
+    name: Lint Python code with ruff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+
   python-tests:
     name: Python ${{ matrix.python-version }} tests
     runs-on: ubuntu-22.04
@@ -100,7 +107,7 @@ jobs:
 
   deploy:
     name: Generate and push C headers
-    needs: [format, python-tests, node-tests]
+    needs: [format, python-lint, python-tests, node-tests]
     runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/master'
     env:
