@@ -47,10 +47,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          pip install future lxml
+          pip install future lxml numpy pytest setuptools
       - name: Test Python generator
         run: |
           ./scripts/test.sh py
+      - run: pip install --editable pymavlink
+      # TODO(cclauss): Remove --ignore when pymavlink is updated beyond @ 4960d4d.
+      - name: Run pytest
+        run: pytest --ignore=pymavlink/generator/C/test/posix/sha256_test.py
 
   build-cmake-c-example:
     name: Build cmake C example
