@@ -28,7 +28,7 @@ import argparse  # for command line parsing
 MAXIMUM_INCLUDE_FILE_NESTING = 5
 
 
-class MAVXML(object):
+class MAVXML:
     '''Represents a MAVLink XML file'''
 
     def __init__(self, filename):
@@ -404,7 +404,7 @@ span.warning {
 
         return insert_text
 
-class MAVDeprecated(object):
+class MAVDeprecated:
     def __init__(self, soup):
         # name, type, print_format, xml, description='', enum='', display='', units='', instance=False
         self.since = soup.get('since')
@@ -428,7 +428,7 @@ class MAVDeprecated(object):
             f"debug:Deprecated: since({self.since}), replaced_by({fix_add_implicit_links_items(self.replaced_by)}), description({self.description})")
 
 
-class MAVWip(object):
+class MAVWip:
     def __init__(self, soup=None):
         # <wip/>
         # self.wip = True
@@ -449,7 +449,7 @@ class MAVWip(object):
         print(f"debug:MAVWip: desc({self.description})")
 
 
-class MAVField(object):
+class MAVField:
     def __init__(self, soup, parent, extension):
         # name, type, print_format, xml, description='', enum='', display='', units='', instance=False
         self.name = None
@@ -540,7 +540,7 @@ class MAVField(object):
         # TODO - display, instance, are not output.
 
 
-class MAVMessage(object):
+class MAVMessage:
     def __init__(self, soup, basename):
         self.name = soup['name']
         self.id = int(soup['id'])
@@ -692,7 +692,7 @@ class MAVMessage(object):
             f"debug:message: name({self.name}, id({self.id}), description({self.description}), deprecated({self.deprecated})")
 
 
-class MAVEnumEntry(object):
+class MAVEnumEntry:
     def __init__(self, soup, basename):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
         self.name = soup['name']
@@ -724,7 +724,7 @@ class MAVEnumEntry(object):
         return string
 
 
-class MAVEnum(object):
+class MAVEnum:
     def __init__(self, soup, basename):
         # name, linenumber, description='', bitmask=False
         self.basename = basename  # dialect declared in
@@ -813,7 +813,7 @@ class MAVEnum(object):
             f"debug:MAVEnum: name({self.name}), bitmask({self.bitmask}), deprecated({self.deprecated}), wip({self.wip}), basename({self.basename})")
 
 
-class MAVCommandParam(object):
+class MAVCommandParam:
     def __init__(self, soup, parent):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
 
@@ -879,7 +879,7 @@ class MAVCommandParam(object):
         if self.multiplier:
             parent.param_fieldnames.add('multiplier')
 
-class MAVCommand(object):
+class MAVCommand:
     def __init__(self, soup, basename):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
         pass
@@ -1069,7 +1069,7 @@ def generateMarkdownTable(headings, rows):
     return string
 
 
-class XMLFiles(object):
+class XMLFiles:
     def __init__(self, dialect=None, source_dir="."):
         self.xml_dialects = dict()
         self.source_dir = source_dir
