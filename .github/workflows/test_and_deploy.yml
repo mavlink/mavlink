@@ -47,10 +47,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          pip install future lxml
+          pip install future lxml pytest
       - name: Test Python generator
         run: |
           ./scripts/test.sh py
+      - name: Run pytest
+        run: pytest --ignore=pymavlink
 
   build-cmake-c-example:
     name: Build cmake C example
