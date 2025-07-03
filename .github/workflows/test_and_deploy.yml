@@ -30,6 +30,17 @@ jobs:
         run: |
           ./scripts/test.sh format
 
+  spell-check:
+    name: Find typos with codespell
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pipx run codespell --ignore-words-list=ned
+                          message_definitions/v1.0/all.xml
+                          message_definitions/v1.0/common.xml
+                          message_definitions/v1.0/minimal.xml
+                          message_definitions/v1.0/standard.xml
+
   python-tests:
     name: Python ${{ matrix.python-version }} tests
     runs-on: ubuntu-22.04
