@@ -175,17 +175,6 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="550" name="MAV_CMD_SET_AT_S_PARAM" hasLocation="false" isDestination="false">
-        <description>Allows setting an AT S command of an SiK radio.
-        </description>
-        <param index="1" label="Radio instance">The radio instance, one-based, 0 for all.</param>
-        <param index="2" label="Index">The Sx index, e.g. 3 for S3 which is NETID.</param>
-        <param index="3" label="Value">The value to set it to, e.g. default 25 for NETID</param>
-        <param index="4" reserved="true"/>
-        <param index="5" reserved="true"/>
-        <param index="6" reserved="true"/>
-        <param index="7" reserved="true"/>
-      </entry>
       <entry value="610" name="MAV_CMD_DO_SET_SYS_CMP_ID" hasLocation="false" isDestination="false">
         <description>
           Set system and component id.
@@ -196,6 +185,21 @@
         <param index="2" label="Component ID" minValue="0" maxValue="255" increment="1">New component ID for target component(s). 0: ignore (component IDs don't change).</param>
         <param index="3" label="Reboot">Reboot components after ID change. Any non-zero value triggers the reboot.</param>
         <param index="4" reserved="true" default="NaN"/>
+      </entry>
+      <entry value="611" name="MAV_CMD_DO_SET_GLOBAL_ORIGIN" hasLocation="true" isDestination="false">
+        <description>Sets the GNSS coordinates of the vehicle local origin (0,0,0) position.
+          Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed.
+          This enables transform between the local coordinate frame and the global (GNSS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.
+          This command supersedes SET_GPS_GLOBAL_ORIGIN.
+          Should be sent in a COMMAND_INT (Expected frame is MAV_FRAME_GLOBAL, and this should be assumed when sent in COMMAND_LONG).
+        </description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
       <entry value="12900" name="MAV_CMD_ODID_SET_EMERGENCY" hasLocation="false" isDestination="false">
         <description>Used to manually set/unset emergency status for remote id.
@@ -245,8 +249,8 @@
           If the system manager component cannot grant control (because takeover requires permission), the request should be rejected with MAV_RESULT_FAILED.
           The system manager component should then send this same command to the current owning GCS in order to notify of the request.
           The owning GCS would ACK with MAV_RESULT_ACCEPTED, and might choose to release control of the vehicle, or re-request control with the takeover bit set to allow permission.
-          In case it choses to re-request control with takeover bit set to allow permission, requestor GCS will only have 10 seconds to get control, otherwise owning GCS will re-request control with takeover bit set to disallow permission, and requestor GCS will need repeat the request if still interested in getting control.
-          Note that the pilots of both GCS should co-ordinate safe handover offline.
+          In case it choses to re-request control with takeover bit set to allow permission, requester GCS will only have 10 seconds to get control, otherwise owning GCS will re-request control with takeover bit set to disallow permission, and requester GCS will need repeat the request if still interested in getting control.
+          Note that the pilots of both GCS should coordinate safe handover offline.
 
           Note that in most systems the only controlled component will be the "system manager component", and that will be the autopilot.
           However separate GCS control of a particular component is also permitted, if supported by the component.
@@ -258,7 +262,7 @@
         <param index="1" label="Sysid requesting control">System ID of GCS requesting control. 0 when command sent from GCS to autopilot (autopilot determines requesting GCS sysid from message header). Sysid of GCS requesting control when command sent by autopilot to controlling GCS.</param>
         <param index="2" label="Action">0: Release control, 1: Request control.</param>
         <param index="3" label="Allow takeover">Enable automatic granting of ownership on request (by default reject request and notify current owner). 0: Ask current owner and reject request, 1: Allow automatic takeover.</param>
-        <param index="4" label="Request timeout" units="s" minValue="3" maxValue="60">Timeout in seconds before a request to a GCS to allow takeover is assumed to be rejected. This is used to display the timeout graphically on requestor and GCS in control.</param>
+        <param index="4" label="Request timeout" units="s" minValue="3" maxValue="60">Timeout in seconds before a request to a GCS to allow takeover is assumed to be rejected. This is used to display the timeout graphically on requester and GCS in control.</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
@@ -468,7 +472,7 @@
       <field type="float" name="capacity_consumed" units="Ah" invalid="NaN">Consumed charge. NaN: field not provided. This is either the consumption since power-on or since the battery was full, depending on the value of MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL.</field>
       <field type="float" name="capacity_remaining" units="Ah" invalid="NaN">Remaining charge (until empty). NaN: field not provided. Note: If MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL is unset, this value is based on the assumption the battery was full when the system was powered.</field>
       <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Remaining battery energy. Values: [0-100], UINT8_MAX: field not provided.</field>
-      <field type="uint32_t" name="status_flags" display="bitmask" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
+      <field type="uint32_t" name="status_flags" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
     </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
@@ -501,7 +505,7 @@
       <field type="uint8_t" name="target_system">System ID (ID of target system, normally flight controller).</field>
       <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
       <field type="uint32_t" name="time_last_update_ms" units="ms">Time when the data in the channels field were last updated (time since boot in the receiver's time domain).</field>
-      <field type="uint16_t" name="flags" enum="RADIO_RC_CHANNELS_FLAGS" display="bitmask">Radio RC channels status flags.</field>
+      <field type="uint16_t" name="flags" enum="RADIO_RC_CHANNELS_FLAGS">Radio RC channels status flags.</field>
       <field type="uint8_t" name="count">Total number of RC channels being received. This can be larger than 32, indicating that more channels are available but not given in this message.</field>
       <extensions/>
       <field type="int16_t[32]" name="channels" minValue="-4096" maxValue="4096">RC channels.
@@ -511,7 +515,7 @@
     <message id="441" name="GNSS_INTEGRITY">
       <description>Information about key components of GNSS receivers, like signal authentication, interference and system errors.</description>
       <field type="uint8_t" name="id" instance="true">GNSS receiver id. Must match instance ids of other messages from same receiver.</field>
-      <field type="uint32_t" name="system_errors" enum="GPS_SYSTEM_ERROR_FLAGS" display="bitmask">Errors in the GPS system.</field>
+      <field type="uint32_t" name="system_errors" enum="GPS_SYSTEM_ERROR_FLAGS">Errors in the GPS system.</field>
       <field type="uint8_t" name="authentication_state" enum="GPS_AUTHENTICATION_STATE">Signal authentication state of the GPS system.</field>
       <field type="uint8_t" name="jamming_state" enum="GPS_JAMMING_STATE">Signal jamming state of the GPS system.</field>
       <field type="uint8_t" name="spoofing_state" enum="GPS_SPOOFING_STATE">Signal spoofing state of the GPS system.</field>
@@ -528,7 +532,7 @@
       <description>Current motion information from sensors on a target</description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time).</field>
       <field type="uint8_t" name="id">The ID of the target if multiple targets are present</field>
-      <field type="uint8_t" name="sensor_capabilities" enum="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" display="bitmask">Bitmap to indicate the sensor's reporting capabilities</field>
+      <field type="uint8_t" name="sensor_capabilities" enum="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS">Bitmap to indicate the sensor's reporting capabilities</field>
       <field type="int32_t" name="lat" units="degE7">Target's latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Target's longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Target's altitude (AMSL)</field>
@@ -558,7 +562,7 @@
     <message id="512" name="CONTROL_STATUS">
       <description>Information about GCS in control of this MAV. This should be broadcast at low rate (nominally 1 Hz) and emitted when ownership or takeover status change. Control over MAV is requested using MAV_CMD_REQUEST_OPERATOR_CONTROL.</description>
       <field type="uint8_t" name="sysid_in_control">System ID of GCS MAVLink component in control (0: no GCS in control).</field>
-      <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS" display="bitmask">Control status. For example, whether takeover is allowed, and whether this message instance defines the default controlling GCS for the whole system.</field>
+      <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS">Control status. For example, whether takeover is allowed, and whether this message instance defines the default controlling GCS for the whole system.</field>
     </message>
   </messages>
 </mavlink>
