@@ -174,14 +174,14 @@ class Application(Frame):
                 return
 
         # Generate headers
-        opts = mavgen.Opts(self.out_value.get(), wire_protocol=self.protocol_value.get(), language=self.language_value.get(), validate=self.validate_value.get(), error_limit=error_limit, strict_units=self.strict_units_value.get());
+        opts = mavgen.Opts(self.out_value.get(), wire_protocol=self.protocol_value.get(), language=self.language_value.get(), validate=self.validate_value.get(), error_limit=error_limit, strict_units=self.strict_units_value.get())
         args = [self.xml_value.get()]
         try:
             mavgen.mavgen(opts,args)
             tkinter.messagebox.showinfo('Successfully Generated Headers', 'Headers generated successfully.')
 
         except Exception as ex:
-            exStr = formatErrorMessage(str(ex));
+            exStr = formatErrorMessage(str(ex))
             tkinter.messagebox.showerror('Error Generating Headers','{0!s}'.format(exStr))
             return
 
@@ -189,10 +189,10 @@ class Application(Frame):
 Format the mavgen exceptions by removing 'ERROR: '.
 """
 def formatErrorMessage(message):
-    reObj = re.compile(r'^(ERROR):\s+',re.M);
-    matches = re.findall(reObj, message);
+    reObj = re.compile(r'^(ERROR):\s+',re.M)
+    matches = re.findall(reObj, message)
     prefix = ("An error occurred in mavgen:" if len(matches) == 1 else "Errors occurred in mavgen:\n")
-    message = re.sub(reObj, '\n', message);
+    message = re.sub(reObj, '\n', message)
 
     return prefix + message
 
