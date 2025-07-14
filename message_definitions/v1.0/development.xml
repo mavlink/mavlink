@@ -164,7 +164,8 @@
       </entry>
       <entry value="309" name="MAV_CMD_PREFLIGHT_CONTROL_SURFACE_TEST" hasLocation="false" isDestination="false">
         <description>Command to test control surfaces.
-          This is similar to MAV_CMD_ACTUATOR_TEST, but rather than testing individual actuators, this tests them in functional groups, i.e. roll, pitch, yaw, and (if tiltrotor) collective rotor tilt, all sequentially after receiving this command.
+          The command sets a normalized torque setpoint in a particular axis (roll, pitch, yaw), or (if tiltrotor) a normalized collective rotor tilt.
+          This is similar to MAV_CMD_ACTUATOR_TEST, except that multiple control surfaces and actuators may contribute to movement in a particular axis.
           Autopilots must NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed.
         </description>
         <param index="1" label="Axis" enum="CS_TEST_AXIS">Axis to check (roll, pitch, yaw)</param>
