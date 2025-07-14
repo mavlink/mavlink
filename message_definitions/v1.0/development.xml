@@ -162,14 +162,14 @@
         <param index="6">Reserved</param>
         <param index="7">WIP: upgrade progress report rate (can be used for more granular control).</param>
       </entry>
-      <entry value="309" name="MAV_CMD_PREFLIGHT_CONTROL_SURFACE_TEST" hasLocation="false" isDestination="false">
-        <description>Command to test control surfaces.
-          The command sets a normalized torque setpoint in a particular axis (roll, pitch, yaw), or (if tiltrotor) a normalized collective rotor tilt.
+      <entry value="309" name="MAV_CMD_ACTUATOR_GROUP_TEST" hasLocation="false" isDestination="false">
+        <description>Command to test groups of related actuators together.
+          This might include groups such as the actuators that contribute to roll, pitch, or yaw torque, actuators that contribute to thrust in x, y, z axis, tilt mechanisms, flaps and spoilers, and so on.
           This is similar to MAV_CMD_ACTUATOR_TEST, except that multiple control surfaces and actuators may contribute to movement in a particular axis.
           Autopilots must NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed.
         </description>
-        <param index="1" label="Axis" enum="CS_TEST_AXIS">Axis to check (roll, pitch, yaw)</param>
-        <param index="2" label="Control input" minValue="-1" maxValue="1">Control</param>
+        <param index="1" label="Group" enum="ACTUATOR_TEST_GROUP">Actuator group to check, such as actuators related to roll torque.</param>
+        <param index="2" label="Value" minValue="-1" maxValue="1">Value to set. This is a normalized value across the full range of the tested group [-1,1].</param>
       </entry>
       <entry value="610" name="MAV_CMD_DO_SET_SYS_CMP_ID" hasLocation="false" isDestination="false">
         <description>
@@ -392,19 +392,19 @@
         <description>RAIM integrity check failed.</description>
       </entry>
     </enum>
-    <enum name="CS_TEST_AXIS">
-      <description>Axis to check in MAV_CMD_PREFLIGHT_CONTROL_SURFACE_TEST.</description>
-      <entry value="0" name="CS_TEST_AXIS_ROLL">
-        <description>Roll axis.</description>
+    <enum name="ACTUATOR_TEST_GROUP">
+      <description>Actuator groups to test in MAV_CMD_ACTUATOR_GROUP_TEST.</description>
+      <entry value="0" name="ACTUATOR_TEST_GROUP_ROLL_TORQUE">
+        <description>Actuators that contribute to roll torque.</description>
       </entry>
-      <entry value="1" name="CS_TEST_AXIS_PITCH">
-        <description>Pitch axis.</description>
+      <entry value="1" name="ACTUATOR_TEST_GROUP_PITCH_TORQUE">
+        <description>Actuators that contribute to pitch torque.</description>
       </entry>
-      <entry value="2" name="CS_TEST_AXIS_YAW">
-        <description>Yaw axis.</description>
+      <entry value="2" name="ACTUATOR_TEST_GROUP_YAW_TORQUE">
+        <description>Actuators that contribute to yaw torque.</description>
       </entry>
-      <entry value="3" name="CS_TEST_AXIS_COLLECTIVE_TILT">
-        <description>Collective Tilt axis.</description>
+      <entry value="3" name="ACTUATOR_TEST_GROUP_COLLECTIVE_TILT">
+        <description>Actuators that affect collective tilt.</description>
       </entry>
     </enum>
   </enums>
