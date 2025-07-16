@@ -1106,7 +1106,7 @@ def tidyDescription(desc_string, type="markdown"):
 
 
 def fix_add_implicit_links_items(input_text):
-    if not type(input_text) is str:
+    if type(input_text) is not str:
         # Its not something we can handle
         return input_text
 

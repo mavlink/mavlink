@@ -22,7 +22,6 @@ Released under GNU GPL version 3 or later
 """
 import os
 import re
-import sys
 
 from tkinter import *
 import tkinter.filedialog
