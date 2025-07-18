@@ -68,6 +68,8 @@ generate_headers csAirLink $1
 generate_headers uAvionix $1
 generate_headers cubepilot $1
 generate_headers ualberta $1
+generate_headers icarous $1
+generate_headers loweheiser $1
 generate_headers paparazzi $1
 generate_headers ASLUAV $1
 generate_headers matrixpilot $1

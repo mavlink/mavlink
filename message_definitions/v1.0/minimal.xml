@@ -204,11 +204,23 @@
         <description>Generic multirotor that does not fit into a specific type or whose type is unknown</description>
       </entry>
       <entry value="44" name="MAV_TYPE_ILLUMINATOR">
-        <description>Illuminator. An illuminator is a light source that is used for lighting up dark areas external to the sytstem: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
+        <description>Illuminator. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
+      </entry>
+      <entry value="45" name="MAV_TYPE_SPACECRAFT_ORBITER">
+        <description>Orbiter spacecraft. Includes satellites orbiting terrestrial and extra-terrestrial bodies. Follows NASA Spacecraft Classification.</description>
+      </entry>
+      <entry value="46" name="MAV_TYPE_GROUND_QUADRUPED">
+        <description>A generic four-legged ground vehicle (e.g., a robot dog).</description>
+      </entry>
+      <entry value="47" name="MAV_TYPE_VTOL_GYRODYNE">
+        <description>VTOL hybrid of helicopter and autogyro. It has a main rotor for lift and separate propellers for forward flight. The rotor must be powered for hover but can autorotate in cruise flight. See: https://en.wikipedia.org/wiki/Gyrodyne</description>
+      </entry>
+      <entry value="48" name="MAV_TYPE_GRIPPER">
+        <description>Gripper</description>
       </entry>
     </enum>
     <enum name="MAV_MODE_FLAG" bitmask="true">
-      <description>These flags encode the MAV mode.</description>
+      <description>These flags encode the MAV mode, see MAV_MODE enum for useful combinations.</description>
       <entry value="128" name="MAV_MODE_FLAG_SAFETY_ARMED">
         <description>0b10000000 MAV safety set to armed. Motors are enabled / running / can start. Ready to fly. Additional note: this flag is to be ignore when sent in the command MAV_CMD_DO_SET_MODE and MAV_CMD_COMPONENT_ARM_DISARM shall be used instead. The flag can still be used to report the armed state.</description>
       </entry>
@@ -231,7 +243,7 @@
         <description>0b00000010 system has a test mode enabled. This flag is intended for temporary system tests and should not be used for stable implementations.</description>
       </entry>
       <entry value="1" name="MAV_MODE_FLAG_CUSTOM_MODE_ENABLED">
-        <description>0b00000001 Reserved for future use.</description>
+        <description>0b00000001 system-specific custom mode is enabled. When using this flag to enable a custom mode all other flags should be ignored.</description>
       </entry>
     </enum>
     <enum name="MAV_MODE_FLAG_DECODE_POSITION" bitmask="true">
@@ -291,9 +303,18 @@
       </entry>
     </enum>
     <enum name="MAV_COMPONENT">
-      <description>Component ids (values) for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.).
-      Components must use the appropriate ID in their source address when sending messages. Components can also use IDs to determine if they are the intended recipient of an incoming message. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components.
-      When creating new entries, components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequential values. An appropriate number of values should be left free after these components to allow the number of instances to be expanded.</description>
+      <description>Legacy component ID values for particular types of hardware/software that might make up a MAVLink system (autopilot, cameras, servos, avoidance systems etc.).
+      
+        Components are not required or expected to use IDs with names that correspond to their type or function, but may choose to do so.
+        Using an ID that matches the type may slightly reduce the chances of component id clashes, as, for historical reasons, it is less likely to be used by some other type of component.
+        System integration will still need to ensure that all components have unique IDs.
+
+        Component IDs are used for addressing messages to a particular component within a system.
+        A component can use any unique ID between 1 and 255 (MAV_COMP_ID_ALL value is the broadcast address, used to send to all components).
+        
+        Historically component ID were also used for identifying the type of component.
+        New code must not use component IDs to infer the component type, but instead check the MAV_TYPE in the HEARTBEAT message!
+      </description>
       <entry value="0" name="MAV_COMP_ID_ALL">
         <description>Target id (target_component) used to broadcast messages to all components of the receiving system. Components should attempt to process messages with this component ID and forward to components on any other interfaces. Note: This is not a valid *source* component id for a message.</description>
       </entry>

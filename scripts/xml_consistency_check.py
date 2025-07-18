@@ -102,7 +102,7 @@ def check_field(file_name, msg_name, field, enums):
 
     if (enum != None):
         # Enum should exist
-        if not (enum in enums):
+        if enum not in enums:
             print("%s: Message %s field %s enum %s does not exist" %
                   (file_name, msg_name, name, enum))
             warning_count += 1
@@ -126,7 +126,7 @@ def check_field(file_name, msg_name, field, enums):
 
         # Enum should fit in given type
         type = field.get('type').split('[')[0]
-        if not (type in types):
+        if type not in types:
             print("%s: Message %s field %s enum %s unexpected type: %s" %
                   (file_name, msg_name, name, enum, type))
             warning_count += 1
@@ -151,7 +151,7 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
 
     if (enum != None):
         # Enum should exist
-        if not (enum in enums):
+        if enum not in enums:
             print("%s: Command %s param %s enum %s does not exist" %
                   (file_name, cmd_name, index, enum))
             warning_count += 1
@@ -168,7 +168,7 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
     #        print("%s: Command %s param %s should be marked reserved=\"true\"" % (file_name, cmd_name, index))
 
 
-description = f"""
+description = """
 XML consistency parser.
 
 Checks XML definition files in ../message_definitions/v1.0/.
