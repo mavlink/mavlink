@@ -1101,7 +1101,7 @@
       <entry value="18" name="MAV_CMD_NAV_LOITER_TURNS" hasLocation="true" isDestination="true">
         <description>Loiter around this waypoint for X turns</description>
         <param index="1" label="Turns" minValue="0">Number of turns.</param>
-        <param index="2" label="Heading Required" enum="BOOL">Leave loiter circle only when track heads towards the next waypoint (BOOL_FALSE: Leave when turns complete). Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="Heading Required" enum="MAV_BOOL">Leave loiter circle only when track heads towards the next waypoint (MAV_BOOL_FALSE: Leave when turns complete). Values not equal to 0 or 1 are invalid.</param>
         <param index="3" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise</param>
         <param index="4" label="Xtrack Location">Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. Otherwise the angle (in degrees) between the tangent of the loiter circle and the center xtrack at which the vehicle must leave the loiter (and converge to the center xtrack). NaN to use the current system default xtrack behaviour.</param>
         <param index="5" label="Latitude">Latitude</param>
@@ -1111,7 +1111,7 @@
       <entry value="19" name="MAV_CMD_NAV_LOITER_TIME" hasLocation="true" isDestination="true">
         <description>Loiter at the specified latitude, longitude and altitude for a certain amount of time. Multicopter vehicles stop at the point (within a vehicle-specific acceptance radius). Forward-only moving vehicles (e.g. fixed-wing) circle the point with the specified radius/direction. If the Heading Required parameter (2) is non-zero forward moving aircraft will only leave the loiter circle once heading towards the next waypoint.</description>
         <param index="1" label="Time" units="s" minValue="0">Loiter time (only starts once Lat, Lon and Alt is reached).</param>
-        <param index="2" label="Heading Required" enum="BOOL">Leave loiter circle only when track heading towards the next waypoint (BOOL_FALSE: Leave on time expiry). Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="Heading Required" enum="MAV_BOOL">Leave loiter circle only when track heading towards the next waypoint (MAV_BOOL_FALSE: Leave on time expiry). Values not equal to 0 or 1 are invalid.</param>
         <param index="3" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise.</param>
         <param index="4" label="Xtrack Location">Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. Otherwise the angle (in degrees) between the tangent of the loiter circle and the center xtrack at which the vehicle must leave the loiter (and converge to the center xtrack). NaN to use the current system default xtrack behaviour.</param>
         <param index="5" label="Latitude">Latitude</param>
@@ -1190,7 +1190,7 @@
       </entry>
       <entry value="31" name="MAV_CMD_NAV_LOITER_TO_ALT" hasLocation="true" isDestination="true">
         <description>Begin loiter at the specified Latitude and Longitude.  If Lat=Lon=0, then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached. Additionally, if the Heading Required parameter is non-zero the aircraft will not leave the loiter until heading toward the next waypoint.</description>
-        <param index="1" label="Heading Required" enum="BOOL">Leave loiter circle only when track heading towards the next waypoint (BOOL_FALSE: Leave when altitude reached). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Heading Required" enum="MAV_BOOL">Leave loiter circle only when track heading towards the next waypoint (MAV_BOOL_FALSE: Leave when altitude reached). Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.</param>
         <param index="3">Empty</param>
         <param index="4" label="Xtrack Location" minValue="0" maxValue="1" increment="1">Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. Otherwise the angle (in degrees) between the tangent of the loiter circle and the center xtrack at which the vehicle must leave the loiter (and converge to the center xtrack). NaN to use the current system default xtrack behaviour.</param>
@@ -1287,7 +1287,7 @@
                     unused to prevent errors -->
       <entry value="92" name="MAV_CMD_NAV_GUIDED_ENABLE" hasLocation="false" isDestination="false">
         <description>Hand control over to an external controller</description>
-        <param index="1" label="Enable" enum="BOOL">Guided mode on (BOOL_FALSE: Off). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Enable" enum="MAV_BOOL">Guided mode on (MAV_BOOL_FALSE: Off). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -1360,7 +1360,7 @@
         <param index="1" label="Angle" units="deg" minValue="0" maxValue="360">target angle [0-360]. Absolute angles: 0 is north. Relative angle: 0 is initial yaw. Direction set by param3.</param>
         <param index="2" label="Angular Speed" units="deg/s" minValue="0">angular speed</param>
         <param index="3" label="Direction" minValue="-1" maxValue="1" increment="1">direction: -1: counter clockwise, 0: shortest direction, 1: clockwise</param>
-        <param index="4" label="Relative" enum="BOOL">Relative offset (BOOL_FALSE: absolute angle). Values not equal to 0 or 1 are invalid.</param>
+        <param index="4" label="Relative" enum="MAV_BOOL">Relative offset (MAV_BOOL_FALSE: absolute angle). Values not equal to 0 or 1 are invalid.</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
@@ -1412,7 +1412,7 @@
           The position is set automatically by the system during the takeoff (and may also be set using this command).
           Note: the current home position may be emitted in a HOME_POSITION message on request (using MAV_CMD_REQUEST_MESSAGE with param1=242).
         </description>
-        <param index="1" label="Use Current" enum="BOOL">Use current location (BOOL_FALSE: use specified location). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Use Current" enum="MAV_BOOL">Use current location (MAV_BOOL_FALSE: use specified location). Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Roll" units="deg" minValue="-180" maxValue="180">Roll angle (of surface). Range: -180..180 degrees. NAN or 0 means value not set. 0.01 indicates zero roll.</param>
         <param index="3" label="Pitch" units="deg" minValue="-90" maxValue="90">Pitch angle (of surface). Range: -90..90 degrees. NAN or 0 means value not set. 0.01 means zero pitch.</param>
         <param index="4" label="Yaw" units="deg" minValue="-180" maxValue="180">Yaw angle. NaN to use default heading. Range: -180..180 degrees.</param>
@@ -1580,7 +1580,7 @@
       </entry>
       <entry value="193" name="MAV_CMD_DO_PAUSE_CONTINUE" hasLocation="false" isDestination="false">
         <description>If in a GPS controlled position mode, hold the current position or continue.</description>
-        <param index="1" label="Continue" enum="BOOL">Continue mission (BOOL_TRUE), Pause current mission or reposition command, hold current position (BOOL_FALSE). Values not equal to 0 or 1 are invalid. A VTOL capable vehicle should enter hover mode (multicopter and VTOL planes). A plane should loiter with the default loiter radius.</param>
+        <param index="1" label="Continue" enum="MAV_BOOL">Continue mission (MAV_BOOL_TRUE), Pause current mission or reposition command, hold current position (MAV_BOOL_FALSE). Values not equal to 0 or 1 are invalid. A VTOL capable vehicle should enter hover mode (multicopter and VTOL planes). A plane should loiter with the default loiter radius.</param>
         <param index="2">Reserved</param>
         <param index="3">Reserved</param>
         <param index="4">Reserved</param>
@@ -1590,7 +1590,7 @@
       </entry>
       <entry value="194" name="MAV_CMD_DO_SET_REVERSE" hasLocation="false" isDestination="false">
         <description>Set moving direction to forward or reverse.</description>
-        <param index="1" label="Reverse" enum="BOOL">Reverse direction (BOOL_FALSE: Forward direction). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Reverse" enum="MAV_BOOL">Reverse direction (MAV_BOOL_FALSE: Forward direction). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -1680,9 +1680,9 @@
         <deprecated since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_CONFIGURE">This message has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_CONFIGURE. The message can still be used to communicate with legacy gimbals implementing it.</deprecated>
         <description>Mission command to configure a camera or antenna mount</description>
         <param index="1" label="Mode" enum="MAV_MOUNT_MODE">Mount operation mode</param>
-        <param index="2" label="Stabilize Roll" enum="BOOL">Stabilize roll (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
-        <param index="3" label="Stabilize Pitch" enum="BOOL">Stabilize pitch (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
-        <param index="4" label="Stabilize Yaw" enum="BOOL">Stabilize yaw (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="Stabilize Roll" enum="MAV_BOOL">Stabilize roll (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="3" label="Stabilize Pitch" enum="MAV_BOOL">Stabilize pitch (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="4" label="Stabilize Yaw" enum="MAV_BOOL">Stabilize yaw (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="5" label="Roll Input Mode">Roll input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
         <param index="6" label="Pitch Input Mode">Pitch input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
         <param index="7" label="Yaw Input Mode">Yaw input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
@@ -1703,7 +1703,7 @@
         <description>Mission command to set camera trigger distance for this flight. The camera is triggered each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.</description>
         <param index="1" label="Distance" units="m" minValue="0">Camera trigger distance. 0 to stop triggering.</param>
         <param index="2" label="Shutter" units="ms" minValue="-1" increment="1">Camera shutter integration time. -1 or 0 to ignore</param>
-        <param index="3" label="Trigger" enum="BOOL">Trigger camera once, immediately (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="3" label="Trigger" enum="MAV_BOOL">Trigger camera once, immediately (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="4" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
@@ -1747,7 +1747,7 @@
       </entry>
       <entry value="210" name="MAV_CMD_DO_INVERTED_FLIGHT" hasLocation="false" isDestination="false">
         <description>Change to/from inverted flight.</description>
-        <param index="1" label="Inverted" enum="BOOL">Inverted flight (BOOL_False: normal flight). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Inverted" enum="MAV_BOOL">Inverted flight (MAV_BOOL_False: normal flight). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -1767,7 +1767,7 @@
       </entry>
       <entry value="212" name="MAV_CMD_DO_AUTOTUNE_ENABLE" hasLocation="false" isDestination="false">
         <description>Enable/disable autotune.</description>
-        <param index="1" label="Enable" enum="BOOL">Enable autotune (BOOL_FALSE: disable autotune). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Enable" enum="MAV_BOOL">Enable autotune (MAV_BOOL_FALSE: disable autotune). Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Axis" enum="AUTOTUNE_AXIS">Specify axes for which autotuning is enabled/disabled. 0 indicates the field is unused (for compatibility reasons). If 0 the autopilot will follow its default behaviour, which is usually to tune all axes.</param>
         <param index="3">Empty.</param>
         <param index="4">Empty.</param>
@@ -1779,7 +1779,7 @@
         <description>Sets a desired vehicle turn angle and speed change.</description>
         <param index="1" label="Yaw" units="deg">Yaw angle to adjust steering by.</param>
         <param index="2" label="Speed" units="m/s">Speed.</param>
-        <param index="3" label="Angle" enum="BOOL">Relative final angle (BOOL_FALSE: Absolute angle). Values not equal to 0 or 1 are invalid.</param>
+        <param index="3" label="Angle" enum="MAV_BOOL">Relative final angle (MAV_BOOL_FALSE: Absolute angle). Values not equal to 0 or 1 are invalid.</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
@@ -1828,8 +1828,8 @@
       </entry>
       <entry value="223" name="MAV_CMD_DO_ENGINE_CONTROL" hasLocation="false" isDestination="false">
         <description>Control vehicle engine. This is interpreted by the vehicles engine controller to change the target engine state. It is intended for vehicles with internal combustion engines</description>
-        <param index="1" label="Start Engine" enum="BOOL">Start engine (BOOL_False: Stop engine). Values not equal to 0 or 1 are invalid.</param>
-        <param index="2" label="Cold Start" enum="BOOL">Cold start engine (BOOL_FALSE: Warm start). Values not equal to 0 or 1 are invalid. Controls use of choke where applicable</param>
+        <param index="1" label="Start Engine" enum="MAV_BOOL">Start engine (MAV_BOOL_False: Stop engine). Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="Cold Start" enum="MAV_BOOL">Cold start engine (MAV_BOOL_FALSE: Warm start). Values not equal to 0 or 1 are invalid. Controls use of choke where applicable</param>
         <param index="3" label="Height Delay" units="m" minValue="0">Height delay. This is for commanding engine start only after the vehicle has gained the specified height. Used in VTOL vehicles during takeoff to start engine after the aircraft is off the ground. Zero for no delay.</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
@@ -1853,7 +1853,7 @@
 	  The command will ACK with MAV_RESULT_FAILED if the sequence number is out of range (including if there is no mission item).
         </description>
         <param index="1" label="Number" minValue="-1" increment="1">Mission sequence value to set. -1 for the current mission item (use to reset mission without changing current mission item).</param>
-        <param index="2" label="Reset Mission" enum="BOOL">Reset mission (BOOL_TRUE). Values not equal to 0 or 1 are invalid. Resets jump counters to initial values and changes mission state "completed" to be "active" or "paused".</param>
+        <param index="2" label="Reset Mission" enum="MAV_BOOL">Reset mission (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid. Resets jump counters to initial values and changes mission state "completed" to be "active" or "paused".</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
@@ -1873,8 +1873,8 @@
       <entry value="241" name="MAV_CMD_PREFLIGHT_CALIBRATION" hasLocation="false" isDestination="false">
         <description>Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Temperature Calibration, only one sensor should be set in a single message and all others should be zero.</description>
         <param index="1" label="Gyro Temperature" minValue="0" maxValue="3" increment="1">1: gyro calibration, 3: gyro temperature calibration</param>
-        <param index="2" label="Magnetometer" enum="BOOL">Magnetometer calibration. Values not equal to 0 or 1 are invalid.</param>
-        <param index="3" label="Ground Pressure" enum="BOOL">Ground pressure calibration. Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="Magnetometer" enum="MAV_BOOL">Magnetometer calibration. Values not equal to 0 or 1 are invalid.</param>
+        <param index="3" label="Ground Pressure" enum="MAV_BOOL">Ground pressure calibration. Values not equal to 0 or 1 are invalid.</param>
         <param index="4" label="Remote Control" minValue="0" maxValue="1" increment="1">1: radio RC calibration, 2: RC trim calibration</param>
         <param index="5" label="Accelerometer" minValue="0" maxValue="4" increment="1">1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration, 4: simple accelerometer calibration</param>
         <param index="6" label="Compmot or Airspeed" minValue="0" maxValue="2" increment="1">1: APM: compass/motor interference calibration (PX4: airspeed calibration, deprecated), 2: airspeed calibration</param>
@@ -1981,7 +1981,7 @@
       </entry>
       <entry value="400" name="MAV_CMD_COMPONENT_ARM_DISARM" hasLocation="false" isDestination="false">
         <description>Arms / Disarms a component</description>
-        <param index="1" label="Arm" enum="BOOL">Arm (BOOL_FALSE: disarm). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Arm" enum="MAV_BOOL">Arm (MAV_BOOL_FALSE: disarm). Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Force" minValue="0" maxValue="21196" increment="21196">0: arm-disarm unless prevented by safety checks (i.e. when landed), 21196: force arming/disarming (e.g. allow arming to override preflight checks and disarming in flight)</param>
       </entry>
       <entry value="401" name="MAV_CMD_RUN_PREARM_CHECKS" hasLocation="false" isDestination="false">
@@ -1994,7 +1994,7 @@
       </entry>
       <entry value="405" name="MAV_CMD_ILLUMINATOR_ON_OFF" hasLocation="false" isDestination="false">
         <description>Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
-        <param index="1" label="Enable" enum="BOOL">Illuminators on/off (BOOL_TRUE: illuminators on). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Enable" enum="MAV_BOOL">Illuminators on/off (MAV_BOOL_TRUE: illuminators on). Values not equal to 0 or 1 are invalid.</param>
       </entry>
       <entry value="406" name="MAV_CMD_DO_ILLUMINATOR_CONFIGURE" hasLocation="false" isDestination="false">
         <description>Configures illuminator settings. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
@@ -2057,56 +2057,56 @@
       <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request MAVLink protocol version compatibility. All receivers should ACK the command and then emit their capabilities in an PROTOCOL_VERSION message</description>
-        <param index="1" label="Protocol" enum="BOOL">Request supported protocol versions by all nodes on the network (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Protocol" enum="MAV_BOOL">Request supported protocol versions by all nodes on the network (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message</description>
-        <param index="1" label="Version" enum="BOOL">Request autopilot version (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Version" enum="MAV_BOOL">Request autopilot version (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request camera information (CAMERA_INFORMATION).</description>
-        <param index="1" label="Capabilities" enum="BOOL">Request camera capabilities (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Capabilities" enum="MAV_BOOL">Request camera capabilities (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="522" name="MAV_CMD_REQUEST_CAMERA_SETTINGS" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request camera settings (CAMERA_SETTINGS).</description>
-        <param index="1" label="Settings" enum="BOOL">Request camera settings (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Settings" enum="MAV_BOOL">Request camera settings (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (0 for all, 1 for first, 2 for second, etc.)</param>
-        <param index="2" label="Information" enum="BOOL">Request storage information (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="Information" enum="MAV_BOOL">Request storage information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="526" name="MAV_CMD_STORAGE_FORMAT" hasLocation="false" isDestination="false">
         <description>Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
-        <param index="2" label="Format" enum="BOOL">Format storage (and reset image log). Values not equal to 0 or 1 are invalid.</param>
-        <param index="3" label="Reset Image Log" enum="BOOL">Reset Image Log (without formatting storage medium). This will reset CAMERA_CAPTURE_STATUS.image_count and CAMERA_IMAGE_CAPTURED.image_index. Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="Format" enum="MAV_BOOL">Format storage (and reset image log). Values not equal to 0 or 1 are invalid.</param>
+        <param index="3" label="Reset Image Log" enum="MAV_BOOL">Reset Image Log (without formatting storage medium). This will reset CAMERA_CAPTURE_STATUS.image_count and CAMERA_IMAGE_CAPTURED.image_index. Values not equal to 0 or 1 are invalid.</param>
         <param index="4">Reserved (all remaining params)</param>
       </entry>
       <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request camera capture status (CAMERA_CAPTURE_STATUS)</description>
-        <param index="1" label="Capture Status" enum="BOOL">Request camera capture status (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Capture Status" enum="MAV_BOOL">Request camera capture status (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="528" name="MAV_CMD_REQUEST_FLIGHT_INFORMATION" hasLocation="false" isDestination="false">
         <deprecated since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request flight information (FLIGHT_INFORMATION)</description>
-        <param index="1" label="Flight Information" enum="BOOL">Request flight information (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Flight Information" enum="MAV_BOOL">Request flight information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="529" name="MAV_CMD_RESET_CAMERA_SETTINGS" hasLocation="false" isDestination="false">
         <description>Reset all camera settings to Factory Default</description>
-        <param index="1" label="Reset" enum="BOOL">Reset all settings (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Reset" enum="MAV_BOOL">Reset all settings (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="530" name="MAV_CMD_SET_CAMERA_MODE" hasLocation="false" isDestination="false">
@@ -2327,7 +2327,7 @@
       </entry>
       <entry value="2600" name="MAV_CMD_CONTROL_HIGH_LATENCY" hasLocation="false" isDestination="false">
         <description>Request to start/stop transmitting over the high latency telemetry</description>
-        <param index="1" label="Enable" enum="BOOL">Start transmission over high latency telemetry (BOOL_FALSE: stop transmission). Values not equal to 0 or 1 are invalid.</param>
+        <param index="1" label="Enable" enum="MAV_BOOL">Start transmission over high latency telemetry (MAV_BOOL_FALSE: stop transmission). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -2373,7 +2373,7 @@
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Delay mission state machine until gate has been reached.</description>
         <param index="1" label="Geometry" minValue="0" increment="1">Geometry: 0: orthogonal to path between previous and next waypoint.</param>
-        <param index="2" label="UseAltitude" enum="BOOL">Use altitude (BOOL_FALSE: ignore altitude). Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="UseAltitude" enum="MAV_BOOL">Use altitude (MAV_BOOL_FALSE: ignore altitude). Values not equal to 0 or 1 are invalid.</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
         <param index="5" label="Latitude">Latitude</param>
@@ -6720,7 +6720,7 @@
       <field type="float" name="z" units="m">Z Position of the landing target in MAV_FRAME</field>
       <field type="float[4]" name="q">Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of landing target</field>
-      <field type="uint8_t" name="position_valid" enum="BOOL" default="0">Position fields (x, y, z, q, type) contain valid target position information (BOOL_FALSE: invalid values). Values not equal to 0 or 1 are invalid.</field>
+      <field type="uint8_t" name="position_valid" enum="MAV_BOOL" default="0">Position fields (x, y, z, q, type) contain valid target position information (MAV_BOOL_FALSE: invalid values). Values not equal to 0 or 1 are invalid.</field>
     </message>
     <!-- imported from ardupilotmega.xml (2019) -->
     <message id="162" name="FENCE_STATUS">
@@ -7143,7 +7143,7 @@
       <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
       <field type="float[4]" name="q">Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
       <field type="int32_t" name="image_index">Zero based index of this image (i.e. a new image will have index CAMERA_CAPTURE_STATUS.image count -1)</field>
-      <field type="int8_t" name="capture_result" enum="BOOL">Image was captured successfully (BOOL_TRUE). Values not equal to 0 or 1 are invalid.</field>
+      <field type="int8_t" name="capture_result" enum="MAV_BOOL">Image was captured successfully (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</field>
       <field type="char[205]" name="file_url">URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.</field>
     </message>
     <message id="264" name="FLIGHT_INFORMATION">
