@@ -21,7 +21,6 @@ Released under GNU GPL version 3 or later
 
 """
 import os
-import re
 
 from tkinter import *  # noqa: F403
 import tkinter.filedialog
@@ -145,7 +144,6 @@ class Application(Frame):
     """
     def generateHeaders(self):
         # Verify settings
-        _rex = re.compile(".*\\.xml$", re.IGNORECASE)  # assigned to but never used?
         if not self.xml_value.get():
             tkinter.messagebox.showerror('Error Generating Headers','An XML message definition file must be specified.')
             return
