@@ -21,9 +21,8 @@ Released under GNU GPL version 3 or later
 
 """
 import os
-import re
 
-from tkinter import *
+from tkinter import *  # noqa: F403
 import tkinter.filedialog
 import tkinter.messagebox
 
@@ -127,7 +126,7 @@ class Application(Frame):
     def browseXMLFile(self):
         # TODO Allow specification of multiple XML definitions
         xml_file = tkinter.filedialog.askopenfilename(parent=self, title='Choose a definition file')
-        if xml_file != None:
+        if xml_file is not None:
             self.xml_value.set(xml_file)
 
     """\
@@ -137,7 +136,7 @@ class Application(Frame):
     def browseOutDirectory(self):
         mavlinkFolder = os.path.dirname(os.path.realpath(__file__))
         out_dir = tkinter.filedialog.askdirectory(parent=self,initialdir=mavlinkFolder,title='Please select an output directory')
-        if out_dir != None:
+        if out_dir is not None:
             self.out_value.set(out_dir)
 
     """\
@@ -145,7 +144,6 @@ class Application(Frame):
     """
     def generateHeaders(self):
         # Verify settings
-        rex = re.compile(".*\\.xml$", re.IGNORECASE)
         if not self.xml_value.get():
             tkinter.messagebox.showerror('Error Generating Headers','An XML message definition file must be specified.')
             return
