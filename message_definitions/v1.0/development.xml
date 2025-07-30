@@ -165,7 +165,8 @@
       <entry value="309" name="MAV_CMD_ACTUATOR_GROUP_TEST" hasLocation="false" isDestination="false">
         <description>Command to test groups of related actuators together.
           This might include groups such as the actuators that contribute to roll, pitch, or yaw torque, actuators that contribute to thrust in x, y, z axis, tilt mechanisms, flaps and spoilers, and so on.
-          This is similar to MAV_CMD_ACTUATOR_TEST, except that multiple control surfaces and actuators may contribute to movement in a particular axis.
+          This is similar to MAV_CMD_ACTUATOR_TEST, except that multiple actuators may be affected.
+          Different groups may also affect the same actuators (as in the case of controls that affect torque in different axes).
           Autopilots must NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed.
         </description>
         <param index="1" label="Group" enum="ACTUATOR_TEST_GROUP">Actuator group to check, such as actuators related to roll torque.</param>
