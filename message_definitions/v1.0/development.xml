@@ -408,6 +408,30 @@
         <description>Actuators that affect collective tilt.</description>
       </entry>
     </enum>
+    <enum name="GLOBAL_POSITION_SRC">
+      <description>Selection of control target for changing ownership.</description>
+      <entry value="0" name="unknown">
+        <description>Source is either unkown or not listed in this enum.</description>
+      </entry>
+      <entry value="1" name="GNSS">
+        <description>Global Navigation Satellite System (e.g.: GPS, Galileo, Glonass, BeiDou).</description>
+      </entry>
+      <entry value="2" name="vision">
+        <description>Vision system (e.g.: map matching).</description>
+      </entry>
+      <entry value="3" name="pseudolites">
+        <description>Beacon-based system different than GNSS.</description>
+      </entry>
+      <entry value="4" name="TRN">
+        <description>Terrain Referenced Navigation.</description>
+      </entry>
+      <entry value="5" name="Magnetic">
+        <description>Magnetic positioning.</description>
+      </entry>
+      <entry value="6" name="estimator">
+        <description>Estimated position based on various sensors.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="295" name="AIRSPEED">
@@ -422,7 +446,7 @@
       <description>Global position measurement or estimate.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID</field>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="uint8_t" name="source" enum="GLOBAL_POSITION_SRC">Source: 0 - unknown, 1 - GNSS, 2 - vision, 3 - pseudolites, 4 - estimator</field>
+      <field type="uint8_t" name="source" enum="GLOBAL_POSITION_SRC">Source: 0 - unknown, 1 - GNSS, 2 - vision, 3 - pseudolites, 4 - TRN, 5 - magnetic, 6 - estimator</field>
       <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude (WGS84)</field>
       <field type="float" name="alt" units="m" invalid="NaN">Altitude (MSL - position-system specific value)</field>
