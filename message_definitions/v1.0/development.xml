@@ -422,19 +422,13 @@
       <description>Global position measurement or estimate.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID</field>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="source" enum="GLOBAL_POSITION_SRC">Source: 0 - unknown, 1 - GNSS, 2 - vision, 3 - pseudolites, 4 - estimator</field>
       <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude (WGS84)</field>
       <field type="float" name="alt" units="m" invalid="NaN">Altitude (MSL - position-system specific value)</field>
-      <field type="float" name="alt_ellipsoid" units="m" invalid="NaN">Altitude (WGS84)</field>
+      <field type="float" name="alt_ellipsoid" units="m" invalid="NaN">Altitude (WGS84 elipsoid)</field>
       <field type="float" name="eph" units="m" invalid="NaN">Standard deviation of horizontal position error</field>
       <field type="float" name="epv" units="m" invalid="NaN">Standard deviation of vertical position error</field>
-      <field type="float" name="vx" units="m/s" invalid="NaN">Ground X Speed (Latitude, positive north)</field>
-      <field type="float" name="vy" units="m/s" invalid="NaN">Ground Y Speed (Longitude, positive east)</field>
-      <field type="float" name="vz" units="m/s" invalid="NaN">Ground Z Speed (Altitude, positive down)</field>
-      <field type="float" name="h_sacc" units="m/s" invalid="NaN">Standard deviation of horizontal velocity error</field>
-      <field type="float" name="v_sacc" units="m/s" invalid="NaN">Standard deviation of vertical velocity error</field>
-      <field type="float" name="hdg" units="deg" minValue="0" maxValue="359.99" invalid="NaN">Vehicle heading (yaw angle). Range is 0.0..359.99 degrees relative to North.</field>
-      <field type="float" name="hdg_acc" units="deg" invalid="NaN">Standard deviation of heading error</field>
     </message>
     <message id="354" name="SET_VELOCITY_LIMITS">
       <wip/>
