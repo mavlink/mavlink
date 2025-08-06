@@ -912,10 +912,10 @@
         <description>Permanently set the actuator (ESC) to spin direction 2 (opposite of direction 1).</description>
       </entry>
       <entry value="6" name="ACTUATOR_CONFIGURATION_READ_SETTINGS">
-        <description>Request ESC Settings.</description>
+        <description>Request ESC Settings. A response of ESC_RAW_SETTINGS should be returned.</description>
       </entry>
       <entry value="7" name="ACTUATOR_CONFIGURATION_WRITE_SETTING">
-        <description>Write a single ESC Setting. The param2 of the command is used for the uin8t address of the setting to write. The param3 of the command is used for the uint8 value to write.</description>
+        <description>Write a single ESC Setting. The param2 of the command is used for the address of the setting to write. The param3 of the command is used for the value to write.</description>
       </entry>
     </enum>
     <enum name="ACTUATOR_OUTPUT_FUNCTION">
@@ -1976,8 +1976,8 @@
       <entry value="311" name="MAV_CMD_CONFIGURE_ACTUATOR" hasLocation="false" isDestination="false">
         <description>Actuator configuration command.</description>
         <param index="1" label="Configuration" enum="ACTUATOR_CONFIGURATION">Actuator configuration action</param>
-        <param index="2" reserved="true" default="0"/>
-        <param index="3" reserved="true" default="0"/>
+        <param index="2" label="address">Only if param1 is ACTUATOR_CONFIGURATION_WRITE_SETTING. Address to write.</param>
+        <param index="3" label="value">Only if param1 is ACTUATOR_CONFIGURATION_WRITE_SETTING. Value to write.</param>
         <param index="4" reserved="true" default="0"/>
         <param index="5" label="Output Function" enum="ACTUATOR_OUTPUT_FUNCTION">Actuator Output function</param>
         <param index="6" reserved="true" default="0"/>
