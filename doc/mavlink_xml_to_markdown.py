@@ -27,8 +27,12 @@ import argparse  # for command line parsing
 
 MAXIMUM_INCLUDE_FILE_NESTING = 5
 
+class CommonMethods:
 
-class MAVXML:
+    def to_dict(self):
+        return self.__dict__
+
+class MAVXML(CommonMethods):
     """Represents a MAVLink XML file"""
 
     def __init__(self, filename):
@@ -411,8 +415,7 @@ span.warning {
 
         return insert_text
 
-
-class MAVDeprecated:
+class MAVDeprecated(CommonMethods):
     def __init__(self, soup):
         # name, type, print_format, xml, description='', enum='', display='', units='', instance=False
         self.since = soup.get("since")
@@ -441,7 +444,7 @@ class MAVDeprecated:
         )
 
 
-class MAVWip:
+class MAVWip(CommonMethods):
     def __init__(self, soup=None):
         # <wip/>
         # self.wip = True
@@ -462,7 +465,7 @@ class MAVWip:
         print(f"debug:MAVWip: desc({self.description})")
 
 
-class MAVField:
+class MAVField(CommonMethods):
     def __init__(self, soup, parent, extension):
         # name, type, print_format, xml, description='',
         # enum='', display='', units='', instance=False
@@ -556,7 +559,7 @@ class MAVField:
         # TODO - display, instance, are not output.
 
 
-class MAVMessage:
+class MAVMessage(CommonMethods):
     def __init__(self, soup, basename):
         self.name = soup["name"]
         self.id = int(soup["id"])
@@ -729,7 +732,7 @@ class MAVMessage:
         )
 
 
-class MAVEnumEntry:
+class MAVEnumEntry(CommonMethods):
     def __init__(self, soup, basename):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
         self.name = soup["name"]
@@ -772,7 +775,7 @@ class MAVEnumEntry:
         return string
 
 
-class MAVEnum:
+class MAVEnum(CommonMethods):
     def __init__(self, soup, basename):
         # name, linenumber, description='', bitmask=False
         self.basename = basename  # dialect declared in
@@ -870,7 +873,7 @@ class MAVEnum:
         )
 
 
-class MAVCommandParam:
+class MAVCommandParam(CommonMethods):
     def __init__(self, soup, parent):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
 
@@ -942,7 +945,7 @@ class MAVCommandParam:
             parent.param_fieldnames.add("multiplier")
 
 
-class MAVCommand:
+class MAVCommand(CommonMethods):
     def __init__(self, soup, basename):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
         pass
@@ -1152,7 +1155,7 @@ def generateMarkdownTable(headings, rows):
     return string
 
 
-class XMLFiles:
+class XMLFiles(CommonMethods):
     def __init__(self, dialect=None, source_dir="."):
         self.xml_dialects = dict()
         self.source_dir = source_dir
