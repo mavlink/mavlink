@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<mavlink>
+    <include>common.xml</include>
+    <dialect>8</dialect>
+
+    <enums>
+        <enum name="MAV_CMD">
+            <entry value="20000" name="MAV_CMD_RMUS_FAULT_CLEAR">
+                <description>Clear a fault by ID</description>
+                <param index="1">Fault ID</param>
+            </entry>
+            <entry value="20100" name="MAV_CMD_RMUS_SENSOR_START_CAPTURE">
+                <description>Start sensor capture</description>
+                <param index="1">Sensor ID</param>
+            </entry>
+            <entry value="20101" name="MAV_CMD_RMUS_SENSOR_STOP_CAPTURE">
+                <description>Stop sensor capture</description>
+                <param index="1">Sensor ID</param>
+            </entry>
+            <entry value="20102" name="MAV_CMD_RMUS_SENSOR_START_STREAM">
+                <description>Start sensor stream</description>
+                <param index="1">Sensor ID</param>
+            </entry>
+            <entry value="20103" name="MAV_CMD_RMUS_SENSOR_STOP_STREAM">
+                <description>Stop sensor stream</description>
+                <param index="1">Sensor ID</param>
+            </entry>
+        </enum>
+
+    </enums>
+
+    <messages>
+        <message id="20000" name="RMUS_FAULT">
+            <description>Fault message</description>
+            <field type="uint32_t" name="fault_id">Fault ID</field>
+            <field type="uint8_t" name="fault_severity" enum="MAV_SEVERITY">Fault severity</field>
+            <field type="uint32_t" name="fault_timestamp">Fault timestamp</field>
+            <field type="char[100]" name="fault_description">Fault description</field>
+        </message>
+
+    </messages>
+</mavlink>

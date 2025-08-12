@@ -1,5 +1,16 @@
 [![Build Status](https://github.com/mavlink/mavlink/workflows/Test%20and%20deploy/badge.svg)](https://github.com/mavlink/mavlink/actions?query=branch%3Amaster)
 
+# RMUS MAVLink
+
+This fork contains the custom MAVLink Dialect that is used throughout all of RMUS's systems. The dialect includes messages for handling more complex sensor systems than MAVLink is originally built for as well is a more robust fault reporting system. 
+
+All RMUS Messages and commands start at ID 20000 to ensure no id collisions happen. The hundreds place is used to organize similar messages together:
+
+- 0: Fault Handling
+- 1: Sensor Control
+- ...
+
+
 # MAVLink
 
 MAVLink -- Micro Air Vehicle Message Marshalling Library.
