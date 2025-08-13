@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <time.h>
+#include <sys/time.h>
 
 #include <mavlink/common/mavlink.h>
 
