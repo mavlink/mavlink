@@ -83,8 +83,9 @@ void receive_some(int socket_fd, struct sockaddr_in* src_addr, socklen_t* src_ad
 
     if (ret < 0) {
         printf("recvfrom error: %s\n", strerror(errno));
+        return;
     } else if (ret == 0) {
-        // peer has done an orderly shutdown
+        // timeout, try again later
         return;
     }
 
