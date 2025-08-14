@@ -1045,6 +1045,24 @@
         <description>Erase all mission data stored on the vehicle (both persistent and volatile storage)</description>
       </entry>
     </enum>
+    <enum name="REBOOT_SHUTDOWN_ACTION">
+      <description>Reboot/shutdown action for selected component in MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN.</description>
+      <entry value="0" name="REBOOT_SHUTDOWN_ACTION_NONE">
+        <description>Do nothing.</description>
+      </entry>
+      <entry value="1" name="REBOOT_SHUTDOWN_ACTION_REBOOT">
+        <description>Reboot component.</description>
+      </entry>
+      <entry value="2" name="REBOOT_SHUTDOWN_ACTION_SHUTDOWN">
+        <description>Shutdown component.</description>
+      </entry>
+      <entry value="3" name="REBOOT_SHUTDOWN_ACTION_REBOOT_TO_BOOTLOADER">
+        <description>Reboot component and keep it in the bootloader until upgraded.</description>
+      </entry>
+      <entry value="4" name="REBOOT_SHUTDOWN_ACTION_POWER_ON">
+        <description>Power on component. Do nothing if component is already powered (ACK command with MAV_RESULT_ACCEPTED).</description>
+      </entry>
+    </enum>
     <enum name="REBOOT_SHUTDOWN_CONDITIONS">
       <description>Specifies the conditions under which the MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN command should be accepted.</description>
       <entry value="0" name="REBOOT_SHUTDOWN_CONDITIONS_SAFETY_INTERLOCKED">
@@ -1892,9 +1910,9 @@
       </entry>
       <entry value="246" name="MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN" hasLocation="false" isDestination="false">
         <description>Request the reboot or shutdown of system components.</description>
-        <param index="1" label="Autopilot" minValue="0" maxValue="3" increment="1">0: Do nothing for autopilot, 1: Reboot autopilot, 2: Shutdown autopilot, 3: Reboot autopilot and keep it in the bootloader until upgraded.</param>
-        <param index="2" label="Companion" minValue="0" maxValue="3" increment="1">0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer, 3: Reboot onboard computer and keep it in the bootloader until upgraded.</param>
-        <param index="3" label="Component action" minValue="0" maxValue="3" increment="1">0: Do nothing for component, 1: Reboot component, 2: Shutdown component, 3: Reboot component and keep it in the bootloader until upgraded</param>
+        <param index="1" label="Autopilot" enum="REBOOT_SHUTDOWN_ACTION">Action to take for autopilot.</param>
+        <param index="2" label="Companion" enum="REBOOT_SHUTDOWN_ACTION">Action to take for onboard computer.</param>
+        <param index="3" label="Component Action" enum="REBOOT_SHUTDOWN_ACTION">Action to take for component specified in param4.</param>
         <param index="4" label="Component ID" minValue="0" maxValue="255" increment="1">MAVLink Component ID targeted in param3 (0 for all components).</param>
         <param index="5">Reserved (set to 0)</param>
         <param index="6" label="Conditions" enum="REBOOT_SHUTDOWN_CONDITIONS">Conditions under which reboot/shutdown is allowed.</param>
