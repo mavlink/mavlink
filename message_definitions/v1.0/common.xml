@@ -1072,6 +1072,27 @@
         <description>Force reboot/shutdown of the autopilot/component regardless of system state.</description>
       </entry>
     </enum>
+    <enum name="DEVICE_TYPE">
+      <description>Specifies the type of device.</description>
+      <entry value="0" name="DEVICE_TYPE_GENERIC">
+        <description>Generic device</description>
+      </entry>
+      <entry value="1" name="DEVICE_TYPE_GPS">
+        <description>GPS</description>
+      </entry>
+      <entry value="2" name="DEVICE_TYPE_MAG">
+        <description>Magnetometer</description>
+      </entry>
+      <entry value="3" name="DEVICE_TYPE_AIRSPEED">
+        <description>Airspeed sensor</description>
+      </entry>
+      <entry value="4" name="DEVICE_TYPE_RANGEFINDER">
+        <description>Rangefinder</description>
+      </entry>
+      <entry value="5" name="DEVICE_TYPE_ESC">
+        <description>Electronic Speed Controller</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -2404,7 +2425,7 @@
       </entry>
       <entry value="5002" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION" hasLocation="true" isDestination="false">
         <description>Fence vertex for an exclusion polygon (the polygon must not be self-intersecting). The vehicle must stay outside this area. Minimum of 3 vertices required.
-          The vertices for a polygon must be sent sequentially, each with param1 set to the total number of vertices in the polygon.                
+          The vertices for a polygon must be sent sequentially, each with param1 set to the total number of vertices in the polygon.
         </description>
         <param index="1" label="Vertex Count" minValue="3" increment="1">Polygon vertex count. This is the number of vertices in the current polygon (all vertices will have the same number).</param>
         <param index="2">Reserved</param>
@@ -7861,6 +7882,15 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="file_crc">CRC32 of the general metadata file.</field>
       <field type="char[100]" name="uri">MAVLink FTP URI for the general metadata file (COMP_METADATA_TYPE_GENERAL), which may be compressed with xz. The file contains general component metadata, and may contain URI links for additional metadata (see COMP_METADATA_TYPE). The information is static from boot, and may be generated at compile time. The string needs to be zero terminated.</field>
+    </message>
+    <message id="398" name="DEVICE_INFORMATION">
+      <description>Hardware information about a device. </description>
+      <field type="uint8_t" name="device_type" enum="DEVICE_TYPE">Type of the device.</field>
+      <field type="char[16]" name="vendor_name">Name of the device vendor.</field>
+      <field type="char[16]" name="model_name">Name of the device model.</field>
+      <field type="char[32]" name="firmware_version" invalid="-1">Version of the firmware. If not available, set to -1.</field>
+      <field type="char[32]" name="hardware_version" invalid="-1">Version of the hardware. If not available, set to -1.</field>
+      <field type="char[32]" name="serial_number" invalid="-1">Device serial number or unique identifier. If not available, set to -1.</field>
     </message>
     <message id="400" name="PLAY_TUNE_V2">
       <description>Play vehicle tone/tune (buzzer). Supersedes message PLAY_TUNE.</description>
