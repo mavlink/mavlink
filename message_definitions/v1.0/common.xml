@@ -6987,7 +6987,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the camera model</field>
-      <field type="uint32_t" name="firmware_version" invalid="0">Version of the camera firmware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 \| (Patch &amp; 0xff) &lt;&lt; 16 \| (Minor &amp; 0xff) &lt;&lt; 8 \| (Major &amp; 0xff)`. Use 0 if not known.</field>
+      <field type="uint32_t" name="firmware_version" invalid="0">Version of the camera firmware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 + (Patch &amp; 0xff) &lt;&lt; 16 + (Minor &amp; 0xff) &lt;&lt; 8 + (Major &amp; 0xff)`. Use 0 if not known.</field>
       <field type="float" name="focal_length" units="mm" invalid="NaN">Focal length. Use NaN if not known.</field>
       <field type="float" name="sensor_size_h" units="mm" invalid="NaN">Image sensor size horizontal. Use NaN if not known.</field>
       <field type="float" name="sensor_size_v" units="mm" invalid="NaN">Image sensor size vertical. Use NaN if not known.</field>
@@ -7239,8 +7239,8 @@
       <field type="char[32]" name="vendor_name">Name of the gimbal vendor.</field>
       <field type="char[32]" name="model_name">Name of the gimbal model.</field>
       <field type="char[32]" name="custom_name">Custom name of the gimbal given to it by the user.</field>
-      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 \| (Patch &amp; 0xff) &lt;&lt; 16 \| (Minor &amp; 0xff) &lt;&lt; 8 \| (Major &amp; 0xff)`.</field>
-      <field type="uint32_t" name="hardware_version">Version of the gimbal hardware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 \| (Patch &amp; 0xff) &lt;&lt; 16 \| (Minor &amp; 0xff) &lt;&lt; 8 \| (Major &amp; 0xff)`.</field>
+      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 + (Patch &amp; 0xff) &lt;&lt; 16 + (Minor &amp; 0xff) &lt;&lt; 8 + (Major &amp; 0xff)`.</field>
+      <field type="uint32_t" name="hardware_version">Version of the gimbal hardware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 + (Patch &amp; 0xff) &lt;&lt; 16 + (Minor &amp; 0xff) &lt;&lt; 8 + (Major &amp; 0xff)`.</field>
       <field type="uint64_t" name="uid" invalid="0">UID of gimbal hardware (0 if unknown).</field>
       <field type="uint16_t" name="cap_flags" enum="GIMBAL_DEVICE_CAP_FLAGS">Bitmap of gimbal capability flags.</field>
       <field type="uint16_t" name="custom_cap_flags">Bitmap for use for gimbal-specific capability flags.</field>
