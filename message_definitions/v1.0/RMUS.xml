@@ -26,6 +26,51 @@
                 <param index="1">Sensor ID</param>
             </entry>
         </enum>
+        <enum name="MAV_TYPE">
+            <entry value="49" name="MAV_TYPE_RADIATION_DETECTOR">
+                <description>FlexSpec radiation detector</description>
+            </entry>
+            <entry value="50" name="MAV_TYPE_GAS_DETECTOR">
+                <description>BlackLine G7c gas detector</description>
+            </entry>
+        </enum>
+        <enum name="RMUS_RADIATION_DIRECTION">
+            <entry value="0" name="RMUS_RADIATION_DIRECTION_NONE">
+                <description>None</description>
+            </entry>
+            <entry value="1" name="RMUS_RADIATION_DIRECTION_LEFT">
+                <description>Left</description>
+            </entry>
+            <entry value="2" name="RMUS_RADIATION_DIRECTION_RIGHT">
+                <description>Right</description>
+            </entry>
+        </enum>
+        <enum name="RMUS_RADIATION_THREAT_LEVEL">
+            <entry value="0" name="RMUS_RADIATION_THREAT_LEVEL_NONE">
+                <description>No threat</description>
+            </entry>
+            <entry value="1" name="RMUS_RADIATION_THREAT_LEVEL_NORM">
+                <description>Normal</description>
+            </entry>
+            <entry value="2" name="RMUS_RADIATION_THREAT_LEVEL_MEDICAL">
+                <description>Medical</description>
+            </entry>
+            <entry value="3" name="RMUS_RADIATION_THREAT_LEVEL_INDUSTRIAL">
+                <description>Industrial</description>
+            </entry>
+            <entry value="4" name="RMUS_RADIATION_THREAT_LEVEL_SUSPECT">
+                <description>Suspect</description>
+            </entry>
+            <entry value="5" name="RMUS_RADIATION_THREAT_LEVEL_THREAT">
+                <description>Threat</description>
+            </entry>
+            <entry value="6" name="RMUS_RADIATION_THREAT_LEVEL_GAMMA">
+                <description>Gamma</description>
+            </entry>
+            <entry value="7" name="RMUS_RADIATION_THREAT_LEVEL_NEUTRON">
+                <description>Neutron</description>
+            </entry>
+        </enum>
 
     </enums>
 
@@ -36,6 +81,26 @@
             <field type="uint8_t" name="fault_severity" enum="MAV_SEVERITY">Fault severity</field>
             <field type="uint32_t" name="fault_timestamp">Fault timestamp</field>
             <field type="char[100]" name="fault_description">Fault description</field>
+        </message>
+
+        <message id="20100" name="RMUS_RADIATION_DOSE_RATE">
+            <description>Radiation dose rate</description>
+            <field type="uint64_t" name="timestamp">Timestamp</field>
+            <field type="uint32_t" name="dose_rate">Dose rate</field>
+            <field type="uint8_t" name="dose_rate_alarm" enum="MAV_BOOL">Dose rate alarm</field>
+        </message>
+
+        <message id="20101" name="RMUS_RADIATION_EVENT">
+            <description>Radiation event</description>
+            <field type="uint64_t" name="timestamp">Timestamp</field>
+            <field type="uint8_t" name="overall_threat_level" enum="RMUS_RADIATION_THREAT_LEVEL">Overall threat level</field>
+            <field type="int32_t" name="latitude">Latitude degE5</field>
+            <field type="int32_t" name="longitude">Longitude degE5</field>
+            <field type="uint16_t" name="event_id">Event ID</field>
+            <field type="uint8_t" name="direction" enum="RMUS_RADIATION_DIRECTION">Direction</field>
+            <field type="char[20]" name="isotope">Isotope</field>
+            <field type="uint8_t" name="threat_level" enum="RMUS_RADIATION_THREAT_LEVEL">Threat level</field>
+            <field type="uint8_t" name="confidence">Confidence</field>
         </message>
 
     </messages>
