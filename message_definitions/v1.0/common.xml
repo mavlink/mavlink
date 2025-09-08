@@ -5206,6 +5206,21 @@
         <description>Simulation is using lockstep</description>
       </entry>
     </enum>
+    <enum name="COMPUTER_STATUS_FLAGS" bitmask="true">
+      <description>Flags used to report computer status.</description>
+      <entry value="1" name="COMPUTER_STATUS_FLAGS_UNDER_VOLTAGE">
+        <description>Indicates if the system is experiencing voltage outside of acceptable range.</description>
+      </entry>
+      <entry value="2" name="COMPUTER_STATUS_FLAGS_CPU_THROTTLE">
+        <description>Indicates if CPU throttling is active.</description>
+      </entry>
+      <entry value="4" name="COMPUTER_STATUS_FLAGS_THERMAL_THROTTLE">
+        <description>Indicates if thermal throttling is active.</description>
+      </entry>
+      <entry value="8" name="COMPUTER_STATUS_FLAGS_DISK_FULL">
+        <description>Indicates if main disk is full.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -7730,6 +7745,7 @@
       <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s" invalid="[UINT32_MAX]">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_tx_max" units="KiB/s" invalid="[UINT32_MAX]">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_rx_max" units="KiB/s" invalid="[UINT32_MAX]">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <field type="uint8_t" name="status_flags" enum="COMPUTER_STATUS_FLAGS">Bitmap of status flags.</field>
     </message>
     <message id="395" name="COMPONENT_INFORMATION">
       <deprecated since="2022-04" replaced_by="COMPONENT_METADATA"/>
