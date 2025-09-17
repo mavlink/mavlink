@@ -594,11 +594,14 @@
     <!-- gripper action enum -->
     <enum name="GRIPPER_ACTIONS">
       <description>Gripper actions.</description>
-      <entry value="0" name="GRIPPER_ACTION_RELEASE">
-        <description>Gripper release cargo.</description>
+      <entry value="0" name="GRIPPER_ACTION_OPEN">
+        <description>Gripper commence open. Often used to release cargo.</description>
       </entry>
-      <entry value="1" name="GRIPPER_ACTION_GRAB">
-        <description>Gripper grab onto cargo.</description>
+      <entry value="1" name="GRIPPER_ACTION_CLOSE">
+        <description>Gripper commence close. Often used to grab onto cargo.</description>
+      </entry>
+      <entry value="2" name="GRIPPER_ACTION_STOP">
+        <description>Gripper stop (maintain current grip position).</description>
       </entry>
     </enum>
     <!-- winch action enum -->
@@ -1755,7 +1758,7 @@
       </entry>
       <entry value="211" name="MAV_CMD_DO_GRIPPER" hasLocation="false" isDestination="false">
         <description>Mission command to operate a gripper.</description>
-        <param index="1" label="Gripper ID" minValue="1" increment="1">Gripper ID. 1-6 for an autopilot connected gripper. In missions this may be set to 1-6 for an autopilot gripper, or the gripper component id for a MAVLink gripper. 0 targets all grippers.</param>
+        <param index="1" label="Gripper ID" minValue="0" increment="1">Gripper ID. 1-6 for an autopilot connected gripper. In missions this may be set to 1-6 for an autopilot gripper, or the gripper component id for a MAVLink gripper. 0 targets all grippers.</param>
         <param index="2" label="Action" enum="GRIPPER_ACTIONS">Gripper action to perform.</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
