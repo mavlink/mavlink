@@ -112,6 +112,18 @@
   </enums>
   <messages>
     <!-- also includes minimal.xml messages -->
+    <message id="33" name="GLOBAL_POSITION_INT">
+      <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It is designed as scaled integer message since the resolution of float is not sufficient.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude, expressed</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude, expressed</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.</field>
+      <field type="int32_t" name="relative_alt" units="mm">Altitude above home</field>
+      <field type="int16_t" name="vx" units="cm/s">Ground X Speed (Latitude, positive north)</field>
+      <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude, positive east)</field>
+      <field type="int16_t" name="vz" units="cm/s">Ground Z Speed (Altitude, positive down)</field>
+      <field type="uint16_t" name="hdg" units="cdeg" invalid="UINT16_MAX">Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+    </message>
     <message id="148" name="AUTOPILOT_VERSION">
       <description>Version and capability of autopilot software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY">Bitmap of capabilities</field>
