@@ -1221,6 +1221,9 @@
       <entry value="28" name="COPTER_MODE_TURTLE">
         <description>TURTLE</description>
       </entry>
+      <entry value="29" name="COPTER_MODE_RATE_ACRO">
+        <description>RATE_ACRO</description>
+      </entry>
     </enum>
     <enum name="SUB_MODE">
       <description>A mapping of sub flight modes for custom_mode field of heartbeat.</description>
@@ -2056,6 +2059,12 @@
       <field type="uint16_t[4]" name="totalcurrent" units="mAh">Total current.</field>
       <field type="uint16_t[4]" name="rpm" units="rpm">RPM (eRPM).</field>
       <field type="uint16_t[4]" name="count">count of telemetry packets received (wraps at 65535).</field>
+    </message>
+    <message id="11060" name="NAMED_VALUE_STRING">
+      <description>Send a key-value pair as string. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="char[10]" name="name" instance="true">Name of the debug variable</field>
+      <field type="char[64]" name="value">Value of the debug variable</field>
     </message>
   </messages>
 </mavlink>
