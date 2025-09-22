@@ -34,12 +34,14 @@ jobs:
     name: Find typos with codespell
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: pipx run codespell --ignore-words-list=ned
-                          message_definitions/v1.0/all.xml
-                          message_definitions/v1.0/common.xml
-                          message_definitions/v1.0/minimal.xml
-                          message_definitions/v1.0/standard.xml
+      - uses: actions/checkout@v5
+      - run: pipx install codespell
+      # Discover typos in all non-XML files and the four XML files that this repo controls
+      - run: codespell --skip="*.xml"
+      - run: codespell --ignore-words-list=ned message_definitions/v1.0/all.xml
+                                               message_definitions/v1.0/common.xml
+                                               message_definitions/v1.0/minimal.xml
+                                               message_definitions/v1.0/standard.xml
 
   python-lint:
     name: Lint Python code with ruff

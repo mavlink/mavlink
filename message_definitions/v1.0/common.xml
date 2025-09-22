@@ -4,24 +4,6 @@
   <version>3</version>
   <dialect>0</dialect>
   <enums>
-    <enum name="FIRMWARE_VERSION_TYPE">
-      <description>These values define the type of firmware release.  These values indicate the first version or release of this type.  For example the first alpha release would be 64, the second would be 65.</description>
-      <entry value="0" name="FIRMWARE_VERSION_TYPE_DEV">
-        <description>development release</description>
-      </entry>
-      <entry value="64" name="FIRMWARE_VERSION_TYPE_ALPHA">
-        <description>alpha release</description>
-      </entry>
-      <entry value="128" name="FIRMWARE_VERSION_TYPE_BETA">
-        <description>beta release</description>
-      </entry>
-      <entry value="192" name="FIRMWARE_VERSION_TYPE_RC">
-        <description>release candidate</description>
-      </entry>
-      <entry value="255" name="FIRMWARE_VERSION_TYPE_OFFICIAL">
-        <description>official stable release</description>
-      </entry>
-    </enum>
     <enum name="HL_FAILURE_FLAG" bitmask="true">
       <description>Flags to report failure cases over the high latency telemetry.</description>
       <entry value="1" name="HL_FAILURE_FLAG_GPS">
@@ -612,11 +594,14 @@
     <!-- gripper action enum -->
     <enum name="GRIPPER_ACTIONS">
       <description>Gripper actions.</description>
-      <entry value="0" name="GRIPPER_ACTION_RELEASE">
-        <description>Gripper release cargo.</description>
+      <entry value="0" name="GRIPPER_ACTION_OPEN">
+        <description>Gripper commence open. Often used to release cargo.</description>
       </entry>
-      <entry value="1" name="GRIPPER_ACTION_GRAB">
-        <description>Gripper grab onto cargo.</description>
+      <entry value="1" name="GRIPPER_ACTION_CLOSE">
+        <description>Gripper commence close. Often used to grab onto cargo.</description>
+      </entry>
+      <entry value="2" name="GRIPPER_ACTION_STOP">
+        <description>Gripper stop (maintain current grip position).</description>
       </entry>
     </enum>
     <!-- winch action enum -->
@@ -1063,6 +1048,24 @@
         <description>Erase all mission data stored on the vehicle (both persistent and volatile storage)</description>
       </entry>
     </enum>
+    <enum name="REBOOT_SHUTDOWN_ACTION">
+      <description>Reboot/shutdown action for selected component in MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN.</description>
+      <entry value="0" name="REBOOT_SHUTDOWN_ACTION_NONE">
+        <description>Do nothing.</description>
+      </entry>
+      <entry value="1" name="REBOOT_SHUTDOWN_ACTION_REBOOT">
+        <description>Reboot component.</description>
+      </entry>
+      <entry value="2" name="REBOOT_SHUTDOWN_ACTION_SHUTDOWN">
+        <description>Shutdown component.</description>
+      </entry>
+      <entry value="3" name="REBOOT_SHUTDOWN_ACTION_REBOOT_TO_BOOTLOADER">
+        <description>Reboot component and keep it in the bootloader until upgraded.</description>
+      </entry>
+      <entry value="4" name="REBOOT_SHUTDOWN_ACTION_POWER_ON">
+        <description>Power on component. Do nothing if component is already powered (ACK command with MAV_RESULT_ACCEPTED).</description>
+      </entry>
+    </enum>
     <enum name="REBOOT_SHUTDOWN_CONDITIONS">
       <description>Specifies the conditions under which the MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN command should be accepted.</description>
       <entry value="0" name="REBOOT_SHUTDOWN_CONDITIONS_SAFETY_INTERLOCKED">
@@ -1219,8 +1222,6 @@
         <param index="7" label="Y Offset" units="m">Y offset from target</param>
       </entry>
       <entry value="34" name="MAV_CMD_DO_ORBIT" hasLocation="true" isDestination="true">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Start orbiting on the circumference of a circle defined by the parameters. Setting values to NaN/INT32_MAX (as appropriate) results in using defaults.</description>
         <param index="1" label="Radius" units="m">Radius of the circle. Positive: orbit clockwise. Negative: orbit counter-clockwise. NaN: Use vehicle default radius, or current radius if already orbiting.</param>
         <param index="2" label="Velocity" units="m/s">Tangential Velocity. NaN: Use vehicle default velocity, or current velocity if already orbiting.</param>
@@ -1757,7 +1758,7 @@
       </entry>
       <entry value="211" name="MAV_CMD_DO_GRIPPER" hasLocation="false" isDestination="false">
         <description>Mission command to operate a gripper.</description>
-        <param index="1" label="Gripper ID" minValue="1" increment="1">Gripper ID. 1-6 for an autopilot connected gripper. In missions this may be set to 1-6 for an autopilot gripper, or the gripper component id for a MAVLink gripper. 0 targets all grippers.</param>
+        <param index="1" label="Gripper ID" minValue="0" increment="1">Gripper ID. 1-6 for an autopilot connected gripper. In missions this may be set to 1-6 for an autopilot gripper, or the gripper component id for a MAVLink gripper. 0 targets all grippers.</param>
         <param index="2" label="Action" enum="GRIPPER_ACTIONS">Gripper action to perform.</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
@@ -1912,9 +1913,9 @@
       </entry>
       <entry value="246" name="MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN" hasLocation="false" isDestination="false">
         <description>Request the reboot or shutdown of system components.</description>
-        <param index="1" label="Autopilot" minValue="0" maxValue="3" increment="1">0: Do nothing for autopilot, 1: Reboot autopilot, 2: Shutdown autopilot, 3: Reboot autopilot and keep it in the bootloader until upgraded.</param>
-        <param index="2" label="Companion" minValue="0" maxValue="3" increment="1">0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer, 3: Reboot onboard computer and keep it in the bootloader until upgraded.</param>
-        <param index="3" label="Component action" minValue="0" maxValue="3" increment="1">0: Do nothing for component, 1: Reboot component, 2: Shutdown component, 3: Reboot component and keep it in the bootloader until upgraded</param>
+        <param index="1" label="Autopilot" enum="REBOOT_SHUTDOWN_ACTION">Action to take for autopilot.</param>
+        <param index="2" label="Companion" enum="REBOOT_SHUTDOWN_ACTION">Action to take for onboard computer.</param>
+        <param index="3" label="Component Action" enum="REBOOT_SHUTDOWN_ACTION">Action to take for component specified in param4.</param>
         <param index="4" label="Component ID" minValue="0" maxValue="255" increment="1">MAVLink Component ID targeted in param3 (0 for all components).</param>
         <param index="5">Reserved (set to 0)</param>
         <param index="6" label="Conditions" enum="REBOOT_SHUTDOWN_CONDITIONS">Conditions under which reboot/shutdown is allowed.</param>
@@ -3169,84 +3170,6 @@
         <description>Custom orientation</description>
       </entry>
     </enum>
-    <enum name="MAV_PROTOCOL_CAPABILITY" bitmask="true">
-      <description>Bitmask of (optional) autopilot capabilities (64 bit). If a bit is set, the autopilot supports this capability.</description>
-      <entry value="1" name="MAV_PROTOCOL_CAPABILITY_MISSION_FLOAT">
-        <description>Autopilot supports the MISSION_ITEM float message type.
-          Note that MISSION_ITEM is deprecated, and autopilots should use MISSION_INT instead.
-        </description>
-      </entry>
-      <entry value="2" name="MAV_PROTOCOL_CAPABILITY_PARAM_FLOAT">
-        <deprecated since="2022-03" replaced_by="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST"/>
-        <description>Autopilot supports the new param float message type.</description>
-      </entry>
-      <entry value="4" name="MAV_PROTOCOL_CAPABILITY_MISSION_INT">
-        <description>Autopilot supports MISSION_ITEM_INT scaled integer message type.
-          Note that this flag must always be set if missions are supported, because missions must always use MISSION_ITEM_INT (rather than MISSION_ITEM, which is deprecated).
-        </description>
-      </entry>
-      <entry value="8" name="MAV_PROTOCOL_CAPABILITY_COMMAND_INT">
-        <description>Autopilot supports COMMAND_INT scaled integer message type.</description>
-      </entry>
-      <entry value="16" name="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE">
-        <description>Parameter protocol uses byte-wise encoding of parameter values into param_value (float) fields: https://mavlink.io/en/services/parameter.html#parameter-encoding.
-          Note that either this flag or MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST should be set if the parameter protocol is supported.
-        </description>
-      </entry>
-      <entry value="32" name="MAV_PROTOCOL_CAPABILITY_FTP">
-        <description>Autopilot supports the File Transfer Protocol v1: https://mavlink.io/en/services/ftp.html.</description>
-      </entry>
-      <entry value="64" name="MAV_PROTOCOL_CAPABILITY_SET_ATTITUDE_TARGET">
-        <description>Autopilot supports commanding attitude offboard.</description>
-      </entry>
-      <entry value="128" name="MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED">
-        <description>Autopilot supports commanding position and velocity targets in local NED frame.</description>
-      </entry>
-      <entry value="256" name="MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_GLOBAL_INT">
-        <description>Autopilot supports commanding position and velocity targets in global scaled integers.</description>
-      </entry>
-      <entry value="512" name="MAV_PROTOCOL_CAPABILITY_TERRAIN">
-        <description>Autopilot supports terrain protocol / data handling.</description>
-      </entry>
-      <entry value="1024" name="MAV_PROTOCOL_CAPABILITY_RESERVED3">
-        <description>Reserved for future use.</description>
-      </entry>
-      <entry value="2048" name="MAV_PROTOCOL_CAPABILITY_FLIGHT_TERMINATION">
-        <description>Autopilot supports the MAV_CMD_DO_FLIGHTTERMINATION command (flight termination).</description>
-      </entry>
-      <entry value="4096" name="MAV_PROTOCOL_CAPABILITY_COMPASS_CALIBRATION">
-        <description>Autopilot supports onboard compass calibration.</description>
-      </entry>
-      <entry value="8192" name="MAV_PROTOCOL_CAPABILITY_MAVLINK2">
-        <description>Autopilot supports MAVLink version 2.</description>
-      </entry>
-      <entry value="16384" name="MAV_PROTOCOL_CAPABILITY_MISSION_FENCE">
-        <description>Autopilot supports mission fence protocol.</description>
-      </entry>
-      <entry value="32768" name="MAV_PROTOCOL_CAPABILITY_MISSION_RALLY">
-        <description>Autopilot supports mission rally point protocol.</description>
-      </entry>
-      <entry value="65536" name="MAV_PROTOCOL_CAPABILITY_RESERVED2">
-        <description>Reserved for future use.</description>
-      </entry>
-      <entry value="131072" name="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST">
-        <description>Parameter protocol uses C-cast of parameter values to set the param_value (float) fields: https://mavlink.io/en/services/parameter.html#parameter-encoding.
-          Note that either this flag or MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE should be set if the parameter protocol is supported.
-        </description>
-      </entry>
-      <entry value="262144" name="MAV_PROTOCOL_CAPABILITY_COMPONENT_IMPLEMENTS_GIMBAL_MANAGER">
-        <description>This component implements/is a gimbal manager. This means the GIMBAL_MANAGER_INFORMATION, and other messages can be requested.
-        </description>
-      </entry>
-      <entry value="524288" name="MAV_PROTOCOL_CAPABILITY_COMPONENT_ACCEPTS_GCS_CONTROL">
-        <wip/>
-        <description>Component supports locking control to a particular GCS independent of its system (via MAV_CMD_REQUEST_OPERATOR_CONTROL).</description>
-      </entry>
-      <entry value="1048576" name="MAV_PROTOCOL_CAPABILITY_GRIPPER">
-        <wip/>
-        <description>Autopilot has a connected gripper. MAVLink Grippers would set MAV_TYPE_GRIPPER instead.</description>
-      </entry>
-    </enum>
     <enum name="MAV_MISSION_TYPE">
       <description>Type of mission items being requested/sent in mission protocol.</description>
       <entry value="0" name="MAV_MISSION_TYPE_MISSION">
@@ -3840,6 +3763,10 @@
       <entry value="4096" name="CAMERA_CAP_FLAGS_HAS_THERMAL_RANGE">
         <description>Camera supports absolute thermal range (request CAMERA_THERMAL_RANGE with MAV_CMD_REQUEST_MESSAGE).</description>
       </entry>
+      <entry value="8192" name="CAMERA_CAP_FLAGS_HAS_MTI">
+        <wip/>
+        <description>Camera supports Moving Target Indicators (MTI) on the camera view (using MAV_CMD_CAMERA_START_MTI).</description>
+      </entry>
     </enum>
     <enum name="VIDEO_STREAM_STATUS_FLAGS" bitmask="true">
       <description>Stream status flags (Bitmap)</description>
@@ -3880,7 +3807,7 @@
         <description>Stream encoding is H.265</description>
       </entry>
     </enum>
-    <enum name="CAMERA_TRACKING_STATUS_FLAGS">
+    <enum name="CAMERA_TRACKING_STATUS_FLAGS" bitmask="true">
       <description>Camera tracking status flags</description>
       <entry value="0" name="CAMERA_TRACKING_STATUS_FLAGS_IDLE">
         <description>Camera is not tracking</description>
@@ -3890,6 +3817,14 @@
       </entry>
       <entry value="2" name="CAMERA_TRACKING_STATUS_FLAGS_ERROR">
         <description>Camera tracking in error state</description>
+      </entry>
+      <entry value="4" name="CAMERA_TRACKING_STATUS_FLAGS_MTI">
+        <wip/>
+        <description>Camera Moving Target Indicators (MTI) are active</description>
+      </entry>
+      <entry value="8" name="CAMERA_TRACKING_STATUS_FLAGS_COASTING">
+        <wip/>
+        <description>Camera tracking target is obscured and is being predicted</description>
       </entry>
     </enum>
     <enum name="CAMERA_TRACKING_MODE">
@@ -4738,26 +4673,26 @@
     </enum>
     <enum name="AIS_NAV_STATUS">
       <description>Navigational status of AIS vessel, enum duplicated from AIS standard, https://gpsd.gitlab.io/gpsd/AIVDM.html</description>
-      <entry value="0" name="UNDER_WAY">
+      <entry value="0" name="AIS_NAV_STATUS_UNDER_WAY">
         <description>Under way using engine.</description>
       </entry>
-      <entry value="1" name="AIS_NAV_ANCHORED"/>
-      <entry value="2" name="AIS_NAV_UN_COMMANDED"/>
-      <entry value="3" name="AIS_NAV_RESTRICTED_MANOEUVERABILITY"/>
-      <entry value="4" name="AIS_NAV_DRAUGHT_CONSTRAINED"/>
-      <entry value="5" name="AIS_NAV_MOORED"/>
-      <entry value="6" name="AIS_NAV_AGROUND"/>
-      <entry value="7" name="AIS_NAV_FISHING"/>
-      <entry value="8" name="AIS_NAV_SAILING"/>
-      <entry value="9" name="AIS_NAV_RESERVED_HSC"/>
-      <entry value="10" name="AIS_NAV_RESERVED_WIG"/>
-      <entry value="11" name="AIS_NAV_RESERVED_1"/>
-      <entry value="12" name="AIS_NAV_RESERVED_2"/>
-      <entry value="13" name="AIS_NAV_RESERVED_3"/>
-      <entry value="14" name="AIS_NAV_AIS_SART">
+      <entry value="1" name="AIS_NAV_STATUS_ANCHORED"/>
+      <entry value="2" name="AIS_NAV_STATUS_UN_COMMANDED"/>
+      <entry value="3" name="AIS_NAV_STATUS_RESTRICTED_MANOEUVERABILITY"/>
+      <entry value="4" name="AIS_NAV_STATUS_DRAUGHT_CONSTRAINED"/>
+      <entry value="5" name="AIS_NAV_STATUS_MOORED"/>
+      <entry value="6" name="AIS_NAV_STATUS_AGROUND"/>
+      <entry value="7" name="AIS_NAV_STATUS_FISHING"/>
+      <entry value="8" name="AIS_NAV_STATUS_SAILING"/>
+      <entry value="9" name="AIS_NAV_STATUS_RESERVED_HSC"/>
+      <entry value="10" name="AIS_NAV_STATUS_RESERVED_WIG"/>
+      <entry value="11" name="AIS_NAV_STATUS_RESERVED_1"/>
+      <entry value="12" name="AIS_NAV_STATUS_RESERVED_2"/>
+      <entry value="13" name="AIS_NAV_STATUS_RESERVED_3"/>
+      <entry value="14" name="AIS_NAV_STATUS_AIS_SART">
         <description>Search And Rescue Transponder.</description>
       </entry>
-      <entry value="15" name="AIS_NAV_UNKNOWN">
+      <entry value="15" name="AIS_NAV_STATUS_UNKNOWN">
         <description>Not available (default).</description>
       </entry>
     </enum>
@@ -5491,19 +5426,6 @@
       <field type="float" name="vx" units="m/s">X Speed</field>
       <field type="float" name="vy" units="m/s">Y Speed</field>
       <field type="float" name="vz" units="m/s">Z Speed</field>
-    </message>
-    <message id="33" name="GLOBAL_POSITION_INT">
-      <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It
-               is designed as scaled integer message since the resolution of float is not sufficient.</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude, expressed</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude, expressed</field>
-      <field type="int32_t" name="alt" units="mm">Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.</field>
-      <field type="int32_t" name="relative_alt" units="mm">Altitude above home</field>
-      <field type="int16_t" name="vx" units="cm/s">Ground X Speed (Latitude, positive north)</field>
-      <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude, positive east)</field>
-      <field type="int16_t" name="vz" units="cm/s">Ground Z Speed (Altitude, positive down)</field>
-      <field type="uint16_t" name="hdg" units="cdeg" invalid="UINT16_MAX">Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
     </message>
     <message id="34" name="RC_CHANNELS_SCALED">
       <description>The scaled values of the RC channels received: (-100%) -10000, (0%) 0, (100%) 10000. Channels that are inactive should be set to INT16_MAX.</description>
@@ -6686,24 +6608,7 @@
       <field type="uint8_t" name="mode" enum="MAV_BATTERY_MODE">Battery mode. Default (0) is that battery mode reporting is not supported or battery is in normal-use mode.</field>
       <field type="uint32_t" name="fault_bitmask" enum="MAV_BATTERY_FAULT">Fault/health indications. These should be set when charge_state is MAV_BATTERY_CHARGE_STATE_FAILED or MAV_BATTERY_CHARGE_STATE_UNHEALTHY (if not, fault reporting is not supported).</field>
     </message>
-    <message id="148" name="AUTOPILOT_VERSION">
-      <description>Version and capability of autopilot software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
-      <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY">Bitmap of capabilities</field>
-      <field type="uint32_t" name="flight_sw_version">Firmware version number.
-        The field must be encoded as 4 bytes, where each byte (shown from MSB to LSB) is part of a semantic version: (major) (minor) (patch) (FIRMWARE_VERSION_TYPE).
-      </field>
-      <field type="uint32_t" name="middleware_sw_version">Middleware version number</field>
-      <field type="uint32_t" name="os_sw_version">Operating system version number</field>
-      <field type="uint32_t" name="board_version">HW / board version (last 8 bits should be silicon ID, if any). The first 16 bits of this field specify https://github.com/PX4/PX4-Bootloader/blob/master/board_types.txt</field>
-      <field type="uint8_t[8]" name="flight_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
-      <field type="uint8_t[8]" name="middleware_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
-      <field type="uint8_t[8]" name="os_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
-      <field type="uint16_t" name="vendor_id">ID of the board vendor</field>
-      <field type="uint16_t" name="product_id">ID of the product</field>
-      <field type="uint64_t" name="uid">UID if provided by hardware (see uid2)</field>
-      <extensions/>
-      <field type="uint8_t[18]" name="uid2">UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)</field>
-    </message>
+    <!-- <message id="148" name="AUTOPILOT_VERSION"> in standard.xml -->
     <message id="149" name="LANDING_TARGET">
       <description>The location of a landing target. See: https://mavlink.io/en/services/landing_target.html</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
@@ -7072,7 +6977,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t[32]" name="vendor_name">Name of the camera vendor</field>
       <field type="uint8_t[32]" name="model_name">Name of the camera model</field>
-      <field type="uint32_t" name="firmware_version" invalid="0">Version of the camera firmware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 \| (Patch &amp; 0xff) &lt;&lt; 16 \| (Minor &amp; 0xff) &lt;&lt; 8 \| (Major &amp; 0xff)`. Use 0 if not known.</field>
+      <field type="uint32_t" name="firmware_version" invalid="0">Version of the camera firmware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 + (Patch &amp; 0xff) &lt;&lt; 16 + (Minor &amp; 0xff) &lt;&lt; 8 + (Major &amp; 0xff)`. Use 0 if not known.</field>
       <field type="float" name="focal_length" units="mm" invalid="NaN">Focal length. Use NaN if not known.</field>
       <field type="float" name="sensor_size_h" units="mm" invalid="NaN">Image sensor size horizontal. Use NaN if not known.</field>
       <field type="float" name="sensor_size_v" units="mm" invalid="NaN">Image sensor size vertical. Use NaN if not known.</field>
@@ -7324,8 +7229,8 @@
       <field type="char[32]" name="vendor_name">Name of the gimbal vendor.</field>
       <field type="char[32]" name="model_name">Name of the gimbal model.</field>
       <field type="char[32]" name="custom_name">Custom name of the gimbal given to it by the user.</field>
-      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 \| (Patch &amp; 0xff) &lt;&lt; 16 \| (Minor &amp; 0xff) &lt;&lt; 8 \| (Major &amp; 0xff)`.</field>
-      <field type="uint32_t" name="hardware_version">Version of the gimbal hardware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 \| (Patch &amp; 0xff) &lt;&lt; 16 \| (Minor &amp; 0xff) &lt;&lt; 8 \| (Major &amp; 0xff)`.</field>
+      <field type="uint32_t" name="firmware_version">Version of the gimbal firmware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 + (Patch &amp; 0xff) &lt;&lt; 16 + (Minor &amp; 0xff) &lt;&lt; 8 + (Major &amp; 0xff)`.</field>
+      <field type="uint32_t" name="hardware_version">Version of the gimbal hardware, encoded as: `(Dev &amp; 0xff) &lt;&lt; 24 + (Patch &amp; 0xff) &lt;&lt; 16 + (Minor &amp; 0xff) &lt;&lt; 8 + (Major &amp; 0xff)`.</field>
       <field type="uint64_t" name="uid" invalid="0">UID of gimbal hardware (0 if unknown).</field>
       <field type="uint16_t" name="cap_flags" enum="GIMBAL_DEVICE_CAP_FLAGS">Bitmap of gimbal capability flags.</field>
       <field type="uint16_t" name="custom_cap_flags">Bitmap for use for gimbal-specific capability flags.</field>
@@ -7469,7 +7374,7 @@
       <field type="uint16_t" name="COG" units="cdeg">Course over ground</field>
       <field type="uint16_t" name="heading" units="cdeg">True heading</field>
       <field type="uint16_t" name="velocity" units="cm/s">Speed over ground</field>
-      <field type="int8_t" name="turn_rate" units="cdeg/s">Turn rate</field>
+      <field type="int8_t" name="turn_rate" units="ddeg/s">Turn rate, 0.1 degrees per second</field>
       <field type="uint8_t" name="navigational_status" enum="AIS_NAV_STATUS">Navigational status</field>
       <field type="uint8_t" name="type" enum="AIS_TYPE">Type of vessels</field>
       <field type="uint16_t" name="dimension_bow" units="m">Distance from lat/lon location to bow</field>
@@ -7672,8 +7577,6 @@
       <field type="float[58]" name="data">data</field>
     </message>
     <message id="360" name="ORBIT_EXECUTION_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Vehicle status report that is sent out while orbit execution is in progress (see MAV_CMD_DO_ORBIT).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="float" name="radius" units="m">Radius of the orbit circle. Positive values orbit clockwise, negative values orbit counter-clockwise.</field>

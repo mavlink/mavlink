@@ -162,6 +162,16 @@
         <param index="6">Reserved</param>
         <param index="7">WIP: upgrade progress report rate (can be used for more granular control).</param>
       </entry>
+      <entry value="309" name="MAV_CMD_ACTUATOR_GROUP_TEST" hasLocation="false" isDestination="false">
+        <description>Command to test groups of related actuators together.
+          This might include groups such as the actuators that contribute to roll, pitch, or yaw torque, actuators that contribute to thrust in x, y, z axis, tilt mechanisms, flaps and spoilers, and so on.
+          This is similar to MAV_CMD_ACTUATOR_TEST, except that multiple actuators may be affected.
+          Different groups may also affect the same actuators (as in the case of controls that affect torque in different axes).
+          Autopilots must NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed.
+        </description>
+        <param index="1" label="Group" enum="ACTUATOR_TEST_GROUP">Actuator group to check, such as actuators related to roll torque.</param>
+        <param index="2" label="Value" minValue="-1" maxValue="1">Value to set. This is a normalized value across the full range of the tested group [-1,1].</param>
+      </entry>
       <entry value="610" name="MAV_CMD_DO_SET_SYS_CMP_ID" hasLocation="false" isDestination="false">
         <description>
           Set system and component id.
@@ -188,12 +198,25 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
+      <entry value="2020" name="MAV_CMD_CAMERA_START_MTI" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Enable Moving Target Indicators (MTI) on streamed video.
+          Support for feature can be checked with CAMERA_CAP_FLAGS_HAS_MTI, and disabled with MAV_CMD_CAMERA_STOP_MTI.</description>
+        <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
+      </entry>
+      <entry value="2021" name="MAV_CMD_CAMERA_STOP_MTI" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Disable Moving Target Indicators (MTI) on streamed video.</description>
+        <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
+      </entry>
       <entry value="12900" name="MAV_CMD_ODID_SET_EMERGENCY" hasLocation="false" isDestination="false">
         <description>Used to manually set/unset emergency status for remote id.
           This is for compliance with MOC ASTM docs, specifically F358 section 7.7: "Emergency Status Indicator".
           The requirement can also be satisfied by automatic setting of the emergency status by flight stack, and that approach is preferred.
           See https://mavlink.io/en/services/opendroneid.html for more information.
-	</description>
+        </description>
         <param index="1" label="Number" minValue="0" increment="1">Set/unset emergency 0: unset, 1: set</param>
         <param index="2" reserved="true" default="NaN"/>
         <param index="3" reserved="true" default="NaN"/>
@@ -214,6 +237,18 @@
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
+      </entry>
+      <entry value="620" name="MAV_CMD_EXTERNAL_ATTITUDE_ESTIMATE" hasLocation="false" isDestination="false">
+        <description>Set an external estimate of vehicle attitude.
+          This might be used to provide an initial attitude (especially heading) estimate to the estimator (EKF). Angles are defined in a 3-2-1 (yaw-pitch-roll) intrinsic Tait-Bryan sequence.
+        </description>
+        <param index="1" label="Roll" units="deg" minValue="0" maxValue="360">Roll angle. Set to NaN if unknown.</param>
+        <param index="2" label="Pitch" units="deg" minValue="0" maxValue="360">Pitch angle. Set to NaN if unknown.</param>
+        <param index="3" label="Yaw" units="deg" minValue="0" maxValue="360">Yaw/heading (relative to true north) angle. Set to NaN if unknown.</param>
+        <param index="4" label="Tilt accuracy" units="deg">Estimated 1 sigma accuracy of roll and pitch angles. Set to NaN if unknown.</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7" label="Yaw accuracy" units="deg">Estimated 1 sigma accuracy of yaw angle. Set to NaN if unknown.</param>
       </entry>
       <entry value="32100" name="MAV_CMD_REQUEST_OPERATOR_CONTROL" hasLocation="false" isDestination="false">
         <description>Request GCS control of a system (or of a specific component in a system).
@@ -383,6 +418,54 @@
         <description>RAIM integrity check failed.</description>
       </entry>
     </enum>
+    <enum name="ACTUATOR_TEST_GROUP">
+      <description>Actuator groups to test in MAV_CMD_ACTUATOR_GROUP_TEST.</description>
+      <entry value="0" name="ACTUATOR_TEST_GROUP_ROLL_TORQUE">
+        <description>Actuators that contribute to roll torque.</description>
+      </entry>
+      <entry value="1" name="ACTUATOR_TEST_GROUP_PITCH_TORQUE">
+        <description>Actuators that contribute to pitch torque.</description>
+      </entry>
+      <entry value="2" name="ACTUATOR_TEST_GROUP_YAW_TORQUE">
+        <description>Actuators that contribute to yaw torque.</description>
+      </entry>
+      <entry value="3" name="ACTUATOR_TEST_GROUP_COLLECTIVE_TILT">
+        <description>Actuators that affect collective tilt.</description>
+      </entry>
+    </enum>
+    <enum name="GLOBAL_POSITION_SRC">
+      <description>Source for GLOBAL_POSITION measurement or estimate.</description>
+      <entry value="0" name="GLOBAL_POSITION_UNKNOWN">
+        <description>Source is unknown or not one of the listed types.</description>
+      </entry>
+      <entry value="1" name="GLOBAL_POSITION_GNSS">
+        <description>Global Navigation Satellite System (e.g.: GPS, Galileo, Glonass, BeiDou).</description>
+      </entry>
+      <entry value="2" name="GLOBAL_POSITION_VISION">
+        <description>Vision system (e.g.: map matching).</description>
+      </entry>
+      <entry value="3" name="GLOBAL_POSITION_PSEUDOLITES">
+        <description>Pseudo-satellite system (performs GNSS-like function, but usually with transceiver beacons).</description>
+      </entry>
+      <entry value="4" name="GLOBAL_POSITION_TRN">
+        <description>Terrain referenced navigation.</description>
+      </entry>
+      <entry value="5" name="GLOBAL_POSITION_MAGNETIC">
+        <description>Magnetic positioning.</description>
+      </entry>
+      <entry value="6" name="GLOBAL_POSITION_ESTIMATOR">
+        <description>Estimated position based on various sensors (eg. a Kalman Filter).</description>
+      </entry>
+    </enum>
+    <enum name="GLOBAL_POSITION_FLAGS" bitmask="true">
+      <description>Status flags for GLOBAL_POSITION</description>
+      <entry value="1" name="GLOBAL_POSITION_UNHEALTHY">
+        <description>Unhealthy sensor/estimator.</description>
+      </entry>
+      <entry value="2" name="GLOBAL_POSITION_PRIMARY">
+        <description>True if the data originates from or is consumed by the primary estimator.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="295" name="AIRSPEED">
@@ -392,6 +475,19 @@
       <field type="int16_t" name="temperature" units="cdegC">Temperature. INT16_MAX for value unknown/not supplied.</field>
       <field type="float" name="raw_press" units="hPa">Raw differential pressure. NaN for value unknown/not supplied.</field>
       <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
+    </message>
+    <message id="296" name="GLOBAL_POSITION">
+      <description>Global position measurement or estimate.</description>
+      <field type="uint8_t" name="id" instance="true">Sensor ID</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="source" enum="GLOBAL_POSITION_SRC">Source of position/estimate (such as GNSS, estimator, etc.)</field>
+      <field type="uint8_t" name="flags" enum="GLOBAL_POSITION_FLAGS">Status flags</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude (WGS84)</field>
+      <field type="float" name="alt" units="m" invalid="NaN">Altitude (MSL - position-system specific value)</field>
+      <field type="float" name="alt_ellipsoid" units="m" invalid="NaN">Altitude (WGS84 elipsoid)</field>
+      <field type="float" name="eph" units="m" invalid="NaN">Standard deviation of horizontal position error</field>
+      <field type="float" name="epv" units="m" invalid="NaN">Standard deviation of vertical position error</field>
     </message>
     <message id="354" name="SET_VELOCITY_LIMITS">
       <wip/>
