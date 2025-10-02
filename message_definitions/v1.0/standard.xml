@@ -112,6 +112,15 @@
   </enums>
   <messages>
     <!-- also includes minimal.xml messages -->
+    <message id="29" name="SCALED_PRESSURE">
+      <description>The pressure readings for the typical setup of one absolute and differential pressure sensor. The units are as specified in each field.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="press_abs" units="hPa">Absolute pressure</field>
+      <field type="float" name="press_diff" units="hPa">Differential pressure 1</field>
+      <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
+      <extensions/>
+      <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
+    </message>
     <message id="33" name="GLOBAL_POSITION_INT">
       <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It is designed as scaled integer message since the resolution of float is not sufficient.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
@@ -123,6 +132,24 @@
       <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude, positive east)</field>
       <field type="int16_t" name="vz" units="cm/s">Ground Z Speed (Altitude, positive down)</field>
       <field type="uint16_t" name="hdg" units="cdeg" invalid="UINT16_MAX">Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+    </message>
+    <message id="137" name="SCALED_PRESSURE2">
+      <description>Barometer readings for 2nd barometer</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="press_abs" units="hPa">Absolute pressure</field>
+      <field type="float" name="press_diff" units="hPa">Differential pressure</field>
+      <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
+      <extensions/>
+      <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
+    </message>
+    <message id="143" name="SCALED_PRESSURE3">
+      <description>Barometer readings for 3rd barometer</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="press_abs" units="hPa">Absolute pressure</field>
+      <field type="float" name="press_diff" units="hPa">Differential pressure</field>
+      <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
+      <extensions/>
+      <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
     </message>
     <message id="148" name="AUTOPILOT_VERSION">
       <description>Version and capability of autopilot software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
