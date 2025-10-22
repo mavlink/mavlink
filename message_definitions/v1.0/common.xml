@@ -5338,19 +5338,38 @@
     </message>
     <!-- IDs 15-17 reserved for PARAM_VALUE_UNION and other param messages -->
     <message id="20" name="PARAM_REQUEST_READ">
-      <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -&gt; value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also https://mavlink.io/en/services/parameter.html for a full documentation of QGroundControl and IMU code.</description>
+      <description>Request to read an onboard parameter using either its string id (`param_id`) or its index (`param_inde`x).
+        The receiving component must emit the PARAM_VALUE with the current parameter value if the parameter exists.
+        PARAM_ERROR should be emitted also/instead if there is an error.
+        Note that the response must include the parameter identity specified in the request (either `param_id` or `param_index`) and must also include `param_index` if it is available.
+
+        After requesting all parameters with PARAM_REQUEST_LIST this message can be used with the `param_index` to request any missing parameters.
+        This allows a GCS or other component to read all parameters without the need of previous knowledge of possible parameter names.
+        Once known, the `param_id` should be used to read or set parameters (the parameter index is not guaranteed to be invariant).
+        The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="int16_t" name="param_index" invalid="-1">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
     </message>
     <message id="21" name="PARAM_REQUEST_LIST">
-      <description>Request all parameters of this component. After this request, all parameters are emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <description>Request all parameters of this component.
+        The recieving component should emit PARAM_VALUE for all parameters, and must include the name (`param_id`), value, total number of parameters (`param_count`), and the index (`param_index`) of the current parameter.
+        PARAM_REQUEST_READ can be used re-request any missing parameters by `param_index`.
+        This allows a GCS or other component to read all parameters without the need of previous knowledge of possible parameter names.
+        Note that the parameter index is not guaranteed to be invariant other than when requesting all parameters and shortly afterwards.
+        The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
     </message>
     <message id="22" name="PARAM_VALUE">
-      <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <description>Emit the value of an onboard parameter.
+        This is sent for all parameters in response to PARAM_REQUEST_LIST, or after an (existing) parameter is read (PARAM_REQUEST_READ) or set (PARAM_SET).
+        If the specified parameter does not exist this message is not emitted (PARAM_ERROR should be sent instead).
+        The inclusion of `param_count` and `param_index` in the message allows the recipient to keep track of received parameters send following PARAM_REQUEST_LIST and re-request missing parameters after a loss or timeout.
+        The param_id must always be set.
+        Note that this message must include the parameter identity specified in the triggering request (either `param_id` or `param_index`) and must also include `param_index` if it is available.
+        The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="float" name="param_value">Onboard parameter value</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
@@ -5359,7 +5378,12 @@
     </message>
     <message id="23" name="PARAM_SET">
       <description>Set a parameter value (write new value to permanent storage).
-        The receiving component should acknowledge the new parameter value by broadcasting a PARAM_VALUE message (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters). If the sending GCS did not receive a PARAM_VALUE within its timeout time, it should re-send the PARAM_SET message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.
+        The receiving component should acknowledge the new parameter value by broadcasting a PARAM_VALUE message (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters).
+        If the parameter exists but can't be set, then the PARAM_VALUE message should be emitted with the current value.
+        PARAM_ERROR should be emitted if there is an error, providing the reason why the value can't be set.
+        Note that the response must include the parameter identity specified in the request (either `param_id` or `param_index`) and must also include `param_index` if it is available.
+        If the sending component does not receive a PARAM_VALUE and/or PARAM_ERROR within its timeout time, it should re-send the PARAM_SET message.
+        The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.
       </description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -7623,7 +7647,10 @@
     <message id="345" name="PARAM_ERROR">
       <wip/>
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Parameter set/get error. Returned from a MAVLink node in response to an error in the parameter protocol, for example failing to set a parameter because it does not exist.
+      <description>Parameter set/get error.
+        This should be emitted by a MAVLink component in response to an error in the parameter protocol, such as failing to set (SET_PARAM) or read (PARAM_REQUEST_READ) a parameter because it does not exist.
+        Note that the response must include the parameter identity specified in the request (either `param_id` or `param_index`) and must also include `param_index` if it is available.
+        The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.          
       </description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
