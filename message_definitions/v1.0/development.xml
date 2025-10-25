@@ -5,15 +5,6 @@
   <version>0</version>
   <dialect>0</dialect>
   <enums>
-    <enum name="AIRSPEED_SENSOR_FLAGS" bitmask="true">
-      <description>Airspeed sensor flags</description>
-      <entry value="1" name="AIRSPEED_SENSOR_UNHEALTHY">
-        <description>Airspeed sensor is unhealthy</description>
-      </entry>
-      <entry value="2" name="AIRSPEED_SENSOR_USING">
-        <description>True if the data from this sensor is being actively used by the flight controller for guidance, navigation or control.</description>
-      </entry>
-    </enum>
     <enum name="MAV_BATTERY_STATUS_FLAGS" bitmask="true">
       <description>Battery status flags for fault, health and state indication.</description>
       <entry value="1" name="MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE">
@@ -475,14 +466,6 @@
     </enum>
   </enums>
   <messages>
-    <message id="295" name="AIRSPEED">
-      <description>Airspeed information from a sensor.</description>
-      <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
-      <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS).</field>
-      <field type="int16_t" name="temperature" units="cdegC">Temperature. INT16_MAX for value unknown/not supplied.</field>
-      <field type="float" name="raw_press" units="hPa">Raw differential pressure. NaN for value unknown/not supplied.</field>
-      <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
-    </message>
     <message id="296" name="GLOBAL_POSITION">
       <description>Global position measurement or estimate.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID</field>

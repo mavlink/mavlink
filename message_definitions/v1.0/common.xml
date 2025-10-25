@@ -5257,6 +5257,15 @@
         <description>Indicates if main disk is full.</description>
       </entry>
     </enum>
+    <enum name="AIRSPEED_SENSOR_FLAGS" bitmask="true">
+      <description>Airspeed sensor flags</description>
+      <entry value="1" name="AIRSPEED_SENSOR_UNHEALTHY">
+        <description>Airspeed sensor is unhealthy</description>
+      </entry>
+      <entry value="2" name="AIRSPEED_SENSOR_USING">
+        <description>True if the data from this sensor is being actively used by the flight controller for guidance, navigation or control.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -7409,7 +7418,14 @@
       <field type="float[4]" name="voltage" units="V">Voltage measured from each ESC.</field>
       <field type="float[4]" name="current" units="A">Current measured from each ESC.</field>
     </message>
-    <!-- id 295 reserved for AIRSPEED message (development.xml). -->
+    <message id="295" name="AIRSPEED">
+      <description>Airspeed information from a sensor.</description>
+      <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
+      <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS).</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature.</field>
+      <field type="float" name="raw_press" units="hPa" invalid="NaN">Raw differential pressure.</field>
+      <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
+    </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
       <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>
