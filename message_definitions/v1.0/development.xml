@@ -147,6 +147,18 @@
         <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
         INT32_MAX or NaN: Use current vehicle altitude.</param>
       </entry>
+      <entry value="36" name="MAV_CMD_NAV_ARC_WAYPOINT" hasLocation="true" isDestination="true">
+        <wip/>
+        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+        <description>Circular arc path waypoint.
+          This defines the end/exit point and angle (param1) of an arc path from the previous waypoint. A position is required before this command to define the start of the arc (e.g. current position, a MAV_CMD_NAV_WAYPOINT, or a MAV_CMD_NAV_ARC_WAYPOINT).
+          The resulting path is a circular arc in the NE frame, with the difference in height being defined by the difference in waypoint altitudes.
+          </description>
+        <param index="1" label="Arc Angle" units="deg" minValue="-359" maxValue="359" increment="1">The angle in degrees from the starting position to the exit position of the arc in the NE frame. Positive values are CW arcs and negative values are CCW arcs.</param>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
+      </entry>
       <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
         <description>Request a target system to start an upgrade of one (or all) of its components.
           For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller.
