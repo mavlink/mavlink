@@ -2820,6 +2820,9 @@
       <entry value="8" name="MAV_PARAM_ERROR_READ_FAIL">
         <description>Parameter exists but reading failed</description>
       </entry>
+      <entry value="8" name="MAV_PARAM_ERROR_NO_PARAMETERS">
+        <description>There are no parameters. This might be sent in response to PARAM_REQUEST_LIST.</description>
+      </entry>
     </enum>
     <enum name="MAV_PARAM_EXT_TYPE">
       <description>Specifies the datatype of a MAVLink extended parameter.</description>
@@ -5354,6 +5357,8 @@
     <message id="21" name="PARAM_REQUEST_LIST">
       <description>Request all parameters of this component.
         The receiving component should emit PARAM_VALUE for all parameters, and must include the name (`param_id`), value, total number of parameters (`param_count`), and the index (`param_index`) of the current parameter.
+        A PARAM_ERROR response must be emitted with MAV_PARAM_ERROR_NO_PARAMETERS if there are no parameters (older protocol versions may send no response).
+
         PARAM_REQUEST_READ can be used to re-request any missing parameters by `param_index`.
         This allows a GCS or other component to read all parameters without the need of previous knowledge of possible parameter names.
         Note that the parameter index is not guaranteed to be invariant other than when requesting all parameters.
@@ -7649,12 +7654,13 @@ If the parameter exists but can't be set then the PARAM_VALUE message should be 
       <description>Parameter set/get error.
         This must be emitted by a MAVLink component in response to an error in the parameter protocol, such as failing to set (SET_PARAM) or read (PARAM_REQUEST_READ) a parameter because it does not exist.
         Note that the response must include the parameter identity specified in the request (either `param_id` or `param_index`) and must also include `param_index` if it is available.
+        If the error is MAV_PARAM_ERROR_NO_PARAMETERS then `param_index=-1` and `param_id` is an empty null-terminated string.
         The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.          
       </description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Parameter id. Terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
-      <field type="int16_t" name="param_index">Parameter index. Will be -1 if the param ID field should be used as an identifier (else the param id will be ignored)</field>
+      <field type="int16_t" name="param_index">Parameter index. Will be -1 if the param ID field is used to identify the parameter (otherwise the param_id will be ignored)</field>
       <field type="uint8_t" name="error" enum="MAV_PARAM_ERROR">Error being returned to client.</field>
     </message>
     <message id="350" name="DEBUG_FLOAT_ARRAY">
