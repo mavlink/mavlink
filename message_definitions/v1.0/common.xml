@@ -5340,7 +5340,8 @@
     <message id="20" name="PARAM_REQUEST_READ">
       <description>Request to read an onboard parameter using either its string id (`param_id`) or its index (`param_index`).
         The receiving component must emit PARAM_VALUE if the parameter can be read, or PARAM_ERROR if there is an error (older protocol versions send no response on error).
-        Note that the response must include the parameter identity specified in the request (either `param_id` or `param_index`) and must also include `param_index` if it is available.
+        A PARAM_VALUE response must include both the `param_id` and `param_index`.
+        A PARAM_ERROR response must include the `param_id` or `param_index` included in the request, and should include both if available.
 
         After requesting all parameters with PARAM_REQUEST_LIST this message can be used with the `param_index` to request any missing parameters.
         This allows a GCS or other component to read all parameters without the need of previous knowledge of possible parameter names.
