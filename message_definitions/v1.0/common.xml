@@ -5339,8 +5339,7 @@
     <!-- IDs 15-17 reserved for PARAM_VALUE_UNION and other param messages -->
     <message id="20" name="PARAM_REQUEST_READ">
       <description>Request to read an onboard parameter using either its string id (`param_id`) or its index (`param_inde`x).
-        The receiving component must emit the PARAM_VALUE with the current parameter value if the parameter exists.
-        PARAM_ERROR should be emitted also/instead if there is an error.
+        The receiving component must emit PARAM_VALUE if the parameter can be read, or PARAM_ERROR if there is an error (older protocol versions send no response on error).
         Note that the response must include the parameter identity specified in the request (either `param_id` or `param_index`) and must also include `param_index` if it is available.
 
         After requesting all parameters with PARAM_REQUEST_LIST this message can be used with the `param_index` to request any missing parameters.
