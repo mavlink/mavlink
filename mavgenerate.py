@@ -21,6 +21,7 @@ Released under GNU GPL version 3 or later
 
 """
 import os
+import re
 
 from tkinter import *  # noqa: F403
 import tkinter.filedialog
