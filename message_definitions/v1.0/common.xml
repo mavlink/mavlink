@@ -5372,7 +5372,7 @@
         If the specified parameter does not exist this message is not emitted (PARAM_ERROR should be sent instead).
         The inclusion of `param_count` and `param_index` in the message allows the recipient to keep track of received parameters send following PARAM_REQUEST_LIST and re-request missing parameters after a loss or timeout.
         The param_id must always be set.
-        Note that this message must include the parameter identity specified in the triggering request (either `param_id` or `param_index`) and must also include `param_index` if it is available.
+        `param_index` must always be set if the message is in response to a PARAM_REQUEST_LIST, or if the message is in response to PARAM_REQUEST_READ for an index, otherwise it should be set if available.
         The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="float" name="param_value">Onboard parameter value</field>
