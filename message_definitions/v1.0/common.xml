@@ -7663,6 +7663,24 @@
       <extensions/>
       <field type="float[58]" name="data">data</field>
     </message>
+    <message id="354" name="SET_VELOCITY_LIMITS">
+      <wip/>
+      <description>Set temporary maximum limits for horizontal speed, vertical speed and yaw rate.
+        The consumer must stream the current limits in VELOCITY_LIMITS at 1 Hz or more (when limits are being set).
+        The consumer should latch the limits until a new limit is received or the mode is changed.
+      </description>
+      <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>
+      <field type="uint8_t" name="target_component">Component ID (0 for broadcast).</field>
+      <field type="float" name="horizontal_speed_limit" default="NaN" units="m/s">Limit for horizontal movement in MAV_FRAME_LOCAL_NED. NaN: Field not used (ignore)</field>
+      <field type="float" name="vertical_speed_limit" default="NaN" units="m/s">Limit for vertical movement in MAV_FRAME_LOCAL_NED. NaN: Field not used (ignore)</field>
+      <field type="float" name="yaw_rate_limit" default="NaN" units="rad/s">Limit for vehicle turn rate around its yaw axis. NaN: Field not used (ignore)</field>
+    </message>
+    <message id="355" name="VELOCITY_LIMITS">
+      <description>Current limits for horizontal speed, vertical speed and yaw rate, as set by SET_VELOCITY_LIMITS.</description>
+      <field type="float" name="horizontal_speed_limit" default="NaN" units="m/s">Limit for horizontal movement in MAV_FRAME_LOCAL_NED. NaN: No limit applied</field>
+      <field type="float" name="vertical_speed_limit" default="NaN" units="m/s">Limit for vertical movement in MAV_FRAME_LOCAL_NED. NaN: No limit applied</field>
+      <field type="float" name="yaw_rate_limit" default="NaN" units="rad/s">Limit for vehicle turn rate around its yaw axis. NaN: No limit applied</field>
+    </message>
     <message id="360" name="ORBIT_EXECUTION_STATUS">
       <description>Vehicle status report that is sent out while orbit execution is in progress (see MAV_CMD_DO_ORBIT).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
