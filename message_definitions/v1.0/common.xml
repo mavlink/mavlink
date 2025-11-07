@@ -2789,6 +2789,38 @@
         <description>64-bit floating-point</description>
       </entry>
     </enum>
+    <enum name="MAV_PARAM_ERROR">
+      <wip/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Parameter protocol error types (see PARAM_ERROR).</description>
+      <entry value="0" name="MAV_PARAM_ERROR_NO_ERROR">
+        <description>No error occurred (not expected in PARAM_ERROR but may be used in future implementations.</description>
+      </entry>
+      <entry value="1" name="MAV_PARAM_ERROR_DOES_NOT_EXIST">
+        <description>Parameter does not exist</description>
+      </entry>
+      <entry value="2" name="MAV_PARAM_ERROR_VALUE_OUT_OF_RANGE">
+        <description>Parameter value does not fit within accepted range</description>
+      </entry>
+      <entry value="3" name="MAV_PARAM_ERROR_PERMISSION_DENIED">
+        <description>Caller is not permitted to set the value of this parameter</description>
+      </entry>
+      <entry value="4" name="MAV_PARAM_ERROR_COMPONENT_NOT_FOUND">
+        <description>Unknown component specified</description>
+      </entry>
+      <entry value="5" name="MAV_PARAM_ERROR_READ_ONLY">
+        <description>Parameter is read-only</description>
+      </entry>
+      <entry value="6" name="MAV_PARAM_ERROR_TYPE_UNSUPPORTED">
+        <description>Parameter data type (MAV_PARAM_TYPE) is not supported by flight stack (at all)</description>
+      </entry>
+      <entry value="7" name="MAV_PARAM_ERROR_TYPE_MISMATCH">
+        <description>Parameter type does not match expected type</description>
+      </entry>
+      <entry value="8" name="MAV_PARAM_ERROR_READ_FAIL">
+        <description>Parameter exists but reading failed</description>
+      </entry>
+    </enum>
     <enum name="MAV_PARAM_EXT_TYPE">
       <description>Specifies the datatype of a MAVLink extended parameter.</description>
       <entry value="1" name="MAV_PARAM_EXT_TYPE_UINT8">
@@ -2834,7 +2866,7 @@
         <description>Command is valid, but cannot be executed at this time. This is used to indicate a problem that should be fixed just by waiting (e.g. a state machine is busy, can't arm because have not got GPS lock, etc.). Retrying later should work.</description>
       </entry>
       <entry value="2" name="MAV_RESULT_DENIED">
-        <description>Command is invalid (is supported but has invalid parameters). Retrying same command and parameters will not work.</description>
+        <description>Command is invalid; it is supported but one or more parameter values are invalid (i.e. parameter reserved, value allowed by spec but not supported by flight stack, and so on). Retrying the same command and parameters will not work.</description>
       </entry>
       <entry value="3" name="MAV_RESULT_UNSUPPORTED">
         <description>Command is not supported (unknown).</description>
@@ -2856,6 +2888,10 @@
       </entry>
       <entry value="9" name="MAV_RESULT_COMMAND_UNSUPPORTED_MAV_FRAME">
         <description>Command is invalid because a frame is required and the specified frame is not supported.</description>
+      </entry>
+      <entry value="10" name="MAV_RESULT_NOT_IN_CONTROL">
+        <wip/>
+        <description>Command has been rejected because source system is not in control of the target system/component.</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
@@ -4847,7 +4883,7 @@
         <description>The requested event is not available (anymore).</description>
       </entry>
     </enum>
-    <enum name="MAV_EVENT_CURRENT_SEQUENCE_FLAGS">
+    <enum name="MAV_EVENT_CURRENT_SEQUENCE_FLAGS" bitmask="true">
       <description>Flags for CURRENT_EVENT_SEQUENCE.</description>
       <entry value="1" name="MAV_EVENT_CURRENT_SEQUENCE_FLAGS_RESET">
         <description>A sequence reset has happened (e.g. vehicle reboot).</description>
@@ -5206,6 +5242,30 @@
         <description>Simulation is using lockstep</description>
       </entry>
     </enum>
+    <enum name="COMPUTER_STATUS_FLAGS" bitmask="true">
+      <description>Flags used to report computer status.</description>
+      <entry value="1" name="COMPUTER_STATUS_FLAGS_UNDER_VOLTAGE">
+        <description>Indicates if the system is experiencing voltage outside of acceptable range.</description>
+      </entry>
+      <entry value="2" name="COMPUTER_STATUS_FLAGS_CPU_THROTTLE">
+        <description>Indicates if CPU throttling is active.</description>
+      </entry>
+      <entry value="4" name="COMPUTER_STATUS_FLAGS_THERMAL_THROTTLE">
+        <description>Indicates if thermal throttling is active.</description>
+      </entry>
+      <entry value="8" name="COMPUTER_STATUS_FLAGS_DISK_FULL">
+        <description>Indicates if main disk is full.</description>
+      </entry>
+    </enum>
+    <enum name="AIRSPEED_SENSOR_FLAGS" bitmask="true">
+      <description>Airspeed sensor flags</description>
+      <entry value="1" name="AIRSPEED_SENSOR_UNHEALTHY">
+        <description>Airspeed sensor is unhealthy</description>
+      </entry>
+      <entry value="2" name="AIRSPEED_SENSOR_USING">
+        <description>True if the data from this sensor is being actively used by the flight controller for guidance, navigation or control.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -5249,7 +5309,7 @@
       <description>Request to control this MAV</description>
       <field type="uint8_t" name="target_system">System the GCS requests control for</field>
       <field type="uint8_t" name="control_request">0: request control of this MAV, 1: Release control of this MAV</field>
-      <field type="uint8_t" name="version" units="rad">0: key as plaintext, 1-255: future, different hashing/encryption variants. The GCS should in general use the safest mode possible initially and then gradually move down the encryption level if it gets a NACK message indicating an encryption mismatch.</field>
+      <field type="uint8_t" name="version">0: key as plaintext, 1-255: future, different hashing/encryption variants. The GCS should in general use the safest mode possible initially and then gradually move down the encryption level if it gets a NACK message indicating an encryption mismatch.</field>
       <field type="char[25]" name="passkey">Password / Key, depending on version plaintext or encrypted. 25 or less characters, NULL terminated. The characters may involve A-Z, a-z, 0-9, and "!?,.-"</field>
     </message>
     <message id="6" name="CHANGE_OPERATOR_CONTROL_ACK">
@@ -5604,7 +5664,7 @@
       </field>
     </message>
     <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
-      <deprecated since="2025-04" replaced_by="MAV_CMD_SET_GLOBAL_ORIGIN"/>
+      <deprecated since="2025-04" replaced_by="MAV_CMD_DO_SET_GLOBAL_ORIGIN"/>
       <description>Sets the GPS coordinates of the vehicle local origin (0,0,0) position. Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed. This enables transform between the local coordinate frame and the global (GPS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
@@ -5753,7 +5813,8 @@
       <field type="uint8_t" name="on_off">1 stream is enabled, 0 stream is stopped.</field>
     </message>
     <message id="69" name="MANUAL_CONTROL">
-      <description>This message provides an API for manually controlling the vehicle using standard joystick axes nomenclature, along with a joystick-like input device. Unused axes can be disabled and buttons states are transmitted as individual on/off bits of a bitmask</description>
+      <description>Manual (joystick) control message.
+        This message represents movement axes and button using standard joystick axes nomenclature. Unused axes can be disabled and buttons states are transmitted as individual on/off bits of a bitmask. For more information see https://mavlink.io/en/manual_control.html</description>
       <field type="uint8_t" name="target">The system to be controlled.</field>
       <field type="int16_t" name="x" invalid="INT16_MAX">X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.</field>
       <field type="int16_t" name="y" invalid="INT16_MAX">Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.</field>
@@ -7357,7 +7418,14 @@
       <field type="float[4]" name="voltage" units="V">Voltage measured from each ESC.</field>
       <field type="float[4]" name="current" units="A">Current measured from each ESC.</field>
     </message>
-    <!-- id 295 reserved for AIRSPEED message (development.xml). -->
+    <message id="295" name="AIRSPEED">
+      <description>Airspeed information from a sensor.</description>
+      <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
+      <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS).</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature.</field>
+      <field type="float" name="raw_press" units="hPa" invalid="NaN">Raw differential pressure.</field>
+      <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
+    </message>
     <message id="299" name="WIFI_CONFIG_AP">
       <description>Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the AP. The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE</description>
       <field type="char[32]" name="ssid">Name of Wi-Fi network (SSID). Blank to leave it unchanged when setting. Current SSID when sent back as a response.</field>
@@ -7365,6 +7433,14 @@
       <extensions/>
       <field type="int8_t" name="mode" enum="WIFI_CONFIG_AP_MODE">WiFi Mode.</field>
       <field type="int8_t" name="response" enum="WIFI_CONFIG_AP_RESPONSE">Message acceptance response (sent back to GS).</field>
+    </message>
+    <message id="300" name="PROTOCOL_VERSION">
+      <description>Version and capability of protocol version. This message can be requested with MAV_CMD_REQUEST_MESSAGE and is used as part of the handshaking to establish which MAVLink version should be used on the network. Every node should respond to a request for PROTOCOL_VERSION to enable the handshaking. Library implementers should consider adding this into the default decoding state machine to allow the protocol core to respond directly.</description>
+      <field type="uint16_t" name="version">Currently active MAVLink version number * 100: v1.0 is 100, v2.0 is 200, etc.</field>
+      <field type="uint16_t" name="min_version">Minimum MAVLink version supported</field>
+      <field type="uint16_t" name="max_version">Maximum MAVLink version supported (set to the same value as version by default)</field>
+      <field type="uint8_t[8]" name="spec_version_hash">The first 8 bytes (not characters printed in hex!) of the git hash.</field>
+      <field type="uint8_t[8]" name="library_version_hash">The first 8 bytes (not characters printed in hex!) of the git hash.</field>
     </message>
     <message id="301" name="AIS_VESSEL">
       <description>The location and information of an AIS vessel</description>
@@ -7568,6 +7644,17 @@
       <field type="uint8_t" name="flight_state" enum="UTM_FLIGHT_STATE">Flight state</field>
       <field type="uint8_t" name="flags" enum="UTM_DATA_AVAIL_FLAGS">Bitwise OR combination of the data available flags.</field>
     </message>
+    <message id="345" name="PARAM_ERROR">
+      <wip/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Parameter set/get error. Returned from a MAVLink node in response to an error in the parameter protocol, for example failing to set a parameter because it does not exist.
+      </description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="char[16]" name="param_id">Parameter id. Terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="int16_t" name="param_index">Parameter index. Will be -1 if the param ID field should be used as an identifier (else the param id will be ignored)</field>
+      <field type="uint8_t" name="error" enum="MAV_PARAM_ERROR">Error being returned to client.</field>
+    </message>
     <message id="350" name="DEBUG_FLOAT_ARRAY">
       <description>Large debug/prototyping array. The message uses the maximum available payload for data. The array_id and name fields are used to discriminate between messages in code and in user interfaces (respectively). Do not use in production code.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
@@ -7707,8 +7794,6 @@
       <field type="uint8_t[8]" name="data">Frame data</field>
     </message>
     <message id="390" name="ONBOARD_COMPUTER_STATUS">
-      <wip/>
-      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
       <description>Hardware status sent by an onboard computer.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint32_t" name="uptime" units="ms">Time since system boot.</field>
@@ -7730,6 +7815,8 @@
       <field type="uint32_t[6]" name="link_rx_rate" units="KiB/s" invalid="[UINT32_MAX]">Network traffic to the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_tx_max" units="KiB/s" invalid="[UINT32_MAX]">Network capacity from the component system. A value of UINT32_MAX implies the field is unused.</field>
       <field type="uint32_t[6]" name="link_rx_max" units="KiB/s" invalid="[UINT32_MAX]">Network capacity to the component system. A value of UINT32_MAX implies the field is unused.</field>
+      <extensions/>
+      <field type="uint16_t" name="status_flags" enum="COMPUTER_STATUS_FLAGS">Bitmap of status flags.</field>
     </message>
     <message id="395" name="COMPONENT_INFORMATION">
       <deprecated since="2022-04" replaced_by="COMPONENT_METADATA"/>
