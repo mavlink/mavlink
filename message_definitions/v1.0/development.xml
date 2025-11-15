@@ -276,6 +276,16 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
+      <entry value="312" name="MAV_CMD_AM32_REQUEST_EEPROM" hasLocation="false" isDestination="false">
+        <description>Request EEPROM data from an AM32 ESC.</description>
+        <param index="1" label="Index" minValue="0" maxValue="255" increment="1">Index of the ESC to query (0 = ESC1, 1 = ESC2, etc.). 255 = request from all.</param>
+        <param index="2" reserved="true" default="NaN"/>
+        <param index="3" reserved="true" default="NaN"/>
+        <param index="4" reserved="true" default="NaN"/>
+        <param index="5" reserved="true" default="NaN"/>
+        <param index="6" reserved="true" default="NaN"/>
+        <param index="7" reserved="true" default="NaN"/>
+      </entry>
     </enum>
     <enum name="GCS_CONTROL_STATUS_FLAGS" bitmask="true">
       <description>CONTROL_STATUS flags.</description>
@@ -594,6 +604,16 @@
       <description>Information about GCS in control of this MAV. This should be broadcast at low rate (nominally 1 Hz) and emitted when ownership or takeover status change. Control over MAV is requested using MAV_CMD_REQUEST_OPERATOR_CONTROL.</description>
       <field type="uint8_t" name="sysid_in_control">System ID of GCS MAVLink component in control (0: no GCS in control).</field>
       <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS">Control status. For example, whether takeover is allowed, and whether this message instance defines the default controlling GCS for the whole system.</field>
+    </message>
+    <message id="292" name="AM32_EEPROM">
+      <description>AM32 ESC EEPROM data. Direction of transfer depends on mode field: either reports current configuration from ESC or commands new configuration to ESC. For write requests, a bitmask allows selective writing of specific bytes to avoid corrupting unchanged values.</description>
+      <field type="uint8_t" name="target_system">System ID (ID of target system, normally flight controller).</field>
+      <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
+      <field type="uint8_t" name="index">Index of the ESC (0 = ESC1, 1 = ESC2, etc.).</field>
+      <field type="uint8_t" name="mode">Operation mode: 0 = readout, 1 = write request.</field>
+      <field type="uint32_t[6]" name="write_mask">Bitmask indicating which bytes in the data array should be written (only used in write mode). Each bit corresponds to a byte index in the data array (bit 0 of write_mask[0] = data[0], bit 31 of write_mask[0] = data[31], bit 0 of write_mask[1] = data[32], etc.). Set bits indicate bytes to write, cleared bits indicate bytes to skip. This allows precise updates of individual parameters without overwriting the entire EEPROM.</field>
+      <field type="uint8_t" name="length">Number of valid bytes in data array.</field>
+      <field type="uint8_t[192]" name="data">Raw AM32 EEPROM data. Unused bytes should be set to zero. Note: the AM32 EEPROM is currently only 192 bytes long. This array has been sized to use the maximum payload length for a MAVLink message in an attempt to future-proof the message in case AM32 extends the EEPROM data length.</field>
     </message>
   </messages>
 </mavlink>
