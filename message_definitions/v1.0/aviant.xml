@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<mavlink>
+  <!-- Complete message set for use on Aviant UAS  -->
+  <!-- https://github.com/aviant/mavlink           -->
+  <!-- mavlink ID range: 59000 - 59099             -->
+  <include>development.xml</include>
+  <include>common.xml</include>
+  <include>AVSSUAS.xml</include>
+  <include>ardupilotmega.xml</include>
+  <version>0</version>
+  <dialect>0</dialect>
+  <enums>
+    <enum name="AVIANT_STATE">
+      <description>Aviant system state"</description>
+      <entry name="UNSPECIFIED" value="0"/>
+    </enum>
+  </enums>
+  <messages>
+    <message name="AVIANT_HEARTBEAT" id="59000">
+      <description>Shows that a system is running Aviant protocol</description>
+      <field name="state" type="uint8_t" enum="AVIANT_STATE">Current state of the system/component</field>
+    </message>
+  </messages>
+</mavlink>
