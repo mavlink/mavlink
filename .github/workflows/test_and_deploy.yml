@@ -3,7 +3,7 @@ name: Test and deploy
 on:
   push:
     branches:
-    - 'master'
+    - 'aviant/main'
   pull_request:
     branches:
     - '*'
@@ -122,10 +122,23 @@ jobs:
     name: Generate and push C headers
     needs: [format, spell-check, python-lint, python-tests, node-tests]
     runs-on: ubuntu-22.04
-    if: github.ref == 'refs/heads/master'
-    env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    if: github.ref == 'refs/heads/aviant/main'
     steps:
+      - name: Install deploy SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          cat > ~/.ssh/config <<EOF
+          Host github.com
+            HostName github.com
+            User git
+            IdentityFile ~/.ssh/id_ed25519
+            IdentitiesOnly yes
+          EOF
+
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
