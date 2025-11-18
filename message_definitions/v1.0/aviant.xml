@@ -16,10 +16,10 @@
     </enum>
     <enum name="AVIANT_INDICATOR_STATE">
       <description>Display state for Aviant indicators</description>
-      <entry name="INACTIVE" value="0"/>
-      <entry name="NOMINAL" value="1"/>
-      <entry name="WARNING" value="2"/>
-      <entry name="EMERGENCY" value="3"/>
+      <entry name="AVIANT_INDICATOR_STATE_INACTIVE" value="0"/>
+      <entry name="AVIANT_INDICATOR_STATE_NOMINAL" value="1"/>
+      <entry name="AVIANT_INDICATOR_STATE_WARNING" value="2"/>
+      <entry name="AVIANT_INDICATOR_STATE_CRITICAL" value="3"/>
     </enum>
   </enums>
   <messages>
@@ -35,6 +35,21 @@
       <field name="uint8_value" type="uint8_t"/>
       <field name="int32_value" type="int32_t"/>
       <field name="text_value" type="char[8]"/>
+    </message>
+    <message name="AVIANT_INDICATOR_NAV" id="59002">
+      <description>Navigation indicators</description>
+      <field name="state_accuracy" type="uint8_t" enum="AVIANT_INDICATOR_STATE">Absolute position accuracy</field>
+      <field name="state_redundancy" type="uint8_t" enum="AVIANT_INDICATOR_STATE">Navigation sensor redundancy</field>
+    </message>
+    <message name="AVIANT_INDICATOR_MR_THRUST" id="59003">
+      <description>Top motor thrust levels</description>
+      <field name="state" type="uint8_t" enum="AVIANT_INDICATOR_STATE"/>
+      <field name="thrust_margin" type="float">Remaining thrust margin on the heaviest loaded motor</field>
+      <field name="thrust_margin_omi" type="float">Estimated remaining thrust margin on the heaviest loaded motor, in case one motor becomes inoperative</field>
+    </message>
+    <message name="AVIANT_INDICATOR_FW_ICING" id="59004">
+      <description>Icing indicator</description>
+      <field name="state" type="uint8_t" enum="AVIANT_INDICATOR_STATE">Icing severity</field>
     </message>
   </messages>
 </mavlink>
