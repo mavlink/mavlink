@@ -1,3 +1,65 @@
+# MAVLink - Aviant dialect
+This repository contains the Aviant MAVLink dialect.
+
+We use message and command IDs starting at `59000`. This is in the far end of the blocks that can be requested by other vendors, and is unlikely to be taken by someone else in a long time. Note that message and command IDs are separate, so the same number can correspond to both a message and a different command.
+
+**Review policy**: Self approval  
+
+**Changes**: Avoid making changes that break backwards compatibility (Define new messages rather than changing existing ones)
+
+## Using the Aviant dialect
+Note that all properly-written programs can handle unknown MAVLink messages without crashing, but they cannot parse the content.
+
+### PX4
+[aviant/PX4-Autopilot](https://github.com/aviant-tech/PX4-Autopilot) has a submodule pointer to this repo, and generates C headers automatically. The default MAVLink dialect used is specified in the Boardconfig for each target.
+
+### C library
+The C library is used by QGC, and is generated from the definitions in this repository.  On commits to `aviant/main`, the updated C library is automatically pushed to [aviant/c_library_v2](https://github.com/aviant-tech/c_library_v2) using a GitHub action.
+
+#### QGC
+As long as [aviant/qgroundcontrol](https://github.com/aviant-tech/qgroundcontrol) is built with the correct `c_library_v2` submodule, it will automatically parse and display all messages in the "MAVLink Inspector" tab.
+
+#### MAVLink Router
+Routing is only done for messages with `target_system` and `target_component` set, other messages are broadcast to all systems. Since these fields are not in the header, but included individually in the payload of (most) messages, [aviant/mavlink-router](https://github.com/aviant-tech/mavlink-router) must also be built with the correct C library for all messages to be routed properly.
+
+### pymavlink
+Pymavlink is a widely-used Python library for MAVLink communication.
+
+#### Installation
+Pymavlink must be installed with the correct message definitions. This is done by passing the path to the `message_definitions` directory of [aviant/mavlink](https://github.com/aviant-tech/mavlink)  while installing. E.g.
+
+```
+MDEF=/path/to/mavlink/repo/message_definitions/ pip install git+https://github.com/ArduPilot/pymavlink.git@2.2.49
+```
+
+For ease of use, the [aviant/pymavlink](https://github.com/aviant-tech/pymavlink) contains a submodule with aviant MAVLink definitions. It can be installed directly by running:
+
+```
+pip install git+https://github.com/aviant-tech/pymavlink
+```
+
+Note that no specific tags are available in this repo. Use the default branch or specify a tag if versioning is important.
+
+#### Use the Aviant dialect in Python
+To use the dialect, it can be set with an environment variable before running the program.
+```
+export MAVLINK_DIALECT=aviant
+```
+
+Or, the dialect can be expressed explicitly
+```
+from pymavlink.dialects.v20 import aviant as mavlink
+
+# Example creating a connection
+m = mavutil.mavlink_connection('/dev/ttyACM0', dialect="aviant")
+```
+
+---
+
+*Original README below*
+
+---
+
 [![Build Status](https://github.com/mavlink/mavlink/workflows/Test%20and%20deploy/badge.svg)](https://github.com/mavlink/mavlink/actions?query=branch%3Amaster)
 
 # MAVLink
