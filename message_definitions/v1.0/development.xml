@@ -599,7 +599,13 @@
       <description>AM32 ESC EEPROM data message.
         ESC data read by sending the MAV_CMD_REQUEST_MESSAGE with `param1=292` and `param2=esc_index`, where esc_index is the zero-indexed ESC number for the corresponding motor, and 255 is used to request data for all ESC.
         The message can be sent to set the ESC value.
-        For write requests, a bitmask allows selective writing of specific bytes to avoid corrupting unchanged values.</description>
+        For write requests, a bitmask allows selective writing of specific bytes to avoid corrupting unchanged values.
+
+        The data format is opaque to the autopilot.
+        A GCS is required to understand the format in order to create an appropriate UI for display and setting configuration values, and to inform users when the ESC uses an unsupported data format.
+        The AM32 EEPROM data layout is defined in: https://github.com/am32-firmware/AM32/blob/main/Inc/eeprom.h.
+        Note that the second byte in the structure is the `eeprom_version`.
+      </description>
       <field type="uint8_t" name="target_system">System ID (ID of target system, normally flight controller).</field>
       <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
       <field type="uint8_t" name="index" maxValue="254">Index of the ESC (0 = ESC1, 1 = ESC2, etc.).</field>
