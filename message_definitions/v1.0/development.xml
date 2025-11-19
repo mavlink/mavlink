@@ -276,17 +276,6 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="312" name="MAV_CMD_AM32_REQUEST_EEPROM" hasLocation="false" isDestination="false">
-        <description>Request EEPROM data from an AM32 ESC or all AM32 ESC.
-          The data for the requested ESC(s) must be emitted in AM32_EEPROM.</description>
-        <param index="1" label="Index" minValue="0" maxValue="255" increment="1">Index of the ESC to query (0 = ESC1, 1 = ESC2, etc.). 255 = request from all.</param>
-        <param index="2" reserved="true" default="NaN"/>
-        <param index="3" reserved="true" default="NaN"/>
-        <param index="4" reserved="true" default="NaN"/>
-        <param index="5" reserved="true" default="NaN"/>
-        <param index="6" reserved="true" default="NaN"/>
-        <param index="7" reserved="true" default="NaN"/>
-      </entry>
     </enum>
     <enum name="GCS_CONTROL_STATUS_FLAGS" bitmask="true">
       <description>CONTROL_STATUS flags.</description>
@@ -607,7 +596,11 @@
       <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS">Control status. For example, whether takeover is allowed, and whether this message instance defines the default controlling GCS for the whole system.</field>
     </message>
     <message id="292" name="AM32_EEPROM">
-      <description>AM32 ESC EEPROM data. Direction of transfer depends on mode field: either reports current configuration from ESC or commands new configuration to ESC. For write requests, a bitmask allows selective writing of specific bytes to avoid corrupting unchanged values.</description>
+      <description>AM32 ESC EEPROM data message.
+        ESC data read by sending the MAV_CMD_REQUEST_MESSAGE with `param1=292` and `param2=esc_index`, where esc_index is the zero-indexed ESC number for the corresponding motor, and 255 is used to request data for all ESC.
+        The message can be sent to set the ESC value.
+        The `mode` field indicates the direction of transfer (read data or write data to update the configuration).
+         For write requests, a bitmask allows selective writing of specific bytes to avoid corrupting unchanged values.</description>
       <field type="uint8_t" name="target_system">System ID (ID of target system, normally flight controller).</field>
       <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
       <field type="uint8_t" name="index">Index of the ESC (0 = ESC1, 1 = ESC2, etc.).</field>
