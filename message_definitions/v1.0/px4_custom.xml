@@ -43,6 +43,34 @@
       <field type="uint32_t" name="onboard_control_sensors_enabled_extended" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
       <field type="uint32_t" name="onboard_control_sensors_health_extended" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
     </message>
+
+    <!-- 重新定义 GPS_STATUS 消息为 GNSS_STATUS,添加自定义字段 -->
+    <message id="25" name="GNSS_STATUS">
+      <description>GNSS sensor system status with GPS positioning information for PX4</description>
+
+      <!-- 时间戳字段 -->
+      <field type="uint64_t" name="time_unix_usec" units="us">Unix timestamp (microseconds since UNIX epoch, 1.1.1970 or later)</field>
+
+      <!-- GPS 定位类型 -->
+      <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type</field>
+
+      <!-- 位置信息 -->
+      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84, EGM96 ellipsoid)</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84, EGM96 ellipsoid)</field>
+
+      <!-- 高度信息 -->
+      <field type="int32_t" name="alt" units="mm">Altitude (MSL). Positive for up. Note: If altitude is provided by GPS, it uses WGS84 ellipsoid, not MSL altitude.</field>
+
+      <!-- 精度信息 -->
+      <field type="uint16_t" name="eph" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to UINT16_MAX</field>
+      <field type="uint16_t" name="epv" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to UINT16_MAX</field>
+
+      <!-- 速度信息 -->
+      <field type="uint16_t" name="vel" units="cm/s">GPS ground speed</field>
+
+      <!-- 可见卫星数 -->
+      <field type="uint8_t" name="satellites_visible" invalid="UINT8_MAX">Number of satellites visible. If unknown, set to UINT8_MAX</field>
+    </message>
   </messages>
 </mavlink>
 
