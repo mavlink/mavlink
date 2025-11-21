@@ -16,6 +16,22 @@
       <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
     </message>
 
+    <!-- 重新定义 GPS_RAW_INT 消息,只保留 9 个基础字段 -->
+    <message id="24" name="GPS_RAW_INT">
+      <description>Simplified GPS raw data with only essential fields for PX4</description>
+
+      <!-- 只保留 9 个基础字段 (无 vel) -->
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot)</field>
+      <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84, EGM96 ellipsoid)</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84, EGM96 ellipsoid)</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (MSL)</field>
+      <field type="uint16_t" name="eph" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless * 100)</field>
+      <field type="uint16_t" name="epv" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless * 100)</field>
+      <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground in degrees * 100</field>
+      <field type="uint8_t" name="satellites_visible" invalid="UINT8_MAX">Number of satellites visible</field>
+    </message>
+
   </messages>
 </mavlink>
 
