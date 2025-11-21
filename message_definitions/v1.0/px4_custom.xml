@@ -4,20 +4,16 @@
   <include>common.xml</include>
 
   <messages>
-    <!-- 重新定义 SYS_STATUS 消息,添加自定义字段 -->
+    <!-- 重新定义 SYS_STATUS 消息,只保留 5 个字段 -->
     <message id="1" name="SYS_STATUS">
-      <description>Extended system status with additional timestamp and network rate information for PX4</description>
+      <description>Simplified system status with only timestamp and sensor bitmaps for PX4</description>
 
-      <!-- 时间戳字段 -->
+      <!-- 只保留 5 个字段 -->
       <field type="uint64_t" name="time_unix_usec" units="us">Unix timestamp (microseconds since UNIX epoch)</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
-
-      <!-- 传感器状态位图 (与 SYS_STATUS 相同) -->
       <field type="uint32_t" name="onboard_control_sensors_present" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</field>
       <field type="uint32_t" name="onboard_control_sensors_enabled" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
       <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
-
-      <!-- 只保留三个基础传感器位图字段 -->
     </message>
 
   </messages>
