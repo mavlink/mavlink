@@ -5591,6 +5591,8 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
     </message>
+    <!-- MISSION_CURRENT seq 字段已整合到 px4_custom.xml 的 VFR_HUD 中 -->
+    <!--
     <message id="42" name="MISSION_CURRENT">
       <description>
         Message that announces the sequence number of the current target mission item (that the system will fly towards/execute when the mission is running).
@@ -5606,6 +5608,7 @@
       <field type="uint32_t" name="fence_id" invalid="0">Id of current on-vehicle fence plan, or 0 if IDs are not supported or there is no fence loaded. GCS can use this to track changes to the fence plan type. The same value is returned on fence upload (in the MISSION_ACK).</field>
       <field type="uint32_t" name="rally_points_id" invalid="0">Id of current on-vehicle rally point plan, or 0 if IDs are not supported or there are no rally points loaded. GCS can use this to track changes to the rally point plan type. The same value is returned on rally point upload (in the MISSION_ACK).</field>
     </message>
+    -->
     <message id="43" name="MISSION_REQUEST_LIST">
       <description>Request the overall list of mission items from the system/component.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -5868,6 +5871,8 @@
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
+    <!-- VFR_HUD 已在 px4_custom.xml 中重新定义 -->
+    <!--
     <message id="74" name="VFR_HUD">
       <description>Metrics typically displayed on a HUD for fixed wing aircraft.</description>
       <field type="float" name="airspeed" units="m/s">Vehicle speed in form appropriate for vehicle type. For standard aircraft this is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either of which can be used by a pilot to estimate stall speed.</field>
@@ -5877,6 +5882,7 @@
       <field type="float" name="alt" units="m">Current altitude (MSL).</field>
       <field type="float" name="climb" units="m/s">Current climb rate.</field>
     </message>
+    -->
     <message id="75" name="COMMAND_INT">
       <description>Send a command with up to seven parameters to the MAV, where params 5 and 6 are integers and the other values are floats. This is preferred over COMMAND_LONG as it allows the MAV_FRAME to be specified for interpreting positional information, such as altitude. COMMAND_INT is also preferred when sending latitude and longitude data in params 5 and 6, as it allows for greater precision. Param 5 and 6 encode positional data as scaled integers, where the scaling depends on the actual command value. NaN or INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current latitude, yaw rather than a specific value). The command microservice is documented at https://mavlink.io/en/services/command.html</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -6751,6 +6757,8 @@
       <field type="float" name="pos_horiz_accuracy" units="m">Horizontal position 1-STD accuracy relative to the EKF local origin</field>
       <field type="float" name="pos_vert_accuracy" units="m">Vertical position 1-STD accuracy relative to the EKF local origin</field>
     </message>
+    <!-- WIND_COV 字段已整合到 px4_custom.xml 的 VFR_HUD 中 -->
+    <!--
     <message id="231" name="WIND_COV">
       <description>Wind estimate from vehicle. Note that despite the name, this message does not actually contain any covariances but instead variability and accuracy fields in terms of standard deviation (1-STD).</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
@@ -6763,6 +6771,7 @@
       <field type="float" name="horiz_accuracy" units="m/s" invalid="0">Horizontal speed 1-STD accuracy (0 if unknown)</field>
       <field type="float" name="vert_accuracy" units="m/s" invalid="0">Vertical speed 1-STD accuracy (0 if unknown)</field>
     </message>
+    -->
     <message id="232" name="GPS_INPUT">
       <description>GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the system.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <mavlink>
-  <!-- 包含 common.xml 作为基础 -->
-  <include>common.xml</include>
+  <!-- 包含 development.xml 作为基础 (development 已包含 common) -->
+  <include>development.xml</include>
 
   <messages>
     <!-- 重新定义 SYS_STATUS 消息,只保留 5 个字段 -->
@@ -30,6 +30,29 @@
       <field type="uint16_t" name="epv" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless * 100)</field>
       <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground in degrees * 100</field>
       <field type="uint8_t" name="satellites_visible" invalid="UINT8_MAX">Number of satellites visible</field>
+    </message>
+
+    <!-- 重新定义 VFR_HUD 消息,整合来自多个原始消息的字段 -->
+    <message id="74" name="VFR_HUD">
+      <description>Simplified VFR HUD data integrating fields from VFR_HUD (74), GLOBAL_POSITION_INT (33), WIND_COV (231), and MISSION_CURRENT (42) for PX4</description>
+
+      <!-- 来自原始 VFR_HUD (74) 的 5 个字段 -->
+      <field type="float" name="airspeed" units="m/s">Vehicle speed (CAS/IAS for fixed-wing, groundspeed for multirotor)</field>
+      <field type="float" name="groundspeed" units="m/s">Current ground speed</field>
+      <field type="int16_t" name="heading" units="deg">Current heading (0-360, 0=north)</field>
+      <field type="uint16_t" name="throttle" units="%">Current throttle setting (0 to 100)</field>
+      <field type="float" name="climb" units="m/s">Current climb rate</field>
+
+      <!-- 来自 GLOBAL_POSITION_INT (33) -->
+      <field type="int32_t" name="relative_alt" units="mm">Altitude above home</field>
+
+      <!-- 来自 WIND_COV (231) 的 3 个风速字段 -->
+      <field type="float" name="wind_x" units="m/s" invalid="NaN">Wind in North (NED) direction</field>
+      <field type="float" name="wind_y" units="m/s" invalid="NaN">Wind in East (NED) direction</field>
+      <field type="float" name="wind_z" units="m/s" invalid="NaN">Wind in down (NED) direction</field>
+
+      <!-- 来自 MISSION_CURRENT (42) -->
+      <field type="uint16_t" name="seq">Current mission sequence number</field>
     </message>
 
   </messages>
