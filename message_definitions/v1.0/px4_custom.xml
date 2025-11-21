@@ -13,64 +13,13 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
 
       <!-- 传感器状态位图 (与 SYS_STATUS 相同) -->
-      <field type="uint32_t" name="onboard_control_sensors_present" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</field>
-      <field type="uint32_t" name="onboard_control_sensors_enabled" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
-      <field type="uint32_t" name="onboard_control_sensors_health" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
+      <field type="uint32_t" name="onboard_control_sensors_present" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</field>
+      <field type="uint32_t" name="onboard_control_sensors_enabled" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
+      <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
 
-      <!-- 系统负载和电池 -->
-      <field type="uint16_t" name="load" units="d%">Maximum usage in percent of the mainloop time. Values: [0-1000] - should always be below 1000</field>
-      <field type="uint16_t" name="voltage_battery" units="mV">Battery voltage, UINT16_MAX: Voltage not sent by autopilot</field>
-      <field type="int16_t" name="current_battery" units="cA">Battery current, -1: Current not sent by autopilot</field>
-      <field type="int8_t" name="battery_remaining" units="%">Battery energy remaining, -1: Battery remaining energy not sent by autopilot</field>
-
-      <!-- 通信状态 -->
-      <field type="uint16_t" name="drop_rate_comm" units="c%">Communication drop rate</field>
-      <field type="uint16_t" name="errors_comm">Communication errors</field>
-
-      <!-- 网络速率 (新增字段) -->
-      <field type="uint16_t" name="tx_rate" units="B/s">Transmit rate (bytes per second)</field>
-      <field type="uint16_t" name="rx_rate" units="B/s">Receive rate (bytes per second)</field>
-
-      <!-- 错误计数 -->
-      <field type="uint16_t" name="errors_count1">Autopilot-specific errors</field>
-      <field type="uint16_t" name="errors_count2">Autopilot-specific errors</field>
-      <field type="uint16_t" name="errors_count3">Autopilot-specific errors</field>
-      <field type="uint16_t" name="errors_count4">Autopilot-specific errors</field>
-
-      <!-- 扩展传感器状态 -->
-      <extensions/>
-      <field type="uint32_t" name="onboard_control_sensors_present_extended" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</field>
-      <field type="uint32_t" name="onboard_control_sensors_enabled_extended" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
-      <field type="uint32_t" name="onboard_control_sensors_health_extended" display="bitmask" print_format="0x%08x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
+      <!-- 只保留三个基础传感器位图字段 -->
     </message>
 
-    <!-- 重新定义 GPS_STATUS 消息为 GNSS_STATUS,添加自定义字段 -->
-    <message id="25" name="GNSS_STATUS">
-      <description>GNSS sensor system status with GPS positioning information for PX4</description>
-
-      <!-- 时间戳字段 -->
-      <field type="uint64_t" name="time_unix_usec" units="us">Unix timestamp (microseconds since UNIX epoch, 1.1.1970 or later)</field>
-
-      <!-- GPS 定位类型 -->
-      <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type</field>
-
-      <!-- 位置信息 -->
-      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84, EGM96 ellipsoid)</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84, EGM96 ellipsoid)</field>
-
-      <!-- 高度信息 -->
-      <field type="int32_t" name="alt" units="mm">Altitude (MSL). Positive for up. Note: If altitude is provided by GPS, it uses WGS84 ellipsoid, not MSL altitude.</field>
-
-      <!-- 精度信息 -->
-      <field type="uint16_t" name="eph" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to UINT16_MAX</field>
-      <field type="uint16_t" name="epv" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to UINT16_MAX</field>
-
-      <!-- 速度信息 -->
-      <field type="uint16_t" name="vel" units="cm/s">GPS ground speed</field>
-
-      <!-- 可见卫星数 -->
-      <field type="uint8_t" name="satellites_visible" invalid="UINT8_MAX">Number of satellites visible. If unknown, set to UINT8_MAX</field>
-    </message>
   </messages>
 </mavlink>
 
