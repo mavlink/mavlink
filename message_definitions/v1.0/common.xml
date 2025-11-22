@@ -5397,6 +5397,8 @@
       <field type="uint8_t[20]" name="satellite_azimuth" units="deg" multiplier="360/255">Direction of satellite, 0: 0 deg, 255: 360 deg.</field>
       <field type="uint8_t[20]" name="satellite_snr" units="dB">Signal to noise ratio of satellite</field>
     </message>
+    <!-- SCALED_IMU 已在 px4_custom.xml 中重新定义,简化为 10 字段版本(移除 temperature) -->
+    <!--
     <message id="26" name="SCALED_IMU">
       <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should contain the scaled values to the described units</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
@@ -5412,6 +5414,7 @@
       <extensions/>
       <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
+    -->
     <message id="27" name="RAW_IMU">
       <description>The RAW IMU readings for a 9DOF sensor, which is identified by the id (default IMU1). This message should always contain the true raw values without any scaling to allow data capture and system debugging.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>

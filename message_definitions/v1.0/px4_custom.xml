@@ -55,6 +55,29 @@
       <field type="uint16_t" name="seq">Current mission sequence number</field>
     </message>
 
+    <!-- 重新定义 SCALED_IMU 消息,移除 temperature 扩展字段 -->
+    <message id="26" name="SCALED_IMU">
+      <description>Simplified SCALED IMU readings for 9DOF sensor for PX4. Contains scaled accelerometer, gyroscope and magnetometer readings without temperature.</description>
+
+      <!-- 时间戳 -->
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot)</field>
+
+      <!-- 加速度计 (已校准和缩放) -->
+      <field type="int16_t" name="xacc" units="mG">X acceleration</field>
+      <field type="int16_t" name="yacc" units="mG">Y acceleration</field>
+      <field type="int16_t" name="zacc" units="mG">Z acceleration</field>
+
+      <!-- 陀螺仪 (已校准和缩放) -->
+      <field type="int16_t" name="xgyro" units="mrad/s">X angular speed</field>
+      <field type="int16_t" name="ygyro" units="mrad/s">Y angular speed</field>
+      <field type="int16_t" name="zgyro" units="mrad/s">Z angular speed</field>
+
+      <!-- 磁力计 (已校准和缩放) -->
+      <field type="int16_t" name="xmag" units="mgauss">X magnetic field</field>
+      <field type="int16_t" name="ymag" units="mgauss">Y magnetic field</field>
+      <field type="int16_t" name="zmag" units="mgauss">Z magnetic field</field>
+    </message>
+
     <!-- 重新定义 ATTITUDE 消息,合并 ATTITUDE (30) 和 ATTITUDE_QUATERNION (31) 的所有字段 -->
     <message id="30" name="ATTITUDE">
       <description>Combined attitude message integrating fields from ATTITUDE (30) and ATTITUDE_QUATERNION (31) for PX4. Includes both Euler angles and quaternion representation.</description>
