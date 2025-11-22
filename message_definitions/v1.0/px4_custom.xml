@@ -55,6 +55,29 @@
       <field type="uint16_t" name="seq">Current mission sequence number</field>
     </message>
 
+    <!-- 重新定义 ATTITUDE 消息,合并 ATTITUDE (30) 和 ATTITUDE_QUATERNION (31) 的所有字段 -->
+    <message id="30" name="ATTITUDE">
+      <description>Combined attitude message integrating fields from ATTITUDE (30) and ATTITUDE_QUATERNION (31) for PX4. Includes both Euler angles and quaternion representation.</description>
+
+      <!-- 来自原始 ATTITUDE (30) 的字段 -->
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot)</field>
+      <field type="float" name="roll" units="rad">Roll angle (-pi..+pi)</field>
+      <field type="float" name="pitch" units="rad">Pitch angle (-pi..+pi)</field>
+      <field type="float" name="yaw" units="rad">Yaw angle (-pi..+pi)</field>
+      <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
+      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
+      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
+
+      <!-- 来自 ATTITUDE_QUATERNION (31) 的四元数字段 -->
+      <field type="float" name="q1">Quaternion component 1, w (1 in null-rotation)</field>
+      <field type="float" name="q2">Quaternion component 2, x (0 in null-rotation)</field>
+      <field type="float" name="q3">Quaternion component 3, y (0 in null-rotation)</field>
+      <field type="float" name="q4">Quaternion component 4, z (0 in null-rotation)</field>
+
+      <!-- 来自 ATTITUDE_QUATERNION (31) 的旋转偏移四元数 -->
+      <field type="float[4]" name="repr_offset_q" invalid="[0]">Rotation offset quaternion for user display (w, x, y, z order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if not supported)</field>
+    </message>
+
   </messages>
 </mavlink>
 
