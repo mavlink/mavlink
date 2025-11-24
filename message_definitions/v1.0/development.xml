@@ -608,10 +608,12 @@
       </description>
       <field type="uint8_t" name="target_system">System ID (ID of target system, normally flight controller).</field>
       <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
-      <field type="uint8_t" name="index" maxValue="254">Index of the ESC (0 = ESC1, 1 = ESC2, etc.).</field>
+      <field type="uint8_t" name="msg_index">Zero-indexed sequence number of this message when multiple messages are required to transfer the complete EEPROM data. The first message has index 0. For single-message transfers, set to 0.</field>
+      <field type="uint8_t" name="msg_count">Total number of messages required to transfer the complete EEPROM data. For single-message transfers, set to 1. Receivers should collect all messages from index 0 to msg_count-1 before reconstructing the complete data.</field>
+      <field type="uint8_t" name="esc_index" maxValue="254">Index of the ESC (0 = ESC1, 1 = ESC2, etc.).</field>
       <field type="uint32_t[7]" name="write_mask">Bitmask indicating which bytes in the data array should be written. Each bit corresponds to a byte index in the data array (bit 0 of write_mask[0] = data[0], bit 31 of write_mask[0] = data[31], bit 0 of write_mask[1] = data[32], etc.). Set bits indicate bytes to write, cleared bits indicate bytes to skip. This allows precise updates of individual parameters without overwriting the entire EEPROM.</field>
       <field type="uint8_t" name="length" maxValue="224">Number of valid bytes in data array.</field>
-      <field type="uint8_t[224]" name="data">Raw AM32 EEPROM data. Unused bytes should be set to zero. Note: the AM32 EEPROM is currently only 192 bytes long. This array has been sized to use the maximum payload length for a MAVLink message in an attempt to future-proof the message in case AM32 extends the EEPROM data length.</field>
+      <field type="uint8_t[222]" name="data">Raw AM32 EEPROM data. Unused bytes should be set to zero. Note: the AM32 EEPROM is currently only 192 bytes long. This array has been sized to use the maximum payload length for a MAVLink message in an attempt to future-proof the message in case AM32 extends the EEPROM data length.</field>
     </message>
   </messages>
 </mavlink>
