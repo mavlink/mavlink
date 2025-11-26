@@ -78,6 +78,15 @@
       <field type="int16_t" name="zmag" units="mgauss">Z magnetic field</field>
     </message>
 
+    <!-- 重新定义 HOME_POSITION 消息,简化为 3 字段版本 -->
+    <message id="242" name="HOME_POSITION">
+      <description>Simplified home position for PX4. Contains only the essential GPS coordinates.</description>
+
+      <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
+      <field type="int32_t" name="altitude" units="mm">Altitude (MSL). Positive for up.</field>
+    </message>
+
     <!-- 重新定义 NAV_CONTROLLER_OUTPUT 消息,简化为 10 字段版本 -->
     <message id="62" name="NAV_CONTROLLER_OUTPUT">
       <description>Simplified navigation and position controller state for PX4. Includes desired attitude, position errors, and target position.</description>
