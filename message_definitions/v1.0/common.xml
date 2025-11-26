@@ -5736,6 +5736,8 @@
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
       <field type="float[9]" name="covariance" invalid="[NaN:]">Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
+    <!-- NAV_CONTROLLER_OUTPUT 已在 px4_custom.xml 中重新定义,扩展为 10 字段版本 -->
+    <!--
     <message id="62" name="NAV_CONTROLLER_OUTPUT">
       <description>The state of the navigation and position controller.</description>
       <field type="float" name="nav_roll" units="deg">Current desired roll</field>
@@ -5747,6 +5749,7 @@
       <field type="float" name="aspd_error" units="m/s">Current airspeed error</field>
       <field type="float" name="xtrack_error" units="m">Current crosstrack error on x-y plane</field>
     </message>
+    -->
     <message id="63" name="GLOBAL_POSITION_INT_COV">
       <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It  is designed as scaled integer message since the resolution of float is not sufficient. NOTE: This message is intended for onboard networks / companion computers and higher-bandwidth links and optimized for accuracy and completeness. Please use the GLOBAL_POSITION_INT message for a minimal subset.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>

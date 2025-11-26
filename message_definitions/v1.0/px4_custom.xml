@@ -78,6 +78,27 @@
       <field type="int16_t" name="zmag" units="mgauss">Z magnetic field</field>
     </message>
 
+    <!-- 重新定义 NAV_CONTROLLER_OUTPUT 消息,简化为 10 字段版本 -->
+    <message id="62" name="NAV_CONTROLLER_OUTPUT">
+      <description>Simplified navigation and position controller state for PX4. Includes desired attitude, position errors, and target position.</description>
+
+      <!-- 姿态和导航 -->
+      <field type="float" name="nav_roll" units="deg">Current desired roll</field>
+      <field type="float" name="nav_pitch" units="deg">Current desired pitch</field>
+      <field type="int16_t" name="nav_bearing" units="deg">Current desired heading</field>
+      <field type="int16_t" name="target_bearing" units="deg">Bearing to current waypoint/target</field>
+      <field type="uint16_t" name="wp_dist" units="m">Distance to active waypoint</field>
+
+      <!-- 误差信息 -->
+      <field type="float" name="alt_error" units="m">Current altitude error</field>
+      <field type="float" name="aspd_error" units="m/s">Current airspeed error</field>
+
+      <!-- 目标位置 (移除 xtrack_error, 添加 lat) -->
+      <field type="int32_t" name="lat" units="degE7">Current desired latitude</field>
+      <field type="int32_t" name="lon" units="degE7">Current desired longitude</field>
+      <field type="int32_t" name="alt" units="mm">Current desired altitude above MSL (Mean Sea Level)</field>
+    </message>
+
     <!-- 重新定义 ATTITUDE 消息,合并 ATTITUDE (30) 和 ATTITUDE_QUATERNION (31) 的所有字段 -->
     <message id="30" name="ATTITUDE">
       <description>Combined attitude message integrating fields from ATTITUDE (30) and ATTITUDE_QUATERNION (31) for PX4. Includes both Euler angles and quaternion representation.</description>
