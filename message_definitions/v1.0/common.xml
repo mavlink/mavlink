@@ -5349,14 +5349,15 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
     </message>
-    <message id="22" name="PARAM_VALUE">
+    <!-- PARAM_VALUE消息已挪到px4_custom.xml中 -->
+    <!-- <message id="22" name="PARAM_VALUE">
       <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
       <field type="float" name="param_value">Onboard parameter value</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
       <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
       <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
-    </message>
+    </message> -->
     <message id="23" name="PARAM_SET">
       <description>Set a parameter value (write new value to permanent storage).
         The receiving component should acknowledge the new parameter value by broadcasting a PARAM_VALUE message (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters). If the sending GCS did not receive a PARAM_VALUE within its timeout time, it should re-send the PARAM_SET message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.
@@ -5625,7 +5626,8 @@
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
-    <message id="44" name="MISSION_COUNT">
+    <!-- MISSION_COUNT消息已挪到px4_custom.xml中 -->
+    <!-- <message id="44" name="MISSION_COUNT">
       <description>This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of waypoints.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -5639,7 +5641,7 @@
         The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.
         The ids are recalculated by the vehicle when any part of the on-vehicle plan changes (when a new plan is uploaded, the vehicle returns the new id to the GCS in MISSION_ACK).
       </field>
-    </message>
+    </message> -->
     <message id="45" name="MISSION_CLEAR_ALL">
       <description>Delete all mission items at once.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -5651,7 +5653,8 @@
       <description>A certain mission item has been reached. The system will either hold this position (or circle on the orbit) or (if the autocontinue on the WP was set) continue to the next waypoint.</description>
       <field type="uint16_t" name="seq">Sequence</field>
     </message>
-    <message id="47" name="MISSION_ACK">
+    <!-- MISSION_ACK消息已挪到px4_custom.xml中 -->
+    <!-- <message id="47" name="MISSION_ACK">
       <description>Acknowledgment message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
@@ -5665,7 +5668,7 @@
         0 if plan ids are not supported.
         The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.
       </field>
-    </message>
+    </message> -->
     <message id="48" name="SET_GPS_GLOBAL_ORIGIN">
       <deprecated since="2025-04" replaced_by="MAV_CMD_DO_SET_GLOBAL_ORIGIN"/>
       <description>Sets the GPS coordinates of the vehicle local origin (0,0,0) position. Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed. This enables transform between the local coordinate frame and the global (GPS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.</description>
@@ -5696,14 +5699,15 @@
       <field type="float" name="param_value_min">Minimum param value. The protocol does not define if this overwrites an onboard minimum value. (Depends on implementation)</field>
       <field type="float" name="param_value_max">Maximum param value. The protocol does not define if this overwrites an onboard maximum value. (Depends on implementation)</field>
     </message>
-    <message id="51" name="MISSION_REQUEST_INT">
+    <!-- MISSION_REQUEST_INT消息已挪到px4_custom.xml中 -->
+    <!-- <message id="51" name="MISSION_REQUEST_INT">
       <description>Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM_INT message. https://mavlink.io/en/services/mission.html</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
-    </message>
+    </message> -->
     <!-- Note, id 53 reserved for MISSION_CHECKSUM message (development.xml) -->
     <message id="54" name="SAFETY_SET_ALLOWED_AREA">
       <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/waypoints to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
@@ -5778,7 +5782,8 @@
       <field type="float" name="az" units="m/s/s">Z Acceleration</field>
       <field type="float[45]" name="covariance" invalid="[NaN:]">Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
     </message>
-    <message id="65" name="RC_CHANNELS">
+    <!-- RC_CHANNELS消息已挪到px4_custom.xml中 -->
+    <!-- <message id="65" name="RC_CHANNELS">
       <description>The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.  A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="chancount">Total number of RC channels being received. This can be larger than 18, indicating that more channels are available but not given in this message. This value should be 0 when no RC channels are available.</field>
@@ -5801,7 +5806,7 @@
       <field type="uint16_t" name="chan17_raw" units="us" invalid="UINT16_MAX">RC channel 17 value.</field>
       <field type="uint16_t" name="chan18_raw" units="us" invalid="UINT16_MAX">RC channel 18 value.</field>
       <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
-    </message>
+    </message> -->
     <message id="66" name="REQUEST_DATA_STREAM">
       <deprecated since="2015-08" replaced_by="MAV_CMD_SET_MESSAGE_INTERVAL "/>
       <description>Request a data stream.</description>
@@ -5863,7 +5868,8 @@
       <field type="uint16_t" name="chan17_raw" units="us" invalid="0">RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
       <field type="uint16_t" name="chan18_raw" units="us" invalid="0">RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field. A value of UINT16_MAX-1 means to release this channel back to the RC radio.</field>
     </message>
-    <message id="73" name="MISSION_ITEM_INT">
+    <!-- MISSION_ITEM_INT消息已挪到px4_custom.xml中 -->
+    <!-- <message id="73" name="MISSION_ITEM_INT">
       <description>Message encoding a mission item. This message is emitted to announce
                 the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). NaN or INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current latitude, yaw rather than a specific value). See also https://mavlink.io/en/services/mission.html.</description>
       <field type="uint8_t" name="target_system">System ID</field>
@@ -5882,7 +5888,7 @@
       <field type="float" name="z">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame.</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
-    </message>
+    </message> -->
     <!-- VFR_HUD 已在 px4_custom.xml 中重新定义 -->
     <!--
     <message id="74" name="VFR_HUD">
@@ -7014,14 +7020,15 @@
       <field type="char[10]" name="name" instance="true">Name of the debug variable</field>
       <field type="int32_t" name="value">Signed integer value</field>
     </message>
-    <message id="253" name="STATUSTEXT">
+    <!-- STATUSTEXT消息已挪到px4_custom.xml中 -->
+    <!-- <message id="253" name="STATUSTEXT">
       <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
       <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
       <field type="char[50]" name="text">Status text message, without null termination character</field>
       <extensions/>
       <field type="uint16_t" name="id">Unique (opaque) identifier for this statustext message.  May be used to reassemble a logical long-statustext message from a sequence of chunks.  A value of zero indicates this is the only chunk in the sequence and the message can be emitted immediately.</field>
       <field type="uint8_t" name="chunk_seq">This chunk's sequence number; indexing is from zero.  Any null character in the text field is taken to mean this was the last chunk.</field>
-    </message>
+    </message> -->
     <message id="254" name="DEBUG">
       <description>Send a debug value. The index is used to discriminate between values. These values show up in the plot of QGroundControl as DEBUG N.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
@@ -7154,7 +7161,8 @@
       <extensions/>
       <field type="float" name="yaw_absolute" units="deg" invalid="NaN">Yaw in absolute frame relative to Earth's North, north is 0 (set to NaN for invalid).</field>
     </message>
-    <message id="266" name="LOGGING_DATA">
+    <!-- LOGGING_DATA消息已挪到px4_custom.xml中 -->
+    <!-- <message id="266" name="LOGGING_DATA">
       <description>A message containing logged data (see also MAV_CMD_LOGGING_START)</description>
       <field type="uint8_t" name="target_system">system ID of the target</field>
       <field type="uint8_t" name="target_component">component ID of the target</field>
@@ -7162,7 +7170,7 @@
       <field type="uint8_t" name="length" units="bytes">data length</field>
       <field type="uint8_t" name="first_message_offset" units="bytes" invalid="UINT8_MAX">offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to UINT8_MAX if no start exists).</field>
       <field type="uint8_t[249]" name="data">logged data</field>
-    </message>
+    </message> -->
     <message id="267" name="LOGGING_DATA_ACKED">
       <description>A message containing logged data which requires a LOGGING_ACK to be sent back</description>
       <field type="uint8_t" name="target_system">system ID of the target</field>
@@ -8088,11 +8096,12 @@
       <field type="uint8_t[225]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
     <!-- The message ids 12916 - 12917 are reserved for OpenDroneID. -->
-    <message id="12918" name="OPEN_DRONE_ID_ARM_STATUS">
+    <!-- OPEN_DRONE_ID_ARM_STATUS消息已挪到px4_custom.xml中 -->
+    <!-- <message id="12918" name="OPEN_DRONE_ID_ARM_STATUS">
       <description>Transmitter (remote ID system) is enabled and ready to start sending location and other required information. This is streamed by transmitter. A flight controller uses it as a condition to arm.</description>
       <field type="uint8_t" name="status" enum="MAV_ODID_ARM_STATUS">Status level indicating if arming is allowed.</field>
       <field type="char[50]" name="error">Text error message, should be empty if status is good to arm. Fill with nulls in unused portion.</field>
-    </message>
+    </message> -->
     <message id="12919" name="OPEN_DRONE_ID_SYSTEM_UPDATE">
       <description>Update the data in the OPEN_DRONE_ID_SYSTEM message with new location information. This can be sent to update the location information for the operator when no other information in the SYSTEM message has changed. This message allows for efficient operation on radio links which have limited uplink bandwidth while meeting requirements for update frequency of the operator location.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>

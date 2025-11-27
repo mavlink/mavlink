@@ -144,6 +144,129 @@
       <field type="uint8_t" name="charge_state" enum="MAV_BATTERY_CHARGE_STATE">State for extent of discharge, provided by autopilot for warning or external reactions</field>
     </message>
 
+    <message id="22" name="PARAM_VALUE">
+      <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Onboard parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+      <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
+      <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
+    </message>
+
+    <!-- 在原始 MISSION_COUNT 消息中删除opaque_id字段 -->
+    <message id="44" name="MISSION_COUNT">
+      <description>This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of waypoints.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="count">Number of mission items in the sequence</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+      <!-- <field type="uint32_t" name="opaque_id" invalid="0">Id of current on-vehicle mission, fence, or rally point plan (on download from vehicle).
+        This field is used when downloading a plan from a vehicle to a GCS.
+        0 on upload to the vehicle from GCS.
+        0 if plan ids are not supported.
+        The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.
+        The ids are recalculated by the vehicle when any part of the on-vehicle plan changes (when a new plan is uploaded, the vehicle returns the new id to the GCS in MISSION_ACK).
+      </field> -->
+    </message>
+
+    <!-- 在原始 MISSION_ACK 消息中删除opaque_id字段 -->
+    <message id="47" name="MISSION_ACK">
+      <description>Acknowledgment message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="type" enum="MAV_MISSION_RESULT">Mission result.</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+      <!-- <field type="uint32_t" name="opaque_id" invalid="0">Id of new on-vehicle mission, fence, or rally point plan (on upload to vehicle).
+        The id is calculated and returned by a vehicle when a new plan is uploaded by a GCS.
+        The only requirement on the id is that it must change when there is any change to the on-vehicle plan type (there is no requirement that the id be globally unique).
+        0 on download from the vehicle to the GCS (on download the ID is set in MISSION_COUNT).
+        0 if plan ids are not supported.
+        The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.
+      </field> -->
+    </message>
+
+    <message id="51" name="MISSION_REQUEST_INT">
+      <description>Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM_INT message. https://mavlink.io/en/services/mission.html</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="seq">Sequence</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+    </message>
+
+    <message id="65" name="RC_CHANNELS">
+      <description>The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.  A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="chancount">Total number of RC channels being received. This can be larger than 18, indicating that more channels are available but not given in this message. This value should be 0 when no RC channels are available.</field>
+      <field type="uint16_t" name="chan1_raw" units="us" invalid="UINT16_MAX">RC channel 1 value.</field>
+      <field type="uint16_t" name="chan2_raw" units="us" invalid="UINT16_MAX">RC channel 2 value.</field>
+      <field type="uint16_t" name="chan3_raw" units="us" invalid="UINT16_MAX">RC channel 3 value.</field>
+      <field type="uint16_t" name="chan4_raw" units="us" invalid="UINT16_MAX">RC channel 4 value.</field>
+      <field type="uint16_t" name="chan5_raw" units="us" invalid="UINT16_MAX">RC channel 5 value.</field>
+      <field type="uint16_t" name="chan6_raw" units="us" invalid="UINT16_MAX">RC channel 6 value.</field>
+      <field type="uint16_t" name="chan7_raw" units="us" invalid="UINT16_MAX">RC channel 7 value.</field>
+      <field type="uint16_t" name="chan8_raw" units="us" invalid="UINT16_MAX">RC channel 8 value.</field>
+      <field type="uint16_t" name="chan9_raw" units="us" invalid="UINT16_MAX">RC channel 9 value.</field>
+      <field type="uint16_t" name="chan10_raw" units="us" invalid="UINT16_MAX">RC channel 10 value.</field>
+      <field type="uint16_t" name="chan11_raw" units="us" invalid="UINT16_MAX">RC channel 11 value.</field>
+      <field type="uint16_t" name="chan12_raw" units="us" invalid="UINT16_MAX">RC channel 12 value.</field>
+      <field type="uint16_t" name="chan13_raw" units="us" invalid="UINT16_MAX">RC channel 13 value.</field>
+      <field type="uint16_t" name="chan14_raw" units="us" invalid="UINT16_MAX">RC channel 14 value.</field>
+      <field type="uint16_t" name="chan15_raw" units="us" invalid="UINT16_MAX">RC channel 15 value.</field>
+      <field type="uint16_t" name="chan16_raw" units="us" invalid="UINT16_MAX">RC channel 16 value.</field>
+      <field type="uint16_t" name="chan17_raw" units="us" invalid="UINT16_MAX">RC channel 17 value.</field>
+      <field type="uint16_t" name="chan18_raw" units="us" invalid="UINT16_MAX">RC channel 18 value.</field>
+      <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+    </message>
+
+    <message id="73" name="MISSION_ITEM_INT">
+      <description>Message encoding a mission item. This message is emitted to announce
+                the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). NaN or INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current latitude, yaw rather than a specific value). See also https://mavlink.io/en/services/mission.html.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="seq">Waypoint ID (sequence number). Starts at zero. Increases monotonically for each waypoint, no gaps in the sequence (0,1,2,3,4).</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint.</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint.</field>
+      <field type="uint8_t" name="current">false:0, true:1</field>
+      <field type="uint8_t" name="autocontinue">Autocontinue to next waypoint. 0: false, 1: true. Set false to pause mission after the item completes.</field>
+      <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
+      <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
+      <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
+      <field type="float" name="param4">PARAM4, see MAV_CMD enum</field>
+      <field type="int32_t" name="x">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
+      <field type="int32_t" name="y">PARAM6 / y position: local: x position in meters * 1e4, global: longitude in degrees *10^7</field>
+      <field type="float" name="z">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame.</field>
+      <extensions/>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
+    </message>
+
+    <message id="253" name="STATUSTEXT">
+      <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
+      <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
+      <field type="char[50]" name="text">Status text message, without null termination character</field>
+      <extensions/>
+      <field type="uint16_t" name="id">Unique (opaque) identifier for this statustext message.  May be used to reassemble a logical long-statustext message from a sequence of chunks.  A value of zero indicates this is the only chunk in the sequence and the message can be emitted immediately.</field>
+      <field type="uint8_t" name="chunk_seq">This chunk's sequence number; indexing is from zero.  Any null character in the text field is taken to mean this was the last chunk.</field>
+    </message>
+
+    <message id="266" name="LOGGING_DATA">
+      <description>A message containing logged data (see also MAV_CMD_LOGGING_START)</description>
+      <field type="uint8_t" name="target_system">system ID of the target</field>
+      <field type="uint8_t" name="target_component">component ID of the target</field>
+      <field type="uint16_t" name="sequence">sequence number (can wrap)</field>
+      <field type="uint8_t" name="length" units="bytes">data length</field>
+      <field type="uint8_t" name="first_message_offset" units="bytes" invalid="UINT8_MAX">offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to UINT8_MAX if no start exists).</field>
+      <field type="uint8_t[249]" name="data">logged data</field>
+    </message>
+
+    <message id="12918" name="OPEN_DRONE_ID_ARM_STATUS">
+      <description>Transmitter (remote ID system) is enabled and ready to start sending location and other required information. This is streamed by transmitter. A flight controller uses it as a condition to arm.</description>
+      <field type="uint8_t" name="status" enum="MAV_ODID_ARM_STATUS">Status level indicating if arming is allowed.</field>
+      <field type="char[50]" name="error">Text error message, should be empty if status is good to arm. Fill with nulls in unused portion.</field>
+    </message>
+
   </messages>
 </mavlink>
 
