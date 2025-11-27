@@ -131,6 +131,19 @@
       <field type="float[4]" name="repr_offset_q" invalid="[0]">Rotation offset quaternion for user display (w, x, y, z order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if not supported)</field>
     </message>
 
+    <!-- 重新定义 BATTERY_STATUS 消息,简化为 6 字段版本 -->
+    <message id="147" name="BATTERY_STATUS">
+      <description>Simplified battery information for PX4. Contains only essential battery status fields.</description>
+
+      <!-- 基础字段 -->
+      <field type="uint8_t" name="id" instance="true">Battery ID</field>
+      <field type="uint16_t[10]" name="voltages" units="mV" invalid="[UINT16_MAX]">Battery voltage of cells 1 to 10 (see voltages_ext for cells 11-14). Cells in this field above the valid cell count for this battery should have the UINT16_MAX value. If individual cell voltages are unknown or not measured for this battery, then the overall battery voltage should be filled in cell 0, with all others set to UINT16_MAX. If the voltage of the battery is greater than (UINT16_MAX - 1), then cell 0 should be set to (UINT16_MAX - 1), and cell 1 to the remaining voltage. This can be extended to multiple cells if the total voltage is greater than 2 * (UINT16_MAX - 1).</field>
+      <field type="int16_t" name="current_battery" units="cA" invalid="-1">Battery current, -1: autopilot does not measure the current</field>
+      <field type="int8_t" name="battery_remaining" units="%" invalid="-1">Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery.</field>
+      <field type="int32_t" name="time_remaining" units="s" invalid="0">Remaining battery time, 0: autopilot does not provide remaining battery time estimate</field>
+      <field type="uint8_t" name="charge_state" enum="MAV_BATTERY_CHARGE_STATE">State for extent of discharge, provided by autopilot for warning or external reactions</field>
+    </message>
+
   </messages>
 </mavlink>
 
