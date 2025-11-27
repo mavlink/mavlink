@@ -453,6 +453,21 @@
         <description>True if the data originates from or is consumed by the primary estimator.</description>
       </entry>
     </enum>
+    <enum name="ESC_FIRMWARE">
+      <description>ESC firmware type identifier.</description>
+      <entry value="0" name="ESC_FIRMWARE_UNKNOWN">
+        <description>Unknown firmware.</description>
+      </entry>
+      <entry value="1" name="ESC_FIRMWARE_AM32">
+        <description>AM32 open source ESC firmware.</description>
+      </entry>
+      <entry value="2" name="ESC_FIRMWARE_BLUEJAY">
+        <description>Bluejay open source ESC firmware.</description>
+      </entry>
+      <entry value="3" name="ESC_FIRMWARE_BLHELI32">
+        <description>BLHeli32 ESC firmware.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="296" name="GLOBAL_POSITION">
@@ -594,6 +609,28 @@
       <description>Information about GCS in control of this MAV. This should be broadcast at low rate (nominally 1 Hz) and emitted when ownership or takeover status change. Control over MAV is requested using MAV_CMD_REQUEST_OPERATOR_CONTROL.</description>
       <field type="uint8_t" name="sysid_in_control">System ID of GCS MAVLink component in control (0: no GCS in control).</field>
       <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS">Control status. For example, whether takeover is allowed, and whether this message instance defines the default controlling GCS for the whole system.</field>
+    </message>
+    <message id="292" name="ESC_EEPROM">
+      <description>ESC EEPROM data message for reading and writing ESC configuration.
+        Supports multiple ESC firmware types including AM32, Bluejay, and BLHeli32.
+        ESC data is read by sending the MAV_CMD_REQUEST_MESSAGE with `param1=292` and `param2=esc_index`, where esc_index is the zero-indexed ESC number for the corresponding motor, and 255 is used to request data for all ESC.
+        The message can be sent to set the ESC value.
+        For write requests, a bitmask allows selective writing of specific bytes to avoid corrupting unchanged values.
+
+        The data format is opaque to the autopilot.
+        A GCS is required to understand the format in order to create an appropriate UI for display and setting configuration values, and to inform users when the ESC uses an unsupported data format.
+        Note that for AM32 EEPROMs the data layout is defined in: https://github.com/am32-firmware/AM32/blob/main/Inc/eeprom.h (the second byte in the structure is the eeprom_version).
+        The firmware field indicates which ESC firmware is in use, allowing the GCS to interpret the data correctly.
+      </description>
+      <field type="uint8_t" name="target_system">System ID (ID of target system, normally flight controller).</field>
+      <field type="uint8_t" name="target_component">Component ID (normally 0 for broadcast).</field>
+      <field type="uint8_t" name="firmware" enum="ESC_FIRMWARE">ESC firmware type.</field>
+      <field type="uint8_t" name="msg_index">Zero-indexed sequence number of this message when multiple messages are required to transfer the complete EEPROM data. The first message has index 0. For single-message transfers, set to 0.</field>
+      <field type="uint8_t" name="msg_count">Total number of messages required to transfer the complete EEPROM data. For single-message transfers, set to 1. Receivers should collect all messages from index 0 to msg_count-1 before reconstructing the complete data.</field>
+      <field type="uint8_t" name="esc_index" maxValue="254">Index of the ESC (0 = ESC1, 1 = ESC2, etc.).</field>
+      <field type="uint32_t[6]" name="write_mask">Bitmask indicating which bytes in the data array should be written. Each bit corresponds to a byte index in the data array (bit 0 of write_mask[0] = data[0], bit 31 of write_mask[0] = data[31], bit 0 of write_mask[1] = data[32], etc.). Set bits indicate bytes to write, cleared bits indicate bytes to skip. This allows precise updates of individual parameters without overwriting the entire EEPROM.</field>
+      <field type="uint8_t" name="length" maxValue="222">Number of valid bytes in data array.</field>
+      <field type="uint8_t[192]" name="data">Raw ESC EEPROM data. Unused bytes should be set to zero.</field>
     </message>
   </messages>
 </mavlink>
