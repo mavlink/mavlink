@@ -118,6 +118,18 @@
         <description>Reserved (not used). If set, this will indicate that an additional status field exists for higher status values.</description>
       </entry>
     </enum>
+    <enum name="MAV_GNSS_DATUM">
+      <description>Possible datums location is specified in GNSS message.
+      </description>
+      <entry value="0" name="MAV_GNSS_DATUM_INVALID">
+        <description>Invalid datum; position not valid.
+        </description>
+      </entry>
+      <entry value="1" name="MAV_GNSS_DATUM_WGS84">
+        <description>WGS84 dataum.
+        </description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -572,6 +584,26 @@
       <field type="uint8_t" name="system_status_summary" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the overall status of the receiver, or 255 if not available.</field>
       <field type="uint8_t" name="gnss_signal_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the quality of incoming GNSS signals, or 255 if not available.</field>
       <field type="uint8_t" name="post_processing_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the estimated PPK quality, or 255 if not available.</field>
+    </message>
+    <message id="442" name="GNSS">
+      <!-- a replacement for GPS_RAW_INT and GPS2_RAW which includes an instance number -->
+      <description>GNSS data.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="id" instance="true">GNSS receiver id. Must match instance ids of other messages from same receiver.</field>
+      <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type.</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
+      <field type="float" name="alt" units="m">Altitude (MSL). Positive for up.  Use NaN for a 2D fix.</field>
+      <field type="float" name="alt_above_datum" units="m">Altitude. Positive for up. Use NaN for a 2D fix.</field>
+      <field type="uint8_t" name="datum" enum="MAV_GNSS_DATUM">Datum used for position.</field>
+      <field type="float" name="ground_speed" units="m/s">GPS ground speed. If unknown, set to: NaN</field>
+      <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground (NOT heading, but direction of movement): 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+      <field type="uint8_t" name="satellites_visible">Number of satellites visible. If unknown, set to 255</field>
+      <field type="uint16_t" name="yaw" units="cdeg">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use 65535 if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
+      <field type="float" name="h_acc" units="m">1-Sigma Position accuracy.  Set to NaN if not known.</field>
+      <field type="float" name="v_acc" units="m">1-Sigma Altitude accuracy.  Set to NaN if not known.</field>
+      <field type="float" name="vel_acc" units="m">1-Sigma Speed accuracy.  Set to NaN if not known.</field>
+      <field type="float" name="hdg_acc" units="deg">1-Sigma Heading / track accuracy.  Set to NaN if not known.</field>
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
