@@ -666,7 +666,13 @@
     <message id="292" name="ESC_INFO_V2">
       <wip since="2025122025>Deprecates ESC_INFO</wip>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>ESC information for lower rate streaming. Each message contains information for up to 4 ESC. The message index is incremented to indicate which set of ESCs are described. Recommended streaming rate 1Hz. See ESC_STATUS_V2 for higher-rate ESC data.</description>
+      <description>ESC information for up to 4 ESC (low streaming rate, nominally 1 Hz).
+
+        The message `index` field is incremented to indicate which set of ESCs are described.
+        The data for each ESC is in the same index for each of the array fields.
+        The ESC number `(message index * 4) + array index` is mapped to the a particular motor using an autopilot specific mechanism.
+
+        ESC_STATUS_V2 with the same message index contains contains corresponding higher-rate ESC data.</description>
       <field type="uint8_t" name="index" instance="true" minValue="0" increment="1" maxValue="25">Message index. ESC data corresponds to ESC_STATUS_V2 message with same index.</field>
       <field type="uint8_t" name="count">Total number of ESCs in all messages of this type. Message fields with an index higher than this should be ignored because they contain invalid data.</field>
       <field type="uint8_t[4]" name="error_percent" invalid="[INT8_MAX]>Percentage of errors vs valid data of each ESC since boot.</field>
@@ -677,7 +683,11 @@
     <message id="293" name="ESC_STATUS_V2">
       <wip since="2025122025>Deprecates ESC_STATUS</wip>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>ESC information for higher rate streaming. Recommended streaming rate is ~10 Hz. Information that changes more slowly is sent in ESC_INFO_V2. It should typically only be streamed on high-bandwidth links (i.e. to a companion computer).</description>
+      <description>ESC information for up to 4 ESC (higher streaming rate, nominally 10 Hz).
+          This should typically only be streamed on high-bandwidth links (i.e. to a companion computer).
+
+          ESC_INFO_V2 with the same message index contains contains corresponding lower-rate ESC data.
+      </description>
       <field type="uint8_t" name="index" instance="true" minValue="0" increment="1" maxValue="25">Message index. ESC data corresponds to ESC_INFO_V2 message with same index.</field>
       <field type="float[4]" name="rpm" units="rpm" invalid="[NaN]">Reported motor RPM from each ESC (negative for reverse rotation).</field>
       <field type="float[4]" name="voltage" units="V" invalid="[NaN]">Voltage measured from each ESC.</field>
