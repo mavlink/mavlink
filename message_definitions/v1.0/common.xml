@@ -695,32 +695,35 @@
         <description>DShot ESC.</description>
       </entry>
     </enum>
-    <enum name="ESC_FAILURE_FLAGS" bitmask="true">
+    <enum name="ESC_FLAGS" bitmask="true">
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Flags to report ESC failures.</description>
-      <entry value="1" name="ESC_FAILURE_OVER_CURRENT">
+      <entry value="1" name="ESC_FLAGS_OVER_CURRENT">
         <description>Over current failure.</description>
       </entry>
-      <entry value="2" name="ESC_FAILURE_OVER_VOLTAGE">
+      <entry value="2" name="ESC_FLAGS_OVER_VOLTAGE">
         <description>Over voltage failure.</description>
       </entry>
-      <entry value="4" name="ESC_FAILURE_OVER_TEMPERATURE">
+      <entry value="4" name="ESC_FLAGS_OVER_TEMPERATURE">
         <description>Over temperature failure.</description>
       </entry>
-      <entry value="8" name="ESC_FAILURE_OVER_RPM">
+      <entry value="8" name="ESC_FLAGS_OVER_RPM">
         <description>Over RPM failure.</description>
       </entry>
-      <entry value="16" name="ESC_FAILURE_INCONSISTENT_CMD">
+      <entry value="16" name="ESC_FLAGS_FAILURE_INCONSISTENT_CMD">
         <description>Inconsistent command failure i.e. out of bounds.</description>
       </entry>
-      <entry value="32" name="ESC_FAILURE_MOTOR_STUCK">
+      <entry value="32" name="ESC_FLAGS_MOTOR_STUCK">
         <description>Motor stuck failure.</description>
       </entry>
-      <entry value="64" name="ESC_FAILURE_GENERIC">
+      <entry value="64" name="ESC_FLAGS_TIMEOUT">
+        <description>ESC timeout failure (data not received when expected; published data is stale).</description>
+      </entry>
+      <entry value="128" name="ESC_FLAGS_FAILURE_GENERIC">
         <description>Generic ESC failure.</description>
       </entry>
-      <entry value="64" name="ESC_FAILURE_TIMEOUT">
-        <description>ESC timeout failure (data not received when expected; published data is stale).</description>
+      <entry value="256" name="ESC_FLAGS_OFFLINE">
+        <description>ESC is offline.</description>
       </entry>
     </enum>
     <enum name="STORAGE_STATUS">
@@ -7424,9 +7427,8 @@
       <description>ESC information for lower rate streaming. Each message contains information for up to 4 ESC. The message index is incremented to indicate which set of ESCs are described. Recommended streaming rate 1Hz. See ESC_STATUS for higher-rate ESC data.</description>
       <field type="uint8_t" name="index" instance="true" minValue="0" increment="1" maxValue="60">Message index. ESC data corresponds to ESC_STATUS message with same index.</field>
       <field type="uint8_t" name="count">Total number of ESCs in all messages of this type. Message fields with an index higher than this should be ignored because they contain invalid data.</field>
-      <field type="uint8_t" name="info">Information regarding online/offline status of each ESC.</field>
       <field type="uint8_t[4]" name="error_percent">Percentage of errors vs valid data of each ESC since boot.</field>
-      <field type="uint16_t[4]" name="failure_flags" enum="ESC_FAILURE_FLAGS">Bitmap of ESC failure flags.</field>
+      <field type="uint16_t[4]" name="failure_flags" enum="ESC_FLAGS">Bitmap of ESC status flags.</field>
       <field type="int16_t[4]" name="temperature" units="cdegC" invalid="[INT16_MAX]">Temperature of each ESC. INT16_MAX: if data not supplied by ESC.</field>
     </message>
     <message id="291" name="ESC_STATUS">
