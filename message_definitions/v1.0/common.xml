@@ -7421,8 +7421,8 @@
     <message id="290" name="ESC_INFO">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>ESC information for lower rate streaming. Recommended streaming rate 1Hz. See ESC_STATUS for higher-rate ESC data.</description>
-      <field type="uint8_t" name="index" instance="true">Index of the first ESC in this message (ESC are indexed in motor order). minValue = 0, maxValue = 60, increment = 4.</field>
+      <description>ESC information for lower rate streaming. Each message contains information for up to 4 ESC. The message index is incremented to indicate which set of ESCs are described. Recommended streaming rate 1Hz. See ESC_STATUS for higher-rate ESC data.</description>
+      <field type="uint8_t" name="index" instance="true" minValue="0" increment="1" maxValue="60">Message index. ESC data corresponds to ESC_STATUS message with same index.</field>
       <field type="uint8_t" name="count">Total number of ESCs in all messages of this type. Message fields with an index higher than this should be ignored because they contain invalid data.</field>
       <field type="uint8_t" name="info">Information regarding online/offline status of each ESC.</field>
       <field type="uint8_t[4]" name="error_percent">Percentage of errors vs valid data of each ESC since boot.</field>
@@ -7433,7 +7433,7 @@
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>ESC information for higher rate streaming. Recommended streaming rate is ~10 Hz. Information that changes more slowly is sent in ESC_INFO. It should typically only be streamed on high-bandwidth links (i.e. to a companion computer).</description>
-      <field type="uint8_t" name="index" instance="true">Index of the first ESC in this message (ESC are indexed in motor order). minValue = 0, maxValue = 60, increment = 4.</field>
+      <field type="uint8_t" name="index" instance="true" minValue="0" increment="1" maxValue="60">Message index. ESC data corresponds to ESC_INFO message with same index.</field>
       <field type="int32_t[4]" name="rpm" units="rpm" invalid="[INT32_MAX]">Reported motor RPM from each ESC (negative for reverse rotation).</field>
       <field type="float[4]" name="voltage" units="V" invalid="[NaN]">Voltage measured from each ESC.</field>
       <field type="float[4]" name="current" units="A" invalid="[NaN]">Current measured from each ESC.</field>
