@@ -7809,6 +7809,15 @@
       <field type="uint32_t" name="active">Active outputs</field>
       <field type="float[32]" name="actuator">Servo / motor output array values. Zero values indicate unused channels.</field>
     </message>
+    <message id="376" name="RELAY_STATUS">
+      <description>Reports the on/off state of relays, as controlled by MAV_CMD_DO_SET_RELAY.
+        Message streaming should be requested using MAV_CMD_SET_MESSAGE_INTERVAL.
+        Note that it should not be sent on every relay state change to avoid flooding the link.
+      </description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint16_t" name="on">Relay states. Relay instance numbers are represented as individual bits in this mask by offset.</field>
+      <field type="uint16_t" name="present">Relay present. Relay instance numbers are represented as individual bits in this mask by offset.  Bits will be true if a relay instance is configured.</field>
+    </message>
     <message id="380" name="TIME_ESTIMATE_TO_TARGET">
       <wip/>
       <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
