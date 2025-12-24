@@ -1853,7 +1853,7 @@
         <param index="1" label="Start Engine" enum="MAV_BOOL">Start engine (MAV_BOOL_False: Stop engine). Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Cold Start" enum="MAV_BOOL">Cold start engine (MAV_BOOL_FALSE: Warm start). Values not equal to 0 or 1 are invalid. Controls use of choke where applicable</param>
         <param index="3" label="Height Delay" units="m" minValue="0">Height delay. This is for commanding engine start only after the vehicle has gained the specified height. Used in VTOL vehicles during takeoff to start engine after the aircraft is off the ground. Zero for no delay.</param>
-        <param index="4">Empty</param>
+        <param index="4" label="Options" enum="ENGINE_CONTROL_OPTIONS">A bitmask of options for engine control</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
@@ -4031,6 +4031,12 @@
       </entry>
       <entry value="2" name="RC_SUB_TYPE_SPEKTRUM_DSMX8">
         <description>Spektrum DSMX8</description>
+      </entry>
+    </enum>
+    <enum name="ENGINE_CONTROL_OPTIONS" bitmask="true">
+      <description>Engine control options</description>
+      <entry value="1" name="ENGINE_CONTROL_OPTIONS_ALLOW_START_WHILE_DISARMED">
+        <description>Allow starting the engine while disarmed (without changing the vehicle's armed state). This effectively arms just the ICE, without arming the vehicle to start other motors or propellers.</description>
       </entry>
     </enum>
     <enum name="POSITION_TARGET_TYPEMASK" bitmask="true">
