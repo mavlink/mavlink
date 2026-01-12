@@ -558,6 +558,24 @@
         Channel values are in centered 13 bit format. Range is -4096 to 4096, center is 0. Conversion to PWM is x * 5/32 + 1500.
         Channels with indexes equal or above count should be set to 0, to benefit from MAVLink's trailing-zero trimming.</field>
     </message>
+    <message id="421" name="RADIO_RC_CHANNELS_MASKED">
+      <description>
+        Bandwidth-efficient variant of RADIO_RC_CHANNELS for transmitting RC channel outputs from a MAVLink RC receiver to a flight controller or other components.
+        This message retains the same channel semantics, scaling, timing, and status flags (including OUTDATED and FAILSAFE) as RADIO_RC_CHANNELS, but uses an active_mask and packed int16_t channel offsets (centered at 0) to reduce bandwidth usage.
+        The message is not intended as an over-the-air RC format and does not replace RC_CHANNELS or similar messages reported by the flight controller.
+      </description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint32_t" name="time_last_update_ms" units="ms">Time when the data in the channels field were last updated (time since boot in the receiver's time domain).</field>
+      <field type="uint16_t" name="flags" enum="RADIO_RC_CHANNELS_FLAGS">Radio RC channels status flags.</field>
+      <field type="uint8_t" name="count">Total number of RC channels being received. This can be larger than 32, indicating that more channels are available but not given in this message.</field>
+      <field type="uint8_t" name="rssi">Receive signal strength indicator (0-255). 255 for unknown.</field>
+      <field type="uint32_t" name="active_mask">Bitmap of included channels (bit 0 = CH1). 1: Valid, 0: Invalid/Unused.</field>
+      <extensions/>
+      <field type="int16_t[32]" name="channels" minValue="-4096" maxValue="4096">RC channels.
+        Channel values are in centered 13 bit format. Range is -4096 to 4096, center is 0. Conversion to PWM is x * 5/32 + 1500.
+        The first count elements contain the values for the channels specified in active_mask. Elements beyond count must be set to 0, to benefit from MAVLink's trailing-zero trimming.</field>
+    </message>
     <message id="441" name="GNSS_INTEGRITY">
       <description>Information about key components of GNSS receivers, like signal authentication, interference and system errors.</description>
       <field type="uint8_t" name="id" instance="true">GNSS receiver id. Must match instance ids of other messages from same receiver.</field>
