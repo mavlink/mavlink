@@ -274,6 +274,26 @@
         <param index="6" reserved="true" default="NaN"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
+      <entry value="40027" name="MAV_CMD_SELF_DRIVING" hasLocation="false" isDestination="false">
+        <description>To enable or disable self-driving mode</description>
+        <param index="1" label="SELF_DRIVING_TYPE" enum="SELF_DRIVING_MODE">Self Driving Mode Selection</param>
+        <param index="2" reserved="true" default="NaN"/>
+        <param index="3" reserved="true" default="NaN"/>
+        <param index="4" reserved="true" default="NaN"/>
+        <param index="5" reserved="true" default="NaN"/>
+        <param index="6" reserved="true" default="NaN"/>
+        <param index="7" reserved="true" default="NaN"/>
+      </entry>
+      <entry value="40028" name="MAV_CMD_PROGRAM_ACTIVATE" hasLocation="false" isDestination="false">
+        <description>To Start/ Stop a program</description>
+        <param index="1" label="PROGRAM" enum="SELF_DRIVING_MODE">Program Selection</param>
+        <param index="2" label="ACTION" enum="ACTION">Program Action</param>
+        <param index="3" reserved="true" default="NaN"/>
+        <param index="4" reserved="true" default="NaN"/>
+        <param index="5" reserved="true" default="NaN"/>
+        <param index="6" reserved="true" default="NaN"/>
+        <param index="7" reserved="true" default="NaN"/>
+      </entry>
     </enum>
     <enum name="PROGRAM_STATE">
       <description>States of the state machine.</description>
@@ -288,6 +308,12 @@
       <description> enable/disable action.</description>
       <entry value="0" name="ACTION_DISABLE"/>
       <entry value="1" name="ACTION_ENABLE"/>
+    </enum>
+    <enum name="SELF_DRIVING_MODE">
+      <description> Difference self-driving options.</description>
+      <entry value="0" name="AUTO_RETRIEVAL"/>
+      <entry value="1" name="WELD_FOLLOW"/>
+      <entry value="2" name="MANUAL"/>
     </enum>
     <enum name="CRITICALITY">
       <description> enable/disable action.</description>
@@ -542,10 +568,6 @@
       <description>line detection offset from center on the bottom</description>
       <field type="float" name="CRAWLER_HEADING">positive on the right</field>
     </message>
-    <message id="3363" name="CRAWLER_INFO">
-      <description>line detection offset from center on the bottom</description>
-      <field type="char[50]" name="CRAWLER_INFO">general purpose buffer</field>
-    </message>
     <message id="3364" name="ONBOARD_COMPUTER_VERSION">
       <description>Version and capability of onboard computer software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint32_t" name="board_version">Hardware board version/revision</field>
@@ -569,6 +591,11 @@
     <message id="3365" name="BRUSH_SPEED">
       <description>Surface prep brush speed</description>
       <field type="int32_t" name="TPS">Surface prep brush speed in turns per second.</field>
+    </message>
+    <message id="3366" name="SELF_DRIVING_STATUS">
+      <description>Message to indicate if self-driving feature is ready</description>
+      <field type="uint8_t" name="RETRIEVAL" enum="ACTION">uint8_t</field>
+      <field type="uint8_t" name="WELD_FOLLOW" enum="ACTION">uint8_t</field>
     </message>
   </messages>
 </mavlink>
