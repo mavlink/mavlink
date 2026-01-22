@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!--
+Contact:
+  - github user name: @danieladelodun
+  - email: daniel_adelodun@hotmail.co.uk
+Range of IDs:
+  messages: 52600 - 52609
+  commands: 52600 - 52609
+Documentation:
+  WIP messages for controlling LED strips attached to MAVLink enabled vehicles.
+-->
+<mavlink>
+  <include>common.xml</include>
+  <enums>
+    <enum name="LED_CONFIG_MODE">
+      <description>
+        How to configure LEDs. We can:
+        - Set all LEDs to the first color in our colors array.
+        - Set up to 8 consecutive LEDs, starting from a given index, to colors provided in an array.
+        - Set the LED colors to change according to the flight mode.
+        - Turn all LEDs off (clear).
+      </description>
+      <entry value="0" name="LED_CONFIG_MODE_ALL">
+        <description>Set all LEDs in the target strip to the first color in our colors array.</description>
+      </entry>
+      <entry value="1" name="LED_CONFIG_MODE_INDEX">
+        <description>Set up to 8 consecutive LEDs, starting from the given index, to the colors provided in the colors array.</description>
+      </entry>
+      <entry value="2" name="LED_CONFIG_MODE_FOLLOW_FLIGHT_MODE">
+        <description>Set all LEDs in target strip to change color according to the flight mode.</description>
+      </entry>
+      <entry value="3" name="LED_CONFIG_MODE_CLEAR">
+        <description>Set all LEDs in the target strip to black (turn off).</description>
+      </entry>
+    </enum>
+  </enums>
+  <messages>
+    <message id="52600" name="LED_STRIP_CONFIG">
+      <description>
+        Set the colors on an LED strip. The mode field determines how the colors are set. We can:
+        - Set all LEDs to the first color in our colors array.
+        - Set up to 8 consecutive LEDs, starting from a given index, to colors provided in an array.
+        - Set the LED colors to change according to the flight mode.
+        - Turn all LEDs off (clear).
+        Which LED strip to configure is specified by the id field.
+        The colors field is an array of up to 8 colors, each represented as a 32-bit integer in the format 0xWWRRGGBB 
+        where WW is white, RR is the intensity of the red color channel, GG is green, and BB is blue.
+      </description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID (Normally 134 for an LED Strip Controller).</field>
+      <field type="uint8_t" name="mode" enum="LED_CONFIG_MODE">How to configure LEDs.</field>
+      <field type="uint8_t" name="index">Set LEDs starting from this index.</field>
+      <field type="uint8_t" name="length">The number of LEDs to set (up to 8).</field>
+      <field type="uint8_t" name="id">Which strip to configure. UINT8_MAX for all strips.</field>
+      <field type="uint32_t[8]" name="colors">Array of 32-bit color values (0xWWRRGGBB).</field>
+    </message>
+    <message id="52601" name="LED_STRIP_STATE">
+      <description>Current LED State. Can be emitted by LED Strip Controller.</description>
+      <field type="uint8_t" name="length">How many LEDs are being reported in this message.</field>
+      <field type="uint8_t" name="index">Index of first LED being reported.</field>
+      <field type="uint8_t" name="id">Which strip is being reported.</field>
+      <field type="uint8_t" name="following_flight_mode">Are the LED colors changing according to the flight mode (1) or not (0).</field>
+      <field type="uint32_t[8]" name="colors">Array of 32-bit color values (0xWWRRGGBB).</field>
+    </message>
+  </messages>
+</mavlink>

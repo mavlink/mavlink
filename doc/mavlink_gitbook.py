@@ -12,7 +12,6 @@ The file is run in mavlink/doc/ with no arguments. It writes the files to /messa
 """
 
 import lxml.etree as ET
-import requests
 from bs4 import BeautifulSoup as bs
 import re
 import os # for walk

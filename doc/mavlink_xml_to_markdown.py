@@ -28,8 +28,8 @@ import argparse  # for command line parsing
 MAXIMUM_INCLUDE_FILE_NESTING = 5
 
 
-class MAVXML(object):
-    '''Represents a MAVLink XML file'''
+class MAVXML:
+    """Represents a MAVLink XML file"""
 
     def __init__(self, filename):
         self.filename = filename
@@ -45,28 +45,28 @@ class MAVXML(object):
         self.version = None
 
         # Read the XML file
-        with open(self.filename, 'r') as f:
+        with open(self.filename, "r") as f:
             xml_content = f.read()
         # Initialize BeautifulSoup with the XML content
-        soup = bs(xml_content, 'xml')
+        soup = bs(xml_content, "xml")
 
         # Extract dialect
-        dialect = soup.find('dialect')
+        dialect = soup.find("dialect")
         if dialect:
             self.dialect = dialect.text
 
         # Extract version
-        version = soup.find('version')
+        version = soup.find("version")
         if version:
             self.version = version.text
 
         # Extract includes
-        includes = soup.find_all('include')
+        includes = soup.find_all("include")
         for include in includes:
             self.includes.append(include.text[:-4])
 
         # Extract and reorder messages
-        messages = soup.find_all('message')
+        messages = soup.find_all("message")
         for message in messages:
             item = MAVMessage(message, self.basename)
             self.messages[item.name] = item
@@ -77,10 +77,11 @@ class MAVXML(object):
         self.messages.clear()
         self.messages.update(sorted_items)
 
-        # Extact all ENUM except MAV_CMD
+        # Extract all ENUM except MAV_CMD
         # Define a custom filter function to exclude "MAV_CMD"
         def exclude_mav_cmd(tag):
-            return tag.name == 'enum' and tag.get('name') != 'MAV_CMD'
+            return tag.name == "enum" and tag.get("name") != "MAV_CMD"
+
         filtered_enums = soup.find_all(exclude_mav_cmd)
         for enum in filtered_enums:
             # print(f"debug: enumTestDalect: {self.basename}")
@@ -88,26 +89,25 @@ class MAVXML(object):
             self.enums[item.name] = item
         # reorder the enum values
         for enumName in self.enums.keys():
-            # reorder the enum values - sort the entries based on the 'value' property
+            # Sort the entries based on the 'value' property
             mav_enum_entries = self.enums[enumName].entries.values()
             sorted_entries = sorted(
                 mav_enum_entries, key=lambda entry: entry.value)
             # Create a new dictionary with the sorted entries
             sorted_enum_entries = {
                 entry.name: entry for entry in sorted_entries}
-            # Clear the original dictionary and rebuild it with the sorted items
+            # Rebuild enums dictionary with the sorted items
             self.enums[enumName].entries.clear()
             self.enums[enumName].entries.update(sorted_enum_entries)
 
         # Extract Commands (MAV_CMD) and reorder
-        mav_cmd_enum = soup.find('enum', attrs={'name': 'MAV_CMD'})
+        mav_cmd_enum = soup.find("enum", attrs={"name": "MAV_CMD"})
         if mav_cmd_enum:
-            mav_commands = mav_cmd_enum.find_all('entry')
+            mav_commands = mav_cmd_enum.find_all("entry")
             for command in mav_commands:
                 item = MAVCommand(command, self.basename)
                 self.commands[item.name] = item
-        # reorder commands by id
-        # Sort the items of the dictionary based on the id property of the value (second element)
+        # Reorder/sort commands by id (second element)
         sorted_items = sorted(self.commands.items(),
                               key=lambda item: item[1].value)
         # Clear the original dictionary and rebuild it with the sorted items
@@ -126,8 +126,7 @@ class MAVXML(object):
             else:
                 # print(f"debug: mergeIn {messageName} added from {mergeXML.basename}")
                 self.messages[messageName] = mergeXML.messages[messageName]
-        # reorder messages by id
-        # Sort the items of the dictionary based on the id property of the value (second element)
+        # Reorder/sort commands by id (second element)
         sorted_items = sorted(self.messages.items(),
                               key=lambda item: item[1].id)
         # Clear the original dictionary and rebuild it with the sorted items
@@ -153,24 +152,28 @@ class MAVXML(object):
         # merge enums
         for enumName in mergeXML.enums.keys():
             if enumName in self.enums:
-                # print(f"TODO need to merge the values: debug: mergeIn {enumName} already present, skip")
+                # print(
+                #     f"TODO need to merge the values: debug: mergeIn {enumName} "
+                #     "already present, skip"
+                # )
                 for enumValue in mergeXML.enums[enumName].entries.keys():
-
                     if enumValue in self.enums[enumName].entries:
                         # print(f"{enumValue} - skip: already present")
                         pass
                     else:
                         # add value from lower level that hasn't been replaced
-                        self.enums[enumName].entries[enumValue] = mergeXML.enums[enumName].entries[enumValue]
+                        self.enums[enumName].entries[enumValue] = mergeXML.enums[
+                            enumName
+                        ].entries[enumValue]
 
-                # reorder the enum values now imported - sort the entries based on the 'value' property
+                # Reorder/sort the enum values using 'value' property
                 mav_enum_entries = self.enums[enumName].entries.values()
                 sorted_entries = sorted(
                     mav_enum_entries, key=lambda entry: entry.value)
                 # Create a new dictionary with the sorted entries
                 sorted_enum_entries = {
                     entry.name: entry for entry in sorted_entries}
-                # Clear the original dictionary and rebuild it with the sorted items
+                # Rebuild dictionary with the sorted entries
                 self.enums[enumName].entries.clear()
                 self.enums[enumName].entries.update(sorted_enum_entries)
                 # continue
@@ -196,7 +199,7 @@ class MAVXML(object):
         # Generate include files docs
         markdownText += "## MAVLink Include Files\n\n"
         if self.includes:
-            base_path = '../messages/'
+            base_path = "../messages/"
             # Create a list of formatted strings
             for include in self.includes:
                 # markdownText+="\n"
@@ -210,7 +213,6 @@ class MAVXML(object):
         entity_summary += "Type | Defined | Included\n"
         entity_summary += "--- | --- | ---\n"
 
-
         matching_count = 0
         non_matching_count = 0
         for message in self.messages.values():
@@ -218,7 +220,9 @@ class MAVXML(object):
                 matching_count += 1
             else:
                 non_matching_count += 1
-        result_string = result_string = f"{'[Messages](#messages)' if matching_count + non_matching_count > 0 else 'Messages'} | {matching_count} | {non_matching_count}\n"
+        result_string = result_string = (
+            f"{'[Messages](#messages)' if matching_count + non_matching_count > 0 else 'Messages'} | {matching_count} | {non_matching_count}\n"
+        )
         entity_summary += result_string
 
         matching_count = 0
@@ -228,7 +232,9 @@ class MAVXML(object):
                 matching_count += 1
             else:
                 non_matching_count += 1
-        result_string = result_string = f"{'[Enums](#enumerated-types)' if matching_count + non_matching_count > 0 else 'Enums'} | {matching_count} | {non_matching_count}\n"
+        result_string = result_string = (
+            f"{'[Enums](#enumerated-types)' if matching_count + non_matching_count > 0 else 'Enums'} | {matching_count} | {non_matching_count}\n"
+        )
         entity_summary += result_string
 
         matching_count = 0
@@ -238,7 +244,9 @@ class MAVXML(object):
                 matching_count += 1
             else:
                 non_matching_count += 1
-        result_string = result_string = f"{'[Commands](#mav_commands)' if matching_count + non_matching_count > 0 else 'Commands'} | {matching_count} | {non_matching_count}\n\n"
+        result_string = result_string = (
+            f"{'[Commands](#mav_commands)' if matching_count + non_matching_count > 0 else 'Commands'} | {matching_count} | {non_matching_count}\n\n"
+        )
         entity_summary += result_string
 
         entity_summary += "The following sections list all entities in the dialect (both included and defined in this file).\n\n"
@@ -265,8 +273,8 @@ class MAVXML(object):
     def get_top_level_docs(self, filename):
         # Inject top level heading and other details.
         # print('FILENAME (prefix): %s' % filename)
-        insert_text = '<!-- THIS FILE IS AUTO-GENERATED: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_xml_to_markdown.py -->\n\n'
-        if filename == 'common':
+        insert_text = "<!-- THIS FILE IS AUTO-GENERATED: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_xml_to_markdown.py -->\n"
+        if filename == "common":
             insert_text += """
 # MAVLINK Common Message Set (common.xml)
 
@@ -276,7 +284,7 @@ MAVLink-compatible systems are expected to use these definitions where possible 
 
 The original definitions are defined in [common.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml).
 """
-        elif filename == 'minimal':
+        elif filename == "minimal":
             insert_text += """
 # MAVLink Minimal Set (minimal.xml)
 
@@ -284,10 +292,12 @@ The MAVLink *minimal* set contains the minimal set of definitions for a viable M
 
 The message set is defined in [minimal.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/minimal.xml) and is managed by the MAVLink project.
 
-> **Tip** The minimal set is included (imported into) other xml definition files, including the [MAVLink Common Message Set (common.xml)](minimal.md).
+::: tip
+The minimal set is included (imported into) other xml definition files, including the [MAVLink Common Message Set (common.xml)](minimal.md).
+:::
 
 """
-        elif filename == 'standard':
+        elif filename == "standard":
             insert_text += """
 # Dialect: MAVLINK Standard Message Set (standard.xml)
 
@@ -297,7 +307,7 @@ AND are likely to be implemented in a compatible way.
 The original definitions are defined in [standard.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/standard.xml).
     """
 
-        elif filename == 'development':
+        elif filename == "development":
             insert_text += """
 # Dialect: development
 
@@ -306,7 +316,7 @@ They should be considered a 'work in progress' and not included in production bu
 
 This topic is a human-readable form of the XML definition file: [development.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/development.xml).
 """
-        elif filename == 'test':
+        elif filename == "test":
             insert_text += """
 # Dialect: test
 
@@ -314,7 +324,7 @@ The test dialect is used for testing XML file parsing.
 
 This topic is a human-readable form of the XML definition file: [test.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/test.xml).
 """
-        elif filename == 'all':
+        elif filename == "all":
             insert_text += """
 # Dialect: all
 
@@ -326,35 +336,39 @@ This ensure that:
 - Systems based on these dialects can co-exist on the same MAVLink network.
 - A Ground Station might (optionally) use libraries generated from **all.xml** to communicate using any of the dialects.
 
-> **Warning**
->
-> - New dialect files in the official repository must be added to **all.xml** and restrict themselves to using ids in their own allocated range.
-> - Dialects should push changes to mavlink/mavlink in order to avoid potential clashes from changes to other dialects.
->
-> A few older dialects are not included because these operate in completely closed networks or because they are only used for tests.
+::: warning
+
+- New dialect files in the official repository must be added to **all.xml** and restrict themselves to using ids in their own allocated range.
+- Dialects should push changes to mavlink/mavlink in order to avoid potential clashes from changes to other dialects.
+
+A few older dialects are not included because these operate in completely closed networks or because they are only used for tests.
+:::
 
 This topic is a human-readable form of the XML definition file: [all.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/all.xml).
 """
 
-        elif filename == 'ardupilotmega':
+        elif filename == "ardupilotmega":
             insert_text += """
 # Dialect: ArduPilotMega
 
-> **Warning** [ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) contains the accurate and up-to-date documentation for this dialect.
-> The documentation below may not be accurate if the dialect owner has not pushed changes.
+::: warning
+[ardupilotmega.xml](https://github.com/ArduPilot/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml) contains the documentation for this dialect as used by the ArduPilot flight stack.
+The documentation here may not be a precise match if, for example, changes have not been pushed by the owner.
+:::
 
-These messages define the [ArduPilot](http://ardupilot.org) specific dialect (as pushed to the [mavlink/mavlink](https://github.com/mavlink/mavlink) GitHub repository by the dialect owner).
+These messages define the [ArduPilot](http://ardupilot.org) specific dialect.
 
 This topic is a human-readable form of the XML definition file: [ardupilotmega.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/ardupilotmega.xml).
-
     """
 
-        elif filename == 'cubepilot':
+        elif filename == "cubepilot":
             insert_text += """
 # Dialect: cubepilot
 
-> **Warning** [cubepilot.xml](https://github.com/CubePilot/mavlink/blob/master/message_definitions/v1.0/cubepilot.xml) contains the accurate and up-to-date documentation for this dialect.
-> The documentation below may not be accurate if the dialect owner has not pushed changes.
+::: warning
+[cubepilot.xml](https://github.com/CubePilot/mavlink/blob/master/message_definitions/v1.0/cubepilot.xml) contains the accurate and up-to-date documentation for this dialect.
+The documentation here may not be a precise match if, for example, changes have not been pushed by the owner.
+:::
 
 These messages define the [CubePilot](http://www.cubepilot.com) specific dialect (as pushed to the [mavlink/mavlink](https://github.com/mavlink/mavlink) GitHub repository by the dialect owner).
 
@@ -362,25 +376,28 @@ This topic is a human-readable form of the XML definition file: [cubepilot.xml](
 
     """
 
-
         else:
-            dialectName = filename.rsplit('.', 1)[0]
-            filenameXML = f'{dialectName}.xml'
+            dialectName = filename.rsplit(".", 1)[0]
+            filenameXML = f"{dialectName}.xml"
             insert_text += f"""
 # Dialect: {dialectName}
 
-> **Warning** This topic documents the version of the dialect file in the [mavlink/mavlink](https://github.com/mavlink/mavlink) Github repository, which may not be up to date with the file in the source repository (it is up to the dialect owner to push changes when needed).
-> The source repo should be listed in the comments at the top of the XML definition file listed below (but may not be).
+::: warning
+This topic documents the version of the dialect file in the [mavlink/mavlink](https://github.com/mavlink/mavlink) Github repository, which may not be up to date with the file in the source repository (it is up to the dialect owner to push changes when needed).
+The source repo should be listed in the comments at the top of the XML definition file listed below (but may not be).
+:::
 
 This topic is a human-readable form of the XML definition file: [{filenameXML}](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/{filenameXML}).
 """
         insert_text += """
-
 <span id="mav2_extension_field"></span>
 
-> **Note**
-> - MAVLink 2 [extension fields](../guide/define_xml_element.md#message_extensions) are displayed in blue.
-> - Entities from dialects are displayed only as headings (with link to original)
+::: info
+
+- MAVLink 2 [extension fields](../guide/define_xml_element.md#message_extensions) are displayed in blue.
+- Entities from dialects are displayed only as headings (with link to original)
+
+:::
 
 <style>
 span.ext {
@@ -394,11 +411,12 @@ span.warning {
 
         return insert_text
 
-class MAVDeprecated(object):
+
+class MAVDeprecated:
     def __init__(self, soup):
         # name, type, print_format, xml, description='', enum='', display='', units='', instance=False
-        self.since = soup.get('since')
-        self.replaced_by = soup.get('replaced_by')
+        self.since = soup.get("since")
+        self.replaced_by = soup.get("replaced_by")
         self.description = soup.text
         if self.description:
             self.description = fix_add_implicit_links_items(self.description)
@@ -407,18 +425,23 @@ class MAVDeprecated(object):
 
     def getMarkdown(self):
         markdown = "**DEPRECATED:**"
-        markdown += f" Replaced By {fix_add_implicit_links_items(self.replaced_by)} " if self.replaced_by else ''
-        markdown += f"({self.since})" if self.since else ''
-        markdown += f" — {self.description})" if self.description else ''
+        markdown += (
+            f" Replaced By {fix_add_implicit_links_items(self.replaced_by)} "
+            if self.replaced_by
+            else ""
+        )
+        markdown += f"({self.since})" if self.since else ""
+        markdown += f" — {self.description})" if self.description else ""
         markdown = f'<span class="warning">{markdown.strip()}</span>'
         return markdown
 
     def debug(self):
         print(
-            f"debug:Deprecated: since({self.since}), replaced_by({fix_add_implicit_links_items(self.replaced_by)}), description({self.description})")
+            f"debug:Deprecated: since({self.since}), replaced_by({fix_add_implicit_links_items(self.replaced_by)}), description({self.description})"
+        )
 
 
-class MAVWip(object):
+class MAVWip:
     def __init__(self, soup=None):
         # <wip/>
         # self.wip = True
@@ -431,7 +454,7 @@ class MAVWip(object):
     def getMarkdown(self):
         if self.description:
             print(f"TODO: MAVWIP: desc not printed: {self.name}")
-        markdown = '**WORK IN PROGRESS**: Do not use in stable production environments (it may change).'
+        markdown = "**WORK IN PROGRESS**: Do not use in stable production environments (it may change)."
         markdown = f'<span class="warning">{markdown.strip()}</span>'
         return markdown
 
@@ -439,9 +462,10 @@ class MAVWip(object):
         print(f"debug:MAVWip: desc({self.description})")
 
 
-class MAVField(object):
+class MAVField:
     def __init__(self, soup, parent, extension):
-        # name, type, print_format, xml, description='', enum='', display='', units='', instance=False
+        # name, type, print_format, xml, description='',
+        # enum='', display='', units='', instance=False
         self.name = None
         self.type = None
         self.units = None
@@ -456,30 +480,30 @@ class MAVField(object):
         self.multiplier = None
         self.extension = extension
         for attr, value in soup.attrs.items():
-            # We do it this way to catch all of them. New additions will throw debug
-            if attr == 'name':
+            # New fields will throw debug
+            if attr == "name":
                 self.name = value
-            elif attr == 'type':
+            elif attr == "type":
                 self.type = value
-            elif attr == 'units':
+            elif attr == "units":
                 self.units = value
-            elif attr == 'enum':
+            elif attr == "enum":
                 self.enum = value
-            elif attr == 'display':
+            elif attr == "display":
                 self.display = value
-            elif attr == 'instance':
+            elif attr == "instance":
                 self.instance = True
-            elif attr == 'print_format':
+            elif attr == "print_format":
                 self.print_format = value
-            elif attr == 'invalid':
+            elif attr == "invalid":
                 self.invalid = value
-            elif attr == 'default':
+            elif attr == "default":
                 self.default = value
-            elif attr == 'minValue':
+            elif attr == "minValue":
                 self.minValue = value
-            elif attr == 'maxValue':
+            elif attr == "maxValue":
                 self.maxValue = value
-            elif attr == 'multiplier':
+            elif attr == "multiplier":
                 self.multiplier = value
             else:
                 print(
@@ -494,46 +518,48 @@ class MAVField(object):
             self.description = self.description[0]  # Expected
         else:
             print(
-                f"DEBUG: field desc multiple array problem: {self.name} (len: {len(self.description)} )")
+                f"DEBUG: field desc multiple array problem: {self.name} (len: {len(self.description)} )"
+            )
             for item in self.description:
                 print(f"  DEBUG: {item}")
 
         # Tell the message what field types it has - needed for table rendering
         # parent.fieldnames.add('name')
         # parent.fieldnames.add('type')
-        parent.fieldnames.add('description')
+        parent.fieldnames.add("description")
         if self.units:
-            parent.fieldnames.add('units')
+            parent.fieldnames.add("units")
         if self.enum:
-            parent.fieldnames.add('enum')
+            parent.fieldnames.add("enum")
         if self.display:
-            parent.fieldnames.add('display')
+            parent.fieldnames.add("display")
         if self.print_format:
-            parent.fieldnames.add('print_format')
+            parent.fieldnames.add("print_format")
         if self.instance:
-            parent.fieldnames.add('instance')
+            parent.fieldnames.add("instance")
         if self.minValue:
-            parent.fieldnames.add('minValue')
+            parent.fieldnames.add("minValue")
         if self.maxValue:
-            parent.fieldnames.add('minValue')
+            parent.fieldnames.add("maxValue")
         if self.default:
-            parent.fieldnames.add('default')
+            parent.fieldnames.add("default")
         if self.invalid:
-            parent.fieldnames.add('invalid')
+            parent.fieldnames.add("invalid")
         if self.multiplier:
-            parent.fieldnames.add('multiplier')
+            parent.fieldnames.add("multiplier")
         # self.debug()
 
     def debug(self):
         print(
-            f"Debug_Field- name ({self.name}), type ({self.type}), desc({self.description}), units({self.units}), display({self.display}), instance({self.instance}), multiplier({self.multiplier})")
+            f"Debug_Field- name ({self.name}), type ({self.type}), desc({self.description}), units({self.units}), display({self.display}), instance({self.instance}), multiplier({self.multiplier})"
+        )
         # TODO - display, instance, are not output.
 
 
-class MAVMessage(object):
+class MAVMessage:
     def __init__(self, soup, basename):
-        self.name = soup['name']
-        self.id = int(soup['id'])
+        self.name = soup["name"]
+        self.id = int(soup["id"])
         self.name_lower = self.name.lower()
         self.basename = basename
         # self.linenumber = linenumber
@@ -542,32 +568,34 @@ class MAVMessage(object):
         self.wip = None
         self.fields = []
         self.fieldnames = set()
-        if self.basename == 'development':
+        if self.basename == "development":
             self.wip = MAVWip()
 
         # iterate the fields of our message
         extension = None
         for child in soup.children:
             if child.name:  # Check if the child is a tag (not a text node)
-                if child.name == 'extensions':
+                if child.name == "extensions":
                     extension = True
-                elif child.name == 'field':
+                elif child.name == "field":
                     self.fields.append(MAVField(child, self, extension))
-                elif child.name == 'description':
+                elif child.name == "description":
                     # Will do more processing this.
                     self.description = child.contents
                     if len(self.description) == 1:
                         self.description = self.description[0]
                         self.description = tidyDescription(self.description)
                         self.description = fix_add_implicit_links_items(
-                            self.description)
+                            self.description
+                        )
                     else:
                         print(
-                            f"DEBUG: message desc multiple array problem: {self.name}")
+                            f"DEBUG: message desc multiple array problem: {self.name}"
+                        )
                     pass
-                elif child.name == 'deprecated':
+                elif child.name == "deprecated":
                     self.deprecated = MAVDeprecated(child)
-                elif child.name == 'wip':
+                elif child.name == "wip":
                     self.wip = MAVWip(child)
                 else:
                     print(f"MAVMessage: Unexpected tag: {child.name}")
@@ -582,6 +610,13 @@ class MAVMessage(object):
         """
         Return markdown for a message.
         """
+        # If it is common we include everything.
+        # But for any other dialect don't include the entity
+        if currentDialect == "common":
+            pass
+        elif self.basename is not currentDialect:
+            return ""
+
         message = f"### {self.name} ({self.id})"
 
         # Add marker after name if there are additions
@@ -591,53 +626,54 @@ class MAVMessage(object):
         # From dialect to heading if in dialect
         if self.basename is not currentDialect:
             # With basename (dialect name) test
-            message += f" \[from: [{self.basename}](../messages/{self.basename}.md#{self.name})\]"
+            message += (
+                f" \\[from: [{self.basename}]"
+                f"(../messages/{self.basename}.md#{self.name})\\]"
+            )
 
         if self.deprecated:
             message += " [DEP]"
         elif self.wip:
             message += " [WIP]"
-            # message+=f"Included from [{self.basename}](../messages/{self.basename}.md#{self.name})\n\n"  # With basename (dialect name) test
-        message += ' {#' + self.name + '}\n\n'
-
-        # If it is common we include everything.
-        # But for any other dialect we don't include the reset of the message
-        if currentDialect == 'common':
-            pass
-        elif self.basename is not currentDialect:
-            return message
+        message += " {#" + self.name + "}\n\n"
 
         if self.deprecated:
-            message += self.deprecated.getMarkdown()+"\n\n"
+            message += self.deprecated.getMarkdown() + "\n\n"
         if self.wip:
-            message += self.wip.getMarkdown()+"\n\n"
+            message += self.wip.getMarkdown() + "\n\n"
 
-        message += self.description + '\n\n'
-        # message+=self.description + f" ({self.basename})\n\n"  # With dialect test
+        message += self.description + "\n\n"
 
         # Test code for building this using the table builder
         # Note, might need to modify for new max/min stuff
         tableHeadings = []
-        tableHeadings.append('Field Name')
-        tableHeadings.append('Type')
+        tableHeadings.append("Field Name")
+        tableHeadings.append("Type")
         valueHeading = False
         unitsHeading = False
         multiplierHeading = False
-        if any(field in self.fieldnames for field in ('units',)):
+        if any(field in self.fieldnames for field in ("units",)):
             unitsHeading = True
-            tableHeadings.append('Units')
-        if any(field in self.fieldnames for field in ('multiplier',)):
+            tableHeadings.append("Units")
+        if any(field in self.fieldnames for field in ("multiplier",)):
             multiplierHeading = True
-            tableHeadings.append('Multiplier')
-        if any(field in self.fieldnames for field in ('enum', 'invalid, maxValue, minValue, default')):
+            tableHeadings.append("Multiplier")
+        if any(
+            field in self.fieldnames
+            for field in ("enum", "invalid, maxValue, minValue, default")
+        ):
             valueHeading = True
-            tableHeadings.append('Values')
-        tableHeadings.append('Description')
+            tableHeadings.append("Values")
+        tableHeadings.append("Description")
 
         tableRows = []
         for field in self.fields:
             row = []
-            nameText = f"<span class='ext'>{field.name}</span> <a href='#mav2_extension_field'>++</a>" if field.extension else f"{field.name}"
+            nameText = (
+                f"<span class='ext'>{field.name}</span> <a href='#mav2_extension_field'>++</a>"
+                if field.extension
+                else f"{field.name}"
+            )
             row.append(nameText)
             row.append(f"`{field.type}`")
             if unitsHeading:
@@ -647,16 +683,18 @@ class MAVMessage(object):
             if valueHeading:
                 # Values: #invalid, default, minValue, maxValue.
                 values = []
-                invalidText = f'invalid:{field.invalid}' if field.invalid else ''
+                invalidText = f"invalid:{field.invalid}" if field.invalid else ""
                 values.append(invalidText)
-                defaultText = f'default:{field.default}' if field.default else ''
+                defaultText = f"default:{field.default}" if field.default else ""
                 values.append(defaultText)
-                minValueText = f'min:{field.minValue}' if field.minValue else ''
+                minValueText = f"min:{field.minValue}" if field.minValue else ""
                 values.append(minValueText)
-                maxValueText = f'max:{field.maxValue}' if field.maxValue else ''
+                maxValueText = f"max:{field.maxValue}" if field.maxValue else ""
                 values.append(maxValueText)
 
-                enumText = f"{fix_add_implicit_links_items(field.enum) if field.enum else ''}"
+                enumText = (
+                    f"{fix_add_implicit_links_items(field.enum) if field.enum else ''}"
+                )
                 values.append(enumText)
 
                 # single elements only get one space
@@ -664,8 +702,16 @@ class MAVMessage(object):
                     f"{elem} " if elem else "" for elem in values)
                 row.append(valueText.strip())
 
-            descriptionText = f"{fix_add_implicit_links_items(tidyDescription(field.description,'table'))}" if field.description else ''
-            instanceText = '<br>Messages with same value are from the same source (instance).' if field.instance else ''
+            descriptionText = (
+                f"{fix_add_implicit_links_items(tidyDescription(field.description, 'table'))}"
+                if field.description
+                else ""
+            )
+            instanceText = (
+                "<br>Messages with same value are from the same source (instance)."
+                if field.instance
+                else ""
+            )
             descriptionText += instanceText
             row.append(descriptionText.strip())
             tableRows.append(row)
@@ -679,43 +725,54 @@ class MAVMessage(object):
 
     def debug(self):
         print(
-            f"debug:message: name({self.name}, id({self.id}), description({self.description}), deprecated({self.deprecated})")
+            f"debug:message: name({self.name}, id({self.id}), description({self.description}), deprecated({self.deprecated})"
+        )
 
 
-class MAVEnumEntry(object):
+class MAVEnumEntry:
     def __init__(self, soup, basename):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
-        self.name = soup['name']
-        self.value = int(soup.get('value')) if soup.get('value') else print(
-            f"TODO MISSING VALUE in MAVEnumEntry: {self.name}")
+        self.name = soup["name"]
+        self.value = (
+            int(soup.get("value"), base=0)
+            if soup.get("value")
+            else print(f"TODO MISSING VALUE in MAVEnumEntry: {self.name}")
+        )
         self.basename = basename
-        self.description = soup.findChild('description', recursive=False)
+        self.description = soup.find("description", recursive=False)
         self.description = self.description.text if self.description else None
-        self.deprecated = soup.findChild('deprecated', recursive=False)
+        self.deprecated = soup.find("deprecated", recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
-        self.wip = soup.findChild('wip', recursive=False)
+        self.wip = soup.find("wip", recursive=False)
         self.wip = MAVWip(self.wip) if self.wip else None
         # self.autovalue = autovalue  # True if value was *not* specified in XML
 
     def getMarkdown(self, currentDialect):
         """Return markdown for an enum entry"""
-        deprString = f"<b>{self.deprecated.getMarkdown()}" if self.deprecated else ""
-        if self.wip:
-            print(f"TODO: WIP in Enum Entry: {self.name}")
+        deprString = f"<br>{self.deprecated.getMarkdown()}" if self.deprecated else ""
+        wipString = f"<br>{self.wip.getMarkdown()}" if self.wip else ""
         importedNote = ""
         if self.basename is not currentDialect:
-            importedNote = " — \[from: [{self.basename}](../messages/{self.basename}.md#{self.name})\]"
+            importedNote = (
+                f" — \\[from: [{self.basename}]"
+                f"(../messages/{self.basename}.md#{self.name})\\]"
+            )
         if self.basename is not currentDialect:
             print(
-                f"TODO/Debug: Check rendering - imported merged enum value {self.name}")
-        desc = fix_add_implicit_links_items(tidyDescription(
-            self.description, 'table')) if self.description else ""
-        string = f"<a id='{self.name}'></a>{self.value} | [{self.name}](#{self.name}) | {desc}{importedNote}{deprString} \n"
+                f"TODO/Debug: Check rendering - imported merged enum value {self.name}"
+            )
+        desc = (
+            fix_add_implicit_links_items(
+                tidyDescription(self.description, "table"))
+            if self.description
+            else ""
+        )
+        string = f"<a id='{self.name}'></a>{self.value} | [{self.name}](#{self.name}) | {desc}{importedNote}{wipString}{deprString} \n"
         return string
 
 
-class MAVEnum(object):
+class MAVEnum:
     def __init__(self, soup, basename):
         # name, linenumber, description='', bitmask=False
         self.basename = basename  # dialect declared in
@@ -724,27 +781,29 @@ class MAVEnum(object):
         self.entries = {}
 
         for attr, value in soup.attrs.items():
-            if attr == 'name':
+            if attr == "name":
                 self.name = value
-            elif attr == 'bitmask':
+            elif attr == "bitmask":
                 self.bitmask = True
             else:
                 print(
-                    f"Debug: MAVEnum: Unexpected attribute: {attr}, Value: {value}")
+                    f"Debug: MAVEnum: Unexpected attr: {attr}, value: {value}")
 
-        self.description = soup.findChild('description', recursive=False)
-        self.description = tidyDescription(
-            self.description.text) if self.description else None
-        self.deprecated = soup.findChild('deprecated', recursive=False)
+        self.description = soup.find("description", recursive=False)
+        self.description = (
+            tidyDescription(
+                self.description.text) if self.description else None
+        )
+        self.deprecated = soup.find("deprecated", recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
-        if self.basename == 'development':
+        if self.basename == "development":
             self.wip = MAVWip()
         else:
-            self.wip = soup.findChild('wip', recursive=False)
+            self.wip = soup.find("wip", recursive=False)
             self.wip = MAVWip(self.wip) if self.wip else None
-        self.bitmask = soup.get('bitmask')
-        enumEntries = soup.find_all('entry')
+        self.bitmask = soup.get("bitmask")
+        enumEntries = soup.find_all("entry")
         for entry in enumEntries:
             enumVal = MAVEnumEntry(entry, self.basename)
             self.entries[enumVal.name] = enumVal
@@ -754,6 +813,13 @@ class MAVEnum(object):
     def getMarkdown(self, currentDialect):
         """Return markdown for a whole enum"""
 
+        # If it is common we include everything.
+        # But for any other dialect don't include the entity
+        if currentDialect == "common":
+            pass
+        elif self.basename is not currentDialect:
+            return ""
+
         string = f"### {self.name}"
 
         # Add marker after name if there are additions
@@ -762,24 +828,19 @@ class MAVEnum(object):
 
         if self.basename is not currentDialect:
             # With basename (dialect name) test
-            string += f" \[from: [{self.basename}](../messages/{self.basename}.md#{self.name})\]"
+            string += (
+                f" \\[from: [{self.basename}]"
+                f"(../messages/{self.basename}.md#{self.name})\\]"
+            )
 
         if self.deprecated:
             string += " [DEP]"
         elif self.wip:
             string += " [WIP]"
-            # message+=f"Included from [{self.basename}](../messages/{self.basename}.md#{self.name})\n\n"  # With basename (dialect name) test
-        string += ' {#' + self.name + '}\n\n'
-
-        # If it is common we include everything.
-        # But for any other dialect we don't include the reset of the message
-        if currentDialect == 'common':
-            pass
-        elif self.basename is not currentDialect:
-            return string
+        string += " {#" + self.name + "}\n\n"
 
         if self.deprecated:
-            string += self.deprecated.getMarkdown()+"\n\n"
+            string += self.deprecated.getMarkdown() + "\n\n"
 
         if self.wip:
             string += self.wip.getMarkdown() + "\n\n"
@@ -789,7 +850,11 @@ class MAVEnum(object):
         #    self.debug()
 
         string += "(Bitmask) " if self.bitmask else ""
-        string += f"{fix_add_implicit_links_items(self.description)}" if self.description else ""
+        string += (
+            f"{fix_add_implicit_links_items(self.description)}"
+            if self.description
+            else ""
+        )
         if self.bitmask or self.description:
             string += "\n\n"
         string += "Value | Name | Description\n--- | --- | ---\n"
@@ -801,10 +866,11 @@ class MAVEnum(object):
 
     def debug(self):
         print(
-            f"debug:MAVEnum: name({self.name}), bitmask({self.bitmask}), deprecated({self.deprecated}), wip({self.wip}), basename({self.basename})")
+            f"debug:MAVEnum: name({self.name}), bitmask({self.bitmask}), deprecated({self.deprecated}), wip({self.wip}), basename({self.basename})"
+        )
 
 
-class MAVCommandParam(object):
+class MAVCommandParam:
     def __init__(self, soup, parent):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
 
@@ -822,29 +888,34 @@ class MAVCommandParam(object):
 
         for attr, value in soup.attrs.items():
             # We do it this way to catch all of them. New additions will throw debug
-            if attr == 'index':
+            if attr == "index":
                 self.index = int(value)
-            elif attr == 'label':
+            elif attr == "label":
                 self.label = value
-            elif attr == 'units':
+            elif attr == "units":
                 self.units = value
-            elif attr == 'minValue':
+            elif attr == "minValue":
                 self.minValue = value
-            elif attr == 'maxValue':
+            elif attr == "maxValue":
                 self.maxValue = value
-            elif attr == 'enum':
+            elif attr == "enum":
                 self.enum = value
-            elif attr == 'increment':
+            elif attr == "increment":
                 self.increment = value
-            elif attr == 'reserved':
-                self.reserved = True  # TODO is it ever reserved by default, and if so make happen
-            elif attr == 'default':
-                self.default = value  # TODO is it ever default by default, and if so make happen?
-            elif attr == 'multiplier':
+            elif attr == "reserved":
+                self.reserved = (
+                    True  # TODO is it ever reserved by default, and if so make happen
+                )
+            elif attr == "default":
+                self.default = (
+                    value  # TODO is it ever default by default, and if so make happen?
+                )
+            elif attr == "multiplier":
                 self.multiplier = value
             else:
                 print(
-                    f"Debug: MAVCommandParam: Unexpected attribute: {attr}, Value: {value}")
+                    f"Debug: MAVCommandParam: Unexpected attribute: {attr}, Value: {value}"
+                )
 
         if soup.text:
             self.description = soup.text
@@ -854,51 +925,61 @@ class MAVCommandParam(object):
         # self.autovalue = autovalue  # True if value was *not* specified in XML
 
         # Add fields to display in parent.
-        parent.param_fieldnames.add('index')
+        parent.param_fieldnames.add("index")
         if self.label:
-            parent.param_fieldnames.add('label')
+            parent.param_fieldnames.add("label")
         if self.units:
-            parent.param_fieldnames.add('units')
+            parent.param_fieldnames.add("units")
         if self.minValue:
-            parent.param_fieldnames.add('minValue')
+            parent.param_fieldnames.add("minValue")
         if self.maxValue:
-            parent.param_fieldnames.add('maxValue')
+            parent.param_fieldnames.add("maxValue")
         if self.increment:
-            parent.param_fieldnames.add('increment')
+            parent.param_fieldnames.add("increment")
         if self.enum:
-            parent.param_fieldnames.add('enum')
+            parent.param_fieldnames.add("enum")
         if self.multiplier:
-            parent.param_fieldnames.add('multiplier')
+            parent.param_fieldnames.add("multiplier")
 
-class MAVCommand(object):
+
+class MAVCommand:
     def __init__(self, soup, basename):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
         pass
-        self.name = soup['name']
-        self.value = int(soup.get('value')) if soup.get(
-            'value') else "TODO MISSING VALUE"
+        self.name = soup["name"]
+        self.value = (
+            int(soup.get("value")) if soup.get(
+                "value") else "TODO MISSING VALUE"
+        )
         self.basename = basename
         self.description = soup.description.text if soup.description else None
         if self.description:
             self.description = tidyDescription(self.description)
-        self.deprecated = soup.findChild('deprecated', recursive=False)
+        self.deprecated = soup.find("deprecated", recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
-        if self.basename == 'development':
+        if self.basename == "development":
             self.wip = MAVWip()
         else:
-            self.wip = soup.findChild('wip', recursive=False)
+            self.wip = soup.find("wip", recursive=False)
             self.wip = MAVWip(self.wip) if self.wip else None
         # self.autovalue = autovalue  # True if value was *not* specified in XML
         self.param_fieldnames = set()
         self.params = []
-        params = soup.find_all('param')
+        params = soup.find_all("param")
         for param in params:
             # TODO: Decide if we want to add entries for non-existing param values
             self.params.append(MAVCommandParam(param, self))
 
     def getMarkdown(self, currentDialect):
         """Return markdown for a command (entry)"""
+
+        # If it is common we include everything.
+        # But for any other dialect don't include the entity
+        if currentDialect == "common":
+            pass
+        elif self.basename is not currentDialect:
+            return ""
 
         string = f"### {self.name} ({self.value})"
 
@@ -909,48 +990,52 @@ class MAVCommand(object):
         # From dialect to heading if in dialect
         if self.basename is not currentDialect:
             # With basename (dialect name) test
-            string += f" \[from: [{self.basename}](../messages/{self.basename}.md#{self.name})\]"
+            string += (
+                f" \\[from: [{self.basename}]"
+                f"(../messages/{self.basename}.md#{self.name})\\]"
+            )
         if self.deprecated:
             string += " [DEP]"
         elif self.wip:
             string += " [WIP]"
-        string += ' {#' + self.name + '}\n\n'
-
-        # If it is common we include everything.
-        # But for any other dialect we don't include the reset of the message
-        if currentDialect == 'common':
-            pass
-        elif self.basename is not currentDialect:
-            return string
-
+        string += " {#" + self.name + "}\n\n"
 
         if self.deprecated:
             string += self.deprecated.getMarkdown() + "\n\n"
         if self.wip:
             string += self.wip.getMarkdown() + "\n\n"
 
-        string += f"{fix_add_implicit_links_items(self.description)}\n\n" if self.description else ""
+        string += (
+            f"{fix_add_implicit_links_items(self.description)}\n\n"
+            if self.description
+            else ""
+        )
         tableHeadings = []
-        tableHeadings.append('Param (Label)')
-        tableHeadings.append('Description')
+        tableHeadings.append("Param (Label)")
+        tableHeadings.append("Description")
         valueHeading = False
         unitsHeading = False
         multiplierHeading = False
-        if any(field in self.param_fieldnames for field in ('enum', 'minValue', 'maxValue', 'increment')):
+        if any(
+            field in self.param_fieldnames
+            for field in ("enum", "minValue", "maxValue", "increment")
+        ):
             valueHeading = True
-            tableHeadings.append('Values')
-        if 'units' in self.param_fieldnames:
+            tableHeadings.append("Values")
+        if "units" in self.param_fieldnames:
             unitsHeading = True
-            tableHeadings.append('Units')
-        if 'multiplier' in self.param_fieldnames:
+            tableHeadings.append("Units")
+        if "multiplier" in self.param_fieldnames:
             multiplierHeading = True
-            tableHeadings.append('Multiplier')
+            tableHeadings.append("Multiplier")
         tableRows = []
 
         for param in self.params:
             row = []
             row.append(
-                f"{param.index} ({param.label})" if param.label else str(param.index))
+                f"{param.index} ({param.label})" if param.label else str(
+                    param.index)
+            )
             row.append(param.description if param.description else "")
 
             if valueHeading:
@@ -992,7 +1077,7 @@ class MAVCommand(object):
 
 def tidyDescription(desc_string, type="markdown"):
     """
-    Helper method to remove odd whitepace etc from a description string.
+    Helper method to remove odd whitespace etc from a description string.
     Different behaviour if the string is to be used in normal markdown or in a table.
     """
     if "\n" not in desc_string:
@@ -1021,7 +1106,7 @@ def tidyDescription(desc_string, type="markdown"):
 
 
 def fix_add_implicit_links_items(input_text):
-    if not type(input_text) is str:
+    if type(input_text) is not str:
         # Its not something we can handle
         return input_text
 
@@ -1032,13 +1117,19 @@ def fix_add_implicit_links_items(input_text):
         # print("make_entry_to_link was called: %s" % matchobj.group(0))
         item_string = matchobj.group(2)
         item_url = item_string
-        if item_string == 'MAV_CMD':
-            item_url = 'mav_commands'
-        returnString = f"{matchobj.group(1)}[{item_string}](#{item_url}){matchobj.group(3)}"
+        if item_string == "MAV_CMD":
+            item_url = "mav_commands"
+        returnString = (
+            f"{matchobj.group(1)}[{item_string}](#{item_url}){matchobj.group(3)}"
+        )
         return returnString
 
     linked_md = re.sub(
-        r'([\`\(\s,]|^)([A-Z]{2,}(?:_[A-Z0-9]+)+)([\`\)\s\.,:]|$)', make_text_to_link, input_text, flags=re.DOTALL)
+        r"([\`\(\s,]|^)([A-Z]{2,}(?:_[A-Z0-9]+)+)([\`\)\s\.,:]|$)",
+        make_text_to_link,
+        input_text,
+        flags=re.DOTALL,
+    )
     return linked_md
 
 
@@ -1061,13 +1152,14 @@ def generateMarkdownTable(headings, rows):
     return string
 
 
-class XMLFiles(object):
+class XMLFiles:
     def __init__(self, dialect=None, source_dir="."):
         self.xml_dialects = dict()
         self.source_dir = source_dir
         if not dialect:
             raise ValueError(
-                "XMLFiles requires XML dialect name or list of dialect names")
+                "XMLFiles requires XML dialect name or list of dialect names"
+            )
 
         dialectNames = []
         if isinstance(dialect, list):
@@ -1118,79 +1210,132 @@ class XMLFiles(object):
 
     def generateIndexDoc(self, output_dir="."):
         # File for index
-        index_file_name = "README.md"
+        index_file_name = "index.md"
 
         # Create outputdir if it does not exist
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         index_file_name = f"{output_dir}{index_file_name}"
 
-        #initialise text for index file.
-        index_text="""<!-- THIS FILE IS AUTO-GENERATED FROM XML: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_xml_to_markdown.py (Do not update mavlink-devguide) -->
-# XML Definition Files & Dialects
+        # initialise text for index file.
+        index_text = """<!-- THIS FILE IS AUTO-GENERATED FROM XML: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_xml_to_markdown.py (Do not update mavlink-devguide) -->
 
-MAVLink definitions files can be found in [mavlink/message definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/).
-These can roughly be divided into:
+# MAVLink-Standard Definitions
 
-- [Standard definitions](#standard-definitions) - core definitions shared by many flight stacks
-- [Test definitions](#test-definitions) - definitions to support testing and validation
-- [Dialects](#dialects) - *protocol-* and *vendor-specific* messages, enums and commands
+The following XML definition files are part of the standard set that are managed by this project.
+They contain messages, commands, and enums that are expected to be used in multiple flight stacks and ground stations:
 
-## Standard Definitions
+- [common.xml](common.md) - the set of entities that have been implemented in at least one core flight stack (and including those in `standard.xml` and `common.xml`).
 
-The following XML definition files are considered standard/core (i.e. not dialects):
+  ::: tip
+  Most developers should use this set of definitions.
+  :::
 
-- [minimal.xml](minimal.md) - the minimum set of entities (messages, enums, MAV_CMD) required to set up a MAVLink network.
-- [standard.xml](standard.md) - the standard set of entities that are implemented by almost all flight stacks (at least 2, in a compatible way).
-  This `includes` [minimal.xml](minimal.md).
-- [common.xml](common.md) - the set of entities that have been implemented in at least one core flight stack.
-  This `includes` [standard.xml](minimal.md)
+- [standard.xml](standard.md) — the standard set of entities that are implemented by at least two core flight stacks, in a compatible way.
+- [minimal.xml](minimal.md) — the minimum set of entities (messages, enums, MAV_CMD) required to set up a MAVLink network.
 
-> **Note** We are still working towards moving the truly standard entities from **common.xml** to **standard.xml**
-  Currently you should include [common.xml](common.md)
+::: info
+See [Dialects & Test Definitions](dialects.md) for flight-stack specific XML definitions.
+:::
 
-In addition:
+## Development Definitions
 
-- [development.xml](development.md) - XML definitions that are _proposed_ for inclusion in the standard definitions.
-   These are work in progress.
+The following definitions are being considered for inclusion in the standard definitions.
+They are a "work in progress" and should not be used in released software.
 
-## Test Definitions
+- [development.xml](development.md) — XML definitions that are _proposed_ for inclusion in the standard definitions.
+- Any standard definitions that have `<wip />` tags.
 
-The following definitions are used for testing and dialect validation:
+## See Also
 
-- [all.xml](all.md) - This includes all other XML files, and is used to verify that there are no ID clashes (and can potentially be used by GCS to communicate with any core dialect).
-- [test.xml](test.md) - Test XML definition file.
+- [Dialects & Test Definitions](dialects.md)
+- [XSD schema](../guide/xml_schema.md)
+- [mavlink/message_definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/) - Source of all XML definition files
 
-## Dialects  {#dialects}
+"""
+        # Write the index
+        with open(index_file_name, "w") as content_file:
+            print(f"Generating: {index_file_name}")
+            content_file.write(index_text)
 
-MAVLink *dialects* are XML definition files that define *protocol-* and *vendor-specific* messages, enums and commands.
+    def generateDialectDoc(self, output_dir="."):
+        # File for index
+        file_name = "dialects.md"
 
-> **Note** Vendor forks of MAVLink may contain XML entities that have not yet been pushed into the main repository (and will not be documented).
+        # Create outputdir if it does not exist
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        file_name = f"{output_dir}{file_name}"
 
-Dialects may *include* other MAVLink XML files, which may in turn contain other XML files (up to 5 levels of XML file nesting are allowed - see `MAXIMUM_INCLUDE_FILE_NESTING` in [mavgen.py](https://github.com/ArduPilot/pymavlink/blob/master/generator/mavgen.py#L44)).
-A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the *MAVLink standard definitions*), extending it with vendor or protocol specific messages.
+        # initialise text for index file.
+        dialect_text = """<!-- THIS FILE IS AUTO-GENERATED FROM XML: https://github.com/mavlink/mavlink/blob/master/doc/mavlink_xml_to_markdown.py (Do not update mavlink-devguide) -->
+
+# Dialects & Test Definitions
+
+## Dialects
+
+MAVLink _dialects_ are XML definition files that define _protocol-_ and _vendor-specific_ messages, enums and commands.
+
+::: warning
+Dialects are not managed by this project!
+
+- They are typically used in only one particular flight stack, and are managed by that flight stack.
+  The XML usually includes owner information as a header comment.
+- Vendor forks of MAVLink may contain XML entities that have not yet been pushed into the main repository (and will not be documented).
+
+:::
 
 The dialect definitions are:
 
 """
 
         for xmlfile in self.xml_dialects.keys():
-            index_text+=f"- [{xmlfile}.xml]({xmlfile}.md)\n"
+            if xmlfile not in [
+                "common",
+                "standard",
+                "minimal",
+                "development",
+                "all",
+                "test",
+                "python_array_test",
+            ]:
+                # Is a dialect
+                dialect_text += f"- [{xmlfile}.xml]({xmlfile}.md)\n"
 
-        #Write the index
-        with open(index_file_name, 'w') as content_file:
-            print(f"Generating: {index_file_name}")
-            content_file.write(index_text)
+        dialect_text += """
+Note that dialects may `include` [MAVLink-Standard Definitions](index.md) or other dialects.
+Up to 5 levels of XML file nesting are allowed - see `MAXIMUM_INCLUDE_FILE_NESTING` in [mavgen.py](https://github.com/ArduPilot/pymavlink/blob/master/generator/mavgen.py#L44).
+A typical pattern is for a dialect to include [common.xml](../messages/common.md) (containing the _MAVLink standard definitions_), extending it with vendor or protocol specific messages.
 
+## Test Definitions
+
+The following definitions are used for testing and dialect validation:
+
+- [all.xml](all.md) — This includes all other XML files, and is used to verify that there are no ID clashes (and can potentially be used by GCS to communicate with any core dialect).
+- [test.xml](test.md) — Test XML definition file.
+- [python_array_test.xml](python_array_test.md) — Test XML definition file for arrays.
+
+## See Also
+
+- [MAVLink-Standard Definitions](index.md)
+- [XSD schema](../guide/xml_schema.md)
+- [mavlink/message_definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/) - Source of all XML definition files
+
+"""
+
+        # Write the index
+        with open(file_name, "w") as content_file:
+            print(f"Generating: {file_name}")
+            content_file.write(dialect_text)
 
     def expand_includes(self):
         """Expand includes. Root files already parsed objects in the xml list."""
 
         def expand_oneiteration():
-            '''takes the list of xml files to process and finds includes which have not already been turned into xml documents added to
+            """takes the list of xml files to process and finds includes which have not already been turned into xml documents added to
             xml files to process, turns them into xml documents and adds them to the xml files list.
             Returns false if no more documents were added.
-            '''
+            """
             includeadded = False
             includes_to_add = set()
             for name in self.xml_dialects.keys():
@@ -1296,14 +1441,27 @@ The dialect definitions are:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Markdown Generator for MAVLink Docs from XML")
+        description="Markdown Generator for MAVLink Docs from XML"
+    )
 
-    parser.add_argument("-d", "--source_dir", default="../message_definitions/v1.0/",
-                        help="Path to XML definition directory")
-    parser.add_argument("-i", "--input_dialect", default=None,
-                        help="Name of XML dialect, e.g. 'common' (if not specified, does all dialects)")
-    parser.add_argument("-o", "--output", default="./messages/",
-                        help="Path to Markdown output directory")
+    parser.add_argument(
+        "-d",
+        "--source_dir",
+        default="../message_definitions/v1.0/",
+        help="Path to XML definition directory",
+    )
+    parser.add_argument(
+        "-i",
+        "--input_dialect",
+        default=None,
+        help="Name of XML dialect, e.g. 'common' (if not specified, does all dialects)",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        default="./messages/",
+        help="Path to Markdown output directory",
+    )
     args = parser.parse_args()
     # print(args.source_dir)
     # print(args.input_dialect)
@@ -1317,13 +1475,14 @@ def main():
     else:
         all_files = os.listdir(args.source_dir)
         xml_dialects = [file[:-4]
-                        for file in all_files if file.endswith('.xml')]
+                        for file in all_files if file.endswith(".xml")]
         files = XMLFiles(dialect=xml_dialects, source_dir=args.source_dir)
         # xml_dialects.append(f"{args.source_dir}{args.input_dialect}.xml")
     # print(xml_dialects)
 
     files.generateDocs(args.output)
     files.generateIndexDoc(args.output)
+    files.generateDialectDoc(args.output)
 
 
 if __name__ == "__main__":
