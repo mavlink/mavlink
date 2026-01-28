@@ -1454,7 +1454,7 @@
         <param index="7">Empty</param>
       </entry>
       <entry value="181" name="MAV_CMD_DO_SET_RELAY" hasLocation="false" isDestination="false">
-        <description>Set a relay to a condition.</description>
+        <description>Set a relay to a condition. The current value may optionally be reported using RELAY_STATUS.</description>
         <param index="1" label="Instance" minValue="0" increment="1">Relay instance number.</param>
         <param index="2" label="Setting" minValue="0" increment="1">Setting. (1=on, 0=off, others possible depending on system hardware)</param>
         <param index="3">Empty</param>
@@ -7808,6 +7808,15 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot).</field>
       <field type="uint32_t" name="active">Active outputs</field>
       <field type="float[32]" name="actuator">Servo / motor output array values. Zero values indicate unused channels.</field>
+    </message>
+    <message id="376" name="RELAY_STATUS">
+      <description>Reports the on/off state of relays, as controlled by MAV_CMD_DO_SET_RELAY.
+        Message streaming should be requested using MAV_CMD_SET_MESSAGE_INTERVAL.
+        Note that it should not be sent on every relay state change to avoid flooding the link.
+      </description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint16_t" name="on">Relay states. Relay instance numbers are represented as individual bits in this mask by offset.</field>
+      <field type="uint16_t" name="present">Relay present. Relay instance numbers are represented as individual bits in this mask by offset.  Bits will be true if a relay instance is configured.</field>
     </message>
     <message id="380" name="TIME_ESTIMATE_TO_TARGET">
       <wip/>
