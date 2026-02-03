@@ -1,0 +1,620 @@
+<?xml version="1.0"?>
+<!-- MAVLink Message Definitions for Rocket Systems -->
+<!--   
+  Message ID Range: 70000 - 70999
+  Command ID Range: 70000 - 70999
+-->
+<mavlink>
+  <include>common.xml</include>
+  <version>1</version>
+  
+  <enums>
+    <!-- Rocket Flight Phases -->
+    <enum name="ROCKET_FLIGHT_PHASE">
+      <description>Enumeration of rocket flight phases from pre-launch to recovery.</description>
+      <entry value="0" name="ROCKET_PHASE_IDLE">
+        <description>Rocket is idle, not in any active flight phase</description>
+      </entry>
+      <entry value="1" name="ROCKET_PHASE_PREFLIGHT">
+        <description>Pre-flight checks and system initialization</description>
+      </entry>
+      <entry value="2" name="ROCKET_PHASE_ARMED">
+        <description>Rocket is armed and ready for ignition</description>
+      </entry>
+      <entry value="3" name="ROCKET_PHASE_IGNITION">
+        <description>Ignition sequence initiated</description>
+      </entry>
+      <entry value="4" name="ROCKET_PHASE_POWERED_ASCENT">
+        <description>Main engine burn / powered flight phase</description>
+      </entry>
+      <entry value="5" name="ROCKET_PHASE_BURNOUT">
+        <description>Engine burnout, transitioning to coast</description>
+      </entry>
+      <entry value="6" name="ROCKET_PHASE_COAST">
+        <description>Coasting phase after burnout</description>
+      </entry>
+      <entry value="7" name="ROCKET_PHASE_APOGEE">
+        <description>At or near apogee</description>
+      </entry>
+      <entry value="8" name="ROCKET_PHASE_DESCENT">
+        <description>Unpowered descent phase</description>
+      </entry>
+      <entry value="9" name="ROCKET_PHASE_DROGUE_DEPLOY">
+        <description>Drogue parachute deployment</description>
+      </entry>
+      <entry value="10" name="ROCKET_PHASE_MAIN_DEPLOY">
+        <description>Main parachute deployment</description>
+      </entry>
+      <entry value="11" name="ROCKET_PHASE_LANDING">
+        <description>Final landing phase</description>
+      </entry>
+      <entry value="12" name="ROCKET_PHASE_LANDED">
+        <description>Rocket has landed</description>
+      </entry>
+      <entry value="13" name="ROCKET_PHASE_ABORT">
+        <description>Flight abort initiated</description>
+      </entry>
+      <entry value="14" name="ROCKET_PHASE_STAGING">
+        <description>Stage separation in progress</description>
+      </entry>
+    </enum>
+
+    <!-- Rocket Propulsion Type -->
+    <enum name="ROCKET_PROPULSION_TYPE">
+      <description>Type of rocket propulsion system.</description>
+      <entry value="0" name="ROCKET_PROPULSION_SOLID">
+        <description>Solid rocket motor</description>
+      </entry>
+      <entry value="1" name="ROCKET_PROPULSION_LIQUID">
+        <description>Liquid rocket engine</description>
+      </entry>
+      <entry value="2" name="ROCKET_PROPULSION_HYBRID">
+        <description>Hybrid rocket motor</description>
+      </entry>
+      <entry value="3" name="ROCKET_PROPULSION_COLD_GAS">
+        <description>Cold gas thruster</description>
+      </entry>
+      <entry value="4" name="ROCKET_PROPULSION_ELECTRIC">
+        <description>Electric propulsion</description>
+      </entry>
+    </enum>
+
+    <!-- Recovery System Status -->
+    <enum name="ROCKET_RECOVERY_STATUS" bitmask="true">
+      <description>Bitmask for recovery system status flags.</description>
+      <entry value="1" name="ROCKET_RECOVERY_DROGUE_ARMED">
+        <description>Drogue parachute system armed</description>
+      </entry>
+      <entry value="2" name="ROCKET_RECOVERY_DROGUE_DEPLOYED">
+        <description>Drogue parachute deployed</description>
+      </entry>
+      <entry value="4" name="ROCKET_RECOVERY_MAIN_ARMED">
+        <description>Main parachute system armed</description>
+      </entry>
+      <entry value="8" name="ROCKET_RECOVERY_MAIN_DEPLOYED">
+        <description>Main parachute deployed</description>
+      </entry>
+      <entry value="16" name="ROCKET_RECOVERY_BACKUP_ARMED">
+        <description>Backup recovery system armed</description>
+      </entry>
+      <entry value="32" name="ROCKET_RECOVERY_BACKUP_DEPLOYED">
+        <description>Backup recovery system deployed</description>
+      </entry>
+      <entry value="64" name="ROCKET_RECOVERY_AIRBRAKES_ARMED">
+        <description>Airbrakes system armed</description>
+      </entry>
+      <entry value="128" name="ROCKET_RECOVERY_AIRBRAKES_DEPLOYED">
+        <description>Airbrakes deployed</description>
+      </entry>
+    </enum>
+
+    <!-- Rocket System Health Status -->
+    <enum name="ROCKET_HEALTH_FLAG" bitmask="true">
+      <description>Bitmask for rocket system health status.</description>
+      <entry value="1" name="ROCKET_HEALTH_IMU">
+        <description>IMU system healthy</description>
+      </entry>
+      <entry value="2" name="ROCKET_HEALTH_GPS">
+        <description>GPS system healthy</description>
+      </entry>
+      <entry value="4" name="ROCKET_HEALTH_BAROMETER">
+        <description>Barometer healthy</description>
+      </entry>
+      <entry value="8" name="ROCKET_HEALTH_BATTERY">
+        <description>Battery healthy</description>
+      </entry>
+      <entry value="16" name="ROCKET_HEALTH_PYRO">
+        <description>Pyrotechnic systems healthy</description>
+      </entry>
+      <entry value="32" name="ROCKET_HEALTH_TELEMETRY">
+        <description>Telemetry link healthy</description>
+      </entry>
+      <entry value="64" name="ROCKET_HEALTH_PROPULSION">
+        <description>Propulsion system healthy</description>
+      </entry>
+      <entry value="128" name="ROCKET_HEALTH_RECOVERY">
+        <description>Recovery system healthy</description>
+      </entry>
+      <entry value="256" name="ROCKET_HEALTH_FINS">
+        <description>Fin actuation system healthy</description>
+      </entry>
+      <entry value="512" name="ROCKET_HEALTH_STAGING">
+        <description>Staging system healthy</description>
+      </entry>
+    </enum>
+
+    <!-- Rocket Abort Reason -->
+    <enum name="ROCKET_ABORT_REASON">
+      <description>Reason for flight abort.</description>
+      <entry value="0" name="ROCKET_ABORT_NONE">
+        <description>No abort condition</description>
+      </entry>
+      <entry value="1" name="ROCKET_ABORT_COMMAND">
+        <description>Abort commanded by ground control</description>
+      </entry>
+      <entry value="2" name="ROCKET_ABORT_ATTITUDE">
+        <description>Excessive attitude deviation</description>
+      </entry>
+      <entry value="3" name="ROCKET_ABORT_TRAJECTORY">
+        <description>Trajectory outside safe corridor</description>
+      </entry>
+      <entry value="4" name="ROCKET_ABORT_PROPULSION">
+        <description>Propulsion system failure</description>
+      </entry>
+      <entry value="5" name="ROCKET_ABORT_STRUCTURAL">
+        <description>Structural integrity concern</description>
+      </entry>
+      <entry value="6" name="ROCKET_ABORT_COMM_LOSS">
+        <description>Communication loss (if required)</description>
+      </entry>
+      <entry value="7" name="ROCKET_ABORT_RANGE_SAFETY">
+        <description>Range safety violation</description>
+      </entry>
+      <entry value="8" name="ROCKET_ABORT_OVERSPEED">
+        <description>Velocity exceeded safe limits</description>
+      </entry>
+      <entry value="9" name="ROCKET_ABORT_OVERTEMP">
+        <description>Temperature exceeded safe limits</description>
+      </entry>
+      <entry value="10" name="ROCKET_ABORT_BATTERY">
+        <description>Critical battery failure</description>
+      </entry>
+    </enum>
+
+    <!-- Pyro Channel Type -->
+    <enum name="ROCKET_PYRO_CHANNEL">
+      <description>Pyrotechnic channel identifier.</description>
+      <entry value="0" name="ROCKET_PYRO_DROGUE">
+        <description>Drogue parachute deployment charge</description>
+      </entry>
+      <entry value="1" name="ROCKET_PYRO_MAIN">
+        <description>Main parachute deployment charge</description>
+      </entry>
+      <entry value="2" name="ROCKET_PYRO_BACKUP_DROGUE">
+        <description>Backup drogue deployment charge</description>
+      </entry>
+      <entry value="3" name="ROCKET_PYRO_BACKUP_MAIN">
+        <description>Backup main deployment charge</description>
+      </entry>
+      <entry value="4" name="ROCKET_PYRO_STAGE_SEP">
+        <description>Stage separation charge</description>
+      </entry>
+      <entry value="5" name="ROCKET_PYRO_MOTOR_IGNITE">
+        <description>Motor ignition charge</description>
+      </entry>
+      <entry value="6" name="ROCKET_PYRO_AIRBRAKES">
+        <description>Airbrakes deployment</description>
+      </entry>
+      <entry value="7" name="ROCKET_PYRO_CUSTOM_1">
+        <description>Custom pyro channel 1</description>
+      </entry>
+      <entry value="8" name="ROCKET_PYRO_CUSTOM_2">
+        <description>Custom pyro channel 2</description>
+      </entry>
+    </enum>
+
+    <!-- Rocket Commands -->
+    <enum name="MAV_CMD">
+      <entry value="70001" name="MAV_CMD_ROCKET_ARM">
+        <description>Arm rocket systems for launch</description>
+        <param index="1" label="Subsystem">1: All systems, 2: Pyro only, 3: Propulsion only</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70002" name="MAV_CMD_ROCKET_DISARM">
+        <description>Disarm rocket systems</description>
+        <param index="1" label="Subsystem">1: All systems, 2: Pyro only, 3: Propulsion only</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70003" name="MAV_CMD_ROCKET_IGNITE">
+        <description>Initiate rocket ignition sequence</description>
+        <param index="1" label="Delay" units="s">Ignition delay in seconds</param>
+        <param index="2" label="Stage">Stage number (0 for single stage)</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70004" name="MAV_CMD_ROCKET_ABORT">
+        <description>Abort rocket flight</description>
+        <param index="1" label="Abort Type" enum="ROCKET_ABORT_REASON">Abort reason code</param>
+        <param index="2" label="Deploy Recovery">1: Deploy recovery systems immediately</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70005" name="MAV_CMD_ROCKET_DEPLOY_DROGUE">
+        <description>Deploy drogue parachute</description>
+        <param index="1" label="Channel">Pyro channel to fire (0=primary, 1=backup)</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70006" name="MAV_CMD_ROCKET_DEPLOY_MAIN">
+        <description>Deploy main parachute</description>
+        <param index="1" label="Channel">Pyro channel to fire (0=primary, 1=backup)</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70007" name="MAV_CMD_ROCKET_STAGE_SEPARATE">
+        <description>Initiate stage separation</description>
+        <param index="1" label="Stage">Stage number to separate</param>
+        <param index="2" label="Ignite Next">1: Ignite next stage after separation</param>
+        <param index="3" label="Delay" units="s">Delay before next stage ignition</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70008" name="MAV_CMD_ROCKET_FIRE_PYRO">
+        <description>Fire a specific pyrotechnic channel</description>
+        <param index="1" label="Channel" enum="ROCKET_PYRO_CHANNEL">Pyro channel to fire</param>
+        <param index="2" label="Duration" units="ms">Fire duration in milliseconds</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70009" name="MAV_CMD_ROCKET_SET_DEPLOY_ALT">
+        <description>Set deployment altitudes for recovery systems</description>
+        <param index="1" label="Drogue Alt" units="m">Drogue deployment altitude AGL</param>
+        <param index="2" label="Main Alt" units="m">Main deployment altitude AGL</param>
+        <param index="3" label="Backup Drogue Alt" units="m">Backup drogue altitude AGL</param>
+        <param index="4" label="Backup Main Alt" units="m">Backup main altitude AGL</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70010" name="MAV_CMD_ROCKET_AIRBRAKES">
+        <description>Control airbrakes deployment</description>
+        <param index="1" label="Position">Airbrakes position (0-100%)</param>
+        <param index="2" label="Mode">0: Manual, 1: Auto (apogee targeting)</param>
+        <param index="3" label="Target Alt" units="m">Target apogee altitude for auto mode</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70011" name="MAV_CMD_ROCKET_CALIBRATE">
+        <description>Calibrate rocket sensors</description>
+        <param index="1" label="Sensor">1: All, 2: IMU, 3: Barometer, 4: Magnetometer</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="70012" name="MAV_CMD_ROCKET_PREFLIGHT_CHECK">
+        <description>Run preflight systems check</description>
+        <param index="1" label="Check Type">1: Quick, 2: Full, 3: Pyro continuity only</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+    </enum>
+  </enums>
+
+  <messages>
+    <!-- Core Rocket Telemetry Message -->
+    <message id="70000" name="ROCKET_TELEMETRY">
+      <description>Primary rocket telemetry message containing essential flight data.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time or time since boot)</field>
+      <field type="uint8_t" name="flight_phase" enum="ROCKET_FLIGHT_PHASE">Current flight phase</field>
+      <field type="float" name="altitude_msl" units="m">Altitude above mean sea level</field>
+      <field type="float" name="altitude_agl" units="m">Altitude above ground level</field>
+      <field type="float" name="velocity_vertical" units="m/s">Vertical velocity (positive up)</field>
+      <field type="float" name="velocity_horizontal" units="m/s">Horizontal velocity magnitude</field>
+      <field type="float" name="velocity_total" units="m/s">Total velocity magnitude</field>
+      <field type="float" name="acceleration_x" units="m/s/s">Acceleration in body X axis</field>
+      <field type="float" name="acceleration_y" units="m/s/s">Acceleration in body Y axis</field>
+      <field type="float" name="acceleration_z" units="m/s/s">Acceleration in body Z axis</field>
+      <field type="float" name="roll" units="deg">Roll angle</field>
+      <field type="float" name="pitch" units="deg">Pitch angle</field>
+      <field type="float" name="yaw" units="deg">Yaw angle</field>
+      <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
+      <field type="uint16_t" name="health_flags" enum="ROCKET_HEALTH_FLAG">System health status bitmask</field>
+      <field type="uint8_t" name="recovery_status" enum="ROCKET_RECOVERY_STATUS">Recovery system status bitmask</field>
+    </message>
+
+    <!-- High-Rate IMU Data -->
+    <message id="70001" name="ROCKET_IMU_RAW">
+      <description>Raw IMU data at high rate for rocket flight.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="int16_t" name="gyro_x" units="mrad/s">Angular velocity X (raw)</field>
+      <field type="int16_t" name="gyro_y" units="mrad/s">Angular velocity Y (raw)</field>
+      <field type="int16_t" name="gyro_z" units="mrad/s">Angular velocity Z (raw)</field>
+      <field type="int16_t" name="accel_x" units="mG">Acceleration X (raw)</field>
+      <field type="int16_t" name="accel_y" units="mG">Acceleration Y (raw)</field>
+      <field type="int16_t" name="accel_z" units="mG">Acceleration Z (raw)</field>
+      <field type="int16_t" name="mag_x" units="mGauss">Magnetometer X (raw)</field>
+      <field type="int16_t" name="mag_y" units="mGauss">Magnetometer Y (raw)</field>
+      <field type="int16_t" name="mag_z" units="mGauss">Magnetometer Z (raw)</field>
+      <field type="int16_t" name="temperature" units="cdegC">IMU temperature</field>
+    </message>
+
+    <!-- Barometric Data -->
+    <message id="70002" name="ROCKET_BAROMETER">
+      <description>Barometric pressure and altitude data.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="float" name="pressure_abs" units="hPa">Absolute pressure</field>
+      <field type="float" name="pressure_diff" units="hPa">Differential pressure (for airspeed)</field>
+      <field type="float" name="altitude_baro" units="m">Barometric altitude</field>
+      <field type="float" name="vertical_speed" units="m/s">Vertical speed from barometer</field>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature</field>
+    </message>
+
+    <!-- Propulsion System Status -->
+    <message id="70003" name="ROCKET_PROPULSION">
+      <description>Rocket propulsion system status and telemetry.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="propulsion_type" enum="ROCKET_PROPULSION_TYPE">Propulsion system type</field>
+      <field type="uint8_t" name="stage_number">Current stage number (0 for single stage)</field>
+      <field type="uint8_t" name="engine_state">Engine state: 0=Off, 1=Ignition, 2=Running, 3=Burnout</field>
+      <field type="float" name="chamber_pressure" units="bar">Combustion chamber pressure</field>
+      <field type="float" name="fuel_mass" units="kg">Remaining fuel mass (liquid/hybrid)</field>
+      <field type="float" name="oxidizer_mass" units="kg">Remaining oxidizer mass (liquid)</field>
+      <field type="float" name="propellant_mass" units="kg">Total remaining propellant mass</field>
+      <field type="float" name="burn_time" units="s">Elapsed burn time</field>
+      <field type="float" name="thrust" units="N">Current thrust</field>
+      <field type="int16_t" name="nozzle_temp" units="cdegC">Nozzle temperature</field>
+      <field type="int16_t" name="chamber_temp" units="cdegC">Chamber temperature</field>
+      <field type="uint8_t" name="throttle_pct">Throttle percentage (0-100) for throttleable engines</field>
+    </message>
+
+    <!-- Recovery System Status -->
+    <message id="70004" name="ROCKET_RECOVERY">
+      <description>Recovery system status and deployment information.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="status" enum="ROCKET_RECOVERY_STATUS">Recovery system status bitmask</field>
+      <field type="float" name="drogue_deploy_alt" units="m">Drogue deployment altitude setting</field>
+      <field type="float" name="main_deploy_alt" units="m">Main deployment altitude setting</field>
+      <field type="float" name="current_alt_agl" units="m">Current altitude AGL</field>
+      <field type="float" name="descent_rate" units="m/s">Current descent rate</field>
+      <field type="uint8_t" name="drogue_pyro_cont">Drogue pyro continuity (0=no, 1=yes)</field>
+      <field type="uint8_t" name="main_pyro_cont">Main pyro continuity (0=no, 1=yes)</field>
+      <field type="uint8_t" name="backup_drogue_cont">Backup drogue continuity</field>
+      <field type="uint8_t" name="backup_main_cont">Backup main continuity</field>
+      <field type="uint64_t" name="drogue_deploy_time" units="us">Drogue deployment timestamp (0 if not deployed)</field>
+      <field type="uint64_t" name="main_deploy_time" units="us">Main deployment timestamp (0 if not deployed)</field>
+    </message>
+
+    <!-- Pyrotechnic Channel Status -->
+    <message id="70005" name="ROCKET_PYRO_STATUS">
+      <description>Status of all pyrotechnic channels.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="channel" enum="ROCKET_PYRO_CHANNEL">Pyro channel ID</field>
+      <field type="uint8_t" name="armed">Channel armed status (0=disarmed, 1=armed)</field>
+      <field type="uint8_t" name="continuity">Continuity check result (0=open, 1=good)</field>
+      <field type="uint8_t" name="fired">Channel fired status (0=not fired, 1=fired)</field>
+      <field type="float" name="resistance" units="Ohm">Measured resistance of pyro circuit</field>
+      <field type="float" name="voltage" units="V">Firing circuit voltage</field>
+      <field type="uint64_t" name="fire_time" units="us">Timestamp when fired (0 if not fired)</field>
+    </message>
+
+    <!-- Flight Statistics -->
+    <message id="70006" name="ROCKET_FLIGHT_STATS">
+      <description>Flight statistics and records during/after flight.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="float" name="max_altitude" units="m">Maximum altitude reached (AGL)</field>
+      <field type="float" name="max_velocity" units="m/s">Maximum velocity reached</field>
+      <field type="float" name="max_acceleration" units="G">Maximum acceleration (in G)</field>
+      <field type="float" name="max_mach">Maximum Mach number</field>
+      <field type="float" name="apogee_time" units="s">Time to apogee from launch</field>
+      <field type="float" name="flight_time" units="s">Total flight time</field>
+      <field type="float" name="landing_velocity" units="m/s">Landing velocity</field>
+      <field type="int32_t" name="landing_lat" units="degE7">Landing latitude</field>
+      <field type="int32_t" name="landing_lon" units="degE7">Landing longitude</field>
+      <field type="float" name="landing_distance" units="m">Distance from launch site</field>
+    </message>
+
+    <!-- Fin/TVC Control Status -->
+    <message id="70007" name="ROCKET_FIN_CONTROL">
+      <description>Active fin control or TVC (Thrust Vector Control) status.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="control_mode">Control mode: 0=Passive, 1=Active stabilization, 2=Guided</field>
+      <field type="float" name="fin1_angle" units="deg">Fin 1 deflection angle</field>
+      <field type="float" name="fin2_angle" units="deg">Fin 2 deflection angle</field>
+      <field type="float" name="fin3_angle" units="deg">Fin 3 deflection angle</field>
+      <field type="float" name="fin4_angle" units="deg">Fin 4 deflection angle</field>
+      <field type="float" name="tvc_pitch" units="deg">TVC pitch angle</field>
+      <field type="float" name="tvc_yaw" units="deg">TVC yaw angle</field>
+      <field type="float" name="roll_rate_cmd" units="deg/s">Commanded roll rate</field>
+      <field type="float" name="pitch_rate_cmd" units="deg/s">Commanded pitch rate</field>
+      <field type="float" name="yaw_rate_cmd" units="deg/s">Commanded yaw rate</field>
+    </message>
+
+    <!-- Airbrakes Status -->
+    <message id="70008" name="ROCKET_AIRBRAKES">
+      <description>Airbrakes system status for apogee control.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="mode">Mode: 0=Manual, 1=Auto (apogee targeting)</field>
+      <field type="uint8_t" name="position_cmd">Commanded position (0-100%)</field>
+      <field type="uint8_t" name="position_actual">Actual position (0-100%)</field>
+      <field type="float" name="target_apogee" units="m">Target apogee altitude</field>
+      <field type="float" name="predicted_apogee" units="m">Predicted apogee with current trajectory</field>
+      <field type="float" name="drag_coefficient">Current drag coefficient estimate</field>
+    </message>
+
+    <!-- Power System Status -->
+    <message id="70009" name="ROCKET_POWER">
+      <description>Rocket power system status.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="float" name="battery_voltage" units="V">Main battery voltage</field>
+      <field type="float" name="battery_current" units="A">Battery current draw</field>
+      <field type="uint8_t" name="battery_remaining">Battery remaining percentage</field>
+      <field type="float" name="pyro_battery_voltage" units="V">Pyro battery voltage</field>
+      <field type="int16_t" name="battery_temp" units="cdegC">Battery temperature</field>
+      <field type="float" name="capacity_consumed" units="mAh">Total capacity consumed</field>
+      <field type="uint16_t[8]" name="cell_voltages" units="mV">Individual cell voltages (0 if not available)</field>
+    </message>
+
+    <!-- GPS Data -->
+    <message id="70010" name="ROCKET_GPS">
+      <description>GPS position and status for rocket tracking.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="fix_type">GPS fix type: 0=No fix, 1=2D, 2=3D, 3=DGPS, 4=RTK</field>
+      <field type="uint8_t" name="satellites_visible">Number of satellites visible</field>
+      <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
+      <field type="float" name="altitude" units="m">GPS altitude (MSL)</field>
+      <field type="float" name="ground_speed" units="m/s">Ground speed</field>
+      <field type="float" name="course" units="deg">Course over ground</field>
+      <field type="float" name="hdop">Horizontal dilution of precision</field>
+      <field type="float" name="vdop">Vertical dilution of precision</field>
+      <field type="int16_t" name="vel_north" units="cm/s">Velocity North</field>
+      <field type="int16_t" name="vel_east" units="cm/s">Velocity East</field>
+      <field type="int16_t" name="vel_down" units="cm/s">Velocity Down</field>
+    </message>
+
+    <!-- Staging Information -->
+    <message id="70011" name="ROCKET_STAGING">
+      <description>Multi-stage rocket staging information.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="total_stages">Total number of stages</field>
+      <field type="uint8_t" name="current_stage">Current active stage</field>
+      <field type="uint8_t" name="stage_state">Stage state: 0=Attached, 1=Separating, 2=Separated</field>
+      <field type="float" name="stage_mass" units="kg">Current stage mass</field>
+      <field type="uint8_t" name="sep_pyro_cont">Separation pyro continuity</field>
+      <field type="uint8_t" name="ignition_pyro_cont">Next stage ignition pyro continuity</field>
+      <field type="uint64_t" name="separation_time" units="us">Last separation timestamp</field>
+    </message>
+
+    <!-- Abort Status -->
+    <message id="70012" name="ROCKET_ABORT_STATUS">
+      <description>Abort system status and monitoring.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="abort_armed">Abort system armed status</field>
+      <field type="uint8_t" name="abort_triggered">Abort has been triggered</field>
+      <field type="uint8_t" name="abort_reason" enum="ROCKET_ABORT_REASON">Reason for abort if triggered</field>
+      <field type="float" name="attitude_limit" units="deg">Maximum allowed attitude deviation</field>
+      <field type="float" name="current_deviation" units="deg">Current attitude deviation from nominal</field>
+      <field type="float" name="trajectory_deviation" units="m">Deviation from planned trajectory</field>
+      <field type="uint64_t" name="abort_time" units="us">Timestamp of abort (0 if not triggered)</field>
+    </message>
+
+    <!-- Environmental Data -->
+    <message id="70013" name="ROCKET_ENVIRONMENT">
+      <description>Environmental conditions during flight.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="float" name="temperature" units="degC">Ambient temperature</field>
+      <field type="float" name="pressure" units="hPa">Ambient pressure</field>
+      <field type="float" name="density" units="kg/m^3">Air density</field>
+      <field type="float" name="speed_of_sound" units="m/s">Local speed of sound</field>
+      <field type="float" name="mach_number">Current Mach number</field>
+      <field type="float" name="dynamic_pressure" units="Pa">Dynamic pressure (Q)</field>
+      <field type="float" name="wind_speed" units="m/s">Estimated wind speed</field>
+      <field type="float" name="wind_direction" units="deg">Estimated wind direction</field>
+    </message>
+
+    <!-- Preflight Check Results -->
+    <message id="70014" name="ROCKET_PREFLIGHT_STATUS">
+      <description>Preflight check status and results.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="check_in_progress">Preflight check in progress</field>
+      <field type="uint8_t" name="imu_check">IMU check: 0=Not done, 1=Pass, 2=Fail</field>
+      <field type="uint8_t" name="gps_check">GPS check: 0=Not done, 1=Pass, 2=Fail</field>
+      <field type="uint8_t" name="baro_check">Barometer check: 0=Not done, 1=Pass, 2=Fail</field>
+      <field type="uint8_t" name="battery_check">Battery check: 0=Not done, 1=Pass, 2=Fail</field>
+      <field type="uint8_t" name="pyro_check">Pyro continuity check: 0=Not done, 1=Pass, 2=Fail</field>
+      <field type="uint8_t" name="telemetry_check">Telemetry link check: 0=Not done, 1=Pass, 2=Fail</field>
+      <field type="uint8_t" name="storage_check">Data storage check: 0=Not done, 1=Pass, 2=Fail</field>
+      <field type="uint8_t" name="overall_status">Overall status: 0=Not ready, 1=Ready for launch</field>
+      <field type="char[32]" name="fail_reason">Failure reason string if any check failed</field>
+    </message>
+
+    <!-- Launch Site Information -->
+    <message id="70015" name="ROCKET_LAUNCH_SITE">
+      <description>Launch site coordinates and conditions.</description>
+      <field type="int32_t" name="latitude" units="degE7">Launch site latitude</field>
+      <field type="int32_t" name="longitude" units="degE7">Launch site longitude</field>
+      <field type="float" name="altitude_msl" units="m">Launch site altitude MSL</field>
+      <field type="float" name="launch_rail_azimuth" units="deg">Launch rail azimuth (true north)</field>
+      <field type="float" name="launch_rail_elevation" units="deg">Launch rail elevation angle</field>
+      <field type="float" name="rail_length" units="m">Launch rail length</field>
+      <field type="float" name="ground_pressure" units="hPa">Ground level pressure</field>
+      <field type="float" name="ground_temperature" units="degC">Ground level temperature</field>
+    </message>
+
+    <!-- Data Logging Status -->
+    <message id="70016" name="ROCKET_LOGGING">
+      <description>Onboard data logging status.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="uint8_t" name="logging_active">Logging active flag</field>
+      <field type="uint8_t" name="storage_type">Storage type: 0=SD Card, 1=Flash, 2=Both</field>
+      <field type="uint32_t" name="bytes_written">Total bytes written</field>
+      <field type="uint32_t" name="storage_remaining" units="KB">Remaining storage in KB</field>
+      <field type="uint16_t" name="sample_rate" units="Hz">Current logging sample rate</field>
+      <field type="uint8_t" name="storage_health">Storage health: 0=Error, 1=Good</field>
+    </message>
+
+    <!-- Event Log Entry -->
+    <message id="70017" name="ROCKET_EVENT">
+      <description>Significant flight event notification.</description>
+      <field type="uint64_t" name="timestamp" units="us">Event timestamp</field>
+      <field type="uint16_t" name="event_id">Event identifier</field>
+      <field type="uint8_t" name="event_type">Event type: 0=Info, 1=Warning, 2=Error, 3=Critical</field>
+      <field type="float" name="altitude" units="m">Altitude at event</field>
+      <field type="float" name="velocity" units="m/s">Velocity at event</field>
+      <field type="char[50]" name="description">Event description</field>
+    </message>
+
+    <!-- Target/Waypoint for Guided Landing -->
+    <message id="70018" name="ROCKET_LANDING_TARGET">
+      <description>Landing target information for guided recovery.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp</field>
+      <field type="int32_t" name="target_lat" units="degE7">Target landing latitude</field>
+      <field type="int32_t" name="target_lon" units="degE7">Target landing longitude</field>
+      <field type="float" name="target_alt" units="m">Target landing altitude MSL</field>
+      <field type="float" name="distance_to_target" units="m">Current distance to target</field>
+      <field type="float" name="bearing_to_target" units="deg">Bearing to target</field>
+      <field type="float" name="glide_ratio">Required glide ratio to reach target</field>
+      <field type="uint8_t" name="target_reachable">Target reachable with current trajectory</field>
+    </message>
+
+  </messages>
+</mavlink>
