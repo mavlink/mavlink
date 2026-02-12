@@ -440,9 +440,15 @@
       <entry value="8192" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_RC_INPUTS">
         <description>Gimbal device supports radio control inputs as an alternative input for controlling the gimbal orientation.</description>
       </entry>
+      <entry value="65536" name="GIMBAL_DEVICE_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL">
+        <description>Gimbal device supports to point to a local position.</description>
+      </entry>
+      <entry value="131072" name="GIMBAL_DEVICE_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
+        <description>Gimbal device supports to point to a global latitude, longitude, altitude position.</description>
+      </entry>
     </enum>
     <enum name="GIMBAL_MANAGER_CAP_FLAGS" bitmask="true">
-      <description>Gimbal manager high level capability flags (bitmap). The first 16 bits are identical to the GIMBAL_DEVICE_CAP_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
+      <description>Gimbal manager high level capability flags (bitmap). The flags are identical to the GIMBAL_DEVICE_CAP_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
       <entry value="1" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_RETRACT">
         <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT.</description>
       </entry>
@@ -486,10 +492,10 @@
         <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RC_INPUTS.</description>
       </entry>
       <entry value="65536" name="GIMBAL_MANAGER_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL">
-        <description>Gimbal manager supports to point to a local position.</description>
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL.</description>
       </entry>
       <entry value="131072" name="GIMBAL_MANAGER_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
-        <description>Gimbal manager supports to point to a global latitude, longitude, altitude position.</description>
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL.</description>
       </entry>
     </enum>
     <enum name="GIMBAL_DEVICE_FLAGS" bitmask="true">
@@ -7336,6 +7342,7 @@
       <field type="float" name="yaw_max" units="rad" invalid="NaN">Maximum hardware yaw angle (positive: to the right, negative: to the left). NAN if unknown.</field>
       <extensions/>
       <field type="uint8_t" name="gimbal_device_id" invalid="0">This field is to be used if the gimbal manager and the gimbal device are the same component and hence have the same component ID. This field is then set to a number between 1-6. If the component ID is separate, this field is not required and must be set to 0.</field>
+      <field type="uint32_t" name="cap_flags2" enum="GIMBAL_DEVICE_CAP_FLAGS" invalid="0">Extended bitmap of gimbal capability flags (32 bit). For backwards compatibility, the lower 16 bits should also be set in cap_flags. Ground stations should prefer this field if non-zero.</field>
     </message>
     <message id="284" name="GIMBAL_DEVICE_SET_ATTITUDE">
       <description>Low level message to control a gimbal device's attitude.
