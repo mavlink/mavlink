@@ -5009,7 +5009,7 @@
       <entry value="2" name="CAN_FILTER_REMOVE"/>
     </enum>
     <enum name="MAV_FTP_ERR">
-      <description>MAV FTP error codes (https://mavlink.io/en/services/ftp.html)</description>
+      <description>MAV FTP error codes (may be used in FILE_TRANSFER_PROTOCOL). See https://mavlink.io/en/services/ftp.html.</description>
       <entry value="0" name="MAV_FTP_ERR_NONE">
         <description>None: No error</description>
       </entry>
@@ -5046,7 +5046,7 @@
       </entry>
     </enum>
     <enum name="MAV_FTP_OPCODE">
-      <description>MAV FTP opcodes: https://mavlink.io/en/services/ftp.html</description>
+      <description>MAV FTP opcodes (may be used in FILE_TRANSFER_PROTOCOL). See https://mavlink.io/en/services/ftp.html.</description>
       <entry value="0" name="MAV_FTP_OPCODE_NONE">
         <description>None. Ignored, always ACKed</description>
       </entry>
@@ -6295,7 +6295,7 @@
       <field type="uint8_t" name="target_network">Network ID (0 for broadcast)</field>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast)</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast)</field>
-      <field type="uint8_t[251]" name="payload">Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields. The content/format of this block is defined in https://mavlink.io/en/services/ftp.html.</field>
+      <field type="uint8_t[251]" name="payload">Variable length payload. The content/format of this block is defined in https://mavlink.io/en/services/ftp.html. The length is defined by the remaining message length when subtracting the header and other fields. See also MAV_FTP_OPCODE and MAV_FTP_ERR.</field>
     </message>
     <message id="111" name="TIMESYNC">
       <description>
