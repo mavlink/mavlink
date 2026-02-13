@@ -13,6 +13,14 @@
         <description>Global (WGS84) coordinate frame with depth from sea surface.</description>
       </entry>
     </enum>
+    <enum name="MAV_DISTANCE_SENSOR">
+      <entry value="10" name="MAV_DISTANCE_SENSOR_DVL"/>
+    </enum>
+    <enum name="DEPTH_REFERENCE">
+      <entry value="0" name="DEPTH_REFERENCE_UNKNOWN"/>
+      <entry value="1" name="DEPTH_REFERENCE_SEA_SURFACE"/>
+      <entry value="2" name="DEPTH_REFERENCE_HOME"/>
+    </enum>
     <enum name="AUTONOMY_DEMAND">
       <description>Demands to be made to the autonomy system.</description>
       <entry value="0" name="AUTONOMY_DEMAND_DEFAULT">
@@ -369,6 +377,17 @@
       <field type="float" name="vehicle_velocity_x" units="m/s">Vehicle velocity in X (NED)</field>
       <field type="float" name="vehicle_velocity_y" units="m/s">Vehicle velocity in Y (NED)</field>
       <field type="float" name="vehicle_velocity_z" units="m/s">Vehicle velocity in Z (NED)</field>
+    </message>
+    <message id="42001" name="DEPTH">
+      <description>
+        Vehicle depth relative to a specified reference.
+        Positive values indicate depth below the reference.
+      </description>
+
+      <field type="uint32_t" name="time_boot_ms">Time since system boot (ms).</field>
+      <field type="float" name="depth_m">Depth below reference (m).</field>
+      <field type="uint8_t" name="reference" enum="DEPTH_REFERENCE">Reference used for depth.</field>
+      <field type="uint8_t" name="rezero_count">Increments whenever the depth reference is re-zeroed.</field>
     </message>
   </messages>
 </mavlink>
