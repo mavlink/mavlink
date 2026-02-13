@@ -5472,15 +5472,6 @@
       <field type="int16_t" name="press_diff2" invalid="0">Differential pressure 2 (raw, 0 if nonexistent)</field>
       <field type="int16_t" name="temperature">Raw Temperature measurement (raw)</field>
     </message>
-    <message id="29" name="SCALED_PRESSURE">
-      <description>The pressure readings for the typical setup of one absolute and differential pressure sensor. The units are as specified in each field.</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="float" name="press_abs" units="hPa">Absolute pressure</field>
-      <field type="float" name="press_diff" units="hPa">Differential pressure 1</field>
-      <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
-      <extensions/>
-      <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
-    </message>
     <message id="30" name="ATTITUDE">
       <description>The attitude in the aeronautical frame (right-handed, Z-down, Y-right, X-front, ZYX, intrinsic).</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
@@ -6590,15 +6581,6 @@
       <field type="uint16_t" name="pending">Number of 4x4 terrain blocks waiting to be received or read from disk</field>
       <field type="uint16_t" name="loaded">Number of 4x4 terrain blocks in memory</field>
     </message>
-    <message id="137" name="SCALED_PRESSURE2">
-      <description>Barometer readings for 2nd barometer</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="float" name="press_abs" units="hPa">Absolute pressure</field>
-      <field type="float" name="press_diff" units="hPa">Differential pressure</field>
-      <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
-      <extensions/>
-      <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
-    </message>
     <message id="138" name="ATT_POS_MOCAP">
       <description>Motion capture attitude and position</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
@@ -6640,15 +6622,6 @@
       <field type="uint8_t[120]" name="uri">The requested unique resource identifier (URI). It is not necessarily a straight domain name (depends on the URI type enum)</field>
       <field type="uint8_t" name="transfer_type">The way the autopilot wants to receive the URI. 0 = MAVLink FTP. 1 = binary stream.</field>
       <field type="uint8_t[120]" name="storage">The storage path the autopilot wants the URI to be stored in. Will only be valid if the transfer_type has a storage associated (e.g. MAVLink FTP).</field>
-    </message>
-    <message id="143" name="SCALED_PRESSURE3">
-      <description>Barometer readings for 3rd barometer</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="float" name="press_abs" units="hPa">Absolute pressure</field>
-      <field type="float" name="press_diff" units="hPa">Differential pressure</field>
-      <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
-      <extensions/>
-      <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
     </message>
     <message id="144" name="FOLLOW_TARGET">
       <description>Current motion information from a designated system</description>
