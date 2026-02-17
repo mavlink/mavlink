@@ -1045,21 +1045,6 @@
         <description>Reset all parameters to default values.</description>
       </entry>
     </enum>
-    <enum name="PREFLIGHT_STORAGE_MISSION_ACTION">
-      <description>
-        Actions for reading and writing plan information (mission, rally points, geofence) between persistent and volatile storage when using MAV_CMD_PREFLIGHT_STORAGE.
-        (Commonly missions are loaded from persistent storage (flash/EEPROM) into volatile storage (RAM) on startup and written back when they are changed.)
-      </description>
-      <entry value="0" name="MISSION_READ_PERSISTENT">
-        <description>Read current mission data from persistent storage</description>
-      </entry>
-      <entry value="1" name="MISSION_WRITE_PERSISTENT">
-        <description>Write current mission data to persistent storage</description>
-      </entry>
-      <entry value="2" name="MISSION_RESET_DEFAULT">
-        <description>Erase all mission data stored on the vehicle (both persistent and volatile storage)</description>
-      </entry>
-    </enum>
     <enum name="REBOOT_SHUTDOWN_ACTION">
       <description>Reboot/shutdown action for selected component in MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN.</description>
       <entry value="0" name="REBOOT_SHUTDOWN_ACTION_NONE">
@@ -1987,7 +1972,7 @@
       <entry value="245" name="MAV_CMD_PREFLIGHT_STORAGE" hasLocation="false" isDestination="false">
         <description>Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.</description>
         <param index="1" label="Parameter Storage" enum="PREFLIGHT_STORAGE_PARAMETER_ACTION">Action to perform on the persistent parameter storage</param>
-        <param index="2" label="Mission Storage" enum="PREFLIGHT_STORAGE_MISSION_ACTION">Action to perform on the persistent mission storage</param>
+        <param index="2">Reserved</param>
         <param index="3" label="Logging Rate" units="Hz" minValue="-1" increment="1">Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, &gt; 1: logging rate (e.g. set to 1000 for 1000 Hz logging)</param>
         <param index="4">Reserved</param>
         <param index="5">Empty</param>
