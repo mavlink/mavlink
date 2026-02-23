@@ -5920,7 +5920,7 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the COMMAND.</field>
       <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the mission item.</field>
-      <field type="uint8_t" name="current">Not used.</field>
+      <field type="uint8_t" name="current" invalid="0">WIP: Idempotency key. A sequence number that uniquely identifies each unique command sent. Must be same number for message resends or same message on multiple channels. Command with number only acted on once and value mirrored COMMAND_ACK.idempotency_key. Keys can wrap. Autopilot should clear old key records based on time and number of records.</field>
       <field type="uint8_t" name="autocontinue">Not used (set 0).</field>
       <field type="float" name="param1" invalid="NaN">PARAM1, see MAV_CMD enum</field>
       <field type="float" name="param2" invalid="NaN">PARAM2, see MAV_CMD enum</field>
@@ -5953,6 +5953,7 @@
       <field type="int32_t" name="result_param2">Additional result information. Can be set with a command-specific enum containing command-specific error reasons for why the command might be denied. If used, the associated enum must be documented in the corresponding MAV_CMD (this enum should have a 0 value to indicate "unused" or "unknown").</field>
       <field type="uint8_t" name="target_system">System ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
       <field type="uint8_t" name="target_component">Component ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
+      <field type="uint8_t" name="idempotency_key" invalid="0">Key of command to which responding. Mirrors value received in COMMAND_INT.continue.</field>
     </message>
     <message id="80" name="COMMAND_CANCEL">
       <wip/>
