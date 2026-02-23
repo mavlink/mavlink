@@ -468,6 +468,37 @@
         <description>BLHeli32 ESC firmware.</description>
       </entry>
     </enum>
+    <enum name="ESC_FLAGS" bitmask="true">
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Flags to report ESC status and failures. Used in ESC_INFO_V2.</description>
+      <entry value="1" name="ESC_FLAGS_OVER_CURRENT">
+        <description>Over current failure.</description>
+      </entry>
+      <entry value="2" name="ESC_FLAGS_OVER_VOLTAGE">
+        <description>Over voltage failure.</description>
+      </entry>
+      <entry value="4" name="ESC_FLAGS_OVER_TEMPERATURE">
+        <description>Over temperature failure.</description>
+      </entry>
+      <entry value="8" name="ESC_FLAGS_OVER_RPM">
+        <description>Over RPM failure.</description>
+      </entry>
+      <entry value="16" name="ESC_FLAGS_FAILURE_INCONSISTENT_CMD">
+        <description>Inconsistent command failure i.e. out of bounds.</description>
+      </entry>
+      <entry value="32" name="ESC_FLAGS_MOTOR_STUCK">
+        <description>Motor stuck failure.</description>
+      </entry>
+      <entry value="64" name="ESC_FLAGS_TIMEOUT">
+        <description>ESC timeout failure (data not received when expected; published data is stale).</description>
+      </entry>
+      <entry value="128" name="ESC_FLAGS_FAILURE_GENERIC">
+        <description>Generic ESC failure.</description>
+      </entry>
+      <entry value="256" name="ESC_FLAGS_OFFLINE">
+        <description>ESC is offline.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="296" name="GLOBAL_POSITION">
@@ -631,6 +662,36 @@
       <field type="uint32_t[6]" name="write_mask">Bitmask indicating which bytes in the data array should be written. Each bit corresponds to a byte index in the data array (bit 0 of write_mask[0] = data[0], bit 31 of write_mask[0] = data[31], bit 0 of write_mask[1] = data[32], etc.). Set bits indicate bytes to write, cleared bits indicate bytes to skip. This allows precise updates of individual parameters without overwriting the entire EEPROM.</field>
       <field type="uint8_t" name="length" maxValue="222">Number of valid bytes in data array.</field>
       <field type="uint8_t[192]" name="data">Raw ESC EEPROM data. Unused bytes should be set to zero.</field>
+    </message>
+    <message id="292" name="ESC_INFO_V2">
+      <wip since="2025122025>Deprecates ESC_INFO</wip>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>ESC information for up to 4 ESC (low streaming rate, nominally 1 Hz).
+
+        The message `index` field is incremented to indicate which set of ESCs are described.
+        The data for each ESC is in the same index for each of the array fields.
+        The ESC number `(message index * 4) + array index` is mapped to a particular motor using an autopilot specific mechanism.
+
+        ESC_STATUS_V2 with the same message index contains contains corresponding higher-rate ESC data.</description>
+      <field type="uint8_t" name="index" instance="true" minValue="0" increment="1" maxValue="25">Message index. ESC data corresponds to ESC_STATUS_V2 message with same index.</field>
+      <field type="uint8_t" name="count">Total number of ESCs in all messages of this type. Message fields with an index higher than this should be ignored because they contain invalid data.</field>
+      <field type="uint8_t[4]" name="error_percent" invalid="[INT8_MAX]>Percentage of errors vs valid data of each ESC since boot.</field>
+      <field type="uint16_t[4]" name="flags" enum="ESC_FLAGS">Bitmap of ESC status flags.</field>
+      <field type="int16_t[4]" name="temperature" units="cdegC" invalid="[INT16_MAX]">Temperature of each ESC.</field>
+      <field type="float[4]" name="total_current" units="Ah" invalid="[NaN]">Total current for each ESC.</field>
+    </message>
+    <message id="293" name="ESC_STATUS_V2">
+      <wip since="2025122025>Deprecates ESC_STATUS</wip>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>ESC information for up to 4 ESC (higher streaming rate, nominally 10 Hz).
+          This should typically only be streamed on high-bandwidth links (i.e. to a companion computer).
+
+          ESC_INFO_V2 with the same message index contains contains corresponding lower-rate ESC data.
+      </description>
+      <field type="uint8_t" name="index" instance="true" minValue="0" increment="1" maxValue="25">Message index. ESC data corresponds to ESC_INFO_V2 message with same index.</field>
+      <field type="float[4]" name="rpm" units="rpm" invalid="[NaN]">Reported motor RPM from each ESC (negative for reverse rotation).</field>
+      <field type="float[4]" name="voltage" units="V" invalid="[NaN]">Voltage measured from each ESC.</field>
+      <field type="float[4]" name="current" units="A" invalid="[NaN]">Current measured from each ESC.</field>
     </message>
   </messages>
 </mavlink>
