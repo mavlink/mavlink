@@ -8034,6 +8034,16 @@
       <field type="uint8_t" name="num_ids">number of IDs in filter list</field>
       <field type="uint16_t[16]" name="ids">filter IDs, length num_ids</field>
     </message>
+    <message id="410" name="COPTER_DRIVE_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Drive status information, applicable to multicopters, helicopters and VTOL/hybrid vehicles. Failed drives or drives operates close to min or max power limit might affect maneuverability or flight stability and immediate operator attention is advised.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint16_t" name="in_use" display="bitmask">Bitmap for drives that are in use in the current flight configuration and flight phase</field>
+      <field type="uint16_t" name="lower_limit" display="bitmask">Bitmap for drives that are running close to or at their minimum power limit.</field>
+      <field type="uint16_t" name="upper_limit" display="bitmask">Bitmap frives that are running close to or at their maxmimum power limit.</field>
+      <field type="uint16_t" name="failed" display="bitmask">Bitmap for drives which are known to be failed.</field>
+    </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
       <description>Cumulative distance traveled for each reported wheel.</description>
