@@ -468,6 +468,33 @@
         <description>BLHeli32 ESC firmware.</description>
       </entry>
     </enum>
+    <enum name="COMMAND_STATE">
+      <description>Command execution state. This is used in COMMAND_PROGRESS message to indicate progress of the main action performed by a command.</description>
+      <entry value="0" name="COMMAND_STATE_UNKNOWN">
+        <description>Command state unknown.</description>
+      </entry>
+      <entry value="1" name="COMMAND_STATE_PENDING">
+        <description>Action has not yet started.</description>
+      </entry>
+      <entry value="3" name="COMMAND_STATE_PRE_ACTION">
+        <description>Command is executing/doing stuff but the action has not yet started (e.g. flying to orbit position).</description>
+      </entry>
+      <entry value="4" name="COMMAND_STATE_STARTED">
+        <description>Action has started.</description>
+      </entry>
+      <entry value="5" name="COMMAND_STATE_COMPLETE">
+        <description>Action has completed normally (e.g. takeoff altitude reached, commanded number of orbits reached).</description>
+      </entry>
+      <entry value="6" name="COMMAND_STATE_FAILED">
+        <description>Commanded action has failed (e.g takeoff, but did not reach altitude, format error on file write).</description>
+      </entry>
+      <entry value="7" name="COMMAND_STATE_INTERRUPTED">
+        <description>Commanded action has been replaced with some other operation (e.g. a goto command has been received half way through a takeoff).</description>
+      </entry>
+      <entry value="8" name="COMMAND_STATE_CANCELLED">
+        <description>Commanded action has been explicitly cancelled (e.g. by COMMAND_CANCEL message).</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="296" name="GLOBAL_POSITION">
@@ -631,6 +658,19 @@
       <field type="uint32_t[6]" name="write_mask">Bitmask indicating which bytes in the data array should be written. Each bit corresponds to a byte index in the data array (bit 0 of write_mask[0] = data[0], bit 31 of write_mask[0] = data[31], bit 0 of write_mask[1] = data[32], etc.). Set bits indicate bytes to write, cleared bits indicate bytes to skip. This allows precise updates of individual parameters without overwriting the entire EEPROM.</field>
       <field type="uint8_t" name="length" maxValue="222">Number of valid bytes in data array.</field>
       <field type="uint8_t[192]" name="data">Raw ESC EEPROM data. Unused bytes should be set to zero.</field>
+    </message>
+    <message id="78" name="COMMAND_PROGRESS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Command protocol progress message.
+      This is used to indicate progress and completion of the action associated with a command (i.e. completion of takeoff), even if the command itself completes immediately with MAV_RESULT_ACCEPTED.
+      It should be streamed from the point the command has been accepted until the main action has completed or otherwise ceased (e.g. if the action is superseded by another action or). The final state should be streamed at least three times following the action ending.
+      The streaming rate is nominally 5Hz, but is expected to be appropriate for the operation being reported, and configurable using normal MAVLink methods. </description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">Mission command being reported.</field>
+      <field type="uint8_t" name="progress" units="%">Progress of main command action. 0 if has not started. UINT8_MAX if progress cannot be estimated.</field>
+      <field type="uint8_t" name="state" enum="COMMAND_STATE">State of command execution.</field>
     </message>
   </messages>
 </mavlink>
