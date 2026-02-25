@@ -238,41 +238,51 @@
         <param index="7" label="Yaw accuracy" units="deg">Estimated 1 sigma accuracy of yaw angle. Set to NaN if unknown.</param>
       </entry>
       <entry value="32100" name="MAV_CMD_REQUEST_OPERATOR_CONTROL" hasLocation="false" isDestination="false">
-        <description>Request GCS control of a system (or of a specific component in a system).
+        <description>Request exclusive control of a system or special system feature by a GCS.
 
-          A controlled system should only accept MAVLink commands and command-like messages that are sent by its controlling GCS, or from other components with the same system id.
-          Commands from other systems should be rejected with MAV_RESULT_FAILED (except for this command, which may be acknowledged with MAV_RESULT_ACCEPTED if control is granted).
-          Command-like messages should be ignored (or rejected if that is supported by their associated protocol).
+          The operator control protocol supports two modes:
+          - In single-owner mode there is a single GCS "owner" that can send state changing operations to the whole system, and this command can be used to request takeover of that ownership role.
+          - In multi-owner mode the flight stack allows multiple GCS to be "owners" and send (most) state changing operations (which GCS those are is implementation-dependent, and not controlled by this protocol).
+            However only one GCS owner can control manual input of the vehicle: this command can be used to request takeover of that ownership role.
+        
+          A controlled system should only accept MAVLink operations that change the state of the vehicle, such as commands and command-like messages, which are sent by its controlling GCS(s) (or from other components in its own system/with the same system id, such as a companion computer).
+          Commands to control the vehicle from other systems should be rejected with MAV_RESULT_NOT_IN_CONTROL (except for this command, which may be acknowledged with MAV_RESULT_ACCEPTED if control is granted).
+          Messages and commands that don't control or change vehicle movement or functionality, such as telemetry requests, may still be send from (and to) a controlled system.
 
           GCS control of the whole system is managed via a single component that we will refer to here as the "system manager component".
           This component streams the CONTROL_STATUS message and sets the GCS_CONTROL_STATUS_FLAGS_SYSTEM_MANAGER flag.
-          Other components in the system should monitor for the CONTROL_STATUS message with this flag, and set their controlling GCS to match its published system id.
+          Other components in the system should monitor for the CONTROL_STATUS message with this flag, and set their controlling GCS(s) to match its published system id(s).
           A GCS that wants to control the system should also monitor for the same message and flag, and address the MAV_CMD_REQUEST_OPERATOR_CONTROL to its component id.
           Note that integrators are required to ensure that there is only one system manager component in the system (i.e. one component emitting the message with GCS_CONTROL_STATUS_FLAGS_SYSTEM_MANAGER set).
 
           The MAV_CMD_REQUEST_OPERATOR_CONTROL command is sent by a GCS to the system manager component to request or release control of a system, specifying whether subsequent takeover requests from another GCS are automatically granted, or require permission.
+          The command may request control for a single GCS system ID or a range of GCS system IDs: the sender of the command must have a system id that is in the requested range.
 
-          The system manager component should grant control to the GCS if the system does not require takeover permission (or is uncontrolled) and ACK the request with MAV_RESULT_ACCEPTED.
-          The system manager component should then stream CONTROL_STATUS indicating its controlling system: all other components with the same system id should monitor this message and set their own controlling GCS to match that of the system manager component.
+          The system manager component should grant control to the requested GCS(s) if the system does not require takeover permission (or is uncontrolled) and ACK the request with MAV_RESULT_ACCEPTED.
+          The system manager component should then stream CONTROL_STATUS indicating its controlling system(s): all other components in the system (with the same system id) should monitor this message and set their own controlling GCS(s) to match that of the system manager component.
 
-          If the system manager component cannot grant control (because takeover requires permission), the request should be rejected with MAV_RESULT_FAILED.
-          The system manager component should then send this same command to the current owning GCS in order to notify of the request.
-          The owning GCS would ACK with MAV_RESULT_ACCEPTED, and might choose to release control of the vehicle, or re-request control with the takeover bit set to allow permission.
-          In case it choses to re-request control with takeover bit set to allow permission, requester GCS will only have 10 seconds to get control, otherwise owning GCS will re-request control with takeover bit set to disallow permission, and requester GCS will need repeat the request if still interested in getting control.
+          If the system manager component cannot grant control because takeover requires permission, the request should be rejected with MAV_RESULT_FAILED.
+          The system manager component should then send this same command to the owning GCS with the lowest system ID that has a heartbeat, in order to notify of the request.
+          That owning GCS must ACK with MAV_RESULT_ACCEPTED, and may choose to release control of the vehicle, or re-request control with the takeover bit set to allow permission.
+          In case it choses to re-request control with takeover bit set to allow permission, the requester GCS will only have 10 seconds to get control, otherwise owning GCS will re-request control with takeover bit set to disallow permission, and requester GCS will need repeat the request if still interested in getting control.
           Note that the pilots of both GCS should coordinate safe handover offline.
 
-          Note that in most systems the only controlled component will be the "system manager component", and that will be the autopilot.
+          While any owning GCS are connected the system should consider itself connected to a GCS, and still owned by all GCS (even those that are not connected).
+          If all owning GCS are disconnected the vehicle should GCS loss failsafe, and broadcast a CONTROL_STATUS indicating that it has no owner(s).
+          In simultaneous-owner scenarios this allows an owner to disconnect and reconnect without the vehicle failsafing, provided at least one owner is connected.
+               
+          Note that in most systems the only controlled component will be the "system manager component", and that will be the autopilot (although it could be a companion computer).
           However separate GCS control of a particular component is also permitted, if supported by the component.
           In this case the GCS will address MAV_CMD_REQUEST_OPERATOR_CONTROL to the specific component it wants to control.
           The component will then stream CONTROL_STATUS for its controlling GCS (it must not set GCS_CONTROL_STATUS_FLAGS_SYSTEM_MANAGER).
           The component should fall back to the system GCS (if any) when it is not directly controlled, and may stop emitting CONTROL_STATUS.
           The flow is otherwise the same as for requesting control over the whole system.
         </description>
-        <param index="1" label="Sysid requesting control">System ID of GCS requesting control. 0 when command sent from GCS to autopilot (autopilot determines requesting GCS sysid from message header). Sysid of GCS requesting control when command sent by autopilot to controlling GCS.</param>
-        <param index="2" label="Action">0: Release control, 1: Request control.</param>
-        <param index="3" label="Allow takeover">Enable automatic granting of ownership on request (by default reject request and notify current owner). 0: Ask current owner and reject request, 1: Allow automatic takeover.</param>
-        <param index="4" label="Request timeout" units="s" minValue="3" maxValue="60">Timeout in seconds before a request to a GCS to allow takeover is assumed to be rejected. This is used to display the timeout graphically on requester and GCS in control.</param>
-        <param index="5">Empty</param>
+        <param index="1" label="Action">0: Release control, 1: Request control.</param>
+        <param index="2" label="Allow takeover">Enable automatic granting of ownership on request (by default reject request and notify current owner). 0: Ask current owner and reject request, 1: Allow automatic takeover.</param>
+        <param index="3" label="Request timeout" units="s" minValue="3" maxValue="60">Timeout in seconds before a request to a GCS to allow takeover is assumed to be rejected. This is used to display the timeout graphically on requester and GCS in control.</param>
+        <param index="4" label="GCS Sysid">System ID of GCS requesting control. For a range of GCS in control, this the minimum id (and the sender system ID may be anywhere in the range).</param>
+        <param index="5" label="GCS Sysid (upper range)">Upper range of controlling GCS system IDs. 0 for single-GCS control. If non-zero the sender system ID may be anywhere in the range).</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
@@ -280,7 +290,10 @@
     <enum name="GCS_CONTROL_STATUS_FLAGS" bitmask="true">
       <description>CONTROL_STATUS flags.</description>
       <entry value="1" name="GCS_CONTROL_STATUS_FLAGS_SYSTEM_MANAGER">
-        <description>If set, this CONTROL_STATUS publishes the controlling GCS for the whole system. If unset, the CONTROL_STATUS indicates the controlling GCS for just the component emitting the message. Note that to request control of the system a GCS should send MAV_CMD_REQUEST_OPERATOR_CONTROL to the component emitting CONTROL_STATUS with this flag set.</description>
+        <description>If set, this CONTROL_STATUS publishes the controlling GCS(s) of the whole system. 
+          If unset, the CONTROL_STATUS indicates the controlling GCS(s) for just the component emitting the message.
+          Note that to request control of the system a GCS should send MAV_CMD_REQUEST_OPERATOR_CONTROL to the component emitting CONTROL_STATUS with this flag set.
+        </description>
       </entry>
       <entry value="2" name="GCS_CONTROL_STATUS_FLAGS_TAKEOVER_ALLOWED">
         <description>Takeover allowed (requests for control will be granted). If not set requests for control will be rejected, but the controlling GCS will be notified (and may release control or allow takeover).</description>
@@ -560,9 +573,21 @@
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of target</field>
     </message>
     <message id="512" name="CONTROL_STATUS">
-      <description>Information about GCS in control of this MAV. This should be broadcast at low rate (nominally 1 Hz) and emitted when ownership or takeover status change. Control over MAV is requested using MAV_CMD_REQUEST_OPERATOR_CONTROL.</description>
-      <field type="uint8_t" name="sysid_in_control">System ID of GCS MAVLink component in control (0: no GCS in control).</field>
-      <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS">Control status. For example, whether takeover is allowed, and whether this message instance defines the default controlling GCS for the whole system.</field>
+      <description>Information about GCS(s) in control of this MAV.
+        This should be broadcast at low rate (nominally 1 Hz) and emitted when ownership or takeover status change.
+        Components in the system should only accept "state changing commands/messages" from any system id in `gcs_main` or  `gcs_secondary`.
+        
+        - In single-owner mode there is a single GCS that can send "state changing commands/messages" listed in `gcs_main` (`gcs_secondary` must be set to all-zero).
+        - In multi-owner mode, all GCS with ids in `gcs_main` and `gcs_secondary` can send "state changing commands/messages".
+          However `gcs_main` is the only GCS that can perform "special controlled operations" such as manual control.
+        - Control over ownership of the `gcs_main` role is requested using MAV_CMD_REQUEST_OPERATOR_CONTROL.
+        - GCS in `gcs_secondary` are set by the flight stack (cannot be set by this mechanism).
+          It should only include IDs for connected GCS.
+          If more than 11 GCS are in control and visible, the flight stack will at most be able to publish 11.
+      </description>
+      <field type="uint8_t" name="flags" enum="GCS_CONTROL_STATUS_FLAGS">Control status. For example, whether takeover of the `gcs_main` role is allowed, and whether this CONTROL_STATUS instance defines the default controlling GCS for the whole system.</field>
+      <field type="uint8_t" name="gcs_main" invalid="0">System ID of GCS in control. 0: no GCS in control.</field>
+      <field type="uint8_t[10]" name="gcs_secondary" invalid="[0,]">System IDs from which the system can recieve state-changing commands/messages in multi-control mode. All values should be zero for single-ower mode.</field>
     </message>
     <message id="292" name="ESC_EEPROM">
       <description>ESC EEPROM data message for reading and writing ESC configuration.
