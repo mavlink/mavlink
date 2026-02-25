@@ -435,57 +435,8 @@
         <description>BLHeli32 ESC firmware.</description>
       </entry>
     </enum>
-    <enum name="GLOBAL_POSITION_SRC">
-      <description>Source for GLOBAL_POSITION measurement or estimate.</description>
-      <entry value="0" name="GLOBAL_POSITION_SRC_UNKNOWN">
-        <description>Source is unknown or not one of the listed types.</description>
-      </entry>
-      <entry value="1" name="GLOBAL_POSITION_SRC_GNSS">
-        <description>Global Navigation Satellite System (e.g.: GPS, Galileo, Glonass, BeiDou).</description>
-      </entry>
-      <entry value="2" name="GLOBAL_POSITION_SRC_VISION">
-        <description>Vision system (e.g.: map matching).</description>
-      </entry>
-      <entry value="3" name="GLOBAL_POSITION_SRC_PSEUDOLITES">
-        <description>A pseudo-satellite system using transceiver beacons to perform GNSS-like positioning.</description>
-      </entry>
-      <entry value="4" name="GLOBAL_POSITION_SRC_TERRAIN">
-        <description>Terrain referenced navigation.</description>
-      </entry>
-      <entry value="5" name="GLOBAL_POSITION_SRC_MAGNETIC">
-        <description>Magnetic positioning.</description>
-      </entry>
-      <entry value="6" name="GLOBAL_POSITION_SRC_ESTIMATOR">
-        <description>Estimated position based on various sensors (eg. a Kalman Filter).</description>
-      </entry>
-    </enum>
-    <enum name="GLOBAL_POSITION_FLAGS" bitmask="true">
-      <description>Status flags for GLOBAL_POSITION</description>
-      <entry value="1" name="GLOBAL_POSITION_UNHEALTHY">
-        <description>Unhealthy sensor/estimator.</description>
-      </entry>
-      <entry value="2" name="GLOBAL_POSITION_PRIMARY">
-        <description>True if the data originates from or is consumed by the primary estimator.</description>
-      </entry>
-    </enum>
   </enums>
   <messages>
-    <message id="296" name="GLOBAL_POSITION_SENSOR">
-      <description>Reports measurement/estimate from a global position sensor. Used as navigation fusion source and optionally displayed in the UI.</description>
-      <field type="uint8_t" name="target_system" default="0">System ID (ID of target system, normally autopilot and ground station).</field>
-      <field type="uint8_t" name="target_component" default="0">Component ID (normally 0 for broadcast).</field>
-      <field type="uint8_t" name="id" instance="true">Sensor ID</field>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp of message transmission (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="uint32_t" name="processing_time" units="us">The time spent in processing the sensor data that is the basis for this position. The recipient can use this to improve time alignment of the data. This is the time between measurement (e.g. camera exposure time) and transmission of this message. Set to NaN if not known.</field>
-      <field type="uint8_t" name="source" enum="GLOBAL_POSITION_SRC">Source of position/estimate (such as GNSS, estimator, etc.)</field>
-      <field type="uint8_t" name="flags" enum="GLOBAL_POSITION_FLAGS">Status flags</field>
-      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude (WGS84)</field>
-      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude (WGS84)</field>
-      <field type="float" name="alt_ellipsoid" units="m" invalid="NaN">Altitude (WGS84 elipsoid), preferred if available</field>
-      <field type="float" name="alt" units="m" invalid="NaN">Altitude (MSL - position-system specific value) use if no alt_ellipsoid available</field>
-      <field type="float" name="eph" units="m" invalid="NaN">Standard deviation of horizontal position error</field>
-      <field type="float" name="epv" units="m" invalid="NaN">Standard deviation of vertical position error</field>
-    </message>
     <message id="354" name="SET_VELOCITY_LIMITS">
       <wip/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
