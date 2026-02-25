@@ -396,6 +396,20 @@
       <entry value="12" name="GIMBAL_Board"/>
       <entry value="13" name="DEPLOYMENT_ARM_Board"/>
     </enum>
+    <enum name="MAV_SYS_STATUS_SENSOR_EXTENDED" bitmask="true">
+      <entry value="65536" name="MAV_SYS_STATUS_SENSOR_LIDAR_SLAM">
+        <description>0x10000 LiDAR-based SLAM positioning (e.g. FAST-LIO, Cartographer, LOAM). Distinct from MAV_SYS_STATUS_SENSOR_LASER_POSITION which covers simple 1D rangefinders.</description>
+      </entry>
+      <entry value="131072" name="MAV_SYS_STATUS_SENSOR_VPS">
+        <description>0x20000 Vision Positioning System (VPS) — downward-facing camera-based hovering aid.</description>
+      </entry>
+      <entry value="262144" name="MAV_SYS_STATUS_SENSOR_VISUAL_SLAM">
+        <description>0x40000 Visual SLAM positioning (camera-based Simultaneous Localization and Mapping, e.g. ORB-SLAM, RTABMap).</description>
+      </entry>
+      <entry value="524288" name="MAV_SYS_STATUS_SENSOR_VIO">
+        <description>0x80000 Visual-Inertial Odometry (VIO) — tightly coupled camera and IMU fusion for position estimation.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="3333" name="Sensor_Status">
