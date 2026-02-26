@@ -586,5 +586,23 @@
       <field type="uint8_t" name="length" maxValue="222">Number of valid bytes in data array.</field>
       <field type="uint8_t[192]" name="data">Raw ESC EEPROM data. Unused bytes should be set to zero.</field>
     </message>
+    <message id="513" name="RANGING_BEACON">
+      <description>Range measurement from a radio beacon for trilateration-based positioning</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (epoch UTC time synced with GNSS system time or time since system boot)</field>
+      <field type="uint8_t" name="beacon_id" instance="true">ID of the ranging beacon/station</field>
+      <field type="uint32_t" name="range" units="mm" invalid="UINT32_MIN">Range measurement in millimeters</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Beacon latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Beacon longitude (WGS84)</field>
+      <field type="float" name="alt_msl" units="m" invalid="NaN">Beacon altitude (MSL, WGS84) </field>
+      <field type="float" name="alt_ellipsoid" units="m" invalid="NaN">Beacon altitude (ellipsoid, WGS84)</field>
+      <field type="uint32_t" name="hacc_est" units="mm" invalid="UINT32_MAX">1-sigma horizontal accuracy estimate</field>
+      <field type="uint32_t" name="vacc_est" units="mm" invalid="UINT32_MAX">1-sigma vertical accuracy estimate</field>
+      <field type="int8_t" name="rssi_node" units="dBm" invalid="INT8_MAX">RSSI at node/vehicle side</field>
+      <field type="int8_t" name="rssi_beacon" units="dBm" invalid="INT8_MAX">RSSI at beacon/station side</field>
+      <field type="uint8_t" name="battery_status" units="%" invalid="UINT8_MAX">Beacon battery status (0-100%, 255 if unknown)</field>
+      <field type="uint8_t" name="sequence">Measurement sequence number</field>
+      <field type="uint16_t" name="carrier_freq" units="MHz" invalid="UINT16_MIN">Ranging carrier frequency</field>
+      <field type="float" name="range_accuracy" units="m" invalid="NaN">Estimated range measurement accuracy</field>
+    </message>
   </messages>
 </mavlink>
