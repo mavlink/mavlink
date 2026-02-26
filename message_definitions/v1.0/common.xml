@@ -801,6 +801,25 @@
         <description>Vehicle uses current yaw behaviour (unchanged). The vehicle-default yaw behaviour is used if this value is specified when orbit is first commanded.</description>
       </entry>
     </enum>
+    <enum name="MISSION_YAW_MODE">
+      <description>
+        Default vehicle yaw.
+        This is used in MAV_CMD_SET_DEFAULT_YAW_MODE to set the default yaw used in missions (if the yaw is not explicitly set).
+        The yaw mode applies to vehicles that allow independent control over yaw and direction of travel (e.g. multirotors).
+      </description>
+      <entry value="0" name="MISSION_YAW_MODE_WAYPOINT">
+        <description>Vehicle front points towards next waypoint.</description>
+      </entry>
+      <entry value="1" name="MISSION_YAW_MODE_HOME">
+        <description>Vehicle front points towards home.</description>
+      </entry>
+      <entry value="2" name="MISSION_YAW_MODE_AWAY_HOME">
+        <description>Vehicle front points away from home (rear faces home location).</description>
+      </entry>
+      <entry value="3" name="MISSION_YAW_MODE_TRAJECTORY">
+        <description>Vehicle front points along vehicle trajectory.</description>
+      </entry>
+    </enum>
     <enum name="WIFI_CONFIG_AP_RESPONSE">
       <description>Possible responses from a WIFI_CONFIG_AP message.</description>
       <entry value="0" name="WIFI_CONFIG_AP_RESPONSE_UNDEFINED">
@@ -1086,7 +1105,7 @@
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2" label="Accept Radius" units="m" minValue="0">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
         <param index="3" label="Pass Radius" units="m">0 to pass through the WP, if &gt; 0 radius to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.</param>
-        <param index="4" label="Yaw" units="deg">Desired yaw angle at waypoint (rotary wing). NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
+        <param index="4" label="Yaw" units="deg">Desired yaw angle at waypoint (multicopter). NaN to use the current system or mission-specific yaw heading mode as set using MAV_CMD_SET_DEFAULT_YAW_MODE (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
@@ -2042,6 +2061,15 @@
         <param index="1" label="Failure unit" enum="FAILURE_UNIT">The unit which is affected by the failure.</param>
         <param index="2" label="Failure type" enum="FAILURE_TYPE">The type how the failure manifests itself.</param>
         <param index="3" label="Instance">Instance affected by failure (0 to signal all).</param>
+      </entry>
+      <entry value="421" name="MAV_CMD_SET_DEFAULT_YAW_MODE" hasLocation="false" isDestination="false">
+        <description>
+          Sets the default mission yaw mode (e.g. yaw: towards next waypoint, towards home, etc.).
+          Sets the system-default mission yaw if sent via the command protocol.
+          When used it a mission it over-rides the system-default mission yaw for the current mission (from the point(s) at which it is inserted).
+          Note that yaw modes only apply on vehicles that support independent control of the direction of movement and the direction that the vehicle is facing (e.g. multirotor).
+        </description>
+        <param index="1" label="Yaw Mode" enum="MISSION_YAW_MODE">Default yaw behaviour in mission mode.</param>
       </entry>
       <entry value="500" name="MAV_CMD_START_RX_PAIR" hasLocation="false" isDestination="false">
         <description>Starts receiver pairing.</description>
@@ -8089,6 +8117,16 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (synced to UNIX time or since system boot).</field>
       <field type="uint8_t" name="count">Number of wheels reported.</field>
       <field type="double[16]" name="distance" units="m">Distance reported by individual wheel encoders. Forward rotations increase values, reverse rotations decrease them. Not all wheels will necessarily have wheel encoders; the mapping of encoders to wheel positions must be agreed/understood by the endpoints.</field>
+    </message>
+    <message id="405" name="MISSION_DEFAULT_YAW">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>
+        The system default mission yaw.
+        This can be requested using MAV_CMD_REQUEST_MESSAGE.
+        Note that the yaw is the default value for all missions if yaw is not explicitly specified, and may be set using AV_CMD_SET_DEFAULT_YAW_MODE.
+      </description>
+      <field type="uint8_t" name="connection_type" enum="MISSION_YAW_MODE">Default mission yaw mode (e.g. towards next waypoint, towards home, etc).</field>
     </message>
     <message id="9005" name="WINCH_STATUS">
       <description>Winch status.</description>
