@@ -1,0 +1,366 @@
+<?xml version="1.0"?>
+<mavlink>
+  <!-- XML file for the MAVLink dialect  -->
+  <include>standard.xml</include>
+  <version>0</version>
+  <dialect>0</dialect>
+  <enums>
+    <enum name="AUTONOMY_DEMAND">
+      <description>Demands to be made to the autonomy system.</description>
+      <entry value="0" name="AUTONOMY_DEMAND_DEFAULT">
+        <description>Default value, ignored.</description>
+      </entry>
+      <entry value="1" name="AUTONOMY_DEMAND_START">
+        <description>Start Autonomy System.</description>
+      </entry>
+      <entry value="2" name="AUTONOMY_DEMAND_STOP">
+        <description>Stop Autonomy System.</description>
+      </entry>
+      <entry value="3" name="AUTONOMY_DEMAND_GO_TO_RECOVERY">
+        <description>Abort Autonomy System to the Recovery Point.</description>
+      </entry>
+      <entry value="4" name="AUTONOMY_DEMAND_PAUSE">
+        <description>Pause Autonomy System.</description>
+      </entry>
+      <entry value="5" name="AUTONOMY_DEMAND_SUSPEND">
+        <description>Suspend Autonomy System Control Temporarily.</description>
+      </entry>
+      <entry value="6" name="AUTONOMY_DEMAND_RESUME">
+        <description>Resume Autonomy System.</description>
+      </entry>
+    </enum>
+    <enum name="AUTONOMY_COMPONENT" bitmask="true">
+      <description>These encode the components that can be present in an autonomy system.</description>
+      <entry value="1" name="AUTONOMY_COMPONENT_CORE">
+        <description>0x01 Autonomy System Core</description>
+      </entry>
+      <entry value="2" name="AUTONOMY_COMPONENT_ATR">
+        <description>0x02 Automated Target Recognition</description>
+      </entry>
+      <entry value="4" name="AUTONOMY_COMPONENT_SAS">
+        <description>0x04 Synthetic Aperture Sonar</description>
+      </entry>
+      <entry value="8" name="AUTONOMY_COMPONENT_MBES">
+        <description>0x08 Multi Beam Echo Sounder</description>
+      </entry>
+      <entry value="16" name="AUTONOMY_COMPONENT_FLS">
+        <description>0x10 Forward Look Sonar</description>
+      </entry>
+      <entry value="32" name="AUTONOMY_COMPONENT_CAMERA">
+        <description>0x20 Camera</description>
+      </entry>
+      <entry value="64" name="AUTONOMY_COMPONENT_ACOMMS">
+        <description>0x40 Acomms Modem</description>
+      </entry>
+      <entry value="128" name="AUTONOMY_COMPONENT_MISSION">
+        <description>0x80 Autonomy Mission</description>
+      </entry>
+    </enum>
+    <enum name="AUTONOMY_STATE">
+      <description>Current state of the Autonomy System.</description>
+      <entry value="0" name="AUTONOMY_STATE_DEFAULT">
+        <description>Default state, ignored.</description>
+      </entry>
+      <entry value="1" name="AUTONOMY_STATE_IDLE">
+        <description>System has not been started.</description>
+      </entry>
+      <entry value="2" name="AUTONOMY_STATE_EXECUTING">
+        <description>Autonomy System Executing and in control.</description>
+      </entry>
+      <entry value="3" name="AUTONOMY_STATE_PAUSED">
+        <description>Autonomy System Paused.</description>
+      </entry>
+      <entry value="4" name="AUTONOMY_STATE_SUSPENDED">
+        <description>Autonomy System Control Suspended Temporarily.</description>
+      </entry>
+      <entry value="5" name="AUTONOMY_STATE_COMPLETED">
+        <description>Autonomy System execution completed successfully.</description>
+      </entry>
+      <entry value="6" name="AUTONOMY_STATE_STOPPED">
+        <description>Autonomy System execution stopped early.</description>
+      </entry>
+      <entry value="7" name="AUTONOMY_STATE_RECOVERING">
+        <description>Autonomy System heading to recovery position.</description>
+      </entry>
+    </enum>
+    <enum name="VEHICLE_MODE">
+      <description>Current mode of a squad vehicle.</description>
+      <entry value="0" name="VEHICLE_MODE_DEFAULT">
+        <description>Default state, ignored.</description>
+      </entry>
+      <entry value="1" name="VEHICLE_MODE_MISSION_FAULT">
+        <description>There is a fault with the current mission.</description>
+      </entry>
+      <entry value="2" name="VEHICLE_MODE_MISSION_ABORT">
+        <description>The current mission has been aborted.</description>
+      </entry>
+      <entry value="3" name="VEHICLE_MODE_BASELINE_MISSION">
+        <description>The vehicle is executing its baseline mission.</description>
+      </entry>
+      <entry value="4" name="VEHICLE_MODE_REMOTE_MISSION">
+        <description>The vehicle is executing a remote mission.</description>
+      </entry>
+    </enum>
+    <enum name="PAYLOAD_TYPE">
+      <description>Supported Payload types.</description>
+      <entry value="0" name="PAYLOAD_TYPE_CAMERA">
+        <description>Generic Camera Payload.</description>
+      </entry>
+      <entry value="1" name="PAYLOAD_TYPE_LIDAR">
+        <description>Light Detection and Ranging Payload.</description>
+      </entry>
+      <entry value="2" name="PAYLOAD_TYPE_WINCH">
+        <description>Winch Payload.</description>
+      </entry>
+      <entry value="3" name="PAYLOAD_TYPE_ACOUSTIC_MODEM">
+        <description>Acoustic Modem Payload.</description>
+      </entry>
+      <entry value="4" name="PAYLOAD_TYPE_SAS">
+        <description>Single Aperture Sonar Payload.</description>
+      </entry>
+      <entry value="5" name="PAYLOAD_TYPE_MBES">
+        <description>Multi Beam Echo Sounder Payload.</description>
+      </entry>
+      <entry value="6" name="PAYLOAD_TYPE_FLS">
+        <description>Forward Look Sonar Payload.</description>
+      </entry>
+      <entry value="101" name="PAYLOAD_TYPE_GENERIC_1">
+        <description>Generic Payload 1.</description>
+      </entry>
+      <entry value="102" name="PAYLOAD_TYPE_GENERIC_2">
+        <description>Generic Payload 2.</description>
+      </entry>
+      <entry value="103" name="PAYLOAD_TYPE_GENERIC_3">
+        <description>Generic Payload 3.</description>
+      </entry>
+      <entry value="104" name="PAYLOAD_TYPE_GENERIC_4">
+        <description>Generic Payload 4.</description>
+      </entry>
+      <entry value="105" name="PAYLOAD_TYPE_GENERIC_5">
+        <description>Generic Payload 5.</description>
+      </entry>
+    </enum>
+    <enum name="PAYLOAD_HEALTH">
+      <description>Flags to report health of a registered payload.</description>
+      <entry value="1" name="PAYLOAD_HEALTH_GENERIC">
+        <description>0x01 Payload Health - Generic.</description>
+      </entry>
+    </enum>
+    <enum name="PAYLOAD_STATE">
+      <description>Flags to report state of a registered payload.</description>
+      <entry value="1" name="PAYLOAD_STATE_POWERED">
+        <description>0x01 Payload State - Powered.</description>
+      </entry>
+      <entry value="2" name="PAYLOAD_STATE_ARMED">
+        <description>0x02 Payload State - Armed.</description>
+      </entry>
+      <entry value="4" name="PAYLOAD_STATE_ACTIVE">
+        <description>0x04 Payload State - Active.</description>
+      </entry>
+    </enum>
+    <enum name="PAYLOAD_LIST_RESULT">
+      <description>Results of payload discovery operation (in a PAYLOAD_LIST_ACK message).</description>
+      <entry value="0" name="PAYLOAD_LIST_ACCEPTED">
+        <description>Payload List downloaded OK</description>
+      </entry>
+      <entry value="1" name="PAYLOAD_LIST_ERROR">
+        <description>Generic error with downloading Payload List.</description>
+      </entry>
+      <entry value="2" name="PAYLOAD_LIST_REPEATED_ID">
+        <description>Multiple entries for same Payload ID in List.</description>
+      </entry>
+    </enum>
+    <!-- Additions to the MAV_SYS_STATUS_SENSOR_EXTENDED enum: -->
+    <enum name="MAV_SYS_STATUS_SENSOR_EXTENDED" bitmask="true">
+      <description>These encode the sensors whose status is sent as part of the SYS_STATUS message in the extended fields.</description>
+      <entry value="2" name="MAV_SYS_STATUS_ACOUSTIC_MODEM">
+        <description>0x02 Acoustic Modem</description>
+      </entry>
+      <entry value="4" name="MAV_SYS_STATUS_SAS">
+        <description>0x04 Single Aperture Sonar</description>
+      </entry>
+      <entry value="8" name="MAV_SYS_STATUS_MBES">
+        <description>0x08 Multi Beam Echo Sounder</description>
+      </entry>
+      <entry value="16" name="MAV_SYS_STATUS_FLS">
+        <description>0x10 Forward Look Sonar</description>
+      </entry>
+    </enum>
+    <!-- The MAV_CMD enum entries describe either: -->
+    <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
+    <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
+    <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
+    <enum name="MAV_CMD">
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <entry value="44000" name="MAV_CMD_AUTONOMY_DEMAND" hasLocation="false" isDestination="false">
+        <description>Send Autonomy Demand to Autonomy System.</description>
+        <param index="1" label="Autonomy Demand"  enum="AUTONOMY_DEMAND">Autonomy Demand.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5">Empty.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
+      <!-- <entry value="44001" name="MAV_CMD_AUTONOMY_COMPONENT_ENABLE" hasLocation="false" isDestination="false">
+        <description>Enable the bitmask specified autonomy components (1 enable, 0 disable). Command will be rejected if trying to enable a component that is not present. </description>
+        <param index="1">Empty.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5" label="components" enum="AUTONOMY_COMPONENT">Bitmask of enabled Autonomy Components.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry> -->
+      <entry value="44002" name="MAV_CMD_PAYLOAD_SET_STATE" hasLocation="false" isDestination="false">
+        <description>Set the states for the payload with the specified ID. Command will be rejected if trying to set a state not supported by the payload. Note that this command should always be sent as COMMAND_INT which has param5/x as int32_t rather than float.</description>
+        <param index="1" label="Payload ID" minValue="0" maxValue="999" increment="1">Payload ID, 0 to apply to all Payloads in List.</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5" label="components" enum="PAYLOAD_STATE">Bitmask of enabled Payload states.</param>
+        <param index="6">Empty.</param>
+        <param index="7">Empty.</param>
+      </entry>
+      <entry value="44010" name="MAV_CMD_NAV_TRACK_START" hasLocation="true" isDestination="true">
+        <description>Navigate between two points maintaining trackline between them</description>
+        <param index="1" label="Hold" units="s" minValue="0">Hold time</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4" label="Tolerance" units="m" minValue="0">Maximum distance from track centre-line before correction is required</param>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
+      </entry>
+      <entry value="44011" name="MAV_CMD_NAV_TRACK_END" hasLocation="true" isDestination="true">
+        <description>Navigate between two points maintaining trackline between them</description>
+        <param index="1" label="Hold" units="s" minValue="0">Hold time</param>
+        <param index="2">Empty.</param>
+        <param index="3">Empty.</param>
+        <param index="4">Empty.</param>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
+      </entry>
+    </enum>
+  </enums>
+  <messages>
+    <message id="44001" name="AUTONOMY_STATUS">
+      <description>The state of the autonomy system.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="autonomy_components_present" enum="AUTONOMY_COMPONENT" display="bitmask" print_format="0x%04x">Bitmap showing which autonomy components are present. Value of 0: not present. Value of 1: present.</field>
+      <field type="uint32_t" name="autonomy_components_enabled" enum="AUTONOMY_COMPONENT" display="bitmask" print_format="0x%04x">Bitmap showing which autonomy components are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
+      <field type="uint32_t" name="autonomy_components_health" enum="AUTONOMY_COMPONENT" display="bitmask" print_format="0x%04x">Bitmap showing which autonomy components have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
+      <field type="uint8_t" name="system_state" enum="AUTONOMY_STATE">The Execution state of the Autonomy System.</field>
+    </message>
+    <message id="44100" name="MESSAGE_CONTACT_SNIPPET">
+      <description>Contact snippet message to be sent to specified destination, as well as confidence of contact snippet.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint32_t" name="destination_address">Acomms message destination, 0 for broadcast.</field>
+      <field type="uint8_t" name="source_vehicle_id">Source Vehicle ID.</field>
+      <field type="uint8_t" name="snippet_confidence" units="%" >Contact snippet confidence (0 to 100).</field>
+      <field type="uint16_t" name="snippet_id">Contact snippet identifier. Unique for each snippet.</field>
+      <field type="uint8_t" name="message_length">Length of the data transported in message.</field>
+      <field type="uint8_t[128]" name="message">Variable length message. The message length is defined by message_length.</field>
+    </message>
+    <message id="44101" name="MESSAGE_AUTONOMY_MISSION_STATUS">
+      <description>Autonomy System Mission Status message to be sent to specified destination.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="destination_address">Acomms message destination, 0 for broadcast.</field>
+      <field type="uint8_t" name="source_vehicle_id" invalid="UINT8_MAX">Source Vehicle ID. UINT8_MAX: field not provided.</field>
+      <field type="uint8_t" name="message_length">Length of the data transported in message.</field>
+      <field type="uint8_t[128]" name="message">Variable length message. The message length is defined by message_length.</field>
+    </message>
+    <message id="44102" name="SQUAD_VEHICLE_STATE">
+      <description>Vehicle state data recieved from another vehicle in the squad.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="source_vehicle_id">Source Vehicle ID.</field>
+      <field type="uint8_t" name="vehicle_mode" enum="VEHICLE_MODE">Vehicle Mode.</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude, expressed</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude, expressed</field>
+      <field type="float" name="depth" units="m">Current depth in meters positive down from the surface.</field>
+      <field type="float" name="altitude" units="m">Current altitude from the terrain.</field>
+      <field type="float" name="heading" units="deg">Heading in degrees clockwise from North.</field>
+      <field type="float" name="velocity" units="m/s">Speed in meters per second.</field>
+      <field type="int8_t" name="battery_state" units="%" invalid="-1">Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery.</field>
+      <field type="uint32_t" name="vehicle_faults">Vehicle faults - defined specific to vehicle.</field>
+    </message>
+    <message id="44200" name="PAYLOAD_REQUEST_LIST">
+      <description>Request the list of registered payloads from the system/component.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+    </message>
+    <message id="44201" name="PAYLOAD_COUNT">
+      <description>Emitted as response to PAYLOAD_REQUEST_LIST, the sender can then request the details of each payload in sequence.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint16_t" name="count">Number of registered payloads</field>
+    </message>
+    <message id="44202" name="PAYLOAD_LIST_ITEM_REQUEST">
+      <description>Request the details of the payload item with the specified list position. The response of the system to this message should be a PAYLOAD_LIST_ITEM message.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="payload_list_position">Payload List Position.</field>
+    </message>
+    <message id="44203" name="PAYLOAD_LIST_ITEM">
+      <description>This message is emitted as response to PAYLOAD_REQUEST_LIST, and contains the details (ID, Type, Name) of the specified Payload.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="payload_id">Payload ID, 1 - N.</field>
+      <field type="char[16]" name="payload_name"> Payload Name.</field>
+      <field type="uint8_t" name="payload_type" enum="PAYLOAD_TYPE">Payload type.</field>
+      <field type="uint16_t" name="valid_states" enum="PAYLOAD_STATE" display="bitmask" print_format="0x%04x">Bitmap showing the valid states of the payload. Value of 0: state cannot be changed. Value of 1: state can be changed.</field>
+    </message>
+    <message id="44204" name="PAYLOAD_LIST_ACK">
+      <description>Acknowledgment message during payload handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="result" enum="PAYLOAD_LIST_RESULT">Payload List result.</field>
+    </message>
+    <message id="44205" name="PAYLOAD_STATUS_REQUEST">
+      <deprecated since="2022-05" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
+      <description>Request the status of the payload item with the specified payload ID. The response of the system to this message should be a PAYLOAD_STATUS message. Note: this message has been deprecated in favor of using MAV_CMD_REQUEST_MESSAGE with param1 specifiying the message ID and param2 specifying the payload ID.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="payload_id">Payload ID.</field>
+    </message>
+    <message id="44206" name="PAYLOAD_STATUS">
+      <description>This message is emitted as response to MAV_CMD_REQUEST_MESSAGE with param1 specifying the message ID (44206) andparam2 specifying the payload ID, and contains the details (ID and Type) and health and status (as bitmasks) of the specified payload.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="payload_id">Payload ID, 1 - N.</field>
+      <field type="uint8_t" name="payload_type" enum="PAYLOAD_TYPE">Payload type.</field>
+      <field type="uint16_t" name="payload_health" enum="PAYLOAD_HEALTH" display="bitmask" print_format="0x%04x">Bitmap showing the health of the payload. Value of 0: issue with health. Value of 1: healthy.</field>
+      <field type="uint16_t" name="payload_state" enum="PAYLOAD_STATE" display="bitmask" print_format="0x%04x">Bitmap showing the states of payload. Value of 0: state is false. Value of 1: state is true.</field>
+    </message>
+    <message id="44207" name="PAYLOAD_CHANGE">
+      <description>Broadcast on change of Payload List, specifies the change (added/removed) and ID of the payload.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="uint8_t" name="payload_change">Payload ID change, value 1 : ID Added, value 0 : ID Removed</field>
+      <field type="uint8_t" name="payload_id">ID of new payload added.</field>
+    </message>
+    <message id="44300" name="WATER_CURRENT">
+      <description>Water current values. Note: Calculated Water current = (Vehicle Velocity - Measured Current).</description>
+      <field type="float" name="measured_current_x" units="m/s">Raw Measured water current in X (NED) direction</field>
+      <field type="float" name="measured_current_y" units="m/s">Raw Measured water current in Y (NED) direction</field>
+      <field type="float" name="measured_current_z" units="m/s">Raw Measured water current in Z (NED) direction</field>
+      <field type="float" name="calculated_current_x" units="m/s">Calculated Water current in X (NED)</field>
+      <field type="float" name="calculated_current_y" units="m/s">Calculated Water current in Y (NED)</field>
+      <field type="float" name="calculated_current_z" units="m/s">Calculated Water current in Z (NED)</field>
+      <field type="float" name="distance" units="m">Measurement distance from the sensor</field>
+    </message>
+    <message id="44301" name="DVL">
+      <description>Doppler Velocity Log Sensor. Used to provide vehicle velocity.</description>
+      <field type="uint8_t" name="has_lock">Boolean indicating if the DVL has bottom lock to the floor (true: 1, false: 0).</field>
+      <field type="float[16]" name="altitude_water" units="m">Vehicle altitude to the floor of body of water for each beam</field>
+      <field type="float" name="vehicle_velocity_x" units="m/s">Vehicle velocity in X (NED)</field>
+      <field type="float" name="vehicle_velocity_y" units="m/s">Vehicle velocity in Y (NED)</field>
+      <field type="float" name="vehicle_velocity_z" units="m/s">Vehicle velocity in Z (NED)</field>
+    </message>
+  </messages>
+</mavlink>
