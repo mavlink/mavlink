@@ -8083,6 +8083,28 @@
       <field type="uint8_t" name="num_ids">number of IDs in filter list</field>
       <field type="uint16_t[16]" name="ids">filter IDs, length num_ids</field>
     </message>
+    <message id="391" name="WATER_CURRENT">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Measured water current values. Note: Actual Water current = (Vehicle Velocity - Measured Current) </description>
+      <field type="float" name="measured_current_x" units="m/s">Measured water current in X (NED) direction</field>
+      <field type="float" name="measured_current_y" units="m/s">Measured water current in Y (NED) direction</field>
+      <field type="float" name="measured_current_z" units="m/s">Measured water current in Z (NED) direction</field>
+      <field type="float" name="distance" units="m">Measurement distance from the sensor</field>
+      <field type="float" name="vehicle_velocity_x" units="m/s">Vehicle velocity when measurement was taken in X (NED)</field>
+      <field type="float" name="vehicle_velocity_y" units="m/s">Vehicle velocity when measurement was taken in Y (NED)</field>
+      <field type="float" name="vehicle_velocity_z" units="m/s">Vehicle velocity when measurement was taken in Z (NED)</field>
+    </message>
+    <message id="392" name="DVL">
+      <wip/>
+      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <description>Doppler Velocity Log Sensor. Used to provide vehicle velocity </description>
+      <field type="uint8_t" name="has_lock">Has bottom lock to the floor (1 = true)</field>
+      <field type="float[16]" name="altitude_water" units="m">Vehicle altitude to the floor of body of water for each beam</field>
+      <field type="float" name="vehicle_velocity_x" units="m/s">Vehicle velocity in X (NED)</field>
+      <field type="float" name="vehicle_velocity_y" units="m/s">Vehicle velocity in Y (NED)</field>
+      <field type="float" name="vehicle_velocity_z" units="m/s">Vehicle velocity in Z (NED)</field>
+    </message>
     <!-- Rover specific messages -->
     <message id="9000" name="WHEEL_DISTANCE">
       <description>Cumulative distance traveled for each reported wheel.</description>
