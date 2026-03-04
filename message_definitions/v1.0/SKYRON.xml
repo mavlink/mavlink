@@ -396,6 +396,21 @@
       <entry value="12" name="GIMBAL_Board"/>
       <entry value="13" name="DEPLOYMENT_ARM_Board"/>
     </enum>
+    <enum name="ONBOARD_POSE_ESTIMATION_SOURCE" bitmask="true">
+      <description>Bitmask of positioning sources currently active and being fused by the OBC EKF. Multiple sources may be active simultaneously. Reported in ONBOARD_POSE_ESTIMATION_STATUS.active_sources. Bits 5-31 reserved for future Avestec use.</description>
+      <entry value="1" name="ONBOARD_POSE_ESTIMATION_SOURCE_LIDAR_SLAM">
+        <description>Bit 0: 3D LiDAR-based SLAM (e.g. FAST-LIO, Cartographer, LOAM).</description>
+      </entry>
+      <entry value="2" name="ONBOARD_POSE_ESTIMATION_SOURCE_VISUAL_SLAM">
+        <description>Bit 1: Camera-based SLAM (e.g. ORB-SLAM, RTABMap).</description>
+      </entry>
+      <entry value="4" name="ONBOARD_POSE_ESTIMATION_SOURCE_VIO">
+        <description>Bit 2: Visual-Inertial Odometry — tightly coupled camera and IMU fusion.</description>
+      </entry>
+      <entry value="8" name="ONBOARD_POSE_ESTIMATION_SOURCE_VPS">
+        <description>Bit 3: Vision Positioning System — downward-facing camera hovering aid.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="3333" name="Sensor_Status">
@@ -599,8 +614,35 @@
     </message>
     <message id="3366" name="SELF_DRIVING_STATUS">
       <description>Message to indicate if self-driving feature is ready</description>
-      <field type="uint8_t" name="RETRIEVAL" enum="ACTION">uint8_t</field>
-      <field type="uint8_t" name="WELD_FOLLOW" enum="ACTION">uint8_t</field>
+      <field type="uint8_t" name="retrieval" enum="ACTION">uint8_t</field>
+      <field type="uint8_t" name="weld_follow" enum="ACTION">uint8_t</field>
+    </message>
+    <message id="3367" name="ONBOARD_POSE_ESTIMATION_STATUS">
+      <description>Onboard computer pose estimation source status. Sent by the OBC (MAV_COMP_ID_ONBOARD_COMPUTER) and forwarded transparently by PX4 to QGC. Reports individual health state (MAV_STATE) for each positioning algorithm and hardware component, plus which source is currently active.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX time or time since system boot).</field>
+      <field type="uint8_t" name="lidar_slam_state" enum="MAV_STATE">LiDAR SLAM algorithm health (e.g. FAST-LIO). MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=healthy, MAV_STATE_CRITICAL=degraded, MAV_STATE_EMERGENCY=failed.</field>
+      <field type="uint8_t" name="visual_slam_state" enum="MAV_STATE">Camera-based SLAM algorithm health (e.g. ORB-SLAM). MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=healthy, MAV_STATE_CRITICAL=degraded.</field>
+      <field type="uint8_t" name="vio_state" enum="MAV_STATE">Visual-Inertial Odometry algorithm health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=healthy, MAV_STATE_CRITICAL=degraded.</field>
+      <field type="uint8_t" name="vps_state" enum="MAV_STATE">Vision Positioning System algorithm health (downward camera). MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=healthy, MAV_STATE_CRITICAL=degraded.</field>
+      <field type="uint8_t" name="lidar_hw_state" enum="MAV_STATE">Physical LiDAR hardware health. MAV_STATE_UNINIT=not detected, MAV_STATE_ACTIVE=publishing, MAV_STATE_EMERGENCY=hardware fault.</field>
+      <field type="uint8_t" name="stereo_cam_hw_state" enum="MAV_STATE">Stereo camera hardware health. MAV_STATE_UNINIT=not detected, MAV_STATE_ACTIVE=streaming, MAV_STATE_EMERGENCY=hardware fault.</field>
+      <field type="uint32_t" name="active_sources" enum="ONBOARD_POSE_ESTIMATION_SOURCE" display="bitmask">Bitmask of positioning sources currently active and fused by the OBC EKF. Multiple bits may be set simultaneously (e.g. LiDAR SLAM + VIO fusion). Zero means no source active.</field>
+      <extensions/>
+      <field type="uint8_t" name="reserved0">Reserved for future use.</field>
+      <field type="uint8_t" name="reserved1">Reserved for future use.</field>
+    </message>
+    <message id="3368" name="ONBOARD_COMPUTER_MODULES_STATUS">
+      <description>Onboard computer software module health states. Applicable to any MAVLink-capable robot (aerial, ground, marine). Sent by the onboard computer (MAV_COMP_ID_ONBOARD_COMPUTER) and forwarded transparently to GCS. Each field reports MAV_STATE for one logical software module. Never reorder or remove existing fields.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX time or time since system boot).</field>
+      <field type="uint8_t" name="ros_state" enum="MAV_STATE">ROS master / middleware core health. MAV_STATE_UNINIT=not started, MAV_STATE_BOOT=starting, MAV_STATE_ACTIVE=running, MAV_STATE_EMERGENCY=crashed.</field>
+      <field type="uint8_t" name="autopilot_bridge_state" enum="MAV_STATE">Autopilot communication bridge health (e.g. MAVROS). MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=connected, MAV_STATE_CRITICAL=link degraded, MAV_STATE_EMERGENCY=crashed.</field>
+      <field type="uint8_t" name="primary_camera_state" enum="MAV_STATE">Primary camera process health. MAV_STATE_UNINIT=not connected, MAV_STATE_BOOT=connecting, MAV_STATE_ACTIVE=streaming/recording, MAV_STATE_EMERGENCY=process failed.</field>
+      <field type="uint8_t" name="video_stream_state" enum="MAV_STATE">Video streaming service health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=streaming, MAV_STATE_CRITICAL=degraded, MAV_STATE_EMERGENCY=crashed.</field>
+      <field type="uint8_t" name="recording_state" enum="MAV_STATE">Data recording service health. MAV_STATE_UNINIT=not started, MAV_STATE_STANDBY=ready but not recording, MAV_STATE_ACTIVE=recording, MAV_STATE_EMERGENCY=storage fault.</field>
+      <field type="uint8_t" name="pose_estimation_state" enum="MAV_STATE">Overall pose estimation pipeline health (see ONBOARD_POSE_ESTIMATION_STATUS for per-source detail). MAV_STATE_UNINIT=no source, MAV_STATE_ACTIVE=fusing, MAV_STATE_CRITICAL=degraded.</field>
+      <field type="uint8_t" name="collision_avoidance_state" enum="MAV_STATE">Collision avoidance module health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=running, MAV_STATE_CRITICAL=degraded.</field>
+      <field type="uint8_t" name="navigation_state" enum="MAV_STATE">Path planning / navigation stack health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=running, MAV_STATE_CRITICAL=degraded, MAV_STATE_EMERGENCY=crashed.</field>
+      <field type="uint8_t" name="object_detection_state" enum="MAV_STATE">Object detection / perception pipeline health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=running, MAV_STATE_CRITICAL=degraded.</field>
     </message>
   </messages>
 </mavlink>
