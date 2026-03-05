@@ -1078,6 +1078,39 @@
         <description>Force reboot/shutdown of the autopilot/component regardless of system state.</description>
       </entry>
     </enum>
+    <enum name="PREFLIGHT_CALIBRATION_MAGNETOMETER">
+      <description>Action for the magnetometer (param2) of MAV_CMD_PREFLIGHT_CALIBRATION.</description>
+      <entry value="0" name="PREFLIGHT_CALIBRATION_MAGNETOMETER_NONE">
+        <description>No action.</description>
+      </entry>
+      <entry value="1" name="PREFLIGHT_CALIBRATION_MAGNETOMETER_START">
+        <description>Start magnetometer calibration.</description>
+      </entry>
+      <entry value="76" name="PREFLIGHT_CALIBRATION_MAGNETOMETER_FORCE_SAVE">
+        <description>Force-accept the existing compass calibration as valid without re-running it. Useful after a parameter reload that cleared calibration validity flags.</description>
+      </entry>
+    </enum>
+    <enum name="PREFLIGHT_CALIBRATION_ACCELEROMETER">
+      <description>Action for the accelerometer (param5) of MAV_CMD_PREFLIGHT_CALIBRATION.</description>
+      <entry value="0" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_NONE">
+        <description>No action.</description>
+      </entry>
+      <entry value="1" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_FULL">
+        <description>Full 6-position accelerometer calibration.</description>
+      </entry>
+      <entry value="2" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_TRIM">
+        <description>Board level (trim) calibration.</description>
+      </entry>
+      <entry value="3" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_TEMPERATURE">
+        <description>Accelerometer temperature calibration.</description>
+      </entry>
+      <entry value="4" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_SIMPLE">
+        <description>Simple accelerometer calibration.</description>
+      </entry>
+      <entry value="76" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_FORCE_SAVE">
+        <description>Force-accept the existing accelerometer calibration as valid without re-running it. Useful after a parameter reload that cleared calibration validity flags.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -1898,10 +1931,10 @@
       <entry value="241" name="MAV_CMD_PREFLIGHT_CALIBRATION" hasLocation="false" isDestination="false">
         <description>Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Temperature Calibration, only one sensor should be set in a single message and all others should be zero.</description>
         <param index="1" label="Gyro Temperature" minValue="0" maxValue="3" increment="1">1: gyro calibration, 3: gyro temperature calibration</param>
-        <param index="2" label="Magnetometer" enum="MAV_BOOL">Magnetometer calibration. Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="Magnetometer" enum="PREFLIGHT_CALIBRATION_MAGNETOMETER">Magnetometer calibration action.</param>
         <param index="3" label="Ground Pressure" enum="MAV_BOOL">Ground pressure calibration. Values not equal to 0 or 1 are invalid.</param>
         <param index="4" label="Remote Control" minValue="0" maxValue="1" increment="1">1: radio RC calibration, 2: RC trim calibration</param>
-        <param index="5" label="Accelerometer" minValue="0" maxValue="4" increment="1">1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration, 4: simple accelerometer calibration</param>
+        <param index="5" label="Accelerometer" enum="PREFLIGHT_CALIBRATION_ACCELEROMETER">Accelerometer calibration action.</param>
         <param index="6" label="Compmot or Airspeed" minValue="0" maxValue="2" increment="1">1: APM: compass/motor interference calibration (PX4: airspeed calibration, deprecated), 2: airspeed calibration</param>
         <param index="7" label="ESC or Baro" minValue="0" maxValue="3" increment="1">1: ESC calibration, 3: barometer temperature calibration</param>
       </entry>
