@@ -588,25 +588,31 @@
       <description>line detection offset from center on the bottom</description>
       <field type="float" name="CRAWLER_HEADING">positive on the right</field>
     </message>
-    <message id="3364" name="ONBOARD_COMPUTER_VERSION">
-      <description>Version and capability of onboard computer software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
-      <field type="uint32_t" name="board_version">Hardware board version/revision</field>
-      <field type="uint8_t[8]" name="software_version">Git tag/hash of the AvesCore repository</field>
-      <field type="uint16_t" name="vendor_id">ID of the computer vendor (e.g., Intel)</field>
-      <field type="uint16_t" name="product_id">ID of the computer product</field>
-      <field type="uint64_t" name="uid">Unique identifier if provided by hardware</field>
-      <field type="char[32]" name="computer_name">Computer hostname/name</field>
-      <field type="char[24]" name="processor_model">Processor model (e.g., i7-1185G7, i5-8265U)</field>
-      <field type="uint8_t" name="processor_cores">Number of processor cores</field>
-      <field type="uint8_t" name="processor_threads">Number of processor threads</field>
-      <field type="uint16_t" name="processor_speed">Processor base speed in MHz</field>
-      <field type="char[16]" name="architecture">System architecture (e.g., x86_64, arm64)</field>
-      <field type="char[18]" name="mac_address">Primary network MAC address (XX:XX:XX:XX:XX:XX format)</field>
-      <field type="char[16]" name="os_distro">Operating system distribution (e.g., Ubuntu 20.04)</field>
-      <field type="char[16]" name="ros_distro">ROS distribution name (e.g., Noetic, Humble)</field>
-      <field type="uint32_t" name="total_memory">Total system memory in MB</field>
-      <field type="uint32_t" name="total_storage">Total system storage in MB</field>
-      <field type="uint32_t" name="uptime">System uptime in seconds</field>
+    <message id="3364" name="ONBOARD_COMPUTER_INFO">
+      <description>Static identity and configuration snapshot of the onboard computer. Sent once on connection and in response to MAV_CMD_REQUEST_MESSAGE (param1=3364). Valid for both x86 (Intel NUC) and ARM (NVIDIA Jetson) platforms — platform-specific fields (l4t_version, cuda_version) are empty strings when not applicable.</description>
+      <field type="uint64_t" name="uid">Unique hardware identifier. Jetson: device-tree fuse-burned serial; x86: DMI product serial hash. Stable across OS reinstalls.</field>
+      <field type="uint32_t" name="computer_id">Lower 32 bits of uid. Used as compact MAVLink system identifier.</field>
+      <field type="uint32_t" name="total_memory">Total installed system RAM in MiB.</field>
+      <field type="uint32_t" name="total_storage">Total root-partition storage in MiB.</field>
+      <field type="uint32_t" name="total_operation_time">Cumulative powered-on time in seconds across all boots. Monotonic-clock based, NTP-independent. Persisted across reboots.</field>
+      <field type="uint32_t" name="boot_count">Number of times this system has booted since first deployment.</field>
+      <field type="uint16_t" name="processor_speed">Processor maximum frequency in MHz.</field>
+      <field type="uint8_t" name="processor_cores">Number of physical processor cores.</field>
+      <field type="uint8_t" name="processor_threads">Number of logical processor threads (equals cores on ARM; 2x cores on x86 HyperThreading).</field>
+      <field type="uint8_t" name="robot_type" enum="VEHICLE">Robot/vehicle platform type as reported by the firmware (Sensor_Status.vehicle).</field>
+      <field type="char[16]" name="software_version">AvesCore software version string (git tag or abbreviated commit hash).</field>
+      <field type="char[12]" name="software_build_date">Git commit date of the running software (YYYY-MM-DD).</field>
+      <field type="char[32]" name="computer_name">System hostname.</field>
+      <field type="char[24]" name="processor_model">Processor model string. Jetson: device-tree model; x86: cpuinfo model name.</field>
+      <field type="char[12]" name="architecture">CPU architecture string (e.g. aarch64, x86_64).</field>
+      <field type="char[18]" name="mac_address">Primary network interface MAC address (XX:XX:XX:XX:XX:XX).</field>
+      <field type="char[16]" name="ip_address">Primary network interface IP address.</field>
+      <field type="char[16]" name="os_distro">Operating system distribution name (e.g. Ubuntu).</field>
+      <field type="char[24]" name="kernel_version">Linux kernel version string (uname -r).</field>
+      <field type="char[12]" name="ros_distro">ROS distribution name (e.g. Humble).</field>
+      <field type="char[12]" name="l4t_version">NVIDIA L4T BSP version (e.g. R36.4.3). Empty string on non-Jetson platforms.</field>
+      <field type="char[12]" name="cuda_version">CUDA toolkit version (e.g. 12.6.11). Empty string if CUDA not installed.</field>
+      <field type="char[12]" name="jetpack_version">NVIDIA JetPack SDK version (e.g. 6.1). Derived from installed nvidia-jetpack package. Empty string on non-Jetson platforms.</field>
     </message>
     <message id="3365" name="BRUSH_SPEED">
       <description>Surface prep brush speed</description>
