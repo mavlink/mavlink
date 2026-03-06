@@ -1078,6 +1078,11 @@
         <description>Force reboot/shutdown of the autopilot/component regardless of system state.</description>
       </entry>
     </enum>
+    <enum name="NAV_TAKEOFF_FLAGS" bitmask="true">
+      <entry value="1" name="NAV_TAKEOFF_FLAGS_AUTOPILOT_NAV_NOT_REQUIRED">
+        <description>Accept the command even if the autopilot will not control the horizontal position.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -1148,7 +1153,7 @@
         <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
         <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
-        <param index="3">Empty</param>
+        <param index="3" label="Flags" enum="NAV_TAKEOFF_FLAGS">Bitmask of options flags.</param>
         <param index="4" label="Yaw" units="deg">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
