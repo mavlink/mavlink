@@ -225,6 +225,18 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
+      <entry value="43005" name="MAV_CMD_SET_ESTIMATOR_SENSOR_FUSION" hasLocation="false" isDestination="false">
+        <description>Enable or disable a specific estimator sensor fusion source at runtime.
+          This allows a GCS or companion computer to dynamically control which sensors the estimator fuses without changing parameters.
+        </description>
+        <param index="1" label="Source" enum="ESTIMATOR_SENSOR_FUSION_SOURCE" minValue="1" increment="1">Sensor fusion source type.</param>
+        <param index="2" label="Instance" minValue="0" increment="1">Sensor instance (0-based, for multi-instance).</param>
+        <param index="3" label="Action" minValue="0" maxValue="1" increment="1">Action: 0: Disable, 1: Enable.</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
       <entry value="620" name="MAV_CMD_EXTERNAL_ATTITUDE_ESTIMATE" hasLocation="false" isDestination="false">
         <description>Set an external estimate of vehicle attitude.
           This might be used to provide an initial attitude (especially heading) estimate to the estimator (EKF). Angles are defined in a 3-2-1 (yaw-pitch-roll) intrinsic Tait-Bryan sequence.
@@ -435,6 +447,36 @@
         <description>BLHeli32 ESC firmware.</description>
       </entry>
     </enum>
+    <enum name="ESTIMATOR_SENSOR_FUSION_SOURCE">
+      <description>Estimator sensor fusion source types. Used in MAV_CMD_SET_ESTIMATOR_SENSOR_FUSION and as array index (source - 1) in ESTIMATOR_SENSOR_FUSION_STATUS.</description>
+      <entry value="1" name="ESTIMATOR_SENSOR_FUSION_SOURCE_GPS">
+        <description>GNSS</description>
+      </entry>
+      <entry value="2" name="ESTIMATOR_SENSOR_FUSION_SOURCE_OF">
+        <description>Optical Flow</description>
+      </entry>
+      <entry value="3" name="ESTIMATOR_SENSOR_FUSION_SOURCE_EV">
+        <description>External Vision</description>
+      </entry>
+      <entry value="4" name="ESTIMATOR_SENSOR_FUSION_SOURCE_AGP">
+        <description>Auxiliary Global Position</description>
+      </entry>
+      <entry value="5" name="ESTIMATOR_SENSOR_FUSION_SOURCE_BARO">
+        <description>Barometer</description>
+      </entry>
+      <entry value="6" name="ESTIMATOR_SENSOR_FUSION_SOURCE_RNG">
+        <description>Range Finder</description>
+      </entry>
+      <entry value="7" name="ESTIMATOR_SENSOR_FUSION_SOURCE_DRAG">
+        <description>Drag</description>
+      </entry>
+      <entry value="8" name="ESTIMATOR_SENSOR_FUSION_SOURCE_MAG">
+        <description>Magnetometer</description>
+      </entry>
+      <entry value="9" name="ESTIMATOR_SENSOR_FUSION_SOURCE_ASPD">
+        <description>Airspeed</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -516,8 +558,8 @@
       <wip since="2026-03"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>
-        Highly bandwidth-efficient RC override message for professional networked operations (LTE, Zigbee, GCP). 
-        Supersedes RC_CHANNELS_OVERRIDE by adding 32-channel support and a bitmask for multi-master conflict avoidance. 
+        Highly bandwidth-efficient RC override message for professional networked operations (LTE, Zigbee, GCP).
+        Supersedes RC_CHANNELS_OVERRIDE by adding 32-channel support and a bitmask for multi-master conflict avoidance.
         Uses centered-at-zero values and extension-field placement to maximize MAVLink 2 trailing-zero truncation.
       </description>
       <field type="uint8_t" name="target_system">System ID.</field>
@@ -525,8 +567,8 @@
       <field type="uint32_t" name="active_mask">Bitmap of included channels (bit 0 = CH1). 1: Valid/Override, 0: Ignore.</field>
       <extensions/>
       <field type="int16_t[32]" name="channels" minValue="-4096" maxValue="4096">
-        RC channels in centered 13-bit format. Range: -4096 to 4096, Center: 0. 
-        Conversion to PWM: (x * 5/32) + 1500. 
+        RC channels in centered 13-bit format. Range: -4096 to 4096, Center: 0.
+        Conversion to PWM: (x * 5/32) + 1500.
         Unused channels must be set to 0 to enable MAVLink 2 trailing-zero trimming.
       </field>
     </message>
@@ -603,6 +645,12 @@
       <field type="uint32_t[6]" name="write_mask">Bitmask indicating which bytes in the data array should be written. Each bit corresponds to a byte index in the data array (bit 0 of write_mask[0] = data[0], bit 31 of write_mask[0] = data[31], bit 0 of write_mask[1] = data[32], etc.). Set bits indicate bytes to write, cleared bits indicate bytes to skip. This allows precise updates of individual parameters without overwriting the entire EEPROM.</field>
       <field type="uint8_t" name="length" maxValue="222">Number of valid bytes in data array.</field>
       <field type="uint8_t[192]" name="data">Raw ESC EEPROM data. Unused bytes should be set to zero.</field>
+    </message>
+    <message id="514" name="ESTIMATOR_SENSOR_FUSION_STATUS">
+      <description>Status of estimator sensor fusion sources. Each array is indexed by ESTIMATOR_SENSOR_FUSION_SOURCE - 1. Each element is a per-instance bitmask (bit 0 = instance 0, etc.). For single-instance sources only bit 0 is used. For multi-instance sources like AGP, multiple bits may be set.</description>
+      <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_SET_ESTIMATOR_SENSOR_FUSION).</field>
+      <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
+      <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
     </message>
   </messages>
 </mavlink>
