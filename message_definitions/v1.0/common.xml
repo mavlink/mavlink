@@ -1084,6 +1084,18 @@
         <description>Force reboot/shutdown of the autopilot/component regardless of system state.</description>
       </entry>
     </enum>
+    <enum name="PREFLIGHT_CALIBRATION_GYRO">
+      <description>Action for the gyroscope (param1) of MAV_CMD_PREFLIGHT_CALIBRATION.</description>
+      <entry value="0" name="PREFLIGHT_CALIBRATION_GYRO_NONE">
+        <description>No action.</description>
+      </entry>
+      <entry value="1" name="PREFLIGHT_CALIBRATION_GYRO_GYRO">
+        <description>Gyro calibration.</description>
+      </entry>
+      <entry value="3" name="PREFLIGHT_CALIBRATION_GYRO_TEMPERATURE">
+        <description>Gyro temperature calibration.</description>
+      </entry>
+    </enum>      
     <enum name="PREFLIGHT_CALIBRATION_MAGNETOMETER">
       <description>Action for the magnetometer (param2) of MAV_CMD_PREFLIGHT_CALIBRATION.</description>
       <entry value="0" name="PREFLIGHT_CALIBRATION_MAGNETOMETER_NONE">
@@ -1094,6 +1106,18 @@
       </entry>
       <entry value="76" name="PREFLIGHT_CALIBRATION_MAGNETOMETER_FORCE_SAVE">
         <description>Force-accept the existing compass calibration as valid without re-running it. Useful after a parameter reload that cleared calibration validity flags.</description>
+      </entry>
+    </enum>
+    <enum name="PREFLIGHT_CALIBRATION_RC">
+      <description>Action for the remote control (param4) of MAV_CMD_PREFLIGHT_CALIBRATION.</description>
+      <entry value="0" name="PREFLIGHT_CALIBRATION_RC_NONE">
+        <description>No action.</description>
+      </entry>
+      <entry value="1" name="PREFLIGHT_CALIBRATION_RC_RADIO">
+        <description>Radio RC calibration.</description>
+      </entry>
+      <entry value="2" name="PREFLIGHT_CALIBRATION_RC_TRIM">
+        <description>RC trim calibration.</description>
       </entry>
     </enum>
     <enum name="PREFLIGHT_CALIBRATION_ACCELEROMETER">
@@ -1115,6 +1139,30 @@
       </entry>
       <entry value="76" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_FORCE_SAVE">
         <description>Force-accept the existing accelerometer calibration as valid without re-running it. Useful after a parameter reload that cleared calibration validity flags.</description>
+      </entry>
+    </enum>
+    <enum name="PREFLIGHT_CALIBRATION_AIRSPEED_COMPMOT">
+      <description>Action for the airspeed or compass/motor interference control (param6) of MAV_CMD_PREFLIGHT_CALIBRATION.</description>
+      <entry value="0" name="PREFLIGHT_CALIBRATION_AIRSPEED_COMPMOT_NONE">
+        <description>No action.</description>
+      </entry>
+      <entry value="1" name="PREFLIGHT_CALIBRATION_AIRSPEED_COMPMOT__CAL_COMPMOT">
+        <description>APM: compass/motor interference calibration (PX4: airspeed calibration, deprecated)</description>
+      </entry>
+      <entry value="2" name="PREFLIGHT_CALIBRATION_AIRSPEED_COMPMOT_CAL_AIRSPEED">
+        <description>Airspeed calibration.</description>
+      </entry>
+    </enum>
+    <enum name="PREFLIGHT_CALIBRATION_ESC_OR_BARO">
+      <description>Action for ESC or baro calibration control (param7) of MAV_CMD_PREFLIGHT_CALIBRATION.</description>
+      <entry value="0" name="PREFLIGHT_CALIBRATION_ESC_OR_BARO_NONE">
+        <description>No action.</description>
+      </entry>
+      <entry value="1" name="PREFLIGHT_CALIBRATION_ESC_OR_BARO_CAL_ESC">
+        <description>ESC calibration.</description>
+      </entry>
+      <entry value="3" name="PREFLIGHT_CALIBRATION_ESC_OR_BARO_CAL_BARO_TEMPERATURE">
+        <description>Barometer temperature calibration</description>
       </entry>
     </enum>
     <!-- The MAV_CMD enum entries describe either: -->
@@ -1936,13 +1984,13 @@
       </entry>
       <entry value="241" name="MAV_CMD_PREFLIGHT_CALIBRATION" hasLocation="false" isDestination="false">
         <description>Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Temperature Calibration, only one sensor should be set in a single message and all others should be zero.</description>
-        <param index="1" label="Gyro Temperature" minValue="0" maxValue="3" increment="1">1: gyro calibration, 3: gyro temperature calibration</param>
+        <param index="1" label="Gyro Temperature" enum="PREFLIGHT_CALIBRATION_GYRO">Gyro calibration action.</param>
         <param index="2" label="Magnetometer" enum="PREFLIGHT_CALIBRATION_MAGNETOMETER">Magnetometer calibration action.</param>
         <param index="3" label="Ground Pressure" enum="MAV_BOOL">Ground pressure calibration. Values not equal to 0 or 1 are invalid.</param>
-        <param index="4" label="Remote Control" minValue="0" maxValue="1" increment="1">1: radio RC calibration, 2: RC trim calibration</param>
+        <param index="4" label="Remote Control" enum="PREFLIGHT_CALIBRATION_RC">RC calibration action.</param>
         <param index="5" label="Accelerometer" enum="PREFLIGHT_CALIBRATION_ACCELEROMETER">Accelerometer calibration action.</param>
-        <param index="6" label="Compmot or Airspeed" minValue="0" maxValue="2" increment="1">1: APM: compass/motor interference calibration (PX4: airspeed calibration, deprecated), 2: airspeed calibration</param>
-        <param index="7" label="ESC or Baro" minValue="0" maxValue="3" increment="1">1: ESC calibration, 3: barometer temperature calibration</param>
+        <param index="6" label="Compmot or Airspeed" enum="PREFLIGHT_CALIBRATION_AIRSPEED_COMPMOT">APM: compass/motor interference calibration or airspeed calibration action.</param>
+        <param index="7" label="ESC or Baro" enum="PREFLIGHT_CALIBRATION_ESC_OR_BARO">ESC or barometer temperature calibration action.</param>
       </entry>
       <entry value="242" name="MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS" hasLocation="false" isDestination="false">
         <description>Set sensor offsets. This command will be only accepted if in pre-flight mode.</description>
