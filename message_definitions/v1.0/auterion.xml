@@ -761,5 +761,27 @@
       <field type="uint8_t" name="mode">Mode; this can be a sub-state within the current state or other indicator. This may vary based on device and state.</field>
       <field type="char[64]" name="message">Message, or other text from device.</field>
     </message>
+    <!-- This message is placed here until upstream/mavlink has accepted the PR for it to be included! -->
+    <message id="513" name="RANGING_BEACON">
+      <description>Range information from a radio beacon for trilateration-based positioning.
+        Note that this message is telemetry (MAVLink does not define the mechanism used to determine the range).
+      </description>
+      <field type="uint8_t" name="target_system" default="0">System ID (ID of target system, normally autopilot and ground station).</field>
+      <field type="uint8_t" name="target_component" default="0">Component ID (normally 0 for broadcast).</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (epoch UTC time synced with GNSS system time or time since system boot)</field>
+      <field type="uint8_t" name="beacon_id" instance="true">ID of the ranging beacon/station</field>
+      <field type="uint32_t" name="range" units="mm" invalid="UINT32_MAX">Range measurement between a beacon and a vehicle</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Beacon latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Beacon longitude (WGS84)</field>
+      <field type="float" name="alt_ellipsoid" units="m" invalid="NaN">Beacon altitude (ellipsoid, WGS84). This field is preferred: alt_msl is a fallback.</field>
+      <field type="float" name="alt_msl" units="m" invalid="NaN">Beacon altitude (MSL), fallback </field>
+      <field type="uint32_t" name="hacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma horizontal accuracy estimate</field>
+      <field type="uint32_t" name="vacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma vertical accuracy estimate</field>
+      <field type="int8_t" name="rssi_node" units="dBm" invalid="INT8_MAX">RSSI at node/vehicle side</field>
+      <field type="int8_t" name="rssi_beacon" units="dBm" invalid="INT8_MAX">RSSI at beacon/station side</field>
+      <field type="uint8_t" name="sequence">Measurement sequence number</field>
+      <field type="uint16_t" name="carrier_freq" units="MHz" invalid="UINT16_MIN">Ranging carrier frequency</field>
+      <field type="uint32_t" name="range_accuracy" units="mm" invalid="UINT32_MAX">Estimated range measurement accuracy</field>
+    </message>
   </messages>
 </mavlink>
