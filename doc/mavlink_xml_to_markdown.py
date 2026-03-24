@@ -311,7 +311,7 @@ The original definitions are defined in [standard.xml](https://github.com/mavlin
             insert_text += """
 # Dialect: development
 
-This dialect contains messages that are proposed for inclusion in the [standard set](standard.md), in order to ease development of prototype implementations.
+This dialect contains messages that are proposed for inclusion in the [common set](common.md), in order to ease development of prototype implementations.
 They should be considered a 'work in progress' and not included in production builds.
 
 This topic is a human-readable form of the XML definition file: [development.xml](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/development.xml).
