@@ -654,14 +654,16 @@
       <description>Onboard computer software module health states. Applicable to any MAVLink-capable robot (aerial, ground, marine). Sent by the onboard computer (MAV_COMP_ID_ONBOARD_COMPUTER) and forwarded transparently to GCS. Each field reports MAV_STATE for one logical software module. Never reorder or remove existing fields.</description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX time or time since system boot).</field>
       <field type="uint8_t" name="ros_state" enum="MAV_STATE">ROS master / middleware core health. MAV_STATE_UNINIT=not started, MAV_STATE_BOOT=starting, MAV_STATE_ACTIVE=running, MAV_STATE_EMERGENCY=crashed.</field>
-      <field type="uint8_t" name="autopilot_bridge_state" enum="MAV_STATE">Autopilot communication bridge health (e.g. MAVROS). MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=connected, MAV_STATE_CRITICAL=link degraded, MAV_STATE_EMERGENCY=crashed.</field>
+      <field type="uint8_t" name="autopilot_connection_state" enum="MAV_STATE">Autopilot serial link health. Always MAV_STATE_UNINIT on robots without an autopilot (e.g. standalone crawler).</field>
+      <field type="uint8_t" name="GCS_connection_state" enum="MAV_STATE">GCS UDP link health. MAV_STATE_UNINIT=no connection object, MAV_STATE_ACTIVE=link up.</field>
+      <field type="uint8_t" name="firmware_connection_state" enum="MAV_STATE">Firmware serial bridge health. MAV_STATE_UNINIT=no serial port at boot, MAV_STATE_ACTIVE=connected and receiving, MAV_STATE_EMERGENCY=thread died.</field>
       <field type="uint8_t" name="primary_camera_state" enum="MAV_STATE">Primary camera process health. MAV_STATE_UNINIT=not connected, MAV_STATE_BOOT=connecting, MAV_STATE_ACTIVE=streaming/recording, MAV_STATE_EMERGENCY=process failed.</field>
       <field type="uint8_t" name="video_stream_state" enum="MAV_STATE">Video streaming service health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=streaming, MAV_STATE_CRITICAL=degraded, MAV_STATE_EMERGENCY=crashed.</field>
       <field type="uint8_t" name="recording_state" enum="MAV_STATE">Data recording service health. MAV_STATE_UNINIT=not started, MAV_STATE_STANDBY=ready but not recording, MAV_STATE_ACTIVE=recording, MAV_STATE_EMERGENCY=storage fault.</field>
       <field type="uint8_t" name="pose_estimation_state" enum="MAV_STATE">Overall pose estimation pipeline health (see ONBOARD_POSE_ESTIMATION_STATUS for per-source detail). MAV_STATE_UNINIT=no source, MAV_STATE_ACTIVE=fusing, MAV_STATE_CRITICAL=degraded.</field>
       <field type="uint8_t" name="collision_avoidance_state" enum="MAV_STATE">Collision avoidance module health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=running, MAV_STATE_CRITICAL=degraded.</field>
+      <field type="uint8_t" name="collision_detection_state" enum="MAV_STATE">Collision detection / perception pipeline health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=running, MAV_STATE_CRITICAL=degraded.</field>
       <field type="uint8_t" name="navigation_state" enum="MAV_STATE">Path planning / navigation stack health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=running, MAV_STATE_CRITICAL=degraded, MAV_STATE_EMERGENCY=crashed.</field>
-      <field type="uint8_t" name="object_detection_state" enum="MAV_STATE">Object detection / perception pipeline health. MAV_STATE_UNINIT=not started, MAV_STATE_ACTIVE=running, MAV_STATE_CRITICAL=degraded.</field>
     </message>
   </messages>
 </mavlink>
