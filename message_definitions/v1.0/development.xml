@@ -225,6 +225,18 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
+      <entry value="43006" name="MAV_CMD_ESTIMATOR_SENSOR_ENABLE" hasLocation="false" isDestination="false">
+        <description>Enable or disable a specific estimator sensor fusion source at runtime.
+          This allows a GCS or companion computer to dynamically control which sensors the estimator fuses without changing parameters.
+        </description>
+        <param index="1" label="Source" enum="ESTIMATOR_SENSOR_FUSION_SOURCE" minValue="0" increment="1">Sensor fusion source type.</param>
+        <param index="2" label="Instance" minValue="0" increment="1">Sensor instance (0-based, for multi-instance).</param>
+        <param index="3" label="Enable" enum="MAV_BOOL">Enable (1) or Disable (0) the source.</param>
+        <param index="4" label="Estimator Instance" default="NaN" minValue="0" increment="1">Estimator instance (0-based, for systems with multiple estimators).</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
       <entry value="620" name="MAV_CMD_EXTERNAL_ATTITUDE_ESTIMATE" hasLocation="false" isDestination="false">
         <description>Set an external estimate of vehicle attitude.
           This might be used to provide an initial attitude (especially heading) estimate to the estimator (EKF). Angles are defined in a 3-2-1 (yaw-pitch-roll) intrinsic Tait-Bryan sequence.
@@ -450,6 +462,36 @@
         <description>Station signal is poor. This might indicate channel fading, interference, or other signal quality issues.</description>
       </entry>
     </enum>
+    <enum name="ESTIMATOR_SENSOR_FUSION_SOURCE">
+      <description>Estimator sensor fusion source types. Used in MAV_CMD_ESTIMATOR_SENSOR_ENABLE and as array index in ESTIMATOR_SENSOR_FUSION_STATUS.</description>
+      <entry value="0" name="ESTIMATOR_SENSOR_FUSION_SOURCE_GPS">
+        <description>GNSS</description>
+      </entry>
+      <entry value="1" name="ESTIMATOR_SENSOR_FUSION_SOURCE_OF">
+        <description>Optical Flow</description>
+      </entry>
+      <entry value="2" name="ESTIMATOR_SENSOR_FUSION_SOURCE_EV">
+        <description>External Vision</description>
+      </entry>
+      <entry value="3" name="ESTIMATOR_SENSOR_FUSION_SOURCE_AGP">
+        <description>Auxiliary Global Position</description>
+      </entry>
+      <entry value="4" name="ESTIMATOR_SENSOR_FUSION_SOURCE_BARO">
+        <description>Barometer</description>
+      </entry>
+      <entry value="5" name="ESTIMATOR_SENSOR_FUSION_SOURCE_RNG">
+        <description>Range Finder</description>
+      </entry>
+      <entry value="6" name="ESTIMATOR_SENSOR_FUSION_SOURCE_MAG">
+        <description>Magnetometer</description>
+      </entry>
+      <entry value="7" name="ESTIMATOR_SENSOR_FUSION_SOURCE_ASPD">
+        <description>Airspeed</description>
+      </entry>
+      <entry value="8" name="ESTIMATOR_SENSOR_FUSION_SOURCE_RANGING_BEACON">
+        <description>Ranging Beacon</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -640,6 +682,12 @@
       <field type="uint32_t" name="range_accuracy" units="mm" invalid="UINT32_MAX">Estimated 1-sigma range measurement accuracy.</field>
       <field type="uint8_t" name="sequence">Measurement sequence number.</field>
       <field type="uint8_t" name="status" enum="RANGING_BEACON_STATUS_FLAG">Ranging beacon status.</field>
+    </message>
+    <message id="514" name="ESTIMATOR_SENSOR_FUSION_STATUS">
+      <description>Status of estimator sensor fusion sources. Each array is indexed by ESTIMATOR_SENSOR_FUSION_SOURCE - 1. Each element is a per-instance bitmask (bit 0 = instance 0, etc.). For single-instance sources only bit 0 is used. For multi-instance sources like AGP, multiple bits may be set.</description>
+      <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_ESTIMATOR_SENSOR_ENABLE).</field>
+      <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
+      <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
     </message>
   </messages>
 </mavlink>
