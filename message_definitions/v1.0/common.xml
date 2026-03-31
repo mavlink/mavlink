@@ -2419,7 +2419,7 @@
       <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST" hasLocation="false" isDestination="false">
         <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request.
 		If approved the COMMAND_ACK message progress field should be set with period of time that this authorization is valid in seconds.
-		If the authorization is denied COMMAND_ACK.result_param2 should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
+		If the authorization is denied COMMAND_ACK.result_param2 should be set with one of the reasons in MAV_ARM_AUTH_DENIED_REASON.
         </description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle</param>
       </entry>
@@ -4040,6 +4040,7 @@
       </entry>
     </enum>
     <enum name="MAV_ARM_AUTH_DENIED_REASON">
+      <description>Reasons for denying an authorization request made with MAV_CMD_ARM_AUTHORIZATION_REQUEST. If the COMMAND_ACK result is MAV_RESULT_DENIED, this is used to set the reason in the result_param2 field.</description>
       <entry value="0" name="MAV_ARM_AUTH_DENIED_REASON_GENERIC">
         <description>Not a specific reason</description>
       </entry>
