@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-"""
-multi_vehicle_sysid.py - Multi-Vehicle MAVLink Fleet Router
-Demonstrates sysid/compid based message routing across
-multiple MAVLink vehicles on a shared UDP link.
-
-Author: ARYA-mgc
-"""
-
-```
 import time
 import logging
 import argparse
@@ -292,5 +282,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
-Add module docstring and shebang
