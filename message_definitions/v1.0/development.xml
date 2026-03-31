@@ -435,6 +435,21 @@
         <description>BLHeli32 ESC firmware.</description>
       </entry>
     </enum>
+    <enum name="RANGING_BEACON_ALT_TYPE">
+      <description>Altitude reference for RANGING_BEACON alt field.</description>
+      <entry value="0" name="RANGING_BEACON_ALT_TYPE_WGS84">
+        <description>Altitude above WGS84 ellipsoid.</description>
+      </entry>
+      <entry value="1" name="RANGING_BEACON_ALT_TYPE_MSL">
+        <description>Altitude above Mean Sea Level (AMSL).</description>
+      </entry>
+    </enum>
+    <enum name="RANGING_BEACON_STATUS_FLAG" bitmask="true">
+      <description>Status flags for a RANGING_BEACON.</description>
+      <entry value="1" name="RANGING_BEACON_STATUS_FLAG_STATION_SIGNAL_POOR">
+        <description>Station signal is poor. This might indicate channel fading, interference, or other signal quality issues.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -603,6 +618,28 @@
       <field type="uint32_t[6]" name="write_mask">Bitmask indicating which bytes in the data array should be written. Each bit corresponds to a byte index in the data array (bit 0 of write_mask[0] = data[0], bit 31 of write_mask[0] = data[31], bit 0 of write_mask[1] = data[32], etc.). Set bits indicate bytes to write, cleared bits indicate bytes to skip. This allows precise updates of individual parameters without overwriting the entire EEPROM.</field>
       <field type="uint8_t" name="length" maxValue="222">Number of valid bytes in data array.</field>
       <field type="uint8_t[192]" name="data">Raw ESC EEPROM data. Unused bytes should be set to zero.</field>
+    </message>
+    <message id="513" name="RANGING_BEACON">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Range information from a radio beacon for trilateration-based positioning.
+        This message is telemetry intended for consumption by an autopilot (MAVLink does not define the mechanism used to determine the range).
+      </description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint16_t" name="beacon_id" instance="true">ID of the ranging beacon/station.</field>
+      <field type="uint32_t" name="range" units="mm" invalid="UINT32_MAX">Range measurement between a beacon and a vehicle.</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Beacon latitude (WGS84).</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Beacon longitude (WGS84).</field>
+      <field type="float" name="alt" units="m" invalid="NaN">Beacon altitude (frame defined in alt_type).</field>
+      <field type="uint8_t" name="alt_type" enum="RANGING_BEACON_ALT_TYPE">Altitude frame for alt field. RANGING_BEACON_ALT_TYPE_WGS84 (0) preferred.</field>
+      <field type="uint32_t" name="hacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma horizontal accuracy estimate.</field>
+      <field type="uint32_t" name="vacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma vertical accuracy estimate.</field>
+      <field type="uint16_t" name="carrier_freq" units="MHz" invalid="UINT16_MIN">Ranging carrier frequency</field>
+      <field type="uint32_t" name="range_accuracy" units="mm" invalid="UINT32_MAX">Estimated 1-sigma range measurement accuracy.</field>
+      <field type="uint8_t" name="sequence">Measurement sequence number.</field>
+      <field type="uint8_t" name="status" enum="RANGING_BEACON_STATUS_FLAG">Ranging beacon status.</field>
     </message>
   </messages>
 </mavlink>
