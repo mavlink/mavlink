@@ -78,18 +78,6 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="43006" name="MAV_CMD_SET_ESTIMATOR_SENSOR_FUSION" hasLocation="false" isDestination="false">
-        <description>Enable or disable a specific estimator sensor fusion source at runtime.
-          This allows a GCS or companion computer to dynamically control which sensors the estimator fuses without changing parameters.
-        </description>
-        <param index="1" label="Source" enum="ESTIMATOR_SENSOR_FUSION_SOURCE" minValue="1" increment="1">Sensor fusion source type.</param>
-        <param index="2" label="Instance" minValue="0" increment="1">Sensor instance (0-based, for multi-instance).</param>
-        <param index="3" label="Enable" enum="MAV_BOOL">Enable (1) or Disable (0) the source.</param>
-        <param index="4">Empty</param>
-        <param index="5">Empty</param>
-        <param index="6">Empty</param>
-        <param index="7">Empty</param>
-      </entry>
       <entry value="13800" name="MAV_CMD_PAYLOAD_DEVICE_TRIGGER" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
@@ -491,36 +479,6 @@
         <description>Device has reported an error. Requires an explicit reset before it can be re-enabled.</description>
       </entry>
     </enum>
-    <enum name="ESTIMATOR_SENSOR_FUSION_SOURCE">
-      <description>Estimator sensor fusion source types. Used in MAV_CMD_SET_ESTIMATOR_SENSOR_FUSION and as array index (source - 1) in ESTIMATOR_SENSOR_FUSION_STATUS.</description>
-      <entry value="1" name="ESTIMATOR_SENSOR_FUSION_SOURCE_GPS">
-        <description>GNSS</description>
-      </entry>
-      <entry value="2" name="ESTIMATOR_SENSOR_FUSION_SOURCE_OF">
-        <description>Optical Flow</description>
-      </entry>
-      <entry value="3" name="ESTIMATOR_SENSOR_FUSION_SOURCE_EV">
-        <description>External Vision</description>
-      </entry>
-      <entry value="4" name="ESTIMATOR_SENSOR_FUSION_SOURCE_AGP">
-        <description>Auxiliary Global Position</description>
-      </entry>
-      <entry value="5" name="ESTIMATOR_SENSOR_FUSION_SOURCE_BARO">
-        <description>Barometer</description>
-      </entry>
-      <entry value="6" name="ESTIMATOR_SENSOR_FUSION_SOURCE_RNG">
-        <description>Range Finder</description>
-      </entry>
-      <entry value="7" name="ESTIMATOR_SENSOR_FUSION_SOURCE_MAG">
-        <description>Magnetometer</description>
-      </entry>
-      <entry value="8" name="ESTIMATOR_SENSOR_FUSION_SOURCE_ASPD">
-        <description>Airspeed</description>
-      </entry>
-      <entry value="9" name="ESTIMATOR_SENSOR_FUSION_SOURCE_RANGING_BEACON">
-        <description>Ranging Beacon</description>
-      </entry>
-    </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
@@ -793,34 +751,6 @@
       <field type="uint32_t" name="countdown" units="s">Countdown timer value for SST or other timed state.</field>
       <field type="uint8_t" name="mode">Mode; this can be a sub-state within the current state or other indicator. This may vary based on device and state.</field>
       <field type="char[64]" name="message">Message, or other text from device.</field>
-    </message>
-    <!-- This message is placed here until upstream/mavlink has accepted the PR for it to be included! -->
-    <message id="513" name="RANGING_BEACON">
-      <description>Range information from a radio beacon for trilateration-based positioning.
-        Note that this message is telemetry (MAVLink does not define the mechanism used to determine the range).
-      </description>
-      <field type="uint8_t" name="target_system" default="0">System ID (ID of target system, normally autopilot and ground station).</field>
-      <field type="uint8_t" name="target_component" default="0">Component ID (normally 0 for broadcast).</field>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (epoch UTC time synced with GNSS system time or time since system boot)</field>
-      <field type="uint8_t" name="beacon_id" instance="true">ID of the ranging beacon/station</field>
-      <field type="uint32_t" name="range" units="mm" invalid="UINT32_MAX">Range measurement between a beacon and a vehicle</field>
-      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Beacon latitude (WGS84)</field>
-      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Beacon longitude (WGS84)</field>
-      <field type="float" name="alt_ellipsoid" units="m" invalid="NaN">Beacon altitude (ellipsoid, WGS84). This field is preferred: alt_msl is a fallback.</field>
-      <field type="float" name="alt_msl" units="m" invalid="NaN">Beacon altitude (MSL), fallback </field>
-      <field type="uint32_t" name="hacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma horizontal accuracy estimate</field>
-      <field type="uint32_t" name="vacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma vertical accuracy estimate</field>
-      <field type="int8_t" name="rssi_node" units="dBm" invalid="INT8_MAX">RSSI at node/vehicle side</field>
-      <field type="int8_t" name="rssi_beacon" units="dBm" invalid="INT8_MAX">RSSI at beacon/station side</field>
-      <field type="uint8_t" name="sequence">Measurement sequence number</field>
-      <field type="uint16_t" name="carrier_freq" units="MHz" invalid="UINT16_MIN">Ranging carrier frequency</field>
-      <field type="uint32_t" name="range_accuracy" units="mm" invalid="UINT32_MAX">Estimated range measurement accuracy</field>
-    </message>
-    <message id="514" name="ESTIMATOR_SENSOR_FUSION_STATUS">
-      <description>Status of estimator sensor fusion sources. Each array is indexed by ESTIMATOR_SENSOR_FUSION_SOURCE - 1. Each element is a per-instance bitmask (bit 0 = instance 0, etc.). For single-instance sources only bit 0 is used. For multi-instance sources like AGP, multiple bits may be set.</description>
-      <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_SET_ESTIMATOR_SENSOR_FUSION).</field>
-      <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
-      <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
     </message>
   </messages>
 </mavlink>

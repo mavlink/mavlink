@@ -81,13 +81,6 @@
       <entry value="4096" name="MAV_BATTERY_STATUS_FLAGS_FAULT_UNDER_TEMPERATURE">
         <description>Under-temperature fault.</description>
       </entry>
-      <entry value="5005" name="MAV_CMD_NAV_FENCE_HOME_CIRCLE_INCLUSION" hasLocation="false" isDestination="false">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Circular fence area centered on home. The vehicle must stay inside this area. If home is moved, the fence moves.</description>
-        <param index="1" label="Radius" units="m">Radius.</param>
-        <param index="2" label="Inclusion Group" minValue="0" increment="1">Vehicle must be inside ALL inclusion zones in a single group, vehicle must be inside at least one group. Ignored when sent as a command.</param>
-      </entry>
       <entry value="8192" name="MAV_BATTERY_STATUS_FLAGS_FAULT_OVER_CURRENT">
         <description>Over-current fault.</description>
       </entry>
@@ -124,18 +117,6 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="36" name="MAV_CMD_NAV_ARC_WAYPOINT" hasLocation="true" isDestination="true">
-        <wip/>
-        <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
-        <description>Circular arc path waypoint.
-          This defines the end/exit point and angle (param1) of an arc path from the previous waypoint. A position is required before this command to define the start of the arc (e.g. current position, a MAV_CMD_NAV_WAYPOINT, or a MAV_CMD_NAV_ARC_WAYPOINT).
-          The resulting path is a circular arc in the NE frame, with the difference in height being defined by the difference in waypoint altitudes.
-          </description>
-        <param index="1" label="Arc Angle" units="deg" minValue="-359" maxValue="359" increment="1">The angle in degrees from the starting position to the exit position of the arc in the NE frame. Positive values are CW arcs and negative values are CCW arcs.</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
-      </entry>
       <entry value="247" name="MAV_CMD_DO_UPGRADE" hasLocation="false" isDestination="false">
         <description>Request a target system to start an upgrade of one (or all) of its components.
           For example, the command might be sent to a companion computer to cause it to upgrade a connected flight controller.
@@ -198,6 +179,13 @@
         <description>Disable Moving Target Indicators (MTI) on streamed video.</description>
         <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
+      <entry value="5005" name="MAV_CMD_NAV_FENCE_HOME_CIRCLE_INCLUSION" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Circular fence area centered on home. The vehicle must stay inside this area. If home is moved, the fence moves.</description>
+        <param index="1" label="Radius" units="m">Radius.</param>
+        <param index="2" label="Inclusion Group" minValue="0" increment="1">Vehicle must be inside ALL inclusion zones in a single group, vehicle must be inside at least one group. Ignored when sent as a command.</param>
+      </entry>
       <entry value="12900" name="MAV_CMD_ODID_SET_EMERGENCY" hasLocation="false" isDestination="false">
         <description>Used to manually set/unset emergency status for remote id.
           This is for compliance with MOC ASTM docs, specifically F358 section 7.7: "Emergency Status Indicator".
@@ -221,6 +209,18 @@
         <param index="2" label="Wind speed accuracy" units="m/s">Estimated 1 sigma accuracy of wind speed. Set to NaN if unknown.</param>
         <param index="3" label="Direction" units="deg" minValue="0" maxValue="360">Azimuth (relative to true north) from where the wind is blowing.</param>
         <param index="4" label="Direction accuracy" units="deg">Estimated 1 sigma accuracy of wind direction. Set to NaN if unknown.</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="43006" name="MAV_CMD_ESTIMATOR_SENSOR_ENABLE" hasLocation="false" isDestination="false">
+        <description>Enable or disable a specific estimator sensor fusion source at runtime.
+          This allows a GCS or companion computer to dynamically control which sensors the estimator fuses without changing parameters.
+        </description>
+        <param index="1" label="Source" enum="ESTIMATOR_SENSOR_FUSION_SOURCE" minValue="0" increment="1">Sensor fusion source type.</param>
+        <param index="2" label="Instance" minValue="0" increment="1">Sensor instance (0-based, for multi-instance).</param>
+        <param index="3" label="Enable" enum="MAV_BOOL">Enable (1) or Disable (0) the source.</param>
+        <param index="4" label="Estimator Instance" default="NaN" minValue="0" increment="1">Estimator instance (0-based, for systems with multiple estimators).</param>
         <param index="5">Empty</param>
         <param index="6">Empty</param>
         <param index="7">Empty</param>
@@ -435,6 +435,51 @@
         <description>BLHeli32 ESC firmware.</description>
       </entry>
     </enum>
+    <enum name="RANGING_BEACON_ALT_TYPE">
+      <description>Altitude reference for RANGING_BEACON alt field.</description>
+      <entry value="0" name="RANGING_BEACON_ALT_TYPE_WGS84">
+        <description>Altitude above WGS84 ellipsoid.</description>
+      </entry>
+      <entry value="1" name="RANGING_BEACON_ALT_TYPE_MSL">
+        <description>Altitude above Mean Sea Level (AMSL).</description>
+      </entry>
+    </enum>
+    <enum name="RANGING_BEACON_STATUS_FLAG" bitmask="true">
+      <description>Status flags for a RANGING_BEACON.</description>
+      <entry value="1" name="RANGING_BEACON_STATUS_FLAG_STATION_SIGNAL_POOR">
+        <description>Station signal is poor. This might indicate channel fading, interference, or other signal quality issues.</description>
+      </entry>
+    </enum>
+    <enum name="ESTIMATOR_SENSOR_FUSION_SOURCE">
+      <description>Estimator sensor fusion source types. Used in MAV_CMD_ESTIMATOR_SENSOR_ENABLE and as array index in ESTIMATOR_SENSOR_FUSION_STATUS.</description>
+      <entry value="0" name="ESTIMATOR_SENSOR_FUSION_SOURCE_GPS">
+        <description>GNSS</description>
+      </entry>
+      <entry value="1" name="ESTIMATOR_SENSOR_FUSION_SOURCE_OF">
+        <description>Optical Flow</description>
+      </entry>
+      <entry value="2" name="ESTIMATOR_SENSOR_FUSION_SOURCE_EV">
+        <description>External Vision</description>
+      </entry>
+      <entry value="3" name="ESTIMATOR_SENSOR_FUSION_SOURCE_AGP">
+        <description>Auxiliary Global Position</description>
+      </entry>
+      <entry value="4" name="ESTIMATOR_SENSOR_FUSION_SOURCE_BARO">
+        <description>Barometer</description>
+      </entry>
+      <entry value="5" name="ESTIMATOR_SENSOR_FUSION_SOURCE_RNG">
+        <description>Range Finder</description>
+      </entry>
+      <entry value="6" name="ESTIMATOR_SENSOR_FUSION_SOURCE_MAG">
+        <description>Magnetometer</description>
+      </entry>
+      <entry value="7" name="ESTIMATOR_SENSOR_FUSION_SOURCE_ASPD">
+        <description>Airspeed</description>
+      </entry>
+      <entry value="8" name="ESTIMATOR_SENSOR_FUSION_SOURCE_RANGING_BEACON">
+        <description>Ranging Beacon</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="337" name="CELLULAR_MODEM_INFORMATION">
@@ -525,6 +570,24 @@
         Channel values are in centered 13 bit format. Range is -4096 to 4096, center is 0. Conversion to PWM is x * 5/32 + 1500.
         Channels with indexes equal or above count should be set to 0, to benefit from MAVLink's trailing-zero trimming.</field>
     </message>
+    <message id="421" name="RC_CHANNELS_OVERRIDE_V2">
+      <wip since="2026-03"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>
+        Highly bandwidth-efficient RC override message for professional networked operations (LTE, Zigbee, GCP). 
+        Supersedes RC_CHANNELS_OVERRIDE by adding 32-channel support and a bitmask for multi-master conflict avoidance. 
+        Uses centered-at-zero values and extension-field placement to maximize MAVLink 2 trailing-zero truncation.
+      </description>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint32_t" name="active_mask">Bitmap of included channels (bit 0 = CH1). 1: Valid/Override, 0: Ignore.</field>
+      <extensions/>
+      <field type="int16_t[32]" name="channels" minValue="-4096" maxValue="4096">
+        RC channels in centered 13-bit format. Range: -4096 to 4096, Center: 0. 
+        Conversion to PWM: (x * 5/32) + 1500. 
+        Unused channels must be set to 0 to enable MAVLink 2 trailing-zero trimming.
+      </field>
+    </message>
     <message id="441" name="GNSS_INTEGRITY">
       <description>Information about key components of GNSS receivers, like signal authentication, interference and system errors.</description>
       <field type="uint8_t" name="id" instance="true">GNSS receiver id. Must match instance ids of other messages from same receiver.</field>
@@ -598,6 +661,34 @@
       <field type="uint32_t[6]" name="write_mask">Bitmask indicating which bytes in the data array should be written. Each bit corresponds to a byte index in the data array (bit 0 of write_mask[0] = data[0], bit 31 of write_mask[0] = data[31], bit 0 of write_mask[1] = data[32], etc.). Set bits indicate bytes to write, cleared bits indicate bytes to skip. This allows precise updates of individual parameters without overwriting the entire EEPROM.</field>
       <field type="uint8_t" name="length" maxValue="222">Number of valid bytes in data array.</field>
       <field type="uint8_t[192]" name="data">Raw ESC EEPROM data. Unused bytes should be set to zero.</field>
+    </message>
+    <message id="513" name="RANGING_BEACON">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Range information from a radio beacon for trilateration-based positioning.
+        This message is telemetry intended for consumption by an autopilot (MAVLink does not define the mechanism used to determine the range).
+      </description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="target_system">System ID.</field>
+      <field type="uint8_t" name="target_component">Component ID.</field>
+      <field type="uint16_t" name="beacon_id" instance="true">ID of the ranging beacon/station.</field>
+      <field type="uint32_t" name="range" units="mm" invalid="UINT32_MAX">Range measurement between a beacon and a vehicle.</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Beacon latitude (WGS84).</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Beacon longitude (WGS84).</field>
+      <field type="float" name="alt" units="m" invalid="NaN">Beacon altitude (frame defined in alt_type).</field>
+      <field type="uint8_t" name="alt_type" enum="RANGING_BEACON_ALT_TYPE">Altitude frame for alt field. RANGING_BEACON_ALT_TYPE_WGS84 (0) preferred.</field>
+      <field type="uint32_t" name="hacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma horizontal accuracy estimate.</field>
+      <field type="uint32_t" name="vacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma vertical accuracy estimate.</field>
+      <field type="uint16_t" name="carrier_freq" units="MHz" invalid="UINT16_MIN">Ranging carrier frequency</field>
+      <field type="uint32_t" name="range_accuracy" units="mm" invalid="UINT32_MAX">Estimated 1-sigma range measurement accuracy.</field>
+      <field type="uint8_t" name="sequence">Measurement sequence number.</field>
+      <field type="uint8_t" name="status" enum="RANGING_BEACON_STATUS_FLAG">Ranging beacon status.</field>
+    </message>
+    <message id="514" name="ESTIMATOR_SENSOR_FUSION_STATUS">
+      <description>Status of estimator sensor fusion sources. Each array is indexed by ESTIMATOR_SENSOR_FUSION_SOURCE - 1. Each element is a per-instance bitmask (bit 0 = instance 0, etc.). For single-instance sources only bit 0 is used. For multi-instance sources like AGP, multiple bits may be set.</description>
+      <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_ESTIMATOR_SENSOR_ENABLE).</field>
+      <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
+      <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
     </message>
   </messages>
 </mavlink>

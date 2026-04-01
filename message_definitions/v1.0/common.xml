@@ -443,9 +443,15 @@
       <entry value="8192" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_RC_INPUTS">
         <description>Gimbal device supports radio control inputs as an alternative input for controlling the gimbal orientation.</description>
       </entry>
+      <entry value="65536" name="GIMBAL_DEVICE_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL">
+        <description>Gimbal device supports to point to a local position.</description>
+      </entry>
+      <entry value="131072" name="GIMBAL_DEVICE_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
+        <description>Gimbal device supports to point to a global latitude, longitude, altitude position.</description>
+      </entry>
     </enum>
     <enum name="GIMBAL_MANAGER_CAP_FLAGS" bitmask="true">
-      <description>Gimbal manager high level capability flags (bitmap). The first 16 bits are identical to the GIMBAL_DEVICE_CAP_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
+      <description>Gimbal manager high level capability flags (bitmap). The flags are identical to the GIMBAL_DEVICE_CAP_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags.</description>
       <entry value="1" name="GIMBAL_MANAGER_CAP_FLAGS_HAS_RETRACT">
         <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT.</description>
       </entry>
@@ -489,10 +495,10 @@
         <description>Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RC_INPUTS.</description>
       </entry>
       <entry value="65536" name="GIMBAL_MANAGER_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL">
-        <description>Gimbal manager supports to point to a local position.</description>
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL.</description>
       </entry>
       <entry value="131072" name="GIMBAL_MANAGER_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL">
-        <description>Gimbal manager supports to point to a global latitude, longitude, altitude position.</description>
+        <description>Based on GIMBAL_DEVICE_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL.</description>
       </entry>
     </enum>
     <enum name="GIMBAL_DEVICE_FLAGS" bitmask="true">
@@ -1078,6 +1084,44 @@
         <description>Force reboot/shutdown of the autopilot/component regardless of system state.</description>
       </entry>
     </enum>
+    <enum name="PREFLIGHT_CALIBRATION_MAGNETOMETER">
+      <description>Action for the magnetometer (param2) of MAV_CMD_PREFLIGHT_CALIBRATION.</description>
+      <entry value="0" name="PREFLIGHT_CALIBRATION_MAGNETOMETER_NONE">
+        <description>No action.</description>
+      </entry>
+      <entry value="1" name="PREFLIGHT_CALIBRATION_MAGNETOMETER_START">
+        <description>Start magnetometer calibration.</description>
+      </entry>
+      <entry value="76" name="PREFLIGHT_CALIBRATION_MAGNETOMETER_FORCE_SAVE">
+        <description>Force-accept the existing compass calibration as valid without re-running it. Useful after a parameter reload that cleared calibration validity flags.</description>
+      </entry>
+    </enum>
+    <enum name="PREFLIGHT_CALIBRATION_ACCELEROMETER">
+      <description>Action for the accelerometer (param5) of MAV_CMD_PREFLIGHT_CALIBRATION.</description>
+      <entry value="0" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_NONE">
+        <description>No action.</description>
+      </entry>
+      <entry value="1" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_FULL">
+        <description>Full 6-position accelerometer calibration.</description>
+      </entry>
+      <entry value="2" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_TRIM">
+        <description>Board level (trim) calibration.</description>
+      </entry>
+      <entry value="3" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_TEMPERATURE">
+        <description>Accelerometer temperature calibration.</description>
+      </entry>
+      <entry value="4" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_SIMPLE">
+        <description>Simple accelerometer calibration.</description>
+      </entry>
+      <entry value="76" name="PREFLIGHT_CALIBRATION_ACCELEROMETER_FORCE_SAVE">
+        <description>Force-accept the existing accelerometer calibration as valid without re-running it. Useful after a parameter reload that cleared calibration validity flags.</description>
+      </entry>
+    </enum>
+    <enum name="NAV_TAKEOFF_FLAGS" bitmask="true">
+      <entry value="1" name="NAV_TAKEOFF_FLAGS_HORIZONTAL_POSITION_NOT_REQUIRED">
+        <description>Accept the command even if the autopilot does not have control over its horizontal position (note that it might not have altitude control either).</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -1148,7 +1192,7 @@
         <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
         <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
-        <param index="3">Empty</param>
+        <param index="3" label="Flags" enum="NAV_TAKEOFF_FLAGS">Bitmask of options flags.</param>
         <param index="4" label="Yaw" units="deg">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
@@ -1254,6 +1298,16 @@
         INT32_MAX or NaN: Use current vehicle position, or current center if already loitering.</param>
         <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
         INT32_MAX or NaN: Use current vehicle altitude.</param>
+      </entry>
+      <entry value="36" name="MAV_CMD_NAV_ARC_WAYPOINT" hasLocation="true" isDestination="true">
+        <description>Circular arc path waypoint.
+          This defines the end/exit point and angle (param1) of an arc path from the previous waypoint. A position is required before this command to define the start of the arc (e.g. current position, a MAV_CMD_NAV_WAYPOINT, or a MAV_CMD_NAV_ARC_WAYPOINT).
+          The resulting path is a circular arc in the NE frame, with the difference in height being defined by the difference in waypoint altitudes.
+        </description>
+        <param index="1" label="Arc Angle" units="deg" minValue="-359" maxValue="359" increment="1">The angle in degrees from the starting position to the exit position of the arc in the NE frame. Positive values are CW arcs and negative values are CCW arcs.</param>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false">
         <superseded since="2018-01" replaced_by="`MAV_CMD_DO_SET_ROI_*`"/>
@@ -1898,10 +1952,10 @@
       <entry value="241" name="MAV_CMD_PREFLIGHT_CALIBRATION" hasLocation="false" isDestination="false">
         <description>Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Temperature Calibration, only one sensor should be set in a single message and all others should be zero.</description>
         <param index="1" label="Gyro Temperature" minValue="0" maxValue="3" increment="1">1: gyro calibration, 3: gyro temperature calibration</param>
-        <param index="2" label="Magnetometer" enum="MAV_BOOL">Magnetometer calibration. Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="Magnetometer" enum="PREFLIGHT_CALIBRATION_MAGNETOMETER">Magnetometer calibration action.</param>
         <param index="3" label="Ground Pressure" enum="MAV_BOOL">Ground pressure calibration. Values not equal to 0 or 1 are invalid.</param>
         <param index="4" label="Remote Control" minValue="0" maxValue="1" increment="1">1: radio RC calibration, 2: RC trim calibration</param>
-        <param index="5" label="Accelerometer" minValue="0" maxValue="4" increment="1">1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration, 4: simple accelerometer calibration</param>
+        <param index="5" label="Accelerometer" enum="PREFLIGHT_CALIBRATION_ACCELEROMETER">Accelerometer calibration action.</param>
         <param index="6" label="Compmot or Airspeed" minValue="0" maxValue="2" increment="1">1: APM: compass/motor interference calibration (PX4: airspeed calibration, deprecated), 2: airspeed calibration</param>
         <param index="7" label="ESC or Baro" minValue="0" maxValue="3" increment="1">1: ESC calibration, 3: barometer temperature calibration</param>
       </entry>
@@ -2377,7 +2431,7 @@
       <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST" hasLocation="false" isDestination="false">
         <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request.
 		If approved the COMMAND_ACK message progress field should be set with period of time that this authorization is valid in seconds.
-		If the authorization is denied COMMAND_ACK.result_param2 should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
+		If the authorization is denied COMMAND_ACK.result_param2 should be set with one of the reasons in MAV_ARM_AUTH_DENIED_REASON.
         </description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle</param>
       </entry>
@@ -3998,6 +4052,7 @@
       </entry>
     </enum>
     <enum name="MAV_ARM_AUTH_DENIED_REASON">
+      <description>Reasons for denying an authorization request made with MAV_CMD_ARM_AUTHORIZATION_REQUEST. If the COMMAND_ACK result is MAV_RESULT_DENIED, this is used to set the reason in the result_param2 field.</description>
       <entry value="0" name="MAV_ARM_AUTH_DENIED_REASON_GENERIC">
         <description>Not a specific reason</description>
       </entry>
@@ -5875,7 +5930,7 @@
     </message>
     <message id="69" name="MANUAL_CONTROL">
       <description>Manual (joystick) control message.
-        This message represents movement axes and button using standard joystick axes nomenclature. Unused axes can be disabled and buttons states are transmitted as individual on/off bits of a bitmask. For more information see https://mavlink.io/en/manual_control.html</description>
+        This message represents movement axes and button using standard joystick axes nomenclature. Unused axes can be disabled and buttons states are transmitted as individual on/off bits of a bitmask. For more information see https://mavlink.io/en/services/manual_control.html</description>
       <field type="uint8_t" name="target">The system to be controlled.</field>
       <field type="int16_t" name="x" minValue="-1000" maxValue="1000" invalid="INT16_MAX">X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.</field>
       <field type="int16_t" name="y" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.</field>
@@ -7369,6 +7424,7 @@
       <field type="float" name="yaw_max" units="rad" invalid="NaN">Maximum hardware yaw angle (positive: to the right, negative: to the left). NAN if unknown.</field>
       <extensions/>
       <field type="uint8_t" name="gimbal_device_id" invalid="0">This field is to be used if the gimbal manager and the gimbal device are the same component and hence have the same component ID. This field is then set to a number between 1-6. If the component ID is separate, this field is not required and must be set to 0.</field>
+      <field type="uint32_t" name="cap_flags2" enum="GIMBAL_DEVICE_CAP_FLAGS" invalid="0">Extended bitmap of gimbal capability flags (32 bit). For backwards compatibility, the lower 16 bits should also be set in cap_flags. Ground stations should prefer this field if non-zero.</field>
     </message>
     <message id="284" name="GIMBAL_DEVICE_SET_ATTITUDE">
       <description>Low level message to control a gimbal device's attitude.
@@ -8056,9 +8112,11 @@
       <field type="uint32_t" name="intended_custom_mode" invalid="0">The custom_mode of the mode that was last commanded by the user (for example, with MAV_CMD_DO_SET_STANDARD_MODE, MAV_CMD_DO_SET_MODE or via RC). This should usually be the same as custom_mode. It will be different if the vehicle is unable to enter the intended mode, or has left that mode due to a failsafe condition. 0 indicates the intended custom mode is unknown/not supplied</field>
     </message>
     <message id="437" name="AVAILABLE_MODES_MONITOR">
-      <description>A change to the sequence number indicates that the set of AVAILABLE_MODES has changed.
-        A receiver must re-request all available modes whenever the sequence number changes.
-        This is only emitted after the first change and should then be broadcast at low rate (nominally 0.3 Hz) and on change.
+      <description>A change to the sequence number indicates that the set of AVAILABLE_MODES has changed, and that the receiver should re-request all available modes.
+
+        The message is optional, and is only needed when the set of modes can change dynamically after boot.
+        It should be emitted whenever the set of modes change.
+        It should be streamed at low rate (nominally 0.3 Hz).
         See https://mavlink.io/en/services/standard_modes.html
       </description>
       <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically).</field>
