@@ -56,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.x']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.x']
     steps:
       - uses: actions/checkout@v6
         with:
@@ -74,7 +74,7 @@ jobs:
 
   build-cmake-c-example:
     name: Build cmake C example
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -85,7 +85,7 @@ jobs:
           sudo apt install -y python3 python3-pip
       - name: Install MAVLink headers
         run: |
-          cmake -Bbuild -H. -DCMAKE_INSTALL_PREFIX=install
+          cmake -Bbuild -H. -DMAVLINK_DIALECT=auterion -DCMAKE_INSTALL_PREFIX=install
           cmake --build build --target install
       - name: Build example
         run: |

@@ -1,0 +1,826 @@
+<?xml version="1.0"?>
+<mavlink>
+  <!-- message ID range: 13000 - 13999 -->
+  <!-- command ID range: 13000 - 13999 -->
+  <include>development.xml</include>
+  <version>0</version>
+  <dialect>0</dialect>
+  <enums>
+    <enum name="MAV_CMD">
+      <entry value="225" name="MAV_CMD_SET_PARACHUTE_ARM" hasLocation="false" isDestination="false">
+        <description>Command to arm/disarm parachute module trigger sources.</description>
+        <param index="1" label="Arm Flags" enum="PARACHUTE_TRIGGER_FLAGS">Arm flags of parachute trigger sources</param>
+        <param index="2" label="Bitmask" enum="PARACHUTE_TRIGGER_FLAGS">Bitmask of arm flags (in param1) that should be modified</param>
+      </entry>
+      <entry value="900" name="MAV_CMD_PARAM_TRANSACTION" hasLocation="false" isDestination="false">
+        <description>Request to start or end a parameter transaction. Multiple kinds of transport layers can be used to exchange parameters in the transaction (param, param_ext and mavftp). The command response can either be a success/failure or an in progress in case the receiving side takes some time to apply the parameters.</description>
+        <param index="1" label="Action" enum="PARAM_TRANSACTION_ACTION">Action to be performed (start, commit, cancel, etc.)</param>
+        <param index="2" label="Transport" enum="PARAM_TRANSACTION_TRANSPORT">Possible transport layers to set and get parameters via mavlink during a parameter transaction.</param>
+        <param index="3" label="Transaction ID">Identifier for a specific transaction.</param>
+      </entry>
+      <entry value="2006" name="MAV_CMD_CAMERA_TRACK_OBJECT" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Start tracking an object by referencing it's ID</description>
+        <param index="1" label="Object ID"/>
+      </entry>
+      <entry value="2099" name="MAV_CMD_CAMERA_TRACKING_ADJUSTMENT">
+        <description>Provides fine adjustments to a tracking window position in the video feed. The position adjustments are sent as relative step changes from the current tracking point.</description>
+        <param index="1" label="Timestamp" units="us">Timestamp (UNIX epoch time)</param>
+        <param index="2" label="Horizontal Step" minValue="-32768" maxValue="32767" increment="1">Horizontal adjustment in steps relative to the current position. Negative values shift the target left; positive values shift it right.</param>
+        <param index="3" label="Vertical Step" minValue="-32768" maxValue="32767" increment="1">Vertical adjustment in steps relative to the current position. Negative values shift the target upward; positive values shift it downward.</param>
+      </entry>
+      <entry value="13670" name="MAV_CMD_DO_CONTROL_TAKEOVER" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Commands to take over control from the safety driver. This command cannot give control to safety driver.</description>
+        <param index="1">Empty</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="13671" name="MAV_CMD_DO_ENGINE_LEG_TRIM" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Set engine leg trim position. Can execute trim for individual legs or all legs at once.</description>
+        <param index="1" label="Engine bitmask" minValue="0" increment="1" maxValue="255">Engine leg selection bitmask.</param>
+        <param index="2" label="Direction" minValue="0" maxValue="1" increment="1">Executes engine leg trimming for all selected engines(0: Down, 1:up)</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="13672" name="MAV_CMD_DO_SET_ENGINE_STATE" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Commands the desired state for vehicle engines.</description>
+        <param index="1" label="Engine bitmask" minValue="0" increment="1" maxValue="255">Engine selection bitmask.</param>
+        <param index="2" label="Command" minValue="0" increment="1" maxValue="4">Commanded engine state for the selected engines.</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="13673" name="MAV_CMD_DO_SET_SHIP_APPROACH_SECTORS" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Set the user defined ship approach sectors. These sector represent approach vectors for the drone's landing sequence, with a 360/8 degree arc.</description>
+        <param index="1" label="Approach bitmask" minValue="0" increment="1" maxValue="255">Approach sector bitmask.</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="43006" name="MAV_CMD_SET_ESTIMATOR_SENSOR_FUSION" hasLocation="false" isDestination="false">
+        <description>Enable or disable a specific estimator sensor fusion source at runtime.
+          This allows a GCS or companion computer to dynamically control which sensors the estimator fuses without changing parameters.
+        </description>
+        <param index="1" label="Source" enum="ESTIMATOR_SENSOR_FUSION_SOURCE" minValue="1" increment="1">Sensor fusion source type.</param>
+        <param index="2" label="Instance" minValue="0" increment="1">Sensor instance (0-based, for multi-instance).</param>
+        <param index="3" label="Enable" enum="MAV_BOOL">Enable (1) or Disable (0) the source.</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="13800" name="MAV_CMD_PAYLOAD_DEVICE_TRIGGER" hasLocation="false" isDestination="false">
+        <wip/>
+        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Commands the payload device to trigger its payload.</description>
+        <param index="1" label="Trigger" minValue="0" increment="1" maxValue="1">Set to 1 to trigger the payload device.</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+    </enum>
+    <enum name="CURRENT_CONTROL_ENTITY">
+      <description>List of the currently active control entity.</description>
+      <entry value="0" name="CURRENT_CONTROL_ENTITY_NONE">
+        <description>Setting if no entity has control ownership.</description>
+      </entry>
+      <entry value="1" name="CURRENT_CONTROL_ENTITY_OWNER">
+        <description>Setting if the receiving GCS is the control entity.</description>
+      </entry>
+      <entry value="2" name="CURRENT_CONTROL_ENTITY_OTHER">
+        <description>Setting if a GCS other than the receiving GCS is the control entity.</description>
+      </entry>
+    </enum>
+    <enum name="CONTROL_TARGET_REQUEST">
+      <description>Selection of control target for changing ownership.</description>
+      <entry value="0" name="CONTROL_TARGET_ALL">
+        <description>Request change control ownership of both flight control and payload control.</description>
+      </entry>
+      <entry value="1" name="CONTROL_TARGET_FLIGHT">
+        <description>Request change control ownership of the flight control.</description>
+      </entry>
+      <entry value="2" name="CONTROL_TARGET_PAYLOAD">
+        <description>Request change control ownership of the payload control.</description>
+      </entry>
+    </enum>
+    <enum name="CONTROL_REQUEST_ERROR_CODE">
+      <description>Error code for the control request response.</description>
+      <entry value="0" name="CONTROL_REQUEST_PROCESSED">
+        <description>Code indicating successful processing of the request.</description>
+      </entry>
+      <entry value="1" name="CONTROL_REQUEST_DENIED">
+        <description>Error code indicating that the control request has been denied by the target system.</description>
+      </entry>
+      <entry value="2" name="CONTROL_REQUEST_HANDOFF_TIMEOUT">
+        <description>Error Code indicating timeout on the handoff request.</description>
+      </entry>
+      <entry value="3" name="CONTROL_REQUEST_DENIED_CONCURRENT">
+        <description>Error Code indicating another control request is in process.</description>
+      </entry>
+      <entry value="4" name="CONTROL_REQUEST_NO_CONTROL_AUTHORITY">
+        <description>Error Code indicating no enough authority to take control ownership.</description>
+      </entry>
+      <entry value="5" name="CONTROL_REQUEST_NO_PRIORITY_AUTHORITY">
+        <description>Error Code indicating no enough priority authority control ownership.</description>
+      </entry>
+    </enum>
+    <enum name="HANDOFF_DECISION">
+      <description>Decision of the GCS to a handoff request.</description>
+      <entry value="0" name="HANDOFF_DECISION_ACCEPT">
+        <description>Decision to accept the handoff and release control ownership.</description>
+      </entry>
+      <entry value="1" name="HANDOFF_DECISION_DENIED">
+        <description>Decision to deny the handoff request and keep control ownership.</description>
+      </entry>
+    </enum>
+    <!-- Transactions for parameter protocol -->
+    <enum name="PARAM_TRANSACTION_TRANSPORT">
+      <description>Possible transport layers to set and get parameters via mavlink during a parameter transaction.</description>
+      <entry value="0" name="PARAM_TRANSACTION_TRANSPORT_PARAM">
+        <description>Transaction over param transport.</description>
+      </entry>
+      <entry value="1" name="PARAM_TRANSACTION_TRANSPORT_PARAM_EXT">
+        <description>Transaction over param_ext transport.</description>
+      </entry>
+    </enum>
+    <enum name="PARAM_TRANSACTION_ACTION">
+      <description>Possible parameter transaction actions.</description>
+      <entry value="0" name="PARAM_TRANSACTION_ACTION_START">
+        <description>Commit the current parameter transaction.</description>
+      </entry>
+      <entry value="1" name="PARAM_TRANSACTION_ACTION_COMMIT">
+        <description>Commit the current parameter transaction.</description>
+      </entry>
+      <entry value="2" name="PARAM_TRANSACTION_ACTION_CANCEL">
+        <description>Cancel the current parameter transaction.</description>
+      </entry>
+    </enum>
+    <enum name="ENGINE_LEG_TRIM_STATE">
+      <description>Defines the position status of a engine leg trim.</description>
+      <entry value="0" name="ENGINE_LEG_TRIM_NONE">
+        <description>ENGINE_LEF_TRIM_NONE indicates no engine leg trim system is present.</description>
+      </entry>
+      <entry value="1" name="ENGINE_LEG_TRIM_STOWED">
+        <description>ENGINE_LEG_TRIM_STOWED means leg is lifted and the engine should not be started.</description>
+      </entry>
+      <entry value="2" name="ENGINE_LEG_TRIM_CRUISE">
+        <description>ENGINE_LEG_TRIM_CRUISE defines the active operational position of the engine leg.</description>
+      </entry>
+      <entry value="3" name="ENGINE_LEG_TRIM_FAULT">
+        <description>ENGINE_LEG_TRIM_FAULT indicates a faulty state in the engine leg trimming system.</description>
+      </entry>
+    </enum>
+    <enum name="RUDDER_STATE">
+      <description>Defines health state of a rudder.</description>
+      <entry value="0" name="RUDDER_NONE">
+        <description>RUDDER_NONE indicates no rudder system is present.</description>
+      </entry>
+      <entry value="1" name="RUDDER_OK">
+        <description>RUDDER_OK indicates the rudder is operating correctly.</description>
+      </entry>
+      <entry value="2" name="RUDDER_FAULT">
+        <description>RUDDER_FAULT indicates a fault in the rudder system.</description>
+      </entry>
+    </enum>
+    <enum name="ENGINE_STATE">
+      <description>Defines the operation state of an engine.</description>
+      <entry value="0" name="ENGINE_NONE">
+        <description>ENGINE_NONE indicates engine is not running and ignition is off.</description>
+      </entry>
+      <entry value="1" name="ENGINE_STOPPED">
+        <description>ENGINE_STOPPED indicates the engine is not running, but ignition is on.</description>
+      </entry>
+      <entry value="2" name="ENGINE_STARTING">
+        <description>ENGINE_STARTING indicates the engine is starting.</description>
+      </entry>
+      <entry value="3" name="ENGINE_RUNNING">
+        <description>ENGINE_RUNNING indicates the engine is running.</description>
+      </entry>
+      <entry value="4" name="ENGINE_FAULT">
+        <description>ENGINE_FAULT indicates a fault in the engine system.</description>
+      </entry>
+    </enum>
+    <enum name="TRANSMISSION_STATE">
+      <description>Defines the operation state of a transmission.</description>
+      <entry value="0" name="TRANSMISSION_NONE">
+        <description>TRANSMISSION_NONE indicates no transmission system is present.</description>
+      </entry>
+      <entry value="1" name="TRANSMISSION_NEUTRAL">
+        <description>TRANSMISSION_NEUTRAL indicates the transmission is in neutral.</description>
+      </entry>
+      <entry value="2" name="TRANSMISSION_FORWARD">
+        <description>TRANSMISSION_FORWARD indicates the transmission is in forward.</description>
+      </entry>
+      <entry value="3" name="TRANSMISSION_REVERSE">
+        <description>TRANSMISSION_REVERSE indicates the transmission is in reverse.</description>
+      </entry>
+      <entry value="4" name="TRANSMISSION_FAULT">
+        <description>TRANSMISSION_FAULT indicates a fault in the transmission system.</description>
+      </entry>
+    </enum>
+    <enum name="FLUID_TANK_TYPE">
+      <description>Defines the type of fluid contained in a tank.</description>
+      <entry value="0" name="TANK_TYPE_FUEL">
+        <description>TANK_TYPE_FUEL indicates the tank contains fuel.</description>
+      </entry>
+      <entry value="1" name="TANK_TYPE_WATER">
+        <description>TANK_TYPE_WATER indicates the tank contains fresh water.</description>
+      </entry>
+      <entry value="2" name="TANK_TYPE_GRAY_WATER">
+        <description>TANK_TYPE_GRAY_WATER indicates the tank contains gray water.</description>
+      </entry>
+      <entry value="3" name="TANK_TYPE_LIVE_WELL">
+        <description>TANK_TYPE_LIVE_WELL indicates the tank is a live well.</description>
+      </entry>
+      <entry value="4" name="TANK_TYPE_OIL">
+        <description>TANK_TYPE_OIL indicates the tank contains engine or hydraulic oil.</description>
+      </entry>
+      <entry value="5" name="TANK_TYPE_BLACK_WATER">
+        <description>TANK_TYPE_BLACK_WATER indicates the tank contains black water.</description>
+      </entry>
+    </enum>
+    <enum name="SPEED_WATER_REFERENCED_TYPE">
+      <description>Defines the type of sensor used for measuring speed through water.</description>
+      <entry value="0" name="REFERENCED_TYPE_PADDLE_WHEEL">
+        <description>REFERENCED_TYPE_PADDLE_WHEEL indicates speed is measured using a paddle wheel sensor.</description>
+      </entry>
+      <entry value="1" name="REFERENCED_TYPE_PITOT_TUBE">
+        <description>REFERENCED_TYPE_PITOT_TUBE indicates speed is measured using a pitot tube.</description>
+      </entry>
+      <entry value="2" name="REFERENCED_TYPE_DOPPLER">
+        <description>REFERENCED_TYPE_DOPPLER indicates speed is measured using a Doppler-based sensor.</description>
+      </entry>
+      <entry value="3" name="REFERENCED_TYPE_CORRELATION">
+        <description>REFERENCED_TYPE_CORRELATION indicates speed is measured using a correlation-based sensor.</description>
+      </entry>
+      <entry value="4" name="REFERENCED_TYPE_ELECTRO_MAGNETIC">
+        <description>REFERENCED_TYPE_ELECTRO_MAGNETIC indicates speed is measured using an electromagnetic flow sensor.</description>
+      </entry>
+    </enum>
+    <enum name="WIND_REFERENCE">
+      <description>Specifies the frame of reference used for wind direction and speed measurements.</description>
+      <entry value="0" name="REFERENCE_TRUE">
+        <description>REFERENCE_TRUE Wind referenced to geographic (true) North.</description>
+      </entry>
+      <entry value="1" name="REFERENCE_MAGNETIC">
+        <description>REFERENCE_MAGNETIC Wind referenced to magnetic North.</description>
+      </entry>
+      <entry value="2" name="REFERENCE_APPARENT">
+        <description>REFERENCE_APPARENT Apparent wind relative to the vessel.</description>
+      </entry>
+      <entry value="3" name="REFERENCE_TRUE_BOAT_REFERENCED">
+        <description>REFERENCE_TRUE_BOAT_REFERENCED True wind direction relative to the boat's heading, corrected for vessel movement but not Earth-referenced..</description>
+      </entry>
+      <entry value="4" name="REFERENCE_TRUE_WATER_REFERENCED">
+        <description>REFERENCE_TRUE_WATER_REFERENCED True wind direction relative to the water surface.</description>
+      </entry>
+    </enum>
+    <enum name="NAVIGATION_ANGLE_TYPE">
+      <description>Type of navigation angle measurement.</description>
+      <entry value="0" name="NAVIGATION_ANGLE_TYPE_RELATIVE">
+        <description>Navigation angle measured with respect to vehicle's heading.</description>
+      </entry>
+      <entry value="1" name="NAVIGATION_ANGLE_TYPE_TRUE">
+        <description>Navigation angle measured with respect to True North.</description>
+      </entry>
+      <entry value="2" name="NAVIGATION_ANGLE_TYPE_MAGNETIC">
+        <description>Navigation angle measured with respect to Magnetic North.</description>
+      </entry>
+    </enum>
+    <enum name="TARGET_TRACK_STATUS">
+      <description>Target track status.</description>
+      <entry value="0" name="TARGET_TRACK_STATUS_UNKNOWN">
+        <description>Target track status is unknown.</description>
+      </entry>
+      <entry value="1" name="TARGET_TRACK_STATUS_LOST">
+        <description>Target track lost.</description>
+      </entry>
+      <entry value="2" name="TARGET_TRACK_STATUS_QUERY">
+        <description>Target track status is being queried.</description>
+      </entry>
+      <entry value="3" name="TARGET_TRACK_STATUS_TRACKING">
+        <description>Target is being tracked.</description>
+      </entry>
+    </enum>
+    <enum name="TARGET_TRACK_ACQUISITION_TYPE">
+      <description>Type of target acquisition.</description>
+      <entry value="0" name="TARGET_TRACK_ACQUISITION_TYPE_AUTO">
+        <description>Automatic target acquisition.</description>
+      </entry>
+      <entry value="1" name="TARGET_TRACK_ACQUISITION_TYPE_MANUAL">
+        <description>Manual target acquisition.</description>
+      </entry>
+      <entry value="2" name="TARGET_TRACK_ACQUISITION_TYPE_REPORTED">
+        <description>Target acquisition is reported by another system.</description>
+      </entry>
+    </enum>
+    <enum name="PARACHUTE_TRIGGER_FLAGS" bitmask="true">
+      <description>Parachute trigger sources.</description>
+      <entry value="1" name="PARACHUTE_TRIGGER_FLAGS_MANUAL">
+        <description>Manual trigger (ground based control via parachute-specific RF channel)</description>
+      </entry>
+      <entry value="2" name="PARACHUTE_TRIGGER_FLAGS_ATS">
+        <description>Automatic trigger system (ATS)</description>
+      </entry>
+      <entry value="4" name="PARACHUTE_TRIGGER_FLAGS_FC">
+        <description>Flight controller trigger (e.g. MAVLink from FC, PWM, DroneCan, RC Control)</description>
+      </entry>
+      <entry value="8" name="PARACHUTE_TRIGGER_FLAGS_OFFBOARD">
+        <description>Offboard computer trigger (via MAVLink)</description>
+      </entry>
+      <entry value="16" name="PARACHUTE_TRIGGER_FLAGS_GEOFENCE">
+        <description>Geofence trigger (by parachute). Parachute uses MAVLink mission protocol to fetch geofence.</description>
+      </entry>
+      <entry value="32" name="PARACHUTE_TRIGGER_FLAGS_FTS_PRECHECKING">
+        <description>FTS (flight termination system) pre-checking protocol trigger</description>
+      </entry>
+      <entry value="64" name="PARACHUTE_TRIGGER_FLAGS_ATS_AUTO_ARM">
+        <description>Auto-arming of parachute automatic trigger system (ATS). This allows a parachute to enable ATS after detecting that it has reached a desired altitude.</description>
+      </entry>
+      <entry value="128" name="PARACHUTE_TRIGGER_FLAGS_ATS_AUTO_DISARM">
+        <description>Auto-disarming of parachute automatic trigger system (ATS). This allows a parachute to disable ATS after detecting that it is below a desired altitude.</description>
+      </entry>
+    </enum>
+    <enum name="PARACHUTE_DEPLOYMENT_TRIGGER">
+      <description>Parachute deployment trigger source</description>
+      <entry value="0" name="PARACHUTE_DEPLOYMENT_TRIGGER_NONE">
+        <description>None (parachute has not deployed)</description>
+      </entry>
+      <entry value="1" name="PARACHUTE_DEPLOYMENT_TRIGGER_MANUAL">
+        <description>Manual</description>
+      </entry>
+      <entry value="2" name="PARACHUTE_DEPLOYMENT_TRIGGER_ATS">
+        <description>Automatic trigger system (ATS)</description>
+      </entry>
+      <entry value="3" name="PARACHUTE_DEPLOYMENT_TRIGGER_DRONE">
+        <description>Drone</description>
+      </entry>
+      <entry value="4" name="PARACHUTE_DEPLOYMENT_TRIGGER_MAVLINK">
+        <description>MAVLink, e.g. from an offboard computer</description>
+      </entry>
+      <entry value="5" name="PARACHUTE_DEPLOYMENT_TRIGGER_GEOFENCE">
+        <description>Geofence</description>
+      </entry>
+      <entry value="6" name="PARACHUTE_DEPLOYMENT_TRIGGER_FTS_PRECHECKING">
+        <description>Flight Termination System (FTS) pre-checking protocol</description>
+      </entry>
+    </enum>
+    <enum name="PARACHUTE_SAFETY_FLAGS" bitmask="true">
+      <description>Parachute module safety-related flags.</description>
+      <entry value="1" name="PARACHUTE_SAFETY_FLAGS_GROUND_CLEARED">
+        <description>This is used to indicate that the parachute module has cleared a safe distance from the ground for deployment.</description>
+      </entry>
+      <entry value="2" name="PARACHUTE_SAFETY_FLAGS_ON_GROUND">
+        <description>This is used to indicate that the parachute's own sensor has confirmed it is stably on the ground.</description>
+      </entry>
+      <entry value="4" name="PARACHUTE_SAFETY_FLAGS_GEOFENCE_MISSION_SET">
+        <description>This is used to indicate that the parachute module has downloaded geofence mission successfully and can be triggered by geofence source.</description>
+      </entry>
+    </enum>
+    <enum name="PARACHUTE_ERROR_FLAGS" bitmask="true">
+      <description>Parachute module error flags (bitmap, 0 means no error)</description>
+      <entry value="1" name="PARACHUTE_ERROR_FLAGS_BAROMETER_ERROR">
+        <description>There is an error with the parachute barometer</description>
+      </entry>
+      <entry value="2" name="PARACHUTE_ERROR_FLAGS_IMU_ERROR">
+        <description>There is an error with the parachute IMU</description>
+      </entry>
+      <entry value="4" name="PARACHUTE_ERROR_FLAGS_RF_CONNECTION_ERROR">
+        <description>There is an error with the parachute's RF that is used for manual control</description>
+      </entry>
+      <entry value="8" name="PARACHUTE_ERROR_FLAGS_LOW_POWER">
+        <description>Parachute module has low power</description>
+      </entry>
+      <entry value="16" name="PARACHUTE_ERROR_FLAGS_FC_CONNECTION_ERROR">
+        <description>There is an error with the connection between parachute and flight controller (FC)</description>
+      </entry>
+      <entry value="32" name="PARACHUTE_ERROR_FLAGS_EFTS_CONNECTION_ERROR">
+        <description>There is an error with the connection between parachute and Electrical Flight Termination System (EFTS)</description>
+      </entry>
+      <entry value="64" name="PARACHUTE_ERROR_FLAGS_POD_CONNECTION_ERROR">
+        <description>There is an error with the parachute pod</description>
+      </entry>
+      <entry value="128" name="PARACHUTE_ERROR_FLAGS_EFTS_DIAGNOSE">
+        <description>Parachute Electrical Flight Termination System (EFTS) diagnosis failed</description>
+      </entry>
+      <entry value="256" name="PARACHUTE_ERROR_FLAGS_CHARGING_FAILED">
+        <description>Parachute module charging failed</description>
+      </entry>
+      <entry value="512" name="PARACHUTE_ERROR_FLAGS_EXTERNAL_POWER_ERROR">
+        <description>There is an error with the parachute external power source</description>
+      </entry>
+      <entry value="1024" name="PARACHUTE_ERROR_FLAGS_GS_CONNECTION_ERROR">
+        <description>There is an error with the connection between parachute and Ground Station (GS)</description>
+      </entry>
+      <entry value="2048" name="PARACHUTE_ERROR_FLAGS_GPS_ERROR">
+        <description>There is an error with the parachute's GPS</description>
+      </entry>
+      <entry value="4096" name="PARACHUTE_ERROR_FLAGS_SUBSYSTEM_CONNECTION_ERROR">
+        <description>There is an error with the connection between parachute and subsystem (e.g. remote controller, expansion board, etc.)</description>
+      </entry>
+      <entry value="8192" name="PARACHUTE_ERROR_FLAGS_SUBSYSTEM_FW_ERROR">
+        <description>There is an error with the parachute subsystem firmware (e.g. wrong firmware version)</description>
+      </entry>
+      <entry value="16384" name="PARACHUTE_ERROR_FLAGS_RESERVED_1">
+        <description>Reserved for future use</description>
+      </entry>
+      <entry value="32768" name="PARACHUTE_ERROR_FLAGS_RESERVED_2">
+        <description>Reserved for future use</description>
+      </entry>
+      <entry value="65536" name="PARACHUTE_ERROR_FLAGS_LOGGING_ERROR">
+        <description>There is an error with the parachute's internal logging system</description>
+      </entry>
+      <entry value="131072" name="PARACHUTE_ERROR_FLAGS_MODULE_RETIRED">
+        <description>This parachute module is retired (i.e. too many deployments)</description>
+      </entry>
+      <entry value="262144" name="PARACHUTE_ERROR_FLAGS_GLOW_WIRE_ERROR">
+        <description>There is an error with the parachute glow wire</description>
+      </entry>
+      <entry value="524288" name="PARACHUTE_ERROR_FLAGS_OFFBOARD_CONNECTION_ERROR">
+        <description>There is an error with the MAVLink connection between parachute and offboard computer</description>
+      </entry>
+      <entry value="1048576" name="PARACHUTE_ERROR_FLAGS_IMU_CALIBRATION_ERROR">
+        <description>Parachute's internal IMU calibration failed</description>
+      </entry>
+    </enum>
+    <enum name="MAV_PAYLOAD_STATE">
+      <description>State of a payload device.</description>
+      <entry value="0" name="MAV_PAYLOAD_STATE_SAFE">
+        <description>Device is in a safe state; not armed and not enabled.</description>
+      </entry>
+      <entry value="1" name="MAV_PAYLOAD_STATE_SST">
+        <description>Device is waiting on its "safe separation timer", or other pre-arm countdown.</description>
+      </entry>
+      <entry value="2" name="MAV_PAYLOAD_STATE_ENABLED">
+        <description>Device is enabled, but not yet armed.</description>
+      </entry>
+      <entry value="3" name="MAV_PAYLOAD_STATE_ARMED">
+        <description>Device is armed and ready.</description>
+      </entry>
+      <entry value="4" name="MAV_PAYLOAD_STATE_TRIGGERED">
+        <description>Device has been triggered and payload has been released.</description>
+      </entry>
+      <entry value="5" name="MAV_PAYLOAD_STATE_ABORTED">
+        <description>Device is in a safe state due to abort command. This may require a power cycle before it can be re-enabled.</description>
+      </entry>
+      <entry value="6" name="MAV_PAYLOAD_STATE_FAULT">
+        <description>Device has reported an error. Requires an explicit reset before it can be re-enabled.</description>
+      </entry>
+    </enum>
+    <enum name="ESTIMATOR_SENSOR_FUSION_SOURCE">
+      <description>Estimator sensor fusion source types. Used in MAV_CMD_SET_ESTIMATOR_SENSOR_FUSION and as array index (source - 1) in ESTIMATOR_SENSOR_FUSION_STATUS.</description>
+      <entry value="1" name="ESTIMATOR_SENSOR_FUSION_SOURCE_GPS">
+        <description>GNSS</description>
+      </entry>
+      <entry value="2" name="ESTIMATOR_SENSOR_FUSION_SOURCE_OF">
+        <description>Optical Flow</description>
+      </entry>
+      <entry value="3" name="ESTIMATOR_SENSOR_FUSION_SOURCE_EV">
+        <description>External Vision</description>
+      </entry>
+      <entry value="4" name="ESTIMATOR_SENSOR_FUSION_SOURCE_AGP">
+        <description>Auxiliary Global Position</description>
+      </entry>
+      <entry value="5" name="ESTIMATOR_SENSOR_FUSION_SOURCE_BARO">
+        <description>Barometer</description>
+      </entry>
+      <entry value="6" name="ESTIMATOR_SENSOR_FUSION_SOURCE_RNG">
+        <description>Range Finder</description>
+      </entry>
+      <entry value="7" name="ESTIMATOR_SENSOR_FUSION_SOURCE_MAG">
+        <description>Magnetometer</description>
+      </entry>
+      <entry value="8" name="ESTIMATOR_SENSOR_FUSION_SOURCE_ASPD">
+        <description>Airspeed</description>
+      </entry>
+      <entry value="9" name="ESTIMATOR_SENSOR_FUSION_SOURCE_RANGING_BEACON">
+        <description>Ranging Beacon</description>
+      </entry>
+    </enum>
+  </enums>
+  <messages>
+    <!-- Transactions for parameter protocol -->
+    <message id="19" name="PARAM_ACK_TRANSACTION">
+      <description>Response from a PARAM_SET message when it is used in a transaction.</description>
+      <field type="uint8_t" name="target_system">Id of system that sent PARAM_SET message.</field>
+      <field type="uint8_t" name="target_component">Id of system that sent PARAM_SET message.</field>
+      <field type="char[16]" name="param_id">Parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Parameter value (new value if PARAM_ACCEPTED, current value otherwise)</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Parameter type.</field>
+      <field type="uint8_t" name="param_result" enum="PARAM_ACK">Result code.</field>
+    </message>
+    <message id="430" name="PARACHUTE_STATUS">
+      <description>Parachute system status</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Uptime in ms</field>
+      <field type="uint32_t" name="error_status" enum="PARACHUTE_ERROR_FLAGS" display="bitmask">Errors</field>
+      <field type="uint8_t" name="arm_status" enum="PARACHUTE_TRIGGER_FLAGS" display="bitmask">Parachute arming status</field>
+      <field type="uint8_t" name="deployment_status" enum="PARACHUTE_DEPLOYMENT_TRIGGER">Parachute deployment status</field>
+      <field type="uint8_t" name="safety_status" enum="PARACHUTE_SAFETY_FLAGS" display="bitmask">Parachute safety status</field>
+      <field type="uint8_t" name="ats_arm_altitude" units="m">Parachute Automatic Trigger System (ATS) auto-arming/disarming altitude in meters</field>
+      <field type="char[11]" name="parachute_packed_date">Parachute packed date (YYYY-MM-DD) in ASCII characters, 0 terminated. All 0: field not provided.</field>
+    </message>
+    <message id="447" name="BEACON_POSITION">
+      <description>Position of and distance to a Beacon.
+      </description>
+      <field type="uint32_t" name="beacon_id">Unique Beacon ID</field>
+      <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84), in degrees * 1E7</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84), in degrees * 1E7</field>
+      <field type="float" name="altitude" units="m">Altitude (MSL), in meters</field>
+      <field type="float" name="distance" units="m">Distance to the Beacon, in meters</field>
+      <field type="int32_t" name="delay" units="ms">Time between generating the value and request, in milliseconds</field>
+      <field type="uint8_t" name="gps_status">Status indicating the quality of the GPS Data. 0=invalid 1=lat long valid, alt invalid 2=valid</field>
+      <field type="int32_t" name="link_quality">Value indicating the Signal to noise ratio (in units of dB)</field>
+    </message>
+    <message id="460" name="RADIATION_DETECTOR_COUNTS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Radiation Detector counts/sec</description>
+      <field type="uint32_t" name="serial_no">Detector serial number</field>
+      <field type="double" name="timestamp" units="s">Timestamp of measurement(UNIX Epoch time or time since detector boot)</field>
+      <field type="uint64_t" name="counts">Accumulated detector counts</field>
+      <field type="uint32_t" name="rate"> Detector count in the current dt integration period.</field>
+      <field type="uint64_t" name="integration_time_usec" units="us">Integration period</field>
+    </message>
+    <message id="461" name="RADIATION_DETECTOR_SPECTRUM">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Radiation Detector Energy Spectrum</description>
+      <field type="uint32_t" name="serial_no">Detector serial number</field>
+      <field type="uint8_t" name="msg_no">Message number [0;255]</field>
+      <field type="uint8_t" name="seq_no">Sequence number [0;127]</field>
+      <field type="uint8_t[249]" name="segment">One segment of a spectrum PDU</field>
+    </message>
+    <message id="462" name="RADIATION_DETECTOR_CPS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Radiation Detector counts/sec</description>
+      <field type="uint32_t" name="serial_no">Detector serial number</field>
+      <field type="double" name="timestamp" units="s">Time of data measurement</field>
+      <field type="uint32_t" name="cps">Detector value scaled by factor</field>
+      <field type="float" name="dt" units="s">delta-t integration period</field>
+    </message>
+    <message id="500" name="TRACKER_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Current status of the tracker. This message should be broadcast a low regular rate e.g. 1 Hz.</description>
+      <field type="uint8_t" name="tracker_status"> </field>
+      <field type="uint16_t" name="number_objects_detected"> Number of objects currently detected.</field>
+      <field type="uint32_t" name="tracked_object_id"> The UID of the object currently being tracked.</field>
+    </message>
+    <message id="501" name="TRACKER_DETECTION_2D">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Contains information on an object detection in a video stream. Note that the video frame (image) ID must uniquely identify the same frame on all receiving devices. </description>
+      <field type="uint64_t" name="img_ts" units="us"> Time stamp of the image.</field>
+      <field type="uint64_t" name="img_id"> Unique ID specifiying the video frame (image) in the message sender video stream.</field>
+      <field type="uint32_t" name="object_id"> Unique ID representing the object. </field>
+      <field type="uint32_t" name="class_id"> Unique ID specifiying the class of the object.</field>
+      <field type="uint8_t" name="tracking_status"> 0: not tracked, 1: tracked.</field>
+      <field type="uint8_t" name="confidence" units="%"> Confidence score in the range of [0, 100] for the classifcation.</field>
+      <field type="uint16_t" name="bbox_top_left_x" units="c%"> Relative image x coordinate (left to right axis) in the range of [0.00, 100.00] describing the top left corner of the bounding box .</field>
+      <field type="uint16_t" name="bbox_top_left_y" units="c%"> Relative image y coordinate (top to bottom axis) in the range of [0.00, 100.00] describing the top left corner of the bounding box.</field>
+      <field type="uint16_t" name="bbox_bot_right_x" units="c%"> Relative image x coordinate (left to right axis) in the range of [0.00, 100.00] describing the bottom right corner of the bounding box.</field>
+      <field type="uint16_t" name="bbox_bot_right_y" units="c%"> Relative image y coordinate (top to bottom axis) in the range of [0.00, 100.00] describing the bottom left corner of the bounding box.</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="UINT32_MAX"> Latitude in WGS84 coordinate frame of the detected object. NAN if unknown.</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="UINT32_MAX"> Longitude in WGS84 coordinate frame of the detected object. NAN if unknown.</field>
+      <field type="float" name="alt" units="m" invalid="[NaN:]"> Altitude in EGM96 coordiante frame of the detected object. NAN if unknown.</field>
+      <field type="float" name="vel_n" units="m/s" invalid="[NaN:]"> North velocity of the object in global frame. NAN if unknown.</field>
+      <field type="float" name="vel_e" units="m/s" invalid="[NaN:]"> East velocity of the object in global frame. NAN if unknown.</field>
+      <field type="float" name="vel_up" units="m/s" invalid="[NaN:]"> Up velocity of the object in global frame. NAN if unknown.</field>
+    </message>
+    <!-- PIXEL_TO_LLA START -->
+    <message id="600" name="PIXEL_TO_LLA_REQUEST">
+      <description>Request the geographic coordinates (latitude, longitude, and altitude (MSL WGS84)) corresponding to a specific pixel location in an image frame. </description>
+      <field type="uint8_t" name="camera_id"> Camera ID of the image source.</field>
+      <field type="uint64_t" name="uid"> Unique ID of the request.</field>
+      <field type="uint64_t" name="img_unix_ts" units="us"> Unix time stamp of the image.</field>
+      <field type="float" name="img_rel_x"> Relative image x coordinate (left to right axis) in the range of [0.0, 1.0].</field>
+      <field type="float" name="img_rel_y"> Relative image y coordinate (top to bottom axis) in the range of [0.0, 1.0].</field>
+    </message>
+    <message id="601" name="PIXEL_TO_LLA_ACK">
+      <description>ACK response for the REQUEST_PIXEL_TO_LLA message. Indicates whether the request was accepted or rejected.</description>
+      <field type="uint64_t" name="uid"> Unique ID of the request.</field>
+      <field type="uint8_t" name="status">0 = Rejected, 1 = Accepted (with an optional error message).</field>
+      <field type="char[100]" name="error_message"> Optional error message in case of rejection. Max length 100 characters.</field>
+    </message>
+    <message id="602" name="PIXEL_TO_LLA_RESULT">
+      <description>Result of the pixel-to-LLA request. Includes the Unix timestamp, geographic coordinates (LLA), and the 3x3 matrix for the NED homography transform of the image, or an error status if the request failed.</description>
+      <field type="uint64_t" name="uid"> Unique ID of the request.</field>
+      <field type="uint8_t" name="status">0 = Failure, 1 = Success. If failure, error_message will provide details.</field>
+      <field type="double" name="latitude" units="deg">Latitude of the requested pixel (degrees, WGS84).</field>
+      <field type="double" name="longitude" units="deg">Longitude of the requested pixel (degrees, WGS84).</field>
+      <field type="double" name="altitude" units="m">Altitude of the requested pixel (meters, WGS84 ellipsoid).</field>
+      <field type="float[9]" name="ned_homography_matrix">3x3 matrix for NED (North-East-Down) homography transform of the image. Row-major order.</field>
+      <field type="char[100]" name="error_message">Optional error message in case of failure. Max length 100 characters.</field>
+    </message>
+    <!-- PIXEL_TO_LLA END -->
+    <message id="13000" name="MOTOR_INFO">
+      <description> Contains information about a motor. </description>
+      <field type="uint8_t" name="index"> Motor index number starting with index 1. 0 if unknown. </field>
+      <field type="uint8_t" name="type"> The type of motor, TODO: define an enum </field>
+      <field type="uint64_t" name="total_time" units="s"> Total accumulated usage time</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of motor. INT16_MAX if unknown.</field>
+    </message>
+    <message id="13441" name="CONTROL_STATUS_REPORT">
+      <description>Status message indicating the currently active flight control and payload control entity.
+        This message should typically be send from the system at a low frequency as well as after a control ownership change to all connected GCS.
+      </description>
+      <field type="uint8_t" name="current_flight_controller" enum="CURRENT_CONTROL_ENTITY">Current flight control entity.</field>
+      <field type="uint8_t" name="current_payload_controller" enum="CURRENT_CONTROL_ENTITY">Current payload control entity.</field>
+    </message>
+    <message id="13442" name="REQUEST_CONTROL">
+      <description>Request the flight control and/or the payload control of the target system by a GCS.
+        The message can be used in a multi GCS environment. A GCS can request the control ownership of the target system.
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to change to own ownership.</field>
+      <field type="uint8_t" name="request_priority" default="0">Priority of the control request. If the priority is higher than the priority
+        of the current control entity, control is given without handoff request.
+        The priority request should be authenticated on the target system before granting this privilegs. Default value of 0.</field>
+      <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
+      <field type="char[100]" name="reason">Reason for taking ownership.</field>
+    </message>
+    <message id="13443" name="REQUEST_CONTROL_ACK">
+      <description>Error code response of the target system to the control ownership request.
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target which was processed.</field>
+      <field type="uint8_t" name="error_code" enum="CONTROL_REQUEST_ERROR_CODE">Error code response.</field>
+    </message>
+    <message id="13444" name="RELEASE_CONTROL">
+      <description>Release the previously acquired control.
+        The message can be used in a multi GCS environment to release the control of the target system.
+        This message is ignored when the GCS is not the current active control entity of the control target.
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to release own ownership.</field>
+    </message>
+    <message id="13445" name="REQUEST_HANDOFF">
+      <description>Request handoff of current control entity.
+        This message is send from the system to the current active control entity to request the handoff of the control target to another GCS.
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff control ownership.</field>
+      <field type="char[40]" name="requester_id">Identification of the control entity requesting ownership.</field>
+      <field type="char[100]" name="reason">Reason from the control entity requesting ownership.</field>
+    </message>
+    <message id="13446" name="HANDOFF_RESPOND">
+      <description>Handoff response to handoff request.
+        This message is the response from the GCS in control to the handoff request.
+      </description>
+      <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff.</field>
+      <field type="uint8_t" name="handoff_decision" enum="HANDOFF_DECISION">Control target decision.</field>
+    </message>
+    <message id="13470" name="UNIQUE_IDENTIFIER">
+      <description>Unique identifier message to uniquely identify different GCS and systems using an 256 bit uuid. The uuid can be randomly generated an stored for the relevant systems.
+      Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=13470.
+      </description>
+      <field type="char[32]" name="uuid">uuid of the sender.</field>
+    </message>
+    <!-- Boat specific MAVLink-->
+    <message id="13666" name="BOAT_ACTUATOR_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat actuator status reports status and position of all boat control surfaces (currently rudders, engine leg trims).</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t[6]" name="engine_leg_trim_state" enum="ENGINE_LEG_TRIM_STATE">Engine leg trim state.</field>
+      <field type="float[6]" name="engine_leg_trim_position" units="deg">Engine leg trim position.</field>
+      <field type="uint8_t[6]" name="rudder_state" enum="RUDDER_STATE">Rudder state.</field>
+      <field type="float[6]" name="rudder_position" units="deg">Rudder position.</field>
+    </message>
+    <message id="13667" name="BOAT_ENGINE_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat engine status reports status and position of all boat engines.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t[6]" name="engine_state" enum="ENGINE_STATE">Engine state.</field>
+      <field type="uint8_t[6]" name="engine_load" units="%">Engine load.</field>
+      <field type="uint16_t[6]" name="engine_rpm" units="rpm">Engine RPM.</field>
+      <field type="float" name="fuel_consumption_rate" units="L/h">Fuel consumption rate.</field>
+      <field type="float[6]" name="oil_pressure" units="kPa">Engine oil pressure.</field>
+      <field type="uint8_t[6]" name="throttle_position" units="%">Throttle position.</field>
+      <field type="float[6]" name="engine_coolant_temperature" units="degC">Engine coolant temperature.</field>
+      <field type="uint8_t[6]" name="transmission_state" enum="TRANSMISSION_STATE">Transmission state.</field>
+    </message>
+    <message id="13668" name="FLUID_LEVEL">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Boat fluid level reports fluid levels as interpreted through NMEA2000.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="instance">Fluid tank instance.</field>
+      <field type="uint8_t" name="type" enum="FLUID_TANK_TYPE">Fluid tank type.</field>
+      <field type="float" name="level" units="%">Fluid level in percentage of full tank.</field>
+      <field type="float" name="capacity" units="l">Fluid capacity left in tank in liters.</field>
+    </message>
+    <message id="13669" name="VESSEL_SPEED">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Vessel speed measurement as interpreted through NMEA2000.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="float" name="speed_water_referenced" units="m/s">Speed water referenced.</field>
+      <field type="float" name="speed_ground_referenced" units="m/s">Speed ground referenced.</field>
+      <field type="uint8_t" name="speed_water_referenced_type" enum="SPEED_WATER_REFERENCED_TYPE">Speed water referenced type.</field>
+      <field type="uint8_t" name="speed_direction">Speed direction.</field>
+    </message>
+    <message id="13670" name="WATER_DEPTH_RAW">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Water depth measurement data as interpreted through NMEA2000.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="float" name="depth" units="m">Depth below transducer.</field>
+      <field type="float" name="offset" units="m">Distance between transducer and surface (positive) or keel (negative).</field>
+      <field type="float" name="range" units="m">Max measurement range.</field>
+    </message>
+    <message id="13671" name="WIND_DATA_RAW">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Wind data measurement message as interpreted through NMEA2000.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="reference" enum="WIND_REFERENCE">Wind reference.</field>
+      <field type="float" name="wind_speed" units="m/s">Wind speed.</field>
+      <field type="float" name="wind_angle" units="rad">Wind angle.</field>
+    </message>
+    <!-- BOAT specific MAVLink-->
+    <!-- NMEA0183 RATTM message for radar target info extraction to MAVLink-->
+    <message id="13672" name="RADAR_TARGET_TRACK">
+      <description> RADAR_TARGET_TRACK message contains information about the radar extracted target. This message is sent to GCS to visualize target tracks for operators.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint16_t" name="target_number"> Numeric ID of a particular target. Each target has a unique numeric ID.</field>
+      <field type="float" name="distance_to_target" units="m"> Distance of the vehicle to the target in meters.</field>
+      <field type="float" name="bearing_to_target" units="deg"> Bearing of the target in degrees. See bearing_type field for reference frame.</field>
+      <field type="uint8_t" name="bearing_type" enum="NAVIGATION_ANGLE_TYPE"> Type of bearing measurement.</field>
+      <field type="float" name="target_speed" units="m/s"> Target's absolute speed over ground. Measured in meters per second. </field>
+      <field type="float" name="target_course" units="deg"> Target's course. Measured in degrees. See course_type field for reference frame.</field>
+      <field type="uint8_t" name="course_type" enum="NAVIGATION_ANGLE_TYPE"> Type of course measurement.</field>
+      <field type="float" name="distance_to_closest_point_of_approach" units="m"> Distance to the closest point of approach. Measured in meters.</field>
+      <field type="float" name="time_to_closest_point_of_approach" units="s"> Time to the closest point of approach. Measured in seconds.</field>
+      <field type="char[20]" name="target_name"> Name of the target.</field>
+      <field type="uint8_t" name="target_track_status" enum="TARGET_TRACK_STATUS"> Status of the target track.</field>
+      <field type="uint8_t" name="target_track_acquisition_type" enum="TARGET_TRACK_ACQUISITION_TYPE"> Type of target acquisition.</field>
+    </message>
+    <!-- NMEA0183 RATTM END-->
+    <message id="13680" name="SHIP_APPROACH_SECTORS_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Currently set ship approach sectors, vehicle heading aligned, clockwise orderer bitmask with a high bit indicating an approach sector is set.</description>
+      <field type="uint8_t" name="sectors">Bitmap indicating which ship approach sectors are set. In clockwise order.</field>
+    </message>
+    <message id="13800" name="PAYLOAD_DEVICE_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Status of payload device.</description>
+      <field type="uint8_t" name="state" enum="MAV_PAYLOAD_STATE">Device state.</field>
+      <field type="uint32_t" name="countdown" units="s">Countdown timer value for SST or other timed state.</field>
+      <field type="uint8_t" name="mode">Mode; this can be a sub-state within the current state or other indicator. This may vary based on device and state.</field>
+      <field type="char[64]" name="message">Message, or other text from device.</field>
+    </message>
+    <!-- This message is placed here until upstream/mavlink has accepted the PR for it to be included! -->
+    <message id="513" name="RANGING_BEACON">
+      <description>Range information from a radio beacon for trilateration-based positioning.
+        Note that this message is telemetry (MAVLink does not define the mechanism used to determine the range).
+      </description>
+      <field type="uint8_t" name="target_system" default="0">System ID (ID of target system, normally autopilot and ground station).</field>
+      <field type="uint8_t" name="target_component" default="0">Component ID (normally 0 for broadcast).</field>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (epoch UTC time synced with GNSS system time or time since system boot)</field>
+      <field type="uint8_t" name="beacon_id" instance="true">ID of the ranging beacon/station</field>
+      <field type="uint32_t" name="range" units="mm" invalid="UINT32_MAX">Range measurement between a beacon and a vehicle</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Beacon latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Beacon longitude (WGS84)</field>
+      <field type="float" name="alt_ellipsoid" units="m" invalid="NaN">Beacon altitude (ellipsoid, WGS84). This field is preferred: alt_msl is a fallback.</field>
+      <field type="float" name="alt_msl" units="m" invalid="NaN">Beacon altitude (MSL), fallback </field>
+      <field type="uint32_t" name="hacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma horizontal accuracy estimate</field>
+      <field type="uint32_t" name="vacc_est" units="mm" invalid="UINT32_MAX">Beacon 1-sigma vertical accuracy estimate</field>
+      <field type="int8_t" name="rssi_node" units="dBm" invalid="INT8_MAX">RSSI at node/vehicle side</field>
+      <field type="int8_t" name="rssi_beacon" units="dBm" invalid="INT8_MAX">RSSI at beacon/station side</field>
+      <field type="uint8_t" name="sequence">Measurement sequence number</field>
+      <field type="uint16_t" name="carrier_freq" units="MHz" invalid="UINT16_MIN">Ranging carrier frequency</field>
+      <field type="uint32_t" name="range_accuracy" units="mm" invalid="UINT32_MAX">Estimated range measurement accuracy</field>
+    </message>
+    <message id="514" name="ESTIMATOR_SENSOR_FUSION_STATUS">
+      <description>Status of estimator sensor fusion sources. Each array is indexed by ESTIMATOR_SENSOR_FUSION_SOURCE - 1. Each element is a per-instance bitmask (bit 0 = instance 0, etc.). For single-instance sources only bit 0 is used. For multi-instance sources like AGP, multiple bits may be set.</description>
+      <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_SET_ESTIMATOR_SENSOR_FUSION).</field>
+      <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
+      <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
+    </message>
+  </messages>
+</mavlink>
