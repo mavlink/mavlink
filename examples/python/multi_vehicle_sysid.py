@@ -7,7 +7,6 @@ listens for heartbeats, and tracks each unique system ID (SYSID) seen on the lin
 
 Usage:
     python multi_vehicle_sysid.py --master udp:127.0.0.1:14550
-
 """
 
 import argparse
@@ -58,7 +57,7 @@ def listen_for_vehicles(master, timeout):
     """
     Listen for MAVLink heartbeat messages and collect unique system IDs.
 
-    Returns a dict mapping sysid -> list of component IDs seen.
+    Returns a dict mapping sysid -> set of component IDs seen.
     """
     vehicles = defaultdict(set)
     start = time.time()
@@ -82,7 +81,6 @@ def listen_for_vehicles(master, timeout):
         compid = msg.get_srcComponent()
 
         if sysid == 0:
-            # Ignore broadcast system ID
             continue
 
         if compid not in vehicles[sysid]:
