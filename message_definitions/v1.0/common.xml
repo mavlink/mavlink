@@ -6009,6 +6009,8 @@
       <field type="int32_t" name="x" invalid="INT32_MAX">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
       <field type="int32_t" name="y" invalid="INT32_MAX">PARAM6 / local: y position in meters * 1e4, global: longitude in degrees * 10^7</field>
       <field type="float" name="z" invalid="NaN">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame).</field>
+      <extensions/>
+      <field type="uint16_t" name="command_opaque_id">Opaque ID (will be boomeranged in COMMAND_ACK.command_opaque_id)</field>
     </message>
     <message id="76" name="COMMAND_LONG">
       <description>Send a command with up to seven parameters to the MAV. COMMAND_INT is generally preferred when sending MAV_CMD commands that include positional information; it offers higher precision and allows the MAV_FRAME to be specified (which may otherwise be ambiguous, particularly for altitude). The command microservice is documented at https://mavlink.io/en/services/command.html</description>
@@ -6023,6 +6025,8 @@
       <field type="float" name="param5" invalid="NaN">Parameter 5 (for the specific command).</field>
       <field type="float" name="param6" invalid="NaN">Parameter 6 (for the specific command).</field>
       <field type="float" name="param7" invalid="NaN">Parameter 7 (for the specific command).</field>
+      <extensions/>
+      <field type="uint16_t" name="command_opaque_id">Opaque ID (will be boomeranged in COMMAND_ACK.command_opaque_id)</field>
     </message>
     <message id="77" name="COMMAND_ACK">
       <description>Report status of a command. Includes feedback whether the command was executed. The command microservice is documented at https://mavlink.io/en/services/command.html</description>
@@ -6033,6 +6037,7 @@
       <field type="int32_t" name="result_param2">Additional result information. Can be set with a command-specific enum containing command-specific error reasons for why the command might be denied. If used, the associated enum must be documented in the corresponding MAV_CMD (this enum should have a 0 value to indicate "unused" or "unknown").</field>
       <field type="uint8_t" name="target_system">System ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
       <field type="uint8_t" name="target_component">Component ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
+      <field type="uint16_t" name="command_opaque_id">Opaque ID passed in via COMMAND_INT</field>
     </message>
     <message id="80" name="COMMAND_CANCEL">
       <wip/>
