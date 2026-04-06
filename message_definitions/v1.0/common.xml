@@ -1299,6 +1299,16 @@
         <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
         INT32_MAX or NaN: Use current vehicle altitude.</param>
       </entry>
+      <entry value="36" name="MAV_CMD_NAV_ARC_WAYPOINT" hasLocation="true" isDestination="true">
+        <description>Circular arc path waypoint.
+          This defines the end/exit point and angle (param1) of an arc path from the previous waypoint. A position is required before this command to define the start of the arc (e.g. current position, a MAV_CMD_NAV_WAYPOINT, or a MAV_CMD_NAV_ARC_WAYPOINT).
+          The resulting path is a circular arc in the NE frame, with the difference in height being defined by the difference in waypoint altitudes.
+        </description>
+        <param index="1" label="Arc Angle" units="deg" minValue="-359" maxValue="359" increment="1">The angle in degrees from the starting position to the exit position of the arc in the NE frame. Positive values are CW arcs and negative values are CCW arcs.</param>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
+      </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false">
         <superseded since="2018-01" replaced_by="`MAV_CMD_DO_SET_ROI_*`"/>
         <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
@@ -2419,7 +2429,7 @@
       <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST" hasLocation="false" isDestination="false">
         <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request.
 		If approved the COMMAND_ACK message progress field should be set with period of time that this authorization is valid in seconds.
-		If the authorization is denied COMMAND_ACK.result_param2 should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
+		If the authorization is denied COMMAND_ACK.result_param2 should be set with one of the reasons in MAV_ARM_AUTH_DENIED_REASON.
         </description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle</param>
       </entry>
@@ -4040,6 +4050,7 @@
       </entry>
     </enum>
     <enum name="MAV_ARM_AUTH_DENIED_REASON">
+      <description>Reasons for denying an authorization request made with MAV_CMD_ARM_AUTHORIZATION_REQUEST. If the COMMAND_ACK result is MAV_RESULT_DENIED, this is used to set the reason in the result_param2 field.</description>
       <entry value="0" name="MAV_ARM_AUTH_DENIED_REASON_GENERIC">
         <description>Not a specific reason</description>
       </entry>
@@ -4809,32 +4820,42 @@
     <enum name="AIS_FLAGS" bitmask="true">
       <description>These flags are used in the AIS_VESSEL.fields bitmask to indicate validity of data in the other message fields. When set, the data is valid.</description>
       <entry value="1" name="AIS_FLAGS_POSITION_ACCURACY">
-        <description>1 = Position accuracy less than 10m, 0 = position accuracy greater than 10m.</description>
+        <description>1 = High (Position accuracy less than or equal to 10m), 0 = Low (position accuracy greater than 10m).</description>
       </entry>
-      <entry value="2" name="AIS_FLAGS_VALID_COG"/>
-      <entry value="4" name="AIS_FLAGS_VALID_VELOCITY"/>
+      <entry value="2" name="AIS_FLAGS_VALID_COG">
+        <description>The COG field contains valid data</description>
+      </entry>
+      <entry value="4" name="AIS_FLAGS_VALID_VELOCITY">
+        <description>The velocity field contains valid data</description>
+      </entry>
       <entry value="8" name="AIS_FLAGS_HIGH_VELOCITY">
         <description>1 = Velocity over 52.5765m/s (102.2 knots)</description>
       </entry>
-      <entry value="16" name="AIS_FLAGS_VALID_TURN_RATE"/>
+      <entry value="16" name="AIS_FLAGS_VALID_TURN_RATE">
+        <description>The turn_rate field contains valid data</description>
+      </entry>
       <entry value="32" name="AIS_FLAGS_TURN_RATE_SIGN_ONLY">
-        <description>Only the sign of the returned turn rate value is valid, either greater than 5deg/30s or less than -5deg/30s</description>
+        <description>Only the sign of the returned turn_rate value is valid. The actual turn rate is either greater than 5deg/30s or less than -5deg/30s.</description>
       </entry>
       <entry value="64" name="AIS_FLAGS_VALID_DIMENSIONS"/>
       <entry value="128" name="AIS_FLAGS_LARGE_BOW_DIMENSION">
-        <description>Distance to bow is larger than 511m</description>
+        <description>Distance to bow is greater than or equal to 511m</description>
       </entry>
       <entry value="256" name="AIS_FLAGS_LARGE_STERN_DIMENSION">
-        <description>Distance to stern is larger than 511m</description>
+        <description>Distance to stern is greater than or equal to 511m</description>
       </entry>
       <entry value="512" name="AIS_FLAGS_LARGE_PORT_DIMENSION">
-        <description>Distance to port side is larger than 63m</description>
+        <description>Distance to port side is greater than or equal to 63m</description>
       </entry>
       <entry value="1024" name="AIS_FLAGS_LARGE_STARBOARD_DIMENSION">
-        <description>Distance to starboard side is larger than 63m</description>
+        <description>Distance to starboard side is greater than or equal to 63m</description>
       </entry>
-      <entry value="2048" name="AIS_FLAGS_VALID_CALLSIGN"/>
-      <entry value="4096" name="AIS_FLAGS_VALID_NAME"/>
+      <entry value="2048" name="AIS_FLAGS_VALID_CALLSIGN">
+        <description>The callsign field contains valid data</description>
+      </entry>
+      <entry value="4096" name="AIS_FLAGS_VALID_NAME">
+        <description>The name field contains valid data</description>
+      </entry>
     </enum>
     <enum name="FAILURE_UNIT">
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
@@ -4887,13 +4908,11 @@
       <entry value="0" name="NAV_VTOL_LAND_OPTIONS_DEFAULT">
         <description>Default autopilot landing behaviour.</description>
       </entry>
-      <entry value="1" name="NAV_VTOL_LAND_OPTIONS_FW_DESCENT">
-        <description>Descend in fixed wing mode, transitioning to multicopter mode for vertical landing when close to the ground.
-          The fixed wing descent pattern is at the discretion of the vehicle (e.g. transition altitude, loiter direction, radius, and speed, etc.).
-        </description>
+      <entry value="1" name="NAV_VTOL_LAND_OPTIONS_FW_SPIRAL_APPROACH">
+        <description>Use a fixed wing spiral desent approach before landing.</description>
       </entry>
-      <entry value="2" name="NAV_VTOL_LAND_OPTIONS_HOVER_DESCENT">
-        <description>Land in multicopter mode on reaching the landing coordinates (the whole landing is by "hover descent").</description>
+      <entry value="2" name="NAV_VTOL_LAND_OPTIONS_FW_APPROACH">
+        <description>Use a fixed wing approach before detransitioning and landing vertically.</description>
       </entry>
     </enum>
     <enum name="MAV_WINCH_STATUS_FLAG" bitmask="true">
@@ -5922,7 +5941,7 @@
     </message>
     <message id="69" name="MANUAL_CONTROL">
       <description>Manual (joystick) control message.
-        This message represents movement axes and button using standard joystick axes nomenclature. Unused axes can be disabled and buttons states are transmitted as individual on/off bits of a bitmask. For more information see https://mavlink.io/en/manual_control.html</description>
+        This message represents movement axes and button using standard joystick axes nomenclature. Unused axes can be disabled and buttons states are transmitted as individual on/off bits of a bitmask. For more information see https://mavlink.io/en/services/manual_control.html</description>
       <field type="uint8_t" name="target">The system to be controlled.</field>
       <field type="int16_t" name="x" minValue="-1000" maxValue="1000" invalid="INT16_MAX">X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.</field>
       <field type="int16_t" name="y" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.</field>
@@ -7051,16 +7070,16 @@
     <message id="246" name="ADSB_VEHICLE">
       <description>The location and information of an ADSB vehicle</description>
       <field type="uint32_t" name="ICAO_address">ICAO address</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude</field>
       <field type="uint8_t" name="altitude_type" enum="ADSB_ALTITUDE_TYPE">ADSB altitude type.</field>
-      <field type="int32_t" name="altitude" units="mm">Altitude(ASL)</field>
-      <field type="uint16_t" name="heading" units="cdeg">Course over ground</field>
-      <field type="uint16_t" name="hor_velocity" units="cm/s">The horizontal velocity</field>
-      <field type="int16_t" name="ver_velocity" units="cm/s">The vertical velocity. Positive is up</field>
+      <field type="int32_t" name="altitude" units="mm" invalid="INT32_MAX">Altitude (ASL)</field>
+      <field type="uint16_t" name="heading" units="cdeg" invalid="UINT16_MAX">Course over ground</field>
+      <field type="uint16_t" name="hor_velocity" units="cm/s" invalid="UINT16_MAX">The horizontal velocity</field>
+      <field type="int16_t" name="ver_velocity" units="cm/s" invalid="INT16_MAX">The vertical velocity. Positive is up</field>
       <field type="char[9]" name="callsign">The callsign, 8+null</field>
       <field type="uint8_t" name="emitter_type" enum="ADSB_EMITTER_TYPE">ADSB emitter type.</field>
-      <field type="uint8_t" name="tslc" units="s">Time since last communication in seconds</field>
+      <field type="uint8_t" name="tslc" units="s">Time since last communication from the remote vehicle, in seconds.</field>
       <field type="uint16_t" name="flags" enum="ADSB_FLAGS">Bitmap to indicate various statuses including valid data fields</field>
       <field type="uint16_t" name="squawk">Squawk code. Note that the code is in decimal: e.g. 7700 (general emergency) is encoded as binary 0b0001_1110_0001_0100, not(!) as 0b0000_111_111_000_000</field>
     </message>
@@ -7576,21 +7595,21 @@
     <message id="301" name="AIS_VESSEL">
       <description>The location and information of an AIS vessel</description>
       <field type="uint32_t" name="MMSI">Mobile Marine Service Identifier, 9 decimal digits</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude</field>
-      <field type="uint16_t" name="COG" units="cdeg">Course over ground</field>
-      <field type="uint16_t" name="heading" units="cdeg">True heading</field>
-      <field type="uint16_t" name="velocity" units="cm/s">Speed over ground</field>
-      <field type="int8_t" name="turn_rate" units="ddeg/s">Turn rate, 0.1 degrees per second</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude</field>
+      <field type="uint16_t" name="COG" units="cdeg" invalid="UINT16_MAX">Course over ground</field>
+      <field type="uint16_t" name="heading" units="cdeg" invalid="UINT16_MAX">True heading</field>
+      <field type="uint16_t" name="velocity" units="cm/s" invalid="UINT16_MAX">Speed over ground</field>
+      <field type="int8_t" name="turn_rate" units="ddeg/s" invalid="INT8_MAX">Turn rate, 0.1 degrees per second</field>
       <field type="uint8_t" name="navigational_status" enum="AIS_NAV_STATUS">Navigational status</field>
       <field type="uint8_t" name="type" enum="AIS_TYPE">Type of vessels</field>
-      <field type="uint16_t" name="dimension_bow" units="m">Distance from lat/lon location to bow</field>
-      <field type="uint16_t" name="dimension_stern" units="m">Distance from lat/lon location to stern</field>
-      <field type="uint8_t" name="dimension_port" units="m">Distance from lat/lon location to port side</field>
-      <field type="uint8_t" name="dimension_starboard" units="m">Distance from lat/lon location to starboard side</field>
-      <field type="char[7]" name="callsign">The vessel callsign</field>
-      <field type="char[20]" name="name">The vessel name</field>
-      <field type="uint16_t" name="tslc" units="s">Time since last communication in seconds</field>
+      <field type="uint16_t" name="dimension_bow" units="m" invalid="UINT16_MAX">Distance from lat/lon location to bow</field>
+      <field type="uint16_t" name="dimension_stern" units="m" invalid="UINT16_MAX">Distance from lat/lon location to stern</field>
+      <field type="uint8_t" name="dimension_port" units="m" invalid="UINT8_MAX">Distance from lat/lon location to port side</field>
+      <field type="uint8_t" name="dimension_starboard" units="m" invalid="UINT8_MAX">Distance from lat/lon location to starboard side</field>
+      <field type="char[7]" name="callsign">The vessel callsign. Characters are encoded as 7-bit ASCII, but only characters in the [AIS 6-bit ASCII subset](https://en.wikipedia.org/wiki/Six-bit_character_code#AIS_SixBit_ASCII) are permitted. Also set AIS_FLAGS_VALID_CALLSIGN if valid. The string is NULL-terminated if it is shorter than the array length.</field>
+      <field type="char[20]" name="name">The vessel name. Characters are encoded as 7-bit ASCII, but only characters in the [AIS 6-bit ASCII subset](https://en.wikipedia.org/wiki/Six-bit_character_code#AIS_SixBit_ASCII) are permitted. Also set AIS_FLAGS_VALID_NAME if valid. The string is NULL-terminated if it is shorter than the array length.</field>
+      <field type="uint16_t" name="tslc" units="s">Time since last communication from the vessel, in seconds</field>
       <field type="uint16_t" name="flags" enum="AIS_FLAGS">Bitmask to indicate various statuses including valid data fields</field>
     </message>
     <!-- UAVCAN related messages. Please keep the range [310, 320) reserved for UAVCAN. -->
