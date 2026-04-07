@@ -1,132 +1,111 @@
 #!/usr/bin/env python3
 """
-multi_vehicle_sysid.py - Example demonstrating MAVLink multi-vehicle system ID handling.
+Example: Multi-vehicle SYSID disambiguation using pymavlink.
 
-This script connects to multiple MAVLink vehicles (or simulated endpoints),
-listens for heartbeats, and tracks each unique system ID (SYSID) seen on the link.
-
-Usage:
-    python multi_vehicle_sysid.py --master udp:127.0.0.1:14550
+Demonstrates how to receive MAVLink messages from multiple vehicles
+on a single connection and route them by (sysid, compid) pairs.
 """
 
-import argparse
-import time
-from collections import defaultdict
+import time, logging, argparse, threading
+from dataclasses import dataclass
+from typing import Dict, Tuple, List
+from collections import deque
 
-try:
-    from pymavlink import mavutil
+from pymavlink import mavutil
+
+
+@dataclass
+class ComponentState:
+        sysid: int
+        compid: int
+        last_heartbeat: float = None
+        last_position: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+        command_ack_queue: deque = None
+
+    def __post_init__(self):
+                self.command_ack_queue = deque(maxlen=20)
+
+
+class MavlinkFleetRouter:
+        def __init__(self, connection_string, baud=115200):
+                    self.master = mavutil.mavlink_connection(connection_string, baud=baud)
+                    self.components: Dict[Tuple[int, int], ComponentState] = {}
+                    self._lock = threading.Lock()
+                    self._running = True
+                    self._router_thread = threading.Thread(target=self._message_loop, daemon=True)
+                    self._monitor_thread = threading.Thread(target=self._monitor_loop, daemon=True)
+                    self.logger = logging.getLogger("MavlinkFleetRouter")
+
+        def start(self):
+                    self._router_thread.start()
+                    self._monitor_thread.start()
+
+        def stop(self):
+                    self._running = False
+                    self._router_thread.join(timeout=2.0)
+                    self._monitor_thread.join(timeout=2.0)
+                    with self._lock:
+                                    try:
+                                                        self.master.close()
 except Exception:
-    print("ERROR: pymavlink is not installed. Run: pip install pymavlink")
-    raise
+                pass
+        self.logger.info("Threads and sockets stopped cleanly.")
+
+    def _message_loop(self):
+                while self._running:
+                                try:
+                                                    with self._lock:
+                                                                            msg = self.master.recv_match(blocking=True, timeout=0.1)
+                                                                        if not msg:
+                                                                                                continue
+                                                                                            sysid = msg.get_srcSystem()
+                                                    compid = msg.get_srcComponent()
+                                                    if sysid == 255:
+                                                                            continue
+                                                                        key = (sysid, compid)
+                                                    with self._lock:
+                                                                            if key not in self.components:
+                                                                                                        self.components[key] = ComponentState(sysid=sysid, compid=compid)
+                                                                                                    state = self.components[key]
+                                                                        mtype = msg.get_type()
+                                                    if mtype == 'HEARTBEAT':
+                                                                            state.last_heartbeat = time.time()
+elif mtype == 'GLOBAL_POSITION_INT':
+                    state.last_position = (msg.lat / 1e7, msg.lon / 1e7, msg.alt / 1e3)
+elif mtype == 'COMMAND_ACK':
+                    state.command_ack_queue.append(msg.command)
+except Exception as e:
+                self.logger.error(f"Error in message loop: {e}")
+
+    def _monitor_loop(self):
+                while self._running:
+                                with self._lock:
+                                                    now = time.time()
+                                                    for key, state in list(self.components.items()):
+                                                                            if state.last_heartbeat is None or (now - state.last_heartbeat > 5.0):
+                                                                                                        self.logger.warning(f"Vehicle {key} lost heartbeat!")
+                                                                                            time.sleep(1.0)
+
+                                        def send_command_with_ack(self, target_sysid, target_compid, command, params):
+                                                    assert len(params) <= 7, "MAVLink COMMAND_LONG supports max 7 params"
+                                                    padded_params = params + [0.0] * (7 - len(params))
+                                                    self.master.mav.command_long_send(target_sysid, target_compid, command, 0, *padded_params)
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="MAVLink multi-vehicle system ID tracker")
-    parser.add_argument(
-        "--master",
-        default="udp:127.0.0.1:14550",
-        help="MAVLink connection string (default: udp:127.0.0.1:14550)",
-    )
-    parser.add_argument(
-        "--timeout",
-        type=float,
-        default=30.0,
-        help="How long to listen for vehicles, in seconds (default: 30)",
-    )
-    parser.add_argument(
-        "--baud",
-        type=int,
-        default=57600,
-        help="Baud rate for serial connections (default: 57600)",
-    )
-    return parser.parse_args()
-
-
-def connect(connection_string, baud):
-    """Establish a MAVLink connection."""
-    print(f"Connecting to: {connection_string}")
-    try:
-        master = mavutil.mavlink_connection(connection_string, baud=baud)
-    except Exception:
-        print(f"Failed to open connection to '{connection_string}'")
-        raise
-    return master
-
-
-def listen_for_vehicles(master, timeout):
-    """
-    Listen for MAVLink heartbeat messages and collect unique system IDs.
-
-    Returns a dict mapping sysid -> set of component IDs seen.
-    """
-    vehicles = defaultdict(set)
-    start = time.time()
-
-    print(f"Listening for vehicles for {timeout:.1f} seconds...")
-
-    while time.time() - start < timeout:
-        try:
-            msg = master.recv_match(type="HEARTBEAT", blocking=True, timeout=1.0)
-        except KeyboardInterrupt:
-            print("\nInterrupted by user.")
-            break
-        except Exception:
-            print("Warning: error receiving MAVLink message, retrying...")
-            continue
-
-        if msg is None:
-            continue
-
-        sysid = msg.get_srcSystem()
-        compid = msg.get_srcComponent()
-
-        if sysid == 0:
-            continue
-
-        if compid not in vehicles[sysid]:
-            vehicles[sysid].add(compid)
-            print(
-                f"  [+] Discovered vehicle — SYSID: {sysid}, COMPID: {compid}"
-                f"  (type={msg.type}, autopilot={msg.autopilot})"
-            )
-
-    return vehicles
-
-
-def report(vehicles):
-    """Print a summary of discovered vehicles."""
-    print("\n--- Multi-Vehicle Summary ---")
-    if not vehicles:
-        print("No vehicles detected.")
-        return
-
-    for sysid in sorted(vehicles):
-        compids = sorted(vehicles[sysid])
-        print(f"  SYSID {sysid}: components {compids}")
-
-    print(f"\nTotal unique system IDs: {len(vehicles)}")
-
-
-def main():
-    args = parse_args()
-
-    try:
-        master = connect(args.master, args.baud)
-    except Exception:
-        return 1
-
-    try:
-        vehicles = listen_for_vehicles(master, args.timeout)
-    except ValueError:
-        print("Invalid configuration value encountered.")
-        return 1
-    except KeyboardInterrupt:
-        print("\nStopped by user.")
-        vehicles = {}
-
-    report(vehicles)
-    return 0
+        def main():
+                logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                parser = argparse.ArgumentParser(description="Multi-vehicle SYSID example")
+                parser.add_argument("--master", required=True, help="MAVLink connection string")
+                args = parser.parse_args()
+                router = MavlinkFleetRouter(args.master)
+                router.start()
+                try:
+                            while True:
+                                            time.sleep(1)
+                except KeyboardInterrupt:
+                            router.stop()
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+        main()
+    
