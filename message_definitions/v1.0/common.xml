@@ -2772,7 +2772,7 @@
       </entry>
       <!-- END of user range (31000 to 31999) -->
       <entry value="32000" name="MAV_CMD_CAN_FORWARD" hasLocation="false" isDestination="false">
-        <description>Request forwarding of CAN packets from the given CAN bus to this component. CAN Frames are sent using CAN_FRAME and CANFD_FRAME messages</description>
+        <description>Request forwarding of CAN packets from the given CAN bus to this component via this MAVLink channel. CAN Frames are sent using CAN_FRAME and CANFD_FRAME messages</description>
         <param index="1" label="bus">Bus number (0 to disable forwarding, 1 for first bus, 2 for 2nd bus, 3 for 3rd bus).</param>
         <param index="2">Empty.</param>
         <param index="3">Empty.</param>
@@ -4822,32 +4822,42 @@
     <enum name="AIS_FLAGS" bitmask="true">
       <description>These flags are used in the AIS_VESSEL.fields bitmask to indicate validity of data in the other message fields. When set, the data is valid.</description>
       <entry value="1" name="AIS_FLAGS_POSITION_ACCURACY">
-        <description>1 = Position accuracy less than 10m, 0 = position accuracy greater than 10m.</description>
+        <description>1 = High (Position accuracy less than or equal to 10m), 0 = Low (position accuracy greater than 10m).</description>
       </entry>
-      <entry value="2" name="AIS_FLAGS_VALID_COG"/>
-      <entry value="4" name="AIS_FLAGS_VALID_VELOCITY"/>
+      <entry value="2" name="AIS_FLAGS_VALID_COG">
+        <description>The COG field contains valid data</description>
+      </entry>
+      <entry value="4" name="AIS_FLAGS_VALID_VELOCITY">
+        <description>The velocity field contains valid data</description>
+      </entry>
       <entry value="8" name="AIS_FLAGS_HIGH_VELOCITY">
         <description>1 = Velocity over 52.5765m/s (102.2 knots)</description>
       </entry>
-      <entry value="16" name="AIS_FLAGS_VALID_TURN_RATE"/>
+      <entry value="16" name="AIS_FLAGS_VALID_TURN_RATE">
+        <description>The turn_rate field contains valid data</description>
+      </entry>
       <entry value="32" name="AIS_FLAGS_TURN_RATE_SIGN_ONLY">
-        <description>Only the sign of the returned turn rate value is valid, either greater than 5deg/30s or less than -5deg/30s</description>
+        <description>Only the sign of the returned turn_rate value is valid. The actual turn rate is either greater than 5deg/30s or less than -5deg/30s.</description>
       </entry>
       <entry value="64" name="AIS_FLAGS_VALID_DIMENSIONS"/>
       <entry value="128" name="AIS_FLAGS_LARGE_BOW_DIMENSION">
-        <description>Distance to bow is larger than 511m</description>
+        <description>Distance to bow is greater than or equal to 511m</description>
       </entry>
       <entry value="256" name="AIS_FLAGS_LARGE_STERN_DIMENSION">
-        <description>Distance to stern is larger than 511m</description>
+        <description>Distance to stern is greater than or equal to 511m</description>
       </entry>
       <entry value="512" name="AIS_FLAGS_LARGE_PORT_DIMENSION">
-        <description>Distance to port side is larger than 63m</description>
+        <description>Distance to port side is greater than or equal to 63m</description>
       </entry>
       <entry value="1024" name="AIS_FLAGS_LARGE_STARBOARD_DIMENSION">
-        <description>Distance to starboard side is larger than 63m</description>
+        <description>Distance to starboard side is greater than or equal to 63m</description>
       </entry>
-      <entry value="2048" name="AIS_FLAGS_VALID_CALLSIGN"/>
-      <entry value="4096" name="AIS_FLAGS_VALID_NAME"/>
+      <entry value="2048" name="AIS_FLAGS_VALID_CALLSIGN">
+        <description>The callsign field contains valid data</description>
+      </entry>
+      <entry value="4096" name="AIS_FLAGS_VALID_NAME">
+        <description>The name field contains valid data</description>
+      </entry>
     </enum>
     <enum name="FAILURE_UNIT">
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
@@ -4900,13 +4910,11 @@
       <entry value="0" name="NAV_VTOL_LAND_OPTIONS_DEFAULT">
         <description>Default autopilot landing behaviour.</description>
       </entry>
-      <entry value="1" name="NAV_VTOL_LAND_OPTIONS_FW_DESCENT">
-        <description>Descend in fixed wing mode, transitioning to multicopter mode for vertical landing when close to the ground.
-          The fixed wing descent pattern is at the discretion of the vehicle (e.g. transition altitude, loiter direction, radius, and speed, etc.).
-        </description>
+      <entry value="1" name="NAV_VTOL_LAND_OPTIONS_FW_SPIRAL_APPROACH">
+        <description>Use a fixed wing spiral desent approach before landing.</description>
       </entry>
-      <entry value="2" name="NAV_VTOL_LAND_OPTIONS_HOVER_DESCENT">
-        <description>Land in multicopter mode on reaching the landing coordinates (the whole landing is by "hover descent").</description>
+      <entry value="2" name="NAV_VTOL_LAND_OPTIONS_FW_APPROACH">
+        <description>Use a fixed wing approach before detransitioning and landing vertically.</description>
       </entry>
     </enum>
     <enum name="MAV_WINCH_STATUS_FLAG" bitmask="true">
@@ -5633,7 +5641,7 @@
     <message id="36" name="SERVO_OUTPUT_RAW">
       <description>Superseded by ACTUATOR_OUTPUT_STATUS. The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.</description>
       <field type="uint32_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
+      <field type="uint8_t" name="port" instance="true">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
       <field type="uint16_t" name="servo1_raw" units="us">Servo output 1 value</field>
       <field type="uint16_t" name="servo2_raw" units="us">Servo output 2 value</field>
       <field type="uint16_t" name="servo3_raw" units="us">Servo output 3 value</field>
@@ -6653,7 +6661,7 @@
       <field type="int32_t" name="lat" units="degE7">Latitude of SW corner of first grid</field>
       <field type="int32_t" name="lon" units="degE7">Longitude of SW corner of first grid</field>
       <field type="uint16_t" name="grid_spacing" units="m">Grid spacing</field>
-      <field type="uint64_t" name="mask" print_format="0x%07x">Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits)</field>
+      <field type="uint64_t" name="mask" display="bitmask" print_format="0x%07x">Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits)</field>
     </message>
     <message id="134" name="TERRAIN_DATA">
       <description>Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN_REQUEST. See terrain protocol docs: https://mavlink.io/en/services/terrain.html</description>
@@ -6824,7 +6832,7 @@
     <message id="192" name="MAG_CAL_REPORT">
       <description>Reports results of completed compass calibration. Sent until MAG_CAL_ACK received.</description>
       <field type="uint8_t" name="compass_id" instance="true">Compass being calibrated.</field>
-      <field type="uint8_t" name="cal_mask">Bitmask of compasses being calibrated.</field>
+      <field type="uint8_t" name="cal_mask" display="bitmask">Bitmask of compasses being calibrated.</field>
       <field type="uint8_t" name="cal_status" enum="MAG_CAL_STATUS">Calibration Status.</field>
       <field type="uint8_t" name="autosaved">0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.</field>
       <field type="float" name="fitness" units="mgauss">RMS milligauss residuals.</field>
@@ -6926,7 +6934,7 @@
       <superseded since="2020-10" replaced_by="HIGH_LATENCY2"/>
       <description>Message appropriate for high latency connections like Iridium</description>
       <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG">Bitmap of enabled system modes.</field>
-      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags.</field>
+      <field type="uint32_t" name="custom_mode" display="bitmask">A bitfield for use for autopilot-specific flags.</field>
       <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
       <field type="int16_t" name="roll" units="cdeg">roll</field>
       <field type="int16_t" name="pitch" units="cdeg">pitch</field>
@@ -6955,7 +6963,7 @@
       <field type="uint32_t" name="timestamp" units="ms">Timestamp (milliseconds since boot or Unix epoch)</field>
       <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc.)</field>
       <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.</field>
-      <field type="uint16_t" name="custom_mode">A bitfield for use for autopilot-specific flags (2 byte version).</field>
+      <field type="uint16_t" name="custom_mode" display="bitmask">A bitfield for use for autopilot-specific flags (2 byte version).</field>
       <field type="int32_t" name="latitude" units="degE7">Latitude</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude</field>
       <field type="int16_t" name="altitude" units="m">Altitude above mean sea level</field>
@@ -7059,16 +7067,16 @@
     <message id="246" name="ADSB_VEHICLE">
       <description>The location and information of an ADSB vehicle</description>
       <field type="uint32_t" name="ICAO_address">ICAO address</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude</field>
       <field type="uint8_t" name="altitude_type" enum="ADSB_ALTITUDE_TYPE">ADSB altitude type.</field>
-      <field type="int32_t" name="altitude" units="mm">Altitude(ASL)</field>
-      <field type="uint16_t" name="heading" units="cdeg">Course over ground</field>
-      <field type="uint16_t" name="hor_velocity" units="cm/s">The horizontal velocity</field>
-      <field type="int16_t" name="ver_velocity" units="cm/s">The vertical velocity. Positive is up</field>
+      <field type="int32_t" name="altitude" units="mm" invalid="INT32_MAX">Altitude (ASL)</field>
+      <field type="uint16_t" name="heading" units="cdeg" invalid="UINT16_MAX">Course over ground</field>
+      <field type="uint16_t" name="hor_velocity" units="cm/s" invalid="UINT16_MAX">The horizontal velocity</field>
+      <field type="int16_t" name="ver_velocity" units="cm/s" invalid="INT16_MAX">The vertical velocity. Positive is up</field>
       <field type="char[9]" name="callsign">The callsign, 8+null</field>
       <field type="uint8_t" name="emitter_type" enum="ADSB_EMITTER_TYPE">ADSB emitter type.</field>
-      <field type="uint8_t" name="tslc" units="s">Time since last communication in seconds</field>
+      <field type="uint8_t" name="tslc" units="s">Time since last communication from the remote vehicle, in seconds.</field>
       <field type="uint16_t" name="flags" enum="ADSB_FLAGS">Bitmap to indicate various statuses including valid data fields</field>
       <field type="uint16_t" name="squawk">Squawk code. Note that the code is in decimal: e.g. 7700 (general emergency) is encoded as binary 0b0001_1110_0001_0100, not(!) as 0b0000_111_111_000_000</field>
     </message>
@@ -7143,7 +7151,7 @@
       <description>Report button state change.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint32_t" name="last_change_ms" units="ms">Time of last change of button state.</field>
-      <field type="uint8_t" name="state">Bitmap for state of buttons.</field>
+      <field type="uint8_t" name="state" display="bitmask">Bitmap for state of buttons.</field>
     </message>
     <message id="258" name="PLAY_TUNE">
       <superseded since="2019-10" replaced_by="PLAY_TUNE_V2">New version explicitly defines format. More interoperable.</superseded>
@@ -7399,7 +7407,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
-      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation, the frame is depends on whether the flag GIMBAL_MANAGER_FLAGS_YAW_LOCK is set)</field>
       <field type="float" name="angular_velocity_x" units="rad/s" invalid="NaN">X component of angular velocity, positive is rolling to the right, NaN to be ignored.</field>
       <field type="float" name="angular_velocity_y" units="rad/s" invalid="NaN">Y component of angular velocity, positive is pitching up, NaN to be ignored.</field>
@@ -7499,7 +7507,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags to use.</field>
-      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float" name="pitch" units="rad" invalid="NaN">Pitch angle (positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="yaw" units="rad" invalid="NaN">Yaw angle (positive: to the right, negative: to the left, NaN to be ignored).</field>
       <field type="float" name="pitch_rate" units="rad/s" invalid="NaN">Pitch angular rate (positive: up, negative: down, NaN to be ignored).</field>
@@ -7510,7 +7518,7 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="flags" enum="GIMBAL_MANAGER_FLAGS">High level gimbal manager flags.</field>
-      <field type="uint8_t" name="gimbal_device_id">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
+      <field type="uint8_t" name="gimbal_device_id" instance="true">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</field>
       <field type="float" name="pitch" invalid="NaN">Pitch angle unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
       <field type="float" name="yaw" invalid="NaN">Yaw angle unitless (-1..1, positive: to the right, negative: to the left, NaN to be ignored).</field>
       <field type="float" name="pitch_rate" invalid="NaN">Pitch angular rate unitless (-1..1, positive: up, negative: down, NaN to be ignored).</field>
@@ -7584,21 +7592,21 @@
     <message id="301" name="AIS_VESSEL">
       <description>The location and information of an AIS vessel</description>
       <field type="uint32_t" name="MMSI">Mobile Marine Service Identifier, 9 decimal digits</field>
-      <field type="int32_t" name="lat" units="degE7">Latitude</field>
-      <field type="int32_t" name="lon" units="degE7">Longitude</field>
-      <field type="uint16_t" name="COG" units="cdeg">Course over ground</field>
-      <field type="uint16_t" name="heading" units="cdeg">True heading</field>
-      <field type="uint16_t" name="velocity" units="cm/s">Speed over ground</field>
-      <field type="int8_t" name="turn_rate" units="ddeg/s">Turn rate, 0.1 degrees per second</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude</field>
+      <field type="uint16_t" name="COG" units="cdeg" invalid="UINT16_MAX">Course over ground</field>
+      <field type="uint16_t" name="heading" units="cdeg" invalid="UINT16_MAX">True heading</field>
+      <field type="uint16_t" name="velocity" units="cm/s" invalid="UINT16_MAX">Speed over ground</field>
+      <field type="int8_t" name="turn_rate" units="ddeg/s" invalid="INT8_MAX">Turn rate, 0.1 degrees per second</field>
       <field type="uint8_t" name="navigational_status" enum="AIS_NAV_STATUS">Navigational status</field>
       <field type="uint8_t" name="type" enum="AIS_TYPE">Type of vessels</field>
-      <field type="uint16_t" name="dimension_bow" units="m">Distance from lat/lon location to bow</field>
-      <field type="uint16_t" name="dimension_stern" units="m">Distance from lat/lon location to stern</field>
-      <field type="uint8_t" name="dimension_port" units="m">Distance from lat/lon location to port side</field>
-      <field type="uint8_t" name="dimension_starboard" units="m">Distance from lat/lon location to starboard side</field>
-      <field type="char[7]" name="callsign">The vessel callsign</field>
-      <field type="char[20]" name="name">The vessel name</field>
-      <field type="uint16_t" name="tslc" units="s">Time since last communication in seconds</field>
+      <field type="uint16_t" name="dimension_bow" units="m" invalid="UINT16_MAX">Distance from lat/lon location to bow</field>
+      <field type="uint16_t" name="dimension_stern" units="m" invalid="UINT16_MAX">Distance from lat/lon location to stern</field>
+      <field type="uint8_t" name="dimension_port" units="m" invalid="UINT8_MAX">Distance from lat/lon location to port side</field>
+      <field type="uint8_t" name="dimension_starboard" units="m" invalid="UINT8_MAX">Distance from lat/lon location to starboard side</field>
+      <field type="char[7]" name="callsign">The vessel callsign. Characters are encoded as 7-bit ASCII, but only characters in the [AIS 6-bit ASCII subset](https://en.wikipedia.org/wiki/Six-bit_character_code#AIS_SixBit_ASCII) are permitted. Also set AIS_FLAGS_VALID_CALLSIGN if valid. The string is NULL-terminated if it is shorter than the array length.</field>
+      <field type="char[20]" name="name">The vessel name. Characters are encoded as 7-bit ASCII, but only characters in the [AIS 6-bit ASCII subset](https://en.wikipedia.org/wiki/Six-bit_character_code#AIS_SixBit_ASCII) are permitted. Also set AIS_FLAGS_VALID_NAME if valid. The string is NULL-terminated if it is shorter than the array length.</field>
+      <field type="uint16_t" name="tslc" units="s">Time since last communication from the vessel, in seconds</field>
       <field type="uint16_t" name="flags" enum="AIS_FLAGS">Bitmask to indicate various statuses including valid data fields</field>
     </message>
     <!-- UAVCAN related messages. Please keep the range [310, 320) reserved for UAVCAN. -->
@@ -7929,7 +7937,7 @@
     <message id="375" name="ACTUATOR_OUTPUT_STATUS">
       <description>The raw values of the actuator outputs (e.g. on Pixhawk, from MAIN, AUX ports). This message supersedes SERVO_OUTPUT_RAW.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (since system boot).</field>
-      <field type="uint32_t" name="active">Active outputs</field>
+      <field type="uint32_t" name="active" display="bitmask">Active outputs</field>
       <field type="float[32]" name="actuator">Servo / motor output array values. Zero values indicate unused channels.</field>
     </message>
     <message id="376" name="RELAY_STATUS">
@@ -7938,8 +7946,8 @@
         Note that it should not be sent on every relay state change to avoid flooding the link.
       </description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint16_t" name="on">Relay states. Relay instance numbers are represented as individual bits in this mask by offset.</field>
-      <field type="uint16_t" name="present">Relay present. Relay instance numbers are represented as individual bits in this mask by offset.  Bits will be true if a relay instance is configured.</field>
+      <field type="uint16_t" name="on" display="bitmask">Relay states. Relay instance numbers are represented as individual bits in this mask by offset.</field>
+      <field type="uint16_t" name="present" display="bitmask">Relay present. Relay instance numbers are represented as individual bits in this mask by offset.  Bits will be true if a relay instance is configured.</field>
     </message>
     <message id="380" name="TIME_ESTIMATE_TO_TARGET">
       <wip/>
