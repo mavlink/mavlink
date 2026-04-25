@@ -8031,14 +8031,14 @@
       <field type="char[100]" name="uri">MAVLink FTP URI for the general metadata file (COMP_METADATA_TYPE_GENERAL), which may be compressed with xz. The file contains general component metadata, and may contain URI links for additional metadata (see COMP_METADATA_TYPE). The information is static from boot, and may be generated at compile time. The string needs to be zero terminated.</field>
     </message>
     <message id="400" name="PLAY_TUNE_V2">
-      <description>Play vehicle tone/tune (buzzer). Supersedes message PLAY_TUNE.</description>
+      <description>Play vehicle tone/tune (buzzer). Supported tunes can be determined using SUPPORTED_TUNES. Supersedes message PLAY_TUNE.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="format" enum="TUNE_FORMAT">Tune format</field>
       <field type="char[248]" name="tune">Tune definition as a NULL-terminated string.</field>
     </message>
     <message id="401" name="SUPPORTED_TUNES">
-      <description>Tune formats supported by vehicle. This should be emitted as response to MAV_CMD_REQUEST_MESSAGE.</description>
+      <description>Tune formats supported by vehicle, i.e. via PLAY_TUNE_V2. This should be emitted as response to MAV_CMD_REQUEST_MESSAGE.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint32_t" name="format" enum="TUNE_FORMAT">Bitfield of supported tune formats.</field>
