@@ -2529,6 +2529,7 @@
       <!-- Values in the range [5200, 5210) should be reserved for UAVCAN.  -->
       <!-- BEGIN UAVCAN range -->
       <entry value="5200" name="MAV_CMD_UAVCAN_GET_NODE_INFO" hasLocation="false" isDestination="false">
+        <superseded since="2026-05" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Commands the vehicle to respond with a sequence of messages UAVCAN_NODE_INFO, one message per every UAVCAN node that is online. Note that some of the response messages can be lost, which the receiver can detect easily by checking whether every received UAVCAN_NODE_STATUS has a matching message UAVCAN_NODE_INFO received earlier; if not, this command should be sent again in order to request re-transmission of the node information messages.</description>
         <param index="1">Reserved (set to 0)</param>
         <param index="2">Reserved (set to 0)</param>
@@ -7003,13 +7004,13 @@
     </message>
     <message id="242" name="HOME_POSITION">
       <description>
-	Contains the home position.
-	The home position is the default position that the system will return to and land on.
-	The position must be set automatically by the system during the takeoff, and may also be explicitly set using MAV_CMD_DO_SET_HOME.
-	The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface.
-	Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach.
-	The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.
-        Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=242 (or the deprecated MAV_CMD_GET_HOME_POSITION command).
+        Contains the home position.
+        The home position is the default position that the system will return to and land on.
+        The position must be set automatically by the system during the takeoff, and may also be explicitly set using MAV_CMD_DO_SET_HOME.
+        The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface.
+        Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach.
+        The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.
+        Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=242.
       </description>
       <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
@@ -7057,8 +7058,7 @@
       <description>
         The interval between messages for a particular MAVLink message ID.
         This message is sent in response to the MAV_CMD_REQUEST_MESSAGE command with param1=244 (this message) and param2=message_id (the id of the message for which the interval is required).
-	It may also be sent in response to MAV_CMD_GET_MESSAGE_INTERVAL.
-	This interface replaces DATA_STREAM.</description>
+        This interface replaces DATA_STREAM.</description>
       <field type="uint16_t" name="message_id">The ID of the requested MAVLink message. v1.0 is limited to 254 messages.</field>
       <field type="int32_t" name="interval_us" units="us">The interval between two messages. A value of -1 indicates this stream is disabled, 0 indicates it is not available, &gt; 0 indicates the interval at which it is sent.</field>
     </message>
@@ -7623,7 +7623,13 @@
       <field type="uint16_t" name="vendor_specific_status_code">Vendor-specific status information.</field>
     </message>
     <message id="311" name="UAVCAN_NODE_INFO">
-      <description>General information describing a particular UAVCAN node. Please refer to the definition of the UAVCAN service "uavcan.protocol.GetNodeInfo" for the background information. This message should be emitted by the system whenever a new node appears online, or an existing node reboots. Additionally, it can be emitted upon request from the other end of the MAVLink channel (see MAV_CMD_UAVCAN_GET_NODE_INFO). It is also not prohibited to emit this message unconditionally at a low frequency. The UAVCAN specification is available at http://uavcan.org.</description>
+      <description>General information describing a particular UAVCAN node.
+        Please refer to the definition of the UAVCAN service "uavcan.protocol.GetNodeInfo" for the background information.
+        This message should be emitted by the system whenever a new node appears online, or an existing node reboots.
+        The message may also be explicitly requested using MAV_CMD_REQUEST_MESSAGE.
+        It is also not prohibited to emit this message unconditionally at a low frequency.
+        The UAVCAN specification is available at http://uavcan.org.
+      </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint32_t" name="uptime_sec" units="s">Time since the start-up of the node.</field>
       <field type="char[80]" name="name">Node name string. For example, "sapog.px4.io".</field>
