@@ -741,7 +741,7 @@ class MAVMessage:
                 else ""
             )
             instanceText = (
-                "<br>Messages with same value are from the same source (instance)."
+                "<br>[Instance field]: Uniquely identifies a device/subcomponent within a single source/target MAVLink component."
                 if field.instance
                 else ""
             )
