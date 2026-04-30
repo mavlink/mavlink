@@ -441,6 +441,32 @@ class MAVDeprecated:
         )
 
 
+class MAVSuperseded:
+    def __init__(self, soup):
+        self.since = soup.get("since")
+        self.replaced_by = soup.get("replaced_by")
+        self.description = soup.text
+        if self.description:
+            self.description = fix_add_implicit_links_items(self.description)
+
+    def getMarkdown(self):
+        markdown = "**SUPERSEDED:**"
+        markdown += (
+            f" Replaced By {fix_add_implicit_links_items(self.replaced_by)} "
+            if self.replaced_by
+            else ""
+        )
+        markdown += f"({self.since})" if self.since else ""
+        markdown += f" — {self.description})" if self.description else ""
+        markdown = f'<span class="warning">{markdown.strip()}</span>'
+        return markdown
+
+    def debug(self):
+        print(
+            f"debug:Superseded: since({self.since}), replaced_by({fix_add_implicit_links_items(self.replaced_by)}), description({self.description})"
+        )
+
+
 class MAVWip:
     def __init__(self, soup=None):
         # <wip/>
@@ -565,6 +591,7 @@ class MAVMessage:
         # self.linenumber = linenumber
 
         self.deprecated = None
+        self.superseded = None
         self.wip = None
         self.fields = []
         self.fieldnames = set()
@@ -595,6 +622,8 @@ class MAVMessage:
                     pass
                 elif child.name == "deprecated":
                     self.deprecated = MAVDeprecated(child)
+                elif child.name == "superseded":
+                    self.superseded = MAVSuperseded(child)
                 elif child.name == "wip":
                     self.wip = MAVWip(child)
                 else:
@@ -620,7 +649,7 @@ class MAVMessage:
         message = f"### {self.name} ({self.id})"
 
         # Add marker after name if there are additions
-        if self.basename is not currentDialect or self.deprecated or self.wip:
+        if self.basename is not currentDialect or self.deprecated or self.superseded or self.wip:
             message += " —"
 
         # From dialect to heading if in dialect
@@ -633,12 +662,16 @@ class MAVMessage:
 
         if self.deprecated:
             message += " [DEP]"
+        elif self.superseded:
+            message += " [SUP]"
         elif self.wip:
             message += " [WIP]"
         message += " {#" + self.name + "}\n\n"
 
         if self.deprecated:
             message += self.deprecated.getMarkdown() + "\n\n"
+        if self.superseded:
+            message += self.superseded.getMarkdown() + "\n\n"
         if self.wip:
             message += self.wip.getMarkdown() + "\n\n"
 
@@ -744,6 +777,9 @@ class MAVEnumEntry:
         self.deprecated = soup.find("deprecated", recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
+        self.superseded = soup.find("superseded", recursive=False)
+        self.superseded = MAVSuperseded(
+            self.superseded) if self.superseded else None
         self.wip = soup.find("wip", recursive=False)
         self.wip = MAVWip(self.wip) if self.wip else None
         # self.autovalue = autovalue  # True if value was *not* specified in XML
@@ -751,6 +787,7 @@ class MAVEnumEntry:
     def getMarkdown(self, currentDialect):
         """Return markdown for an enum entry"""
         deprString = f"<br>{self.deprecated.getMarkdown()}" if self.deprecated else ""
+        supString = f"<br>{self.superseded.getMarkdown()}" if self.superseded else ""
         wipString = f"<br>{self.wip.getMarkdown()}" if self.wip else ""
         importedNote = ""
         if self.basename is not currentDialect:
@@ -768,7 +805,7 @@ class MAVEnumEntry:
             if self.description
             else ""
         )
-        string = f"<a id='{self.name}'></a>{self.value} | [{self.name}](#{self.name}) | {desc}{importedNote}{wipString}{deprString} \n"
+        string = f"<a id='{self.name}'></a>{self.value} | [{self.name}](#{self.name}) | {desc}{importedNote}{wipString}{supString}{deprString} \n"
         return string
 
 
@@ -797,6 +834,9 @@ class MAVEnum:
         self.deprecated = soup.find("deprecated", recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
+        self.superseded = soup.find("superseded", recursive=False)
+        self.superseded = MAVSuperseded(
+            self.superseded) if self.superseded else None
         if self.basename == "development":
             self.wip = MAVWip()
         else:
@@ -823,7 +863,7 @@ class MAVEnum:
         string = f"### {self.name}"
 
         # Add marker after name if there are additions
-        if self.basename is not currentDialect or self.deprecated or self.wip:
+        if self.basename is not currentDialect or self.deprecated or self.superseded or self.wip:
             string += " —"
 
         if self.basename is not currentDialect:
@@ -835,12 +875,17 @@ class MAVEnum:
 
         if self.deprecated:
             string += " [DEP]"
+        elif self.superseded:
+            string += " [SUP]"
         elif self.wip:
             string += " [WIP]"
         string += " {#" + self.name + "}\n\n"
 
         if self.deprecated:
             string += self.deprecated.getMarkdown() + "\n\n"
+
+        if self.superseded:
+            string += self.superseded.getMarkdown() + "\n\n"
 
         if self.wip:
             string += self.wip.getMarkdown() + "\n\n"
@@ -958,6 +1003,9 @@ class MAVCommand:
         self.deprecated = soup.find("deprecated", recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
+        self.superseded = soup.find("superseded", recursive=False)
+        self.superseded = MAVSuperseded(
+            self.superseded) if self.superseded else None
         if self.basename == "development":
             self.wip = MAVWip()
         else:
@@ -984,7 +1032,7 @@ class MAVCommand:
         string = f"### {self.name} ({self.value})"
 
         # Add marker after name if there are additions
-        if self.basename is not currentDialect or self.deprecated or self.wip:
+        if self.basename is not currentDialect or self.deprecated or self.superseded or self.wip:
             string += " —"
 
         # From dialect to heading if in dialect
@@ -996,12 +1044,16 @@ class MAVCommand:
             )
         if self.deprecated:
             string += " [DEP]"
+        elif self.superseded:
+            string += " [SUP]"
         elif self.wip:
             string += " [WIP]"
         string += " {#" + self.name + "}\n\n"
 
         if self.deprecated:
             string += self.deprecated.getMarkdown() + "\n\n"
+        if self.superseded:
+            string += self.superseded.getMarkdown() + "\n\n"
         if self.wip:
             string += self.wip.getMarkdown() + "\n\n"
 
