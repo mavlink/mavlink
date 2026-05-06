@@ -1552,15 +1552,16 @@
       </entry>
       <entry value="185" name="MAV_CMD_DO_FLIGHTTERMINATION" hasLocation="false" isDestination="false">
         <description>Terminate flight immediately.
-          Flight termination immediately and irreversibly terminates the current flight, returning the vehicle to ground.
-          The vehicle will ignore RC or other input until it has been power-cycled.
+          Flight termination immediately and (ordinarily) irreversibly terminates the current flight, returning the vehicle to ground.
+	  Setting MAV_DO_FLIGHTTERMINATION_REVERSIBLE in param2 allows the operation to be reversed.
+          The vehicle will ignore RC or other input until it has been power-cycled unless param2 indicates the operation should be reversible.
           Termination may trigger safety measures, including: disabling motors and deployment of parachute on multicopters, and setting flight surfaces to initiate a landing pattern on fixed-wing).
           On multicopters without a parachute it may trigger a crash landing.
           Support for this command can be tested using the protocol bit: MAV_PROTOCOL_CAPABILITY_FLIGHT_TERMINATION.
           Support for this command can also be tested by sending the command with param1=0 (&lt; 0.5); the ACK should be either MAV_RESULT_FAILED or MAV_RESULT_UNSUPPORTED.
         </description>
         <param index="1" label="Terminate" minValue="0" maxValue="1" increment="1">Flight termination activated if &gt; 0.5. Otherwise not activated and ACK with MAV_RESULT_FAILED.</param>
-        <param index="2">Empty</param>
+        <param index="2" label="Options" enum="MAV_DO_FLIGHTTERMINATION_OPTIONS">Termination options</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
         <param index="5">Empty</param>
@@ -5393,6 +5394,12 @@
       </entry>
       <entry value="2" name="GLOBAL_POSITION_PRIMARY">
         <description>True if the data originates from or is consumed by the primary estimator.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_DO_FLIGHTTERMINATION_OPTIONS" bitmask="true">
+      <description>Bitmap of options for the MAV_CMD_DO_FLIGHTTERMINATION command</description>
+      <entry value="1" name="MAV_DO_FLIGHTTERMINATION_REVERSIBLE">
+        <description>Allows this action to be reversed, and permits operator input during termination.</description>
       </entry>
     </enum>
   </enums>
