@@ -314,6 +314,13 @@
       <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
     </message>
 
+    <message id="1" name="SYS_STATUS">
+      <description>Sensor and subsystem status information. Provides a compact representation of sensor/subsystem status and a few other basic statistics.</description>
+      <field type="uint16_t" name="voltage_battery" units="mV" invalid="UINT16_MAX">Battery voltage, UINT16_MAX: Voltage not sent by autopilot</field>
+      <field type="int8_t" name="battery_remaining" units="%" invalid="-1">Battery energy remaining, -1: Battery remaining energy not sent by autopilot</field>
+      <field type="uint16_t" name="drop_rate_comm" units="c%">Communication drop rate, (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)</field>
+    </message>
+
     <message id="2" name="SYSTEM_TIME">
       <description>The system time is the time of the sender's master clock.
         This can be emitted by flight controllers, onboard computers, or other components in the MAVLink network.
