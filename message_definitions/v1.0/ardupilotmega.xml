@@ -20,11 +20,7 @@
       <entry value="16777215" name="ACCELCAL_VEHICLE_POS_SUCCESS"/>
       <entry value="16777216" name="ACCELCAL_VEHICLE_POS_FAILED"/>
     </enum>
-    <enum name="HEADING_TYPE">
-      <entry value="0" name="HEADING_TYPE_COURSE_OVER_GROUND"/>
-      <entry value="1" name="HEADING_TYPE_HEADING"/>
-      <entry value="2" name="HEADING_TYPE_DEFAULT"/>
-    </enum>
+    <!-- HEADING_TYPE moved to common.xml -->
     <!-- ardupilot specific MAV_CMD_* commands -->
     <enum name="MAV_CMD">
       <!-- 200 to 214 used by common.xml -->
@@ -321,16 +317,7 @@
         <param index="6">Empty</param>
         <param index="7" label="target alt" units="m">Target Altitude</param>
       </entry>
-      <entry value="43002" name="MAV_CMD_GUIDED_CHANGE_HEADING" hasLocation="false" isDestination="false">
-        <description>Change to target heading at a given rate, overriding previous heading/s. This slews the vehicle at a controllable rate between it's previous heading and the new one. (affects GUIDED only. Exiting GUIDED returns aircraft to normal behaviour defined elsewhere. Designed for onboard companion-computer command-and-control, not normally operator/GCS control.)</description>
-        <param index="1" label="heading type" enum="HEADING_TYPE">course-over-ground or raw vehicle heading.</param>
-        <param index="2" label="heading target" units="deg" minValue="0" maxValue="359.99">Target heading.</param>
-        <param index="3" label="heading rate-of-change" units="m/s/s">Maximum centripetal accelearation, ie rate of change,  toward new heading.</param>
-        <param index="4">Empty</param>
-        <param index="5">Empty</param>
-        <param index="6">Empty</param>
-        <param index="7">Empty</param>
-      </entry>
+      <!-- 43002 MAV_CMD_GUIDED_CHANGE_HEADING moved to common.xml -->
       <entry value="43005" name="MAV_CMD_SET_HAGL" hasLocation="false" isDestination="false">
         <description>Provide a value for height above ground level. This can be used for things like fixed wing and VTOL landing.</description>
         <param index="1" label="hagl" units="m">Height above ground level.</param>
