@@ -2610,7 +2610,12 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <!-- from ardupilotmega.xml (hence ID is in that range) -->
+      <entry value="43002" name="MAV_CMD_GUIDED_CHANGE_HEADING" hasLocation="false" isDestination="false">
+        <description>Change to target direction at a given rate, overriding previous heading/s. This slews the vehicle at a controllable rate between its previous heading and the new one.</description>
+        <param index="1" label="Heading Type" enum="HEADING_TYPE">Course-over-ground or raw vehicle heading.</param>
+        <param index="2" label="Heading Target" units="deg" minValue="0" maxValue="359.99">Target heading.</param>
+        <param index="3" label="Heading Rate of Change" units="deg/s">Maximum centripetal acceleration, i.e. rate of change toward new heading.</param>
+      </entry>
       <entry value="43003" name="MAV_CMD_EXTERNAL_POSITION_ESTIMATE" hasLocation="true" isDestination="false">
         <description>Provide an external position estimate for use when dead-reckoning. This is meant to be used for occasional position resets that may be provided by a external system such as a remote pilot using landmarks over a video link.</description>
         <param index="1" label="transmission_time" units="s">Timestamp that this message was sent as a time in the transmitters time domain. The sender should wrap this time back to zero based on required timing accuracy for the application and the limitations of a 32 bit float. For example, wrapping at 10 hours would give approximately 1ms accuracy. Recipient must handle time wrap in any timing jitter correction applied to this field. Wrap rollover time should not be at not more than 250 seconds, which would give approximately 10 microsecond accuracy.</param>
@@ -3626,6 +3631,18 @@
       </entry>
       <entry value="3" name="SPEED_TYPE_DESCENT_SPEED">
         <description>Descent speed</description>
+      </entry>
+    </enum>
+    <enum name="HEADING_TYPE">
+      <description>Heading setpoint types used in MAV_CMD_GUIDED_CHANGE_HEADING</description>
+      <entry value="0" name="HEADING_TYPE_COURSE_OVER_GROUND">
+        <description>Course over ground.</description>
+      </entry>
+      <entry value="1" name="HEADING_TYPE_HEADING">
+        <description>Raw vehicle heading.</description>
+      </entry>
+      <entry value="2" name="HEADING_TYPE_DEFAULT">
+        <description>Default heading.</description>
       </entry>
     </enum>
     <!-- ESTIMATOR_STATUS_FLAGS - these values should be bit-and with the messages flags field to know if flag has been set -->
