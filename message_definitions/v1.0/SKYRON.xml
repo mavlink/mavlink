@@ -616,8 +616,8 @@
     </message>
     <message id="3364" name="ONBOARD_COMPUTER_INFO">
       <description>Static identity and configuration snapshot of the onboard computer. Sent once on connection and in response to MAV_CMD_REQUEST_MESSAGE (param1=3364). Valid for both x86 (Intel NUC) and ARM (NVIDIA Jetson) platforms — platform-specific fields (l4t_version, cuda_version) are empty strings when not applicable.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch, microseconds). Converted from ROS Time at send.</field>
       <field type="uint64_t" name="uid">Unique hardware identifier. Jetson: device-tree fuse-burned serial; x86: DMI product serial hash. Stable across OS reinstalls.</field>
-      <field type="uint32_t" name="computer_id">Lower 32 bits of uid. Used as compact MAVLink system identifier.</field>
       <field type="uint32_t" name="total_memory">Total installed system RAM in MiB.</field>
       <field type="uint32_t" name="total_storage">Total root-partition storage in MiB.</field>
       <field type="uint32_t" name="total_operation_time">Cumulative powered-on time in seconds across all boots. Monotonic-clock based, NTP-independent. Persisted across reboots.</field>
