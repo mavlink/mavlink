@@ -45,7 +45,7 @@ def check_enum(enum, file_name):
     values = []
     enumEntries = enum.find_all('entry')
     for entry in enumEntries:
-        values.append(int(entry.get('value')))
+        values.append(int(entry.get('value'), 0))
 
     # Check for duplicate values
     for a, b in itertools.combinations(values, 2):
@@ -243,6 +243,11 @@ for name in all_enums:
             list(set(values) & set(enum['enum'][i]['values']))) > 0
         values += enum['enum'][i]['values']
 
+    if not values:
+        print("%s: Enum: %s has no entries" % (enum['file'], name))
+        warning_count += 1
+        continue
+
     enum['min'] = min(values)
     enum['max'] = max(values)
 
@@ -273,8 +278,32 @@ for key in xml:
     for enum in xml[key].find_all('enum', {"name": "MAV_CMD"}):
         for entry in enum.find_all('entry'):
             name = entry.get('name')
+            seen_indices = []   # List of indices seen so far to check for duplicates
             for param in entry.find_all('param'):
                 check_cmd_param(key, name, param, all_enums)
+                idx = param.get('index')
+
+                # Check if the param index is an integer and in the valid range of [1,7]
+                try:
+                    idx_int = int(idx)
+                    if idx_int < 1 or idx_int > 7:
+                        print("%s: Command %s param index %s is out of range" %
+                              (key, name, idx))
+                        warning_count += 1
+                        continue
+                except (TypeError, ValueError):
+                    print("%s: Command %s param index %s is not an integer" %
+                          (key, name, idx))
+                    warning_count += 1
+                    continue
+
+                # Check if the index is duplicated
+                if idx in seen_indices:
+                    print("%s: Command %s param index %s is duplicated" %
+                          (key, name, idx))
+                    warning_count += 1
+                else:
+                    seen_indices.append(idx)
 
 # Check for unused enums
 for key in all_enums:

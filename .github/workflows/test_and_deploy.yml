@@ -30,6 +30,16 @@ jobs:
         run: |
           ./scripts/test.sh format
 
+  xml-consistency:
+    name: XML consistency check
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+      - run: pip install beautifulsoup4 lxml
+      # TODO: add --exception flag once pre-existing warnings are resolved
+      - name: Check XML consistency
+        run: python3 scripts/xml_consistency_check.py
+
   spell-check:
     name: Find typos with codespell
     runs-on: ubuntu-latest
@@ -120,7 +130,7 @@ jobs:
 
   deploy:
     name: Generate and push C headers
-    needs: [format, spell-check, python-lint, python-tests, node-tests]
+    needs: [format, xml-consistency, spell-check, python-lint, python-tests, node-tests]
     runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/master'
     env:
