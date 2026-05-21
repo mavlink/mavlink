@@ -7735,7 +7735,13 @@
     </message>
     <!-- cellular status information -->
     <message id="334" name="CELLULAR_STATUS">
-      <description>Report current used cellular network status</description>
+      <description>Cellular network status as reported by a particular modem.
+      
+        This is primarily intended for logging, but a GCS may choose to display link_tx_rate and link_rx_rate.
+        
+        Note that a value of 0 in the id field indicates that the sender does not support reporting of multiple modems.
+        Message data should be from a single modem, but that is not guaranteed.
+      </description>
       <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
       <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLULAR_STATUS_FLAG_FAILED</field>
       <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
