@@ -7768,7 +7768,13 @@
     </message>
     <!-- cellular status information -->
     <message id="334" name="CELLULAR_STATUS">
-      <description>Report current used cellular network status</description>
+      <description>Cellular network status as reported by a particular modem.
+      
+        This is primarily intended for logging, but a GCS may choose to display link_tx_rate and link_rx_rate.
+        
+        Note that a value of 0 in the id field indicates that the sender does not support reporting of multiple modems.
+        Message data should be from a single modem, but that is not guaranteed.
+      </description>
       <field type="uint8_t" name="status" enum="CELLULAR_STATUS_FLAG">Cellular modem status</field>
       <field type="uint8_t" name="failure_reason" enum="CELLULAR_NETWORK_FAILED_REASON">Failure reason when status in in CELLULAR_STATUS_FLAG_FAILED</field>
       <field type="uint8_t" name="type" enum="CELLULAR_NETWORK_RADIO_TYPE">Cellular network radio type: gsm, cdma, lte...</field>
@@ -7776,6 +7782,18 @@
       <field type="uint16_t" name="mcc" invalid="UINT16_MAX">Mobile country code. If unknown, set to UINT16_MAX</field>
       <field type="uint16_t" name="mnc" invalid="UINT16_MAX">Mobile network code. If unknown, set to UINT16_MAX</field>
       <field type="uint16_t" name="lac" invalid="0">Location area code. If unknown, set to 0</field>
+      <extensions/>
+      <field type="uint8_t" name="id" instance="true" minValue="1">Cellular modem instance number. Indexed from 1.</field>
+      <field type="uint32_t" name="link_tx_rate" units="KiB/s" invalid="0">Download rate.</field>
+      <field type="uint32_t" name="link_rx_rate" units="KiB/s" invalid="0">Upload rate.</field>
+      <field type="char[9]" name="cell_tower_id" invalid="0">ID of the currently connected cell tower. This must be NULL terminated if the length is less than 9 human-readable chars, and without the null termination (NULL) byte if the length is exactly 9 chars.</field>
+      <field type="uint8_t" name="band_number" invalid="0">LTE frequency band number.</field>
+      <field type="float" name="band_frequency" units="MHz" invalid="0">LTE radio frequency.</field>
+      <field type="uint32_t" name="channel_number" invalid="0">The channel number (CN). Absolute radio-frequency (ARFCN) / E-UTRA (EARFCN) / UTRA (UARFCN) / New radio (NR_CH).</field>
+      <field type="float" name="rx_level" units="dBm" invalid="0">On 3G is Received Signal Code Power (RSCP). On LTE is Reference Signal Received Power (RSRP). On 5G is New Radio Reference Signal Received Power (NR_RSRP).</field>
+      <field type="float" name="tx_level" units="dBm" invalid="0">Transmitter (modem) signal absolute power level.</field>
+      <field type="float" name="rx_quality" units="dBm" invalid="0">On 3G is Receiver Quality (RxQual). On LTE is Reference Signal Received Quality (RSRQ). On 5G is New Radio Reference Signal Received Quality (NR_RSRQ).</field>
+      <field type="float" name="sinr" units="dB" invalid="0">Signal to interference plus noise ratio (SINR).</field>
     </message>
     <message id="335" name="ISBD_LINK_STATUS">
       <description>Status of the Iridium SBD link.</description>
