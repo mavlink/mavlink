@@ -7533,7 +7533,7 @@
       <field type="uint16_t" name="estimator_status" enum="ESTIMATOR_STATUS_FLAGS">Bitmap indicating which estimator outputs are valid.</field>
       <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE" invalid="MAV_LANDED_STATE_UNDEFINED">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
       <extensions/>
-      <field type="float" name="angular_velocity_z" units="rad/s" invalid="NaN">Z component of angular velocity in NED (North, East, Down). NaN if unknown.</field>
+      <field type="float" name="angular_velocity_z" units="rad/s" invalid="0">Z component of angular velocity in NED (North, East, Down). 0 if unknown. Use 0.00001 to represent a measured value of zero.</field>
     </message>
     <message id="287" name="GIMBAL_MANAGER_SET_PITCHYAW">
       <description>Set gimbal manager pitch and yaw angles (high rate message). This message is to be sent to the gimbal manager (e.g. from a ground station) and will be ignored by gimbal devices. Angles and rates can be set to NaN according to use case. Use MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW for low-rate adjustments that require confirmation.</description>
