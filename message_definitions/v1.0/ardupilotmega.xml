@@ -991,6 +991,36 @@
       <entry value="4" name="PID_TUNING_ACCZ"/>
       <entry value="5" name="PID_TUNING_STEER"/>
       <entry value="6" name="PID_TUNING_LANDING"/>
+      <entry value="7" name="PID_TUNING_WHEEL_LEFT">
+        <description>Left wheel rate.</description>
+      </entry>
+      <entry value="8" name="PID_TUNING_WHEEL_RIGHT">
+        <description>Right wheel rate.</description>
+      </entry>
+      <entry value="9" name="PID_TUNING_SAIL_HEEL">
+        <description>Sailboat heel to mainsail.</description>
+      </entry>
+      <entry value="10" name="PID_TUNING_VEL_NORTH">
+        <description>Velocity north.</description>
+      </entry>
+      <entry value="11" name="PID_TUNING_VEL_EAST">
+        <description>Velocity east.</description>
+      </entry>
+      <entry value="12" name="PID_TUNING_VEL_DOWN">
+        <description>Velocity down.</description>
+      </entry>
+      <entry value="13" name="PID_TUNING_POS_NORTH">
+        <description>Position north.</description>
+      </entry>
+      <entry value="14" name="PID_TUNING_POS_EAST">
+        <description>Position east.</description>
+      </entry>
+      <entry value="15" name="PID_TUNING_POS_DOWN">
+        <description>Position down.</description>
+      </entry>
+      <entry value="16" name="PID_TUNING_YAW_ANGLE">
+        <description>Yaw angle.</description>
+      </entry>
     </enum>
     <enum name="MAV_REMOTE_LOG_DATA_BLOCK_COMMANDS">
       <description>Special ACK block numbers control activation of dataflash log streaming.</description>
@@ -1477,6 +1507,7 @@
       <field type="int32_t" name="lng" units="degE7">Longitude.</field>
     </message>
     <message id="165" name="HWSTATUS">
+      <deprecated since="2022-09" replaced_by="POWER_STATUS">POWER_STATUS+SYS_STATUS form a superset of the fields in this message.</deprecated>
       <description>Status of key hardware.</description>
       <field type="uint16_t" name="Vcc" units="mV">Board voltage.</field>
       <field type="uint8_t" name="I2Cerr">I2C error count.</field>
