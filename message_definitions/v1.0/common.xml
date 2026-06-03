@@ -8227,12 +8227,6 @@
       <field type="int16_t" name="temperature" units="degC" invalid="INT16_MAX">Temperature of the motor. INT16_MAX if unknown</field>
       <field type="uint32_t" name="status" enum="MAV_WINCH_STATUS_FLAG">Status flags</field>
     </message>
-    <message id="11045" name="TRACKING_MESSAGE">
-      <description>Normalised tracking error sent from a companion computer to the autopilot. Consumed by the PX4 tracking flight mode. Field order matches the satria-firmware ardupilotmega.xml definition so the CRC_EXTRA agrees and the same drone-seeker payload works on both stacks. Defined in common.xml so the development and ardupilotmega dialects share a single definition (avoids the duplicate-id error when dialects are merged).</description>
-      <field type="uint64_t" name="time_usec" units="us">Timestamp (monotonic microseconds)</field>
-      <field type="float" name="errorx">Normalised horizontal tracking error [-1, 1]. Positive = target right of centre.</field>
-      <field type="float" name="errory">Normalised vertical tracking error [-1, 1]. Positive = target above centre.</field>
-    </message>
     <message id="12900" name="OPEN_DRONE_ID_BASIC_ID">
       <description>Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant for feeding data to/from an OpenDroneID implementation. E.g. https://github.com/opendroneid/opendroneid-core-c. These messages are compatible with the ASTM F3411 Remote ID standard and the ASD-STAN prEN 4709-002 Direct Remote ID standard. Additional information and usage of these messages is documented at https://mavlink.io/en/services/opendroneid.html.</description>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast).</field>

@@ -2047,6 +2047,12 @@
       <field type="uint16_t[4]" name="rpm" units="rpm">RPM (eRPM).</field>
       <field type="uint16_t[4]" name="count">count of telemetry packets received (wraps at 65535).</field>
     </message>
+    <message id="11045" name="TRACKING_MESSAGE">
+      <description>Normalised tracking error sent from companion computer to autopilot. errorx and errory are in [-1, 1] where 0 is centred.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (monotonic microseconds)</field>
+      <field type="float" name="errorx">Normalised horizontal tracking error [-1, 1]</field>
+      <field type="float" name="errory">Normalised vertical tracking error [-1, 1]</field>
+    </message>
     <message id="11060" name="NAMED_VALUE_STRING">
       <description>Send a key-value pair as string. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
