@@ -6923,15 +6923,39 @@
       <field type="float" name="ignition_voltage" units="V">Supply voltage to EFI sparking system.  Zero in this value means "unknown", so if the supply voltage really is zero volts use 0.0001 instead.</field>
       <field type="float" name="fuel_pressure" units="kPa">Fuel pressure. Zero in this value means "unknown", so if the fuel pressure really is zero kPa use 0.0001 instead.</field>
     </message>
+    <enum name="EFI_PERFORMANCE_STATUS_FLAGS" bitmask="true">
+      <description>Bitmask of EFI ECU status flags in EFI_PERFORMANCE.ecu_status.</description>
+      <entry value="1" name="EFI_PERFORMANCE_STATUS_ENGINE_RUNNING">
+        <description>Engine is running.</description>
+      </entry>
+      <entry value="2" name="EFI_PERFORMANCE_STATUS_FAULT">
+        <description>A fault has been detected by the ECU.</description>
+      </entry>
+      <entry value="4" name="EFI_PERFORMANCE_STATUS_FUEL_PUMP_ACTIVE">
+        <description>Fuel pump is active.</description>
+      </entry>
+      <entry value="8" name="EFI_PERFORMANCE_STATUS_IGNITION_ACTIVE">
+        <description>Ignition system is active.</description>
+      </entry>
+      <entry value="16" name="EFI_PERFORMANCE_STATUS_STARTER_ACTIVE">
+        <description>Starter motor is engaged.</description>
+      </entry>
+      <entry value="32" name="EFI_PERFORMANCE_STATUS_OVER_TEMPERATURE">
+        <description>ECU temperature has exceeded the warning threshold.</description>
+      </entry>
+      <entry value="64" name="EFI_PERFORMANCE_STATUS_LOW_FUEL_PRESSURE">
+        <description>Fuel pressure is below the minimum operating threshold.</description>
+      </entry>
+    </enum>
     <message id="442" name="EFI_PERFORMANCE">
       <description>Performance statistics of the EFI system.</description>
-      <field type="uint16_t" name="fuel_pump_duty_cycle" units="%" invalid="NaN">Fuel pump power output, as a percentage of maximum. A value of 0 indicates the pump is off, 100 indicates full power.</field>
-      <field type="uint16_t" name="fuel_pump_voltage" units="V" invalid="NaN">Fuel pump supply voltage.</field>
-      <field type="uint16_t" name="fuel_pump_current" units="A" invalid="NaN">Fuel pump current draw.</field>
-      <field type="uint16_t" name="ecu_supply_voltage" units="V" invalid="NaN">ECU supply voltage.</field>
-      <field type="uint16_t" name="ecu_current" units="A" invalid="NaN">ECU current draw.</field>
-      <field type="uint8_t" name="ecu_temperature" units="degC" invalid="NaN">ECU temperature.</field>
-      <field type="uint16_t" name="ecu_status">ECU status flags.</field>
+      <field type="uint8_t" name="fuel_pump_duty_cycle" units="%" invalid="UINT8_MAX">Fuel pump power output, as a percentage of maximum. A value of 0 indicates the pump is off, 100 indicates full power.</field>
+      <field type="uint8_t" name="fuel_pump_voltage" units="V" invalid="0">Fuel pump supply voltage.</field>
+      <field type="uint8_t" name="fuel_pump_current" units="A" invalid="0">Fuel pump current draw.</field>
+      <field type="uint8_t" name="ecu_supply_voltage" units="V" invalid="0">ECU supply voltage.</field>
+      <field type="uint8_t" name="ecu_current" units="A" invalid="0">ECU current draw.</field>
+      <field type="uint8_t" name="ecu_temperature" units="degC" invalid="UINT8_MAX">ECU temperature.</field>
+      <field type="uint16_t" name="ecu_status" enum="EFI_PERFORMANCE_STATUS_FLAGS">ECU status flags.</field>
     </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
