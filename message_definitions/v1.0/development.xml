@@ -111,6 +111,21 @@
         <description>Reserved (not used). If set, this will indicate that an additional status field exists for higher status values.</description>
       </entry>
     </enum>
+    <enum name="MAV_CORRIDOR_NODE_TYPE">
+      <description>Type of a corridor graph node, defining its role in routing.</description>
+      <entry value="0" name="MAV_CORRIDOR_NODE_TYPE_WAYPOINT">
+        <description>Intermediate routing node. Not a landing site.</description>
+      </entry>
+      <entry value="1" name="MAV_CORRIDOR_NODE_TYPE_NEST">
+        <description>Primary landing site (base). Preferred RTL destination in normal landing procedure.</description>
+      </entry>
+      <entry value="2" name="MAV_CORRIDOR_NODE_TYPE_DIVERT_SITE">
+        <description>Alternate landing site. Selected when there is no feasible path to a nest in normal landing procedure.</description>
+      </entry>
+      <entry value="3" name="MAV_CORRIDOR_NODE_TYPE_DITCH_SITE">
+        <description>Last-resort site where the airframe is considered expendable. Selected only when no other landing site is feasible.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -160,7 +175,7 @@
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Defines a node in a flight corridor graph. Nodes are uploaded sequentially as part of a corridor graph mission upload and are referenced by index (zero-based, upload order). The graph describes pre-approved flight paths for corridor-constrained routing (e.g. urban air mobility RTL).</description>
-        <param index="1">Reserved</param>
+        <param index="1" label="Type" enum="MAV_CORRIDOR_NODE_TYPE">Node type</param>
         <param index="2">Reserved</param>
         <param index="3">Reserved</param>
         <param index="4">Reserved</param>
