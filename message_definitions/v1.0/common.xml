@@ -6923,41 +6923,6 @@
       <field type="float" name="ignition_voltage" units="V">Supply voltage to EFI sparking system.  Zero in this value means "unknown", so if the supply voltage really is zero volts use 0.0001 instead.</field>
       <field type="float" name="fuel_pressure" units="kPa">Fuel pressure. Zero in this value means "unknown", so if the fuel pressure really is zero kPa use 0.0001 instead.</field>
     </message>
-    <enum name="EFI_PERFORMANCE_STATUS_FLAGS" bitmask="true">
-      <description>Bitmask of EFI ECU status flags in EFI_PERFORMANCE.ecu_status.</description>
-      <entry value="1" name="EFI_PERFORMANCE_STATUS_ENGINE_RUNNING">
-        <description>Engine is running.</description>
-      </entry>
-      <entry value="2" name="EFI_PERFORMANCE_STATUS_FAULT">
-        <description>A fault has been detected by the ECU.</description>
-      </entry>
-      <entry value="4" name="EFI_PERFORMANCE_STATUS_FUEL_PUMP_ACTIVE">
-        <description>Fuel pump is active.</description>
-      </entry>
-      <entry value="8" name="EFI_PERFORMANCE_STATUS_IGNITION_ACTIVE">
-        <description>Ignition system is active.</description>
-      </entry>
-      <entry value="16" name="EFI_PERFORMANCE_STATUS_STARTER_ACTIVE">
-        <description>Starter motor is engaged.</description>
-      </entry>
-      <entry value="32" name="EFI_PERFORMANCE_STATUS_OVER_TEMPERATURE">
-        <description>ECU temperature has exceeded the warning threshold.</description>
-      </entry>
-      <entry value="64" name="EFI_PERFORMANCE_STATUS_LOW_FUEL_PRESSURE">
-        <description>Fuel pressure is below the minimum operating threshold.</description>
-      </entry>
-    </enum>
-    <message id="442" name="EFI_PERFORMANCE">
-      <description>Performance statistics of the EFI system.</description>
-      <field type="uint8_t" name="ecu_index" instance="true">ECU index for systems with multiple EFI units. Set to 0 for the first (or only) ECU.</field>
-      <field type="uint8_t" name="fuel_pump_duty_cycle" units="%" invalid="UINT8_MAX">Fuel pump power output, as a percentage of maximum. A value of 0 indicates the pump is off, 100 indicates full power.</field>
-      <field type="uint8_t" name="fuel_pump_voltage" units="V" invalid="0">Fuel pump supply voltage.</field>
-      <field type="uint8_t" name="fuel_pump_current" units="A" invalid="0">Fuel pump current draw.</field>
-      <field type="uint8_t" name="ecu_supply_voltage" units="V" invalid="0">ECU supply voltage.</field>
-      <field type="uint8_t" name="ecu_current" units="A" invalid="0">ECU current draw.</field>
-      <field type="uint8_t" name="ecu_temperature" units="degC" invalid="UINT8_MAX">ECU temperature.</field>
-      <field type="uint16_t" name="ecu_status" enum="EFI_PERFORMANCE_STATUS_FLAGS">ECU status flags.</field>
-    </message>
     <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <message id="230" name="ESTIMATOR_STATUS">
       <description>Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovation test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovation test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.</description>
