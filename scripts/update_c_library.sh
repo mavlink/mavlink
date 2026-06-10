@@ -72,7 +72,6 @@ generate_headers icarous $1
 generate_headers loweheiser $1
 generate_headers paparazzi $1
 generate_headers ASLUAV $1
-generate_headers matrixpilot $1
 generate_headers python_array_test $1
 generate_headers development $1
 generate_headers common $1
