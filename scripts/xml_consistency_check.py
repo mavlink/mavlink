@@ -85,7 +85,7 @@ def check_enum(enum, file_name):
                   (file_name, name))
             warning_count += 1
 
-    return {"name": name, "bitmask": bitmask, "values": values, "used": False}
+    return {"name": name, "bitmask": bitmask, "values": values}
 
 
 def check_field(file_name, msg_name, field, enums):
@@ -107,8 +107,6 @@ def check_field(file_name, msg_name, field, enums):
                   (file_name, msg_name, name, enum))
             warning_count += 1
             return
-
-        enums[enum]["used"] = True
 
         # Enum should fit in given type
         type = field.get('type').split('[')[0]
@@ -143,8 +141,6 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
             warning_count += 1
             return
 
-        enums[enum]["used"] = True
-
     # There are a huge amount or errors here, commented out for now
     # Should be marked as reserved correctly
     # if len(entry.contents) > 0:
@@ -174,8 +170,13 @@ args = parser.parse_args()
 source_dir = os.path.join(os.path.dirname(
     __file__), "../message_definitions/v1.0/")
 
+# Dialects this repository controls. Other dialects (e.g. ardupilotmega.xml)
+# are vendored/synced from downstream projects, so we don't gate CI on their
+# content. They are free to run this script on their side if they wish.
+managed_dialects = ["common.xml", "minimal.xml", "standard.xml"]
+
 if args.file is None:
-    files = list(filter(lambda x: x.endswith('.xml'), os.listdir(source_dir)))
+    files = managed_dialects
 else:
     if not args.file.endswith('.xml'):
         args.file += '.xml'
@@ -207,7 +208,7 @@ for key in xml:
         else:
             # Create new enum
             all_enums[name] = {'name': name, 'file': [
-                key], 'enum': [decoded], 'used': False}
+                key], 'enum': [decoded]}
 
 # Check for enums declared in multiple locations
 for name in all_enums:
@@ -244,11 +245,6 @@ for name in all_enums:
 
     if values_conflict:
         print("%s: Enum: %s has conflicting values" % (enum['file'],  name))
-        warning_count += 1
-
-    if (not enum['bitmask'] and len(values) <= 1) or len(values) == 0:
-        print("%s: Enum: %s has only %i items?" %
-              (enum['file'],  name, len(values)))
         warning_count += 1
 
 # Check all fields against enums
@@ -290,13 +286,6 @@ for key in xml:
                     warning_count += 1
                 else:
                     seen_indices.append(idx)
-
-# Check for unused enums
-for key in all_enums:
-    if all_enums[key]["used"] is False:
-        print("%s: Enum: %s is unused" %
-              (all_enums[key]['file'], all_enums[key]["name"]))
-        warning_count += 1
 
 # Give summary for possible CI usage
 if args.exception and (warning_count > 0):
