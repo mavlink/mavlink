@@ -36,9 +36,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: pip install beautifulsoup4 lxml
-      # TODO: add --exception flag once pre-existing warnings are resolved
       - name: Check XML consistency
-        run: python3 scripts/xml_consistency_check.py
+        run: python3 scripts/xml_consistency_check.py --exception
 
   spell-check:
     name: Find typos with codespell
