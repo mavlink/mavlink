@@ -2611,6 +2611,18 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
+      <!-- from ardupilotmega.xml (hence ID is in that range) -->
+      <entry value="43000" name="MAV_CMD_GUIDED_CHANGE_SPEED" hasLocation="false" isDestination="false">
+        <description>Change flight speed at a given rate. This slews the vehicle at a controllable rate between it's previous speed and the new one.</description>
+        <param index="1" label="speed type" enum="SPEED_TYPE">Airspeed or groundspeed.</param>
+        <param index="2" label="speed target" units="m/s">Target Speed</param>
+        <param index="3" label="speed rate-of-change" units="m/s/s">Acceleration rate, 0 to take effect instantly</param>
+      </entry>
+      <entry value="43001" name="MAV_CMD_GUIDED_CHANGE_ALTITUDE" hasLocation="false" isDestination="false">
+        <description>Change target altitude at a given rate. This slews the vehicle at a controllable rate between it's previous altitude and the new one.</description>
+        <param index="3" label="alt rate-of-change" units="m/s" minValue="0">Rate of change, toward new altitude. 0 for maximum rate change. Positive numbers only, as negative numbers will not converge on the new target alt.</param>
+        <param index="7" label="target alt" units="m">Target Altitude</param>
+      </entry>
       <entry value="43002" name="MAV_CMD_GUIDED_CHANGE_HEADING" hasLocation="false" isDestination="false">
         <description>Change to target direction at a given rate, overriding previous heading/s. This slews the vehicle at a controllable rate between its previous heading and the new one.</description>
         <param index="1" label="Heading Type" enum="HEADING_TYPE">Course-over-ground or raw vehicle heading.</param>
