@@ -675,5 +675,11 @@
       <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
       <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
     </message>
+    <message id="11045" name="TRACKING_MESSAGE">
+      <description>Normalised tracking error sent from a companion computer to the autopilot. Consumed by the PX4 tracking flight mode. Field order matches the satria-firmware ardupilotmega.xml definition so the CRC_EXTRA agrees and the same drone-seeker payload works on both stacks. Lives in development.xml (not common.xml) to avoid adding dialect-table bytes to flash-constrained NuttX boards that use the "common" dialect.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (monotonic microseconds)</field>
+      <field type="float" name="errorx">Normalised horizontal tracking error [-1, 1]. Positive = target right of centre.</field>
+      <field type="float" name="errory">Normalised vertical tracking error [-1, 1]. Positive = target above centre.</field>
+    </message>
   </messages>
 </mavlink>
