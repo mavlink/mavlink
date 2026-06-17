@@ -7165,7 +7165,7 @@
       <field type="int16_t" name="ver_velocity" units="cm/s" invalid="INT16_MAX">The vertical velocity. Positive is up</field>
       <field type="char[9]" name="callsign">The callsign, 8+null</field>
       <field type="uint8_t" name="emitter_type" enum="ADSB_EMITTER_TYPE">ADSB emitter type.</field>
-      <field type="uint8_t" name="tslc" units="s">Time since last communication from the remote vehicle, in seconds.</field>
+      <field type="uint8_t" name="tslc" units="s">Time since last communication. This is the age of the ADS-B information in this message, in seconds.</field>
       <field type="uint16_t" name="flags" enum="ADSB_FLAGS">Bitmap to indicate various statuses including valid data fields</field>
       <field type="uint16_t" name="squawk">Squawk code. Note that the code is in decimal: e.g. 7700 (general emergency) is encoded as binary 0b0001_1110_0001_0100, not(!) as 0b0000_111_111_000_000</field>
     </message>
@@ -7695,7 +7695,7 @@
       <field type="uint8_t" name="dimension_starboard" units="m" invalid="UINT8_MAX">Distance from lat/lon location to starboard side</field>
       <field type="char[7]" name="callsign">The vessel callsign. Characters are encoded as 7-bit ASCII, but only characters in the [AIS 6-bit ASCII subset](https://en.wikipedia.org/wiki/Six-bit_character_code#AIS_SixBit_ASCII) are permitted. Also set AIS_FLAGS_VALID_CALLSIGN if valid. The string is NULL-terminated if it is shorter than the array length.</field>
       <field type="char[20]" name="name">The vessel name. Characters are encoded as 7-bit ASCII, but only characters in the [AIS 6-bit ASCII subset](https://en.wikipedia.org/wiki/Six-bit_character_code#AIS_SixBit_ASCII) are permitted. Also set AIS_FLAGS_VALID_NAME if valid. The string is NULL-terminated if it is shorter than the array length.</field>
-      <field type="uint16_t" name="tslc" units="s">Time since last communication from the vessel, in seconds</field>
+      <field type="uint16_t" name="tslc" units="s">Time since last communication. This is the age of the AIS information in this message, in seconds.</field>
       <field type="uint16_t" name="flags" enum="AIS_FLAGS">Bitmask to indicate various statuses including valid data fields</field>
     </message>
     <!-- UAVCAN related messages. Please keep the range [310, 320) reserved for UAVCAN. -->
