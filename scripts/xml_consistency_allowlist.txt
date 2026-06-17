@@ -1,0 +1,22 @@
+# Allowlist for xml_consistency_check.py
+#
+# Each non-comment, non-blank line is the exact text of a warning to suppress
+# from the failure total used by --exception. Allowlisted warnings are still
+# printed but we don't throw on them. These are warnings that can not be fixed
+# in the short term but should be addressed eventually.
+#
+# To allow a new warning, copy its line verbatim from the script output.
+
+# --- Pre-existing warnings (not fixable in the short term) ---
+common.xml: Enum: CAMERA_TRACKING_STATUS_FLAGS bitmask should not contain 0
+standard.xml: Enum: MAV_BOOL bitmask should not contain 0
+common.xml: Message GIMBAL_DEVICE_INFORMATION field cap_flags enum GIMBAL_DEVICE_CAP_FLAGS does not fit in type: uint16_t
+
+# --- Intended orphan enums (referenced by code, not message fields) ---
+common.xml: Enum: COMP_METADATA_TYPE is unused
+common.xml: Enum: MAV_ARM_AUTH_DENIED_REASON is unused
+common.xml: Enum: MAV_FTP_ERR is unused
+common.xml: Enum: MAV_FTP_OPCODE is unused
+minimal.xml: Enum: MAV_MODE_FLAG_DECODE_POSITION is unused
+minimal.xml: Enum: MAV_COMPONENT is unused
+standard.xml: Enum: FIRMWARE_VERSION_TYPE is unused
