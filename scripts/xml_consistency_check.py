@@ -27,6 +27,7 @@ types = {
 warning_count = 0
 allowed_count = 0
 allowlist = set()
+matched_allowlist = set()
 
 
 def warn(message):
@@ -38,6 +39,7 @@ def warn(message):
     if message in allowlist:
         print("[allowed] %s" % message)
         allowed_count += 1
+        matched_allowlist.add(message)
     else:
         print(message)
         warning_count += 1
@@ -118,6 +120,11 @@ def check_field(file_name, msg_name, field, enums):
 
         enums[enum]["used"] = True
 
+        # An enum with no entries has min/max set to None during aggregation
+        # and was already warned about there, so there's nothing to range-check.
+        if enums[enum]["min"] is None:
+            return
+
         # Enum should fit in given type
         type = field.get('type').split('[')[0]
         if type not in types:
@@ -174,15 +181,16 @@ parser.add_argument('-f', '--file', default=None, nargs='+',
                     help="XML file name(s) to check (defaults to the managed dialects)")
 parser.add_argument('-e', '--exception', action='store_true',
                     help="Throw error if any non-allowlisted warnings are found")
-parser.add_argument('-a', '--allowlist',
-                    default=os.path.join(os.path.dirname(__file__),
-                                         "xml_consistency_allowlist.txt"),
-                    help="Path to allowlist file of known-acceptable warnings")
+parser.add_argument('-a', '--allowlist', default=None,
+                    help="Path to allowlist file of known-acceptable warnings "
+                         "(defaults to xml_consistency_allowlist.txt next to this script)")
 
 args = parser.parse_args()
 
-source_dir = os.path.join(os.path.dirname(
-    __file__), "../message_definitions/v1.0/")
+# Resolve paths relative to this script, not the working directory, so the
+# defaults work regardless of where the script is invoked from.
+script_dir = os.path.dirname(os.path.abspath(__file__))
+source_dir = os.path.join(script_dir, "../message_definitions/v1.0/")
 
 # Dialects this repository controls. Other dialects (e.g. ardupilotmega.xml)
 # are vendored/synced from downstream projects, so we don't gate CI on their
@@ -195,13 +203,23 @@ if args.file is None:
 else:
     files = [f if f.endswith('.xml') else f + '.xml' for f in args.file]
 
-# Load the allowlist of known-acceptable warnings, if present.
-if args.allowlist and os.path.exists(args.allowlist):
-    with open(args.allowlist, 'r') as f:
+# Load the allowlist of known-acceptable warnings. An explicitly-passed path
+# that doesn't exist is a hard error; a missing default is reported (not
+# silently ignored) so that unexpectedly-failing CI is easy to diagnose.
+default_allowlist = os.path.join(script_dir, "xml_consistency_allowlist.txt")
+allowlist_path = args.allowlist if args.allowlist is not None else default_allowlist
+
+if os.path.exists(allowlist_path):
+    with open(allowlist_path, 'r') as f:
         for line in f:
             line = line.strip()
             if line and not line.startswith('#'):
                 allowlist.add(line)
+elif args.allowlist is not None:
+    raise SystemExit("Allowlist file not found: %s" % allowlist_path)
+else:
+    print("Note: no allowlist found at %s; all warnings will count toward the total." %
+          allowlist_path)
 
 print(f"Files: {files}")
 
@@ -247,12 +265,14 @@ for name in all_enums:
     for i in range(1, len(enum['enum'])):
         bitmask_conflict |= bool(enum['bitmask']) != bool(
             enum['enum'][i]['bitmask'])
-        values_conflict |= len(
-            list(set(values) & set(enum['enum'][i]['values']))) > 0
+        values_conflict |= not set(values).isdisjoint(enum['enum'][i]['values'])
         values += enum['enum'][i]['values']
 
     if not values:
         warn("%s: Enum: %s has no entries" % (enum['file'], name))
+        # Leave min/max defined (as None) so downstream field checks can
+        # detect the empty enum rather than hitting a KeyError.
+        enum['min'] = enum['max'] = None
         continue
 
     enum['min'] = min(values)
@@ -278,10 +298,20 @@ for key in xml:
     for enum in xml[key].find_all('enum', {"name": "MAV_CMD"}):
         for entry in enum.find_all('entry'):
             name = entry.get('name')
-            seen_indices = []   # List of indices seen so far to check for duplicates
+            seen_indices = set()   # Indices seen so far, to check for duplicates
             for param in entry.find_all('param'):
                 check_cmd_param(key, name, param, all_enums)
                 idx = param.get('index')
+
+                # Flag duplicate indices regardless of whether they're in the
+                # valid range, so e.g. two params both with index="0" are both
+                # reported as a duplicate and as out of range.
+                if idx is not None:
+                    if idx in seen_indices:
+                        warn("%s: Command %s param index %s is duplicated" %
+                             (key, name, idx))
+                    else:
+                        seen_indices.add(idx)
 
                 # Check if the param index is an integer and in the valid range of [1,7]
                 try:
@@ -289,18 +319,9 @@ for key in xml:
                     if idx_int < 1 or idx_int > 7:
                         warn("%s: Command %s param index %s is out of range" %
                              (key, name, idx))
-                        continue
                 except (TypeError, ValueError):
                     warn("%s: Command %s param index %s is not an integer" %
                          (key, name, idx))
-                    continue
-
-                # Check if the index is duplicated
-                if idx in seen_indices:
-                    warn("%s: Command %s param index %s is duplicated" %
-                         (key, name, idx))
-                else:
-                    seen_indices.append(idx)
 
 # Check for unused enums. Defining enums not referenced by any message or
 # command is a legitimate use of this library, so intended orphans should be
@@ -309,6 +330,14 @@ for key in all_enums:
     if all_enums[key]["used"] is False:
         warn("%s: Enum: %s is unused" %
              (all_enums[key]['file'], all_enums[key]["name"]))
+
+# Detect stale allowlist entries that no longer match any warning (e.g. a
+# warning was fixed, or its message was reworded). Only meaningful on a full
+# run: a subset run (-f) legitimately won't exercise entries for other files.
+if args.file is None:
+    stale = sorted(allowlist - matched_allowlist)
+    for entry in stale:
+        warn("Stale allowlist entry (no longer matches any warning): %s" % entry)
 
 # Give summary for possible CI usage
 if allowed_count:
