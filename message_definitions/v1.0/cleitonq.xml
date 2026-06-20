@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<!--
+  CleitonQ MAVLink Dialect — RFC Draft
+  Author: Cleiton Augusto Correa Bezerra
+
+  Defines two message types for relay-transparent post-quantum authentication
+  over MAVLink v2. Message IDs are in the vendor extension range (50000+) and
+  are pending assignment by the MAVLink working group.
+
+  Wire format rationale:
+    MAVLink v2 payloads are capped at 255 bytes. CleitonQ authentication
+    material (ML-DSA-87 signature: 4627B; ML-KEM-1024 ciphertext: 1568B)
+    exceeds this limit. CLEITONQ_CHUNK provides a generic fragment carrier:
+    receivers reassemble by (session_token, frame_type, chunk_seq).
+
+    A relay that does not know CLEITONQ_CHUNK forwards it as an opaque but
+    valid MAVLink frame — no auth bytes are silently stripped (unlike the
+    naive append-after-frame approach).
+
+  Message IDs (vendor extension range, pending WG assignment):
+    50000 — CLEITONQ_CHUNK
+-->
+<mavlink>
+  <version>3</version>
+  <dialect>0</dialect>
+
+  <enums>
+    <enum name="CLEITONQ_FRAME_TYPE">
+      <description>
+        Identifies the type of CleitonQ payload being carried in a
+        CLEITONQ_CHUNK message. The receiver uses frame_type together with
+        session_token and chunk_seq to reassemble the complete payload.
+      </description>
+      <entry value="0" name="CLEITONQ_FRAME_SIGNED_CMD">
+        <description>
+          CLEITONQ_SIGNED_CMD payload: authenticated MAVLink command.
+          Wire layout (all little-endian, reassembled):
+            original_msg_id : uint16   (2B) — MAVLink message ID being authenticated
+            target_system   : uint8    (1B)
+            target_component: uint8    (1B)
+            nonce           : uint64   (8B) — monotonically increasing anti-replay counter
+            payload_len     : uint16   (2B) — length of original MAVLink payload
+            payload         : uint8[]       — original MAVLink payload bytes
+            signature       : uint8[4627]   — ML-DSA-87 signature over (payload || nonce)
+          Total: 14 + payload_len + 4627 bytes.
+        </description>
+      </entry>
+      <entry value="1" name="CLEITONQ_FRAME_SESSION_INIT">
+        <description>
+          CLEITONQ_SESSION_INIT payload: ML-KEM-1024 session establishment.
+          Wire layout (all little-endian, reassembled):
+            initiator_system : uint8       (1B)  — system_id of the initiating GCS
+            timestamp        : uint64      (8B)  — microseconds since epoch (handshake anti-replay)
+            kem_ciphertext   : uint8[1568]        — ML-KEM-1024 ciphertext
+          Total: 1577 bytes.
+        </description>
+      </entry>
+    </enum>
+  </enums>
+
+  <messages>
+    <message id="50000" name="CLEITONQ_CHUNK">
+      <description>
+        Fragment carrier for CleitonQ post-quantum authentication material.
+
+        CleitonQ authentication payloads (ML-DSA-87 signatures and ML-KEM-1024
+        ciphertexts) exceed the MAVLink v2 payload limit of 255 bytes. This
+        message carries one fragment; receivers reassemble the complete payload
+        using (session_token, frame_type, chunk_seq).
+
+        A relay unaware of CleitonQ forwards CLEITONQ_CHUNK as a valid but
+        unknown MAVLink message — the authentication material is preserved
+        end-to-end, unlike the naive approach of appending auth bytes after
+        a MAVLink frame (which any relay silently discards).
+
+        Fragmentation parameters:
+          - Each chunk carries up to 245 bytes of payload data (data_len <= 245).
+          - Chunk ordering is defined by chunk_seq (0-based, contiguous).
+          - chunk_count is the total number of chunks for this payload.
+          - Reassembly is complete when chunk_count chunks with matching
+            (session_token, frame_type) and chunk_seq in [0, chunk_count-1]
+            are received.
+
+        SIGNED_CMD example (COMMAND_LONG, 40-byte payload):
+          Total bytes: 14 + 40 + 4627 = 4681
+          Chunks needed: ceil(4681 / 245) = 20
+
+        SESSION_INIT example:
+          Total bytes: 1 + 8 + 1568 = 1577
+          Chunks needed: ceil(1577 / 245) = 7
+      </description>
+      <field type="uint8_t" name="target_system" instance="true">
+        System ID of the intended recipient (0 for broadcast).
+      </field>
+      <field type="uint8_t" name="target_component">
+        Component ID of the intended recipient (0 for broadcast).
+      </field>
+      <field type="uint16_t" name="session_token">
+        Per-payload random token used for reassembly. The sender generates a
+        fresh random uint16 for each new SIGNED_CMD or SESSION_INIT payload.
+        Receivers discard stale partial assemblies when a new session_token
+        with the same frame_type arrives.
+      </field>
+      <field type="uint8_t" name="frame_type">
+        Payload type being carried. See CLEITONQ_FRAME_TYPE enum.
+        0 = CLEITONQ_FRAME_SIGNED_CMD
+        1 = CLEITONQ_FRAME_SESSION_INIT
+      </field>
+      <field type="uint8_t" name="chunk_seq">
+        Zero-based sequence number of this chunk within the payload.
+        Range: [0, chunk_count - 1].
+      </field>
+      <field type="uint8_t" name="chunk_count">
+        Total number of chunks for this payload. Constant across all chunks
+        of the same (session_token, frame_type).
+      </field>
+      <field type="uint8_t" name="data_len">
+        Number of valid bytes in the data field for this chunk.
+        data_len MUST equal 245 for all chunks except the last, which may
+        be less. Receivers MUST ignore bytes beyond data_len.
+      </field>
+      <field type="uint8_t[245]" name="data">
+        Fragment data. Valid bytes: data[0..data_len-1].
+        Unused bytes at the end of the last chunk MUST be zero-padded by
+        the sender and MUST be ignored by the receiver.
+      </field>
+    </message>
+  </messages>
+</mavlink>
