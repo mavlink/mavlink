@@ -334,17 +334,27 @@ for key in all_enums:
 # Detect stale allowlist entries that no longer match any warning (e.g. a
 # warning was fixed, or its message was reworded). Only meaningful on a full
 # run: a subset run (-f) legitimately won't exercise entries for other files.
+# Tracked separately from warning_count so CI can distinguish a new XML
+# consistency problem from allowlist housekeeping: both fail --exception, but
+# the messages tell you which one to fix (edit the XML vs. prune the allowlist).
+stale = []
 if args.file is None:
     stale = sorted(allowlist - matched_allowlist)
     for entry in stale:
-        warn("Stale allowlist entry (no longer matches any warning): %s" % entry)
+        print("Stale allowlist entry (no longer matches any warning): %s" % entry)
 
 # Give summary for possible CI usage
 if allowed_count:
     print("\n%i allowlisted warning(s) suppressed." % allowed_count)
 
-if args.exception and (warning_count > 0):
-    raise Exception("Found %i issues in: %s\n" % (warning_count, files))
+if stale:
+    print("\n%i stale allowlist entry(ies) no longer match any warning and "
+          "should be removed from %s." % (len(stale), allowlist_path))
 
-else:
-    print("\nFound %i issues in: %s\n" % (warning_count, files))
+summary = ("Found %i new consistency warning(s) and %i stale allowlist "
+           "entry(ies) in: %s" % (warning_count, len(stale), files))
+
+if args.exception and (warning_count > 0 or stale):
+    raise Exception(summary + "\n")
+
+print("\n%s\n" % summary)
