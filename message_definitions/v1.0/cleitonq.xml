@@ -23,7 +23,6 @@
 <mavlink>
   <version>3</version>
   <dialect>0</dialect>
-
   <enums>
     <enum name="CLEITONQ_FRAME_TYPE">
       <description>
@@ -35,13 +34,13 @@
         <description>
           CLEITONQ_SIGNED_CMD payload: authenticated MAVLink command.
           Wire layout (all little-endian, reassembled):
-            original_msg_id : uint16   (2B) — MAVLink message ID being authenticated
+            original_msg_id : uint16   (2B) &#x2014; MAVLink message ID being authenticated
             target_system   : uint8    (1B)
             target_component: uint8    (1B)
-            nonce           : uint64   (8B) — monotonically increasing anti-replay counter
-            payload_len     : uint16   (2B) — length of original MAVLink payload
-            payload         : uint8[]       — original MAVLink payload bytes
-            signature       : uint8[4627]   — ML-DSA-87 signature over (payload || nonce)
+            nonce           : uint64   (8B) &#x2014; monotonically increasing anti-replay counter
+            payload_len     : uint16   (2B) &#x2014; length of original MAVLink payload
+            payload         : uint8[]       &#x2014; original MAVLink payload bytes
+            signature       : uint8[4627]   &#x2014; ML-DSA-87 signature over (payload || nonce)
           Total: 14 + payload_len + 4627 bytes.
         </description>
       </entry>
@@ -49,15 +48,14 @@
         <description>
           CLEITONQ_SESSION_INIT payload: ML-KEM-1024 session establishment.
           Wire layout (all little-endian, reassembled):
-            initiator_system : uint8       (1B)  — system_id of the initiating GCS
-            timestamp        : uint64      (8B)  — microseconds since epoch (handshake anti-replay)
-            kem_ciphertext   : uint8[1568]        — ML-KEM-1024 ciphertext
+            initiator_system : uint8       (1B)  &#x2014; system_id of the initiating GCS
+            timestamp        : uint64      (8B)  &#x2014; microseconds since epoch (handshake anti-replay)
+            kem_ciphertext   : uint8[1568]        &#x2014; ML-KEM-1024 ciphertext
           Total: 1577 bytes.
         </description>
       </entry>
     </enum>
   </enums>
-
   <messages>
     <message id="50000" name="CLEITONQ_CHUNK">
       <description>
@@ -69,7 +67,7 @@
         using (session_token, frame_type, chunk_seq).
 
         A relay unaware of CleitonQ forwards CLEITONQ_CHUNK as a valid but
-        unknown MAVLink message — the authentication material is preserved
+        unknown MAVLink message &#x2014; the authentication material is preserved
         end-to-end, unlike the naive approach of appending auth bytes after
         a MAVLink frame (which any relay silently discards).
 
