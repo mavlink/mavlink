@@ -6998,7 +6998,7 @@
       <field type="uint16_t" name="ignore_flags" enum="GPS_INPUT_IGNORE_FLAGS">Bitmap indicating which GPS input flags fields to ignore.  All other fields must be provided.</field>
       <field type="uint32_t" name="time_week_ms" units="ms">GPS time (from start of GPS week)</field>
       <field type="uint16_t" name="time_week">GPS week number</field>
-      <field type="uint8_t" name="fix_type">0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK</field>
+      <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GNSS fix type</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Altitude (MSL). Positive for up.</field>
@@ -7012,7 +7012,7 @@
       <field type="float" name="vert_accuracy" units="m">GPS vertical accuracy</field>
       <field type="uint8_t" name="satellites_visible">Number of satellites visible.</field>
       <extensions/>
-      <field type="uint16_t" name="yaw" units="cdeg">Yaw of vehicle relative to Earth's North, zero means not available, use 36000 for north</field>
+      <field type="uint16_t" name="yaw" units="cdeg" invalid="0">Yaw of vehicle relative to Earth's North, zero means not available, use 36000 for north</field>
     </message>
     <message id="233" name="GPS_RTCM_DATA">
       <description>RTCM message for injecting into the onboard GPS (used for DGPS)</description>
