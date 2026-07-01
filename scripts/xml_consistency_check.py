@@ -110,7 +110,7 @@ def check_field(file_name, msg_name, field, enums):
 
     # Display property has been removed
     display = field.get('display')
-    if display != None:
+    if display is not None:
         print("%s: Message %s field %s display=\"%s\" is deprecated" %
               (file_name, msg_name, name, display))
         warning_count += 1
@@ -169,7 +169,7 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
 
         enums[enum]["used"] = True
 
-    if minValue != None and maxValue != None :
+    if minValue is not None and maxValue is not None :
         min = float(minValue)
         max = float(maxValue)
         range = max - min
@@ -179,7 +179,7 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
             warning_count += 1
             return
 
-        if increment != None:
+        if increment is not None:
             step = float(increment)
             if range % step != 0:
                 print("%s: Command %s param %s range %f => %f incompatible with increment %f" %
@@ -275,7 +275,7 @@ for file in files:
 all_enums = {}
 for key in xml:
     for enum in xml[key].find_all('enum'):
-        if enum.find('deprecated', recursive=False) != None:
+        if enum.find('deprecated', recursive=False) is not None:
             # Skip and deprecated items
             continue
         decoded = check_enum(enum, key)
@@ -329,7 +329,7 @@ for name in all_enums:
 # Check all fields against enums
 for key in xml:
     for message in xml[key].find_all('message'):
-        if message.find('deprecated', recursive=False) != None:
+        if message.find('deprecated', recursive=False) is not None:
             # Skip and deprecated items
             continue
         name = message.get('name')
@@ -341,7 +341,7 @@ for key in xml:
 for key in xml:
     for enum in xml[key].find_all('enum', {"name": "MAV_CMD"}):
         for entry in enum.find_all('entry'):
-            if entry.find('deprecated', recursive=False) != None:
+            if entry.find('deprecated', recursive=False) is not None:
                 # Skip and deprecated items
                 continue
             name = entry.get('name')
