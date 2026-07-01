@@ -102,9 +102,18 @@ def check_enum(enum, file_name):
 
 
 def check_field(file_name, msg_name, field, enums):
+    global warning_count
+
     name = field.get('name')
     enum = field.get('enum')
     units = field.get('units')
+
+    # Display property has been removed
+    display = field.get('display')
+    if display is not None:
+        print("%s: Message %s field %s display=\"%s\" is deprecated" %
+              (file_name, msg_name, name, display))
+        warning_count += 1
 
     # Enum with units doesn't make sense
     if enum is not None and units is not None:
@@ -137,9 +146,14 @@ def check_field(file_name, msg_name, field, enums):
 
 
 def check_cmd_param(file_name, cmd_name, entry, enums):
+    global warning_count
+
     index = entry.get('index')
     enum = entry.get('enum')
     units = entry.get('units')
+    minValue = entry.get('minValue')
+    maxValue = entry.get('maxValue')
+    increment = entry.get('increment')
 
     # Enum with units doesn't make sense
     if enum is not None and units is not None:
@@ -154,6 +168,30 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
             return
 
         enums[enum]["used"] = True
+
+    if minValue is not None and maxValue is not None :
+        min = float(minValue)
+        max = float(maxValue)
+        range = max - min
+        if range <= 0:
+            print("%s: Command %s param %s min and max invalid got %f => %f" %
+                  (file_name, cmd_name, index, min, max))
+            warning_count += 1
+            return
+
+        if increment is not None:
+            step = float(increment)
+            if range % step != 0:
+                print("%s: Command %s param %s range %f => %f incompatible with increment %f" %
+                    (file_name, cmd_name, index, min, max, step))
+                warning_count += 1
+                return
+
+            if (step == 1) and range <= 20:
+                print("%s: Command %s param %s min, max close and increment of 1, should there be a enum?" %
+                    (file_name, cmd_name, index))
+                warning_count += 1
+                return
 
     # There are a huge amount or errors here, commented out for now
     # Should be marked as reserved correctly
@@ -237,6 +275,9 @@ for file in files:
 all_enums = {}
 for key in xml:
     for enum in xml[key].find_all('enum'):
+        if enum.find('deprecated', recursive=False) is not None:
+            # Skip and deprecated items
+            continue
         decoded = check_enum(enum, key)
         name = decoded["name"]
         if name in all_enums:
@@ -288,6 +329,9 @@ for name in all_enums:
 # Check all fields against enums
 for key in xml:
     for message in xml[key].find_all('message'):
+        if message.find('deprecated', recursive=False) is not None:
+            # Skip and deprecated items
+            continue
         name = message.get('name')
         fields = message.find_all('field')
         for field in fields:
@@ -297,6 +341,9 @@ for key in xml:
 for key in xml:
     for enum in xml[key].find_all('enum', {"name": "MAV_CMD"}):
         for entry in enum.find_all('entry'):
+            if entry.find('deprecated', recursive=False) is not None:
+                # Skip and deprecated items
+                continue
             name = entry.get('name')
             seen_indices = set()   # Indices seen so far, to check for duplicates
             for param in entry.find_all('param'):
