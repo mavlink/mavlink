@@ -2079,6 +2079,14 @@
       <entry value="405" name="MAV_CMD_ILLUMINATOR_ON_OFF" hasLocation="false" isDestination="false">
         <description>Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
         <param index="1" label="Enable" enum="MAV_BOOL">Illuminators on/off (MAV_BOOL_TRUE: illuminators on). Values not equal to 0 or 1 are invalid.</param>
+        <param index="2" label="ID" minValue="0" maxValue="255" increment="1">
+            Target illuminator ID. 
+
+            When the MAV_CMD is used in a mission this param specifies the target illuminator.
+            This will either be the id of an autopilot-connected illuminator (1-6), the component ID of a MAVLink illuminator (7-255), or 0 to target the autopilot's default illuminator(s).
+            
+            When used in a command sent to the autopilot, this field can specify the id of an autopilot-connected device (1-6). Otherwise it should be set to 0.
+        </param>
       </entry>
       <entry value="406" name="MAV_CMD_DO_ILLUMINATOR_CONFIGURE" hasLocation="false" isDestination="false">
         <description>Configures illuminator settings. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
@@ -2086,6 +2094,14 @@
         <param index="2" label="Brightness" units="%" minValue="0" maxValue="100">0%: Off, 100%: Max Brightness</param>
         <param index="3" label="Strobe Period" units="s" minValue="0">Strobe period in seconds where 0 means strobing is not used</param>
         <param index="4" label="Strobe Duty" units="%" minValue="0" maxValue="100">Strobe duty cycle where 100% means it is on constantly and 0 means strobing is not used</param>
+        <param index="5" label="ID" minValue="0" maxValue="255" increment="1">
+            Target illuminator ID. 
+
+            When the MAV_CMD is used in a mission this param specifies the target illuminator.
+            This will either be the id of an autopilot-connected illuminator (1-6), the component ID of a MAVLink illuminator (7-255), or 0 to target the autopilot's default illuminator(s).
+            
+            When used in a command sent to the autopilot, this field can specify the id of an autopilot-connected device (1-6). Otherwise it should be set to 0.
+        </param>
       </entry>
       <entry value="410" name="MAV_CMD_GET_HOME_POSITION" hasLocation="false" isDestination="false">
         <superseded since="2022-04" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
@@ -8260,6 +8276,8 @@
       <field type="float" name="temp_c">Temperature in Celsius</field>
       <field type="float" name="min_strobe_period" units="s">Minimum strobing period in seconds</field>
       <field type="float" name="max_strobe_period" units="s">Maximum strobing period in seconds</field>
+      <extensions/>
+      <field type="uint8_t" name="id" invalid="0" minValue="1" maxValue="6">Illuminator id for a non-MAVLink camera attached to an autopilot (1-6). 0 if the component is a MAVLink camera (with its own component id).</field>
     </message>
     <!-- The message ids 510 and 511 are reserved for ABSOLUTE_TARGET and RELATIVE_TARGET, currently in development.xml. -->
     <!-- Rover specific messages -->
