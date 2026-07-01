@@ -5,6 +5,14 @@
   <version>0</version>
   <dialect>0</dialect>
   <enums>
+    <enum name="MAV_ENERGY_STATUS_FLAGS" bitmask="true">
+      <entry value="1" name="MAV_ENERGY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL">
+          Energy capacity_remaining values are relative to a full energy source.
+          This flag would be set for a smart battery that can accurately determine its remaining charge across vehicle reboots and discharge/recharge cycles.
+          If unset the capacity_remaining, if provided, indicates the estimated remaining capacity on the assumption that the battery was full on vehicle boot.
+          If unset a GCS is recommended to advise that users fully charge the battery on power on.
+      </entry>
+    </enum>
     <enum name="MAV_BATTERY_STATUS_FLAGS" bitmask="true">
       <description>Battery status flags for fault, health and state indication.</description>
       <entry value="1" name="MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE">
@@ -489,6 +497,21 @@
       <field type="float" name="vertical_speed_limit" default="NaN" units="m/s">Limit for vertical movement in MAV_FRAME_LOCAL_NED. NaN: No limit applied</field>
       <field type="float" name="yaw_rate_limit" default="NaN" units="rad/s">Limit for vehicle turn rate around its yaw axis. NaN: No limit applied</field>
     </message>
+    <message id="367" name="ENERGY_SOURCE_INFO">
+      <description>Energy source information.  Very low rate (or requested) information about an energy source, not expected to change throughout a flight.</description>
+      <field type="uint8_t" name="id" instance="true">Energy Source ID (see ENERGY_SOURCE_STATUS)</field>
+      <field type="uint8_t" name="energy_function" enum="MAV_BATTERY_FUNCTION">Function of the energy source</field>
+    </message>
+    <message id="368" name="ENERGY_SOURCE_STATUS">
+      <description>Energy source status.
+        This should be streamed (nominally at 1Hz).
+	Basic information about an energy source.  Static information should be in ENERGY_INFO
+      </description>
+      <field type="uint8_t" name="id" instance="true">Energy System ID (see ENERGY_STATUS)</field>
+      <field type="float" name="remaining" units="%" invalid="NaN">Remaining capacity relative to full capacity as a percentage. Values: [0-100], NaN: field not provided.</field>
+      <field type="float" name="time_remaining" units="s">Estimated time remaining at current consumption rate</field>
+      <field type="uint16_t" name="status_flags" enum="MAV_ENERGY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
+    </message>
     <message id="369" name="BATTERY_STATUS_V2">
       <description>Battery dynamic information.
         This should be streamed (nominally at 1Hz).
@@ -496,14 +519,27 @@
         Note that smart batteries should set the MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL bit to indicate that supplied capacity values are relative to a battery that is known to be full.
         Power monitors would not set this bit, indicating that capacity_consumed is relative to drone power-on, and that other values are estimated based on the assumption that the battery was full on power-on.
       </description>
-      <field type="uint8_t" name="id" instance="true">Battery ID</field>
+      <field type="uint8_t" name="id" instance="true">Energy System ID (see ENERGY_STATUS)</field>
       <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of the whole battery pack (not internal electronics). INT16_MAX field not provided.</field>
       <field type="float" name="voltage" units="V" invalid="NaN">Battery voltage (total). NaN: field not provided.</field>
       <field type="float" name="current" units="A" invalid="NaN">Battery current (through all cells/loads). Positive value when discharging and negative if charging. NaN: field not provided.</field>
       <field type="float" name="capacity_consumed" units="Ah" invalid="NaN">Consumed charge. NaN: field not provided. This is either the consumption since power-on or since the battery was full, depending on the value of MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL.</field>
       <field type="float" name="capacity_remaining" units="Ah" invalid="NaN">Remaining charge (until empty). NaN: field not provided. Note: If MAV_BATTERY_STATUS_FLAGS_CAPACITY_RELATIVE_TO_FULL is unset, this value is based on the assumption the battery was full when the system was powered.</field>
-      <field type="float" name="state_of_charge" units="%" invalid="NaN">State of Charge (SoC). Remaining capacity relative to current fully-charged capacity as a percentage. Values: [0-100], NaN: field not provided. Note that the value may be calculated from design_capacity if current full_charge_capacity is not known (see BATTERY_INFO).</field>
       <field type="uint32_t" name="status_flags" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
+    </message>
+    <message id="370" name="BATTERY_CELL_STATUS">
+      <description>Per-cell information for a battery.</description>
+      <field type="uint8_t" name="id">Energy System ID (see ENERGY_STATUS)</field>
+      <field type="uint8_t" name="cells_instance">Instance of this message for the given energy system.  </field>
+      <field type="uint16_t[6]" name="voltages" units="mV" invalid="[UINT16_MAX]">Battery voltage of cells 6*cells_instance+1 to 6*cells_instance+7.</field>
+    </message>
+    <message id="371" name="FUEL_INFORMATION_V2">
+      <field type="uint8_t" name="id" instance="true">Energy System ID (see ENERGY_STATUS)</field>
+      <field type="uint8_t" name="id" enum="MAV_FUEL_TYPE">Fuel type</field>
+      <field type="float" name="maximum_fuel" units="decibels">Capacity when full.  Interim decibles units representing arguments to be had over grams vs litres vs cm^3</field>
+    </message>
+    <message id="372" name="FUEL_STATUS_V2">
+      <field type="uint8_t" name="id" instance="true">Energy System ID (see ENERGY_STATUS)</field>
     </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
