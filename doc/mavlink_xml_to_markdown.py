@@ -220,7 +220,7 @@ class MAVXML:
                 matching_count += 1
             else:
                 non_matching_count += 1
-        result_string = result_string = (
+        result_string = (
             f"{'[Messages](#messages)' if matching_count + non_matching_count > 0 else 'Messages'} | {matching_count} | {non_matching_count}\n"
         )
         entity_summary += result_string
@@ -232,19 +232,19 @@ class MAVXML:
                 matching_count += 1
             else:
                 non_matching_count += 1
-        result_string = result_string = (
+        result_string = (
             f"{'[Enums](#enumerated-types)' if matching_count + non_matching_count > 0 else 'Enums'} | {matching_count} | {non_matching_count}\n"
         )
         entity_summary += result_string
 
         matching_count = 0
         non_matching_count = 0
-        for commands in self.commands.values():
-            if commands.basename == commands.basename:
+        for command in self.commands.values():
+            if command.basename == self.basename:
                 matching_count += 1
             else:
                 non_matching_count += 1
-        result_string = result_string = (
+        result_string = (
             f"{'[Commands](#mav_commands)' if matching_count + non_matching_count > 0 else 'Commands'} | {matching_count} | {non_matching_count}\n\n"
         )
         entity_summary += result_string
