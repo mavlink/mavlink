@@ -2103,7 +2103,8 @@
         <description>Inject artificial failure for testing purposes. Note that autopilots should implement an additional protection before accepting this command such as a specific param setting.</description>
         <param index="1" label="Failure unit" enum="FAILURE_UNIT">The unit which is affected by the failure.</param>
         <param index="2" label="Failure type" enum="FAILURE_TYPE">The type how the failure manifests itself.</param>
-        <param index="3" label="Instance">Instance affected by failure (0 to signal all).</param>
+        <param index="3" label="Instance" minValue="0" increment="1">Instance affected by failure (0 to signal all). Takes precedence over Instance bitmask (param4) when not NaN. Set to NaN to use Instance bitmask instead.</param>
+        <param index="4" label="Instance bitmask" minValue="0">Bitmask of instances affected by the failure (bit 0 = first instance, bit 1 = second instance, etc.). Used only when Instance (param3) is NaN.</param>
       </entry>
       <entry value="500" name="MAV_CMD_START_RX_PAIR" hasLocation="false" isDestination="false">
         <description>Starts receiver pairing.</description>
@@ -4938,11 +4939,16 @@
       <entry value="7" name="FAILURE_UNIT_SENSOR_DISTANCE_SENSOR"/>
       <entry value="8" name="FAILURE_UNIT_SENSOR_AIRSPEED"/>
       <entry value="100" name="FAILURE_UNIT_SYSTEM_BATTERY"/>
-      <entry value="101" name="FAILURE_UNIT_SYSTEM_MOTOR"/>
+      <entry value="101" name="FAILURE_UNIT_SYSTEM_MOTOR">
+        <description>Interrupts the commanded output to the motor.</description>
+      </entry>
       <entry value="102" name="FAILURE_UNIT_SYSTEM_SERVO"/>
       <entry value="103" name="FAILURE_UNIT_SYSTEM_AVOIDANCE"/>
       <entry value="104" name="FAILURE_UNIT_SYSTEM_RC_SIGNAL"/>
       <entry value="105" name="FAILURE_UNIT_SYSTEM_MAVLINK_SIGNAL"/>
+      <entry value="106" name="FAILURE_UNIT_SYSTEM_ESC">
+        <description>Interrupts the telemetry reported by the ESC.</description>
+      </entry>
     </enum>
     <enum name="FAILURE_TYPE">
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
