@@ -2240,6 +2240,17 @@
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
       </entry>
+      <entry value="611" name="MAV_CMD_DO_SET_GLOBAL_ORIGIN" hasLocation="true" isDestination="false">
+        <description>Sets the GNSS coordinates of the vehicle local origin (0,0,0) position.
+          Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed.
+          This enables transform between the local coordinate frame and the global (GNSS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.
+          This command supersedes SET_GPS_GLOBAL_ORIGIN.
+          Should be sent in a COMMAND_INT (Expected frame is MAV_FRAME_GLOBAL, and this should be assumed when sent in COMMAND_LONG).
+        </description>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
+      </entry>
       <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW" hasLocation="false" isDestination="false">
         <description>Set gimbal manager pitch/yaw setpoints (low rate command). It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: only the gimbal manager will react to this command - it will be ignored by a gimbal device. Use GIMBAL_MANAGER_SET_PITCHYAW if you need to stream pitch/yaw setpoints at higher rate. </description>
         <param index="1" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch angle (positive to pitch up, relative to vehicle for FOLLOW mode, relative to world horizon for LOCK mode).</param>
