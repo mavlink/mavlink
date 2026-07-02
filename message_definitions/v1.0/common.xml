@@ -1192,14 +1192,18 @@
         <param index="7" label="Altitude" units="m">Landing altitude (ground level in current frame).</param>
       </entry>
       <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true">
-        <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
-        <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
+        <description>Takeoff from ground / hand.
+          Uses vehicle-specific behaviour (e.g. ascend vertically to a safe height, or fly straight ahead and climb for fixed-wing).
+          If lat/lon/alt are supported, the vehicle then proceeds to the specified waypoint and/or altitude; otherwise falls back to system-defined behaviour.
+          Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.
+          Not supported in surface vehicles.</description>
+        <param index="1" label="Pitch" units="deg" minValue="-90" maxValue="90">Minimum pitch (if airspeed sensor present), desired pitch without sensor. NaN to use default pitch.</param>
         <param index="2">Empty</param>
         <param index="3" label="Flags" enum="NAV_TAKEOFF_FLAGS">Bitmask of options flags.</param>
-        <param index="4" label="Yaw" units="deg">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="4" label="Yaw" units="deg" minValue="0" maxValue="360">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
+        <param index="5" label="Latitude">Latitude. INT32_MAX/NaN to use current latitude.</param>
+        <param index="6" label="Longitude">Longitude. INT32_MAX/NaN to use current longitude.</param>
+        <param index="7" label="Altitude" units="m">Altitude. NaN to use system-default altitude.</param>
       </entry>
       <entry value="23" name="MAV_CMD_NAV_LAND_LOCAL" hasLocation="true" isDestination="true">
         <description>Land at local position (local frame only)</description>
