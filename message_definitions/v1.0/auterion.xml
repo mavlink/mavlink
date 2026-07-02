@@ -649,6 +649,13 @@
       <field type="uint8_t" name="control_target" enum="CONTROL_TARGET_REQUEST">Control target to handoff.</field>
       <field type="uint8_t" name="handoff_decision" enum="HANDOFF_DECISION">Control target decision.</field>
     </message>
+    <message id="13447" name="MANUAL_CONTROL_STATUS">
+      <description>Status of the manual control input arbitration on the autopilot: which source is currently selected and, when a MAVLink joystick is selected, which system/component is providing it. Emitted by the autopilot for ground stations to display the active manual control source.</description>
+      <field type="uint8_t" name="source">Currently selected manual control source (0: none/unknown, 1: RC receiver, 2 and above: MAVLink joystick instance).</field>
+      <field type="uint8_t" name="sender_system_id">System ID of the MAVLink joystick currently providing manual control. 0 if the source is not a MAVLink joystick.</field>
+      <field type="uint8_t" name="sender_component_id">Component ID of the MAVLink joystick currently providing manual control. 0 if the source is not a MAVLink joystick.</field>
+      <field type="uint8_t" name="valid">1 if a valid manual control setpoint is currently being produced, 0 otherwise.</field>
+    </message>
     <message id="13470" name="UNIQUE_IDENTIFIER">
       <description>Unique identifier message to uniquely identify different GCS and systems using an 256 bit uuid. The uuid can be randomly generated an stored for the relevant systems.
       Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=13470.
