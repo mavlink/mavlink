@@ -205,6 +205,28 @@ def describe_mutation(key: NameKey, old_a: Dict[str, Any], new_a: Dict[str, Any]
     return f"{describe_key(key)} ({', '.join(changes)})"
 
 
+def find_mutations(
+    old_names: Dict[NameKey, bool],
+    new_names: Dict[NameKey, bool],
+    old_attrs: Dict[NameKey, Dict[str, Any]],
+    new_attrs: Dict[NameKey, Dict[str, Any]],
+) -> List[str]:
+    """Return description strings for wire-breaking attribute mutations (type, id, value)."""
+    mutation_descs: List[str] = []
+    for key in old_names:
+        if key not in new_names:
+            continue
+        if old_names.get(key) or new_names.get(key):
+            continue  # skip WIP items
+        old_a = old_attrs.get(key)
+        new_a = new_attrs.get(key)
+        if old_a is None or new_a is None:
+            continue
+        if old_a != new_a:
+            mutation_descs.append(describe_mutation(key, old_a, new_a))
+    return mutation_descs
+
+
 def build_removal_comment(
     removed_by_file: Dict[str, List[NameKey]],
     mutations_by_file: Optional[Dict[str, List[str]]] = None,
@@ -279,20 +301,9 @@ def main() -> None:
             breaking_descs.append(f"Removed {describe_key(name)}")
 
         # Check for wire-breaking attribute mutations (type, id, value)
-        mutation_descs: List[str] = []
-        for key in old_names:
-            if key not in new_names:
-                continue
-            if old_names.get(key) or new_names.get(key):
-                continue  # skip WIP items
-            old_a = old_attrs.get(key)
-            new_a = new_attrs.get(key)
-            if old_a is None or new_a is None:
-                continue
-            if old_a != new_a:
-                desc = describe_mutation(key, old_a, new_a)
-                mutation_descs.append(desc)
-                breaking_descs.append(f"Changed {desc}")
+        mutation_descs = find_mutations(old_names, new_names, old_attrs, new_attrs)
+        for desc in mutation_descs:
+            breaking_descs.append(f"Changed {desc}")
 
         if mutation_descs:
             mutations_for_comment[xml] = mutation_descs
