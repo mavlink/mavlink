@@ -300,7 +300,7 @@ def main() -> None:
         for name in confirmed_breaking:
             breaking_descs.append(f"Removed {describe_key(name)}")
 
-        # Check for wire-breaking attribute mutations (type, id, value)
+        """Check for wire-breaking attribute mutations (type, id, value)."""
         mutation_descs = find_mutations(old_names, new_names, old_attrs, new_attrs)
         for desc in mutation_descs:
             breaking_descs.append(f"Changed {desc}")
