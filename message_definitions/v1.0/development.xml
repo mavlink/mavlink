@@ -465,6 +465,141 @@
         <description>Ranging Beacon</description>
       </entry>
     </enum>
+    <enum name="EFI_PERFORMANCE_STATUS_FLAGS" bitmask="true">
+      <wip since="2026-06"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Status flags for the EFI Electronic Control Unit (ECU). Reported in EFI_PERFORMANCE. Each bit is an independent boolean condition. A flag that is 0 means either "not asserted" or "not supported by this ECU"; the two cannot be distinguished from the bitmask alone.</description>
+      <!-- Engine run-state -->
+      <entry value="1" name="EFI_PERFORMANCE_STATUS_FLAGS_ENGINE_RUNNING">
+        <description>Engine is running.</description>
+      </entry>
+      <entry value="2" name="EFI_PERFORMANCE_STATUS_FLAGS_STARTER_ACTIVE">
+        <description>Starter motor is engaged / engine is cranking.</description>
+      </entry>
+      <entry value="4" name="EFI_PERFORMANCE_STATUS_FLAGS_ENGINE_SHUTTING_DOWN">
+        <description>Controlled engine shutdown is in progress.</description>
+      </entry>
+      <entry value="8" name="EFI_PERFORMANCE_STATUS_FLAGS_EMERGENCY_STOP">
+        <description>Emergency stop has been asserted.</description>
+      </entry>
+      <entry value="16" name="EFI_PERFORMANCE_STATUS_FLAGS_REV_LIMIT_EXCEEDED">
+        <description>Engine rev limiter is active.</description>
+      </entry>
+      <!-- Fault / warning summary -->
+      <entry value="32" name="EFI_PERFORMANCE_STATUS_FLAGS_FAULT">
+        <description>An unclassified fault (check-engine) has been detected by the ECU.</description>
+      </entry>
+      <entry value="64" name="EFI_PERFORMANCE_STATUS_FLAGS_WARNING_LEVEL_1">
+        <description>Severity level 1 warning is active.</description>
+      </entry>
+      <entry value="128" name="EFI_PERFORMANCE_STATUS_FLAGS_WARNING_LEVEL_2">
+        <description>Severity level 2 warning is active.</description>
+      </entry>
+      <entry value="256" name="EFI_PERFORMANCE_STATUS_FLAGS_MAINTENANCE_REQUIRED">
+        <description>ECU reports that maintenance/service is due.</description>
+      </entry>
+      <entry value="512" name="EFI_PERFORMANCE_STATUS_FLAGS_COMMS_ERROR">
+        <description>ECU/engine internal communication error.</description>
+      </entry>
+      <entry value="1024" name="EFI_PERFORMANCE_STATUS_FLAGS_POWER_REDUCTION_ACTIVE">
+        <description>ECU is limiting/reducing engine output power.</description>
+      </entry>
+      <!-- Sensor health -->
+      <entry value="2048" name="EFI_PERFORMANCE_STATUS_FLAGS_CRANK_SENSOR_FAULT">
+        <description>Crankshaft / RPM sensor has faulted.</description>
+      </entry>
+      <entry value="4096" name="EFI_PERFORMANCE_STATUS_FLAGS_THROTTLE_SENSOR_FAULT">
+        <description>Throttle-position sensor has faulted.</description>
+      </entry>
+      <entry value="8192" name="EFI_PERFORMANCE_STATUS_FLAGS_ENGINE_TEMP_SENSOR_FAULT">
+        <description>Engine-temperature sensor has faulted.</description>
+      </entry>
+      <entry value="16384" name="EFI_PERFORMANCE_STATUS_FLAGS_AIR_TEMP_SENSOR_FAULT">
+        <description>Intake-air-temperature sensor has faulted.</description>
+      </entry>
+      <entry value="32768" name="EFI_PERFORMANCE_STATUS_FLAGS_AIR_PRESSURE_SENSOR_FAULT">
+        <description>Intake-air-pressure sensor has faulted.</description>
+      </entry>
+      <!-- Thermal -->
+      <entry value="65536" name="EFI_PERFORMANCE_STATUS_FLAGS_ECU_OVER_TEMPERATURE">
+        <description>ECU temperature has exceeded the warning threshold.</description>
+      </entry>
+      <entry value="131072" name="EFI_PERFORMANCE_STATUS_FLAGS_ENGINE_OVER_TEMPERATURE">
+        <description>Engine temperature has exceeded the fault threshold (overheating).</description>
+      </entry>
+      <entry value="262144" name="EFI_PERFORMANCE_STATUS_FLAGS_ENGINE_TEMP_ABOVE_NOMINAL">
+        <description>Engine temperature is above nominal (warning).</description>
+      </entry>
+      <entry value="524288" name="EFI_PERFORMANCE_STATUS_FLAGS_ENGINE_TEMP_BELOW_NOMINAL">
+        <description>Engine temperature is below nominal (not yet warmed up).</description>
+      </entry>
+      <entry value="1048576" name="EFI_PERFORMANCE_STATUS_FLAGS_EGT_ABOVE_NOMINAL">
+        <description>Exhaust-gas temperature is above nominal.</description>
+      </entry>
+      <entry value="2097152" name="EFI_PERFORMANCE_STATUS_FLAGS_LOW_COOLANT_LEVEL">
+        <description>Coolant level is low.</description>
+      </entry>
+      <entry value="4194304" name="EFI_PERFORMANCE_STATUS_FLAGS_COOLANT_FLOW_FAULT">
+        <description>Coolant water-flow fault.</description>
+      </entry>
+      <!-- Fuel -->
+      <entry value="8388608" name="EFI_PERFORMANCE_STATUS_FLAGS_FUEL_PUMP_ACTIVE">
+        <description>Fuel pump is active.</description>
+      </entry>
+      <entry value="16777216" name="EFI_PERFORMANCE_STATUS_FLAGS_LOW_FUEL_PRESSURE">
+        <description>Fuel pressure is below the minimum operating threshold.</description>
+      </entry>
+      <entry value="33554432" name="EFI_PERFORMANCE_STATUS_FLAGS_HIGH_FUEL_PRESSURE">
+        <description>Fuel pressure is above the maximum operating threshold.</description>
+      </entry>
+      <entry value="67108864" name="EFI_PERFORMANCE_STATUS_FLAGS_WATER_IN_FUEL">
+        <description>Water has been detected in the fuel.</description>
+      </entry>
+      <!-- Oil -->
+      <entry value="134217728" name="EFI_PERFORMANCE_STATUS_FLAGS_LOW_OIL_PRESSURE">
+        <description>Oil pressure is below the minimum operating threshold.</description>
+      </entry>
+      <entry value="268435456" name="EFI_PERFORMANCE_STATUS_FLAGS_HIGH_OIL_PRESSURE">
+        <description>Oil pressure is above the maximum operating threshold.</description>
+      </entry>
+      <entry value="536870912" name="EFI_PERFORMANCE_STATUS_FLAGS_LOW_OIL_LEVEL">
+        <description>Oil level is low.</description>
+      </entry>
+      <!-- Ignition -->
+      <entry value="1073741824" name="EFI_PERFORMANCE_STATUS_FLAGS_IGNITION_ACTIVE">
+        <description>Ignition system is active.</description>
+      </entry>
+      <entry value="2147483648" name="EFI_PERFORMANCE_STATUS_FLAGS_IGNITION_REDUNDANCY_LOST">
+        <description>Redundant (dual) ignition degraded - only one spark source is firing.</description>
+      </entry>
+      <entry value="4294967296" name="EFI_PERFORMANCE_STATUS_FLAGS_PREHEAT_ACTIVE">
+        <description>Glow/preheat is active.</description>
+      </entry>
+      <!-- Electrical -->
+      <entry value="8589934592" name="EFI_PERFORMANCE_STATUS_FLAGS_LOW_SUPPLY_VOLTAGE">
+        <description>ECU supply/system voltage is low.</description>
+      </entry>
+      <entry value="17179869184" name="EFI_PERFORMANCE_STATUS_FLAGS_CHARGING_ACTIVE">
+        <description>Alternator/charging system is active.</description>
+      </entry>
+      <!-- Combustion health -->
+      <entry value="34359738368" name="EFI_PERFORMANCE_STATUS_FLAGS_DETONATION_OBSERVED">
+        <description>Detonation/knock has been observed.</description>
+      </entry>
+      <entry value="68719476736" name="EFI_PERFORMANCE_STATUS_FLAGS_MISFIRE_OBSERVED">
+        <description>Misfire has been observed.</description>
+      </entry>
+      <entry value="137438953472" name="EFI_PERFORMANCE_STATUS_FLAGS_DEBRIS_DETECTED">
+        <description>Foreign debris has been detected.</description>
+      </entry>
+      <!-- Air / boost -->
+      <entry value="274877906944" name="EFI_PERFORMANCE_STATUS_FLAGS_HIGH_BOOST_PRESSURE">
+        <description>Boost pressure is above threshold.</description>
+      </entry>
+      <entry value="549755813888" name="EFI_PERFORMANCE_STATUS_FLAGS_EGR_SYSTEM_FAULT">
+        <description>Exhaust-gas-recirculation (EGR) system fault.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -673,6 +808,40 @@
       <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_ESTIMATOR_SENSOR_ENABLE).</field>
       <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
       <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
+    </message>
+    <message id="442" name="EFI_PERFORMANCE">
+      <wip since="2026-06"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>EFI performance and health telemetry. Primarily intended for debugging EFI system faults to determine whether problems are within the engine, fuel pump, actuators, or the ECU. Nominal stream rate is 1 Hz. Core engine telemetry (RPM, temperatures, pressures, fuel flow) is carried in EFI_STATUS; this message carries the electrical/actuator/diagnostic data not present there.</description>
+      <!-- identity -->
+      <field type="uint8_t" name="ecu_index" instance="true">Electronic Control Unit (ECU) index for systems with multiple EFI units. Set to 0 for the first (or only) ECU.</field>
+      <!-- fuel pump -->
+      <field type="uint8_t" name="fuel_pump_duty_cycle" units="%" minValue="0" maxValue="100" invalid="UINT8_MAX">Fuel pump power output, as a percentage of maximum. 0 = off, 100 = full power.</field>
+      <field type="uint16_t" name="fuel_pump_voltage" units="mV" invalid="UINT16_MAX">Fuel pump supply voltage.</field>
+      <field type="uint16_t" name="fuel_pump_current" units="cA" invalid="UINT16_MAX">Fuel pump current draw.</field>
+      <!-- ECU electrical/thermal -->
+      <field type="uint16_t" name="ecu_supply_voltage" units="mV" invalid="UINT16_MAX">ECU supply voltage.</field>
+      <field type="uint16_t" name="ecu_current" units="cA" invalid="UINT16_MAX">ECU current draw.</field>
+      <field type="int16_t" name="ecu_temperature" units="cdegC" invalid="INT16_MAX">ECU/electronics board temperature.</field>
+      <field type="uint8_t" name="ecu_cpu_load" units="%" minValue="0" maxValue="100" invalid="UINT8_MAX">ECU processor load.</field>
+      <!-- actuators -->
+      <field type="uint16_t" name="servo_supply_voltage" units="mV" invalid="UINT16_MAX">Throttle-servo / actuator supply voltage.</field>
+      <field type="uint8_t" name="servo_output_level" units="%" minValue="0" maxValue="100" invalid="UINT8_MAX">Electronic-throttle / servo commanded output level.</field>
+      <field type="uint8_t" name="water_pump_duty_cycle" units="%" minValue="0" maxValue="100" invalid="UINT8_MAX">Coolant-pump power output, as a percentage of maximum.</field>
+      <!-- injection -->
+      <field type="uint8_t" name="injector_duty_cycle" units="%" minValue="0" maxValue="100" invalid="UINT8_MAX">Primary injector duty cycle.</field>
+      <field type="float" name="fuel_mass_rate" units="g/min" invalid="NaN">Instantaneous fuel consumption by mass. NaN if not provided.</field>
+      <field type="float" name="fuel_mass_consumed" units="g" invalid="NaN">Fuel consumed by mass since engine start. NaN if not provided.</field>
+      <!-- engine command / runtime -->
+      <field type="uint16_t" name="commanded_rpm" units="rpm" invalid="UINT16_MAX">Governor/target RPM setpoint.</field>
+      <field type="uint32_t" name="engine_runtime" units="s" invalid="UINT32_MAX">Cumulative engine run time (hobbs).</field>
+      <field type="uint8_t" name="error_memory_count" invalid="UINT8_MAX">Number of faults currently stored in the ECU error memory.</field>
+      <!-- air -->
+      <field type="float" name="boost_pressure" units="kPa" invalid="NaN">Forced-induction boost pressure. NaN if not provided.</field>
+      <field type="float" name="coolant_pressure" units="kPa" invalid="NaN">Coolant-circuit pressure. NaN if not provided.</field>
+      <field type="int16_t" name="engine_torque" units="%" invalid="INT16_MAX">Percent engine torque (signed; negative = motoring/braking).</field>
+      <!-- status -->
+      <field type="uint64_t" name="status_flags" enum="EFI_PERFORMANCE_STATUS_FLAGS" display="bitmask">EFI status flags.</field>
     </message>
   </messages>
 </mavlink>
