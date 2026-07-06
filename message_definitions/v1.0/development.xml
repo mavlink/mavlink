@@ -454,6 +454,18 @@
         <description>Ranging Beacon</description>
       </entry>
     </enum>
+    <enum name="MAV_MANUAL_CONTROL_SOURCE">
+      <description>Source of manual control input currently selected by the autopilot's manual control arbitration.</description>
+      <entry value="0" name="MAV_MANUAL_CONTROL_SOURCE_UNKNOWN">
+        <description>No manual control source is selected, or the source is unknown.</description>
+      </entry>
+      <entry value="1" name="MAV_MANUAL_CONTROL_SOURCE_RC">
+        <description>Manual control is provided by a radio control (RC) receiver.</description>
+      </entry>
+      <entry value="2" name="MAV_MANUAL_CONTROL_SOURCE_MAVLINK">
+        <description>Manual control is provided by a MAVLink enabled input device (e.g. via MANUAL_CONTROL messages). The specific device is identified by the sender_system_id and sender_component_id fields.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -662,6 +674,13 @@
       <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_ESTIMATOR_SENSOR_ENABLE).</field>
       <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
       <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
+    </message>
+    <message id="515" name="MANUAL_CONTROL_STATUS">
+      <description>Status of the manual control input arbitration on the autopilot: which source is currently selected and, when a MAVLink enabled input device is selected, which system/component is providing it. Emitted by the autopilot for ground stations to display the active manual control source.</description>
+      <field type="uint8_t" name="source" enum="MAV_MANUAL_CONTROL_SOURCE">Currently selected manual control source.</field>
+      <field type="uint8_t" name="sender_system_id">System ID of the MAVLink enabled input device currently providing manual control. 0 if the source is not a MAVLink enabled input device.</field>
+      <field type="uint8_t" name="sender_component_id">Component ID of the MAVLink enabled input device currently providing manual control. 0 if the source is not a MAVLink enabled input device.</field>
+      <field type="uint8_t" name="valid">1 if a valid manual control setpoint is currently being produced, 0 otherwise.</field>
     </message>
   </messages>
 </mavlink>
