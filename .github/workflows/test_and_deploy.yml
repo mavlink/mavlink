@@ -102,6 +102,27 @@ jobs:
           cmake -Bbuild -H. -DCMAKE_PREFIX_PATH=$(pwd)/../../install
           cmake --build build
 
+  build-cmake-cpp-example:
+    name: Build cmake C++ example
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3 python3-pip
+      - name: Install MAVLink headers
+        run: |
+          cmake -Bbuild -H. -DCMAKE_INSTALL_PREFIX=install
+          cmake --build build --target install
+      - name: Build example
+        run: |
+          cd examples/cpp
+          cmake -Bbuild -H. -DCMAKE_PREFIX_PATH=$(pwd)/../../install
+          cmake --build build
+
   node-tests:
     name: Node ${{ matrix.node-version }} test
     runs-on: ubuntu-22.04
