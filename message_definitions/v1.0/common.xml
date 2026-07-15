@@ -208,6 +208,18 @@
       <entry value="2" name="MAV_SYS_STATUS_SENSOR_LEAK">
         <description>0x02 Leak detection</description>
       </entry>
+      <entry value="4" name="MAV_SYS_STATUS_SENSOR_3D_GYRO3">
+        <description>0x04 3rd 3D gyro</description>
+      </entry>
+      <entry value="8" name="MAV_SYS_STATUS_SENSOR_3D_ACCEL3">
+        <description>0x08 3rd 3D accelerometer</description>
+      </entry>
+      <entry value="16" name="MAV_SYS_STATUS_SENSOR_3D_GYRO4">
+        <description>0x10 4th 3D gyro</description>
+      </entry>
+      <entry value="32" name="MAV_SYS_STATUS_SENSOR_3D_ACCEL4">
+        <description>0x20 4th 3D accelerometer</description>
+      </entry>
     </enum>
     <enum name="MAV_FRAME">
       <description>Coordinate frames used by MAVLink. Not all frames are supported by all commands, messages, or vehicles.
@@ -2239,6 +2251,17 @@
         <description>Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number.</description>
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
+      </entry>
+      <entry value="611" name="MAV_CMD_DO_SET_GLOBAL_ORIGIN" hasLocation="true" isDestination="false">
+        <description>Sets the GNSS coordinates of the vehicle local origin (0,0,0) position.
+          Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed.
+          This enables transform between the local coordinate frame and the global (GNSS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.
+          This command supersedes SET_GPS_GLOBAL_ORIGIN.
+          Should be sent in a COMMAND_INT (Expected frame is MAV_FRAME_GLOBAL, and this should be assumed when sent in COMMAND_LONG).
+        </description>
+        <param index="5" label="Latitude">Latitude</param>
+        <param index="6" label="Longitude">Longitude</param>
+        <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
       <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW" hasLocation="false" isDestination="false">
         <description>Set gimbal manager pitch/yaw setpoints (low rate command). It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: only the gimbal manager will react to this command - it will be ignored by a gimbal device. Use GIMBAL_MANAGER_SET_PITCHYAW if you need to stream pitch/yaw setpoints at higher rate. </description>
@@ -4949,6 +4972,9 @@
       <entry value="106" name="FAILURE_UNIT_SYSTEM_ESC">
         <description>Interrupts the telemetry reported by the ESC.</description>
       </entry>
+      <entry value="107" name="FAILURE_UNIT_SYSTEM_TRAFFIC_AVOIDANCE">
+        <description>Traffic avoidance system like ADS-B or FLARM.</description>
+      </entry>
     </enum>
     <enum name="FAILURE_TYPE">
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
@@ -4976,6 +5002,9 @@
       </entry>
       <entry value="7" name="FAILURE_TYPE_INTERMITTENT">
         <description>Unit is sometimes working, sometimes not.</description>
+      </entry>
+      <entry value="8" name="FAILURE_TYPE_DRIFT">
+        <description>Unit is publishing plausible values but drifting away from true values.</description>
       </entry>
     </enum>
     <enum name="NAV_VTOL_LAND_OPTIONS">
