@@ -25,7 +25,22 @@ if (NOT MAVLINK_VERSION)
 endif()
 message(STATUS "MAVLink version: ${MAVLINK_VERSION}")
 
+# Generate both the C headers (--lang=C, produces *.h) and the C++11 headers
+# (--lang=C++11, produces *.hpp). The C++11 generator also emits the C headers,
+# so both examples in examples/ build against the same install.
+option(MAVLINK_ENABLE_CXX "Also generate and install the C++11 (*.hpp) headers" ON)
+
 set(EXAMPLE_HEADER ${CMAKE_CURRENT_BINARY_DIR}/include/mavlink/${MAVLINK_DIALECT}/mavlink.h)
+
+if (MAVLINK_ENABLE_CXX)
+    set(GENERATE_CXX_COMMAND
+        COMMAND ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/pip-dependencies/" ${Python_EXECUTABLE}
+        -m pymavlink.tools.mavgen
+        --lang=C++11
+        --wire-protocol=${MAVLINK_VERSION}
+        --output ${CMAKE_CURRENT_BINARY_DIR}/include/mavlink/
+        message_definitions/v1.0/${MAVLINK_DIALECT}.xml)
+endif()
 
 add_custom_command(OUTPUT ${EXAMPLE_HEADER}
     COMMAND ${Python_EXECUTABLE}
@@ -36,9 +51,10 @@ add_custom_command(OUTPUT ${EXAMPLE_HEADER}
         --wire-protocol=${MAVLINK_VERSION}
         --output ${CMAKE_CURRENT_BINARY_DIR}/include/mavlink/
         message_definitions/v1.0/${MAVLINK_DIALECT}.xml
+        ${GENERATE_CXX_COMMAND}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     DEPENDS message_definitions/v1.0/${MAVLINK_DIALECT}.xml
-    COMMENT "Generating C headers")
+    COMMENT "Generating C and C++11 headers")
 
 # Unfortunately, the dependencies don't work for INTERFACE libraries.
 # The only way I could make it work is to add ALL which means it
@@ -65,7 +81,7 @@ install(TARGETS mavlink
 
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/mavlink"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-    FILES_MATCHING PATTERN "*.h"
+    FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
 )
 
 install(EXPORT MAVLinkTargets
