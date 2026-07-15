@@ -2,15 +2,10 @@
 
 Simple example receiving and sending MAVLink v2 over UDP based on POSIX APIs (e.g. Linux, BSD, macOS).
 
-This is the C++11 counterpart to the [C example](../c). Instead of the C
-pack/decode functions it uses the generated message structs (e.g.
-`mavlink::minimal::msg::HEARTBEAT`) together with `mavlink::MsgMap` to serialize
-and deserialize to and from a `mavlink_message_t`.
+This is the C++11 counterpart to the [C example](../c). Instead of the C pack/decode functions it uses the generated message structs (e.g. `mavlink::minimal::msg::HEARTBEAT`) together with `mavlink::MsgMap` to serialize and deserialize to and from a `mavlink_message_t`.
 
-> **Note** The C++11 library requires the user to provide a
-> `mavlink::mavlink_get_msg_entry()` function so that `mavlink_parse_char()` can
-> look up the length and CRC extra of incoming messages. This example builds it
-> from the dialect's `MESSAGE_ENTRIES` table (see the top of `udp_example.cpp`).
+> **Note** The C++11 library requires the user to provide a `mavlink::mavlink_get_msg_entry()` function so that `mavlink_parse_char()` can look up the length and CRC extra of incoming messages.
+> This example builds it from the dialect's `MESSAGE_ENTRIES` table (see the top of `udp_example.cpp`).
 
 ## Install MAVLink
 
