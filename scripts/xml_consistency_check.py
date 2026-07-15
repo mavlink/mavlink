@@ -27,22 +27,30 @@ types = {
 warning_count = 0
 allowed_count = 0
 allowlist = set()
+allowlist_display = {}
 matched_allowlist = set()
+warnings = []
 
 
-def warn(message):
-    """Print a warning. If the message is in the allowlist it is still shown
-    (prefixed with [allowed]) but does not count toward the failure total
-    used by --exception. This lets CI gate on new warnings while tolerating
-    pre-existing ones."""
+def warn(message, file):
+    """Record a warning for later printing rather than printing it right
+    away. The checks run in several passes over all files (enum defs, field
+    checks, cmd param checks, unused-enum check), so printing immediately
+    would interleave warnings by pass/order-of-discovery rather than by
+    file. Buffering lets the caller sort everything by file before display.
+
+    If the message is in the allowlist it is still shown (prefixed with
+    [allowed]) but does not count toward the failure total used by
+    --exception."""
     global warning_count, allowed_count
     if message in allowlist:
-        print("[allowed] %s" % message)
         allowed_count += 1
         matched_allowlist.add(message)
+        display = allowlist_display.get(message, message)
+        warnings.append((file, "[allowed] %s" % display))
     else:
-        print(message)
         warning_count += 1
+        warnings.append((file, message))
 
 
 def check_enum(enum, file_name):
@@ -72,7 +80,7 @@ def check_enum(enum, file_name):
     # Check if should be marked as a bitmask
     contains_zero = 0 in values
     if bitmask and contains_zero:
-        warn("%s: Enum: %s bitmask should not contain 0" % (file_name, name))
+        warn("%s: Enum: %s bitmask should not contain 0" % (file_name, name), file_name)
 
     # Need at least three values to tell if something should be a bitmask
     # 1,2,4 vs 1,2,3 (assuming bits added sequentially)
@@ -92,11 +100,11 @@ def check_enum(enum, file_name):
 
         if not bitmask and not overlap:
             warn("%s: Enum: %s should be a marked as bitmask?" %
-                 (file_name, name))
+                 (file_name, name), file_name)
 
         if bitmask and overlap:
             warn("%s: Enum: %s should be not be a marked as bitmask" %
-                 (file_name, name))
+                 (file_name, name), file_name)
 
     return {"name": name, "bitmask": bitmask, "values": values}
 
@@ -109,13 +117,13 @@ def check_field(file_name, msg_name, field, enums):
     # Enum with units doesn't make sense
     if enum is not None and units is not None:
         warn("%s: Message %s field %s has both units and enum" %
-             (file_name, msg_name, name))
+             (file_name, msg_name, name), file_name)
 
     if enum is not None:
         # Enum should exist
         if enum not in enums:
             warn("%s: Message %s field %s enum %s does not exist" %
-                 (file_name, msg_name, name, enum))
+                 (file_name, msg_name, name, enum), file_name)
             return
 
         enums[enum]["used"] = True
@@ -129,11 +137,11 @@ def check_field(file_name, msg_name, field, enums):
         type = field.get('type').split('[')[0]
         if type not in types:
             warn("%s: Message %s field %s enum %s unexpected type: %s" %
-                 (file_name, msg_name, name, enum, type))
+                 (file_name, msg_name, name, enum, type), file_name)
 
         elif (enums[enum]["min"] < types[type][0]) or (enums[enum]["max"] > types[type][1]):
             warn("%s: Message %s field %s enum %s does not fit in type: %s" %
-                 (file_name, msg_name, name, enum, type))
+                 (file_name, msg_name, name, enum, type), file_name)
 
 
 def check_cmd_param(file_name, cmd_name, entry, enums):
@@ -144,13 +152,13 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
     # Enum with units doesn't make sense
     if enum is not None and units is not None:
         warn("%s: Command %s param %s has both units and enum" %
-             (file_name, cmd_name, index))
+             (file_name, cmd_name, index), file_name)
 
     if enum is not None:
         # Enum should exist
         if enum not in enums:
             warn("%s: Command %s param %s enum %s does not exist" %
-                 (file_name, cmd_name, index, enum))
+                 (file_name, cmd_name, index, enum), file_name)
             return
 
         enums[enum]["used"] = True
@@ -178,7 +186,8 @@ parser = ArgumentParser(description=description,
                         formatter_class=RawDescriptionHelpFormatter)
 
 parser.add_argument('-f', '--file', default=None, nargs='+',
-                    help="XML file name(s) to check (defaults to the managed dialects)")
+                    help="XML file name(s) to check (defaults to all XML files in "
+                         "message_definitions/v1.0/)")
 parser.add_argument('-e', '--exception', action='store_true',
                     help="Throw error if any non-allowlisted warnings are found")
 parser.add_argument('-a', '--allowlist', default=None,
@@ -192,14 +201,14 @@ args = parser.parse_args()
 script_dir = os.path.dirname(os.path.abspath(__file__))
 source_dir = os.path.join(script_dir, "../message_definitions/v1.0/")
 
-# Dialects this repository controls. Other dialects (e.g. ardupilotmega.xml)
-# are vendored/synced from downstream projects, so we don't gate CI on their
-# content. They are free to run this script on their side if they wish (pass
-# their files via -f/--file).
-managed_dialects = ["common.xml", "minimal.xml", "standard.xml", "development.xml"]
+# Dialects this repository controls, checked first so their warnings are
+# easy to spot; other (vendored/downstream) dialects follow, alphabetically.
+priority_dialects = ["common.xml", "standard.xml", "minimal.xml", "development.xml"]
 
 if args.file is None:
-    files = managed_dialects
+    all_xml = set(f for f in os.listdir(source_dir) if f.endswith('.xml'))
+    files = [f for f in priority_dialects if f in all_xml] + \
+        sorted(all_xml - set(priority_dialects))
 else:
     files = [f if f.endswith('.xml') else f + '.xml' for f in args.file]
 
@@ -214,7 +223,13 @@ if os.path.exists(allowlist_path):
         for line in f:
             line = line.strip()
             if line and not line.startswith('#'):
-                allowlist.add(line)
+                # A trailing " # comment" (e.g. explaining why a warning is
+                # allowlisted) is stripped for matching against the actual
+                # warning text, but the full line is kept for display so the
+                # comment still shows up when the warning is suppressed.
+                message = line.split(' #', 1)[0].strip()
+                allowlist.add(message)
+                allowlist_display[message] = line
 elif args.allowlist is not None:
     raise SystemExit("Allowlist file not found: %s" % allowlist_path)
 else:
@@ -268,8 +283,12 @@ for name in all_enums:
         values_conflict |= not set(values).isdisjoint(enum['enum'][i]['values'])
         values += enum['enum'][i]['values']
 
+    # Enums declared in multiple files report all of them in the message,
+    # but are sorted/displayed under the first (highest-priority) one.
+    first_file = enum['file'].split(", ")[0]
+
     if not values:
-        warn("%s: Enum: %s has no entries" % (enum['file'], name))
+        warn("%s: Enum: %s has no entries" % (enum['file'], name), first_file)
         # Leave min/max defined (as None) so downstream field checks can
         # detect the empty enum rather than hitting a KeyError.
         enum['min'] = enum['max'] = None
@@ -280,10 +299,10 @@ for name in all_enums:
 
     if bitmask_conflict:
         warn("%s: Enum: %s has conflicting bitmask definitions" %
-             (enum['file'],  name))
+             (enum['file'],  name), first_file)
 
     if values_conflict:
-        warn("%s: Enum: %s has conflicting values" % (enum['file'],  name))
+        warn("%s: Enum: %s has conflicting values" % (enum['file'],  name), first_file)
 
 # Check all fields against enums
 for key in xml:
@@ -309,7 +328,7 @@ for key in xml:
                 if idx is not None:
                     if idx in seen_indices:
                         warn("%s: Command %s param index %s is duplicated" %
-                             (key, name, idx))
+                             (key, name, idx), key)
                     else:
                         seen_indices.add(idx)
 
@@ -318,18 +337,25 @@ for key in xml:
                     idx_int = int(idx)
                     if idx_int < 1 or idx_int > 7:
                         warn("%s: Command %s param index %s is out of range" %
-                             (key, name, idx))
+                             (key, name, idx), key)
                 except (TypeError, ValueError):
                     warn("%s: Command %s param index %s is not an integer" %
-                         (key, name, idx))
+                         (key, name, idx), key)
 
 # Check for unused enums. Defining enums not referenced by any message or
 # command is a legitimate use of this library, so intended orphans should be
 # added to the allowlist rather than removed.
 for key in all_enums:
     if all_enums[key]["used"] is False:
+        first_file = all_enums[key]['file'].split(", ")[0]
         warn("%s: Enum: %s is unused" %
-             (all_enums[key]['file'], all_enums[key]["name"]))
+             (all_enums[key]['file'], all_enums[key]["name"]), first_file)
+
+# Print all buffered warnings, ordered to match `files` (priority dialects
+# first, then the rest) rather than the order checks happened to run in.
+file_priority = {f: i for i, f in enumerate(files)}
+for file, message in sorted(warnings, key=lambda w: file_priority.get(w[0], len(files))):
+    print(message)
 
 # Detect stale allowlist entries that no longer match any warning (e.g. a
 # warning was fixed, or its message was reworded). Only meaningful on a full
@@ -341,7 +367,8 @@ stale = []
 if args.file is None:
     stale = sorted(allowlist - matched_allowlist)
     for entry in stale:
-        print("Stale allowlist entry (no longer matches any warning): %s" % entry)
+        print("Stale allowlist entry (no longer matches any warning): %s" %
+              allowlist_display.get(entry, entry))
 
 # Give summary for possible CI usage
 if allowed_count:
