@@ -53,7 +53,7 @@ def check_enum(enum, file_name):
         if attr == 'name':
             name = value
         elif attr == 'bitmask':
-            bitmask = True
+            bitmask = value == 'true'
 
     if name is None:
         raise Exception("%s: No name for Enum: %s" % (file_name, enum))
@@ -66,8 +66,8 @@ def check_enum(enum, file_name):
     # Check for duplicate values
     for a, b in itertools.combinations(values, 2):
         if a == b:
-            raise Exception("%s: Enum: %s duplicate value %i" %
-                            (file_name, name, a))
+            warn("%s: Enum: %s duplicate value %i" %
+                 (file_name, name, a))
 
     # Check if should be marked as a bitmask
     contains_zero = 0 in values
