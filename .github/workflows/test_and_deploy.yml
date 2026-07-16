@@ -36,6 +36,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: pip install beautifulsoup4 lxml
+      - name: Run xml consistency check unit tests
+        run: python -m unittest scripts/test_xml_consistency_check.py -v
       - name: Check XML consistency
         run: python3 scripts/xml_consistency_check.py --exception
 
