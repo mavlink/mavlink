@@ -663,5 +663,31 @@
       <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
       <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
     </message>
+    <message id="515" name="DISTANCE_SENSOR_INFO">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Static characteristics of a distance sensor (onboard rangefinder).
+        This should be streamed (nominally at 1Hz).
+        Measurements are sent in DISTANCE_SENSOR_V2.</description>
+      <field type="uint8_t" name="id" instance="true">Onboard ID of the sensor. Matches the id field of DISTANCE_SENSOR_V2.</field>
+      <field type="uint8_t" name="type" enum="MAV_DISTANCE_SENSOR">Type of distance sensor.</field>
+      <field type="float" name="min_distance" units="m" invalid="NaN">Minimum distance the sensor can measure</field>
+      <field type="float" name="max_distance" units="m" invalid="NaN">Maximum distance the sensor can measure</field>
+      <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces.</field>
+      <field type="float" name="horizontal_fov" units="rad" invalid="NaN">Horizontal Field of View (angle) where the distance measurement is valid. NaN if unknown.</field>
+      <field type="float" name="vertical_fov" units="rad" invalid="NaN">Vertical Field of View (angle) where the distance measurement is valid. NaN if unknown.</field>
+    </message>
+    <message id="516" name="DISTANCE_SENSOR_V2">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Distance sensor measurement, for an onboard rangefinder described by DISTANCE_SENSOR_INFO. Streamed at the sensor update rate.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="id" instance="true">Onboard ID of the sensor. Matches the id field of DISTANCE_SENSOR_INFO.</field>
+      <field type="float" name="current_distance" units="m" invalid="NaN">Current distance reading. NaN if the reading is invalid or no reading is available.</field>
+      <field type="float" name="covariance" units="m^2" invalid="NaN">Measurement variance. NaN if unknown.</field>
+      <field type="uint8_t" name="signal_quality" units="%" invalid="0">Signal quality of the sensor. Specific to each sensor type, representing the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. 0 = unknown/unset signal quality, 1 = invalid signal, 100 = perfect signal.</field>
+      <extensions/>
+      <field type="float[4]" name="quaternion" invalid="[0]">Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM.This field is required if orientation in DISTANCE_SENSOR_INFO is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid.</field>
+    </message>
   </messages>
 </mavlink>
