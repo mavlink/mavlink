@@ -493,6 +493,20 @@
       <field type="float" name="state_of_charge" units="%" invalid="NaN">State of Charge (SoC). Remaining capacity relative to current fully-charged capacity as a percentage. Values: [0-100], NaN: field not provided. Note that the value may be calculated from design_capacity if current full_charge_capacity is not known (see BATTERY_INFO).</field>
       <field type="uint32_t" name="status_flags" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
     </message>
+    <message id="405" name="NAV_CONTROLLER_PROGRESS">
+      <wip since="2026-07"/>
+      <description>Progress of the current Nav Controller item.</description>
+      <field type="uint8_t" name="percentage_complete" invalid="UINT8_MAX">Percentage complete. Set to UINT8_MAX if unknown.</field>
+      <field type="float" name="distance_remaining" units="m" invalid="NaN">Distance remaining until the current Nav Controller item is complete. Set to NaN if unknown, or not applicable.</field>
+      <field type="float" name="time_remaining" units="s" invalid="NaN">Time remaining until the current Nav Controller item is complete. Set to NaN if unknown, or not applicable.</field>
+      <field type="float" name="count_remaining" invalid="NaN">Count remaining until the current Nav Controller item is complete. Set to NaN if unknown, or not applicable.</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission item type.</field>
+      <field type="uint16_t" name="seq">Sequence (mission item number). Set to 0 if not a mission item.</field>
+      <field type="int32_t" name="target_x" invalid="INT32_MAX">X pos/Latitude of nav target. Set to INT32_MAX if no target, or to use the location of the corresponding mission item.</field>
+      <field type="int32_t" name="target_y" invalid="INT32_MAX">Y pos/Longitude of nav target. Set to INT32_MAX if no target, or to use the location of the corresponding mission item.</field>
+      <field type="float" name="target_z" units="m" invalid="NaN">Z pos/Altitude of nav target. Set to NaN if no target, or to use the location of the corresponding mission item.</field>
+      <field type="uint8_t" name="target_frame" enum="MAV_FRAME">Coordinate frame of target.</field>
+    </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
       <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_START).</field>
