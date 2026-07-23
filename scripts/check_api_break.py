@@ -120,14 +120,8 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
 
 
 def get_base_commit() -> str:
-    base_ref = os.getenv("GITHUB_BASE_REF") or "master"
-    subprocess.run(
-        ["git", "fetch", "--no-tags", "origin", base_ref],
-        check=False,
-        stderr=subprocess.DEVNULL,
-    )
     return subprocess.check_output(
-        ["git", "merge-base", f"origin/{base_ref}", "HEAD"], text=True
+        ["git", "merge-base", "origin/master", "HEAD"], text=True
     ).strip()
 
 def get_changed_xml_files(base: str) -> List[str]:
