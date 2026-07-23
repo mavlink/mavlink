@@ -454,6 +454,21 @@
         <description>Ranging Beacon</description>
       </entry>
     </enum>
+    <enum name="MAV_MANUAL_INPUT_SOURCE">
+      <description>Source of manual control input currently selected by the autopilot's manual control arbitration.</description>
+      <entry value="0" name="MAV_MANUAL_INPUT_SOURCE_NONE">
+        <description>No manual input messages are currently being provided.</description>
+      </entry>
+      <entry value="1" name="MAV_MANUAL_INPUT_SOURCE_RC">
+        <description>Manual input messages are being provided by a radio control (RC) receiver.</description>
+      </entry>
+      <entry value="2" name="MAV_MANUAL_INPUT_SOURCE_MAVLINK">
+        <description>Manual input messages are being provided by a MAVLink enabled input device (e.g. via MANUAL_CONTROL messages). The specific device is identified by the sender_system_id and sender_component_id fields.</description>
+      </entry>
+      <entry value="3" name="MAV_MANUAL_INPUT_SOURCE_MIXED">
+        <description>Manual input messages are being provided simultaneously by both a radio control (RC) receiver and a MAVLink enabled input device.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -662,6 +677,27 @@
       <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_ESTIMATOR_SENSOR_ENABLE).</field>
       <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
       <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
+    </message>
+    <message id="515" name="MANUAL_INPUT">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Status of the manual control input arbitration on the autopilot: which source is currently active, when a MAVLink enabled input device is selected, which system/component is providing it. Emitted by the autopilot for ground stations to display the active manual control source.</description>
+      <field type="uint8_t" name="source" enum="MAV_MANUAL_INPUT_SOURCE">Current manual control source active.</field>
+      <field type="uint8_t" name="sender_system_id">System ID of the MAVLink enabled input device currently providing manual control. 0 if the source is not a MAVLink enabled input device.</field>
+      <field type="uint8_t" name="sender_component_id">Component ID of the MAVLink enabled input device currently providing manual control. 0 if the source is not a MAVLink enabled input device.</field>
+      <field type="int16_t" name="x" minValue="-1000" maxValue="1000" invalid="INT16_MAX">X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.</field>
+      <field type="int16_t" name="y" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.</field>
+      <field type="int16_t" name="z" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are positive thrust, negative values are negative thrust.</field>
+      <field type="int16_t" name="r" minValue="-1000" maxValue="1000" invalid="INT16_MAX">R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with clockwise being 1000 and counter-clockwise being -1000, and the yaw of a vehicle.</field>
+      <field type="uint32_t" name="buttons">A bitfield corresponding to the joystick buttons' 0-31 current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.</field>
+      <field type="int16_t" name="s" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Pitch-only-axis, normalized to the range [-1000,1000]. Generally corresponds to pitch on vehicles with additional degrees of freedom. A value of INT16_MAX indicates that this axis is invalid.</field>
+      <field type="int16_t" name="t" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Roll-only-axis, normalized to the range [-1000,1000]. Generally corresponds to roll on vehicles with additional degrees of freedom. A value of INT16_MAX indicates that this axis is invalid.</field>
+      <field type="int16_t" name="aux1" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Aux continuous input field 1. Normalized in the range [-1000,1000]. Purpose defined by recipient. A value of INT16_MAX indicates that this axis is invalid.</field>
+      <field type="int16_t" name="aux2" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Aux continuous input field 2. Normalized in the range [-1000,1000]. Purpose defined by recipient. A value of INT16_MAX indicates that this axis is invalid.</field>
+      <field type="int16_t" name="aux3" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Aux continuous input field 3. Normalized in the range [-1000,1000]. Purpose defined by recipient. A value of INT16_MAX indicates that this axis is invalid.</field>
+      <field type="int16_t" name="aux4" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Aux continuous input field 4. Normalized in the range [-1000,1000]. Purpose defined by recipient. A value of INT16_MAX indicates that this axis is invalid.</field>
+      <field type="int16_t" name="aux5" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Aux continuous input field 5. Normalized in the range [-1000,1000]. Purpose defined by recipient. A value of INT16_MAX indicates that this axis is invalid.</field>
+      <field type="int16_t" name="aux6" minValue="-1000" maxValue="1000" invalid="INT16_MAX">Aux continuous input field 6. Normalized in the range [-1000,1000]. Purpose defined by recipient. A value of INT16_MAX indicates that this axis is invalid.</field>
     </message>
   </messages>
 </mavlink>
