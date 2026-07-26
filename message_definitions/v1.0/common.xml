@@ -8244,6 +8244,8 @@
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
       <field type="uint32_t" name="properties" enum="MAV_MODE_PROPERTY">Mode properties.</field>
       <field type="char[35]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
+      <extensions/>
+      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever the set of AVAILABLE_MODES changes and should match value of AVAILABLE_MODES_MONITOR.</field>
     </message>
     <message id="436" name="CURRENT_MODE">
       <description>Get the current mode.
@@ -8263,7 +8265,7 @@
         It should be streamed at low rate (nominally 0.3 Hz).
         See https://mavlink.io/en/services/standard_modes.html
       </description>
-      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically).</field>
+      <field type="uint8_t" name="seq">Sequence number. The iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically). 0 initially. 1 on first change of mode set.</field>
     </message>
     <message id="440" name="ILLUMINATOR_STATUS">
       <description>Illuminator status</description>
