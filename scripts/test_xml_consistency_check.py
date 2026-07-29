@@ -61,10 +61,10 @@ class ConsistencyCheckTestCase(unittest.TestCase):
 
 
 def make_enum_entry(name, bitmask):
+    bitmask_attr = ' bitmask="true"' if bitmask else ""
     enum = parse_enum(
-        '<enum name="%s"%s><entry name="%s_A" value="1"/>'
-        '<entry name="%s_B" value="2"/></enum>'
-        % (name, ' bitmask="true"' if bitmask else "", name, name)
+        f'<enum name="{name}"{bitmask_attr}><entry name="{name}_A" value="1"/>'
+        f'<entry name="{name}_B" value="2"/></enum>'
     )
     decoded = check_enum(enum, "test.xml")
     return {

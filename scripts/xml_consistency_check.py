@@ -37,7 +37,7 @@ def warn(message):
     pre-existing ones."""
     global warning_count, allowed_count
     if message in allowlist:
-        print("[allowed] %s" % message)
+        print(f"[allowed] {message}")
         allowed_count += 1
         matched_allowlist.add(message)
     else:
@@ -56,7 +56,7 @@ def check_enum(enum, file_name):
             bitmask = value == 'true'
 
     if name is None:
-        raise Exception("%s: No name for Enum: %s" % (file_name, enum))
+        raise Exception(f"{file_name}: No name for Enum: {enum}")
 
     values = []
     enumEntries = enum.find_all('entry')
@@ -66,13 +66,12 @@ def check_enum(enum, file_name):
     # Check for duplicate values
     for a, b in itertools.combinations(values, 2):
         if a == b:
-            warn("%s: Enum: %s duplicate value %i" %
-                 (file_name, name, a))
+            warn(f"{file_name}: Enum: {name} duplicate value {a}")
 
     # Check if should be marked as a bitmask
     contains_zero = 0 in values
     if bitmask and contains_zero:
-        warn("%s: Enum: %s bitmask should not contain 0" % (file_name, name))
+        warn(f"{file_name}: Enum: {name} bitmask should not contain 0")
 
     # Need at least three values to tell if something should be a bitmask
     # 1,2,4 vs 1,2,3 (assuming bits added sequentially)
@@ -91,12 +90,10 @@ def check_enum(enum, file_name):
                 break
 
         if not bitmask and not overlap:
-            warn("%s: Enum: %s should be a marked as bitmask?" %
-                 (file_name, name))
+            warn(f"{file_name}: Enum: {name} should be a marked as bitmask?")
 
         if bitmask and overlap:
-            warn("%s: Enum: %s should be not be a marked as bitmask" %
-                 (file_name, name))
+            warn(f"{file_name}: Enum: {name} should be not be a marked as bitmask")
 
     return {"name": name, "bitmask": bitmask, "values": values}
 
@@ -109,14 +106,12 @@ def check_field(file_name, msg_name, field, enums):
 
     # Enum with units doesn't make sense
     if enum is not None and units is not None:
-        warn("%s: Message %s field %s has both units and enum" %
-             (file_name, msg_name, name))
+        warn(f"{file_name}: Message {msg_name} field {name} has both units and enum")
 
     if enum is not None:
         # Enum should exist
         if enum not in enums:
-            warn("%s: Message %s field %s enum %s does not exist" %
-                 (file_name, msg_name, name, enum))
+            warn(f"{file_name}: Message {msg_name} field {name} enum {enum} does not exist")
             return
 
         enums[enum]["used"] = True
@@ -126,8 +121,7 @@ def check_field(file_name, msg_name, field, enums):
         # bitmask field still needs display="bitmask" as its only way to
         # signal that, so that case is not deprecated.
         if display is not None and enums[enum].get("bitmask"):
-            warn("%s: Message %s field %s display=\"%s\" is deprecated" %
-                 (file_name, msg_name, name, display))
+            warn(f'{file_name}: Message {msg_name} field {name} display="{display}" is deprecated')
 
         # An enum with no entries has min/max set to None during aggregation
         # and was already warned about there, so there's nothing to range-check.
@@ -137,12 +131,10 @@ def check_field(file_name, msg_name, field, enums):
         # Enum should fit in given type
         type = field.get('type').split('[')[0]
         if type not in types:
-            warn("%s: Message %s field %s enum %s unexpected type: %s" %
-                 (file_name, msg_name, name, enum, type))
+            warn(f"{file_name}: Message {msg_name} field {name} enum {enum} unexpected type: {type}")
 
         elif (enums[enum]["min"] < types[type][0]) or (enums[enum]["max"] > types[type][1]):
-            warn("%s: Message %s field %s enum %s does not fit in type: %s" %
-                 (file_name, msg_name, name, enum, type))
+            warn(f"{file_name}: Message {msg_name} field {name} enum {enum} does not fit in type: {type}")
 
 
 def check_cmd_param(file_name, cmd_name, entry, enums):
@@ -155,14 +147,12 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
 
     # Enum with units doesn't make sense
     if enum is not None and units is not None:
-        warn("%s: Command %s param %s has both units and enum" %
-             (file_name, cmd_name, index))
+        warn(f"{file_name}: Command {cmd_name} param {index} has both units and enum")
 
     if enum is not None:
         # Enum should exist
         if enum not in enums:
-            warn("%s: Command %s param %s enum %s does not exist" %
-                 (file_name, cmd_name, index, enum))
+            warn(f"{file_name}: Command {cmd_name} param {index} enum {enum} does not exist")
             return
 
         enums[enum]["used"] = True
@@ -172,20 +162,17 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
         max = float(maxValue)
         range = max - min
         if range <= 0:
-            warn("%s: Command %s param %s min and max invalid got %f => %f" %
-                 (file_name, cmd_name, index, min, max))
+            warn(f"{file_name}: Command {cmd_name} param {index} min and max invalid got {min:f} => {max:f}")
             return
 
         if increment is not None:
             step = float(increment)
             if range % step != 0:
-                warn("%s: Command %s param %s range %f => %f incompatible with increment %f" %
-                     (file_name, cmd_name, index, min, max, step))
+                warn(f"{file_name}: Command {cmd_name} param {index} range {min:f} => {max:f} incompatible with increment {step:f}")
                 return
 
             if (step == 1) and range <= 20:
-                warn("%s: Command %s param %s min, max close and increment of 1, should there be a enum?" %
-                     (file_name, cmd_name, index))
+                warn(f"{file_name}: Command {cmd_name} param {index} min, max close and increment of 1, should there be a enum?")
                 return
 
     # There are a huge amount or errors here, commented out for now
@@ -250,10 +237,9 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
                 if line and not line.startswith('#'):
                     allowlist.add(line)
     elif args.allowlist is not None:
-        raise SystemExit("Allowlist file not found: %s" % allowlist_path)
+        raise SystemExit(f"Allowlist file not found: {allowlist_path}")
     else:
-        print("Note: no allowlist found at %s; all warnings will count toward the total." %
-              allowlist_path)
+        print(f"Note: no allowlist found at {allowlist_path}; all warnings will count toward the total.")
 
     print(f"Files: {files}")
 
@@ -306,7 +292,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
             values += enum['enum'][i]['values']
 
         if not values:
-            warn("%s: Enum: %s has no entries" % (enum['file'], name))
+            warn(f"{enum['file']}: Enum: {name} has no entries")
             # Leave min/max defined (as None) so downstream field checks can
             # detect the empty enum rather than hitting a KeyError.
             enum['min'] = enum['max'] = None
@@ -316,11 +302,10 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
         enum['max'] = max(values)
 
         if bitmask_conflict:
-            warn("%s: Enum: %s has conflicting bitmask definitions" %
-                 (enum['file'],  name))
+            warn(f"{enum['file']}: Enum: {name} has conflicting bitmask definitions")
 
         if values_conflict:
-            warn("%s: Enum: %s has conflicting values" % (enum['file'],  name))
+            warn(f"{enum['file']}: Enum: {name} has conflicting values")
 
     # Check all fields against enums
     for key in xml:
@@ -351,8 +336,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
                     # reported as a duplicate and as out of range.
                     if idx is not None:
                         if idx in seen_indices:
-                            warn("%s: Command %s param index %s is duplicated" %
-                                 (key, name, idx))
+                            warn(f"{key}: Command {name} param index {idx} is duplicated")
                         else:
                             seen_indices.add(idx)
 
@@ -360,19 +344,16 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
                     try:
                         idx_int = int(idx)
                         if idx_int < 1 or idx_int > 7:
-                            warn("%s: Command %s param index %s is out of range" %
-                                 (key, name, idx))
+                            warn(f"{key}: Command {name} param index {idx} is out of range")
                     except (TypeError, ValueError):
-                        warn("%s: Command %s param index %s is not an integer" %
-                             (key, name, idx))
+                        warn(f"{key}: Command {name} param index {idx} is not an integer")
 
     # Check for unused enums. Defining enums not referenced by any message or
     # command is a legitimate use of this library, so intended orphans should be
     # added to the allowlist rather than removed.
     for key in all_enums:
         if all_enums[key]["used"] is False:
-            warn("%s: Enum: %s is unused" %
-                 (all_enums[key]['file'], all_enums[key]["name"]))
+            warn(f"{all_enums[key]['file']}: Enum: {all_enums[key]['name']} is unused")
 
     # Detect stale allowlist entries that no longer match any warning (e.g. a
     # warning was fixed, or its message was reworded). Only meaningful on a full
@@ -384,23 +365,23 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
     if args.file is None:
         stale = sorted(allowlist - matched_allowlist)
         for entry in stale:
-            print("Stale allowlist entry (no longer matches any warning): %s" % entry)
+            print(f"Stale allowlist entry (no longer matches any warning): {entry}")
 
     # Give summary for possible CI usage
     if allowed_count:
-        print("\n%i allowlisted warning(s) suppressed." % allowed_count)
+        print(f"\n{allowed_count} allowlisted warning(s) suppressed.")
 
     if stale:
-        print("\n%i stale allowlist entry(ies) no longer match any warning and "
-              "should be removed from %s." % (len(stale), allowlist_path))
+        print(f"\n{len(stale)} stale allowlist entry(ies) no longer match any warning and "
+              f"should be removed from {allowlist_path}.")
 
-    summary = ("Found %i new consistency warning(s) and %i stale allowlist "
-               "entry(ies) in: %s" % (warning_count, len(stale), files))
+    summary = (f"Found {warning_count} new consistency warning(s) and {len(stale)} stale allowlist "
+               f"entry(ies) in: {files}")
 
     if args.exception and (warning_count > 0 or stale):
         raise Exception(summary + "\n")
 
-    print("\n%s\n" % summary)
+    print(f"\n{summary}\n")
 
 
 if __name__ == "__main__":
