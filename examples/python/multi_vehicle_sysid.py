@@ -3,7 +3,7 @@
 Example: multi-vehicle SYSID disambiguation using pymavlink.
 
 Multiple vehicles on one link get demultiplexed into per-(sysid, compid)
-state, tracked for liveness, and each discovered autopilot is targeted
+state, tracked for liveness, and each discovered mavlink node is targeted
 with a command in turn -- demonstrating that traffic from many vehicles
 sharing one link can be told apart and addressed individually.
 """
