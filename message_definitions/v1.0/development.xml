@@ -454,6 +454,21 @@
         <description>Ranging Beacon</description>
       </entry>
     </enum>
+    <enum name="MAV_MANUAL_INPUT_SOURCE">
+      <description>Source of manual control input currently selected by the autopilot's manual control arbitration.</description>
+      <entry value="0" name="MAV_MANUAL_INPUT_SOURCE_NONE">
+        <description>No manual input messages are currently being provided.</description>
+      </entry>
+      <entry value="1" name="MAV_MANUAL_INPUT_SOURCE_RC">
+        <description>Manual input messages are being provided by a radio control (RC) receiver.</description>
+      </entry>
+      <entry value="2" name="MAV_MANUAL_INPUT_SOURCE_MAVLINK">
+        <description>Manual input messages are being provided by a MAVLink enabled input device (e.g. via MANUAL_CONTROL messages). The specific device is identified by the sender_system_id and sender_component_id fields.</description>
+      </entry>
+      <entry value="3" name="MAV_MANUAL_INPUT_SOURCE_MIXED">
+        <description>Manual input messages are being provided simultaneously by both a radio control (RC) receiver and a MAVLink enabled input device.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -662,6 +677,14 @@
       <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_ESTIMATOR_SENSOR_ENABLE).</field>
       <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
       <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
+    </message>
+    <message id="515" name="MANUAL_INPUT_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Status of the manual control input arbitration on the autopilot: which source is currently active and, when a MAVLink enabled input device is selected, which system/component is providing it. Emitted by the autopilot for ground stations to display the active manual control source.</description>
+      <field type="uint8_t" name="source" enum="MAV_MANUAL_INPUT_SOURCE">Current manual control source active.</field>
+      <field type="uint8_t" name="sender_system_id">System ID of the MAVLink enabled input device currently providing manual control. Set whenever a MAVLink enabled input device is contributing, i.e. for both MAV_MANUAL_INPUT_SOURCE_MAVLINK and MAV_MANUAL_INPUT_SOURCE_MIXED. 0 otherwise.</field>
+      <field type="uint8_t" name="sender_component_id">Component ID of the MAVLink enabled input device currently providing manual control. Set whenever a MAVLink enabled input device is contributing, i.e. for both MAV_MANUAL_INPUT_SOURCE_MAVLINK and MAV_MANUAL_INPUT_SOURCE_MIXED. 0 otherwise.</field>
     </message>
   </messages>
 </mavlink>
