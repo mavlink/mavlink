@@ -154,7 +154,7 @@ class Application(Frame):
 
 
         if os.path.isdir(self.out_value.get()):
-            if not tkinter.messagebox.askokcancel('Overwrite Headers?','The output directory \'{0}\' already exists. Headers may be overwritten if they already exist.'.format(self.out_value.get())):
+            if not tkinter.messagebox.askokcancel('Overwrite Headers?', f"The output directory '{self.out_value.get()}' already exists. Headers may be overwritten if they already exist."):
                 return
 
         # Generate headers
@@ -166,7 +166,7 @@ class Application(Frame):
 
         except Exception as ex:
             exStr = formatErrorMessage(str(ex))
-            tkinter.messagebox.showerror('Error Generating Headers','{0!s}'.format(exStr))
+            tkinter.messagebox.showerror('Error Generating Headers', f"{exStr}")
             return
 
 """\
