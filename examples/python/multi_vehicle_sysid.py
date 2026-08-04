@@ -260,11 +260,11 @@ def main():
         # sent once per vehicle, and each ACK is matched back to the
         # (sysid, compid) it came from rather than to "whatever replied".
         for sysid, compid in autopilots:
-            print(f"Sending ARM to sysid={sysid} compid={compid}")
+            print(f"Requesting AUTOPILOT_VERSION from sysid={sysid} compid={compid}")
             ack = tracker.send_command_with_ack(
                 sysid, compid,
-                mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                [1.0]
+                mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,
+                [mavutil.mavlink.MAVLINK_MSG_ID_AUTOPILOT_VERSION]
             )
             if ack is not None:
                 print(f"  ACK from sysid={sysid} compid={compid}: {ack}")
