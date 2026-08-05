@@ -233,7 +233,7 @@ def main():
     )
 
     parser = argparse.ArgumentParser(description="Multi-vehicle SYSID disambiguation example")
-    parser.add_argument("--master", default="udp:127.0.0.1:14550", help="MAVLink connection string")
+    parser.add_argument("--master", default="udpin:127.0.0.1:14550", help="MAVLink connection string")
     parser.add_argument(
         "--discovery-time", type=float, default=3.0,
         help="Seconds to wait for vehicles to be discovered before sending commands"
