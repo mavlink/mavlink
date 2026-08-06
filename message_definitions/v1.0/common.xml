@@ -8245,7 +8245,7 @@
       <field type="uint32_t" name="properties" enum="MAV_MODE_PROPERTY">Mode properties.</field>
       <field type="char[35]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
       <extensions/>
-      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever the set of AVAILABLE_MODES changes and should match value of AVAILABLE_MODES_MONITOR. Note, a GCS must ignore 0 values.</field>
+      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever the set of AVAILABLE_MODES changes and should match value of AVAILABLE_MODES_MONITOR. Note, a GCS must ignore 0 values, and should re-start the download if the value changes part-way through fetching modes.</field>
     </message>
     <message id="436" name="CURRENT_MODE">
       <description>Get the current mode.
