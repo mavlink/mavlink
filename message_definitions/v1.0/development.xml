@@ -885,6 +885,7 @@
       <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces.</field>
       <field type="float" name="horizontal_fov" units="rad" minValue="0" invalid="NaN">Horizontal Field of View (angle) where the distance measurement is valid. NaN if unknown.</field>
       <field type="float" name="vertical_fov" units="rad" minValue="0" invalid="NaN">Vertical Field of View (angle) where the distance measurement is valid. NaN if unknown.</field>
+      <extensions/>
       <field type="float[4]" name="quaternion" invalid="[0]">Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if orientation is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid.</field>
     </message>
     <message id="517" name="DISTANCE_SENSOR_V2">
@@ -894,7 +895,6 @@
       <field type="uint32_t " name="time_boot_ms" units="ms">Timestamp (time since system boot)</field>
       <field type="uint8_t" name="id" instance="true">Sensor ID. Matches the id field of DISTANCE_SENSOR_INFO.</field>
       <field type="float" name="distance" units="m" invalid="NaN">Current distance reading. NaN if not provided.</field>
-      <field type="float" name="covariance" units="m^2" invalid="NaN">Measurement variance. NaN if unknown.</field>
       <field type="int8_t" name="signal_quality" units="%" invalid="INT8_MAX">Signal quality (sensor-type specific). Represents the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. Values: [0-100], 0 = unusable signal, 100 = perfect signal. INT8_MAX = unknown/not provided.</field>
     </message>
   </messages>
