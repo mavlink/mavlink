@@ -895,7 +895,7 @@
       <field type="uint8_t" name="id" instance="true">Sensor ID. Matches the id field of DISTANCE_SENSOR_INFO.</field>
       <field type="float" name="distance" units="m" invalid="NaN">Current distance reading. NaN if not provided.</field>
       <field type="float" name="covariance" units="m^2" invalid="NaN">Measurement variance. NaN if unknown.</field>
-      <field type="int8_t" name="signal_quality" units="%" invalid="-1">Signal quality of the sensor. Specific to each sensor type, representing the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. Values: [0-100], 0 = invalid signal, 100 = perfect signal. -1 = unknown/not provided.</field>
+      <field type="int8_t" name="signal_quality" units="%" invalid="INT8_MAX">Signal quality (sensor-type specific). Represents the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. Values: [0-100], 0 = unusable signal, 100 = perfect signal. INT8_MAX = unknown/not provided.</field>
     </message>
   </messages>
 </mavlink>
