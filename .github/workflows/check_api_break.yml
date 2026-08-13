@@ -5,9 +5,13 @@ on:
   push:
   workflow_dispatch:
 
+# This job runs against untrusted PR content (it checks out and executes
+# the PR branch's own script/tests), so it must not hold any token beyond
+# the default read-only access - not even for same-repo PRs. It writes any
+# PR comment it wants posted to an artifact instead of calling the GitHub
+# API itself; see post_api_break_comment.yml for why and how that's posted.
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   check-api-break:
@@ -30,3 +34,12 @@ jobs:
 
       - name: Run API break check
         run: python scripts/check_api_break.py
+
+      - name: Upload PR comment artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-break-comment
+          path: api-break-comment/
+          retention-days: 1
+          if-no-files-found: ignore

@@ -1,0 +1,101 @@
+name: Post API Break Comment
+
+# Posts the PR comment prepared by check_api_break.yml.
+#
+# It's split into its own workflow, triggered by workflow_run rather than
+# posting directly from check_api_break.yml, because that job checks out
+# and executes untrusted PR content: for `pull_request` runs triggered from
+# a fork, GITHUB_TOKEN is always read-only there no matter what permissions
+# are requested, and it must stay that way. A workflow_run job, by
+# contrast, always runs the workflow file and permissions from the base
+# repo's default branch, with a normal token - regardless of where the
+# triggering run came from - which is what lets it post the comment.
+#
+# To keep that token safe, this job never checks out or runs any code from
+# the pull request: it only downloads the plain-text comment body that the
+# trusted script already rendered, and posts it as-is via the GitHub CLI.
+#
+# It does NOT trust a PR number from the artifact: check_api_break.yml runs
+# the PR branch's own workflow file and script, so a malicious PR could
+# make that job write an arbitrary PR number to the artifact and get this
+# privileged job to post to any PR/issue in the repo (a known "artifact
+# poisoning" pattern - see GitHub Security Lab's "Keeping your GitHub
+# Actions and workflows secure" series). Instead, the PR number is looked
+# up from github.event.workflow_run.head_sha, which is set by GitHub from
+# the run being reported on and can't be forged by PR content.
+#
+# The comment body is stamped with a hidden COMMENT_MARKER (see
+# check_api_break.py) so re-runs on the same PR update that one comment
+# instead of piling up a new one on every push. The lookup for the comment
+# to update is scoped to comments whose *author* is this workflow's own
+# github-actions[bot] identity, not just ones containing the marker text -
+# `user.login` is set by GitHub from the authenticated actor and can't be
+# forged by a PR comment, whereas the marker text alone could be copied
+# into an unrelated comment to trick this job into editing someone else's.
+on:
+  workflow_run:
+    workflows: ["Check MAVLink API Breaks"]
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  actions: read
+
+jobs:
+  comment:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download PR comment artifact
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: api-break-comment
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post comment
+        if: steps.download.outcome == 'success' && hashFiles('comment.md') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          # Look up the real PR for this run's commit via the API rather than
+          # trusting any PR number the artifact might contain - see the header
+          # comment above for why the artifact can't be trusted for this.
+          pr_number="$(
+            gh api "repos/${REPO}/commits/${HEAD_SHA}/pulls" \
+              --jq '.[0].number // empty'
+          )"
+
+          if [[ -z "$pr_number" ]]; then
+            echo "::error::No open pull request found for commit $HEAD_SHA."
+            exit 1
+          fi
+          if ! [[ "$pr_number" =~ ^[0-9]+$ ]]; then
+            echo "::error::Unexpected PR number lookup result: $pr_number"
+            exit 1
+          fi
+
+          # Must be our own bot's comment, not merely one containing the marker text -
+          # anyone can post a comment with that text, but user.login is set by GitHub
+          # from the authenticated actor and can't be spoofed by a PR commenter. The
+          # marker is a fixed literal (kept in sync with COMMENT_MARKER in
+          # check_api_break.py), so it's safe to inline into the jq filter as-is.
+          existing_id="$(
+            gh api "repos/${REPO}/issues/${pr_number}/comments" --paginate \
+              --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- mavlink-api-break-check -->"))) | .id' \
+              | tail -n1
+          )"
+
+          if [[ -n "$existing_id" ]]; then
+            echo "Updating existing comment $existing_id on #$pr_number."
+            gh api --method PATCH "repos/${REPO}/issues/comments/${existing_id}" -F body=@comment.md
+          else
+            echo "No existing comment found, creating a new one on #$pr_number."
+            gh pr comment "$pr_number" --repo "$REPO" --body-file comment.md
+          fi
