@@ -15,6 +15,11 @@ on:
 permissions:
   contents: read
 
+# Cancel in-progress runs for the same branch/PR to save CI minutes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   format:
     name: Formatting check
@@ -67,7 +72,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.x']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.x']
     steps:
       - uses: actions/checkout@v7
         with:
@@ -131,15 +136,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['14', '16', '17', '18', 'lts/*']
+        node-version: ['latest', 'lts/*', 'lts/-1', 'lts/-2', '18']
     steps:
       - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
-      - name: Set up Python 3.8
+      - name: Set up Python 3.10
         uses: actions/setup-python@v7
         with:
-          python-version: 3.8
+          python-version: '3.10'
       - name: Install dependencies
         run: |
           pip install future lxml
@@ -161,10 +166,10 @@ jobs:
       - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
-      - name: Set up Python 3.8
+      - name: Set up Python 3.10
         uses: actions/setup-python@v7
         with:
-          python-version: 3.8
+          python-version: '3.10'
       - name: Install dependencies
         run: |
           pip install future lxml
