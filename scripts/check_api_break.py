@@ -22,7 +22,6 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
-from urllib import error, request
 
 from lxml import etree
 
@@ -160,38 +159,41 @@ def get_pull_request_info() -> Optional[Tuple[str, int]]:
     return None
 
 
-def post_pr_comment(body: str) -> bool:
-    """Post a comment to the pull request."""
+PR_COMMENT_ARTIFACT_DIR = "api-break-comment"
+
+
+def write_pr_comment_artifact(body: str) -> bool:
+    """Write the comment body to disk as a build artifact.
+
+    This job runs against untrusted PR content (it checks out and executes
+    the PR branch's own script/tests), and for `pull_request` runs triggered
+    from a fork, GITHUB_TOKEN is always read-only regardless of the
+    permissions granted to this workflow. So this job must never hold a
+    token, and must never try to call the GitHub API directly.
+
+    Instead it writes the comment to disk; a separate, trusted workflow
+    (triggered by `workflow_run`, which does not check out or execute any
+    PR content) picks up this artifact and posts the actual comment with a
+    token that does have write access. That workflow looks up the target
+    PR number itself from trustworthy `workflow_run` event data rather than
+    from anything written here, since this job's own code (this script and
+    its workflow file) is exactly the untrusted PR content it can't hold a
+    token against - a PR number written here could just as easily be
+    forged.
+    """
     pr_info = get_pull_request_info()
     if not pr_info:
-        print("No pull request context found, skipping PR comment.")
+        print("No pull request context found, skipping PR comment artifact.")
         return False
 
-    repo, pr_number = pr_info
-    token = os.getenv("GITHUB_TOKEN")
-    if not token:
-        print("GITHUB_TOKEN not set, skipping PR comment.")
-        return False
+    _repo, pr_number = pr_info
 
-    url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
-    data = json.dumps({"body": body}).encode()
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github+json",
-        "User-Agent": "mavlink-check-api-break",
-        "Content-Type": "application/json",
-    }
+    os.makedirs(PR_COMMENT_ARTIFACT_DIR, exist_ok=True)
+    with open(os.path.join(PR_COMMENT_ARTIFACT_DIR, "comment.md"), "w", encoding="utf-8") as comment_file:
+        comment_file.write(body)
 
-    try:
-        with request.urlopen(request.Request(url, data=data, headers=headers, method="POST")):
-            print(f"Posted PR comment about message/enum removals to #{pr_number}.")
-        return True
-    except error.HTTPError as exception:
-        print(f"Failed to post PR comment (HTTP {exception.code}): {exception.reason}")
-    except error.URLError as exception:
-        print(f"Failed to post PR comment (network): {exception.reason}")
-
-    return False
+    print(f"Wrote PR comment artifact for #{pr_number}.")
+    return True
 
 
 def describe_mutation(key: NameKey, old_a: Dict[str, Any], new_a: Dict[str, Any]) -> str:
@@ -227,12 +229,18 @@ def find_mutations(
     return mutation_descs
 
 
+# Identifies the bot's own comment across runs so it can be updated in place
+# instead of accumulating a new comment on every push. Must stay in sync with
+# the marker check in post_api_break_comment.yml.
+COMMENT_MARKER = "<!-- mavlink-api-break-check -->"
+
+
 def build_removal_comment(
     removed_by_file: Dict[str, List[NameKey]],
     mutations_by_file: Optional[Dict[str, List[str]]] = None,
 ) -> str:
     """Format a PR comment listing removed messages/enums and attribute mutations."""
-    lines: List[str] = []
+    lines: List[str] = [COMMENT_MARKER, ""]
 
     if removed_by_file:
         lines.extend(["Detected removed MAVLink messages or enums:", ""])
@@ -325,7 +333,7 @@ def main() -> None:
                 for desc in descs:
                     print(f"   - {desc}")
 
-        post_pr_comment(build_removal_comment(removals_for_comment, mutations_for_comment))
+        write_pr_comment_artifact(build_removal_comment(removals_for_comment, mutations_for_comment))
 
     if breaking_by_file:
         for xml, descs in breaking_by_file.items():
