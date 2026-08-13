@@ -163,7 +163,7 @@ PR_COMMENT_ARTIFACT_DIR = "api-break-comment"
 
 
 def write_pr_comment_artifact(body: str) -> bool:
-    """Write the PR number and comment body to disk as a build artifact.
+    """Write the comment body to disk as a build artifact.
 
     This job runs against untrusted PR content (it checks out and executes
     the PR branch's own script/tests), and for `pull_request` runs triggered
@@ -174,7 +174,12 @@ def write_pr_comment_artifact(body: str) -> bool:
     Instead it writes the comment to disk; a separate, trusted workflow
     (triggered by `workflow_run`, which does not check out or execute any
     PR content) picks up this artifact and posts the actual comment with a
-    token that does have write access.
+    token that does have write access. That workflow looks up the target
+    PR number itself from trustworthy `workflow_run` event data rather than
+    from anything written here, since this job's own code (this script and
+    its workflow file) is exactly the untrusted PR content it can't hold a
+    token against - a PR number written here could just as easily be
+    forged.
     """
     pr_info = get_pull_request_info()
     if not pr_info:
@@ -184,8 +189,6 @@ def write_pr_comment_artifact(body: str) -> bool:
     _repo, pr_number = pr_info
 
     os.makedirs(PR_COMMENT_ARTIFACT_DIR, exist_ok=True)
-    with open(os.path.join(PR_COMMENT_ARTIFACT_DIR, "pr_number.txt"), "w", encoding="utf-8") as pr_file:
-        pr_file.write(str(pr_number))
     with open(os.path.join(PR_COMMENT_ARTIFACT_DIR, "comment.md"), "w", encoding="utf-8") as comment_file:
         comment_file.write(body)
 

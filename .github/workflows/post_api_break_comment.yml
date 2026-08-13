@@ -12,9 +12,17 @@ name: Post API Break Comment
 # triggering run came from - which is what lets it post the comment.
 #
 # To keep that token safe, this job never checks out or runs any code from
-# the pull request: it only downloads the plain-text artifact (PR number +
-# comment body) that the trusted script already rendered, and posts it
-# as-is via the GitHub CLI.
+# the pull request: it only downloads the plain-text comment body that the
+# trusted script already rendered, and posts it as-is via the GitHub CLI.
+#
+# It does NOT trust a PR number from the artifact: check_api_break.yml runs
+# the PR branch's own workflow file and script, so a malicious PR could
+# make that job write an arbitrary PR number to the artifact and get this
+# privileged job to post to any PR/issue in the repo (a known "artifact
+# poisoning" pattern - see GitHub Security Lab's "Keeping your GitHub
+# Actions and workflows secure" series). Instead, the PR number is looked
+# up from github.event.workflow_run.head_sha, which is set by GitHub from
+# the run being reported on and can't be forged by PR content.
 #
 # The comment body is stamped with a hidden COMMENT_MARKER (see
 # check_api_break.py) so re-runs on the same PR update that one comment
@@ -48,16 +56,28 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Post comment
-        if: steps.download.outcome == 'success' && hashFiles('pr_number.txt', 'comment.md') != ''
+        if: steps.download.outcome == 'success' && hashFiles('comment.md') != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
 
-          pr_number="$(cat pr_number.txt)"
+          # Look up the real PR for this run's commit via the API rather than
+          # trusting any PR number the artifact might contain - see the header
+          # comment above for why the artifact can't be trusted for this.
+          pr_number="$(
+            gh api "repos/${REPO}/commits/${HEAD_SHA}/pulls" \
+              --jq '.[0].number // empty'
+          )"
+
+          if [[ -z "$pr_number" ]]; then
+            echo "::error::No open pull request found for commit $HEAD_SHA."
+            exit 1
+          fi
           if ! [[ "$pr_number" =~ ^[0-9]+$ ]]; then
-            echo "::error::pr_number.txt did not contain a plain integer: $pr_number"
+            echo "::error::Unexpected PR number lookup result: $pr_number"
             exit 1
           fi
 
