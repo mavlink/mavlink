@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+set -o pipefail
 
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
@@ -40,7 +41,7 @@ echo "$xml_files"
 ret=0
 for f in $xml_files
 do
-    xmllint -format "${f}" > "${f}".new
+    xmllint -format "${f}" | sed 's/[[:blank:]]*$//' > "${f}".new
     case "$mode" in
     format)
         if ! cmp "${f}" "${f}".new >/dev/null 2>&1
