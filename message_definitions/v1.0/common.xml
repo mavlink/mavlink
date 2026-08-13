@@ -220,6 +220,12 @@
       <entry value="32" name="MAV_SYS_STATUS_SENSOR_3D_ACCEL4">
         <description>0x20 4th 3D accelerometer</description>
       </entry>
+      <entry value="64" name="MAV_SYS_STATUS_SENSOR_3D_MAG3">
+        <description>0x40 3rd 3D magnetometer</description>
+      </entry>
+      <entry value="128" name="MAV_SYS_STATUS_SENSOR_3D_MAG4">
+        <description>0x80 4th 3D magnetometer</description>
+      </entry>
     </enum>
     <enum name="MAV_FRAME">
       <description>Coordinate frames used by MAVLink. Not all frames are supported by all commands, messages, or vehicles.
@@ -1057,21 +1063,6 @@
         <description>Reset all parameters to default values.</description>
       </entry>
     </enum>
-    <enum name="PREFLIGHT_STORAGE_MISSION_ACTION">
-      <description>
-        Actions for reading and writing plan information (mission, rally points, geofence) between persistent and volatile storage when using MAV_CMD_PREFLIGHT_STORAGE.
-        (Commonly missions are loaded from persistent storage (flash/EEPROM) into volatile storage (RAM) on startup and written back when they are changed.)
-      </description>
-      <entry value="0" name="MISSION_READ_PERSISTENT">
-        <description>Read current mission data from persistent storage</description>
-      </entry>
-      <entry value="1" name="MISSION_WRITE_PERSISTENT">
-        <description>Write current mission data to persistent storage</description>
-      </entry>
-      <entry value="2" name="MISSION_RESET_DEFAULT">
-        <description>Erase all mission data stored on the vehicle (both persistent and volatile storage)</description>
-      </entry>
-    </enum>
     <enum name="REBOOT_SHUTDOWN_ACTION">
       <description>Reboot/shutdown action for selected component in MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN.</description>
       <entry value="0" name="REBOOT_SHUTDOWN_ACTION_NONE">
@@ -1724,7 +1715,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="198" name="MAV_CMD_DO_SET_ROI_SYSID">
+      <entry value="198" name="MAV_CMD_DO_SET_ROI_SYSID" hasLocation="false" isDestination="false">
         <description>Mount tracks system with specified system ID. Determination of target vehicle position may be done with GLOBAL_POSITION_INT or any other means. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message.</description>
         <param index="1" label="System ID" minValue="1" maxValue="255" increment="1">System ID</param>
         <param index="2" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
@@ -1999,7 +1990,7 @@
       <entry value="245" name="MAV_CMD_PREFLIGHT_STORAGE" hasLocation="false" isDestination="false">
         <description>Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.</description>
         <param index="1" label="Parameter Storage" enum="PREFLIGHT_STORAGE_PARAMETER_ACTION">Action to perform on the persistent parameter storage</param>
-        <param index="2" label="Mission Storage" enum="PREFLIGHT_STORAGE_MISSION_ACTION">Action to perform on the persistent mission storage</param>
+        <param index="2">Reserved</param>
         <param index="3" label="Logging Rate" units="Hz" minValue="-1" increment="1">Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, &gt; 1: logging rate (e.g. set to 1000 for 1000 Hz logging)</param>
         <param index="4">Reserved</param>
         <param index="5">Empty</param>
@@ -2111,7 +2102,7 @@
         <param index="6">Reserved</param>
         <param index="7">Reserved</param>
       </entry>
-      <entry value="420" name="MAV_CMD_INJECT_FAILURE">
+      <entry value="420" name="MAV_CMD_INJECT_FAILURE" hasLocation="false" isDestination="false">
         <description>Inject artificial failure for testing purposes. Note that autopilots should implement an additional protection before accepting this command such as a specific param setting.</description>
         <param index="1" label="Failure unit" enum="FAILURE_UNIT">The unit which is affected by the failure.</param>
         <param index="2" label="Failure type" enum="FAILURE_TYPE">The type how the failure manifests itself.</param>
@@ -2615,7 +2606,7 @@
         <param index="7">Reserved</param>
       </entry>
       <!-- from ardupilotmega.xml (hence ID is in that range) -->
-      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW">
+      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW" hasLocation="false" isDestination="false">
         <description>Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM field tables in the vehicle, given only the known yaw of the vehicle. If Latitude and longitude are both zero then use the current vehicle location.</description>
         <param index="1" label="Yaw" units="deg">Yaw of vehicle in earth frame.</param>
         <param index="2" label="CompassMask">CompassMask, 0 for all.</param>
@@ -4025,11 +4016,9 @@
         <description>Camera tracking in error state</description>
       </entry>
       <entry value="4" name="CAMERA_TRACKING_STATUS_FLAGS_MTI">
-        <wip/>
         <description>Camera Moving Target Indicators (MTI) are active</description>
       </entry>
       <entry value="8" name="CAMERA_TRACKING_STATUS_FLAGS_COASTING">
-        <wip/>
         <description>Camera tracking target is obscured and is being predicted</description>
       </entry>
     </enum>
@@ -8261,6 +8250,8 @@
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
       <field type="uint32_t" name="properties" enum="MAV_MODE_PROPERTY">Mode properties.</field>
       <field type="char[35]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
+      <extensions/>
+      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever the set of AVAILABLE_MODES changes and should match value of AVAILABLE_MODES_MONITOR. Note, a GCS must ignore 0 values, and should re-start the download if the value changes part-way through fetching modes.</field>
     </message>
     <message id="436" name="CURRENT_MODE">
       <description>Get the current mode.
@@ -8280,7 +8271,7 @@
         It should be streamed at low rate (nominally 0.3 Hz).
         See https://mavlink.io/en/services/standard_modes.html
       </description>
-      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically).</field>
+      <field type="uint8_t" name="seq">Sequence number. Iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically). 0 initially. 1 on first change of mode set.</field>
     </message>
     <message id="440" name="ILLUMINATOR_STATUS">
       <description>Illuminator status</description>
