@@ -306,6 +306,12 @@
       <entry value="64" name="GPS_SYSTEM_ERROR_OUTPUT_CONGESTION">
         <description>The GPS receiver is experiencing output congestion.</description>
       </entry>
+      <entry value="128" name="GPS_SYSTEM_ERROR_MULTI_CONSTELLATION_MISMATCH">
+        <description>Position or timing solutions from independent satellite constellations (e.g. GPS vs Galileo vs BeiDou) show excessive deviation, indicating possible constellation-specific interference or spoofing (distinct from receiver-level spoofing_state).</description>
+      </entry>
+      <entry value="256" name="GPS_SYSTEM_ERROR_RF_SATURATION">
+        <description>RF frontend automatic gain control is saturated / experiencing analog front-end compression (distinct from algorithmic jamming_state).</description>
+      </entry>
     </enum>
     <enum name="GPS_AUTHENTICATION_STATE">
       <description>Signal authentication state in a GPS receiver.</description>
@@ -713,6 +719,10 @@
       <field type="uint8_t" name="system_status_summary" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the overall status of the receiver, or 255 if not available.</field>
       <field type="uint8_t" name="gnss_signal_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the quality of incoming GNSS signals, or 255 if not available.</field>
       <field type="uint8_t" name="post_processing_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the estimated PPK quality, or 255 if not available.</field>
+      <extensions/>
+      <field type="uint8_t" name="cno_mean" minValue="0" maxValue="63" invalid="UINT8_MAX">Mean Carrier-to-Noise ratio (C/N0) of satellites used in the navigation fix, in dB-Hz (0: no signal, 63: maximum quality; satellites tracked but not in fix are excluded). 255 if not available.</field>
+      <field type="uint8_t" name="agc_level" units="%" minValue="0" maxValue="100" invalid="UINT8_MAX">Automatic Gain Control (AGC) amplifier gain level percentage (0: minimum gain / backed off due to strong RF interference or saturation, 100: maximum gain / nominal quiet RF environment). 255 if not available.</field>
+      <field type="uint16_t" name="constellation_pos_deviation" units="cm" invalid="UINT16_MAX">Position deviation magnitude between independent constellation solutions (e.g. GPS vs Galileo). Large values indicate potential spoofing or constellation-specific anomalies. 65535 if not available.</field>
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
