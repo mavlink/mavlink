@@ -5521,6 +5521,21 @@
         <description>True if the data originates from or is consumed by the primary estimator.</description>
       </entry>
     </enum>
+    <enum name="FOLLOW_TARGET_CAP" bitmask="true">
+      <description>Follow Target Capabilities.</description>
+      <entry value="1" name="FOLLOW_TARGET_CAP_POS">
+        <description>Position</description>
+      </entry>
+      <entry value="2" name="FOLLOW_TARGET_CAP_VEL">
+        <description>Velocity</description>
+      </entry>
+      <entry value="4" name="FOLLOW_TARGET_CAP_ACCEL">
+        <description>Acceleration</description>
+      </entry>
+      <entry value="8" name="FOLLOW_TARGET_CAP_ATT_RATES">
+        <description>Attitude + Rates</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -6881,7 +6896,7 @@
     <message id="144" name="FOLLOW_TARGET">
       <description>Current motion information from a designated system</description>
       <field type="uint64_t" name="timestamp" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="est_capabilities">bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3)</field>
+      <field type="uint8_t" name="est_capabilities" enum="FOLLOW_TARGET_CAP">Bitmask for tracker reporting capabilities</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Altitude (MSL)</field>
