@@ -604,24 +604,6 @@
         <description>Exhaust-gas-recirculation (EGR) system fault.</description>
       </entry>
     </enum>
-    <enum name="DISTANCE_SENSOR_MODE">
-      <description>Operating mode of a distance sensor. Used in DISTANCE_SENSOR_INFO.</description>
-      <entry value="0" name="DISTANCE_SENSOR_MODE_DEFAULT">
-        <description>Default operating mode, or mode unknown.</description>
-      </entry>
-      <entry value="1" name="DISTANCE_SENSOR_MODE_SHORT_RANGE">
-        <description>Sensor is operating in short range mode.</description>
-      </entry>
-      <entry value="2" name="DISTANCE_SENSOR_MODE_LONG_RANGE">
-        <description>Sensor is operating in long range mode.</description>
-      </entry>
-      <entry value="3" name="DISTANCE_SENSOR_MODE_BALANCED">
-        <description>Sensor is operating in balanced mode.</description>
-      </entry>
-      <entry value="4" name="DISTANCE_SENSOR_MODE_AUTO">
-        <description>Sensor is operating in auto mode.</description>
-      </entry>
-    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -879,7 +861,6 @@
         Measurements are sent in DISTANCE_SENSOR_V2.</description>
       <field type="uint8_t" name="id" instance="true">Sensor ID. Matches the id field of DISTANCE_SENSOR_V2.</field>
       <field type="uint8_t" name="type" enum="MAV_DISTANCE_SENSOR">Type of distance sensor.</field>
-      <field type="uint8_t" name="mode" enum="DISTANCE_SENSOR_MODE">Operating mode of the sensor.</field>
       <field type="float" name="min_distance" units="m" invalid="NaN">Minimum distance the sensor can measure.</field>
       <field type="float" name="max_distance" units="m" invalid="NaN">Maximum distance the sensor can measure.</field>
       <field type="uint8_t" name="orientation" enum="MAV_SENSOR_ORIENTATION">Direction the sensor faces.</field>
