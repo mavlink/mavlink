@@ -136,5 +136,49 @@ class RemovalDetectionTests(unittest.TestCase):
         self.assertNotIn(FieldKey(message=MessageKey(message_name="MY_MSG"), field_name="foo"), removed)
 
 
+class BaseCommitTests(unittest.TestCase):
+    def test_override_is_attempted_first(self):
+        from unittest.mock import patch
+        import subprocess
+
+        def fake_check_output(cmd, **kwargs):
+            if cmd[:3] == ["git", "merge-base", "custom-branch"]:
+                return "abc1234\n"
+            raise subprocess.CalledProcessError(1, cmd)
+
+        with patch("subprocess.check_output", side_effect=fake_check_output):
+            res = check_api_break.get_base_commit("custom-branch")
+            self.assertEqual(res, "abc1234")
+
+    def test_upstream_master_fallback_when_origin_master_missing(self):
+        from unittest.mock import patch
+        import subprocess
+
+        def fake_check_output(cmd, **kwargs):
+            if cmd[:3] == ["git", "merge-base", "upstream/master"]:
+                return "fedcba9\n"
+            raise subprocess.CalledProcessError(128, cmd)
+
+        with patch("subprocess.check_output", side_effect=fake_check_output):
+            res = check_api_break.get_base_commit()
+            self.assertEqual(res, "fedcba9")
+
+    def test_env_var_base_ref_respected(self):
+        from unittest.mock import patch
+        import subprocess
+
+        def fake_check_output(cmd, **kwargs):
+            if cmd[:3] == ["git", "merge-base", "pr-target"]:
+                return "1122334\n"
+            raise subprocess.CalledProcessError(1, cmd)
+
+        with patch.dict(os.environ, {"MAVLINK_BASE_REF": "pr-target"}), patch(
+            "subprocess.check_output", side_effect=fake_check_output
+        ):
+            res = check_api_break.get_base_commit()
+            self.assertEqual(res, "1122334")
+
+
 if __name__ == "__main__":
     unittest.main()
+

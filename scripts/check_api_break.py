@@ -15,6 +15,7 @@ This script checks for the following changes:
 -      <field type="uint8_t" name="stream_id">The ID of the requested data stream</field>
 -    </message>
 """
+import argparse
 import json
 import os
 import subprocess
@@ -118,10 +119,60 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
     return names, attrs
 
 
-def get_base_commit() -> str:
-    return subprocess.check_output(
-        ["git", "merge-base", "origin/master", "HEAD"], text=True
-    ).strip()
+def get_base_commit(base_override: Optional[str] = None) -> str:
+    """Determine the base commit to diff against.
+
+    Checks in order:
+    1. Explicit base_override passed via CLI (--base)
+    2. Environment variables MAVLINK_BASE_REF or GITHUB_BASE_REF
+    3. Common upstream tracking branches (upstream/master, origin/master, master, main)
+    4. Fallback to HEAD~1 if in a commit history
+    """
+    candidates: List[str] = []
+    if base_override:
+        candidates.append(base_override)
+
+    env_base = os.getenv("MAVLINK_BASE_REF") or os.getenv("GITHUB_BASE_REF")
+    if env_base:
+        candidates.extend([env_base, f"origin/{env_base}", f"upstream/{env_base}"])
+
+    candidates.extend([
+        "upstream/master",
+        "origin/master",
+        "master",
+        "origin/main",
+        "upstream/main",
+        "main",
+    ])
+
+    for ref in candidates:
+        try:
+            output = subprocess.check_output(
+                ["git", "merge-base", ref, "HEAD"],
+                text=True,
+                stderr=subprocess.DEVNULL,
+            ).strip()
+            if output:
+                return output
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            continue
+
+    # Fallback to HEAD~1
+    try:
+        output = subprocess.check_output(
+            ["git", "rev-parse", "HEAD~1"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+        if output:
+            return output
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+
+    raise RuntimeError(
+        "Could not determine base commit. Please specify a base branch using "
+        "--base <ref> or the MAVLINK_BASE_REF environment variable."
+    )
 
 def get_changed_xml_files(base: str) -> List[str]:
     changed = subprocess.check_output(
@@ -263,7 +314,16 @@ def build_removal_comment(
 
 
 def main() -> None:
-    base = get_base_commit()
+    parser = argparse.ArgumentParser(description="Check for breaking changes in MAVLink XML definitions.")
+    parser.add_argument(
+        "-b",
+        "--base",
+        help="Base commit or branch to diff against (default: auto-detected)",
+        default=None,
+    )
+    args = parser.parse_args()
+
+    base = get_base_commit(args.base)
     xml_files = get_changed_xml_files(base)
     if not xml_files:
         print("No XML files changed.")
