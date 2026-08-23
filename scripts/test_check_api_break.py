@@ -178,7 +178,17 @@ class BaseCommitTests(unittest.TestCase):
             res = check_api_break.get_base_commit()
             self.assertEqual(res, "1122334")
 
+    def test_main_passes_base_arg_to_get_base_commit(self):
+        from unittest.mock import patch
+
+        with patch("sys.argv", ["check_api_break.py", "--base", "custom-ref"]), \
+             patch.object(check_api_break, "get_base_commit", return_value="deadbeef") as mock_get_base, \
+             patch.object(check_api_break, "get_changed_xml_files", return_value=[]):
+            check_api_break.main()
+            mock_get_base.assert_called_once_with("custom-ref")
+
 
 if __name__ == "__main__":
     unittest.main()
+
 
