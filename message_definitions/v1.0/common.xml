@@ -5521,19 +5521,19 @@
         <description>True if the data originates from or is consumed by the primary estimator.</description>
       </entry>
     </enum>
-    <enum name="FOLLOW_TARGET_CAP" bitmask="true">
-      <description>Follow Target Capabilities.</description>
-      <entry value="1" name="FOLLOW_TARGET_CAP_POS">
-        <description>Position</description>
+    <enum name="FOLLOW_TARGET_CAP_FLAGS" bitmask="true">
+      <description>Bitmask indicating which fields contain valid data in a FOLLOW_TARGET message (lat/lon/alt, vel, acc, attitude_q, rates). If a bit is unset, the corresponding field(s) are zero-filled and should be ignored.</description>
+      <entry value="1" name="FOLLOW_TARGET_CAP_FLAGS_POS">
+        <description>Position estimate is valid (lat/lon/alt).</description>
       </entry>
-      <entry value="2" name="FOLLOW_TARGET_CAP_VEL">
-        <description>Velocity</description>
+      <entry value="2" name="FOLLOW_TARGET_CAP_FLAGS_VEL">
+        <description>Velocity estimate is valid (vel field).</description>
       </entry>
-      <entry value="4" name="FOLLOW_TARGET_CAP_ACCEL">
-        <description>Acceleration</description>
+      <entry value="4" name="FOLLOW_TARGET_CAP_FLAGS_ACCEL">
+        <description>Acceleration estimate is valid (acc field).</description>
       </entry>
-      <entry value="8" name="FOLLOW_TARGET_CAP_ATT_RATES">
-        <description>Attitude + Rates</description>
+      <entry value="8" name="FOLLOW_TARGET_CAP_FLAGS_ATT_RATES">
+        <description>Attitude and angular rate estimates are valid (attitude_q and rates fields).</description>
       </entry>
     </enum>
   </enums>
@@ -6896,7 +6896,7 @@
     <message id="144" name="FOLLOW_TARGET">
       <description>Current motion information from a designated system</description>
       <field type="uint64_t" name="timestamp" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="est_capabilities" enum="FOLLOW_TARGET_CAP">Bitmask for tracker reporting capabilities</field>
+      <field type="uint8_t" name="est_capabilities" enum="FOLLOW_TARGET_CAP_FLAGS">Bitmask indicating which fields in this message contain valid data.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Altitude (MSL)</field>
