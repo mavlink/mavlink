@@ -603,6 +603,42 @@
         <description>Exhaust-gas-recirculation (EGR) system fault.</description>
       </entry>
     </enum>
+    <enum name="MAV_ENERGY_SYSTEM">
+      <description>Energy system identifier.
+        Batteries and and other fuel systems are grouped by energy systems that support particular functions.
+        Referenced by ENERGY_SYSTEM_INFO, BATTERY_INFO, and FUEL_INFORMATION_V2.
+        BATTERY_STATUS_V2 and FUEL_STATUS_V2 are associated with an energy system via their instance association with the INFO messages.</description>
+      <entry value="0" name="MAV_ENERGY_SYSTEM_UNKNOWN">
+        <description>Energy system is unknown</description>
+      </entry>
+      <entry value="1" name="MAV_ENERGY_SYSTEM_ALL">
+        <description>Energy system supports all flight systems</description>
+      </entry>
+      <entry value="2" name="MAV_ENERGY_SYSTEM_PROPULSION">
+        <description>Propulsion energy system</description>
+      </entry>
+      <entry value="3" name="MAV_ENERGY_SYSTEM_AVIONICS">
+        <description>Avionics energy system</description>
+      </entry>
+      <entry value="4" name="MAV_ENERGY_SYSTEM_PAYLOAD">
+        <description>Payload energy system</description>
+      </entry>
+      <entry value="5" name="MAV_ENERGY_SYSTEM_USER_DEFINED1">
+        <description>User-defined energy system (1). Name is provided in ENERGY_SYSTEM_INFO. </description>
+      </entry>
+      <entry value="6" name="MAV_ENERGY_SYSTEM_USER_DEFINED2">
+        <description></description>
+      </entry>
+      <entry value="7" name="MAV_ENERGY_SYSTEM_USER_DEFINED3">
+        <description></description>
+      </entry>
+      <entry value="8" name="MAV_ENERGY_SYSTEM_USER_DEFINED4">
+        <description></description>
+      </entry>
+      <entry value="9" name="MAV_ENERGY_SYSTEM_USER_DEFINED5">
+        <description></description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -638,7 +674,7 @@
       <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of the whole battery pack (not internal electronics). INT16_MAX field not provided.</field>
       <field type="float" name="voltage" units="V" invalid="NaN">Battery voltage (total). NaN: field not provided.</field>
       <field type="float" name="current" units="A" invalid="NaN">Battery current (through all cells/loads). Positive value when discharging and negative if charging. NaN: field not provided.</field>
-      <field type="uint16_t" name="state_of_charge" units="%" multiplier="2E-3" minValue="0" maxValue="50000" invalid="UINT16_MAX">State of Charge (SoC). Values: [0-50000], UINT16_MAX: field not provided. Note that SoC is remaining capacity relative to fully-charged capacity as a percentage.</field>      
+      <field type="uint16_t" name="state_of_charge" units="%" multiplier="2E-3" minValue="0" maxValue="50000" invalid="UINT16_MAX">State of Charge (SoC). Values: [0-50000], UINT16_MAX: field not provided. Note that SoC is remaining capacity relative to fully-charged capacity as a percentage.</field>
       <field type="uint32_t" name="status_flags" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
     </message>
     <message id="414" name="GROUP_START">
@@ -875,6 +911,56 @@
       <field type="uint8_t" name="id" instance="true">Sensor ID. Matches the id field of DISTANCE_SENSOR_INFO.</field>
       <field type="float" name="distance" units="m" invalid="NaN">Current distance reading. NaN if not provided.</field>
       <field type="int8_t" name="signal_quality" units="%" invalid="INT8_MAX">Signal quality (sensor-type specific). Represents the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. Values: [0-100], 0 = unusable signal, 100 = perfect signal. INT8_MAX = unknown/not provided.</field>
+    </message>
+    <message id="365" name="ENERGY_SYSTEM_INFO">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Energy system (propulsion, avionics, payload, all, or user-defined) low rate/static information.
+
+        ENERGY_SYSTEM_STATUS provides corresponding status information.
+
+        An energy system represents the energy supply for a single function domain (which might be "all" if all functions are supplied by a single system).
+        Each energy system aggregates one or more batteries and/or fuel systems and represents them as a single time or percentage remaining (it is up to the emitting system to determine the aggregation strategy).
+        The intent is that a GCS can display a high level energy system as a simple indicator, and users can drill down to see the individual sources that contribute to it.
+
+        The ENERGY_SYSTEM_INFO, ENERGY_SYSTEM_STATUS, FUEL_INFORMATION_V2, are grouped having the same value in energy_system field (BATTERY_INFO.battery_function is used for batteries).
+        The BATTERY_STATUS_V2 and FUEL_STATUS_V2 are mapped via their corresponding INFO messages.
+
+        For many cases the default functional domains are sufficient.
+        If more granular functions are needed then user defined energy_systems can be used (such as MAV_ENERGY_SYSTEM_USER_DEFINED1).
+        These can be given a human-readable name in the energy_system_name field.
+      </description>
+      <field type="uint8_t" name="energy_system" enum="MAV_ENERGY_SYSTEM">Energy system. Vehicle unique.</field>
+      <field type="char[25]" name="energy_system_name">User-defined energy system name (allows a GCS to provide a human readable string for an energy_system such as MAV_ENERGY_SYSTEM_USER_DEFINED1). Empty for predefined energy_system types. This is UTF-8 encoded and without null termination character.</field>
+    </message>
+    <message id="366" name="ENERGY_SYSTEM_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Energy system (propulsion, avionics, payload, all, or user-defined) status information.
+
+        See ENERGY_SYSTEM_INFO for an overview of energy systems.
+        This provides corresponding low rate/invariant information, including a human readable name if user-defined energy_system values are used.
+      </description>
+      <field type="uint8_t" name="energy_system" enum="MAV_ENERGY_SYSTEM">Energy system.</field>
+    </message>
+    <message id="367" name="FUEL_INFORMATION_V2">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Fuel information that is static, or requires infrequent update.
+        This message should be requested using MAV_CMD_REQUEST_MESSAGE and/or streamed at very low rate.
+        FUEL_STATUS_V2 is used for higher-rate fuel status information.
+      </description>
+      <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as FUEL_STATUS_V2.</field>
+      <field type="uint8_t" name="energy_system" enum="MAV_ENERGY_SYSTEM">Energy system.</field>
+    </message>
+    <message id="368" name="FUEL_STATUS_V2">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Fuel dynamic information.
+        This should be streamed (nominally at 1Hz).
+        Static/invariant fuel information is sent in FUEL_INFORMATION_V2.
+      </description>
+      <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as FUEL_INFORMATION_V2.</field>
     </message>
   </messages>
 </mavlink>
