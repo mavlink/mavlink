@@ -119,55 +119,147 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
     return names, attrs
 
 
+def _merge_base(ref: str) -> Optional[str]:
+    try:
+        output = subprocess.check_output(
+            ["git", "merge-base", ref, "HEAD"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+        return output or None
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+
+
+def get_ci_event_base_sha() -> Optional[str]:
+    """Return the base commit SHA GitHub Actions computed for this run, if any.
+
+    For `pull_request`/`push` events this is authoritative: GitHub derives it
+    from the real PR/push relationship on its own servers, not from local
+    remotes, so it's correct even in a fork's CI with no `upstream` remote
+    and no risk of a stale local ref. Because of that, any failure to read it
+    here is a hard error rather than a silent fall-through to guessing -
+    getting the base wrong in CI is exactly what this must avoid.
+
+    Returns None for triggers with no such payload (e.g. workflow_dispatch),
+    or when not running in GitHub Actions at all, so callers fall back to the
+    best-effort local resolution.
+    """
+    event_path = os.getenv("GITHUB_EVENT_PATH")
+    if not event_path:
+        return None
+
+    event_name = os.getenv("GITHUB_EVENT_NAME")
+    if event_name not in ("pull_request", "push"):
+        return None
+
+    try:
+        with open(event_path, "r", encoding="utf-8") as event_file:
+            event = json.load(event_file)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(
+            f"Running in CI for a '{event_name}' event but couldn't read/parse "
+            f"GITHUB_EVENT_PATH ({event_path}): {exc}"
+        )
+
+    if event_name == "pull_request":
+        sha = event.get("pull_request", {}).get("base", {}).get("sha")
+        if not sha:
+            raise RuntimeError(
+                "Running in CI for a pull_request event but 'pull_request.base.sha' "
+                "is missing from the event payload."
+            )
+        return sha
+
+    sha = event.get("before")
+    if not sha:
+        raise RuntimeError(
+            "Running in CI for a push event but 'before' is missing from the event payload."
+        )
+    if set(sha) == {"0"}:
+        raise RuntimeError(
+            "This push has no prior commit on the branch (first push of a new branch), "
+            "so there is no base to diff against. Pass --base explicitly to check it anyway."
+        )
+    return sha
+
+
 def get_base_commit(base_override: Optional[str] = None) -> str:
     """Determine the base commit to diff against.
 
     Checks in order:
-    1. Explicit base_override passed via CLI (--base)
-    2. Environment variables MAVLINK_BASE_REF or GITHUB_BASE_REF
-    3. Common upstream tracking branches (upstream/master, origin/master, master, main)
-    4. Fallback to HEAD~1 if in a commit history
+    1. Explicit --base override - required to resolve; errors if it doesn't.
+    2. The GitHub Actions event payload (pull_request.base.sha / push.before) -
+       authoritative when present; errors rather than falling through, since
+       this is the path that CI correctness depends on.
+    3. Local/manual use only: a best-effort guess across common remote and
+       branch names, fetching each candidate remote first to reduce
+       staleness. Every match here is printed and flagged as unverified,
+       since none of these carry the same guarantee as (1) or (2).
     """
-    candidates: List[str] = []
     if base_override:
-        candidates.append(base_override)
+        resolved = _merge_base(base_override)
+        if resolved is None:
+            raise RuntimeError(
+                f"--base {base_override!r} does not resolve to a commit reachable from HEAD."
+            )
+        print(f"Diffing against explicit --base {base_override!r} ({resolved}).", file=sys.stderr)
+        return resolved
+
+    ci_sha = get_ci_event_base_sha()
+    if ci_sha is not None:
+        resolved = _merge_base(ci_sha)
+        if resolved is None:
+            raise RuntimeError(
+                f"Running in CI but the event's base commit {ci_sha!r} isn't reachable from "
+                "HEAD - checkout history may be too shallow (check fetch-depth)."
+            )
+        print(f"Diffing against CI event base commit {resolved}.", file=sys.stderr)
+        return resolved
 
     env_base = os.getenv("MAVLINK_BASE_REF") or os.getenv("GITHUB_BASE_REF")
+    candidates: List[str] = []
     if env_base:
-        candidates.extend([env_base, f"origin/{env_base}", f"upstream/{env_base}"])
+        candidates.extend([f"origin/{env_base}", f"upstream/{env_base}", env_base])
 
     candidates.extend([
         "upstream/master",
         "origin/master",
         "master",
-        "origin/main",
         "upstream/main",
+        "origin/main",
         "main",
     ])
 
-    for ref in candidates:
+    remotes = {ref.split("/", 1)[0] for ref in candidates if "/" in ref}
+    for remote in remotes:
         try:
-            output = subprocess.check_output(
-                ["git", "merge-base", ref, "HEAD"],
-                text=True,
+            subprocess.run(
+                ["git", "fetch", "--quiet", remote],
+                stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
-            ).strip()
-            if output:
-                return output
-        except (subprocess.CalledProcessError, FileNotFoundError):
-            continue
+            )
+        except (subprocess.SubprocessError, OSError):
+            pass
 
-    # Fallback to HEAD~1
-    try:
-        output = subprocess.check_output(
-            ["git", "rev-parse", "HEAD~1"],
-            text=True,
-            stderr=subprocess.DEVNULL,
-        ).strip()
-        if output:
-            return output
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        pass
+    for ref in candidates:
+        resolved = _merge_base(ref)
+        if resolved is not None:
+            print(
+                f"Diffing against best-effort base '{ref}' ({resolved}). This was guessed, "
+                "not verified - pass --base explicitly if this looks wrong.",
+                file=sys.stderr,
+            )
+            return resolved
+
+    resolved = _merge_base("HEAD~1")
+    if resolved is not None:
+        print(
+            f"Diffing against HEAD~1 ({resolved}) as a last resort - no other base could be "
+            "determined. This is very likely NOT the right comparison; pass --base explicitly.",
+            file=sys.stderr,
+        )
+        return resolved
 
     raise RuntimeError(
         "Could not determine base commit. Please specify a base branch using "
@@ -341,9 +433,14 @@ def main() -> None:
             old_content = subprocess.check_output(
                 ["git", "show", f"{base}:{xml}"], text=True
             )
-            new_content = open(xml).read()
         except subprocess.CalledProcessError:
-            continue  # new file or removed, ignore
+            continue  # new file, nothing to compare against
+
+        try:
+            new_content = open(xml).read()
+        except FileNotFoundError:
+            print(f"Skipped {xml}: removed since base.")
+            continue
 
         old_root = parse_xml(old_content)
         new_root = parse_xml(new_content)

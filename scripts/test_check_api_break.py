@@ -137,6 +137,21 @@ class RemovalDetectionTests(unittest.TestCase):
 
 
 class BaseCommitTests(unittest.TestCase):
+    """Covers get_base_commit()'s three tiers: --base override, the CI event
+    payload (authoritative, must error rather than guess on failure), and the
+    local best-effort ref cascade.
+
+    Every test that can reach the cascade neutralizes GITHUB_EVENT_PATH and
+    mocks subprocess.run, because these tests run inside this repo's own
+    GitHub Actions job: without that, a real GITHUB_EVENT_PATH would make the
+    CI-event tier intercept the call, and a real `git fetch` would hit the
+    network for real remotes (origin/upstream) that exist in this repo.
+    """
+
+    # Neutralizes ambient CI env vars so cascade-focused tests behave the same
+    # locally and when this suite runs inside the project's own CI job.
+    _NO_CI_ENV = {"GITHUB_EVENT_PATH": "", "GITHUB_EVENT_NAME": "", "GITHUB_BASE_REF": ""}
+
     def test_override_is_attempted_first(self):
         from unittest.mock import patch
         import subprocess
@@ -150,6 +165,14 @@ class BaseCommitTests(unittest.TestCase):
             res = check_api_break.get_base_commit("custom-branch")
             self.assertEqual(res, "abc1234")
 
+    def test_override_that_does_not_resolve_raises(self):
+        from unittest.mock import patch
+        import subprocess
+
+        with patch("subprocess.check_output", side_effect=subprocess.CalledProcessError(1, [])):
+            with self.assertRaises(RuntimeError):
+                check_api_break.get_base_commit("no-such-ref")
+
     def test_upstream_master_fallback_when_origin_master_missing(self):
         from unittest.mock import patch
         import subprocess
@@ -159,7 +182,9 @@ class BaseCommitTests(unittest.TestCase):
                 return "fedcba9\n"
             raise subprocess.CalledProcessError(128, cmd)
 
-        with patch("subprocess.check_output", side_effect=fake_check_output):
+        with patch.dict(os.environ, self._NO_CI_ENV), \
+             patch("subprocess.check_output", side_effect=fake_check_output), \
+             patch("subprocess.run"):
             res = check_api_break.get_base_commit()
             self.assertEqual(res, "fedcba9")
 
@@ -172,11 +197,154 @@ class BaseCommitTests(unittest.TestCase):
                 return "1122334\n"
             raise subprocess.CalledProcessError(1, cmd)
 
-        with patch.dict(os.environ, {"MAVLINK_BASE_REF": "pr-target"}), patch(
-            "subprocess.check_output", side_effect=fake_check_output
-        ):
+        env = dict(self._NO_CI_ENV, MAVLINK_BASE_REF="pr-target")
+        with patch.dict(os.environ, env), \
+             patch("subprocess.check_output", side_effect=fake_check_output), \
+             patch("subprocess.run"):
             res = check_api_break.get_base_commit()
             self.assertEqual(res, "1122334")
+
+    def test_env_var_qualified_forms_preferred_over_bare_name(self):
+        # A locally-checked-out branch of the same name as env_base shouldn't
+        # win over the remote-qualified forms - those are more likely fresh.
+        from unittest.mock import patch
+        import subprocess
+
+        def fake_check_output(cmd, **kwargs):
+            if cmd[:3] == ["git", "merge-base", "upstream/pr-target"]:
+                return "9988776\n"
+            if cmd[:3] == ["git", "merge-base", "pr-target"]:
+                return "0000000\n"  # a stale local branch - should lose
+            raise subprocess.CalledProcessError(1, cmd)
+
+        env = dict(self._NO_CI_ENV, MAVLINK_BASE_REF="pr-target")
+        with patch.dict(os.environ, env), \
+             patch("subprocess.check_output", side_effect=fake_check_output), \
+             patch("subprocess.run"):
+            res = check_api_break.get_base_commit()
+            self.assertEqual(res, "9988776")
+
+    def test_ci_pull_request_base_sha_takes_priority(self):
+        from unittest.mock import patch
+        import json
+        import subprocess
+        import tempfile
+
+        def fake_check_output(cmd, **kwargs):
+            if cmd[:3] == ["git", "merge-base", "cafebabe"]:
+                return "cafebabe\n"
+            raise subprocess.CalledProcessError(1, cmd)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            event_path = os.path.join(tmp, "event.json")
+            with open(event_path, "w", encoding="utf-8") as f:
+                json.dump({"pull_request": {"base": {"sha": "cafebabe"}}}, f)
+
+            env = {
+                "GITHUB_EVENT_PATH": event_path,
+                "GITHUB_EVENT_NAME": "pull_request",
+                # Should be ignored: the CI event payload outranks it.
+                "MAVLINK_BASE_REF": "should-be-ignored",
+            }
+            with patch.dict(os.environ, env), \
+                 patch("subprocess.check_output", side_effect=fake_check_output):
+                res = check_api_break.get_base_commit()
+                self.assertEqual(res, "cafebabe")
+
+    def test_ci_push_before_sha_used(self):
+        from unittest.mock import patch
+        import json
+        import subprocess
+        import tempfile
+
+        def fake_check_output(cmd, **kwargs):
+            if cmd[:3] == ["git", "merge-base", "1122334455"]:
+                return "1122334455\n"
+            raise subprocess.CalledProcessError(1, cmd)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            event_path = os.path.join(tmp, "event.json")
+            with open(event_path, "w", encoding="utf-8") as f:
+                json.dump({"before": "1122334455"}, f)
+
+            env = {"GITHUB_EVENT_PATH": event_path, "GITHUB_EVENT_NAME": "push"}
+            with patch.dict(os.environ, env), \
+                 patch("subprocess.check_output", side_effect=fake_check_output):
+                res = check_api_break.get_base_commit()
+                self.assertEqual(res, "1122334455")
+
+    def test_ci_pull_request_missing_base_sha_raises(self):
+        from unittest.mock import patch
+        import json
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            event_path = os.path.join(tmp, "event.json")
+            with open(event_path, "w", encoding="utf-8") as f:
+                json.dump({"pull_request": {"base": {}}}, f)
+
+            env = {"GITHUB_EVENT_PATH": event_path, "GITHUB_EVENT_NAME": "pull_request"}
+            with patch.dict(os.environ, env):
+                with self.assertRaises(RuntimeError):
+                    check_api_break.get_base_commit()
+
+    def test_ci_push_zero_before_raises(self):
+        from unittest.mock import patch
+        import json
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            event_path = os.path.join(tmp, "event.json")
+            with open(event_path, "w", encoding="utf-8") as f:
+                json.dump({"before": "0" * 40}, f)
+
+            env = {"GITHUB_EVENT_PATH": event_path, "GITHUB_EVENT_NAME": "push"}
+            with patch.dict(os.environ, env):
+                with self.assertRaises(RuntimeError):
+                    check_api_break.get_base_commit()
+
+    def test_ci_event_sha_unreachable_raises_instead_of_guessing(self):
+        # Simulates a too-shallow checkout: the event's base sha exists but
+        # isn't in local history. This must error, not silently fall through
+        # to the local cascade - that's the whole point of the CI tier.
+        from unittest.mock import patch
+        import json
+        import subprocess
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            event_path = os.path.join(tmp, "event.json")
+            with open(event_path, "w", encoding="utf-8") as f:
+                json.dump({"pull_request": {"base": {"sha": "deadbeef"}}}, f)
+
+            env = {"GITHUB_EVENT_PATH": event_path, "GITHUB_EVENT_NAME": "pull_request"}
+            with patch.dict(os.environ, env), \
+                 patch("subprocess.check_output", side_effect=subprocess.CalledProcessError(128, [])):
+                with self.assertRaises(RuntimeError):
+                    check_api_break.get_base_commit()
+
+    def test_workflow_dispatch_has_no_event_base_falls_through_to_cascade(self):
+        from unittest.mock import patch
+        import json
+        import subprocess
+        import tempfile
+
+        def fake_check_output(cmd, **kwargs):
+            if cmd[:3] == ["git", "merge-base", "upstream/master"]:
+                return "abcdef1\n"
+            raise subprocess.CalledProcessError(1, cmd)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            event_path = os.path.join(tmp, "event.json")
+            with open(event_path, "w", encoding="utf-8") as f:
+                json.dump({"inputs": {}}, f)
+
+            env = {"GITHUB_EVENT_PATH": event_path, "GITHUB_EVENT_NAME": "workflow_dispatch"}
+            with patch.dict(os.environ, env), \
+                 patch("subprocess.check_output", side_effect=fake_check_output), \
+                 patch("subprocess.run"):
+                res = check_api_break.get_base_commit()
+                self.assertEqual(res, "abcdef1")
 
     def test_main_passes_base_arg_to_get_base_commit(self):
         from unittest.mock import patch
@@ -186,6 +354,34 @@ class BaseCommitTests(unittest.TestCase):
              patch.object(check_api_break, "get_changed_xml_files", return_value=[]):
             check_api_break.main()
             mock_get_base.assert_called_once_with("custom-ref")
+
+
+class MainRemovedFileTests(unittest.TestCase):
+    def test_file_removed_since_base_is_reported_not_crashed(self):
+        # A whole XML file present at `base` but deleted by HEAD used to crash
+        # main() with an unhandled FileNotFoundError (open() on the no-longer
+        # -existing path wasn't covered by the CalledProcessError handler
+        # around the `git show base:file` read). It should be skipped and
+        # reported instead, consistent with how a brand-new file is skipped.
+        from unittest.mock import patch
+        import io
+        import contextlib
+        import subprocess
+
+        def fake_check_output(cmd, **kwargs):
+            if cmd[:2] == ["git", "show"]:
+                return "<mavlink><enums></enums></mavlink>"
+            raise subprocess.CalledProcessError(1, cmd)
+
+        stdout = io.StringIO()
+        with patch("sys.argv", ["check_api_break.py"]), \
+             patch.object(check_api_break, "get_base_commit", return_value="deadbeef"), \
+             patch.object(check_api_break, "get_changed_xml_files", return_value=["removed_dialect.xml"]), \
+             patch("subprocess.check_output", side_effect=fake_check_output), \
+             contextlib.redirect_stdout(stdout):
+            check_api_break.main()  # must not raise
+
+        self.assertIn("Skipped removed_dialect.xml: removed since base.", stdout.getvalue())
 
 
 if __name__ == "__main__":
