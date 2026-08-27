@@ -98,7 +98,7 @@ def check_enum(enum, file_name):
     return {"name": name, "bitmask": bitmask, "values": values}
 
 
-def check_field(file_name, msg_name, field, enums):
+def check_field(file_name, msg_name, field, enums, deprecated_enums=frozenset()):
     name = field.get('name')
     enum = field.get('enum')
     units = field.get('units')
@@ -111,7 +111,10 @@ def check_field(file_name, msg_name, field, enums):
     if enum is not None:
         # Enum should exist
         if enum not in enums:
-            warn(f"{file_name}: Message {msg_name} field {name} enum {enum} does not exist")
+            if enum in deprecated_enums:
+                warn(f"{file_name}: Message {msg_name} field {name} enum {enum} is deprecated")
+            else:
+                warn(f"{file_name}: Message {msg_name} field {name} enum {enum} does not exist")
             return
 
         enums[enum]["used"] = True
@@ -137,7 +140,7 @@ def check_field(file_name, msg_name, field, enums):
             warn(f"{file_name}: Message {msg_name} field {name} enum {enum} does not fit in type: {type}")
 
 
-def check_cmd_param(file_name, cmd_name, entry, enums):
+def check_cmd_param(file_name, cmd_name, entry, enums, deprecated_enums=frozenset()):
     index = entry.get('index')
     enum = entry.get('enum')
     units = entry.get('units')
@@ -152,7 +155,10 @@ def check_cmd_param(file_name, cmd_name, entry, enums):
     if enum is not None:
         # Enum should exist
         if enum not in enums:
-            warn(f"{file_name}: Command {cmd_name} param {index} enum {enum} does not exist")
+            if enum in deprecated_enums:
+                warn(f"{file_name}: Command {cmd_name} param {index} enum {enum} is deprecated")
+            else:
+                warn(f"{file_name}: Command {cmd_name} param {index} enum {enum} does not exist")
             return
 
         enums[enum]["used"] = True
@@ -255,10 +261,15 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
 
     # Get all enums
     all_enums = {}
+    # Deprecated enums are not checked and are not counted as "used", but they do
+    # still exist. Remember their names so that a reference to one is reported as
+    # deprecated rather than as missing.
+    deprecated_enums = set()
     for key in xml:
         for enum in xml[key].find_all('enum'):
             if enum.find('deprecated', recursive=False) is not None:
                 # Skip and deprecated items
+                deprecated_enums.add(enum.get('name'))
                 continue
             decoded = check_enum(enum, key)
             name = decoded["name"]
@@ -316,7 +327,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
             name = message.get('name')
             fields = message.find_all('field')
             for field in fields:
-                check_field(key, name, field, all_enums)
+                check_field(key, name, field, all_enums, deprecated_enums)
 
     # Check params in MAV_CMD
     for key in xml:
@@ -328,7 +339,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
                 name = entry.get('name')
                 seen_indices = set()   # Indices seen so far, to check for duplicates
                 for param in entry.find_all('param'):
-                    check_cmd_param(key, name, param, all_enums)
+                    check_cmd_param(key, name, param, all_enums, deprecated_enums)
                     idx = param.get('index')
 
                     # Flag duplicate indices regardless of whether they're in the
