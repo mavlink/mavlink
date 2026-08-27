@@ -182,5 +182,51 @@ class CmdParamRangeTests(ConsistencyCheckTestCase):
         self.assertEqual(messages, [])
 
 
+class DeprecatedEnumReferenceTestCase(ConsistencyCheckTestCase):
+    """A deprecated enum is skipped when the checker collects enums, so a
+    reference to one is not found in `enums`. It still exists in the XML
+    though, so it must be reported as deprecated rather than as missing."""
+
+    def test_field_referencing_deprecated_enum_says_deprecated(self):
+        field = parse_field('<field type="uint8_t" name="mode" enum="OLD_ENUM">desc</field>')
+        messages = self.warnings(
+            check_field, "test.xml", "MY_MSG", field, {}, {"OLD_ENUM"}
+        )
+        self.assertEqual(
+            messages,
+            ["test.xml: Message MY_MSG field mode enum OLD_ENUM is deprecated"],
+        )
+
+    def test_field_referencing_unknown_enum_still_says_does_not_exist(self):
+        field = parse_field('<field type="uint8_t" name="mode" enum="GONE_ENUM">desc</field>')
+        messages = self.warnings(
+            check_field, "test.xml", "MY_MSG", field, {}, {"OLD_ENUM"}
+        )
+        self.assertEqual(
+            messages,
+            ["test.xml: Message MY_MSG field mode enum GONE_ENUM does not exist"],
+        )
+
+    def test_cmd_param_referencing_deprecated_enum_says_deprecated(self):
+        param = parse_param('<param index="1" enum="OLD_ENUM">desc</param>')
+        messages = self.warnings(
+            check_cmd_param, "test.xml", "MY_CMD", param, {}, {"OLD_ENUM"}
+        )
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 enum OLD_ENUM is deprecated"],
+        )
+
+    def test_cmd_param_referencing_unknown_enum_still_says_does_not_exist(self):
+        param = parse_param('<param index="1" enum="GONE_ENUM">desc</param>')
+        messages = self.warnings(
+            check_cmd_param, "test.xml", "MY_CMD", param, {}, {"OLD_ENUM"}
+        )
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 enum GONE_ENUM does not exist"],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

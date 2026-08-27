@@ -11,12 +11,14 @@
 common.xml: Enum: CAMERA_TRACKING_STATUS_FLAGS bitmask should not contain 0
 common.xml: Message GIMBAL_DEVICE_INFORMATION field cap_flags enum GIMBAL_DEVICE_CAP_FLAGS does not fit in type: uint16_t
 
-# --- Messages referencing removed/missing enums ---
-common.xml: Message HIL_CONTROLS field mode enum MAV_MODE does not exist
+# --- Live messages referencing deprecated enums ---
+common.xml: Message HIL_CONTROLS field mode enum MAV_MODE is deprecated
 
-# --- Commands referencing removed/missing enums ---
-common.xml: Command MAV_CMD_DO_MOUNT_CONFIGURE param 1 enum MAV_MOUNT_MODE does not exist
-common.xml: Command MAV_CMD_DO_MOUNT_CONTROL param 7 enum MAV_MOUNT_MODE does not exist
+# --- Superseded commands referencing deprecated enums ---
+# Both are <superseded/> rather than <deprecated/> and say they are still usable
+# with legacy gimbals, so the reference to MAV_MOUNT_MODE is intentional.
+common.xml: Command MAV_CMD_DO_MOUNT_CONFIGURE param 1 enum MAV_MOUNT_MODE is deprecated
+common.xml: Command MAV_CMD_DO_MOUNT_CONTROL param 7 enum MAV_MOUNT_MODE is deprecated
 
 # --- Command params with small integer ranges (no enum defined yet) ---
 common.xml: Command MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT param 1 min, max close and increment of 1, should there be a enum?
