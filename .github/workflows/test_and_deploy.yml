@@ -52,12 +52,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: pipx install codespell
-      # Discover typos in all non-XML files and the four XML files that this repo controls
+      # Discover typos in all non-XML files and the XML files that this repo controls
       - run: codespell --skip="*.xml"
       - run: codespell --ignore-words-list=ned message_definitions/v1.0/all.xml
                                                message_definitions/v1.0/common.xml
                                                message_definitions/v1.0/minimal.xml
                                                message_definitions/v1.0/standard.xml
+                                               message_definitions/v1.0/development.xml
 
   python-lint:
     name: Lint Python code with ruff
