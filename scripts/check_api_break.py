@@ -84,13 +84,13 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
 
     for enum in root.findall(".//enum"):
         enum_name = enum.get("name")
-        enum_is_wip = enum.find("wip") is not None
+        enum_is_wip = enum.find("wip") is not None or enum.find("deprecated") is not None
         enum_key = EnumKey(enum_name=enum_name)
         names[enum_key] = enum_is_wip
 
         for entry in enum.findall("entry"):
             entry_name = entry.get("name")
-            entry_is_wip = enum_is_wip or entry.find("wip") is not None
+            entry_is_wip = enum_is_wip or entry.find("wip") is not None or entry.find("deprecated") is not None
             entry_key = EnumEntryKey(enum=enum_key, entry_name=entry_name)
             names[entry_key] = entry_is_wip
             entry_value = entry.get("value")
@@ -99,7 +99,7 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
 
     for msg in root.findall(".//message"):
         message_name = msg.get("name")
-        message_is_wip = msg.find("wip") is not None
+        message_is_wip = msg.find("wip") is not None or msg.find("deprecated") is not None
         message_key = MessageKey(message_name=message_name)
         names[message_key] = message_is_wip
         message_id = msg.get("id")
@@ -108,7 +108,7 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
 
         for field in msg.findall("field"):
             field_name = field.get("name")
-            field_is_wip = message_is_wip or field.find("wip") is not None
+            field_is_wip = message_is_wip or field.find("wip") is not None or field.find("deprecated") is not None
             field_key = FieldKey(message=message_key, field_name=field_name)
             names[field_key] = field_is_wip
             field_type = field.get("type")

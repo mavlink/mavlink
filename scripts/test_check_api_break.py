@@ -136,5 +136,98 @@ class RemovalDetectionTests(unittest.TestCase):
         self.assertNotIn(FieldKey(message=MessageKey(message_name="MY_MSG"), field_name="foo"), removed)
 
 
+class DeprecatedExemptionTests(unittest.TestCase):
+    """Removing or mutating deprecated items should not be flagged as breaking."""
+
+    DEPRECATED_ENTRY_XML = """<mavlink>
+<enums>
+<enum name="MAV_CMD">
+  <entry name="MAV_CMD_DO_MOUNT_CONFIGURE" value="204">
+    <deprecated since="2024-06" replaced_by="GIMBAL_MANAGER_CONFIGURE"/>
+    <description>deprecated</description>
+  </entry>
+  <entry name="MAV_CMD_DO_SET_MODE" value="176">
+    <description>Set system mode.</description>
+  </entry>
+</enum>
+</enums>
+<messages/>
+</mavlink>"""
+
+    def test_deprecated_entry_removal_is_not_breaking(self):
+        new_xml = self.DEPRECATED_ENTRY_XML.replace(
+            '  <entry name="MAV_CMD_DO_MOUNT_CONFIGURE" value="204">\n'
+            '    <deprecated since="2024-06" replaced_by="GIMBAL_MANAGER_CONFIGURE"/>\n'
+            '    <description>deprecated</description>\n'
+            '  </entry>\n', ''
+        )
+        removed = removed_between(self.DEPRECATED_ENTRY_XML, new_xml)
+        self.assertNotIn(
+            EnumEntryKey(enum=EnumKey(enum_name="MAV_CMD"), entry_name="MAV_CMD_DO_MOUNT_CONFIGURE"),
+            removed,
+        )
+
+    def test_deprecated_message_removal_is_not_breaking(self):
+        old_xml = """<mavlink>
+<enums/>
+<messages>
+<message id="10" name="OLD_MSG">
+  <deprecated since="2020-01" replaced_by="NEW_MSG"/>
+  <field type="uint8_t" name="foo">desc</field>
+</message>
+</messages>
+</mavlink>"""
+        new_xml = "<mavlink><enums/><messages/></mavlink>"
+        removed = removed_between(old_xml, new_xml)
+        self.assertNotIn(MessageKey(message_name="OLD_MSG"), removed)
+        self.assertNotIn(
+            FieldKey(message=MessageKey(message_name="OLD_MSG"), field_name="foo"),
+            removed,
+        )
+
+    def test_deprecated_entry_value_mutation_is_not_breaking(self):
+        new_xml = self.DEPRECATED_ENTRY_XML.replace('value="204"', 'value="999"')
+        mutations = mutations_between(self.DEPRECATED_ENTRY_XML, new_xml)
+        self.assertEqual(mutations, [])
+
+    def test_non_deprecated_removal_still_breaks(self):
+        """Regression guard: normal (non-deprecated, non-wip) removals must still be caught."""
+        new_xml = self.DEPRECATED_ENTRY_XML.replace(
+            '<entry name="MAV_CMD_DO_SET_MODE" value="176">\n'
+            '    <description>Set system mode.</description>\n'
+            '  </entry>\n', ''
+        )
+        removed = removed_between(self.DEPRECATED_ENTRY_XML, new_xml)
+        self.assertIn(
+            EnumEntryKey(enum=EnumKey(enum_name="MAV_CMD"), entry_name="MAV_CMD_DO_SET_MODE"),
+            removed,
+        )
+
+    def test_deprecated_field_in_surviving_message_is_not_breaking(self):
+        old_xml = """<mavlink>
+<enums/>
+<messages>
+<message id="10" name="MY_MSG">
+  <field type="uint8_t" name="keep">desc</field>
+  <field type="uint8_t" name="drop">
+    <deprecated since="2023-01" replaced_by="keep"/>
+    desc
+  </field>
+</message>
+</messages>
+</mavlink>"""
+        new_xml = old_xml.replace(
+            '  <field type="uint8_t" name="drop">\n'
+            '    <deprecated since="2023-01" replaced_by="keep"/>\n'
+            '    desc\n'
+            '  </field>\n', ''
+        )
+        removed = removed_between(old_xml, new_xml)
+        self.assertNotIn(
+            FieldKey(message=MessageKey(message_name="MY_MSG"), field_name="drop"),
+            removed,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
