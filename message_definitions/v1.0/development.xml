@@ -110,6 +110,24 @@
         <description>Reserved (not used). If set, this will indicate that an additional status field exists for higher status values.</description>
       </entry>
     </enum>
+    <enum name="MAV_FUEL_STATUS_FLAGS" bitmask="true">
+      <description>Fuel status flags for fault, health and state indication of a single fuel source. These indicate conditions of the fuel source itself; they do not indicate the status of the aggregated energy system as a whole (see MAV_ENERGY_STATUS in ENERGY_SYSTEM_STATUS for that).</description>
+      <entry value="1" name="MAV_FUEL_STATUS_FLAGS_NOT_READY_TO_USE">
+        <description>
+          The fuel source is not ready to use (fly).
+          Set if the fuel source has faults or other conditions that make it unsafe to fly with.
+        </description>
+      </entry>
+      <entry value="2" name="MAV_FUEL_STATUS_FLAGS_TANK_EMPTY">
+        <description>The fuel tank is empty.</description>
+      </entry>
+      <entry value="4" name="MAV_FUEL_STATUS_FLAGS_LEAK_DETECTED">
+        <description>A fuel leak has been detected.</description>
+      </entry>
+      <entry value="8" name="MAV_FUEL_STATUS_FLAGS_SENSOR_FAULT">
+        <description>A fuel level or flow sensor fault has been detected; reported values may be inaccurate.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -639,6 +657,27 @@
         <description></description>
       </entry>
     </enum>
+    <enum name="MAV_ENERGY_STATUS">
+      <description>Status of an aggregated energy system, as reported in ENERGY_SYSTEM_STATUS.
+        Applies to the energy system as a whole (not necessarily a specific battery or fuel tank contributing to it).
+        Note that the associated action/reaction of a vehicle depends on the energy system: an emergency status in a propulsion system should trigger an emergency landing, while a similar status in a payload might trigger a return to home.
+      </description>
+      <entry value="0" name="MAV_ENERGY_STATUS_UNDEFINED">
+        <description>Energy system status not provided.</description>
+      </entry>
+      <entry value="1" name="MAV_ENERGY_STATUS_LOW">
+        <description>Energy state is low, warn and monitor close.</description>
+      </entry>
+      <entry value="2" name="MAV_ENERGY_STATUS_CRITICAL">
+        <description>Energy state is critical. For flight-critical energy systems (i.e. propulsion), return or abort immediately.</description>
+      </entry>
+      <entry value="3" name="MAV_ENERGY_STATUS_EMERGENCY">
+        <description>Energy state is at emergency/failure level. For flight-critical energy systems (i.e. propulsion) land immediately.</description>
+      </entry>
+      <entry value="4" name="MAV_ENERGY_STATUS_UNAVAILABLE">
+        <description>Energy system unavailable. Arming might be blocked for a propulsion energy system.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -676,6 +715,18 @@
       <field type="float" name="current" units="A" invalid="NaN">Battery current (through all cells/loads). Positive value when discharging and negative if charging. NaN: field not provided.</field>
       <field type="uint16_t" name="state_of_charge" units="%" multiplier="2E-3" minValue="0" maxValue="50000" invalid="UINT16_MAX">State of Charge (SoC). Values: [0-50000], UINT16_MAX: field not provided. Note that SoC is remaining capacity relative to fully-charged capacity as a percentage.</field>
       <field type="uint32_t" name="status_flags" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
+    </message>
+    <message id="364" name="BATTERY_CELL_STATUS">
+      <wip/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Battery cell voltages.
+        The id field matches the id field of the corresponding BATTERY_STATUS_V2 and BATTERY_INFO messages.
+        A battery with more than 6 cells in series (see BATTERY_INFO.cells_in_series) sends multiple instances of this message, indexed by cells_instance, to cover all cells.
+        Note that the aggregate battery voltage is provided in BATTERY_STATUS_V2.voltage.
+      </description>
+      <field type="uint8_t" name="id" instance="true">Battery ID. Matches the id field of BATTERY_STATUS_V2.</field>
+      <field type="uint8_t" name="cells_instance">Instance of this message for the given energy system.  </field>
+      <field type="uint16_t[6]" name="voltages" units="mV" invalid="[UINT16_MAX]">Battery voltage of cells 6*cells_instance+1 to 6*cells_instance+7.</field>
     </message>
     <message id="414" name="GROUP_START">
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
@@ -919,7 +970,7 @@
 
         ENERGY_SYSTEM_STATUS provides corresponding status information.
 
-        An energy system represents the energy supply for a single function domain (which might be "all" if all functions are supplied by a single system).
+        An energy system represents the energy supply for a single functional domain (which might be "all" if all functions are supplied by a single system).
         Each energy system aggregates one or more batteries and/or fuel systems and represents them as a single time or percentage remaining (it is up to the emitting system to determine the aggregation strategy).
         The intent is that a GCS can display a high level energy system as a simple indicator, and users can drill down to see the individual sources that contribute to it.
 
@@ -929,6 +980,7 @@
         For many cases the default functional domains are sufficient.
         If more granular functions are needed then user defined energy_systems can be used (such as MAV_ENERGY_SYSTEM_USER_DEFINED1).
         These can be given a human-readable name in the energy_system_name field.
+        Systems that support component metadata can use this as a key to provide translation information.
       </description>
       <field type="uint8_t" name="energy_system" enum="MAV_ENERGY_SYSTEM">Energy system. Vehicle unique.</field>
       <field type="char[25]" name="energy_system_name">User-defined energy system name (allows a GCS to provide a human readable string for an energy_system such as MAV_ENERGY_SYSTEM_USER_DEFINED1). Empty for predefined energy_system types. This is UTF-8 encoded and without null termination character.</field>
@@ -942,6 +994,10 @@
         This provides corresponding low rate/invariant information, including a human readable name if user-defined energy_system values are used.
       </description>
       <field type="uint8_t" name="energy_system" enum="MAV_ENERGY_SYSTEM">Energy system.</field>
+      <field type="float" name="remaining_capacity" units="%" invalid="NaN">Remaining capacity relative to full capacity as a percentage. Values: [0-100], NaN: field not provided.</field>
+      <field type="float" name="remaining_time" units="s">Estimated time remaining at current consumption rate.
+        When landed, estimated time at nominal in-use consumption rate (such as during hover/cruise mode for normal propulsion) hover/cruise mode.</field>
+      <field type="uint16_t" name="status_flags" enum="MAV_ENERGY_STATUS">Health and readiness state of overall power system.</field>
     </message>
     <message id="367" name="FUEL_INFORMATION_V2">
       <wip/>
@@ -952,6 +1008,8 @@
       </description>
       <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as FUEL_STATUS_V2.</field>
       <field type="uint8_t" name="energy_system" enum="MAV_ENERGY_SYSTEM">Energy system.</field>
+      <field type="uint32_t" name="fuel_type" enum="MAV_FUEL_TYPE">Fuel type. Defines units for fuel capacity and consumption fields in FUEL_STATUS_V2.</field>
+      <field type="float" name="maximum_fuel">Capacity when full. Must be provided.</field>
     </message>
     <message id="368" name="FUEL_STATUS_V2">
       <wip/>
@@ -961,6 +1019,12 @@
         Static/invariant fuel information is sent in FUEL_INFORMATION_V2.
       </description>
       <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as FUEL_INFORMATION_V2.</field>
+      <field type="float" name="consumed_fuel" invalid="NaN">Consumed fuel (measured). Units defined by MAV_FUEL_TYPE. This value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="float" name="remaining_fuel" invalid="NaN">Remaining fuel until empty (measured). Units defined by MAV_FUEL_TYPE. The value should not be inferred: if not measured set to NaN. NaN: field not provided.</field>
+      <field type="uint8_t" name="percent_remaining" units="%" invalid="UINT8_MAX">Percentage of remaining fuel, relative to full. Values: [0-100], UINT8_MAX: field not provided.</field>
+      <field type="float" name="flow_rate" invalid="NaN">Positive value when emptying/using, and negative if filling/replacing. NaN: field not provided.</field>
+      <field type="float" name="temperature" units="K" invalid="NaN">Fuel temperature. NaN: field not provided.</field>
+      <field type="uint32_t" name="status_flags" enum="MAV_FUEL_STATUS_FLAGS">Fault, health, readiness, and other status indications for this fuel source.</field>
     </message>
   </messages>
 </mavlink>
