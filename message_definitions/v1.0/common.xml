@@ -5294,6 +5294,64 @@
         <description>NAK: NAK response</description>
       </entry>
     </enum>
+    <enum name="MAV_PARAM_PCK_TYPE">
+      <description>
+        Value types used in the packed parameter file served over MAVLink FTP at @PARAM/param.pck.
+        These are not MAV_PARAM_TYPE.
+
+        A component that implements packed download serves that virtual path.
+        OpenFileRO of an unknown path NAKs FileNotFound, which is how a client discovers that the component does not implement it.
+        Writes are optional; a server that rejects them NAKs FileProtected.
+
+        Optional query string fields: start (0-based index into the component parameter list, default 0), count (maximum entries, 0 or omitted means all from start), withdefaults (1 includes a default on entries whose value differs from default).
+        Example: @PARAM/param.pck?withdefaults=1 or @PARAM/param.pck?start=50&amp;count=10.
+
+        Every ReadFile and BurstReadFile on the session uses one block size, taken from the first such request (size 0 means 239).
+        The server may NAK a later request that uses a different size.
+        Before each entry the server may insert zero pad bytes so the value, and the default when present, lie entirely in one block.
+        Clients skip leading zeros.
+
+        Little-endian file layout. Header:
+        uint16 magic (MAV_PARAM_PCK_MAGIC_VALUES, or MAV_PARAM_PCK_MAGIC_WITH_DEFAULTS when withdefaults=1),
+        uint16 num_params (entries in this file),
+        uint16 total_params (entries a full download would contain).
+        A download of the full set has num_params equal to total_params.
+
+        Each entry:
+        uint8 type:4 flags:4 (type is this enum; flags is MAV_PARAM_PCK_FLAG),
+        uint8 common_len:4 name_len_minus_1:4,
+        uint8 name[name_len] (name_len is the high nibble plus one; common_len copies that many bytes from the previous name and is 0 on the first entry; common_len plus name_len is 1 to 16; names are not NUL-terminated; name_len cannot be 0, so an empty suffix is encoded by reducing common_len and emitting one suffix byte),
+        value as little-endian native bytes of this type,
+        default of the same width if MAV_PARAM_PCK_FLAG_DEFAULT is set.
+      </description>
+      <entry value="1" name="MAV_PARAM_PCK_TYPE_INT8">
+        <description>8-bit signed integer (1 byte).</description>
+      </entry>
+      <entry value="2" name="MAV_PARAM_PCK_TYPE_INT16">
+        <description>16-bit signed integer (2 bytes, little-endian).</description>
+      </entry>
+      <entry value="3" name="MAV_PARAM_PCK_TYPE_INT32">
+        <description>32-bit signed integer (4 bytes, little-endian).</description>
+      </entry>
+      <entry value="4" name="MAV_PARAM_PCK_TYPE_FLOAT">
+        <description>32-bit IEEE754 float (4 bytes, little-endian).</description>
+      </entry>
+    </enum>
+    <enum name="MAV_PARAM_PCK_FLAG" bitmask="true">
+      <description>Flags in the high nibble of the first byte of a packed parameter entry (@PARAM/param.pck). Bits 1-3 are reserved and must be 0.</description>
+      <entry value="1" name="MAV_PARAM_PCK_FLAG_DEFAULT">
+        <description>A default value of the same packed type follows the parameter value. Set only when the file was requested with withdefaults=1 and the value differs from the default.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_PARAM_PCK_MAGIC">
+      <description>Magic number in the 6-byte header of @PARAM/param.pck. Selects whether default values may appear in the file.</description>
+      <entry value="0x671B" name="MAV_PARAM_PCK_MAGIC_VALUES">
+        <description>File contains values only.</description>
+      </entry>
+      <entry value="0x671C" name="MAV_PARAM_PCK_MAGIC_WITH_DEFAULTS">
+        <description>File was requested with withdefaults=1. An entry includes a default only if MAV_PARAM_PCK_FLAG_DEFAULT is set.</description>
+      </entry>
+    </enum>
     <enum name="MISSION_STATE">
       <description>
         States of the mission state machine.
@@ -6519,7 +6577,7 @@
       <field type="uint16_t" name="fixed">Count of error corrected radio packets (since boot).</field>
     </message>
     <message id="110" name="FILE_TRANSFER_PROTOCOL">
-      <description>File transfer protocol message: https://mavlink.io/en/services/ftp.html.</description>
+      <description>File transfer protocol message: https://mavlink.io/en/services/ftp.html. Packed parameters are served at the virtual path @PARAM/param.pck (see MAV_PARAM_PCK_TYPE).</description>
       <field type="uint8_t" name="target_network">Network ID (0 for broadcast)</field>
       <field type="uint8_t" name="target_system">System ID (0 for broadcast)</field>
       <field type="uint8_t" name="target_component">Component ID (0 for broadcast)</field>
