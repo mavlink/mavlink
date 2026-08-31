@@ -3472,6 +3472,12 @@
       <entry value="64" name="MAV_ENERGY_SYSTEM_FLAGS_USER_DEFINED2">
         <description>User-defined energy system (2). Name is provided in ENERGY_SYSTEM_INFO.</description>
       </entry>
+      <entry value="128" name="MAV_ENERGY_SYSTEM_FLAGS_USER_DEFINED3">
+        <description>User-defined energy system (3). Name is provided in ENERGY_SYSTEM_INFO.</description>
+      </entry>
+      <entry value="256" name="MAV_ENERGY_SYSTEM_FLAGS_USER_DEFINED4">
+        <description>User-defined energy system (4). Name is provided in ENERGY_SYSTEM_INFO.</description>
+      </entry>
     </enum>
     <enum name="MAV_BATTERY_CHARGE_STATE">
       <description>Enumeration for battery charge states.</description>
@@ -8099,7 +8105,7 @@
       <field type="char[32]" name="serial_number" invalid="[0]">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
       <field type="char[50]" name="name" invalid="[0]">Battery device name. Formatted as manufacturer name then product name, separated with an underscore (in ASCII characters), 0 terminated. All 0: field not provided.</field>
       <extensions/>
-      <field type="uint8_t" name="energy_systems" enum="MAV_ENERGY_SYSTEM_FLAGS">Energy system(s) this battery is associated with. A source is associated with an ENERGY_SYSTEM_INFO/ENERGY_SYSTEM_STATUS stream if any bit is set in both energy_systems values (bitwise AND is non-zero) - see MAV_ENERGY_SYSTEM_FLAGS. 0: field not provided; a consumer may instead make a best guess at the energy systems from battery_function.</field>
+      <field type="uint16_t" name="energy_systems" enum="MAV_ENERGY_SYSTEM_FLAGS">Energy system(s) this battery is associated with. A source is associated with an ENERGY_SYSTEM_INFO/ENERGY_SYSTEM_STATUS stream if any bit is set in both energy_systems values (bitwise AND is non-zero) - see MAV_ENERGY_SYSTEM_FLAGS. 0: field not provided; a consumer may instead make a best guess at the energy systems from battery_function.</field>
     </message>
     <message id="373" name="GENERATOR_STATUS">
       <description>Telemetry of power generation system. Alternator or mechanical generator.</description>
