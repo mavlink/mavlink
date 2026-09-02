@@ -5521,6 +5521,21 @@
         <description>True if the data originates from or is consumed by the primary estimator.</description>
       </entry>
     </enum>
+    <enum name="FOLLOW_TARGET_CAP_FLAGS" bitmask="true">
+      <description>Bitmask indicating which fields contain valid data in a FOLLOW_TARGET message (lat/lon/alt, vel, acc, attitude_q, rates). If a bit is unset, the corresponding field(s) are zero-filled and should be ignored.</description>
+      <entry value="1" name="FOLLOW_TARGET_CAP_FLAGS_POS">
+        <description>Position estimate is valid (lat/lon/alt).</description>
+      </entry>
+      <entry value="2" name="FOLLOW_TARGET_CAP_FLAGS_VEL">
+        <description>Velocity estimate is valid (vel field).</description>
+      </entry>
+      <entry value="4" name="FOLLOW_TARGET_CAP_FLAGS_ACCEL">
+        <description>Acceleration estimate is valid (acc field).</description>
+      </entry>
+      <entry value="8" name="FOLLOW_TARGET_CAP_FLAGS_ATT_RATES">
+        <description>Attitude and angular rate estimates are valid (attitude_q and rates fields).</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="1" name="SYS_STATUS">
@@ -6881,14 +6896,14 @@
     <message id="144" name="FOLLOW_TARGET">
       <description>Current motion information from a designated system</description>
       <field type="uint64_t" name="timestamp" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint8_t" name="est_capabilities">bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3)</field>
+      <field type="uint8_t" name="est_capabilities" enum="FOLLOW_TARGET_CAP_FLAGS">Bitmask indicating which fields in this message contain valid data.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Altitude (MSL)</field>
-      <field type="float[3]" name="vel" units="m/s" invalid="[0]">target velocity (0,0,0) for unknown</field>
-      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">linear target acceleration (0,0,0) for unknown</field>
-      <field type="float[4]" name="attitude_q" invalid="[0]">(0 0 0 0 for unknown)</field>
-      <field type="float[3]" name="rates" invalid="[0]">(0 0 0 for unknown)</field>
+      <field type="float[3]" name="vel" units="m/s" invalid="[0]">Target velocity in MAV_FRAME_LOCAL_NED frame. (0,0,0) for unknown.</field>
+      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">Target linear acceleration in MAV_FRAME_LOCAL_NED frame. (0,0,0) for unknown.</field>
+      <field type="float[4]" name="attitude_q" invalid="[0]">Target orientation as a quaternion rotating from MAV_FRAME_BODY_FRD to MAV_FRAME_LOCAL_NED (w, x, y, z order, zero-rotation is [1, 0, 0, 0]). (0, 0, 0, 0) for unknown.</field>
+      <field type="float[3]" name="rates" units="rad/s" invalid="[0]">Target angular rates (roll, pitch, yaw) in MAV_FRAME_BODY_FRD frame. (0,0,0) for unknown.</field>
       <field type="float[3]" name="position_cov">eph epv</field>
       <field type="uint64_t" name="custom_state">button states or switches of a tracker device</field>
     </message>
