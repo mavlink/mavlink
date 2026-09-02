@@ -28,6 +28,14 @@ from lxml import etree
 
 NameKey = Union['EnumKey', 'EnumEntryKey', 'MessageKey', 'FieldKey']
 
+# Lifecycle statuses returned by collect_names().
+WIP = "wip"
+DEPRECATED = "deprecated"
+STABLE = "stable"
+_WIP = WIP
+_DEPRECATED = DEPRECATED
+_STABLE = STABLE
+
 
 class IsRelativeOfBase(ABC):
     @abstractmethod
@@ -77,40 +85,62 @@ def describe_key(name: NameKey) -> str:
     return str(name)
 
 
-def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameKey, Dict[str, Any]]]:
-    """Collect names and wire-critical attributes (id, type, value) from a MAVLink XML root."""
-    names = {}
-    attrs = {}
+def _lifecycle_status(element: etree._Element, parent_status: str = _STABLE) -> str:
+    """Determine lifecycle status of a MAVLink XML element.
+
+    WIP is inherited from parent (an entire message/enum being WIP means all
+    its children are WIP).
+
+    DEPRECATED is NOT inherited: a deprecated message still has a fixed, released
+    wire format while it survives. Surviving fields of a deprecated message must
+    not be mutated or removed. Only elements explicitly marked with <deprecated>
+    (or an entire deprecated message/enum deleted as a whole) qualify.
+    """
+    if element.find("wip") is not None or parent_status == _WIP:
+        return _WIP
+    if element.find("deprecated") is not None:
+        return _DEPRECATED
+    return _STABLE
+
+
+def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, str], Dict[NameKey, Dict[str, Any]]]:
+    """Collect names and wire-critical attributes (id, type, value) from a MAVLink XML root.
+
+    The first dict maps each NameKey to its lifecycle status ('wip', 'deprecated',
+    or 'stable').
+    """
+    names: Dict[NameKey, str] = {}
+    attrs: Dict[NameKey, Dict[str, Any]] = {}
 
     for enum in root.findall(".//enum"):
         enum_name = enum.get("name")
-        enum_is_wip = enum.find("wip") is not None
+        enum_status = _lifecycle_status(enum)
         enum_key = EnumKey(enum_name=enum_name)
-        names[enum_key] = enum_is_wip
+        names[enum_key] = enum_status
 
         for entry in enum.findall("entry"):
             entry_name = entry.get("name")
-            entry_is_wip = enum_is_wip or entry.find("wip") is not None
+            entry_status = _lifecycle_status(entry, enum_status)
             entry_key = EnumEntryKey(enum=enum_key, entry_name=entry_name)
-            names[entry_key] = entry_is_wip
+            names[entry_key] = entry_status
             entry_value = entry.get("value")
             if entry_value is not None:
                 attrs[entry_key] = {"value": entry_value}
 
     for msg in root.findall(".//message"):
         message_name = msg.get("name")
-        message_is_wip = msg.find("wip") is not None
+        message_status = _lifecycle_status(msg)
         message_key = MessageKey(message_name=message_name)
-        names[message_key] = message_is_wip
+        names[message_key] = message_status
         message_id = msg.get("id")
         if message_id is not None:
             attrs[message_key] = {"id": message_id}
 
         for field in msg.findall("field"):
             field_name = field.get("name")
-            field_is_wip = message_is_wip or field.find("wip") is not None
+            field_status = _lifecycle_status(field, message_status)
             field_key = FieldKey(message=message_key, field_name=field_name)
-            names[field_key] = field_is_wip
+            names[field_key] = field_status
             field_type = field.get("type")
             if field_type is not None:
                 attrs[field_key] = {"type": field_type}
@@ -208,18 +238,22 @@ def describe_mutation(key: NameKey, old_a: Dict[str, Any], new_a: Dict[str, Any]
 
 
 def find_mutations(
-    old_names: Dict[NameKey, bool],
-    new_names: Dict[NameKey, bool],
+    old_names: Dict[NameKey, str],
+    new_names: Dict[NameKey, str],
     old_attrs: Dict[NameKey, Dict[str, Any]],
     new_attrs: Dict[NameKey, Dict[str, Any]],
 ) -> List[str]:
-    """Return description strings for wire-breaking attribute mutations (type, id, value)."""
+    """Return description strings for wire-breaking attribute mutations (type, id, value).
+
+    Only WIP items are exempt — deprecated items are still wire-released and
+    changing their id/type/value is a genuine wire break.
+    """
     mutation_descs: List[str] = []
     for key in old_names:
         if key not in new_names:
             continue
-        if old_names.get(key) or new_names.get(key):
-            continue  # skip WIP items
+        if _WIP in (old_names.get(key), new_names.get(key)):
+            continue  # skip WIP items; deprecated items are still wire-breaking
         old_a = old_attrs.get(key)
         new_a = new_attrs.get(key)
         if old_a is None or new_a is None:
@@ -238,6 +272,7 @@ COMMENT_MARKER = "<!-- mavlink-api-break-check -->"
 def build_removal_comment(
     removed_by_file: Dict[str, List[NameKey]],
     mutations_by_file: Optional[Dict[str, List[str]]] = None,
+    deprecated_by_file: Optional[Dict[str, List[NameKey]]] = None,
 ) -> str:
     """Format a PR comment listing removed messages/enums and attribute mutations."""
     lines: List[str] = [COMMENT_MARKER, ""]
@@ -248,6 +283,14 @@ def build_removal_comment(
             lines.append(f"- `{xml}`")
             for name in sorted(removed_by_file[xml], key=describe_key):
                 lines.append(f"  - Removed {describe_key(name)}")
+        lines.append("")
+
+    if deprecated_by_file:
+        lines.extend(["Detected removal of deprecated items (expected lifecycle cleanup):", ""])
+        for xml in sorted(deprecated_by_file):
+            lines.append(f"- `{xml}`")
+            for name in sorted(deprecated_by_file[xml], key=describe_key):
+                lines.append(f"  - Removed deprecated {describe_key(name)}")
         lines.append("")
 
     if mutations_by_file:
@@ -270,6 +313,7 @@ def main() -> None:
         return
 
     removals_for_comment: Dict[str, List[NameKey]] = {}
+    deprecated_for_comment: Dict[str, List[NameKey]] = {}
     mutations_for_comment: Dict[str, List[str]] = {}
     breaking_by_file: Dict[str, List[str]] = {}
 
@@ -293,16 +337,30 @@ def main() -> None:
 
         # If field is not in new names, it was removed
         removed = [n for n in old_names if n not in new_names]
-        # If removed field is not wip, it is a breaking change
-        breaking_candidates = [r for r in removed if not old_names.get(r)]
 
-        # Moving an entire message/enum (e.g. from a dialect to common) can be ok, so separate those cases
-        removed_enum_or_message = [item for item in breaking_candidates if isinstance(item, (MessageKey, EnumKey))]
+        # All messages and enums removed in this diff (stable or deprecated)
+        removed_enum_or_message = [item for item in removed if isinstance(item, (MessageKey, EnumKey))]
 
-        if removed_enum_or_message:
-            removals_for_comment[xml] = removed_enum_or_message
+        # Stable whole messages/enums removed go to comment for confirmation
+        stable_removed_enum_or_message = [item for item in removed_enum_or_message if old_names.get(item) == _STABLE]
+        if stable_removed_enum_or_message:
+            removals_for_comment[xml] = stable_removed_enum_or_message
 
-        confirmed_breaking = [b for b in breaking_candidates if not any(b.is_relative_of(item) for item in removed_enum_or_message)]
+        # Deprecated whole messages/enums, or deprecated standalone fields/entries in surviving parents
+        deprecated_for_comment_items = [
+            item for item in removed
+            if old_names.get(item) == _DEPRECATED
+            and (isinstance(item, (MessageKey, EnumKey)) or not any(item.is_relative_of(parent) for parent in removed_enum_or_message))
+        ]
+        if deprecated_for_comment_items:
+            deprecated_for_comment[xml] = deprecated_for_comment_items
+
+        # Confirmed breaking: stable items whose parent message/enum was NOT removed
+        confirmed_breaking = [
+            b for b in removed
+            if old_names.get(b) == _STABLE
+            and not any(b.is_relative_of(parent) for parent in removed_enum_or_message)
+        ]
 
         breaking_descs: List[str] = []
         for name in confirmed_breaking:
@@ -319,10 +377,16 @@ def main() -> None:
         if breaking_descs:
             breaking_by_file[xml] = breaking_descs
 
-    if removals_for_comment or mutations_for_comment:
+    if removals_for_comment or deprecated_for_comment or mutations_for_comment:
         if removals_for_comment:
             print("Message or enum removals detected.")
             for xml, removals in removals_for_comment.items():
+                print(f" - {xml}:")
+                for removal in removals:
+                    print(f"   - {describe_key(removal)}")
+        if deprecated_for_comment:
+            print("Deprecated item removals detected (expected lifecycle cleanup).")
+            for xml, removals in deprecated_for_comment.items():
                 print(f" - {xml}:")
                 for removal in removals:
                     print(f"   - {describe_key(removal)}")
@@ -333,7 +397,7 @@ def main() -> None:
                 for desc in descs:
                     print(f"   - {desc}")
 
-        write_pr_comment_artifact(build_removal_comment(removals_for_comment, mutations_for_comment))
+        write_pr_comment_artifact(build_removal_comment(removals_for_comment, mutations_for_comment, deprecated_for_comment))
 
     if breaking_by_file:
         for xml, descs in breaking_by_file.items():
