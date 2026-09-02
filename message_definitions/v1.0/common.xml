@@ -5299,7 +5299,8 @@
         Value types used in the packed parameter file served over MAVLink FTP at @PARAM/param.pck.
         These are not MAV_PARAM_TYPE.
 
-        A component that implements packed download serves that virtual path.
+        A packed parameter file is a self-describing binary encoding that allows efficient and atomic upload and download of all parameters on a component using MAVFTP.
+        A component that supports this protocol implements host the file at the virtual path @PARAM/param.pck.
         OpenFileRO of an unknown path NAKs FileNotFound, which is how a client discovers that the component does not implement it.
         Writes are optional; a server that rejects them NAKs FileProtected.
 
