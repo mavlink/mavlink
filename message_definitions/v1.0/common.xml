@@ -3436,6 +3436,49 @@
         <description>Payload battery</description>
       </entry>
     </enum>
+    <enum name="MAV_ENERGY_SYSTEM_FLAGS" bitmask="true">
+      <wip/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Energy system function flags.
+        In an ENERGY_SYSTEM_STATUS it indicates the function domains the energy system supplies.
+        In source messages (BATTERY_INFO.energy_systems, FUEL_INFORMATION_V2.energy_systems) it indicates the functional domains the source contributes to;
+        if any bits in a source message match corresponding bits in an energy system, the source should appear in a drop down for the energy system.
+
+        ENERGY_SYSTEM_STATUS should never be emitted with a zero value.
+        A source that has zero may be grouped with other sources that set 0, but this is not encouraged.
+      </description>
+      <entry value="1" name="MAV_ENERGY_SYSTEM_FLAGS_PROPULSION">
+        <description>Propulsion energy system.</description>
+      </entry>
+      <entry value="2" name="MAV_ENERGY_SYSTEM_FLAGS_AVIONICS">
+        <description>Avionics energy system.</description>
+      </entry>
+      <entry value="4" name="MAV_ENERGY_SYSTEM_FLAGS_PAYLOAD">
+        <description>Payload energy system.</description>
+      </entry>
+      <entry value="8" name="MAV_ENERGY_SYSTEM_FLAGS_PROPULSION_VTOL_MC">
+        <description>Propulsion energy system for a VTOL in MC mode.
+          Used when reporting modes usage separately (for either different or the same underlying sources).
+          MAV_ENERGY_SYSTEM_FLAGS_PROPULSION can be used if there is a single physical source and you want to report the consumption in the current mode.</description>
+      </entry>
+      <entry value="16" name="MAV_ENERGY_SYSTEM_FLAGS_PROPULSION_VTOL_FW">
+        <description>Propulsion energy system for a VTOL in FW mode.
+          Used when reporting modes usage separately (for either different or the same underlying sources).
+          MAV_ENERGY_SYSTEM_FLAGS_PROPULSION can be used if there is a single physical source and you want to report the consumption in the current mode.</description>
+      </entry>
+      <entry value="32" name="MAV_ENERGY_SYSTEM_FLAGS_USER_DEFINED1">
+        <description>User-defined energy system (1). Name is provided in ENERGY_SYSTEM_INFO.</description>
+      </entry>
+      <entry value="64" name="MAV_ENERGY_SYSTEM_FLAGS_USER_DEFINED2">
+        <description>User-defined energy system (2). Name is provided in ENERGY_SYSTEM_INFO.</description>
+      </entry>
+      <entry value="128" name="MAV_ENERGY_SYSTEM_FLAGS_USER_DEFINED3">
+        <description>User-defined energy system (3). Name is provided in ENERGY_SYSTEM_INFO.</description>
+      </entry>
+      <entry value="256" name="MAV_ENERGY_SYSTEM_FLAGS_USER_DEFINED4">
+        <description>User-defined energy system (4). Name is provided in ENERGY_SYSTEM_INFO.</description>
+      </entry>
+    </enum>
     <enum name="MAV_BATTERY_CHARGE_STATE">
       <description>Enumeration for battery charge states.</description>
       <entry value="0" name="MAV_BATTERY_CHARGE_STATE_UNDEFINED">
@@ -8057,7 +8100,7 @@
         BATTERY_STATUS_V2 is used for higher-rate battery status information.
       </description>
       <field type="uint8_t" name="id" instance="true">Battery ID</field>
-      <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery.</field>
+      <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery. See also the energy_systems field.</field>
       <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery.</field>
       <field type="uint8_t" name="state_of_health" units="%" invalid="UINT8_MAX">State of Health (SOH) estimate. Typically 100% at the time of manufacture and will decrease over time and use. -1: field not provided.</field>
       <field type="uint8_t" name="cells_in_series" invalid="0">Number of battery cells in series. 0: field not provided.</field>
@@ -8076,6 +8119,8 @@
       <field type="char[9]" name="manufacture_date" invalid="[0]">Manufacture date (DDMMYYYY) in ASCII characters, 0 terminated. All 0: field not provided.</field>
       <field type="char[32]" name="serial_number" invalid="[0]">Serial number in ASCII characters, 0 terminated. All 0: field not provided.</field>
       <field type="char[50]" name="name" invalid="[0]">Battery device name. Formatted as manufacturer name then product name, separated with an underscore (in ASCII characters), 0 terminated. All 0: field not provided.</field>
+      <extensions/>
+      <field type="uint16_t" name="energy_systems" enum="MAV_ENERGY_SYSTEM_FLAGS">Energy system(s) this battery is associated with. A source is associated with an ENERGY_SYSTEM_INFO/ENERGY_SYSTEM_STATUS stream if any bit is set in both energy_systems values (bitwise AND is non-zero) - see MAV_ENERGY_SYSTEM_FLAGS. 0: field not provided; a consumer may instead make a best guess at the energy systems from battery_function.</field>
     </message>
     <message id="373" name="GENERATOR_STATUS">
       <description>Telemetry of power generation system. Alternator or mechanical generator.</description>
