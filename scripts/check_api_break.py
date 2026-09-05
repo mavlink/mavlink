@@ -129,8 +129,26 @@ def get_changed_xml_files(base: str) -> List[str]:
     ).splitlines()
     return [f for f in changed if f.endswith(".xml")]
 
+# MAVLink dialect files are plain <mavlink> documents with no legitimate need
+# for a DOCTYPE or entities. This job parses untrusted PR content (see
+# write_pr_comment_artifact's docstring), so the parser is locked down:
+# resolve_entities=False keeps any declared entity as a literal, unexpanded
+# reference instead of substituting its value. lxml >=5.0 already restricts
+# *external* entity resolution (e.g. SYSTEM "file:///...") by default, but
+# purely internal entities (e.g. classic "billion laughs" expansion) are
+# still resolved unless this is set explicitly - so this line closes both
+# the exfiltration vector and the expansion-based DoS vector, and does so
+# in a way that doesn't depend on which lxml version the CI runner has
+# installed. no_network=True (lxml's own default) is kept explicit here
+# for the same reason - readable and version-independent.
+_XML_PARSER = etree.XMLParser(resolve_entities=False, no_network=True)
+
+
 def parse_xml(content: Union[str, bytes]) -> etree._Element:
-    return etree.fromstring(content.encode() if isinstance(content, str) else content)
+    return etree.fromstring(
+        content.encode() if isinstance(content, str) else content,
+        parser=_XML_PARSER,
+    )
 
 
 def get_pull_request_info() -> Optional[Tuple[str, int]]:
