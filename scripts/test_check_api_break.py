@@ -458,7 +458,7 @@ class NumericAttributeTests(unittest.TestCase):
         self.assertIsNone(as_number("1e3"))
 
     def test_non_numeric_attribute_values_fall_back_to_text_comparison(self):
-        # If a value= is ever written as something unparseable, the check must
+        # If a value= is ever written as something unparsable, the check must
         # keep its old string behavior rather than silently treating the pair
         # as equal.
         self.assertTrue(check_api_break.attr_changed("value", "TBD", "TBD_LATER"))
