@@ -120,12 +120,12 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
 
 def get_base_commit() -> str:
     return subprocess.check_output(
-        ["git", "merge-base", "origin/master", "HEAD"], text=True
+        ["git", "merge-base", "origin/master", "HEAD"], text=True, encoding="utf-8"
     ).strip()
 
 def get_changed_xml_files(base: str) -> List[str]:
     changed = subprocess.check_output(
-        ["git", "diff", "--name-only", base], text=True
+        ["git", "diff", "--name-only", base], text=True, encoding="utf-8"
     ).splitlines()
     return [f for f in changed if f.endswith(".xml")]
 
@@ -279,10 +279,11 @@ def main() -> None:
 
         try:
             old_content = subprocess.check_output(
-                ["git", "show", f"{base}:{xml}"], text=True
+                ["git", "show", f"{base}:{xml}"], text=True, encoding="utf-8"
             )
-            new_content = open(xml).read()
-        except subprocess.CalledProcessError:
+            with open(xml, encoding="utf-8") as f:
+                new_content = f.read()
+        except (subprocess.CalledProcessError, FileNotFoundError):
             continue  # new file or removed, ignore
 
         old_root = parse_xml(old_content)
