@@ -136,5 +136,44 @@ class RemovalDetectionTests(unittest.TestCase):
         self.assertNotIn(FieldKey(message=MessageKey(message_name="MY_MSG"), field_name="foo"), removed)
 
 
+class ParseXmlHardeningTests(unittest.TestCase):
+    """parse_xml() hardening tests: verify entity expansion (DoS/XXE) is disabled."""
+
+    def test_normal_xml_parses(self):
+        root = parse_xml(BASE_XML)
+        names, _ = collect_names(root)
+        self.assertIn(MessageKey(message_name="MY_MSG"), names)
+
+    def test_billion_laughs_entity_expansion_blocked(self):
+        bomb = (
+            '<?xml version="1.0"?>'
+            '<!DOCTYPE lolz ['
+            '<!ENTITY lol "lol">'
+            '<!ENTITY lol2 "&lol;&lol;">'
+            ']>'
+            '<mavlink><enums/><messages/></mavlink>'
+        )
+        root = parse_xml(bomb)
+        self.assertIsNotNone(root)
+
+    def test_external_entity_xxe_blocked(self):
+        xxe = (
+            '<?xml version="1.0"?>'
+            '<!DOCTYPE foo ['
+            '<!ENTITY xxe SYSTEM "file:///etc/hostname">'
+            ']>'
+            '<mavlink><enums/><messages/></mavlink>'
+        )
+        root = parse_xml(xxe)
+        self.assertIsNotNone(root)
+
+    def test_malformed_xml_raises(self):
+        from lxml import etree
+
+        with self.assertRaises(etree.XMLSyntaxError):
+            parse_xml("<not valid xml!!!>")
+
+
 if __name__ == "__main__":
     unittest.main()
+
