@@ -384,6 +384,87 @@ class MainRemovedFileTests(unittest.TestCase):
         self.assertIn("Skipped removed_dialect.xml: removed since base.", stdout.getvalue())
 
 
+class NumericAttributeTests(unittest.TestCase):
+    """value= and id= are numbers. Rewriting one in a different notation leaves
+    the wire format identical, so it must not be reported as a break, while a
+    genuine change to the number still must be."""
+
+    # Shaped after MLRS_RADIO_LINK_STATS_FLAGS in storm32.xml, which is one of
+    # the enums that already writes its values in hex.
+    HEX_XML = """<mavlink>
+<enums>
+<enum name="HEX_ENUM">
+  <entry name="HEX_ENUM_A" value="0x0001"/>
+  <entry name="HEX_ENUM_B" value="0x0040"/>
+</enum>
+</enums>
+<messages>
+<message id="27" name="HEX_MSG">
+  <field type="uint8_t" name="foo">desc</field>
+</message>
+</messages>
+</mavlink>"""
+
+    def test_hex_rewritten_as_decimal_is_not_a_mutation(self):
+        new_xml = self.HEX_XML.replace('value="0x0040"', 'value="64"')
+        self.assertEqual(mutations_between(self.HEX_XML, new_xml), [])
+
+    def test_hex_zero_padding_change_is_not_a_mutation(self):
+        new_xml = self.HEX_XML.replace('value="0x0001"', 'value="0x1"')
+        self.assertEqual(mutations_between(self.HEX_XML, new_xml), [])
+
+    def test_message_id_notation_change_is_not_a_mutation(self):
+        new_xml = self.HEX_XML.replace('id="27"', 'id="0x1B"')
+        self.assertEqual(mutations_between(self.HEX_XML, new_xml), [])
+
+    def test_real_value_change_still_detected_across_notations(self):
+        # The report keeps the spellings as written, which is what a reviewer
+        # needs to see, rather than the normalized integers.
+        new_xml = self.HEX_XML.replace('value="0x0040"', 'value="65"')
+        self.assertEqual(
+            mutations_between(self.HEX_XML, new_xml),
+            ["enum entry HEX_ENUM.HEX_ENUM_B (value: 0x0040 -> 65)"],
+        )
+
+    def test_real_value_change_within_hex_still_detected(self):
+        new_xml = self.HEX_XML.replace('value="0x0040"', 'value="0x0080"')
+        self.assertEqual(
+            mutations_between(self.HEX_XML, new_xml),
+            ["enum entry HEX_ENUM.HEX_ENUM_B (value: 0x0040 -> 0x0080)"],
+        )
+
+    def test_field_type_is_compared_as_text_not_as_a_number(self):
+        # type= is a name, so it must never go through numeric normalization.
+        new_xml = self.HEX_XML.replace('type="uint8_t"', 'type="uint16_t"')
+        self.assertEqual(
+            mutations_between(self.HEX_XML, new_xml),
+            ["field HEX_MSG.foo (type: uint8_t -> uint16_t)"],
+        )
+
+    def test_as_number_parses_the_notations_that_appear_in_definitions(self):
+        as_number = check_api_break.as_number
+        self.assertEqual(as_number("0x0040"), 64)
+        self.assertEqual(as_number("0X40"), 64)
+        self.assertEqual(as_number("64"), 64)
+        self.assertEqual(as_number("007"), 7)   # base 0 rejects this, base 10 does not
+        self.assertEqual(as_number(" 64 "), 64)
+        self.assertEqual(as_number("-1"), -1)
+
+    def test_as_number_returns_none_for_things_that_are_not_numbers(self):
+        as_number = check_api_break.as_number
+        self.assertIsNone(as_number(None))
+        self.assertIsNone(as_number(""))
+        self.assertIsNone(as_number("uint8_t"))
+        self.assertIsNone(as_number("1e3"))
+
+    def test_non_numeric_attribute_values_fall_back_to_text_comparison(self):
+        # If a value= is ever written as something unparseable, the check must
+        # keep its old string behavior rather than silently treating the pair
+        # as equal.
+        self.assertTrue(check_api_break.attr_changed("value", "TBD", "TBD_LATER"))
+        self.assertFalse(check_api_break.attr_changed("value", "TBD", "TBD"))
+
+
 if __name__ == "__main__":
     unittest.main()
 
