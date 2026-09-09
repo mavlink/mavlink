@@ -339,13 +339,47 @@ def write_pr_comment_artifact(body: str) -> bool:
     return True
 
 
+# Attributes written as a number rather than a name. Two spellings of the same
+# number describe the same bytes on the wire, so comparing them as raw strings
+# reports a break that is not one. Both notations are already in the tree:
+# storm32.xml and marsh.xml write enum values in hex, everything else decimal.
+NUMERIC_ATTRS = frozenset({"value", "id"})
+
+
+def as_number(text: Any) -> Optional[int]:
+    """Return the integer an attribute denotes, or None if it does not denote one."""
+    if text is None:
+        return None
+    literal = str(text).strip()
+    # Base 0 honours the 0x/0o/0b prefixes; base 10 then covers zero-padded
+    # decimals like "007", which base 0 rejects.
+    for base in (0, 10):
+        try:
+            return int(literal, base)
+        except ValueError:
+            continue
+    return None
+
+
+def attr_changed(attr: str, old_val: Any, new_val: Any) -> bool:
+    """Whether a wire-critical attribute really changed, not just its spelling."""
+    if old_val == new_val:
+        return False
+    if attr in NUMERIC_ATTRS:
+        old_num = as_number(old_val)
+        new_num = as_number(new_val)
+        if old_num is not None and new_num is not None:
+            return old_num != new_num
+    return True
+
+
 def describe_mutation(key: NameKey, old_a: Dict[str, Any], new_a: Dict[str, Any]) -> str:
     """Describe a wire-breaking attribute mutation for a given key."""
     changes = []
     for attr in sorted(set(old_a) | set(new_a)):
         old_val = old_a.get(attr)
         new_val = new_a.get(attr)
-        if old_val != new_val:
+        if attr_changed(attr, old_val, new_val):
             changes.append(f"{attr}: {old_val} -> {new_val}")
     return f"{describe_key(key)} ({', '.join(changes)})"
 
@@ -367,7 +401,10 @@ def find_mutations(
         new_a = new_attrs.get(key)
         if old_a is None or new_a is None:
             continue
-        if old_a != new_a:
+        if any(
+            attr_changed(attr, old_a.get(attr), new_a.get(attr))
+            for attr in set(old_a) | set(new_a)
+        ):
             mutation_descs.append(describe_mutation(key, old_a, new_a))
     return mutation_descs
 
