@@ -107,14 +107,34 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
         if message_id is not None:
             attrs[message_key] = {"id": message_id}
 
-        for field in msg.findall("field"):
+        # Fields before <extensions/> are re-sorted by size when a message is
+        # serialized, so their order in the XML is not wire-visible and must not
+        # be compared. Extension fields are the opposite: they are never
+        # reordered, and their serialization order is defined by the XML
+        # definition order, so position is part of the wire format for them.
+        # Record it for those fields only.
+        extension_index = None
+        for child in msg:
+            if child.tag == "extensions":
+                extension_index = 0
+                continue
+            if child.tag != "field":
+                continue
+
+            field = child
             field_name = field.get("name")
             field_is_wip = message_is_wip or field.find("wip") is not None
             field_key = FieldKey(message=message_key, field_name=field_name)
             names[field_key] = field_is_wip
+            field_attrs: Dict[str, Any] = {}
             field_type = field.get("type")
             if field_type is not None:
-                attrs[field_key] = {"type": field_type}
+                field_attrs["type"] = field_type
+            if extension_index is not None:
+                field_attrs["extension_index"] = extension_index
+                extension_index += 1
+            if field_attrs:
+                attrs[field_key] = field_attrs
 
     return names, attrs
 

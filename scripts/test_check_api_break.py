@@ -40,6 +40,24 @@ BASE_XML = """<mavlink>
 </mavlink>"""
 
 
+# A message shaped like the real ones that carry extensions (e.g. RAW_IMU in
+# common.xml): two ordinary fields, then <extensions/>, then two extension
+# fields of different types, so their order is visible in the payload layout.
+EXT_XML = """<mavlink>
+<enums>
+</enums>
+<messages>
+<message id="27" name="EXT_MSG">
+  <field type="uint64_t" name="time_usec">Timestamp.</field>
+  <field type="int16_t" name="xacc">X acceleration.</field>
+  <extensions/>
+  <field type="uint8_t" name="id">Id.</field>
+  <field type="int16_t" name="temperature">Temperature.</field>
+</message>
+</messages>
+</mavlink>"""
+
+
 def mutations_between(old_xml: str, new_xml: str):
     old_names, old_attrs = collect_names(parse_xml(old_xml))
     new_names, new_attrs = collect_names(parse_xml(new_xml))
@@ -101,6 +119,67 @@ class FindMutationsTests(unittest.TestCase):
         # silently changing behavior.
         new_xml = BASE_XML.replace(' value="2"', '')
         self.assertEqual(mutations_between(BASE_XML, new_xml), [])
+
+
+class ExtensionFieldOrderTests(unittest.TestCase):
+    """Extension fields are not reordered when a message is serialized, so their
+    XML order is part of the wire format. Fields before <extensions/> are sorted
+    by size by the generator, so their XML order is not."""
+
+    def test_extension_field_reorder_detected(self):
+        new_xml = EXT_XML.replace(
+            '  <field type="uint8_t" name="id">Id.</field>\n'
+            '  <field type="int16_t" name="temperature">Temperature.</field>',
+            '  <field type="int16_t" name="temperature">Temperature.</field>\n'
+            '  <field type="uint8_t" name="id">Id.</field>',
+        )
+        self.assertEqual(
+            sorted(mutations_between(EXT_XML, new_xml)),
+            [
+                "field EXT_MSG.id (extension_index: 0 -> 1)",
+                "field EXT_MSG.temperature (extension_index: 1 -> 0)",
+            ],
+        )
+
+    def test_appending_an_extension_field_is_not_a_mutation(self):
+        # Appending to the end is the supported way to extend a message and
+        # must stay silent, otherwise the check blocks the one change it is
+        # meant to allow.
+        new_xml = EXT_XML.replace(
+            '  <field type="int16_t" name="temperature">Temperature.</field>',
+            '  <field type="int16_t" name="temperature">Temperature.</field>\n'
+            '  <field type="uint32_t" name="added_later">Added later.</field>',
+        )
+        self.assertEqual(mutations_between(EXT_XML, new_xml), [])
+
+    def test_non_extension_field_reorder_is_not_a_mutation(self):
+        new_xml = EXT_XML.replace(
+            '  <field type="uint64_t" name="time_usec">Timestamp.</field>\n'
+            '  <field type="int16_t" name="xacc">X acceleration.</field>',
+            '  <field type="int16_t" name="xacc">X acceleration.</field>\n'
+            '  <field type="uint64_t" name="time_usec">Timestamp.</field>',
+        )
+        self.assertEqual(mutations_between(EXT_XML, new_xml), [])
+
+    def test_extension_index_recorded_only_after_the_marker(self):
+        _names, attrs = collect_names(parse_xml(EXT_XML))
+        msg = MessageKey(message_name="EXT_MSG")
+        before = attrs[FieldKey(message=msg, field_name="time_usec")]
+        after = attrs[FieldKey(message=msg, field_name="id")]
+        self.assertNotIn("extension_index", before)
+        self.assertEqual(after["extension_index"], 0)
+
+    def test_message_without_extensions_is_unaffected(self):
+        _names, attrs = collect_names(parse_xml(BASE_XML))
+        field = attrs[FieldKey(message=MessageKey(message_name="MY_MSG"), field_name="foo")]
+        self.assertEqual(field, {"type": "uint8_t"})
+
+    def test_extension_field_type_change_still_detected(self):
+        new_xml = EXT_XML.replace('type="uint8_t" name="id"', 'type="uint16_t" name="id"')
+        self.assertEqual(
+            mutations_between(EXT_XML, new_xml),
+            ["field EXT_MSG.id (type: uint8_t -> uint16_t)"],
+        )
 
 
 class RemovalDetectionTests(unittest.TestCase):
