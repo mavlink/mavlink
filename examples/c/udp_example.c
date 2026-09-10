@@ -82,10 +82,9 @@ void receive_some(int socket_fd, struct sockaddr_in* src_addr, socklen_t* src_ad
             socket_fd, buffer, sizeof(buffer), 0, (struct sockaddr*)(src_addr), src_addr_len);
 
     if (ret < 0) {
-        printf("recvfrom error: %s\n", strerror(errno));
-        return;
-    } else if (ret == 0) {
-        // timeout, try again later
+        if (errno != EAGAIN && errno != EWOULDBLOCK) {
+            printf("recvfrom error: %s\n", strerror(errno));
+        }
         return;
     }
 
