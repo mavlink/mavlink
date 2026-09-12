@@ -998,9 +998,22 @@ class MAVCommand:
                 "value") else "TODO MISSING VALUE"
         )
         self.basename = basename
+        self.has_location = soup.get("hasLocation", "false").lower() == "true"
         self.description = soup.description.text if soup.description else None
         if self.description:
             self.description = tidyDescription(self.description)
+        if self.has_location:
+            location_note = (
+                "::: tip\n"
+                "Use [COMMAND_INT](common.md#COMMAND_INT)/[MISSION_ITEM_INT](common.md#MISSION_ITEM_INT) by preference and "
+                "scale latitude/longitude values by `1E7` (for greater precision).\n"
+                ":::\n"
+            )
+            self.description = (
+                f"{self.description}\n\n{location_note}"
+                if self.description
+                else location_note
+            )
         self.deprecated = soup.find("deprecated", recursive=False)
         self.deprecated = MAVDeprecated(
             self.deprecated) if self.deprecated else None
