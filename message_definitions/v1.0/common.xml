@@ -459,7 +459,7 @@
         <description>Gimbal device supports yawing/panning infinitely (e.g. using slip disk).</description>
       </entry>
       <entry value="4096" name="GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_YAW_IN_EARTH_FRAME">
-        <description>Gimbal device supports yaw angles and angular velocities relative to North (earth frame). This usually requires support by an autopilot via AUTOPILOT_STATE_FOR_GIMBAL_DEVICE. Support can go on and off during runtime, which is reported by the flag GIMBAL_DEVICE_FLAGS_CAN_ACCEPT_YAW_IN_EARTH_FRAME.</description>
+        <description>Gimbal device supports yaw angles and angular velocities relative to North (earth frame). This usually requires support by an autopilot via AUTOPILOT_STATE_FOR_GIMBAL_DEVICE. Support can go on and off during runtime, which is reported by the flag GIMBAL_DEVICE_FLAGS_ACCEPTS_YAW_IN_EARTH_FRAME.</description>
       </entry>
       <entry value="8192" name="GIMBAL_DEVICE_CAP_FLAGS_HAS_RC_INPUTS">
         <description>Gimbal device supports radio control inputs as an alternative input for controlling the gimbal orientation.</description>
@@ -1604,7 +1604,7 @@
         <description>Mission item to specify the start of a failsafe/landing return-path segment (the end of the segment is the next MAV_CMD_DO_LAND_START item).
           A vehicle that is using missions for landing (e.g. in a return mode) will join the mission on the closest path of the return-path segment (instead of MAV_CMD_DO_LAND_START or the nearest waypoint).
           The main use case is to minimize the failsafe flight path in corridor missions, where the inbound/outbound paths are constrained (by geofences) to the same particular path.
-          The MAV_CMD_NAV_RETURN_PATH_START would be placed at the start of the return path.
+          The MAV_CMD_DO_RETURN_PATH_START would be placed at the start of the return path.
           If a failsafe occurs on the outbound path the vehicle will move to the nearest point on the return path (which is parallel for this kind of mission), effectively turning round and following the shortest path to landing.
           If a failsafe occurs on the inbound path the vehicle is already on the return segment and will continue to landing.
           The Latitude/Longitude/Altitude are optional, and may be set to 0 if not needed.
@@ -3482,7 +3482,7 @@
         <description>Voltage spikes.</description>
       </entry>
       <entry value="4" name="MAV_BATTERY_FAULT_CELL_FAIL">
-        <description>One or more cells have failed. Battery should also report MAV_BATTERY_CHARGE_STATE_FAILE (and should not be used).</description>
+        <description>One or more cells have failed. Battery should also report MAV_BATTERY_CHARGE_STATE_FAILED (and should not be used).</description>
       </entry>
       <entry value="8" name="MAV_BATTERY_FAULT_OVER_CURRENT">
         <description>Over-current fault.</description>
