@@ -172,7 +172,8 @@ class ExtensionFieldOrderTests(unittest.TestCase):
     def test_message_without_extensions_is_unaffected(self):
         _names, attrs = collect_names(parse_xml(BASE_XML))
         field = attrs[FieldKey(message=MessageKey(message_name="MY_MSG"), field_name="foo")]
-        self.assertEqual(field, {"type": "uint8_t"})
+        self.assertNotIn("extension_index", field)
+        self.assertEqual(field["type"], "uint8_t")
 
     def test_extension_field_type_change_still_detected(self):
         new_xml = EXT_XML.replace('type="uint8_t" name="id"', 'type="uint16_t" name="id"')
@@ -180,6 +181,114 @@ class ExtensionFieldOrderTests(unittest.TestCase):
             mutations_between(EXT_XML, new_xml),
             ["field EXT_MSG.id (type: uint8_t -> uint16_t)"],
         )
+
+
+# Shaped like ATTITUDE in common.xml: a uint32_t followed by several floats.
+# uint32_t and float are both 4 bytes, so the generator puts them in one size
+# class and their relative XML order survives into the payload.
+SAME_SIZE_XML = """<mavlink>
+<enums>
+</enums>
+<messages>
+<message id="30" name="SS_MSG">
+  <field type="uint32_t" name="time_boot_ms">Timestamp.</field>
+  <field type="float" name="roll">Roll.</field>
+  <field type="float" name="pitch">Pitch.</field>
+  <field type="uint8_t" name="flags">Flags.</field>
+</message>
+</messages>
+</mavlink>"""
+
+
+class SameSizeFieldOrderTests(unittest.TestCase):
+    """The generator sorts pre-extension fields by size with a STABLE sort, so
+    two fields of the same size keep their XML order in the payload. Swapping
+    them changes the byte layout and CRC_EXTRA, which every peer rejects."""
+
+    def test_swapping_two_same_size_fields_is_detected(self):
+        new_xml = SAME_SIZE_XML.replace(
+            '  <field type="float" name="roll">Roll.</field>\n'
+            '  <field type="float" name="pitch">Pitch.</field>',
+            '  <field type="float" name="pitch">Pitch.</field>\n'
+            '  <field type="float" name="roll">Roll.</field>',
+        )
+        self.assertEqual(
+            sorted(mutations_between(SAME_SIZE_XML, new_xml)),
+            [
+                "field SS_MSG.pitch (size_group_index: 2 -> 1)",
+                "field SS_MSG.roll (size_group_index: 1 -> 2)",
+            ],
+        )
+
+    def test_reorder_across_size_classes_stays_silent(self):
+        # The generator re-sorts these relative to each other regardless of XML
+        # order, so moving the uint8_t above the floats changes nothing on the
+        # wire and must not be reported.
+        new_xml = SAME_SIZE_XML.replace(
+            '  <field type="float" name="roll">Roll.</field>\n'
+            '  <field type="float" name="pitch">Pitch.</field>\n'
+            '  <field type="uint8_t" name="flags">Flags.</field>',
+            '  <field type="uint8_t" name="flags">Flags.</field>\n'
+            '  <field type="float" name="roll">Roll.</field>\n'
+            '  <field type="float" name="pitch">Pitch.</field>',
+        )
+        self.assertEqual(mutations_between(SAME_SIZE_XML, new_xml), [])
+
+    def test_size_class_is_byte_width_not_type_name(self):
+        _names, attrs = collect_names(parse_xml(SAME_SIZE_XML))
+        msg = MessageKey(message_name="SS_MSG")
+
+        def index_of(field_name):
+            return attrs[FieldKey(message=msg, field_name=field_name)]["size_group_index"]
+
+        # uint32_t and float share the 4-byte class and are numbered together.
+        self.assertEqual(index_of("time_boot_ms"), 0)
+        self.assertEqual(index_of("roll"), 1)
+        self.assertEqual(index_of("pitch"), 2)
+        # The uint8_t is in its own class, so it restarts at 0.
+        self.assertEqual(index_of("flags"), 0)
+
+    def test_arrays_group_by_element_type_not_total_size(self):
+        # mavparse sorts on type_length, the ELEMENT size, so uint8_t[16] sorts
+        # with the 1-byte fields. Grouping by total size would separate these.
+        xml = SAME_SIZE_XML.replace(
+            '  <field type="uint8_t" name="flags">Flags.</field>',
+            '  <field type="uint8_t" name="flags">Flags.</field>\n'
+            '  <field type="uint8_t[16]" name="callsign">Callsign.</field>',
+        )
+        _names, attrs = collect_names(parse_xml(xml))
+        msg = MessageKey(message_name="SS_MSG")
+        self.assertEqual(attrs[FieldKey(message=msg, field_name="flags")]["size_group_index"], 0)
+        self.assertEqual(attrs[FieldKey(message=msg, field_name="callsign")]["size_group_index"], 1)
+
+    def test_extension_fields_get_no_size_group_index(self):
+        # Extension fields are never reordered, so extension_index already pins
+        # them exactly; a size class on top would report the same move twice.
+        _names, attrs = collect_names(parse_xml(EXT_XML))
+        msg = MessageKey(message_name="EXT_MSG")
+        self.assertNotIn("size_group_index", attrs[FieldKey(message=msg, field_name="id")])
+        self.assertEqual(
+            attrs[FieldKey(message=msg, field_name="time_usec")]["size_group_index"], 0
+        )
+
+    def test_unknown_type_records_no_size_group_index(self):
+        # An unrecognised type must not crash the check or invent an ordering
+        # it cannot know; it simply carries no position.
+        xml = SAME_SIZE_XML.replace('type="uint8_t" name="flags"', 'type="mystery_t" name="flags"')
+        _names, attrs = collect_names(parse_xml(xml))
+        field = attrs[FieldKey(message=MessageKey(message_name="SS_MSG"), field_name="flags")]
+        self.assertNotIn("size_group_index", field)
+        self.assertEqual(field["type"], "mystery_t")
+
+    def test_appending_a_field_does_not_shift_existing_indices(self):
+        # Adding a field at the end of its size class leaves every existing
+        # field where it was, so a pure addition stays silent here.
+        new_xml = SAME_SIZE_XML.replace(
+            '  <field type="uint8_t" name="flags">Flags.</field>',
+            '  <field type="uint8_t" name="flags">Flags.</field>\n'
+            '  <field type="uint8_t" name="extra">Extra.</field>',
+        )
+        self.assertEqual(mutations_between(SAME_SIZE_XML, new_xml), [])
 
 
 class RemovalDetectionTests(unittest.TestCase):

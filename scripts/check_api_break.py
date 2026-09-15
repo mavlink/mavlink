@@ -78,6 +78,36 @@ def describe_key(name: NameKey) -> str:
     return str(name)
 
 
+# Element sizes the generator sorts fields by, mirroring
+# pymavlink/generator/mavparse.py MAVField.lengths. An array sorts by its
+# element type, not by its total size, so the "[n]" suffix is stripped.
+TYPE_LENGTHS = {
+    "float": 4,
+    "double": 8,
+    "char": 1,
+    "int8_t": 1,
+    "uint8_t": 1,
+    "uint8_t_mavlink_version": 1,
+    "int16_t": 2,
+    "uint16_t": 2,
+    "int32_t": 4,
+    "uint32_t": 4,
+    "int64_t": 8,
+    "uint64_t": 8,
+}
+
+
+def type_length(field_type: Optional[str]) -> Optional[int]:
+    """Size the generator sorts this field by, or None if the type is unknown."""
+    if field_type is None:
+        return None
+    base = field_type.split("[", 1)[0].strip()
+    if base in TYPE_LENGTHS:
+        return TYPE_LENGTHS[base]
+    # mavparse also accepts the "_t"-less spellings (e.g. "uint8").
+    return TYPE_LENGTHS.get(base + "_t")
+
+
 def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameKey, Dict[str, Any]]]:
     """Collect names and wire-critical attributes (id, type, value) from a MAVLink XML root."""
     names = {}
@@ -108,12 +138,18 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
             attrs[message_key] = {"id": message_id}
 
         # Fields before <extensions/> are re-sorted by size when a message is
-        # serialized, so their order in the XML is not wire-visible and must not
-        # be compared. Extension fields are the opposite: they are never
-        # reordered, and their serialization order is defined by the XML
-        # definition order, so position is part of the wire format for them.
-        # Record it for those fields only.
+        # serialized, so their order in the XML is mostly not wire-visible.
+        # Mostly: the generator's sort is stable (mavparse.py sorts
+        # m.fields[:base_fields] by type_length alone), so among fields of the
+        # SAME size the XML order survives into the payload. Comparing absolute
+        # XML position would flag harmless reorders across size classes, so
+        # record each field's index within its own size class instead - that
+        # changes only when the wire layout really does.
+        #
+        # Extension fields are simpler: they are never reordered and serialize
+        # in XML definition order, so their absolute position is wire-critical.
         extension_index = None
+        size_group_counts: Dict[int, int] = {}
         for child in msg:
             if child.tag == "extensions":
                 extension_index = 0
@@ -133,6 +169,12 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
             if extension_index is not None:
                 field_attrs["extension_index"] = extension_index
                 extension_index += 1
+            else:
+                length = type_length(field_type)
+                if length is not None:
+                    position = size_group_counts.get(length, 0)
+                    field_attrs["size_group_index"] = position
+                    size_group_counts[length] = position + 1
             if field_attrs:
                 attrs[field_key] = field_attrs
 
