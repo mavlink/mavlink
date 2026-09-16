@@ -1228,7 +1228,7 @@
         <param index="7" label="Z Position" units="m">Z-axis position</param>
       </entry>
       <!-- Removed never-implemented MAV_CMD_NAV_FOLLOW (25) 2026-10 -->
-      <entry value="30" name="MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT" hasAltitudeOnly="true">
+      <entry value="30" name="MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT" hasAltitudeOnly="true" mission="true">
         <description>Continue on the current course and climb/descend to specified altitude.  When the altitude is reached continue to the next command (i.e., don't proceed to the next command until the desired altitude is reached.</description>
         <param index="1" label="Action" minValue="0" maxValue="2" increment="1">Climb or Descend (0 = Neutral, command completes when within 5m of this command's altitude, 1 = Climbing, command completes when at or above this command's altitude, 2 = Descending, command completes when at or below this command's altitude.</param>
         <param index="2">Empty</param>
@@ -1238,7 +1238,7 @@
         <param index="6">Empty</param>
         <param index="7" label="Altitude" units="m">Desired altitude</param>
       </entry>
-      <entry value="31" name="MAV_CMD_NAV_LOITER_TO_ALT" hasLocation="true" isDestination="true">
+      <entry value="31" name="MAV_CMD_NAV_LOITER_TO_ALT" hasLocation="true" isDestination="true" mission="true">
         <description>Begin loiter at the specified Latitude and Longitude.  If Lat=Lon=0, then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached. Additionally, if the Heading Required parameter is non-zero the aircraft will not leave the loiter until heading toward the next waypoint.</description>
         <param index="1" label="Heading Required" enum="MAV_BOOL">Leave loiter circle only when track heading towards the next waypoint (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE causes leaving when altitude is reached. Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.</param>
@@ -1299,7 +1299,7 @@
         <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
         INT32_MAX or NaN: Use current vehicle altitude.</param>
       </entry>
-      <entry value="36" name="MAV_CMD_NAV_ARC_WAYPOINT" hasLocation="true" isDestination="true">
+      <entry value="36" name="MAV_CMD_NAV_ARC_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
         <description>Circular arc path waypoint.
           This defines the end/exit point and angle (param1) of an arc path from the previous waypoint. A position is required before this command to define the start of the arc (e.g. current position, a MAV_CMD_NAV_WAYPOINT, or a MAV_CMD_NAV_ARC_WAYPOINT).
           The resulting path is a circular arc in the NE frame, with the difference in height being defined by the difference in waypoint altitudes.
@@ -1330,7 +1330,7 @@
         <param index="6" label="Longitude/Y">Longitude/Y of goal</param>
         <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
       </entry>
-      <entry value="82" name="MAV_CMD_NAV_SPLINE_WAYPOINT" hasLocation="true" isDestination="true">
+      <entry value="82" name="MAV_CMD_NAV_SPLINE_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
         <description>Navigate to waypoint using a spline path.</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2">Empty</param>
@@ -1374,7 +1374,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="93" name="MAV_CMD_NAV_DELAY">
+      <entry value="93" name="MAV_CMD_NAV_DELAY" mission="true">
         <description>Delay the next navigation command a number of seconds or until a specified time</description>
         <param index="1" label="Delay" units="s" minValue="-1" increment="1">Delay (-1 to enable time-of-day fields)</param>
         <param index="2" label="Hour" minValue="-1" maxValue="23" increment="1">hour (24h format, UTC, -1 to ignore)</param>
