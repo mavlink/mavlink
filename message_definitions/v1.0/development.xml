@@ -117,7 +117,7 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="309" name="MAV_CMD_ACTUATOR_GROUP_TEST" hasLocation="false" isDestination="false">
+      <entry value="309" name="MAV_CMD_ACTUATOR_GROUP_TEST" hasLocation="false" isDestination="false" command="true">
         <description>Command to test groups of related actuators together.
           This might include groups such as the actuators that contribute to roll, pitch, or yaw torque, actuators that contribute to thrust in x, y, z axis, tilt mechanisms, flaps and spoilers, and so on.
           This is similar to MAV_CMD_ACTUATOR_TEST, except that multiple actuators may be affected.
@@ -136,14 +136,14 @@
         <param index="2" label="Component ID" minValue="0" maxValue="255" increment="1">New component ID for target component(s). 0: ignore (component IDs don't change).</param>
         <param index="3" label="Reboot">Reboot components after ID change. Any non-zero value triggers the reboot.</param>
       </entry>
-      <entry value="2020" name="MAV_CMD_CAMERA_START_MTI" hasLocation="false" isDestination="false">
+      <entry value="2020" name="MAV_CMD_CAMERA_START_MTI" hasLocation="false" isDestination="false" command="true">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Enable Moving Target Indicators (MTI) on streamed video.
           Support for feature can be checked with CAMERA_CAP_FLAGS_HAS_MTI, and disabled with MAV_CMD_CAMERA_STOP_MTI.</description>
         <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
-      <entry value="2021" name="MAV_CMD_CAMERA_STOP_MTI" hasLocation="false" isDestination="false">
+      <entry value="2021" name="MAV_CMD_CAMERA_STOP_MTI" hasLocation="false" isDestination="false" command="true">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Disable Moving Target Indicators (MTI) on streamed video.</description>
@@ -182,7 +182,7 @@
         <param index="3" label="Enable" enum="MAV_BOOL">Enable (1) or Disable (0) the source.</param>
         <param index="4" label="Estimator Instance" default="NaN" minValue="0" increment="1">Estimator instance (0-based, for systems with multiple estimators).</param>
       </entry>
-      <entry value="620" name="MAV_CMD_EXTERNAL_ATTITUDE_ESTIMATE" hasLocation="false" isDestination="false">
+      <entry value="620" name="MAV_CMD_EXTERNAL_ATTITUDE_ESTIMATE" hasLocation="false" isDestination="false" command="true">
         <description>Set an external estimate of vehicle attitude.
           This might be used to provide an initial attitude (especially heading) estimate to the estimator (EKF). Angles are defined in a 3-2-1 (yaw-pitch-roll) intrinsic Tait-Bryan sequence.
         </description>
