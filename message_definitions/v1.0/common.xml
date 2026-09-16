@@ -1137,7 +1137,7 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true">
+      <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
         <description>Navigate to waypoint. This is intended for use in missions (for guided commands outside of missions use MAV_CMD_DO_REPOSITION).</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2" label="Accept Radius" units="m" minValue="0">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
@@ -1404,7 +1404,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="112" name="MAV_CMD_CONDITION_DELAY">
+      <entry value="112" name="MAV_CMD_CONDITION_DELAY" mission="true">
         <description>Delay mission state machine.</description>
         <param index="1" label="Delay" units="s" minValue="0">Delay</param>
         <param index="2">Empty</param>
@@ -1414,7 +1414,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="113" name="MAV_CMD_CONDITION_CHANGE_ALT" hasAltitudeOnly="true">
+      <entry value="113" name="MAV_CMD_CONDITION_CHANGE_ALT" hasAltitudeOnly="true" mission="true">
         <description>Ascend/descend to target altitude at specified rate. Delay mission state machine until desired altitude reached.</description>
         <param index="1" label="Rate" units="m/s">Descent / Ascend rate.</param>
         <param index="2">Empty</param>
@@ -1424,7 +1424,7 @@
         <param index="6">Empty</param>
         <param index="7" label="Altitude" units="m">Target Altitude</param>
       </entry>
-      <entry value="114" name="MAV_CMD_CONDITION_DISTANCE">
+      <entry value="114" name="MAV_CMD_CONDITION_DISTANCE" mission="true">
         <description>Delay mission state machine until within desired distance of next NAV point.</description>
         <param index="1" label="Distance" units="m" minValue="0">Distance.</param>
         <param index="2">Empty</param>
@@ -1464,7 +1464,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="177" name="MAV_CMD_DO_JUMP" missionOnly="true">
+      <entry value="177" name="MAV_CMD_DO_JUMP" mission="true">
         <description>Jump to the desired command in the mission list.  Repeat this action only the specified number of times</description>
         <param index="1" label="Number" minValue="0" increment="1">Sequence number</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count</param>
@@ -1689,7 +1689,7 @@
         <param index="6" label="Longitude">Longitude of ROI location</param>
         <param index="7" label="Altitude" units="m">Altitude of ROI location</param>
       </entry>
-      <entry value="196" name="MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET">
+      <entry value="196" name="MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET" mission="true">
         <description>Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message.</description>
         <param index="1" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
         <param index="2">Empty</param>
@@ -2232,7 +2232,7 @@
         <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
         <param index="1" label="Tag" minValue="0" increment="1">Tag.</param>
       </entry>
-      <entry value="601" name="MAV_CMD_DO_JUMP_TAG" missionOnly="true">
+      <entry value="601" name="MAV_CMD_DO_JUMP_TAG" mission="true">
         <description>Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number.</description>
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
@@ -2461,7 +2461,7 @@
         <param index="5" label="Latitude" units="degE7">Target latitude of center of circle in CIRCLE_MODE</param>
         <param index="6" label="Longitude" units="degE7">Target longitude of center of circle in CIRCLE_MODE</param>
       </entry>
-      <entry value="4501" name="MAV_CMD_CONDITION_GATE" hasLocation="true">
+      <entry value="4501" name="MAV_CMD_CONDITION_GATE" hasLocation="true" mission="true">
         <description>Delay mission state machine until gate has been reached.</description>
         <param index="1" label="Geometry" minValue="0" increment="1">Geometry: 0: orthogonal to path between previous and next waypoint.</param>
         <param index="2" label="UseAltitude" enum="MAV_BOOL">Use altitude (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE ignores altitude. Values not equal to 0 or 1 are invalid.</param>
@@ -2648,7 +2648,7 @@
       </entry>
       <!-- END of payload range (30000 to 30999) -->
       <!-- BEGIN user defined range (31000 to 31999) -->
-      <entry value="31000" name="MAV_CMD_WAYPOINT_USER_1" hasLocation="true" isDestination="true">
+      <entry value="31000" name="MAV_CMD_WAYPOINT_USER_1" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2658,7 +2658,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31001" name="MAV_CMD_WAYPOINT_USER_2" hasLocation="true" isDestination="true">
+      <entry value="31001" name="MAV_CMD_WAYPOINT_USER_2" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2668,7 +2668,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31002" name="MAV_CMD_WAYPOINT_USER_3" hasLocation="true" isDestination="true">
+      <entry value="31002" name="MAV_CMD_WAYPOINT_USER_3" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2678,7 +2678,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31003" name="MAV_CMD_WAYPOINT_USER_4" hasLocation="true" isDestination="true">
+      <entry value="31003" name="MAV_CMD_WAYPOINT_USER_4" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2688,7 +2688,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31004" name="MAV_CMD_WAYPOINT_USER_5" hasLocation="true" isDestination="true">
+      <entry value="31004" name="MAV_CMD_WAYPOINT_USER_5" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2698,7 +2698,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31005" name="MAV_CMD_SPATIAL_USER_1" hasLocation="true" isDestination="false">
+      <entry value="31005" name="MAV_CMD_SPATIAL_USER_1" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2708,7 +2708,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31006" name="MAV_CMD_SPATIAL_USER_2" hasLocation="true" isDestination="false">
+      <entry value="31006" name="MAV_CMD_SPATIAL_USER_2" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2718,7 +2718,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31007" name="MAV_CMD_SPATIAL_USER_3" hasLocation="true" isDestination="false">
+      <entry value="31007" name="MAV_CMD_SPATIAL_USER_3" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2728,7 +2728,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31008" name="MAV_CMD_SPATIAL_USER_4" hasLocation="true" isDestination="false">
+      <entry value="31008" name="MAV_CMD_SPATIAL_USER_4" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2738,7 +2738,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31009" name="MAV_CMD_SPATIAL_USER_5" hasLocation="true" isDestination="false">
+      <entry value="31009" name="MAV_CMD_SPATIAL_USER_5" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
