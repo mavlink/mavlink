@@ -2022,7 +2022,7 @@
         <param index="6" label="Pitch Angle" units="deg" minValue="-180" maxValue="180" default="0">Fixed pitch angle that the camera will hold in oblique mode if the mount is actuated in the pitch axis.</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE">
+      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" command="true">
         <description>Enable the specified standard MAVLink mode.
           If the specified mode is not supported, the vehicle should ACK with MAV_RESULT_FAILED.
           See https://mavlink.io/en/services/standard_modes.html
@@ -2540,7 +2540,7 @@
       </entry>
       <!-- Values in the range [5200, 5210) should be reserved for UAVCAN.  -->
       <!-- BEGIN UAVCAN range -->
-      <entry value="5200" name="MAV_CMD_UAVCAN_GET_NODE_INFO">
+      <entry value="5200" name="MAV_CMD_UAVCAN_GET_NODE_INFO" command="true">
         <superseded since="2026-05" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Commands the vehicle to respond with a sequence of messages UAVCAN_NODE_INFO, one message per every UAVCAN node that is online. Note that some of the response messages can be lost, which the receiver can detect easily by checking whether every received UAVCAN_NODE_STATUS has a matching message UAVCAN_NODE_INFO received earlier; if not, this command should be sent again in order to request re-transmission of the node information messages.</description>
         <param index="1">Reserved (set to 0)</param>
