@@ -1207,7 +1207,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="23" name="MAV_CMD_NAV_LAND_LOCAL" hasLocation="true" isDestination="true" command="true">
+      <entry value="23" name="MAV_CMD_NAV_LAND_LOCAL" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Land at local position (local frame only)</description>
         <param index="1" label="Target" minValue="0" increment="1">Landing target number (if available)</param>
         <param index="2" label="Offset" units="m" minValue="0">Maximum accepted offset from desired landing position - computed magnitude from spherical coordinates: d = sqrt(x^2 + y^2 + z^2), which gives the maximum accepted distance between the desired landing position and the position where the vehicle is about to land</param>
@@ -1268,7 +1268,7 @@
         <param index="6" label="X Offset" units="m">X offset from target</param>
         <param index="7" label="Y Offset" units="m">Y offset from target</param>
       </entry>
-      <entry value="34" name="MAV_CMD_DO_ORBIT" hasLocation="true" isDestination="true" command="true">
+      <entry value="34" name="MAV_CMD_DO_ORBIT" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Start orbiting on the circumference of a circle defined by the parameters. Setting values to NaN/INT32_MAX (as appropriate) results in using defaults.</description>
         <param index="1" label="Radius" units="m">Radius of the circle. Positive: orbit clockwise. Negative: orbit counter-clockwise. NaN: Use vehicle default radius, or current radius if already orbiting.</param>
         <param index="2" label="Velocity" units="m/s">Tangential Velocity. NaN: Use vehicle default velocity, or current velocity if already orbiting.</param>
@@ -1278,7 +1278,7 @@
         <param index="6" label="Longitude/Y">Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. INT32_MAX (or NaN if sent in COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
         <param index="7" label="Altitude/Z">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude.</param>
       </entry>
-      <entry value="35" name="MAV_CMD_DO_FIGURE_EIGHT" hasLocation="true" isDestination="true" command="true">
+      <entry value="35" name="MAV_CMD_DO_FIGURE_EIGHT" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Fly a figure eight path as defined by the parameters.
           Set parameters to NaN/INT32_MAX (as appropriate) to use system-default values.
           The command is intended for fixed wing vehicles (and VTOL hybrids flying in fixed-wing mode), allowing POI tracking for gimbals that don't support infinite rotation.
@@ -1309,7 +1309,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false" command="true">
+      <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false" mission="true" command="true">
         <superseded since="2018-01" replaced_by="`MAV_CMD_DO_SET_ROI_*`"/>
         <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1" label="ROI Mode" enum="MAV_ROI">Region of interest mode.</param>
@@ -1550,7 +1550,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="185" name="MAV_CMD_DO_FLIGHTTERMINATION" command="true">
+      <entry value="185" name="MAV_CMD_DO_FLIGHTTERMINATION" mission="true" command="true">
         <description>Terminate flight immediately.
           Flight termination immediately and irreversibly terminates the current flight, returning the vehicle to ground.
           The vehicle will ignore RC or other input until it has been power-cycled.
@@ -1639,8 +1639,8 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="191" name="MAV_CMD_DO_GO_AROUND" mission="true" command="true">
-        <description>Mission command to safely abort an autonomous landing.</description>
+      <entry value="191" name="MAV_CMD_DO_GO_AROUND" command="true">
+        <description>Command to safely abort an autonomous landing.</description>
         <param index="1" label="Altitude" units="m">Altitude</param>
         <param index="2">Empty</param>
         <param index="3">Empty</param>
@@ -1709,12 +1709,12 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="198" name="MAV_CMD_DO_SET_ROI_SYSID" command="true">
+      <entry value="198" name="MAV_CMD_DO_SET_ROI_SYSID" mission="true" command="true">
         <description>Mount tracks system with specified system ID. Determination of target vehicle position may be done with GLOBAL_POSITION_INT or any other means. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message.</description>
         <param index="1" label="System ID" minValue="1" maxValue="255" increment="1">System ID</param>
         <param index="2" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
       </entry>
-      <entry value="200" name="MAV_CMD_DO_CONTROL_VIDEO" command="true">
+      <entry value="200" name="MAV_CMD_DO_CONTROL_VIDEO" mission="true" command="true">
         <description>Control onboard camera system.</description>
         <param index="1" label="ID" minValue="-1" increment="1">Camera ID (-1 for all)</param>
         <param index="2" label="Transmission" minValue="0" maxValue="2" increment="1">Transmission: 0: disabled, 1: enabled compressed, 2: enabled raw</param>
@@ -2096,7 +2096,7 @@
         <param index="6">Reserved</param>
         <param index="7">Reserved</param>
       </entry>
-      <entry value="420" name="MAV_CMD_INJECT_FAILURE" command="true">
+      <entry value="420" name="MAV_CMD_INJECT_FAILURE" mission="true" command="true">
         <description>Inject artificial failure for testing purposes. Note that autopilots should implement an additional protection before accepting this command such as a specific param setting.</description>
         <param index="1" label="Failure unit" enum="FAILURE_UNIT">The unit which is affected by the failure.</param>
         <param index="2" label="Failure type" enum="FAILURE_TYPE">The type how the failure manifests itself.</param>
@@ -2388,7 +2388,7 @@
         <description>Request video stream status (VIDEO_STREAM_STATUS)</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
       </entry>
-      <entry value="2510" name="MAV_CMD_LOGGING_START" command="true">
+      <entry value="2510" name="MAV_CMD_LOGGING_START" mission="true" command="true">
         <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
         <param index="1" label="Format" minValue="0" increment="1">Format: 0: ULog</param>
         <param index="2">Reserved (set to 0)</param>
@@ -2398,7 +2398,7 @@
         <param index="6">Reserved (set to 0)</param>
         <param index="7">Reserved (set to 0)</param>
       </entry>
-      <entry value="2511" name="MAV_CMD_LOGGING_STOP" command="true">
+      <entry value="2511" name="MAV_CMD_LOGGING_STOP" command="true" command="true">
         <description>Request to stop streaming log data over MAVLink</description>
         <param index="1">Reserved (set to 0)</param>
         <param index="2">Reserved (set to 0)</param>
@@ -2428,7 +2428,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="2800" name="MAV_CMD_PANORAMA_CREATE" command="true">
+      <entry value="2800" name="MAV_CMD_PANORAMA_CREATE" mission="true" command="true">
         <description>Create a panorama at the current position</description>
         <param index="1" label="Horizontal Angle" units="deg">Viewing angle horizontal of the panorama (+- 0.5 the total angle)</param>
         <param index="2" label="Vertical Angle" units="deg">Viewing angle vertical of panorama.</param>
