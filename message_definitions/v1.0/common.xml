@@ -1137,7 +1137,7 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true">
+      <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
         <description>Navigate to waypoint. This is intended for use in missions (for guided commands outside of missions use MAV_CMD_DO_REPOSITION).</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2" label="Accept Radius" units="m" minValue="0">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
@@ -1147,7 +1147,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="17" name="MAV_CMD_NAV_LOITER_UNLIM" hasLocation="true" isDestination="true">
+      <entry value="17" name="MAV_CMD_NAV_LOITER_UNLIM" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Loiter around this waypoint an unlimited amount of time</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
@@ -1177,7 +1177,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="20" name="MAV_CMD_NAV_RETURN_TO_LAUNCH">
+      <entry value="20" name="MAV_CMD_NAV_RETURN_TO_LAUNCH" mission="true" command="true">
         <description>Return to launch location</description>
         <param index="1">Empty</param>
         <param index="2">Empty</param>
@@ -1187,7 +1187,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="21" name="MAV_CMD_NAV_LAND" hasLocation="true" isDestination="true">
+      <entry value="21" name="MAV_CMD_NAV_LAND" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Land at location.</description>
         <param index="1" label="Abort Alt" units="m">Minimum target altitude if landing is aborted (0 = undefined/use system default).</param>
         <param index="2" label="Land Mode" enum="PRECISION_LAND_MODE">Precision land mode.</param>
@@ -1197,7 +1197,7 @@
         <param index="6" label="Longitude">Longitude.</param>
         <param index="7" label="Altitude" units="m">Landing altitude (ground level in current frame).</param>
       </entry>
-      <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true">
+      <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
         <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
@@ -1228,7 +1228,7 @@
         <param index="7" label="Z Position" units="m">Z-axis position</param>
       </entry>
       <!-- Removed never-implemented MAV_CMD_NAV_FOLLOW (25) 2026-10 -->
-      <entry value="30" name="MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT" hasAltitudeOnly="true">
+      <entry value="30" name="MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT" hasAltitudeOnly="true" mission="true">
         <description>Continue on the current course and climb/descend to specified altitude.  When the altitude is reached continue to the next command (i.e., don't proceed to the next command until the desired altitude is reached.</description>
         <param index="1" label="Action" minValue="0" maxValue="2" increment="1">Climb or Descend (0 = Neutral, command completes when within 5m of this command's altitude, 1 = Climbing, command completes when at or above this command's altitude, 2 = Descending, command completes when at or below this command's altitude.</param>
         <param index="2">Empty</param>
@@ -1238,7 +1238,7 @@
         <param index="6">Empty</param>
         <param index="7" label="Altitude" units="m">Desired altitude</param>
       </entry>
-      <entry value="31" name="MAV_CMD_NAV_LOITER_TO_ALT" hasLocation="true" isDestination="true">
+      <entry value="31" name="MAV_CMD_NAV_LOITER_TO_ALT" hasLocation="true" isDestination="true" mission="true">
         <description>Begin loiter at the specified Latitude and Longitude.  If Lat=Lon=0, then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached. Additionally, if the Heading Required parameter is non-zero the aircraft will not leave the loiter until heading toward the next waypoint.</description>
         <param index="1" label="Heading Required" enum="MAV_BOOL">Leave loiter circle only when track heading towards the next waypoint (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE causes leaving when altitude is reached. Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.</param>
@@ -1248,7 +1248,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="32" name="MAV_CMD_DO_FOLLOW">
+      <entry value="32" name="MAV_CMD_DO_FOLLOW" command="true">
         <description>Begin following a target</description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">System ID (of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode.</param>
         <param index="2">Reserved</param>
@@ -1299,7 +1299,7 @@
         <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
         INT32_MAX or NaN: Use current vehicle altitude.</param>
       </entry>
-      <entry value="36" name="MAV_CMD_NAV_ARC_WAYPOINT" hasLocation="true" isDestination="true">
+      <entry value="36" name="MAV_CMD_NAV_ARC_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
         <description>Circular arc path waypoint.
           This defines the end/exit point and angle (param1) of an arc path from the previous waypoint. A position is required before this command to define the start of the arc (e.g. current position, a MAV_CMD_NAV_WAYPOINT, or a MAV_CMD_NAV_ARC_WAYPOINT).
           The resulting path is a circular arc in the NE frame, with the difference in height being defined by the difference in waypoint altitudes.
@@ -1330,7 +1330,7 @@
         <param index="6" label="Longitude/Y">Longitude/Y of goal</param>
         <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
       </entry>
-      <entry value="82" name="MAV_CMD_NAV_SPLINE_WAYPOINT" hasLocation="true" isDestination="true">
+      <entry value="82" name="MAV_CMD_NAV_SPLINE_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
         <description>Navigate to waypoint using a spline path.</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2">Empty</param>
@@ -1340,7 +1340,7 @@
         <param index="6" label="Longitude/Y">Longitude/Y of goal</param>
         <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
       </entry>
-      <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF" hasLocation="true" isDestination="true">
+      <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading. The command should be ignored by vehicles that dont support both VTOL and fixed-wing flight (multicopters, boats,etc.).</description>
         <param index="1">Empty</param>
         <param index="2" label="Transition Heading" enum="VTOL_TRANSITION_HEADING">Front transition heading.</param>
@@ -1350,7 +1350,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="85" name="MAV_CMD_NAV_VTOL_LAND" hasLocation="true" isDestination="true">
+      <entry value="85" name="MAV_CMD_NAV_VTOL_LAND" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Land using VTOL mode</description>
         <param index="1" label="Land Options" enum="NAV_VTOL_LAND_OPTIONS">Landing behaviour.</param>
         <param index="2">Empty</param>
@@ -1374,7 +1374,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="93" name="MAV_CMD_NAV_DELAY">
+      <entry value="93" name="MAV_CMD_NAV_DELAY" mission="true">
         <description>Delay the next navigation command a number of seconds or until a specified time</description>
         <param index="1" label="Delay" units="s" minValue="-1" increment="1">Delay (-1 to enable time-of-day fields)</param>
         <param index="2" label="Hour" minValue="-1" maxValue="23" increment="1">hour (24h format, UTC, -1 to ignore)</param>
@@ -1404,7 +1404,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="112" name="MAV_CMD_CONDITION_DELAY">
+      <entry value="112" name="MAV_CMD_CONDITION_DELAY" mission="true">
         <description>Delay mission state machine.</description>
         <param index="1" label="Delay" units="s" minValue="0">Delay</param>
         <param index="2">Empty</param>
@@ -1414,7 +1414,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="113" name="MAV_CMD_CONDITION_CHANGE_ALT" hasAltitudeOnly="true">
+      <entry value="113" name="MAV_CMD_CONDITION_CHANGE_ALT" hasAltitudeOnly="true" mission="true">
         <description>Ascend/descend to target altitude at specified rate. Delay mission state machine until desired altitude reached.</description>
         <param index="1" label="Rate" units="m/s">Descent / Ascend rate.</param>
         <param index="2">Empty</param>
@@ -1424,7 +1424,7 @@
         <param index="6">Empty</param>
         <param index="7" label="Altitude" units="m">Target Altitude</param>
       </entry>
-      <entry value="114" name="MAV_CMD_CONDITION_DISTANCE">
+      <entry value="114" name="MAV_CMD_CONDITION_DISTANCE" mission="true">
         <description>Delay mission state machine until within desired distance of next NAV point.</description>
         <param index="1" label="Distance" units="m" minValue="0">Distance.</param>
         <param index="2">Empty</param>
@@ -1434,7 +1434,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="115" name="MAV_CMD_CONDITION_YAW">
+      <entry value="115" name="MAV_CMD_CONDITION_YAW" mission="true">
         <description>Reach a certain target angle.</description>
         <param index="1" label="Angle" units="deg" minValue="0" maxValue="360">target angle [0-360]. Absolute angles: 0 is north. Relative angle: 0 is initial yaw. Direction set by param3.</param>
         <param index="2" label="Angular Speed" units="deg/s" minValue="0">angular speed</param>
@@ -1454,7 +1454,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="176" name="MAV_CMD_DO_SET_MODE">
+      <entry value="176" name="MAV_CMD_DO_SET_MODE" command="true">
         <description>Set system mode.</description>
         <param index="1" label="Mode" enum="MAV_MODE_FLAG">Mode flags. MAV_MODE values can be used to set some mode flag combinations.</param>
         <param index="2" label="Custom Mode">Custom system-specific mode (see target autopilot specifications for mode information). If MAV_MODE_FLAG_CUSTOM_MODE_ENABLED is set in param1 (mode) this mode is used: otherwise the field is ignored.</param>
@@ -1464,7 +1464,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="177" name="MAV_CMD_DO_JUMP" missionOnly="true">
+      <entry value="177" name="MAV_CMD_DO_JUMP" mission="true">
         <description>Jump to the desired command in the mission list.  Repeat this action only the specified number of times</description>
         <param index="1" label="Number" minValue="0" increment="1">Sequence number</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count</param>
@@ -1474,7 +1474,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="178" name="MAV_CMD_DO_CHANGE_SPEED">
+      <entry value="178" name="MAV_CMD_DO_CHANGE_SPEED" mission="true" command="true">
         <description>Change speed and/or throttle set points. The value persists until it is overridden or there is a mode change</description>
         <param index="1" label="Speed Type" enum="SPEED_TYPE">Speed type of value set in param2 (such as airspeed, ground speed, and so on)</param>
         <param index="2" label="Speed" units="m/s" minValue="-2">Speed (-1 indicates no change, -2 indicates return to default vehicle speed)</param>
@@ -1484,7 +1484,7 @@
         <param index="6" reserved="true" default="0"/>
         <param index="7" reserved="true" default="0"/>
       </entry>
-      <entry value="179" name="MAV_CMD_DO_SET_HOME" hasLocation="true" isDestination="false">
+      <entry value="179" name="MAV_CMD_DO_SET_HOME" hasLocation="true" isDestination="false" mission="true" command="true">
         <description>
           Sets the home position to either to the current position or a specified position.
           The home position is the default position that the system will return to and land on.
@@ -1510,7 +1510,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="181" name="MAV_CMD_DO_SET_RELAY">
+      <entry value="181" name="MAV_CMD_DO_SET_RELAY" mission="true" command="true">
         <description>Set a relay to a condition. The current value may optionally be reported using RELAY_STATUS.</description>
         <param index="1" label="Instance" minValue="0" increment="1">Relay instance number.</param>
         <param index="2" label="Setting" minValue="0" increment="1">Setting. (1=on, 0=off, others possible depending on system hardware)</param>
@@ -1520,7 +1520,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="182" name="MAV_CMD_DO_REPEAT_RELAY">
+      <entry value="182" name="MAV_CMD_DO_REPEAT_RELAY" mission="true" command="true">
         <description>Cycle a relay on and off for a desired number of cycles with a desired period.</description>
         <param index="1" label="Instance" minValue="0" increment="1">Relay instance number.</param>
         <param index="2" label="Count" minValue="1" increment="1">Cycle count.</param>
@@ -1530,7 +1530,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="183" name="MAV_CMD_DO_SET_SERVO">
+      <entry value="183" name="MAV_CMD_DO_SET_SERVO" mission="true" command="true">
         <description>Set a servo to a desired PWM value.</description>
         <param index="1" label="Instance" minValue="0" increment="1">Servo instance number.</param>
         <param index="2" label="PWM" units="us" minValue="0" increment="1">Pulse Width Modulation.</param>
@@ -1540,7 +1540,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="184" name="MAV_CMD_DO_REPEAT_SERVO">
+      <entry value="184" name="MAV_CMD_DO_REPEAT_SERVO" mission="true" command="true">
         <description>Cycle a between its nominal setting and a desired PWM for a desired number of cycles with a desired period.</description>
         <param index="1" label="Instance" minValue="0" increment="1">Servo instance number.</param>
         <param index="2" label="PWM" units="us" minValue="0" increment="1">Pulse Width Modulation.</param>
@@ -1610,7 +1610,7 @@
         <param index="6" label="Longitude">Longitudee. 0: not used.</param>
         <param index="7" label="Altitude" units="m">Altitudee. 0: not used.</param>
       </entry>
-      <entry value="189" name="MAV_CMD_DO_LAND_START" hasLocation="true" isDestination="false">
+      <entry value="189" name="MAV_CMD_DO_LAND_START" hasLocation="true" isDestination="false" mission="true" command="true">
         <description>Mission item to mark the start of a mission landing pattern, or a command to land with a mission landing pattern.
 
         When used in a mission, this is a marker for the start of a sequence of mission items that represent a landing pattern.
@@ -1649,7 +1649,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="192" name="MAV_CMD_DO_REPOSITION" hasLocation="true" isDestination="true">
+      <entry value="192" name="MAV_CMD_DO_REPOSITION" hasLocation="true" isDestination="true" command="true">
         <description>Reposition the vehicle to a specific WGS84 global position. This command is intended for guided commands (for missions use MAV_CMD_NAV_WAYPOINT instead).</description>
         <param index="1" label="Speed" units="m/s" minValue="-1">Ground speed, less than 0 (-1) for default</param>
         <param index="2" label="Bitmask" enum="MAV_DO_REPOSITION_FLAGS">Bitmask of option flags.</param>
@@ -1659,7 +1659,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="193" name="MAV_CMD_DO_PAUSE_CONTINUE">
+      <entry value="193" name="MAV_CMD_DO_PAUSE_CONTINUE" mission="true" command="true">
         <description>If in a GPS controlled position mode, hold the current position or continue.</description>
         <param index="1" label="Continue" enum="MAV_BOOL">Continue mission (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE pauses the current mission or reposition command and holds current position (a VTOL capable vehicle should enter hover mode (multicopter and VTOL planes); a plane should loiter with the default loiter radius). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved</param>
@@ -1679,7 +1679,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="195" name="MAV_CMD_DO_SET_ROI_LOCATION" hasLocation="true" isDestination="false">
+      <entry value="195" name="MAV_CMD_DO_SET_ROI_LOCATION" hasLocation="true" isDestination="false" mission="true" command="true">
         <description>Sets the region of interest (ROI) to a location. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal is not to react to this message.</description>
         <param index="1" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
         <param index="2">Empty</param>
@@ -1689,7 +1689,7 @@
         <param index="6" label="Longitude">Longitude of ROI location</param>
         <param index="7" label="Altitude" units="m">Altitude of ROI location</param>
       </entry>
-      <entry value="196" name="MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET">
+      <entry value="196" name="MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET" mission="true">
         <description>Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message.</description>
         <param index="1" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
         <param index="2">Empty</param>
@@ -1699,7 +1699,7 @@
         <param index="6" label="Roll Offset" units="deg">Roll offset from next waypoint, positive rolling to the right</param>
         <param index="7" label="Yaw Offset" units="deg">Yaw offset from next waypoint, positive yawing to the right</param>
       </entry>
-      <entry value="197" name="MAV_CMD_DO_SET_ROI_NONE">
+      <entry value="197" name="MAV_CMD_DO_SET_ROI_NONE" mission="true" command="true">
         <description>Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message. After this command the gimbal manager should go back to manual input if available, and otherwise assume a neutral position.</description>
         <param index="1" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
         <param index="2">Empty</param>
@@ -1709,7 +1709,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="198" name="MAV_CMD_DO_SET_ROI_SYSID">
+      <entry value="198" name="MAV_CMD_DO_SET_ROI_SYSID" command="true">
         <description>Mount tracks system with specified system ID. Determination of target vehicle position may be done with GLOBAL_POSITION_INT or any other means. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message.</description>
         <param index="1" label="System ID" minValue="1" maxValue="255" increment="1">System ID</param>
         <param index="2" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
@@ -1724,7 +1724,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="201" name="MAV_CMD_DO_SET_ROI" hasLocation="true" isDestination="false">
+      <entry value="201" name="MAV_CMD_DO_SET_ROI" hasLocation="true" isDestination="false" mission="true" command="true">
         <superseded since="2018-01" replaced_by="`MAV_CMD_DO_SET_ROI_*`"/>
         <description>Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1" label="ROI Mode" enum="MAV_ROI">Region of interest mode.</param>
@@ -1736,7 +1736,7 @@
         <param index="7">MAV_ROI_WPNEXT: yaw offset from next waypoint, MAV_ROI_LOCATION: altitude</param>
       </entry>
       <!-- Camera Controller Mission Commands Enumeration -->
-      <entry value="202" name="MAV_CMD_DO_DIGICAM_CONFIGURE">
+      <entry value="202" name="MAV_CMD_DO_DIGICAM_CONFIGURE" mission="true" command="true">
         <description>Configure digital camera. This is a fallback message for systems that have not yet implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html ).</description>
         <param index="1" label="Mode" minValue="0" increment="1">Modes: P, TV, AV, M, Etc.</param>
         <param index="2" label="Shutter Speed" minValue="0" increment="1">Shutter speed: Divisor number for one second.</param>
@@ -1746,7 +1746,7 @@
         <param index="6" label="Command Identity">Command Identity.</param>
         <param index="7" label="Engine Cut-off" units="ds" minValue="0" increment="1">Main engine cut-off time before camera trigger. (0 means no cut-off)</param>
       </entry>
-      <entry value="203" name="MAV_CMD_DO_DIGICAM_CONTROL">
+      <entry value="203" name="MAV_CMD_DO_DIGICAM_CONTROL" mission="true" command="true">
         <description>Control digital camera. This is a fallback message for systems that have not yet implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html ).</description>
         <param index="1" label="Session Control">Session control e.g. show/hide lens</param>
         <param index="2" label="Zoom Absolute">Zoom's absolute position</param>
@@ -1757,7 +1757,7 @@
         <param index="7" label="Shot ID">Test shot identifier. If set to 1, image will only be captured, but not counted towards internal frame count.</param>
       </entry>
       <!-- Camera Mount Mission Commands Enumeration -->
-      <entry value="204" name="MAV_CMD_DO_MOUNT_CONFIGURE">
+      <entry value="204" name="MAV_CMD_DO_MOUNT_CONFIGURE" command="true">
         <superseded since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_CONFIGURE">The message can still be used to communicate with legacy gimbals implementing it.</superseded>
         <description>Mission command to configure a camera or antenna mount</description>
         <param index="1" label="Mode" enum="MAV_MOUNT_MODE">Mount operation mode</param>
@@ -1769,7 +1769,7 @@
         <param index="7" label="Yaw Input Mode">Yaw input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)</param>
       </entry>
       <!-- this one is messed up! altitude should be param 7, not param4 -->
-      <entry value="205" name="MAV_CMD_DO_MOUNT_CONTROL">
+      <entry value="205" name="MAV_CMD_DO_MOUNT_CONTROL" mission="true" command="true">
         <superseded since="2020-01" replaced_by="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">This message is ambiguous and inconsistent. It has been superseded by MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW and `MAV_CMD_DO_SET_ROI_*` variants. The message can still be used to communicate with legacy gimbals implementing it.</superseded>
         <description>Mission command to control a camera or antenna mount</description>
         <param index="1" label="Pitch">pitch depending on mount mode (degrees or degrees/second depending on pitch input).</param>
@@ -1780,7 +1780,7 @@
         <param index="6" label="Longitude">longitude, set if appropriate mount mode.</param>
         <param index="7" label="Mode" enum="MAV_MOUNT_MODE">Mount mode.</param>
       </entry>
-      <entry value="206" name="MAV_CMD_DO_SET_CAM_TRIGG_DIST">
+      <entry value="206" name="MAV_CMD_DO_SET_CAM_TRIGG_DIST" mission="true" command="true">
         <description>Mission command to set camera trigger distance for this flight. The camera is triggered each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.</description>
         <param index="1" label="Distance" units="m" minValue="0">Camera trigger distance. 0 to stop triggering.</param>
         <param index="2" label="Shutter" units="ms" minValue="-1" increment="1">Camera shutter integration time. -1 or 0 to ignore</param>
@@ -1790,7 +1790,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="207" name="MAV_CMD_DO_FENCE_ENABLE">
+      <entry value="207" name="MAV_CMD_DO_FENCE_ENABLE" mission="true" command="true">
         <description>
           Enable the geofence.
           This can be used in a mission or via the command protocol.
@@ -1806,7 +1806,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="208" name="MAV_CMD_DO_PARACHUTE">
+      <entry value="208" name="MAV_CMD_DO_PARACHUTE" mission="true" command="true">
         <description>Mission item/command to release a parachute or enable/disable auto release.</description>
         <param index="1" label="Action" enum="PARACHUTE_ACTION">Action</param>
         <param index="2">Empty</param>
@@ -1816,7 +1816,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="209" name="MAV_CMD_DO_MOTOR_TEST">
+      <entry value="209" name="MAV_CMD_DO_MOTOR_TEST" command="true">
         <description>Command to perform motor test.</description>
         <param index="1" label="Instance" minValue="1" increment="1">Motor instance number (from 1 to max number of motors on the vehicle).</param>
         <param index="2" label="Throttle Type" enum="MOTOR_TEST_THROTTLE_TYPE">Throttle type (whether the Throttle Value in param3 is a percentage, PWM value, etc.)</param>
@@ -1836,7 +1836,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="211" name="MAV_CMD_DO_GRIPPER">
+      <entry value="211" name="MAV_CMD_DO_GRIPPER" mission="true" command="true">
         <description>Mission command to operate a gripper.</description>
         <param index="1" label="Gripper ID" minValue="0" increment="1">Gripper ID. 1-6 for an autopilot connected gripper. In missions this may be set to 1-6 for an autopilot gripper, or the gripper component id for a MAVLink gripper. 0 targets all grippers.</param>
         <param index="2" label="Action" enum="GRIPPER_ACTIONS">Gripper action to perform.</param>
@@ -1887,7 +1887,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="221" name="MAV_CMD_DO_GUIDED_MASTER">
+      <entry value="221" name="MAV_CMD_DO_GUIDED_MASTER" command="true">
         <description>set id of master controller</description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">System ID</param>
         <param index="2" label="Component ID" minValue="0" maxValue="255" increment="1">Component ID</param>
@@ -1917,7 +1917,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="224" name="MAV_CMD_DO_SET_MISSION_CURRENT">
+      <entry value="224" name="MAV_CMD_DO_SET_MISSION_CURRENT" command="true">
         <description>
           Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (whether or not the mission number changed).
           If a mission is currently being executed, the system will continue to this new mission item on the shortest path, skipping any intermediate mission items.
@@ -1951,7 +1951,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="241" name="MAV_CMD_PREFLIGHT_CALIBRATION">
+      <entry value="241" name="MAV_CMD_PREFLIGHT_CALIBRATION" command="true">
         <description>Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Temperature Calibration, only one sensor should be set in a single message and all others should be zero.</description>
         <param index="1" label="Gyro Temperature" minValue="0" maxValue="3" increment="1">1: gyro calibration, 3: gyro temperature calibration</param>
         <param index="2" label="Magnetometer" enum="PREFLIGHT_CALIBRATION_MAGNETOMETER">Magnetometer calibration action.</param>
@@ -1981,7 +1981,7 @@
         <param index="6">Reserved</param>
         <param index="7">Reserved</param>
       </entry>
-      <entry value="245" name="MAV_CMD_PREFLIGHT_STORAGE">
+      <entry value="245" name="MAV_CMD_PREFLIGHT_STORAGE" command="true">
         <description>Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.</description>
         <param index="1" label="Parameter Storage" enum="PREFLIGHT_STORAGE_PARAMETER_ACTION">Action to perform on the persistent parameter storage</param>
         <param index="2">Reserved</param>
@@ -1991,7 +1991,7 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="246" name="MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN">
+      <entry value="246" name="MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN" command="true">
         <description>Request the reboot or shutdown of system components.</description>
         <param index="1" label="Autopilot" enum="REBOOT_SHUTDOWN_ACTION">Action to take for autopilot.</param>
         <param index="2" label="Companion" enum="REBOOT_SHUTDOWN_ACTION">Action to take for onboard computer.</param>
@@ -2002,7 +2002,7 @@
         <param index="7">WIP: ID (e.g. camera ID -1 for all IDs)</param>
       </entry>
       <!-- id "247" was MAV_CMD_DO_UPGRADE, no publicly available code available -->
-      <entry value="252" name="MAV_CMD_OVERRIDE_GOTO" hasLocation="true" isDestination="true">
+      <entry value="252" name="MAV_CMD_OVERRIDE_GOTO" hasLocation="true" isDestination="true" command="true">
         <description>Override current mission with command to pause mission, pause mission and move to position, continue/resume mission. When param 1 indicates that the mission is paused (MAV_GOTO_DO_HOLD), param 2 defines whether it holds in place or moves to another position.</description>
         <param index="1" label="Continue" enum="MAV_GOTO">MAV_GOTO_DO_HOLD: pause mission and either hold or move to specified position (depending on param2), MAV_GOTO_DO_CONTINUE: resume mission.</param>
         <param index="2" label="Position" enum="MAV_GOTO">MAV_GOTO_HOLD_AT_CURRENT_POSITION: hold at current position, MAV_GOTO_HOLD_AT_SPECIFIED_POSITION: hold at specified position.</param>
@@ -2022,7 +2022,7 @@
         <param index="6" label="Pitch Angle" units="deg" minValue="-180" maxValue="180" default="0">Fixed pitch angle that the camera will hold in oblique mode if the mount is actuated in the pitch axis.</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE">
+      <entry value="262" name="MAV_CMD_DO_SET_STANDARD_MODE" command="true">
         <description>Enable the specified standard MAVLink mode.
           If the specified mode is not supported, the vehicle should ACK with MAV_RESULT_FAILED.
           See https://mavlink.io/en/services/standard_modes.html
@@ -2035,12 +2035,12 @@
         <param index="6" reserved="true" default="0"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
-      <entry value="300" name="MAV_CMD_MISSION_START">
+      <entry value="300" name="MAV_CMD_MISSION_START" command="true">
         <description>start running a mission</description>
         <param index="1" label="First Item" minValue="0" increment="1">first_item: the first mission item to run</param>
         <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the mission ends)</param>
       </entry>
-      <entry value="310" name="MAV_CMD_ACTUATOR_TEST">
+      <entry value="310" name="MAV_CMD_ACTUATOR_TEST" command="true">
         <description>Actuator testing command. This is similar to MAV_CMD_DO_MOTOR_TEST but operates on the level of output functions, i.e. it is possible to test Motor1 independent from which output it is configured on. Autopilots must NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed.</description>
         <param index="1" label="Value" minValue="-1" maxValue="1">Output value: 1 means maximum positive output, 0 to center servos or minimum motor thrust (expected to spin), -1 for maximum negative (if not supported by the motors, i.e. motor is not reversible, smaller than 0 maps to NaN). And NaN maps to disarmed (stop the motors).</param>
         <param index="2" label="Timeout" units="s" minValue="0" maxValue="3">Timeout after which the test command expires and the output is restored to the previous value. A timeout has to be set for safety reasons. A timeout of 0 means to restore the previous value immediately.</param>
@@ -2050,7 +2050,7 @@
         <param index="6" reserved="true" default="0"/>
         <param index="7" reserved="true" default="0"/>
       </entry>
-      <entry value="311" name="MAV_CMD_CONFIGURE_ACTUATOR">
+      <entry value="311" name="MAV_CMD_CONFIGURE_ACTUATOR" command="true">
         <description>Actuator configuration command.</description>
         <param index="1" label="Configuration" enum="ACTUATOR_CONFIGURATION">Actuator configuration action</param>
         <param index="2" reserved="true" default="0"/>
@@ -2065,7 +2065,7 @@
         <param index="1" label="Arm" enum="MAV_BOOL">Arm (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE disarms. Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Force" minValue="0" maxValue="21196" increment="21196">0: arm-disarm unless prevented by safety checks (i.e. when landed), 21196: force arming/disarming (e.g. allow arming to override preflight checks and disarming in flight)</param>
       </entry>
-      <entry value="401" name="MAV_CMD_RUN_PREARM_CHECKS">
+      <entry value="401" name="MAV_CMD_RUN_PREARM_CHECKS" command="true">
         <description>Instructs a target system to run pre-arm checks.
           This allows preflight checks to be run on demand, which may be useful on systems that normally run them at low rate, or which do not trigger checks when the armable state might have changed.
           This command should return MAV_RESULT_ACCEPTED if it will run the checks.
@@ -2084,7 +2084,7 @@
         <param index="3" label="Strobe Period" units="s" minValue="0">Strobe period in seconds where 0 means strobing is not used</param>
         <param index="4" label="Strobe Duty" units="%" minValue="0" maxValue="100">Strobe duty cycle where 100% means it is on constantly and 0 means strobing is not used</param>
       </entry>
-      <entry value="410" name="MAV_CMD_GET_HOME_POSITION">
+      <entry value="410" name="MAV_CMD_GET_HOME_POSITION" command="true">
         <superseded since="2022-04" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request the home position from the vehicle.
           The vehicle will ACK the command and emit the HOME_POSITION message.</description>
@@ -2096,19 +2096,19 @@
         <param index="6">Reserved</param>
         <param index="7">Reserved</param>
       </entry>
-      <entry value="420" name="MAV_CMD_INJECT_FAILURE">
+      <entry value="420" name="MAV_CMD_INJECT_FAILURE" command="true">
         <description>Inject artificial failure for testing purposes. Note that autopilots should implement an additional protection before accepting this command such as a specific param setting.</description>
         <param index="1" label="Failure unit" enum="FAILURE_UNIT">The unit which is affected by the failure.</param>
         <param index="2" label="Failure type" enum="FAILURE_TYPE">The type how the failure manifests itself.</param>
         <param index="3" label="Instance" minValue="0" increment="1">Instance affected by failure (0 to signal all). Takes precedence over Instance bitmask (param4) when not NaN. Set to NaN to use Instance bitmask instead.</param>
         <param index="4" label="Instance bitmask" minValue="0">Bitmask of instances affected by the failure (bit 0 = first instance, bit 1 = second instance, etc.). Used only when Instance (param3) is NaN.</param>
       </entry>
-      <entry value="500" name="MAV_CMD_START_RX_PAIR">
+      <entry value="500" name="MAV_CMD_START_RX_PAIR" command="true">
         <description>Starts receiver pairing.</description>
         <param index="1" label="RC Type" enum="RC_TYPE">RC type.</param>
         <param index="2" label="RC Sub Type" enum="RC_SUB_TYPE">RC sub type.</param>
       </entry>
-      <entry value="510" name="MAV_CMD_GET_MESSAGE_INTERVAL">
+      <entry value="510" name="MAV_CMD_GET_MESSAGE_INTERVAL" command="true">
         <superseded since="2022-04" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>
           Request the interval between messages for a particular MAVLink message ID.
@@ -2116,7 +2116,7 @@
         </description>
         <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID</param>
       </entry>
-      <entry value="511" name="MAV_CMD_SET_MESSAGE_INTERVAL">
+      <entry value="511" name="MAV_CMD_SET_MESSAGE_INTERVAL" command="true">
         <description>Set the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM.</description>
         <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID</param>
         <param index="2" label="Interval" units="us" minValue="-1" increment="1">The interval between two messages. -1: disable. 0: request default rate (which may be zero).</param>
@@ -2126,7 +2126,7 @@
         <param index="6" label="Req Param 6">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0/NaN).</param>
         <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address of message stream (if message has target address fields). 0: Flight-stack default (recommended), 1: address of requester, 2: broadcast.</param>
       </entry>
-      <entry value="512" name="MAV_CMD_REQUEST_MESSAGE">
+      <entry value="512" name="MAV_CMD_REQUEST_MESSAGE" command="true">
         <description>Request the target system(s) emit a single instance of a specified message (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).</description>
         <param index="1" label="Message ID" minValue="0" maxValue="16777215" increment="1">The MAVLink message ID of the requested message.</param>
         <param index="2" label="Req Param 1">Use for index ID, if required. Otherwise, the use of this parameter (if any) must be defined in the requested message. By default assumed not used (0).</param>
@@ -2136,57 +2136,57 @@
         <param index="6" label="Req Param 5">The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0).</param>
         <param index="7" label="Response Target" minValue="0" maxValue="2" increment="1">Target address for requested message (if message has target address fields). 0: Flight-stack default, 1: address of requester, 2: broadcast.</param>
       </entry>
-      <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION">
+      <entry value="519" name="MAV_CMD_REQUEST_PROTOCOL_VERSION" command="true">
         <deprecated since="2025-11" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request MAVLink protocol version compatibility. All receivers should ACK the command and then emit their capabilities in an PROTOCOL_VERSION message</description>
         <param index="1" label="Protocol" enum="MAV_BOOL">Request supported protocol versions by all nodes on the network (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
-      <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES">
+      <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message</description>
         <param index="1" label="Version" enum="MAV_BOOL">Request autopilot version (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
-      <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION">
+      <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request camera information (CAMERA_INFORMATION).</description>
         <param index="1" label="Capabilities" enum="MAV_BOOL">Request camera capabilities (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
-      <entry value="522" name="MAV_CMD_REQUEST_CAMERA_SETTINGS">
+      <entry value="522" name="MAV_CMD_REQUEST_CAMERA_SETTINGS" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request camera settings (CAMERA_SETTINGS).</description>
         <param index="1" label="Settings" enum="MAV_BOOL">Request camera settings (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
-      <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION">
+      <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (0 for all, 1 for first, 2 for second, etc.)</param>
         <param index="2" label="Information" enum="MAV_BOOL">Request storage information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="3">Reserved (all remaining params)</param>
       </entry>
-      <entry value="526" name="MAV_CMD_STORAGE_FORMAT">
+      <entry value="526" name="MAV_CMD_STORAGE_FORMAT" command="true">
         <description>Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
         <param index="2" label="Format" enum="MAV_BOOL">Format storage (and reset image log) (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="3" label="Reset Image Log" enum="MAV_BOOL">Reset Image Log (without formatting storage medium) (MAV_BOOL_TRUE). This will reset CAMERA_CAPTURE_STATUS.image_count and CAMERA_IMAGE_CAPTURED.image_index. Values not equal to 0 or 1 are invalid.</param>
         <param index="4">Reserved (all remaining params)</param>
       </entry>
-      <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS">
+      <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request camera capture status (CAMERA_CAPTURE_STATUS)</description>
         <param index="1" label="Capture Status" enum="MAV_BOOL">Request camera capture status (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
-      <entry value="528" name="MAV_CMD_REQUEST_FLIGHT_INFORMATION">
+      <entry value="528" name="MAV_CMD_REQUEST_FLIGHT_INFORMATION" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request flight information (FLIGHT_INFORMATION)</description>
         <param index="1" label="Flight Information" enum="MAV_BOOL">Request flight information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Reserved (all remaining params)</param>
       </entry>
-      <entry value="529" name="MAV_CMD_RESET_CAMERA_SETTINGS">
+      <entry value="529" name="MAV_CMD_RESET_CAMERA_SETTINGS" command="true">
         <description>Reset all camera settings to Factory Default</description>
         <param index="1" label="Reset" enum="MAV_BOOL">Reset all settings (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
@@ -2199,21 +2199,21 @@
         <param index="4" reserved="true" default="NaN"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
-      <entry value="531" name="MAV_CMD_SET_CAMERA_ZOOM">
+      <entry value="531" name="MAV_CMD_SET_CAMERA_ZOOM" mission="true" command="true">
         <description>Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
         <param index="1" label="Zoom Type" enum="CAMERA_ZOOM_TYPE">Zoom type</param>
         <param index="2" label="Zoom Value">Zoom value. The range of valid values depend on the zoom type.</param>
         <param index="3" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="4" reserved="true" default="NaN"/>
       </entry>
-      <entry value="532" name="MAV_CMD_SET_CAMERA_FOCUS">
+      <entry value="532" name="MAV_CMD_SET_CAMERA_FOCUS" mission="true" command="true">
         <description>Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success).</description>
         <param index="1" label="Focus Type" enum="SET_FOCUS_TYPE">Focus type</param>
         <param index="2" label="Focus Value">Focus value</param>
         <param index="3" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
         <param index="4" reserved="true" default="NaN"/>
       </entry>
-      <entry value="533" name="MAV_CMD_SET_STORAGE_USAGE">
+      <entry value="533" name="MAV_CMD_SET_STORAGE_USAGE" command="true">
         <description>Set that a particular storage is the preferred location for saving photos, videos, and/or other media (e.g. to set that an SD card is used for storing videos).
           There can only be one preferred save location for each particular media type: setting a media usage flag will clear/reset that same flag if set on any other storage.
           If no flag is set the system should use its default storage.
@@ -2222,7 +2222,7 @@
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
         <param index="2" label="Usage" enum="STORAGE_USAGE_FLAG">Usage flags</param>
       </entry>
-      <entry value="534" name="MAV_CMD_SET_CAMERA_SOURCE">
+      <entry value="534" name="MAV_CMD_SET_CAMERA_SOURCE" mission="true" command="true">
         <description>Set camera source. Changes the camera's active sources on cameras with multiple image sensors.</description>
         <param index="1" label="device id">Component Id of camera to address or 1-6 for non-MAVLink cameras, 0 for all cameras.</param>
         <param index="2" label="primary source" enum="CAMERA_SOURCE">Primary Source</param>
@@ -2232,12 +2232,12 @@
         <description>Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.</description>
         <param index="1" label="Tag" minValue="0" increment="1">Tag.</param>
       </entry>
-      <entry value="601" name="MAV_CMD_DO_JUMP_TAG" missionOnly="true">
+      <entry value="601" name="MAV_CMD_DO_JUMP_TAG" mission="true">
         <description>Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number.</description>
         <param index="1" label="Tag" minValue="0" increment="1">Target tag to jump to.</param>
         <param index="2" label="Repeat" minValue="0" increment="1">Repeat count.</param>
       </entry>
-      <entry value="611" name="MAV_CMD_DO_SET_GLOBAL_ORIGIN" hasLocation="true" isDestination="false">
+      <entry value="611" name="MAV_CMD_DO_SET_GLOBAL_ORIGIN" hasLocation="true" isDestination="false" command="true">
         <description>Sets the GNSS coordinates of the vehicle local origin (0,0,0) position.
           Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed.
           This enables transform between the local coordinate frame and the global (GNSS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.
@@ -2248,7 +2248,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW">
+      <entry value="1000" name="MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW" mission="true" command="true">
         <description>Set gimbal manager pitch/yaw setpoints (low rate command). It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: only the gimbal manager will react to this command - it will be ignored by a gimbal device. Use GIMBAL_MANAGER_SET_PITCHYAW if you need to stream pitch/yaw setpoints at higher rate. </description>
         <param index="1" label="Pitch angle" units="deg" minValue="-180" maxValue="180">Pitch angle (positive to pitch up, relative to vehicle for FOLLOW mode, relative to world horizon for LOCK mode).</param>
         <param index="2" label="Yaw angle" units="deg" minValue="-180" maxValue="180">Yaw angle (positive to yaw to the right, relative to vehicle for FOLLOW mode, absolute to North for LOCK mode).</param>
@@ -2257,7 +2257,7 @@
         <param index="5" label="Gimbal manager flags" enum="GIMBAL_MANAGER_FLAGS">Gimbal manager flags to use.</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
       </entry>
-      <entry value="1001" name="MAV_CMD_DO_GIMBAL_MANAGER_CONFIGURE">
+      <entry value="1001" name="MAV_CMD_DO_GIMBAL_MANAGER_CONFIGURE" command="true">
         <description>Gimbal configuration to set which sysid/compid is in primary and secondary control.</description>
         <param index="1" label="sysid primary control">Sysid for primary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control).</param>
         <param index="2" label="compid primary control">Compid for primary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control).</param>
@@ -2265,7 +2265,7 @@
         <param index="4" label="compid secondary control">Compid for secondary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control).</param>
         <param index="7" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
       </entry>
-      <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE">
+      <entry value="2000" name="MAV_CMD_IMAGE_START_CAPTURE" mission="true" command="true">
         <description>Start image capture sequence. CAMERA_IMAGE_CAPTURED must be emitted after each capture.
 
           Param1 (id) may be used to specify the target camera: 0: all cameras, 1 to 6: autopilot-connected cameras, 7-255: MAVLink camera component ID.
@@ -2288,7 +2288,7 @@
         <param index="6" reserved="true"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
-      <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE">
+      <entry value="2001" name="MAV_CMD_IMAGE_STOP_CAPTURE" mission="true" command="true">
         <description>Stop image capture sequence.
 
           Param1 (id) may be used to specify the target camera: 0: all cameras, 1 to 6: autopilot-connected cameras, 7-255: MAVLink camera component ID.
@@ -2329,14 +2329,14 @@
         <param index="3" label="Pause" minValue="-1" maxValue="1" increment="2">1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore</param>
         <param index="4" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
-      <entry value="2004" name="MAV_CMD_CAMERA_TRACK_POINT">
+      <entry value="2004" name="MAV_CMD_CAMERA_TRACK_POINT" command="true">
         <description>If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking.</description>
         <param index="1" label="Point x" minValue="0" maxValue="1">Point to track x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="2" label="Point y" minValue="0" maxValue="1">Point to track y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="3" label="Radius" minValue="0" maxValue="1">Point radius (normalized 0..1, 0 is one pixel, 1 is full image width).</param>
         <param index="4" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
-      <entry value="2005" name="MAV_CMD_CAMERA_TRACK_RECTANGLE">
+      <entry value="2005" name="MAV_CMD_CAMERA_TRACK_RECTANGLE" command="true">
         <description>If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking.</description>
         <param index="1" label="Top left corner x" minValue="0" maxValue="1">Top left corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).</param>
         <param index="2" label="Top left corner y" minValue="0" maxValue="1">Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
@@ -2344,11 +2344,11 @@
         <param index="4" label="Bottom right corner y" minValue="0" maxValue="1">Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).</param>
         <param index="5" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
-      <entry value="2010" name="MAV_CMD_CAMERA_STOP_TRACKING">
+      <entry value="2010" name="MAV_CMD_CAMERA_STOP_TRACKING" command="true">
         <description>Stops ongoing tracking.</description>
         <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
-      <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
+      <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE" mission="true" command="true">
         <description>Starts video capture (recording).</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams)</param>
         <param index="2" label="Status Frequency" minValue="0" units="Hz">Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency)</param>
@@ -2358,7 +2358,7 @@
         <param index="6" reserved="true"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
-      <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE">
+      <entry value="2501" name="MAV_CMD_VIDEO_STOP_CAPTURE" mission="true" command="true">
         <description>Stop the current video capture (recording).</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams)</param>
         <param index="2" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
@@ -2378,12 +2378,12 @@
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
         <param index="2" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
-      <entry value="2504" name="MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION">
+      <entry value="2504" name="MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request video stream information (VIDEO_STREAM_INFORMATION)</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
       </entry>
-      <entry value="2505" name="MAV_CMD_REQUEST_VIDEO_STREAM_STATUS">
+      <entry value="2505" name="MAV_CMD_REQUEST_VIDEO_STREAM_STATUS" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request video stream status (VIDEO_STREAM_STATUS)</description>
         <param index="1" label="Stream ID" minValue="0" increment="1">Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)</param>
@@ -2418,7 +2418,7 @@
         <param index="6" reserved="true"/>
         <param index="7" reserved="true" default="NaN"/>
       </entry>
-      <entry value="2600" name="MAV_CMD_CONTROL_HIGH_LATENCY">
+      <entry value="2600" name="MAV_CMD_CONTROL_HIGH_LATENCY" command="true">
         <description>Request to start/stop transmitting over the high latency telemetry</description>
         <param index="1" label="Enable" enum="MAV_BOOL">Start transmission over high latency telemetry (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE stops transmission. Values not equal to 0 or 1 are invalid.</param>
         <param index="2">Empty</param>
@@ -2440,18 +2440,18 @@
         <param index="1" label="State" enum="MAV_VTOL_STATE">The target VTOL state. For normal transitions, only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.</param>
         <param index="2" label="Immediate">Force immediate transition to the specified MAV_VTOL_STATE. 1: Force immediate, 0: normal transition. Can be used, for example, to trigger an emergency "Quadchute". Caution: Can be dangerous/damage vehicle, depending on autopilot implementation of this command.</param>
       </entry>
-      <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST">
+      <entry value="3001" name="MAV_CMD_ARM_AUTHORIZATION_REQUEST" command="true">
         <description>Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request.
 		If approved the COMMAND_ACK message progress field should be set with period of time that this authorization is valid in seconds.
 		If the authorization is denied COMMAND_ACK.result_param2 should be set with one of the reasons in MAV_ARM_AUTH_DENIED_REASON.
         </description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle</param>
       </entry>
-      <entry value="4000" name="MAV_CMD_SET_GUIDED_SUBMODE_STANDARD">
+      <entry value="4000" name="MAV_CMD_SET_GUIDED_SUBMODE_STANDARD" command="true">
         <description>This command sets the submode to standard guided when vehicle is in guided mode. The vehicle holds position and altitude and the user can input the desired velocities along all three axes.
                   </description>
       </entry>
-      <entry value="4001" name="MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE" hasLocation="true" isDestination="false">
+      <entry value="4001" name="MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE" hasLocation="true" isDestination="false" command="true">
         <description>This command sets submode circle when vehicle is in guided mode. Vehicle flies along a circle facing the center of the circle. The user can input the velocity along the circle and change the radius. If no input is given the vehicle will hold position.
                   </description>
         <param index="1" label="Radius" units="m">Radius of desired circle in CIRCLE_MODE</param>
@@ -2461,7 +2461,7 @@
         <param index="5" label="Latitude" units="degE7">Target latitude of center of circle in CIRCLE_MODE</param>
         <param index="6" label="Longitude" units="degE7">Target longitude of center of circle in CIRCLE_MODE</param>
       </entry>
-      <entry value="4501" name="MAV_CMD_CONDITION_GATE" hasLocation="true">
+      <entry value="4501" name="MAV_CMD_CONDITION_GATE" hasLocation="true" mission="true">
         <description>Delay mission state machine until gate has been reached.</description>
         <param index="1" label="Geometry" minValue="0" increment="1">Geometry: 0: orthogonal to path between previous and next waypoint.</param>
         <param index="2" label="UseAltitude" enum="MAV_BOOL">Use altitude (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE ignores altitude. Values not equal to 0 or 1 are invalid.</param>
@@ -2471,7 +2471,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="5000" name="MAV_CMD_NAV_FENCE_RETURN_POINT" hasLocation="true" isDestination="true">
+      <entry value="5000" name="MAV_CMD_NAV_FENCE_RETURN_POINT" hasLocation="true" isDestination="true" fence="true">
         <description>Fence return point (there can only be one such point in a geofence definition). If rally points are supported they should be used instead.</description>
         <param index="1">Reserved</param>
         <param index="2">Reserved</param>
@@ -2481,7 +2481,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
-      <entry value="5001" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_INCLUSION" hasLocation="true" isDestination="false">
+      <entry value="5001" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_INCLUSION" hasLocation="true" isDestination="false" fence="true">
         <description>Fence vertex for an inclusion polygon (the polygon must not be self-intersecting). The vehicle must stay within this area. Minimum of 3 vertices required.
           The vertices for a polygon must be sent sequentially, each with param1 set to the total number of vertices in the polygon.
         </description>
@@ -2493,7 +2493,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7">Reserved</param>
       </entry>
-      <entry value="5002" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION" hasLocation="true" isDestination="false">
+      <entry value="5002" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION" hasLocation="true" isDestination="false" fence="true">
         <description>Fence vertex for an exclusion polygon (the polygon must not be self-intersecting). The vehicle must stay outside this area. Minimum of 3 vertices required.
           The vertices for a polygon must be sent sequentially, each with param1 set to the total number of vertices in the polygon.
         </description>
@@ -2505,7 +2505,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7">Reserved</param>
       </entry>
-      <entry value="5003" name="MAV_CMD_NAV_FENCE_CIRCLE_INCLUSION" hasLocation="true" isDestination="false">
+      <entry value="5003" name="MAV_CMD_NAV_FENCE_CIRCLE_INCLUSION" hasLocation="true" isDestination="false" fence="true">
         <description>Circular fence area. The vehicle must stay inside this area.
         </description>
         <param index="1" label="Radius" units="m">Radius.</param>
@@ -2516,7 +2516,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7">Reserved</param>
       </entry>
-      <entry value="5004" name="MAV_CMD_NAV_FENCE_CIRCLE_EXCLUSION" hasLocation="true" isDestination="false">
+      <entry value="5004" name="MAV_CMD_NAV_FENCE_CIRCLE_EXCLUSION" hasLocation="true" isDestination="false" fence="true">
         <description>Circular fence area. The vehicle must stay outside this area.
         </description>
         <param index="1" label="Radius" units="m">Radius.</param>
@@ -2527,7 +2527,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7">Reserved</param>
       </entry>
-      <entry value="5100" name="MAV_CMD_NAV_RALLY_POINT" hasLocation="true" isDestination="false">
+      <entry value="5100" name="MAV_CMD_NAV_RALLY_POINT" hasLocation="true" isDestination="false" rally="true">
         <description>Rally point. You can have multiple rally points defined.
         </description>
         <param index="1">Reserved</param>
@@ -2540,7 +2540,7 @@
       </entry>
       <!-- Values in the range [5200, 5210) should be reserved for UAVCAN.  -->
       <!-- BEGIN UAVCAN range -->
-      <entry value="5200" name="MAV_CMD_UAVCAN_GET_NODE_INFO">
+      <entry value="5200" name="MAV_CMD_UAVCAN_GET_NODE_INFO" command="true">
         <superseded since="2026-05" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Commands the vehicle to respond with a sequence of messages UAVCAN_NODE_INFO, one message per every UAVCAN node that is online. Note that some of the response messages can be lost, which the receiver can detect easily by checking whether every received UAVCAN_NODE_STATUS has a matching message UAVCAN_NODE_INFO received earlier; if not, this command should be sent again in order to request re-transmission of the node information messages.</description>
         <param index="1">Reserved (set to 0)</param>
@@ -2552,7 +2552,7 @@
         <param index="7">Reserved (set to 0)</param>
       </entry>
       <!-- END of UAVCAN range -->
-      <entry value="5300" name="MAV_CMD_DO_SET_SAFETY_SWITCH_STATE">
+      <entry value="5300" name="MAV_CMD_DO_SET_SAFETY_SWITCH_STATE" command="true">
         <description>Change state of safety switch.</description>
         <param index="1" label="Desired State" enum="SAFETY_SWITCH_STATE">New safety switch state.</param>
         <param index="2">Empty.</param>
@@ -2562,7 +2562,7 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="10001" name="MAV_CMD_DO_ADSB_OUT_IDENT">
+      <entry value="10001" name="MAV_CMD_DO_ADSB_OUT_IDENT" command="true">
         <description>Trigger the start of an ADSB-out IDENT. This should only be used when requested to do so by an Air Traffic Controller in controlled airspace. This starts the IDENT which is then typically held for 18 seconds by the hardware per the Mode A, C, and S transponder spec.</description>
         <param index="1">Reserved (set to 0)</param>
         <param index="2">Reserved (set to 0)</param>
@@ -2598,7 +2598,7 @@
         <param index="7">Reserved</param>
       </entry>
       <!-- from ardupilotmega.xml (hence ID is in that range) -->
-      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW">
+      <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW" command="true">
         <description>Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM field tables in the vehicle, given only the known yaw of the vehicle. If Latitude and longitude are both zero then use the current vehicle location.</description>
         <param index="1" label="Yaw" units="deg">Yaw of vehicle in earth frame.</param>
         <param index="2" label="CompassMask">CompassMask, 0 for all.</param>
@@ -2608,7 +2608,7 @@
         <param index="6">Empty.</param>
         <param index="7">Empty.</param>
       </entry>
-      <entry value="42600" name="MAV_CMD_DO_WINCH">
+      <entry value="42600" name="MAV_CMD_DO_WINCH" mission="true" command="true">
         <description>Command to operate winch.</description>
         <param index="1" label="Instance" minValue="1" increment="1">Winch instance number.</param>
         <param index="2" label="Action" enum="WINCH_ACTIONS">Action to perform.</param>
@@ -2619,24 +2619,24 @@
         <param index="7">Empty.</param>
       </entry>
       <!-- from ardupilotmega.xml (hence ID is in that range) -->
-      <entry value="43000" name="MAV_CMD_GUIDED_CHANGE_SPEED">
+      <entry value="43000" name="MAV_CMD_GUIDED_CHANGE_SPEED" command="true">
         <description>Change flight speed at a given rate. This slews the vehicle at a controllable rate between it's previous speed and the new one.</description>
         <param index="1" label="speed type" enum="SPEED_TYPE">Airspeed or groundspeed.</param>
         <param index="2" label="speed target" units="m/s">Target Speed</param>
         <param index="3" label="speed rate-of-change" units="m/s/s">Acceleration rate, 0 to take effect instantly</param>
       </entry>
-      <entry value="43001" name="MAV_CMD_GUIDED_CHANGE_ALTITUDE" hasLocation="false" isDestination="false">
+      <entry value="43001" name="MAV_CMD_GUIDED_CHANGE_ALTITUDE" hasLocation="false" isDestination="false" command="true">
         <description>Change target altitude at a given rate. This slews the vehicle at a controllable rate between it's previous altitude and the new one.</description>
         <param index="3" label="alt rate-of-change" units="m/s" minValue="0">Rate of change, toward new altitude. 0 for maximum rate change. Positive numbers only, as negative numbers will not converge on the new target alt.</param>
         <param index="7" label="target alt" units="m">Target Altitude</param>
       </entry>
-      <entry value="43002" name="MAV_CMD_GUIDED_CHANGE_HEADING">
+      <entry value="43002" name="MAV_CMD_GUIDED_CHANGE_HEADING" command="true">
         <description>Change to target direction at a given rate, overriding previous heading/s. This slews the vehicle at a controllable rate between its previous heading and the new one.</description>
         <param index="1" label="Heading Type" enum="HEADING_TYPE">Course-over-ground or raw vehicle heading.</param>
         <param index="2" label="Heading Target" units="deg" minValue="0" maxValue="359.99">Target heading.</param>
         <param index="3" label="Heading Rate of Change" units="deg/s">Maximum centripetal acceleration, i.e. rate of change toward new heading.</param>
       </entry>
-      <entry value="43003" name="MAV_CMD_EXTERNAL_POSITION_ESTIMATE" hasLocation="true" isDestination="false">
+      <entry value="43003" name="MAV_CMD_EXTERNAL_POSITION_ESTIMATE" hasLocation="true" isDestination="false" command="true">
         <description>Provide an external position estimate for use when dead-reckoning. This is meant to be used for occasional position resets that may be provided by a external system such as a remote pilot using landmarks over a video link.</description>
         <param index="1" label="transmission_time" units="s">Timestamp that this message was sent as a time in the transmitters time domain. The sender should wrap this time back to zero based on required timing accuracy for the application and the limitations of a 32 bit float. For example, wrapping at 10 hours would give approximately 1ms accuracy. Recipient must handle time wrap in any timing jitter correction applied to this field. Wrap rollover time should not be at not more than 250 seconds, which would give approximately 10 microsecond accuracy.</param>
         <param index="2" label="processing_time" units="s">The time spent in processing the sensor data that is the basis for this position. The recipient can use this to improve time alignment of the data. Set to zero if not known.</param>
@@ -2648,7 +2648,7 @@
       </entry>
       <!-- END of payload range (30000 to 30999) -->
       <!-- BEGIN user defined range (31000 to 31999) -->
-      <entry value="31000" name="MAV_CMD_WAYPOINT_USER_1" hasLocation="true" isDestination="true">
+      <entry value="31000" name="MAV_CMD_WAYPOINT_USER_1" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2658,7 +2658,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31001" name="MAV_CMD_WAYPOINT_USER_2" hasLocation="true" isDestination="true">
+      <entry value="31001" name="MAV_CMD_WAYPOINT_USER_2" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2668,7 +2668,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31002" name="MAV_CMD_WAYPOINT_USER_3" hasLocation="true" isDestination="true">
+      <entry value="31002" name="MAV_CMD_WAYPOINT_USER_3" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2678,7 +2678,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31003" name="MAV_CMD_WAYPOINT_USER_4" hasLocation="true" isDestination="true">
+      <entry value="31003" name="MAV_CMD_WAYPOINT_USER_4" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2688,7 +2688,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31004" name="MAV_CMD_WAYPOINT_USER_5" hasLocation="true" isDestination="true">
+      <entry value="31004" name="MAV_CMD_WAYPOINT_USER_5" hasLocation="true" isDestination="true" mission="true">
         <description>User defined waypoint item. Ground Station will show the Vehicle as flying through this item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2698,7 +2698,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31005" name="MAV_CMD_SPATIAL_USER_1" hasLocation="true" isDestination="false">
+      <entry value="31005" name="MAV_CMD_SPATIAL_USER_1" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2708,7 +2708,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31006" name="MAV_CMD_SPATIAL_USER_2" hasLocation="true" isDestination="false">
+      <entry value="31006" name="MAV_CMD_SPATIAL_USER_2" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2718,7 +2718,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31007" name="MAV_CMD_SPATIAL_USER_3" hasLocation="true" isDestination="false">
+      <entry value="31007" name="MAV_CMD_SPATIAL_USER_3" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2728,7 +2728,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31008" name="MAV_CMD_SPATIAL_USER_4" hasLocation="true" isDestination="false">
+      <entry value="31008" name="MAV_CMD_SPATIAL_USER_4" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2738,7 +2738,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31009" name="MAV_CMD_SPATIAL_USER_5" hasLocation="true" isDestination="false">
+      <entry value="31009" name="MAV_CMD_SPATIAL_USER_5" hasLocation="true" isDestination="false" mission="true">
         <description>User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2748,7 +2748,7 @@
         <param index="6" label="Longitude">Longitude unscaled</param>
         <param index="7" label="Altitude" units="m">Altitude (MSL)</param>
       </entry>
-      <entry value="31010" name="MAV_CMD_USER_1">
+      <entry value="31010" name="MAV_CMD_USER_1" mission="true">
         <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2758,7 +2758,7 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="31011" name="MAV_CMD_USER_2">
+      <entry value="31011" name="MAV_CMD_USER_2" mission="true">
         <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2768,7 +2768,7 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="31012" name="MAV_CMD_USER_3">
+      <entry value="31012" name="MAV_CMD_USER_3" mission="true">
         <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2778,7 +2778,7 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="31013" name="MAV_CMD_USER_4">
+      <entry value="31013" name="MAV_CMD_USER_4" mission="true">
         <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2788,7 +2788,7 @@
         <param index="6">User defined</param>
         <param index="7">User defined</param>
       </entry>
-      <entry value="31014" name="MAV_CMD_USER_5">
+      <entry value="31014" name="MAV_CMD_USER_5" mission="true">
         <description>User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.</description>
         <param index="1">User defined</param>
         <param index="2">User defined</param>
@@ -2799,7 +2799,7 @@
         <param index="7">User defined</param>
       </entry>
       <!-- END of user range (31000 to 31999) -->
-      <entry value="32000" name="MAV_CMD_CAN_FORWARD">
+      <entry value="32000" name="MAV_CMD_CAN_FORWARD" command="true">
         <description>Request forwarding of CAN packets from the given CAN bus to this component via this MAVLink channel. CAN Frames are sent using CAN_FRAME and CANFD_FRAME messages</description>
         <param index="1" label="bus">Bus number (0 to disable forwarding, 1 for first bus, 2 for 2nd bus, 3 for 3rd bus).</param>
         <param index="2">Empty.</param>
