@@ -265,9 +265,14 @@ class MAVXML:
             markdownText += enum.getMarkdown(self.basename)
 
         if len(self.commands):
-            markdownText += "## Commands (MAV_CMD) {#mav_commands}\n\n"
+            # Filter control (theme component; rendered client-side only, so the
+            # page is complete without JS). Commands below are wrapped in
+            # <div class="mav-cmd" data-...> that the filter shows/hides.
+            markdownText += "## Commands (MAV_CMD) {#mav_commands}\n\n<MavCmdFilter />\n\n"
         for command in self.commands.values():
-            markdownText += command.getMarkdown(self.basename)
+            command_markdown = command.getMarkdown(self.basename)
+            if command_markdown:
+                markdownText += command.wrapForFilter(command_markdown)
 
         return markdownText
 
@@ -1056,6 +1061,12 @@ class MAVCommand:
             label, badge_type, tooltip = COMMAND_USAGE[key]
             badges += f' <span class="VPBadge {badge_type}" title="{tooltip}">{label}</span>'
         return badges
+
+    def wrapForFilter(self, markdown):
+        """Wrap a command's markdown in a div carrying its usage as data attributes.
+        Blank lines around the content keep the markdown inside parsed."""
+        attrs = "".join(f" data-{key}" for key in self.usage)
+        return f'<div class="mav-cmd"{attrs}>\n\n{markdown.rstrip()}\n\n</div>\n\n'
 
     def getMarkdown(self, currentDialect):
         """Return markdown for a command (entry)"""
