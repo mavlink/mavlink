@@ -29,6 +29,6 @@ This repo only defines the schema — actual usage lives in the consuming projec
 These are the major flight-stack and ground-control consumers of MAVLink; a definition can be relied upon by any of them even if it looks unused within this repo.
 
 ## Conventions
-- A `<wip/>` tag on a message/command/enum marks it as work-in-progress/unstable — do not treat WIP entries as part of the stable public API, and don't remove the tag without confirming the item is finalized.
+- All entries in development.xml should have a `<wip/>` where allowed and include the date attribute
 - New message/command ID ranges are reserved per-dialect (see comments in `all.xml`); don't invent IDs outside an owned range without checking for clashes.
 - This repo's own contribution conventions are thin (`CONTRIBUTING.md` just points to the external MAVLink Developer Guide, sourced from https://github.com/mavlink/mavlink-devguide and published at mavlink.io); when in doubt about process, defer to that guide rather than assuming.
