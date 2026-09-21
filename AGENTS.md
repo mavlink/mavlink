@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 This repo defines the MAVLink message/dialect schema (XML) and reference generator tooling. It is a foundational spec repo: changes here ripple out to every downstream flight stack and ground control station that generates code from these XML files.
 
