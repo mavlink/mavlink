@@ -265,9 +265,14 @@ class MAVXML:
             markdownText += enum.getMarkdown(self.basename)
 
         if len(self.commands):
-            markdownText += "## Commands (MAV_CMD) {#mav_commands}\n\n"
+            # Filter control (theme component; rendered client-side only, so the
+            # page is complete without JS). Commands below are wrapped in
+            # <div class="mav-cmd" data-...> that the filter shows/hides.
+            markdownText += "## Commands (MAV_CMD) {#mav_commands}\n\n<MavCmdFilter />\n\n"
         for command in self.commands.values():
-            markdownText += command.getMarkdown(self.basename)
+            command_markdown = command.getMarkdown(self.basename)
+            if command_markdown:
+                markdownText += command.wrapForFilter(command_markdown)
 
         return markdownText
 
@@ -988,6 +993,17 @@ class MAVCommandParam:
             parent.param_fieldnames.add("multiplier")
 
 
+# MAV_CMD usage contexts (XML attribute -> label, VitePress badge type, tooltip).
+# Order is the display order. Badges use the default-theme `VPBadge` classes, so they
+# are static HTML: no Vue component to hydrate, and readable even if CSS/JS is late.
+COMMAND_USAGE = {
+    "mission": ("Mission", "tip", "Can be used as a mission item"),
+    "command": ("Command", "info", "Can be sent as a command (COMMAND_INT/COMMAND_LONG)"),
+    "fence": ("Fence", "warning", "Can be used in a geofence plan"),
+    "rally": ("Rally", "warning", "Can be used in a rally point plan"),
+}
+
+
 class MAVCommand:
     def __init__(self, soup, basename):
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
@@ -999,6 +1015,10 @@ class MAVCommand:
         )
         self.basename = basename
         self.has_location = soup.get("hasLocation", "false").lower() == "true"
+        self.usage = [
+            key for key in COMMAND_USAGE
+            if soup.get(key, "false").lower() == "true"
+        ]
         self.description = soup.description.text if soup.description else None
         if self.description:
             self.description = tidyDescription(self.description)
@@ -1033,6 +1053,21 @@ class MAVCommand:
             # TODO: Decide if we want to add entries for non-existing param values
             self.params.append(MAVCommandParam(param, self))
 
+    def getUsageBadges(self):
+        """Return static-HTML badges (leading space included) for the contexts
+        in which this command can be used, or "" if none are declared."""
+        badges = ""
+        for key in self.usage:
+            label, badge_type, tooltip = COMMAND_USAGE[key]
+            badges += f' <span class="VPBadge {badge_type}" title="{tooltip}">{label}</span>'
+        return badges
+
+    def wrapForFilter(self, markdown):
+        """Wrap a command's markdown in a div carrying its usage as data attributes.
+        Blank lines around the content keep the markdown inside parsed."""
+        attrs = "".join(f" data-{key}" for key in self.usage)
+        return f'<div class="mav-cmd"{attrs}>\n\n{markdown.rstrip()}\n\n</div>\n\n'
+
     def getMarkdown(self, currentDialect):
         """Return markdown for a command (entry)"""
 
@@ -1062,6 +1097,7 @@ class MAVCommand:
             string += " [SUP]"
         elif self.wip:
             string += " [WIP]"
+        string += self.getUsageBadges()
         string += " {#" + self.name + "}\n\n"
 
         if self.deprecated:
