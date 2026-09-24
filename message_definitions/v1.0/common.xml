@@ -2069,7 +2069,7 @@
         <description>Instructs a target system to run pre-arm checks.
           This allows preflight checks to be run on demand, which may be useful on systems that normally run them at low rate, or which do not trigger checks when the armable state might have changed.
           This command should return MAV_RESULT_ACCEPTED if it will run the checks.
-          The results of the checks are usually then reported in SYS_STATUS messages (this is system-specific).
+          The results of the checks are usually then reported in SYS_STATUS, EVENT, or STATUSTEXT messages (this is system-specific).
           The command should return MAV_RESULT_TEMPORARILY_REJECTED if the system is already armed.
         </description>
       </entry>
@@ -8234,7 +8234,7 @@
       <field type="uint8_t" name="flags" enum="MAV_EVENT_CURRENT_SEQUENCE_FLAGS">Flag bitset.</field>
     </message>
     <message id="412" name="REQUEST_EVENT">
-      <description>Request one or more events to be (re-)sent. If first_sequence==last_sequence, only a single event is requested. Note that first_sequence can be larger than last_sequence (because the sequence number can wrap). Each sequence will trigger an EVENT or EVENT_ERROR response.</description>
+      <description>Request one or more events to be (re-)sent. If first_sequence==last_sequence, only a single event is requested. Note that first_sequence can be larger than last_sequence (because the sequence number can wrap). Each sequence will trigger an EVENT or RESPONSE_EVENT_ERROR response.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="first_sequence">First sequence number of the requested event.</field>
