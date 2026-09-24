@@ -228,5 +228,147 @@ class DeprecatedEnumReferenceTestCase(ConsistencyCheckTestCase):
         )
 
 
+class EnumDuplicateValuesTests(ConsistencyCheckTestCase):
+    def test_duplicate_enum_values_warns(self):
+        enum = parse_enum(
+            '<enum name="MY_ENUM">'
+            '<entry name="MY_ENUM_A" value="1"/>'
+            '<entry name="MY_ENUM_B" value="1"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertEqual(messages, ["test.xml: Enum: MY_ENUM duplicate value 1"])
+
+    def test_unique_enum_values_does_not_warn(self):
+        enum = parse_enum(
+            '<enum name="MY_ENUM">'
+            '<entry name="MY_ENUM_A" value="1"/>'
+            '<entry name="MY_ENUM_B" value="2"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertEqual(messages, [])
+
+
+class EnumBitmaskConsistencyTests(ConsistencyCheckTestCase):
+    def test_bitmask_containing_zero_warns(self):
+        enum = parse_enum(
+            '<enum name="MY_FLAGS" bitmask="true">'
+            '<entry name="MY_FLAGS_NONE" value="0"/>'
+            '<entry name="MY_FLAGS_A" value="1"/>'
+            '<entry name="MY_FLAGS_B" value="2"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertIn("test.xml: Enum: MY_FLAGS bitmask should not contain 0", messages)
+
+    def test_sequential_powers_of_two_without_bitmask_flag_suggests_bitmask(self):
+        enum = parse_enum(
+            '<enum name="MY_FLAGS">'
+            '<entry name="MY_FLAGS_A" value="1"/>'
+            '<entry name="MY_FLAGS_B" value="2"/>'
+            '<entry name="MY_FLAGS_C" value="4"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertEqual(messages, ["test.xml: Enum: MY_FLAGS should be a marked as bitmask?"])
+
+    def test_overlapping_values_with_bitmask_flag_warns(self):
+        enum = parse_enum(
+            '<enum name="MY_FLAGS" bitmask="true">'
+            '<entry name="MY_FLAGS_A" value="1"/>'
+            '<entry name="MY_FLAGS_B" value="2"/>'
+            '<entry name="MY_FLAGS_C" value="3"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertEqual(messages, ["test.xml: Enum: MY_FLAGS should be not be a marked as bitmask"])
+
+    def test_valid_bitmask_does_not_warn(self):
+        enum = parse_enum(
+            '<enum name="MY_FLAGS" bitmask="true">'
+            '<entry name="MY_FLAGS_A" value="1"/>'
+            '<entry name="MY_FLAGS_B" value="2"/>'
+            '<entry name="MY_FLAGS_C" value="4"/>'
+            '<entry name="MY_FLAGS_D" value="8"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertEqual(messages, [])
+
+    def test_valid_sequential_enum_does_not_warn(self):
+        enum = parse_enum(
+            '<enum name="MY_ENUM">'
+            '<entry name="MY_ENUM_A" value="1"/>'
+            '<entry name="MY_ENUM_B" value="2"/>'
+            '<entry name="MY_ENUM_C" value="3"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertEqual(messages, [])
+
+
+class FieldAndParamUnitsWithEnumTests(ConsistencyCheckTestCase):
+    def test_field_with_both_units_and_enum_warns(self):
+        field = parse_field('<field type="uint8_t" name="mode" enum="MY_ENUM" units="m">desc</field>')
+        messages = self.warnings(check_field, "test.xml", "MY_MSG", field, {})
+        self.assertIn("test.xml: Message MY_MSG field mode has both units and enum", messages)
+
+    def test_cmd_param_with_both_units_and_enum_warns(self):
+        param = parse_param('<param index="1" enum="MY_ENUM" units="m">desc</param>')
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertIn("test.xml: Command MY_CMD param 1 has both units and enum", messages)
+
+
+class EnumFitsTypeTests(ConsistencyCheckTestCase):
+    def test_enum_value_exceeding_type_range_warns(self):
+        enums = {
+            "BIG_ENUM": {
+                "name": "BIG_ENUM",
+                "bitmask": False,
+                "min": 1,
+                "max": 300,
+                "used": False,
+            }
+        }
+        field = parse_field('<field type="uint8_t" name="mode" enum="BIG_ENUM">desc</field>')
+        messages = self.warnings(check_field, "test.xml", "MY_MSG", field, enums)
+        self.assertEqual(
+            messages,
+            ["test.xml: Message MY_MSG field mode enum BIG_ENUM does not fit in type: uint8_t"],
+        )
+
+    def test_enum_value_fitting_type_range_does_not_warn(self):
+        enums = {
+            "FIT_ENUM": {
+                "name": "FIT_ENUM",
+                "bitmask": False,
+                "min": 1,
+                "max": 200,
+                "used": False,
+            }
+        }
+        field = parse_field('<field type="uint8_t" name="mode" enum="FIT_ENUM">desc</field>')
+        messages = self.warnings(check_field, "test.xml", "MY_MSG", field, enums)
+        self.assertEqual(messages, [])
+
+    def test_field_enum_unexpected_type_warns(self):
+        enums = {
+            "MY_ENUM": {
+                "name": "MY_ENUM",
+                "bitmask": False,
+                "min": 1,
+                "max": 5,
+                "used": False,
+            }
+        }
+        field = parse_field('<field type="custom_t" name="mode" enum="MY_ENUM">desc</field>')
+        messages = self.warnings(check_field, "test.xml", "MY_MSG", field, enums)
+        self.assertEqual(
+            messages,
+            ["test.xml: Message MY_MSG field mode enum MY_ENUM unexpected type: custom_t"],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
