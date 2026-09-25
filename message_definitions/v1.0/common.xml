@@ -3981,6 +3981,13 @@
       <entry value="4" name="VIDEO_STREAM_TYPE_WHEP">
         <description>Stream is WHEP (WebRTC-HTTP Egress Protocol)</description>
       </entry>
+      <entry value="5" name="VIDEO_STREAM_TYPE_SRT">
+        <description>Stream is SRT (Secure Reliable Transport).
+          The payload is MPEG-TS (as for VIDEO_STREAM_TYPE_MPEG_TS); streams other than video (e.g. KLV metadata, audio) may be ignored.
+          VIDEO_STREAM_INFORMATION.uri is a full URI with the prefix `srt://host:port` followed by query parameters.
+          Recognised parameters include: mode (caller, listener or rendezvous), latency (ms), streamid (opaque string, e.g. for hub access control).
+          Encryption passphrases should be exchanged out of band rather than in the URI, as MAVLink messages are not encrypted.</description>
+      </entry>
     </enum>
     <enum name="VIDEO_STREAM_ENCODING">
       <description>Video stream encodings</description>
@@ -7443,7 +7450,7 @@
       <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise.</field>
       <field type="uint16_t" name="hfov" units="deg">Horizontal Field of view.</field>
       <field type="char[32]" name="name">Stream name.</field>
-      <field type="char[160]" name="uri">Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to).</field>
+      <field type="char[160]" name="uri">Video stream URI (TCP, RTSP or SRT URI ground station should connect to) or port number (UDP port ground station should listen to).</field>
       <extensions/>
       <field type="uint8_t" name="encoding" enum="VIDEO_STREAM_ENCODING">Encoding of stream.</field>
       <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
