@@ -2896,6 +2896,42 @@
       <entry value="10" name="MAV_PARAM_TYPE_REAL64">
         <description>64-bit floating-point</description>
       </entry>
+      <entry value="11" name="MAV_PARAM_TYPE_EXTENDED">
+        <description>Value carried in the extended_type and extended_data fields of PARAM_VALUE and PARAM_SET. Only for use with components that advertise MAV_PROTOCOL_CAPABILITY_PARAM_BYTEWISE.</description>
+      </entry>
+      <entry value="12" name="MAV_PARAM_TYPE_BYTEWISE_INT32">
+        <description>32-bit signed integer carried as four little-endian bytes in param_value, without floating-point conversion. The extension fields must be zero. Receivers must preserve the raw bytes, including NaN bit patterns.</description>
+      </entry>
+      <entry value="13" name="MAV_PARAM_TYPE_BYTEWISE_UINT32">
+        <description>32-bit unsigned integer carried as four little-endian bytes in param_value, without floating-point conversion. The extension fields must be zero. Receivers must preserve the raw bytes, including NaN bit patterns.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_PARAM_EXTENDED_TYPE">
+      <description>Specifies the datatype carried in the extended_data field of PARAM_VALUE and PARAM_SET when param_type is MAV_PARAM_TYPE_EXTENDED.</description>
+      <entry value="0" name="MAV_PARAM_EXTENDED_TYPE_NONE">
+        <description>No extended data. Used when param_type is not MAV_PARAM_TYPE_EXTENDED.</description>
+      </entry>
+      <entry value="1" name="MAV_PARAM_EXTENDED_TYPE_BYTEWISE_INT64">
+        <description>64-bit signed integer, little-endian in the first 8 bytes of extended_data. Remaining bytes must be zero. param_value must be NaN and is ignored by receivers.</description>
+      </entry>
+      <entry value="2" name="MAV_PARAM_EXTENDED_TYPE_BYTEWISE_UINT64">
+        <description>64-bit unsigned integer, little-endian in the first 8 bytes of extended_data. Remaining bytes must be zero. param_value must be NaN and is ignored by receivers.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_PARAM_TYPES_SUPPORTED" bitmask="true">
+      <description>Explicit parameter encodings understood by a requester. These bits are independent of MAV_PARAM_TYPE and MAV_PARAM_EXTENDED_TYPE numeric values. Zero, including an absent extension, requests legacy encoding. Unsupported bits are ignored. PARAM_VALUE is broadcast: when clients share a channel, use only encodings understood by all clients on that channel.</description>
+      <entry value="1" name="MAV_PARAM_TYPES_SUPPORTED_BYTEWISE_INT32">
+        <description>Understands MAV_PARAM_TYPE_BYTEWISE_INT32.</description>
+      </entry>
+      <entry value="2" name="MAV_PARAM_TYPES_SUPPORTED_BYTEWISE_UINT32">
+        <description>Understands MAV_PARAM_TYPE_BYTEWISE_UINT32.</description>
+      </entry>
+      <entry value="4" name="MAV_PARAM_TYPES_SUPPORTED_BYTEWISE_INT64">
+        <description>Understands MAV_PARAM_TYPE_EXTENDED with MAV_PARAM_EXTENDED_TYPE_BYTEWISE_INT64.</description>
+      </entry>
+      <entry value="8" name="MAV_PARAM_TYPES_SUPPORTED_BYTEWISE_UINT64">
+        <description>Understands MAV_PARAM_TYPE_EXTENDED with MAV_PARAM_EXTENDED_TYPE_BYTEWISE_UINT64.</description>
+      </entry>
     </enum>
     <enum name="MAV_PARAM_ERROR">
       <description>Parameter protocol error types (see PARAM_ERROR).</description>
@@ -5617,11 +5653,15 @@
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string. Encoded as 7-bit ASCII.</field>
       <field type="int16_t" name="param_index" invalid="-1">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
+      <extensions/>
+      <field type="uint32_t" name="supported_types" enum="MAV_PARAM_TYPES_SUPPORTED">Explicit encodings understood by the requester. Zero requests legacy encoding. The component caches this advertisement for subsequent parameter replies and updates on this channel; requests from other clients must not enable an encoding unsupported by an existing client.</field>
     </message>
     <message id="21" name="PARAM_REQUEST_LIST">
       <description>Request all parameters of this component. After this request, all parameters are emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
+      <extensions/>
+      <field type="uint32_t" name="supported_types" enum="MAV_PARAM_TYPES_SUPPORTED">Explicit encodings understood by the requester. Zero requests legacy encoding. The component caches this advertisement for subsequent parameter replies and updates on this channel; requests from other clients must not enable an encoding unsupported by an existing client.</field>
     </message>
     <message id="22" name="PARAM_VALUE">
       <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
@@ -5630,6 +5670,9 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
       <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
       <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
+      <extensions/>
+      <field type="uint8_t" name="extended_type" enum="MAV_PARAM_EXTENDED_TYPE">Datatype of extended_data. Set (non-zero) only when param_type is MAV_PARAM_TYPE_EXTENDED, in which case param_value should be set to NaN.</field>
+      <field type="uint8_t[32]" name="extended_data">Extended parameter value, encoded according to extended_type.</field>
     </message>
     <message id="23" name="PARAM_SET">
       <description>Set a parameter value (write new value to permanent storage).
@@ -5640,6 +5683,9 @@
       <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string. Encoded as 7-bit ASCII.</field>
       <field type="float" name="param_value">Onboard parameter value</field>
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+      <extensions/>
+      <field type="uint8_t" name="extended_type" enum="MAV_PARAM_EXTENDED_TYPE">Datatype of extended_data. Set (non-zero) only when param_type is MAV_PARAM_TYPE_EXTENDED, in which case param_value should be set to NaN.</field>
+      <field type="uint8_t[32]" name="extended_data">Extended parameter value, encoded according to extended_type.</field>
     </message>
     <message id="24" name="GPS_RAW_INT">
       <description>The global position, as returned by the Global Positioning System (GPS). This is
