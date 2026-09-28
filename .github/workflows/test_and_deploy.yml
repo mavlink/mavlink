@@ -158,7 +158,8 @@ jobs:
 
   deploy:
     name: Generate and push C headers
-    needs: [format, xml-consistency, spell-check, python-lint, python-tests, node-tests]
+    needs: [format, xml-consistency, spell-check, python-lint, python-tests,
+            build-cmake-c-example, build-cmake-cpp-example, node-tests]
     runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/master'
     env:
