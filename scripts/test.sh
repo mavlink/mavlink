@@ -29,7 +29,24 @@ generate_mavlink() {
 	    --wire-protocol "${wire_protocol}" \
 	    --strict-units \
 	    --output="${outdir}" "${msg_def}"
+    compile_generated
     echo PASS
+}
+
+# mavgen accepts some names that are not valid C or C++ (for example a
+# keyword, or the same entry name in two enums), so compile the generated
+# headers too. The packed-member warning is expected from the packed structs.
+compile_generated() {
+    dialect=$(basename "$msg_def" .xml)
+    if [ "$lang" == "C" ]; then
+        echo "#include \"${dialect}/mavlink.h\"" |
+            gcc -fsyntax-only -Wno-address-of-packed-member \
+                -I"${outdir}" -x c -
+    elif [ "$lang" == "C++11" ]; then
+        echo "#include \"${dialect}/${dialect}.hpp\"" |
+            g++ -std=c++11 -fsyntax-only -Wno-address-of-packed-member \
+                -I"${outdir}" -x c++ -
+    fi
 }
 
 test_py() {
