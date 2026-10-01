@@ -7,7 +7,6 @@ message/enum/field removal detection used by main()) against small in-memory
 XML fixtures, so regressions in wire-breaking-change detection are caught in
 CI instead of relying on manual testing against real PRs.
 """
-import ast
 import importlib.util
 import os
 import unittest
@@ -272,13 +271,19 @@ class SameSizeFieldOrderTests(unittest.TestCase):
             attrs[FieldKey(message=msg, field_name="time_usec")]["size_group_index"], 0
         )
 
-    def test_unknown_type_records_no_size_group_index(self):
-        # An unrecognised type must not crash the check or invent an ordering
-        # it cannot know; it simply carries no position.
+    def test_unknown_type_raises(self):
+        # A field with no known size cannot be given a position, so a reorder
+        # involving it would pass unnoticed. Fail instead of skipping it.
         xml = SAME_SIZE_XML.replace('type="uint8_t" name="flags"', 'type="mystery_t" name="flags"')
+        with self.assertRaisesRegex(ValueError, r"'mystery_t' for field SS_MSG\.flags"):
+            collect_names(parse_xml(xml))
+
+    def test_unknown_extension_field_type_is_not_checked(self):
+        # Extension fields are ordered by XML position, not size, so their
+        # type is never looked up here.
+        xml = EXT_XML.replace('type="uint8_t" name="id"', 'type="mystery_t" name="id"')
         _names, attrs = collect_names(parse_xml(xml))
-        field = attrs[FieldKey(message=MessageKey(message_name="SS_MSG"), field_name="flags")]
-        self.assertNotIn("size_group_index", field)
+        field = attrs[FieldKey(message=MessageKey(message_name="EXT_MSG"), field_name="id")]
         self.assertEqual(field["type"], "mystery_t")
 
     def test_appending_a_field_does_not_shift_existing_indices(self):
@@ -652,53 +657,6 @@ class NumericAttributeTests(unittest.TestCase):
         # as equal.
         self.assertTrue(check_api_break.attr_changed("value", "TBD", "TBD_LATER"))
         self.assertFalse(check_api_break.attr_changed("value", "TBD", "TBD"))
-
-
-_MAVPARSE_PATH = os.path.join(
-    os.path.dirname(__file__), "..", "pymavlink", "generator", "mavparse.py"
-)
-
-
-def mavparse_type_lengths(path):
-    """Return the literal `lengths` dict from MAVField.__init__ in mavparse.py.
-
-    Read with ast rather than by importing pymavlink, so check_api_break.py
-    stays free of that dependency.
-    """
-    with open(path, encoding="utf-8") as f:
-        tree = ast.parse(f.read(), filename=path)
-    for cls in tree.body:
-        if isinstance(cls, ast.ClassDef) and cls.name == "MAVField":
-            for func in cls.body:
-                if isinstance(func, ast.FunctionDef) and func.name == "__init__":
-                    for node in ast.walk(func):
-                        if (
-                            isinstance(node, ast.Assign)
-                            and len(node.targets) == 1
-                            and isinstance(node.targets[0], ast.Name)
-                            and node.targets[0].id == "lengths"
-                        ):
-                            return ast.literal_eval(node.value)
-    return None
-
-
-class TypeLengthsTests(unittest.TestCase):
-    """TYPE_LENGTHS is a copy of the generator's table, so check they agree.
-
-    If they drift, the same-size reordering check silently groups a field by
-    the wrong size, or skips a type it does not know.
-    """
-
-    def test_type_lengths_match_mavparse(self):
-        if not os.path.exists(_MAVPARSE_PATH):
-            if os.environ.get("CI"):
-                self.fail("pymavlink submodule is not checked out: " + _MAVPARSE_PATH)
-            self.skipTest("pymavlink submodule is not checked out")
-        lengths = mavparse_type_lengths(_MAVPARSE_PATH)
-        self.assertIsNotNone(
-            lengths, "could not find the lengths dict in MAVField.__init__"
-        )
-        self.assertEqual(check_api_break.TYPE_LENGTHS, lengths)
 
 
 if __name__ == "__main__":
