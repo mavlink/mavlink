@@ -471,6 +471,45 @@ def find_mutations(
     return mutation_descs
 
 
+def find_added_wire_fields(
+    old_names: Dict[NameKey, bool],
+    new_names: Dict[NameKey, bool],
+    new_attrs: Dict[NameKey, Dict[str, Any]],
+) -> List[str]:
+    """Return descriptions for fields added ahead of <extensions/> in an existing message.
+
+    CRC_EXTRA is computed over the non-extension fields' types and names, so a
+    field added before the marker changes it, and every peer built against the
+    old definition then drops the message outright. It also shifts the payload
+    offset of every field the generator sorts after it.
+
+    Appending after <extensions/> is the supported way to grow a released
+    message: extension fields are excluded from CRC_EXTRA and land past the
+    old payload, so an old peer keeps parsing what it already understood.
+    Those additions are not reported.
+
+    Fields of a message that is itself new belong to that new message rather
+    than to a released one, and adding a whole message is already allowed, so
+    they are skipped too.
+    """
+    addition_descs: List[str] = []
+    for key, is_wip in new_names.items():
+        if not isinstance(key, FieldKey):
+            continue
+        if key in old_names or is_wip:
+            continue
+        if key.message not in old_names or old_names.get(key.message):
+            continue
+        # No extension_index means the field sits ahead of the marker. A field
+        # whose type the generator does not know records neither index and is
+        # still ahead of the marker, so absence is the right test rather than
+        # the presence of size_group_index.
+        if "extension_index" in (new_attrs.get(key) or {}):
+            continue
+        addition_descs.append(describe_key(key))
+    return addition_descs
+
+
 # Identifies the bot's own comment across runs so it can be updated in place
 # instead of accumulating a new comment on every push. Must stay in sync with
 # the marker check in post_api_break_comment.yml.
@@ -480,8 +519,9 @@ COMMENT_MARKER = "<!-- mavlink-api-break-check -->"
 def build_removal_comment(
     removed_by_file: Dict[str, List[NameKey]],
     mutations_by_file: Optional[Dict[str, List[str]]] = None,
+    additions_by_file: Optional[Dict[str, List[str]]] = None,
 ) -> str:
-    """Format a PR comment listing removed messages/enums and attribute mutations."""
+    """Format a PR comment listing removed messages/enums, attribute mutations and wire-breaking field additions."""
     lines: List[str] = [COMMENT_MARKER, ""]
 
     if removed_by_file:
@@ -498,6 +538,19 @@ def build_removal_comment(
             lines.append(f"- `{xml}`")
             for desc in mutations_by_file[xml]:
                 lines.append(f"  - Changed {desc}")
+        lines.append("")
+
+    if additions_by_file:
+        lines.extend([
+            "Detected fields added ahead of `<extensions/>` in an existing message. "
+            "This changes the message's CRC_EXTRA, so peers built against the previous "
+            "definition will drop it. Add the field after `<extensions/>` instead:",
+            "",
+        ])
+        for xml in sorted(additions_by_file):
+            lines.append(f"- `{xml}`")
+            for desc in additions_by_file[xml]:
+                lines.append(f"  - Added {desc}")
         lines.append("")
 
     lines.append("If these changes are intentional, please confirm in the PR.")
@@ -522,6 +575,7 @@ def main() -> None:
 
     removals_for_comment: Dict[str, List[NameKey]] = {}
     mutations_for_comment: Dict[str, List[str]] = {}
+    additions_for_comment: Dict[str, List[str]] = {}
     breaking_by_file: Dict[str, List[str]] = {}
 
     for xml in xml_files:
@@ -572,10 +626,18 @@ def main() -> None:
         if mutation_descs:
             mutations_for_comment[xml] = mutation_descs
 
+        # Check for fields added ahead of <extensions/> in an existing message.
+        addition_descs = find_added_wire_fields(old_names, new_names, new_attrs)
+        for desc in addition_descs:
+            breaking_descs.append(f"Added {desc} before <extensions/>")
+
+        if addition_descs:
+            additions_for_comment[xml] = addition_descs
+
         if breaking_descs:
             breaking_by_file[xml] = breaking_descs
 
-    if removals_for_comment or mutations_for_comment:
+    if removals_for_comment or mutations_for_comment or additions_for_comment:
         if removals_for_comment:
             print("Message or enum removals detected.")
             for xml, removals in removals_for_comment.items():
@@ -589,7 +651,18 @@ def main() -> None:
                 for desc in descs:
                     print(f"   - {desc}")
 
-        write_pr_comment_artifact(build_removal_comment(removals_for_comment, mutations_for_comment))
+        if additions_for_comment:
+            print("Fields added ahead of <extensions/> in an existing message detected.")
+            for xml, descs in additions_for_comment.items():
+                print(f" - {xml}:")
+                for desc in descs:
+                    print(f"   - {desc}")
+
+        write_pr_comment_artifact(
+            build_removal_comment(
+                removals_for_comment, mutations_for_comment, additions_for_comment
+            )
+        )
 
     if breaking_by_file:
         for xml, descs in breaking_by_file.items():
