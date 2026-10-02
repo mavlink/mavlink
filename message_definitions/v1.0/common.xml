@@ -7530,6 +7530,10 @@
       <field type="float" name="pitch_max" units="rad">Maximum pitch angle (positive: up, negative: down)</field>
       <field type="float" name="yaw_min" units="rad">Minimum yaw angle (positive: to the right, negative: to the left)</field>
       <field type="float" name="yaw_max" units="rad">Maximum yaw angle (positive: to the right, negative: to the left)</field>
+      <extensions/>
+      <field type="float" name="roll_rate_max" units="rad/s" minValue="0" invalid="0">Maximum hardware roll angular rate magnitude. 0 if unknown.</field>
+      <field type="float" name="pitch_rate_max" units="rad/s" minValue="0" invalid="0">Maximum hardware pitch angular rate magnitude. 0 if unknown.</field>
+      <field type="float" name="yaw_rate_max" units="rad/s" minValue="0" invalid="0">Maximum hardware yaw angular rate magnitude. 0 if unknown.</field>
     </message>
     <message id="281" name="GIMBAL_MANAGER_STATUS">
       <description>Current status about a high level gimbal manager. This message should be broadcast at a low regular rate (e.g. 5Hz).</description>
@@ -7572,6 +7576,9 @@
       <extensions/>
       <field type="uint8_t" name="gimbal_device_id" invalid="0">This field is to be used if the gimbal manager and the gimbal device are the same component and hence have the same component ID. This field is then set to a number between 1-6. If the component ID is separate, this field is not required and must be set to 0.</field>
       <field type="uint32_t" name="cap_flags2" enum="GIMBAL_DEVICE_CAP_FLAGS" invalid="0">Extended bitmap of gimbal capability flags (32 bit). For backwards compatibility, the lower 16 bits should also be set in cap_flags. Ground stations should prefer this field if non-zero.</field>
+      <field type="float" name="roll_rate_max" units="rad/s" minValue="0" invalid="0">Maximum hardware roll angular rate magnitude. 0 if unknown.</field>
+      <field type="float" name="pitch_rate_max" units="rad/s" minValue="0" invalid="0">Maximum hardware pitch angular rate magnitude. 0 if unknown.</field>
+      <field type="float" name="yaw_rate_max" units="rad/s" minValue="0" invalid="0">Maximum hardware yaw angular rate magnitude. 0 if unknown.</field>
     </message>
     <message id="284" name="GIMBAL_DEVICE_SET_ATTITUDE">
       <description>Low level message to control a gimbal device's attitude.
