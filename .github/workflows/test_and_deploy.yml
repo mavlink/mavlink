@@ -131,6 +131,22 @@ jobs:
           cmake -Bbuild -H. -DCMAKE_PREFIX_PATH=$(pwd)/../../install
           cmake --build build
 
+  test-c-parser:
+    name: Test parser C runtime behaviour
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: 'recursive'
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3 python3-pip
+          python3 -m pip install lxml
+      - name: Build and run C parser behaviour tests
+        run: |
+          ./scripts/test_c_parser.sh
+
   node-tests:
     name: Node ${{ matrix.node-version }} test
     runs-on: ubuntu-22.04
