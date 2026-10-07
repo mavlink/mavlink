@@ -2538,6 +2538,7 @@
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
       </entry>
+      <!-- Entries 5110, 5111 reserved for corridor graph commands MAV_CMD_NAV_CORRIDOR_NODE/EDGE in development.xml -->
       <!-- Values in the range [5200, 5210) should be reserved for UAVCAN.  -->
       <!-- BEGIN UAVCAN range -->
       <entry value="5200" name="MAV_CMD_UAVCAN_GET_NODE_INFO" command="true">
@@ -5878,6 +5879,7 @@
       <field type="uint32_t" name="mission_id" invalid="0">Id of current on-vehicle mission plan, or 0 if IDs are not supported or there is no mission loaded. GCS can use this to track changes to the mission plan type. The same value is returned on mission upload (in the MISSION_ACK).</field>
       <field type="uint32_t" name="fence_id" invalid="0">Id of current on-vehicle fence plan, or 0 if IDs are not supported or there is no fence loaded. GCS can use this to track changes to the fence plan type. The same value is returned on fence upload (in the MISSION_ACK).</field>
       <field type="uint32_t" name="rally_points_id" invalid="0">Id of current on-vehicle rally point plan, or 0 if IDs are not supported or there are no rally points loaded. GCS can use this to track changes to the rally point plan type. The same value is returned on rally point upload (in the MISSION_ACK).</field>
+      <field type="uint32_t" name="corridor_id" invalid="0">Id of current on-vehicle corridor graph plan, or 0 if IDs are not supported or there is no corridor graph loaded. GCS can use this to track changes to the corridor graph plan type and dynamically reload/display the graph when it changes. The same value is returned on corridor graph upload (in the MISSION_ACK).</field>
     </message>
     <message id="43" name="MISSION_REQUEST_LIST">
       <description>Request the overall list of mission items from the system/component.</description>
