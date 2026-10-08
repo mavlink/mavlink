@@ -917,7 +917,8 @@ class MAVEnum:
 
 
 class MAVCommandParam:
-    def __init__(self, soup, parent):
+    def __init__(self, soup, parent, index=None):
+        # soup is None for a param that is not declared in the XML (implicitly reserved)
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
 
         self.index = None
@@ -932,7 +933,8 @@ class MAVCommandParam:
         self.default = None
         self.multiplier = None
 
-        for attr, value in soup.attrs.items():
+        attrs = soup.attrs if soup else {"index": str(index), "reserved": "true"}
+        for attr, value in attrs.items():
             # We do it this way to catch all of them. New additions will throw debug
             if attr == "index":
                 self.index = int(value)
@@ -963,10 +965,12 @@ class MAVCommandParam:
                     f"Debug: MAVCommandParam: Unexpected attribute: {attr}, Value: {value}"
                 )
 
-        if soup.text:
+        if soup and soup.text:
             self.description = soup.text
         if self.description:
             self.description = tidyDescription(self.description, "table")
+        elif self.reserved:
+            self.description = reservedParamDescription(self.index, self.default)
         # no deprecated or wip supported
         # self.autovalue = autovalue  # True if value was *not* specified in XML
 
@@ -1045,8 +1049,13 @@ class MAVCommand:
         self.params = []
         params = soup.find_all("param")
         for param in params:
-            # TODO: Decide if we want to add entries for non-existing param values
             self.params.append(MAVCommandParam(param, self))
+        # Params that are not declared in the XML are reserved
+        declared = {param.index for param in self.params}
+        for index in range(1, 8):
+            if index not in declared:
+                self.params.append(MAVCommandParam(None, self, index))
+        self.params.sort(key=lambda param: param.index)
 
     def getUsageBadges(self):
         """Return static-HTML badges (leading space included) for the contexts
@@ -1164,6 +1173,18 @@ class MAVCommand:
         string += "\n\n"
 
         return string
+
+
+def reservedParamDescription(index, default=None):
+    """
+    Description for a reserved MAV_CMD param that has no description in the XML.
+    """
+    if default:
+        return f"Reserved (default:{default})"
+    if index in (5, 6):
+        # param5/param6 are int32 in COMMAND_INT/MISSION_ITEM_INT, which can't carry NaN
+        return "Reserved (default:NaN or INT32_MAX)"
+    return "Reserved (default:NaN)"
 
 
 def tidyDescription(desc_string, type="markdown"):
