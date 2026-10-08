@@ -170,11 +170,18 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
                 field_attrs["extension_index"] = extension_index
                 extension_index += 1
             else:
+                # Without a size the field cannot be placed in a size class,
+                # and a reorder involving it would go unreported, so stop.
                 length = type_length(field_type)
-                if length is not None:
-                    position = size_group_counts.get(length, 0)
-                    field_attrs["size_group_index"] = position
-                    size_group_counts[length] = position + 1
+                if length is None:
+                    raise ValueError(
+                        f"Unknown field type {field_type!r} for field "
+                        f"{message_name}.{field_name}: update TYPE_LENGTHS to "
+                        "match pymavlink/generator/mavparse.py"
+                    )
+                position = size_group_counts.get(length, 0)
+                field_attrs["size_group_index"] = position
+                size_group_counts[length] = position + 1
             if field_attrs:
                 attrs[field_key] = field_attrs
 
