@@ -33,7 +33,7 @@ types = {
 WIP_REQUIRED_DIALECTS = ["development.xml"]
 
 # Same pattern the schema (mavschema.xsd) uses for the since attribute
-WIP_SINCE_PATTERN = re.compile(r"20\d{2}-(0[1-9]|1[012])")
+SINCE_PATTERN = re.compile(r"20\d{2}-(0[1-9]|1[012])")
 
 # Comment that must follow every <wip>, where {} is what is being marked
 # (message, enum, command or entry). It is for people reading the XML.
@@ -206,8 +206,8 @@ def check_cmd_param(file_name, cmd_name, entry, enums, deprecated_enums=frozense
     #        print("%s: Command %s param %s should be marked reserved=\"true\"" % (file_name, cmd_name, index))
 
 
-def latest_wip_month(now=None):
-    """Latest YYYY-MM that a wip since date may have. Uses the furthest-ahead
+def latest_since_month(now=None):
+    """Latest YYYY-MM that a since date may have. Uses the furthest-ahead
     timezone (UTC+14), so a date that is the current month for the author is
     not reported as being in the future by a CI runner on UTC."""
     if now is None:
@@ -229,17 +229,20 @@ def wip_label(element):
     return f"Enum: {name}"
 
 
-def check_wip_dates(file_name, soup, latest_month):
-    """Every <wip> must have a well-formed since date that is not in the future."""
-    for wip in soup.find_all('wip'):
-        label = wip_label(wip.parent)
-        since = wip.get('since')
+def check_since_dates(file_name, soup, latest_month):
+    """The since date of a <wip>, <deprecated> or <superseded> must be well-formed
+    and not in the future. A <wip> must have one: the schema leaves it optional
+    there, but requires it on the other two."""
+    for marker in soup.find_all(['wip', 'deprecated', 'superseded']):
+        label = f"{wip_label(marker.parent)} <{marker.name}>"
+        since = marker.get('since')
         if since is None:
-            warn(f"{file_name}: {label} <wip> has no since date")
-        elif not WIP_SINCE_PATTERN.fullmatch(since):
-            warn(f'{file_name}: {label} <wip> since "{since}" is not a valid YYYY-MM date')
+            if marker.name == 'wip':
+                warn(f"{file_name}: {label} has no since date")
+        elif not SINCE_PATTERN.fullmatch(since):
+            warn(f'{file_name}: {label} since "{since}" is not a valid YYYY-MM date')
         elif since > latest_month:
-            warn(f'{file_name}: {label} <wip> since "{since}" is in the future')
+            warn(f'{file_name}: {label} since "{since}" is in the future')
 
 
 def wip_comment(element):
@@ -311,7 +314,7 @@ XML consistency parser.
 
 Checks XML definition files in ../message_definitions/v1.0/.
 Warns on consistency errors such as flag enums that do not include bitmask attributes, and so on.
-Also checks that every <wip> has a valid since date that is not in the future and is
+Also checks that since dates are valid and not in the future, that every <wip> has one and is
 followed by the standard work-in-progress comment, and that everything in
 development.xml is marked <wip since="YYYY-MM"/>.
 
@@ -477,10 +480,10 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
                     except (TypeError, ValueError):
                         warn(f"{key}: Command {name} param index {idx} is not an integer")
 
-    # Check work in progress markers
-    latest_month = latest_wip_month()
+    # Check lifecycle markers (wip, deprecated, superseded)
+    latest_month = latest_since_month()
     for key in xml:
-        check_wip_dates(key, xml[key], latest_month)
+        check_since_dates(key, xml[key], latest_month)
         check_wip_comments(key, xml[key])
         if key in WIP_REQUIRED_DIALECTS:
             check_wip_required(key, xml[key], included_enum_names(source_dir, key))
