@@ -485,7 +485,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
     for key in xml:
         check_since_dates(key, xml[key], latest_month)
         check_wip_comments(key, xml[key])
-        if key in WIP_REQUIRED_DIALECTS:
+        if os.path.basename(key) in WIP_REQUIRED_DIALECTS:
             check_wip_required(key, xml[key], included_enum_names(source_dir, key))
 
     # Check for unused enums. Defining enums not referenced by any message or

@@ -620,6 +620,15 @@ class MainRunsLifecycleChecksTest(ConsistencyCheckTestCase):
         self.assertEqual([call.args[0] for call in required.call_args_list], ["development.xml"])
         self.assertIn("MAV_CMD", required.call_args.args[2])
 
+    def test_wip_required_for_development_however_it_is_named(self):
+        for name in ("development", "development.xml", "./development.xml"):
+            with self.subTest(name=name):
+                with mock.patch.object(xml_consistency_check, "check_wip_required") as required, \
+                        mock.patch("sys.argv", ["xml_consistency_check.py", "-f", name]), \
+                        contextlib.redirect_stdout(io.StringIO()):
+                    xml_consistency_check.main()
+                self.assertEqual(required.call_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()
