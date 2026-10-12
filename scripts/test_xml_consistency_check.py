@@ -21,10 +21,10 @@ _spec.loader.exec_module(xml_consistency_check)
 check_enum = xml_consistency_check.check_enum
 check_field = xml_consistency_check.check_field
 check_cmd_param = xml_consistency_check.check_cmd_param
-check_wip_dates = xml_consistency_check.check_wip_dates
+check_since_dates = xml_consistency_check.check_since_dates
 check_wip_comments = xml_consistency_check.check_wip_comments
 check_wip_required = xml_consistency_check.check_wip_required
-latest_wip_month = xml_consistency_check.latest_wip_month
+latest_since_month = xml_consistency_check.latest_since_month
 
 
 def parse_enum(xml):
@@ -379,7 +379,7 @@ def parse_dialect(body):
     return bs(f"<mavlink>{body}</mavlink>", 'xml')
 
 
-class CheckWipDatesTest(ConsistencyCheckTestCase):
+class CheckSinceDatesTest(ConsistencyCheckTestCase):
     """A <wip> in any dialect needs a valid since date that is not in the future."""
 
     LATEST = "2026-10"
@@ -392,20 +392,20 @@ class CheckWipDatesTest(ConsistencyCheckTestCase):
 
     def test_dated_wip_no_warning(self):
         soup = self.message('<wip since="2026-03"/>')
-        self.assertEqual(self.warnings(check_wip_dates, "common.xml", soup, self.LATEST), [])
+        self.assertEqual(self.warnings(check_since_dates, "common.xml", soup, self.LATEST), [])
 
     def test_no_wip_no_warning(self):
         soup = self.message('')
-        self.assertEqual(self.warnings(check_wip_dates, "common.xml", soup, self.LATEST), [])
+        self.assertEqual(self.warnings(check_since_dates, "common.xml", soup, self.LATEST), [])
 
     def test_current_month_no_warning(self):
         soup = self.message('<wip since="2026-10"/>')
-        self.assertEqual(self.warnings(check_wip_dates, "common.xml", soup, self.LATEST), [])
+        self.assertEqual(self.warnings(check_since_dates, "common.xml", soup, self.LATEST), [])
 
     def test_bare_wip_warns(self):
         soup = self.message('<wip/>')
         self.assertEqual(
-            self.warnings(check_wip_dates, "common.xml", soup, self.LATEST),
+            self.warnings(check_since_dates, "common.xml", soup, self.LATEST),
             ["common.xml: Message MY_MSG <wip> has no since date"],
         )
 
@@ -414,7 +414,7 @@ class CheckWipDatesTest(ConsistencyCheckTestCase):
             with self.subTest(since=since):
                 soup = self.message(f'<wip since="{since}"/>')
                 self.assertEqual(
-                    self.warnings(check_wip_dates, "common.xml", soup, self.LATEST),
+                    self.warnings(check_since_dates, "common.xml", soup, self.LATEST),
                     [f'common.xml: Message MY_MSG <wip> since "{since}" is not a valid YYYY-MM date'],
                 )
 
@@ -423,9 +423,27 @@ class CheckWipDatesTest(ConsistencyCheckTestCase):
             with self.subTest(since=since):
                 soup = self.message(f'<wip since="{since}"/>')
                 self.assertEqual(
-                    self.warnings(check_wip_dates, "common.xml", soup, self.LATEST),
+                    self.warnings(check_since_dates, "common.xml", soup, self.LATEST),
                     [f'common.xml: Message MY_MSG <wip> since "{since}" is in the future'],
                 )
+
+    def test_deprecated_and_superseded_dates_are_checked(self):
+        for tag in ("deprecated", "superseded"):
+            for since, problem in (("2026-13", "is not a valid YYYY-MM date"), ("2027-01", "is in the future")):
+                with self.subTest(tag=tag, since=since):
+                    soup = self.message(f'<{tag} since="{since}" replaced_by="X"/>')
+                    self.assertEqual(
+                        self.warnings(check_since_dates, "common.xml", soup, self.LATEST),
+                        [f'common.xml: Message MY_MSG <{tag}> since "{since}" {problem}'],
+                    )
+
+    def test_deprecated_and_superseded_valid_or_missing_date_no_warning(self):
+        # A missing since on these two is left to the schema, which requires it.
+        for marker in ('<deprecated since="2026-03" replaced_by="X"/>', '<superseded since="2026-10" replaced_by="X"/>',
+                       '<deprecated replaced_by="X"/>'):
+            with self.subTest(marker=marker):
+                soup = self.message(marker)
+                self.assertEqual(self.warnings(check_since_dates, "common.xml", soup, self.LATEST), [])
 
     def test_enum_entry_and_command_labels(self):
         soup = parse_dialect(
@@ -433,7 +451,7 @@ class CheckWipDatesTest(ConsistencyCheckTestCase):
             '<enum name="MAV_CMD"><entry value="2" name="MAV_CMD_MY"><wip/></entry></enum></enums>'
         )
         self.assertEqual(
-            self.warnings(check_wip_dates, "standard.xml", soup, self.LATEST),
+            self.warnings(check_since_dates, "standard.xml", soup, self.LATEST),
             [
                 "standard.xml: Enum: MY_ENUM <wip> has no since date",
                 "standard.xml: Enum: MY_ENUM entry MY_ENUM_A <wip> has no since date",
@@ -444,10 +462,10 @@ class CheckWipDatesTest(ConsistencyCheckTestCase):
     def test_latest_month_uses_furthest_ahead_timezone(self):
         utc = datetime.timezone.utc
         # 09:59 UTC on the last day of the month is still that month everywhere
-        self.assertEqual(latest_wip_month(datetime.datetime(2026, 10, 31, 9, 59, tzinfo=utc)), "2026-10")
+        self.assertEqual(latest_since_month(datetime.datetime(2026, 10, 31, 9, 59, tzinfo=utc)), "2026-10")
         # 10:00 UTC is already the 1st of next month at UTC+14
-        self.assertEqual(latest_wip_month(datetime.datetime(2026, 10, 31, 10, 0, tzinfo=utc)), "2026-11")
-        self.assertEqual(latest_wip_month(datetime.datetime(2026, 12, 31, 12, 0, tzinfo=utc)), "2027-01")
+        self.assertEqual(latest_since_month(datetime.datetime(2026, 10, 31, 10, 0, tzinfo=utc)), "2026-11")
+        self.assertEqual(latest_since_month(datetime.datetime(2026, 12, 31, 12, 0, tzinfo=utc)), "2027-01")
 
 
 class CheckWipCommentsTest(ConsistencyCheckTestCase):
@@ -528,7 +546,7 @@ class CheckWipRequiredTest(ConsistencyCheckTestCase):
         )
 
     def test_marked_message_no_warning(self):
-        # The date itself is the job of check_wip_dates, so a bare <wip/> is not reported twice.
+        # The date itself is the job of check_since_dates, so a bare <wip/> is not reported twice.
         for wip in ('<wip since="2026-03"/>', '<wip/>'):
             with self.subTest(wip=wip):
                 soup = parse_dialect(f'<messages><message id="1" name="MY_MSG">{wip}</message></messages>')
