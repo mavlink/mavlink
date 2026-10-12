@@ -1,12 +1,15 @@
 #! /usr/bin/python
 """
 Script to parse all XML definition files in ../message_definitions/v1.0/ for consistency errors.
-These might include flag enums that do not include bitmask attributes, and so on.
+These might include flag enums that do not include bitmask attributes, work in
+progress markers that are missing or have a bad date, and so on.
 """
 
 from bs4 import BeautifulSoup as bs
 import os
+import re
 import itertools
+from datetime import datetime, timedelta, timezone
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
@@ -23,6 +26,13 @@ types = {
     "int64_t": [-9223372036854775808, 9223372036854775807],
     "uint64_t": [0, 18446744073709551615],
 }
+
+# Dialects in which every definition is work in progress, and so must be marked
+# with <wip since="YYYY-MM"/>. Elsewhere <wip> is optional, but must still be dated.
+WIP_REQUIRED_DIALECTS = ["development.xml"]
+
+# Same pattern the schema (mavschema.xsd) uses for the since attribute
+WIP_SINCE_PATTERN = re.compile(r"20\d{2}-(0[1-9]|1[012])")
 
 warning_count = 0
 allowed_count = 0
@@ -190,12 +200,94 @@ def check_cmd_param(file_name, cmd_name, entry, enums, deprecated_enums=frozense
     #        print("%s: Command %s param %s should be marked reserved=\"true\"" % (file_name, cmd_name, index))
 
 
+def latest_wip_month(now=None):
+    """Latest YYYY-MM that a wip since date may have. Uses the furthest-ahead
+    timezone (UTC+14), so a date that is the current month for the author is
+    not reported as being in the future by a CI runner on UTC."""
+    if now is None:
+        now = datetime.now(timezone.utc)
+    return (now + timedelta(hours=14)).strftime("%Y-%m")
+
+
+def wip_label(element):
+    """Describe a message, enum or enum entry in the way the other warnings do."""
+    name = element.get('name')
+    if element.name == 'message':
+        return f"Message {name}"
+    if element.name == 'entry':
+        enum = element.find_parent('enum')
+        enum_name = enum.get('name') if enum is not None else None
+        if enum_name == 'MAV_CMD':
+            return f"Command {name}"
+        return f"Enum: {enum_name} entry {name}"
+    return f"Enum: {name}"
+
+
+def check_wip_dates(file_name, soup, latest_month):
+    """Every <wip> must have a well-formed since date that is not in the future."""
+    for wip in soup.find_all('wip'):
+        label = wip_label(wip.parent)
+        since = wip.get('since')
+        if since is None:
+            warn(f"{file_name}: {label} <wip> has no since date")
+        elif not WIP_SINCE_PATTERN.fullmatch(since):
+            warn(f'{file_name}: {label} <wip> since "{since}" is not a valid YYYY-MM date')
+        elif since > latest_month:
+            warn(f'{file_name}: {label} <wip> since "{since}" is in the future')
+
+
+def check_wip_required(file_name, soup, inherited_enums):
+    """Every definition in a work in progress dialect must be marked <wip>.
+
+    An enum that is also defined in an included dialect (such as MAV_CMD) is
+    being extended rather than defined, so it is the new entries that must be
+    marked. Entries of an enum defined here are covered by the enum's own <wip>.
+    The schema allows only one of wip/deprecated/superseded, so a definition
+    that is already deprecated or superseded is not expected to have a <wip>."""
+    def needs_wip(element):
+        return all(element.find(tag, recursive=False) is None
+                   for tag in ('wip', 'deprecated', 'superseded'))
+
+    elements = soup.find_all('message')
+    for enum in soup.find_all('enum'):
+        if enum.get('name') in inherited_enums:
+            elements += enum.find_all('entry', recursive=False)
+        else:
+            elements.append(enum)
+
+    for element in elements:
+        if needs_wip(element):
+            warn(f'{file_name}: {wip_label(element)} is missing <wip since="YYYY-MM"/>')
+
+
+def included_enum_names(source_dir, file_name, seen=None):
+    """Names of the enums defined in the dialects that file_name includes,
+    directly or indirectly. Read from disk, so the result does not depend on
+    which files were asked for with --file."""
+    if seen is None:
+        seen = set()
+    names = set()
+    with open(os.path.join(source_dir, file_name), 'r') as f:
+        soup = bs(f.read(), 'xml')
+    for include in soup.find_all('include'):
+        included = include.text.strip()
+        if included in seen:
+            continue
+        seen.add(included)
+        with open(os.path.join(source_dir, included), 'r') as f:
+            names.update(enum.get('name') for enum in bs(f.read(), 'xml').find_all('enum'))
+        names |= included_enum_names(source_dir, included, seen)
+    return names
+
+
 def main():
     description = """
 XML consistency parser.
 
 Checks XML definition files in ../message_definitions/v1.0/.
 Warns on consistency errors such as flag enums that do not include bitmask attributes, and so on.
+Also checks that every <wip> has a valid since date that is not in the future, and
+that everything in development.xml is marked <wip since="YYYY-MM"/>.
 
 Known, pre-existing warnings can be listed in an allowlist file (see --allowlist)
 so that CI can gate on new warnings while tolerating ones we can't fix yet.
@@ -358,6 +450,13 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
                             warn(f"{key}: Command {name} param index {idx} is out of range")
                     except (TypeError, ValueError):
                         warn(f"{key}: Command {name} param index {idx} is not an integer")
+
+    # Check work in progress markers
+    latest_month = latest_wip_month()
+    for key in xml:
+        check_wip_dates(key, xml[key], latest_month)
+        if key in WIP_REQUIRED_DIALECTS:
+            check_wip_required(key, xml[key], included_enum_names(source_dir, key))
 
     # Check for unused enums. Defining enums not referenced by any message or
     # command is a legitimate use of this library, so intended orphans should be

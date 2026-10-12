@@ -6,6 +6,7 @@ Exercises check_enum/check_field/check_cmd_param against small in-memory XML
 fixtures, so regressions in the consistency checks are caught in CI instead
 of relying on manual testing against real message definitions.
 """
+import datetime
 import importlib.util
 import os
 import unittest
@@ -20,6 +21,9 @@ _spec.loader.exec_module(xml_consistency_check)
 check_enum = xml_consistency_check.check_enum
 check_field = xml_consistency_check.check_field
 check_cmd_param = xml_consistency_check.check_cmd_param
+check_wip_dates = xml_consistency_check.check_wip_dates
+check_wip_required = xml_consistency_check.check_wip_required
+latest_wip_month = xml_consistency_check.latest_wip_month
 
 
 def parse_enum(xml):
@@ -368,6 +372,144 @@ class EnumFitsTypeTests(ConsistencyCheckTestCase):
             messages,
             ["test.xml: Message MY_MSG field mode enum MY_ENUM unexpected type: custom_t"],
         )
+
+
+def parse_dialect(body):
+    return bs(f"<mavlink>{body}</mavlink>", 'xml')
+
+
+class CheckWipDatesTest(ConsistencyCheckTestCase):
+    """A <wip> in any dialect needs a valid since date that is not in the future."""
+
+    LATEST = "2026-10"
+
+    def message(self, wip):
+        return parse_dialect(
+            f'<messages><message id="1" name="MY_MSG">{wip}<description>d</description>'
+            '<field type="uint8_t" name="a">a</field></message></messages>'
+        )
+
+    def test_dated_wip_no_warning(self):
+        soup = self.message('<wip since="2026-03"/>')
+        self.assertEqual(self.warnings(check_wip_dates, "common.xml", soup, self.LATEST), [])
+
+    def test_no_wip_no_warning(self):
+        soup = self.message('')
+        self.assertEqual(self.warnings(check_wip_dates, "common.xml", soup, self.LATEST), [])
+
+    def test_current_month_no_warning(self):
+        soup = self.message('<wip since="2026-10"/>')
+        self.assertEqual(self.warnings(check_wip_dates, "common.xml", soup, self.LATEST), [])
+
+    def test_bare_wip_warns(self):
+        soup = self.message('<wip/>')
+        self.assertEqual(
+            self.warnings(check_wip_dates, "common.xml", soup, self.LATEST),
+            ["common.xml: Message MY_MSG <wip> has no since date"],
+        )
+
+    def test_malformed_dates_warn(self):
+        for since in ("2026-13", "2026-00", "26-03", "2026-3", "2026-03-01", "2026/03", "1999-03", ""):
+            with self.subTest(since=since):
+                soup = self.message(f'<wip since="{since}"/>')
+                self.assertEqual(
+                    self.warnings(check_wip_dates, "common.xml", soup, self.LATEST),
+                    [f'common.xml: Message MY_MSG <wip> since "{since}" is not a valid YYYY-MM date'],
+                )
+
+    def test_future_dates_warn(self):
+        for since in ("2026-11", "2027-01"):
+            with self.subTest(since=since):
+                soup = self.message(f'<wip since="{since}"/>')
+                self.assertEqual(
+                    self.warnings(check_wip_dates, "common.xml", soup, self.LATEST),
+                    [f'common.xml: Message MY_MSG <wip> since "{since}" is in the future'],
+                )
+
+    def test_enum_entry_and_command_labels(self):
+        soup = parse_dialect(
+            '<enums><enum name="MY_ENUM"><wip/><entry value="1" name="MY_ENUM_A"><wip/></entry></enum>'
+            '<enum name="MAV_CMD"><entry value="2" name="MAV_CMD_MY"><wip/></entry></enum></enums>'
+        )
+        self.assertEqual(
+            self.warnings(check_wip_dates, "standard.xml", soup, self.LATEST),
+            [
+                "standard.xml: Enum: MY_ENUM <wip> has no since date",
+                "standard.xml: Enum: MY_ENUM entry MY_ENUM_A <wip> has no since date",
+                "standard.xml: Command MAV_CMD_MY <wip> has no since date",
+            ],
+        )
+
+    def test_latest_month_uses_furthest_ahead_timezone(self):
+        utc = datetime.timezone.utc
+        # 09:59 UTC on the last day of the month is still that month everywhere
+        self.assertEqual(latest_wip_month(datetime.datetime(2026, 10, 31, 9, 59, tzinfo=utc)), "2026-10")
+        # 10:00 UTC is already the 1st of next month at UTC+14
+        self.assertEqual(latest_wip_month(datetime.datetime(2026, 10, 31, 10, 0, tzinfo=utc)), "2026-11")
+        self.assertEqual(latest_wip_month(datetime.datetime(2026, 12, 31, 12, 0, tzinfo=utc)), "2027-01")
+
+
+class CheckWipRequiredTest(ConsistencyCheckTestCase):
+    """Everything in a work in progress dialect must be marked <wip>."""
+
+    def test_unmarked_message_warns(self):
+        soup = parse_dialect('<messages><message id="1" name="MY_MSG"><description>d</description></message></messages>')
+        self.assertEqual(
+            self.warnings(check_wip_required, "development.xml", soup, set()),
+            ['development.xml: Message MY_MSG is missing <wip since="YYYY-MM"/>'],
+        )
+
+    def test_marked_message_no_warning(self):
+        # The date itself is the job of check_wip_dates, so a bare <wip/> is not reported twice.
+        for wip in ('<wip since="2026-03"/>', '<wip/>'):
+            with self.subTest(wip=wip):
+                soup = parse_dialect(f'<messages><message id="1" name="MY_MSG">{wip}</message></messages>')
+                self.assertEqual(self.warnings(check_wip_required, "development.xml", soup, set()), [])
+
+    def test_deprecated_or_superseded_no_warning(self):
+        for tag in ("deprecated", "superseded"):
+            with self.subTest(tag=tag):
+                soup = parse_dialect(
+                    f'<messages><message id="1" name="MY_MSG"><{tag} since="2026-03" replaced_by="X"/></message></messages>'
+                )
+                self.assertEqual(self.warnings(check_wip_required, "development.xml", soup, set()), [])
+
+    def test_new_enum_needs_wip_but_its_entries_do_not(self):
+        soup = parse_dialect(
+            '<enums><enum name="MARKED"><wip since="2026-03"/><entry value="1" name="MARKED_A"/></enum>'
+            '<enum name="UNMARKED"><entry value="1" name="UNMARKED_A"/></enum></enums>'
+        )
+        self.assertEqual(
+            self.warnings(check_wip_required, "development.xml", soup, set()),
+            ['development.xml: Enum: UNMARKED is missing <wip since="YYYY-MM"/>'],
+        )
+
+    def test_extended_enum_entries_need_wip_but_the_enum_does_not(self):
+        soup = parse_dialect(
+            '<enums><enum name="MAV_CMD"><entry value="1" name="MAV_CMD_MARKED"><wip since="2026-03"/></entry>'
+            '<entry value="2" name="MAV_CMD_UNMARKED"/></enum>'
+            '<enum name="MAV_RESULT"><entry value="9" name="MAV_RESULT_UNMARKED"/></enum></enums>'
+        )
+        self.assertEqual(
+            self.warnings(check_wip_required, "development.xml", soup, {"MAV_CMD", "MAV_RESULT"}),
+            [
+                'development.xml: Command MAV_CMD_UNMARKED is missing <wip since="YYYY-MM"/>',
+                'development.xml: Enum: MAV_RESULT entry MAV_RESULT_UNMARKED is missing <wip since="YYYY-MM"/>',
+            ],
+        )
+
+
+class WipDialectsTest(ConsistencyCheckTestCase):
+    def test_only_development_requires_wip(self):
+        self.assertEqual(xml_consistency_check.WIP_REQUIRED_DIALECTS, ["development.xml"])
+
+    def test_included_enum_names_follows_include_chain(self):
+        source_dir = os.path.join(os.path.dirname(__file__), "../message_definitions/v1.0/")
+        names = xml_consistency_check.included_enum_names(source_dir, "development.xml")
+        self.assertIn("MAV_CMD", names)  # common.xml
+        self.assertIn("MAV_PROTOCOL_CAPABILITY", names)  # standard.xml, via common.xml
+        self.assertIn("MAV_TYPE", names)  # minimal.xml, via standard.xml
+        self.assertEqual(xml_consistency_check.included_enum_names(source_dir, "minimal.xml"), set())
 
 
 if __name__ == "__main__":

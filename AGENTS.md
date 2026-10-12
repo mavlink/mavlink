@@ -29,6 +29,6 @@ This repo only defines the schema — actual usage lives in the consuming projec
 These are the major flight-stack and ground-control consumers of MAVLink; a definition can be relied upon by any of them even if it looks unused within this repo.
 
 ## Conventions
-- All entries in development.xml should have a `<wip/>` where allowed and include the date attribute
+- All entries in development.xml must have `<wip since="YYYY-MM"/>` where allowed (messages, new enums, and entries added to an enum from another dialect, such as `MAV_CMD`). A `<wip>` in any other managed dialect must also have a `since` date. Dates must not be in the future. `xml_consistency_check.py` enforces this.
 - New message/command ID ranges are reserved per-dialect (see comments in `all.xml`); don't invent IDs outside an owned range without checking for clashes.
 - This repo's own contribution conventions are thin (`CONTRIBUTING.md` just points to the external MAVLink Developer Guide, sourced from https://github.com/mavlink/mavlink-devguide and published at mavlink.io); when in doubt about process, defer to that guide rather than assuming.
