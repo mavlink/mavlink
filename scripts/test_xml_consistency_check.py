@@ -6,10 +6,13 @@ Exercises check_enum/check_field/check_cmd_param against small in-memory XML
 fixtures, so regressions in the consistency checks are caught in CI instead
 of relying on manual testing against real message definitions.
 """
+import contextlib
 import datetime
 import importlib.util
+import io
 import os
 import unittest
+from unittest import mock
 
 from bs4 import BeautifulSoup as bs
 
@@ -596,6 +599,26 @@ class WipDialectsTest(ConsistencyCheckTestCase):
         self.assertIn("MAV_PROTOCOL_CAPABILITY", names)  # standard.xml, via common.xml
         self.assertIn("MAV_TYPE", names)  # minimal.xml, via standard.xml
         self.assertEqual(xml_consistency_check.included_enum_names(source_dir, "minimal.xml"), set())
+
+
+class MainRunsLifecycleChecksTest(ConsistencyCheckTestCase):
+    """The checks above are only useful if main() calls them. The managed
+    dialects are clean, so a check that stopped running would not be noticed."""
+
+    def test_main_runs_lifecycle_checks(self):
+        with mock.patch.object(xml_consistency_check, "check_since_dates") as dates, \
+                mock.patch.object(xml_consistency_check, "check_wip_comments") as comments, \
+                mock.patch.object(xml_consistency_check, "check_wip_required") as required, \
+                mock.patch("sys.argv", ["xml_consistency_check.py"]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            xml_consistency_check.main()
+
+        managed = ["common.xml", "development.xml", "minimal.xml", "standard.xml"]
+        self.assertEqual(sorted(call.args[0] for call in dates.call_args_list), managed)
+        self.assertEqual(sorted(call.args[0] for call in comments.call_args_list), managed)
+        # Only development.xml requires everything to be marked wip
+        self.assertEqual([call.args[0] for call in required.call_args_list], ["development.xml"])
+        self.assertIn("MAV_CMD", required.call_args.args[2])
 
 
 if __name__ == "__main__":
