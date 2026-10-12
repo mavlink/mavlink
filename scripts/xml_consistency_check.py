@@ -229,15 +229,16 @@ def wip_label(element):
     return f"Enum: {name}"
 
 
-def check_since_dates(file_name, soup, latest_month):
+def check_since_dates(file_name, soup, latest_month, wip_since_required=True):
     """The since date of a <wip>, <deprecated> or <superseded> must be well-formed
-    and not in the future. A <wip> must have one: the schema leaves it optional
-    there, but requires it on the other two."""
+    and not in the future. The schema requires the date on the last two but
+    leaves it optional on <wip>, so a <wip> without one is only reported if
+    wip_since_required is set."""
     for marker in soup.find_all(['wip', 'deprecated', 'superseded']):
         label = f"{wip_label(marker.parent)} <{marker.name}>"
         since = marker.get('since')
         if since is None:
-            if marker.name == 'wip':
+            if marker.name == 'wip' and wip_since_required:
                 warn(f"{file_name}: {label} has no since date")
         elif not SINCE_PATTERN.fullmatch(since):
             warn(f'{file_name}: {label} since "{since}" is not a valid YYYY-MM date')
@@ -314,9 +315,10 @@ XML consistency parser.
 
 Checks XML definition files in ../message_definitions/v1.0/.
 Warns on consistency errors such as flag enums that do not include bitmask attributes, and so on.
-Also checks that since dates are valid and not in the future, that every <wip> has one and is
-followed by the standard work-in-progress comment, and that everything in
-development.xml is marked <wip since="YYYY-MM"/>.
+Also checks that since dates are valid and not in the future. In the managed dialects
+(common, minimal, standard, development) every <wip> must have a since date and be
+followed by the standard work-in-progress comment, and everything in development.xml
+must be marked <wip since="YYYY-MM"/>.
 
 Known, pre-existing warnings can be listed in an allowlist file (see --allowlist)
 so that CI can gate on new warnings while tolerating ones we can't fix yet.
@@ -480,11 +482,16 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
                     except (TypeError, ValueError):
                         warn(f"{key}: Command {name} param index {idx} is not an integer")
 
-    # Check lifecycle markers (wip, deprecated, superseded)
+    # Check lifecycle markers (wip, deprecated, superseded). A since date must
+    # be valid in any dialect. Requiring a <wip> to have a date and the standard
+    # comment is a rule for the dialects this repository manages: the schema
+    # allows a bare <wip/>, so other dialects are free to use one.
     latest_month = latest_since_month()
     for key in xml:
-        check_since_dates(key, xml[key], latest_month)
-        check_wip_comments(key, xml[key])
+        managed = os.path.basename(key) in managed_dialects
+        check_since_dates(key, xml[key], latest_month, wip_since_required=managed)
+        if managed:
+            check_wip_comments(key, xml[key])
         if os.path.basename(key) in WIP_REQUIRED_DIALECTS:
             check_wip_required(key, xml[key], included_enum_names(source_dir, key))
 

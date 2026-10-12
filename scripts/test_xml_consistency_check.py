@@ -412,6 +412,19 @@ class CheckSinceDatesTest(ConsistencyCheckTestCase):
             ["common.xml: Message MY_MSG <wip> has no since date"],
         )
 
+    def test_bare_wip_allowed_when_date_not_required(self):
+        soup = self.message('<wip/>')
+        self.assertEqual(
+            self.warnings(check_since_dates, "storm32.xml", soup, self.LATEST, False), []
+        )
+
+    def test_bad_date_warns_even_when_date_not_required(self):
+        soup = self.message('<wip since="2027-01"/>')
+        self.assertEqual(
+            self.warnings(check_since_dates, "storm32.xml", soup, self.LATEST, False),
+            ['storm32.xml: Message MY_MSG <wip> since "2027-01" is in the future'],
+        )
+
     def test_malformed_dates_warn(self):
         for since in ("2026-13", "2026-00", "26-03", "2026-3", "2026-03-01", "2026/03", "1999-03", ""):
             with self.subTest(since=since):
@@ -609,16 +622,35 @@ class MainRunsLifecycleChecksTest(ConsistencyCheckTestCase):
         with mock.patch.object(xml_consistency_check, "check_since_dates") as dates, \
                 mock.patch.object(xml_consistency_check, "check_wip_comments") as comments, \
                 mock.patch.object(xml_consistency_check, "check_wip_required") as required, \
+                mock.patch.object(xml_consistency_check, "latest_since_month", return_value="2026-10"), \
                 mock.patch("sys.argv", ["xml_consistency_check.py"]), \
                 contextlib.redirect_stdout(io.StringIO()):
             xml_consistency_check.main()
 
         managed = ["common.xml", "development.xml", "minimal.xml", "standard.xml"]
         self.assertEqual(sorted(call.args[0] for call in dates.call_args_list), managed)
+        # The month dates are compared with must be the one main() worked out
+        self.assertEqual({call.args[2] for call in dates.call_args_list}, {"2026-10"})
+        self.assertEqual({call.kwargs["wip_since_required"] for call in dates.call_args_list}, {True})
         self.assertEqual(sorted(call.args[0] for call in comments.call_args_list), managed)
         # Only development.xml requires everything to be marked wip
         self.assertEqual([call.args[0] for call in required.call_args_list], ["development.xml"])
         self.assertIn("MAV_CMD", required.call_args.args[2])
+
+    def test_other_dialects_only_get_date_validity(self):
+        # The schema allows a bare <wip/>, so a dialect this repository does not
+        # manage is not required to date its <wip> or add the comment.
+        with mock.patch.object(xml_consistency_check, "check_since_dates") as dates, \
+                mock.patch.object(xml_consistency_check, "check_wip_comments") as comments, \
+                mock.patch.object(xml_consistency_check, "check_wip_required") as required, \
+                mock.patch("sys.argv", ["xml_consistency_check.py", "-f", "storm32.xml"]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            xml_consistency_check.main()
+
+        self.assertEqual([call.args[0] for call in dates.call_args_list], ["storm32.xml"])
+        self.assertIs(dates.call_args.kwargs["wip_since_required"], False)
+        comments.assert_not_called()
+        required.assert_not_called()
 
     def test_wip_required_for_development_however_it_is_named(self):
         for name in ("development", "development.xml", "./development.xml"):
