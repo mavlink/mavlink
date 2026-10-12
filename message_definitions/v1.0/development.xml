@@ -6,6 +6,8 @@
   <dialect>0</dialect>
   <enums>
     <enum name="MAV_BATTERY_STATUS_FLAGS" bitmask="true">
+      <wip since="2022-10"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Battery status flags for fault, health and state indication.</description>
       <entry value="1" name="MAV_BATTERY_STATUS_FLAGS_NOT_READY_TO_USE">
         <description>
@@ -118,6 +120,8 @@
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
       <entry value="309" name="MAV_CMD_ACTUATOR_GROUP_TEST" hasLocation="false" isDestination="false" command="true">
+        <wip since="2025-07"/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Command to test groups of related actuators together.
           This might include groups such as the actuators that contribute to roll, pitch, or yaw torque, actuators that contribute to thrust in x, y, z axis, tilt mechanisms, flaps and spoilers, and so on.
           This is similar to MAV_CMD_ACTUATOR_TEST, except that multiple actuators may be affected.
@@ -127,6 +131,8 @@
         <param index="2" label="Value" minValue="-1" maxValue="1">Value to set. This is a normalized value across the full range of the tested group [-1,1].</param>
       </entry>
       <entry value="610" name="MAV_CMD_DO_SET_SYS_CMP_ID" hasLocation="false" isDestination="false" command="true">
+        <wip since="2024-03"/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>
           Set system and component id.
           This allows moving of a system and all its components to a new system id, or moving a particular component to a new system/component id.
@@ -137,26 +143,28 @@
         <param index="3" label="Reboot">Reboot components after ID change. Any non-zero value triggers the reboot.</param>
       </entry>
       <entry value="2020" name="MAV_CMD_CAMERA_START_MTI" hasLocation="false" isDestination="false" command="true">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <wip since="2025-08"/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Enable Moving Target Indicators (MTI) on streamed video.
           Support for feature can be checked with CAMERA_CAP_FLAGS_HAS_MTI, and disabled with MAV_CMD_CAMERA_STOP_MTI.</description>
         <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="2021" name="MAV_CMD_CAMERA_STOP_MTI" hasLocation="false" isDestination="false" command="true">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <wip since="2025-08"/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Disable Moving Target Indicators (MTI) on streamed video.</description>
         <param index="1" label="Target Camera ID" minValue="0" maxValue="255" increment="1">Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission.</param>
       </entry>
       <entry value="5005" name="MAV_CMD_NAV_FENCE_HOME_CIRCLE_INCLUSION" hasLocation="false" isDestination="false" fence="true">
-        <wip/>
-        <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <wip since="2025-10"/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Circular fence area centered on home. The vehicle must stay inside this area. If home is moved, the fence moves.</description>
         <param index="1" label="Radius" units="m">Radius.</param>
         <param index="2" label="Inclusion Group" minValue="0" increment="1">Vehicle must be inside ALL inclusion zones in a single group, vehicle must be inside at least one group. Ignored when sent as a command.</param>
       </entry>
       <entry value="12900" name="MAV_CMD_ODID_SET_EMERGENCY" hasLocation="false" isDestination="false" command="true">
+        <wip since="2024-02"/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Used to manually set/unset emergency status for remote id.
           This is for compliance with MOC ASTM docs, specifically F358 section 7.7: "Emergency Status Indicator".
           The requirement can also be satisfied by automatic setting of the emergency status by flight stack, and that approach is preferred.
@@ -165,6 +173,8 @@
         <param index="1" label="Number" minValue="0" increment="1">Set/unset emergency 0: unset, 1: set</param>
       </entry>
       <entry value="43006" name="MAV_CMD_ESTIMATOR_SENSOR_ENABLE" hasLocation="false" isDestination="false" command="true">
+        <wip since="2026-03"/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Enable or disable a specific estimator sensor fusion source at runtime.
           This allows a GCS or companion computer to dynamically control which sensors the estimator fuses without changing parameters.
         </description>
@@ -174,6 +184,8 @@
         <param index="4" label="Estimator Instance" default="NaN" minValue="0" increment="1">Estimator instance (0-based, for systems with multiple estimators).</param>
       </entry>
       <entry value="620" name="MAV_CMD_EXTERNAL_ATTITUDE_ESTIMATE" hasLocation="false" isDestination="false" command="true">
+        <wip since="2025-08"/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Set an external estimate of vehicle attitude.
           This might be used to provide an initial attitude (especially heading) estimate to the estimator (EKF). Angles are defined in a 3-2-1 (yaw-pitch-roll) intrinsic Tait-Bryan sequence.
         </description>
@@ -184,6 +196,8 @@
         <param index="7" label="Yaw accuracy" units="deg">Estimated 1 sigma accuracy of yaw angle. Set to NaN if unknown.</param>
       </entry>
       <entry value="32100" name="MAV_CMD_REQUEST_OPERATOR_CONTROL" hasLocation="false" isDestination="false" command="true">
+        <wip since="2024-11"/>
+        <!-- This command is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Request exclusive control of a system or special system feature by a GCS.
 
           The operator control protocol supports two modes:
@@ -231,6 +245,8 @@
       </entry>
     </enum>
     <enum name="GCS_CONTROL_STATUS_FLAGS" bitmask="true">
+      <wip since="2024-11"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>CONTROL_STATUS flags.</description>
       <entry value="1" name="GCS_CONTROL_STATUS_FLAGS_SYSTEM_MANAGER">
         <description>If set, this CONTROL_STATUS publishes the controlling GCS(s) of the whole system.
@@ -243,6 +259,8 @@
       </entry>
     </enum>
     <enum name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" bitmask="true">
+      <wip since="2023-03"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>These flags indicate the sensor reporting capabilities for TARGET_ABSOLUTE.</description>
       <entry value="1" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_POSITION"/>
       <entry value="2" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_VELOCITY"/>
@@ -251,6 +269,8 @@
       <entry value="16" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_RATES"/>
     </enum>
     <enum name="TARGET_OBS_FRAME">
+      <wip since="2023-03"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>The frame of a target observation from an onboard sensor.</description>
       <entry value="0" name="TARGET_OBS_FRAME_LOCAL_NED">
         <description>NED local tangent frame (x: North, y: East, z: Down) with origin fixed relative to earth.</description>
@@ -266,6 +286,8 @@
       </entry>
     </enum>
     <enum name="GPS_SYSTEM_ERROR_FLAGS" bitmask="true">
+      <wip since="2024-06"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Flags indicating errors in a GPS receiver.</description>
       <entry value="1" name="GPS_SYSTEM_ERROR_INCOMING_CORRECTIONS">
         <description>There are problems with incoming correction streams.</description>
@@ -290,6 +312,8 @@
       </entry>
     </enum>
     <enum name="GPS_AUTHENTICATION_STATE">
+      <wip since="2024-06"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Signal authentication state in a GPS receiver.</description>
       <entry value="0" name="GPS_AUTHENTICATION_STATE_UNKNOWN">
         <description>The GPS receiver does not provide GPS signal authentication info.</description>
@@ -308,6 +332,8 @@
       </entry>
     </enum>
     <enum name="GPS_JAMMING_STATE">
+      <wip since="2024-06"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Signal jamming state in a GPS receiver.</description>
       <entry value="0" name="GPS_JAMMING_STATE_UNKNOWN">
         <description>The GPS receiver does not provide GPS signal jamming info.</description>
@@ -323,6 +349,8 @@
       </entry>
     </enum>
     <enum name="GPS_SPOOFING_STATE">
+      <wip since="2024-06"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Signal spoofing state in a GPS receiver.</description>
       <entry value="0" name="GPS_SPOOFING_STATE_UNKNOWN">
         <description>The GPS receiver does not provide GPS signal spoofing info.</description>
@@ -338,6 +366,8 @@
       </entry>
     </enum>
     <enum name="GPS_RAIM_STATE">
+      <wip since="2024-06"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>State of RAIM processing.</description>
       <entry value="0" name="GPS_RAIM_STATE_UNKNOWN">
         <description>RAIM capability is unknown.</description>
@@ -353,6 +383,8 @@
       </entry>
     </enum>
     <enum name="ACTUATOR_TEST_GROUP">
+      <wip since="2025-07"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Actuator groups to test in MAV_CMD_ACTUATOR_GROUP_TEST.</description>
       <entry value="0" name="ACTUATOR_TEST_GROUP_ROLL_TORQUE">
         <description>Actuators that contribute to roll torque.</description>
@@ -377,6 +409,8 @@
       </entry>
     </enum>
     <enum name="ESC_FIRMWARE">
+      <wip since="2025-11"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>ESC firmware type identifier.</description>
       <entry value="0" name="ESC_FIRMWARE_UNKNOWN">
         <description>Unknown firmware.</description>
@@ -392,6 +426,8 @@
       </entry>
     </enum>
     <enum name="RANGING_BEACON_ALT_TYPE">
+      <wip since="2026-03"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Altitude reference for RANGING_BEACON alt field.</description>
       <entry value="0" name="RANGING_BEACON_ALT_TYPE_WGS84">
         <description>Altitude above WGS84 ellipsoid.</description>
@@ -401,12 +437,16 @@
       </entry>
     </enum>
     <enum name="RANGING_BEACON_STATUS_FLAG" bitmask="true">
+      <wip since="2026-03"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Status flags for a RANGING_BEACON.</description>
       <entry value="1" name="RANGING_BEACON_STATUS_FLAG_STATION_SIGNAL_POOR">
         <description>Station signal is poor. This might indicate channel fading, interference, or other signal quality issues.</description>
       </entry>
     </enum>
     <enum name="ESTIMATOR_SENSOR_FUSION_SOURCE">
+      <wip since="2026-03"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Estimator sensor fusion source types. Used in MAV_CMD_ESTIMATOR_SENSOR_ENABLE and as array index in ESTIMATOR_SENSOR_FUSION_STATUS.</description>
       <entry value="0" name="ESTIMATOR_SENSOR_FUSION_SOURCE_GPS">
         <description>GNSS</description>
@@ -437,6 +477,8 @@
       </entry>
     </enum>
     <enum name="MAV_MANUAL_INPUT_SOURCE">
+      <wip since="2026-08"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Source of manual control input currently selected by the autopilot's manual control arbitration.</description>
       <entry value="0" name="MAV_MANUAL_INPUT_SOURCE_NONE">
         <description>No manual input messages are currently being provided.</description>
@@ -452,7 +494,7 @@
       </entry>
     </enum>
     <enum name="EFI_PERFORMANCE_STATUS_FLAGS" bitmask="true">
-      <wip since="2026-06"/>
+      <wip since="2026-08"/>
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Status flags for the EFI Electronic Control Unit (ECU). Reported in EFI_PERFORMANCE. Each bit is an independent boolean condition. A flag that is 0 means either "not asserted" or "not supported by this ECU"; the two cannot be distinguished from the bitmask alone.</description>
       <!-- Engine run-state -->
@@ -589,7 +631,7 @@
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
-      <wip/>
+      <wip since="2023-09"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Set temporary maximum limits for horizontal speed, vertical speed and yaw rate.
         The consumer must stream the current limits in VELOCITY_LIMITS at 1 Hz or more (when limits are being set).
@@ -602,7 +644,7 @@
       <field type="float" name="yaw_rate_limit" default="NaN" units="rad/s">Limit for vehicle turn rate around its yaw axis. NaN: Field not used (ignore)</field>
     </message>
     <message id="355" name="VELOCITY_LIMITS">
-      <wip/>
+      <wip since="2023-09"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Current limits for horizontal speed, vertical speed and yaw rate, as set by SET_VELOCITY_LIMITS.</description>
       <field type="float" name="horizontal_speed_limit" default="NaN" units="m/s">Limit for horizontal movement in MAV_FRAME_LOCAL_NED. NaN: No limit applied</field>
@@ -610,6 +652,8 @@
       <field type="float" name="yaw_rate_limit" default="NaN" units="rad/s">Limit for vehicle turn rate around its yaw axis. NaN: No limit applied</field>
     </message>
     <message id="369" name="BATTERY_STATUS_V2">
+      <wip since="2022-10"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Battery dynamic information.
         This should be streamed (nominally at 1Hz).
         Static/invariant battery information is sent in BATTERY_INFO.
@@ -626,6 +670,8 @@
       <field type="uint32_t" name="status_flags" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
     </message>
     <message id="414" name="GROUP_START">
+      <wip since="2021-09"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_START.</description>
       <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_START).</field>
       <field type="uint32_t" name="mission_checksum">CRC32 checksum of current plan for MAV_MISSION_TYPE_ALL. As defined in MISSION_CHECKSUM message.</field>
@@ -633,6 +679,8 @@
         The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
     </message>
     <message id="415" name="GROUP_END">
+      <wip since="2021-09"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Emitted during mission execution when control reaches MAV_CMD_GROUP_END.</description>
       <field type="uint32_t" name="group_id">Mission-unique group id (from MAV_CMD_GROUP_END).</field>
       <field type="uint32_t" name="mission_checksum">CRC32 checksum of current plan for MAV_MISSION_TYPE_ALL. As defined in MISSION_CHECKSUM message.</field>
@@ -658,6 +706,8 @@
       </field>
     </message>
     <message id="441" name="GNSS_INTEGRITY">
+      <wip since="2024-06"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about key components of GNSS receivers, like signal authentication, interference and system errors.</description>
       <field type="uint8_t" name="id" instance="true">GNSS receiver id. Must match instance ids of other messages from same receiver.</field>
       <field type="uint32_t" name="system_errors" enum="GPS_SYSTEM_ERROR_FLAGS">Errors in the GPS system.</field>
@@ -674,6 +724,8 @@
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
+      <wip since="2023-03"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Current motion information from sensors on a target</description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time).</field>
       <field type="uint8_t" name="id">The ID of the target if multiple targets are present</field>
@@ -691,6 +743,8 @@
     </message>
     <!-- Target info measured by MAV's onboard sensors -->
     <message id="511" name="TARGET_RELATIVE">
+      <wip since="2023-03"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>The location of a target measured by MAV's onboard sensors. </description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time)</field>
       <field type="uint8_t" name="id" instance="true">The ID of the target if multiple targets are present</field>
@@ -705,6 +759,8 @@
       <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of target</field>
     </message>
     <message id="512" name="CONTROL_STATUS">
+      <wip since="2024-11"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Information about GCS(s) in control of this MAV.
         This should be broadcast at low rate (nominally 1 Hz) and emitted when ownership or takeover status change.
         Components in the system should only accept "state changing commands/messages" from any system id in `gcs_main` or  `gcs_secondary`.
@@ -722,6 +778,8 @@
       <field type="uint8_t[10]" name="gcs_secondary" invalid="[0,]">System IDs from which the system can receive state-changing commands/messages in multi-control mode. All values should be zero for single-owner mode.</field>
     </message>
     <message id="292" name="ESC_EEPROM">
+      <wip since="2025-11"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>ESC EEPROM data message for reading and writing ESC configuration.
         Supports multiple ESC firmware types including AM32, Bluejay, and BLHeli32.
         ESC data is read by sending the MAV_CMD_REQUEST_MESSAGE with `param1=292` and `param2=esc_index`, where esc_index is the zero-indexed ESC number for the corresponding motor, and 255 is used to request data for all ESC.
@@ -744,7 +802,7 @@
       <field type="uint8_t[192]" name="data">Raw ESC EEPROM data. Unused bytes should be set to zero.</field>
     </message>
     <message id="513" name="RANGING_BEACON">
-      <wip/>
+      <wip since="2026-03"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Range information from a radio beacon for trilateration-based positioning.
         This message is telemetry intended for consumption by an autopilot (MAVLink does not define the mechanism used to determine the range).
@@ -766,13 +824,15 @@
       <field type="uint8_t" name="status" enum="RANGING_BEACON_STATUS_FLAG">Ranging beacon status.</field>
     </message>
     <message id="514" name="ESTIMATOR_SENSOR_FUSION_STATUS">
+      <wip since="2026-03"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Status of estimator sensor fusion sources. Each array is indexed by ESTIMATOR_SENSOR_FUSION_SOURCE - 1. Each element is a per-instance bitmask (bit 0 = instance 0, etc.). For single-instance sources only bit 0 is used. For multi-instance sources like AGP, multiple bits may be set.</description>
       <field type="uint8_t[9]" name="intended">Per-source instance bitmask of sensors the estimator intends to fuse (reflects CTRL params with runtime overrides via MAV_CMD_ESTIMATOR_SENSOR_ENABLE).</field>
       <field type="uint8_t[9]" name="active">Per-source instance bitmask of sensors the estimator is actively fusing.</field>
       <field type="float[9]" name="test_ratio" invalid="[NaN]">Per-source normalized innovation test ratio. NaN if not available.</field>
     </message>
     <message id="515" name="MANUAL_INPUT_STATUS">
-      <wip/>
+      <wip since="2026-08"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Status of the manual control input arbitration on the autopilot: which source is currently active and, when a MAVLink enabled input device is selected, which system/component is providing it. Emitted by the autopilot for ground stations to display the active manual control source.</description>
       <field type="uint8_t" name="source" enum="MAV_MANUAL_INPUT_SOURCE">Current manual control source active.</field>
@@ -780,7 +840,7 @@
       <field type="uint8_t" name="sender_component_id">Component ID of the MAVLink enabled input device currently providing manual control. Set whenever a MAVLink enabled input device is contributing, i.e. for both MAV_MANUAL_INPUT_SOURCE_MAVLINK and MAV_MANUAL_INPUT_SOURCE_MIXED. 0 otherwise.</field>
     </message>
     <message id="442" name="EFI_PERFORMANCE">
-      <wip since="2026-06"/>
+      <wip since="2026-08"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>EFI performance and health telemetry. Primarily intended for debugging EFI system faults to determine whether problems are within the engine, fuel pump, actuators, or the ECU. Nominal stream rate is 1 Hz. Core engine telemetry (RPM, temperatures, pressures, fuel flow) is carried in EFI_STATUS; this message carries the electrical/actuator/diagnostic data not present there.</description>
       <!-- identity -->
@@ -813,7 +873,7 @@
       <field type="uint64_t" name="status_flags" enum="EFI_PERFORMANCE_STATUS_FLAGS">EFI status flags.</field>
     </message>
     <message id="516" name="DISTANCE_SENSOR_INFO">
-      <wip/>
+      <wip since="2026-08"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Static characteristics of a distance sensor (onboard rangefinder).
         Measurements are sent in DISTANCE_SENSOR_V2.</description>
@@ -828,7 +888,7 @@
       <field type="float[4]" name="quaternion" invalid="[0]">Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if orientation is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid.</field>
     </message>
     <message id="517" name="DISTANCE_SENSOR_V2">
-      <wip/>
+      <wip since="2026-08"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Distance sensor measurement, for an onboard rangefinder described by DISTANCE_SENSOR_INFO. Streamed at the sensor update rate.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot)</field>
