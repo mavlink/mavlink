@@ -6,6 +6,7 @@ progress markers that are missing or have a bad date, and so on.
 """
 
 from bs4 import BeautifulSoup as bs
+from bs4 import Comment
 import os
 import re
 import itertools
@@ -33,6 +34,11 @@ WIP_REQUIRED_DIALECTS = ["development.xml"]
 
 # Same pattern the schema (mavschema.xsd) uses for the since attribute
 WIP_SINCE_PATTERN = re.compile(r"20\d{2}-(0[1-9]|1[012])")
+
+# Comment that must follow every <wip>, where {} is what is being marked
+# (message, enum, command or entry). It is for people reading the XML.
+WIP_COMMENT = ("This {} is work-in-progress and it can therefore change. "
+               "It should NOT be used in stable production environments.")
 
 warning_count = 0
 allowed_count = 0
@@ -236,6 +242,25 @@ def check_wip_dates(file_name, soup, latest_month):
             warn(f'{file_name}: {label} <wip> since "{since}" is in the future')
 
 
+def wip_comment(element):
+    """The comment expected after the <wip> of a message, enum or enum entry."""
+    kind = element.name
+    if kind == 'entry':
+        enum = element.find_parent('enum')
+        if enum is not None and enum.get('name') == 'MAV_CMD':
+            kind = 'command'
+    return WIP_COMMENT.format(kind)
+
+
+def check_wip_comments(file_name, soup):
+    """Every <wip> must be immediately followed by the standard comment."""
+    for wip in soup.find_all('wip'):
+        expected = wip_comment(wip.parent)
+        following = next((node for node in wip.next_siblings if str(node).strip()), None)
+        if not isinstance(following, Comment) or following.strip() != expected:
+            warn(f"{file_name}: {wip_label(wip.parent)} <wip> is not followed by the comment: <!-- {expected} -->")
+
+
 def check_wip_required(file_name, soup, inherited_enums):
     """Every definition in a work in progress dialect must be marked <wip>.
 
@@ -286,8 +311,9 @@ XML consistency parser.
 
 Checks XML definition files in ../message_definitions/v1.0/.
 Warns on consistency errors such as flag enums that do not include bitmask attributes, and so on.
-Also checks that every <wip> has a valid since date that is not in the future, and
-that everything in development.xml is marked <wip since="YYYY-MM"/>.
+Also checks that every <wip> has a valid since date that is not in the future and is
+followed by the standard work-in-progress comment, and that everything in
+development.xml is marked <wip since="YYYY-MM"/>.
 
 Known, pre-existing warnings can be listed in an allowlist file (see --allowlist)
 so that CI can gate on new warnings while tolerating ones we can't fix yet.
@@ -455,6 +481,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
     latest_month = latest_wip_month()
     for key in xml:
         check_wip_dates(key, xml[key], latest_month)
+        check_wip_comments(key, xml[key])
         if key in WIP_REQUIRED_DIALECTS:
             check_wip_required(key, xml[key], included_enum_names(source_dir, key))
 

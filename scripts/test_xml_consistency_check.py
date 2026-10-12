@@ -22,6 +22,7 @@ check_enum = xml_consistency_check.check_enum
 check_field = xml_consistency_check.check_field
 check_cmd_param = xml_consistency_check.check_cmd_param
 check_wip_dates = xml_consistency_check.check_wip_dates
+check_wip_comments = xml_consistency_check.check_wip_comments
 check_wip_required = xml_consistency_check.check_wip_required
 latest_wip_month = xml_consistency_check.latest_wip_month
 
@@ -447,6 +448,73 @@ class CheckWipDatesTest(ConsistencyCheckTestCase):
         # 10:00 UTC is already the 1st of next month at UTC+14
         self.assertEqual(latest_wip_month(datetime.datetime(2026, 10, 31, 10, 0, tzinfo=utc)), "2026-11")
         self.assertEqual(latest_wip_month(datetime.datetime(2026, 12, 31, 12, 0, tzinfo=utc)), "2027-01")
+
+
+class CheckWipCommentsTest(ConsistencyCheckTestCase):
+    """A <wip> in any dialect must be followed by the standard comment."""
+
+    COMMENT = "This {} is work-in-progress and it can therefore change. It should NOT be used in stable production environments."
+
+    def message(self, after_wip):
+        return parse_dialect(
+            f'<messages><message id="1" name="MY_MSG">\n<wip since="2026-03"/>\n{after_wip}\n'
+            '<description>d</description></message></messages>'
+        )
+
+    def expected(self, label, kind):
+        return [f"common.xml: {label} <wip> is not followed by the comment: <!-- {self.COMMENT.format(kind)} -->"]
+
+    def test_comment_present_no_warning(self):
+        soup = self.message(f'<!-- {self.COMMENT.format("message")} -->')
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", soup), [])
+
+    def test_no_wip_no_warning(self):
+        soup = parse_dialect('<messages><message id="1" name="MY_MSG"><description>d</description></message></messages>')
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", soup), [])
+
+    def test_missing_comment_warns(self):
+        soup = self.message('')
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", soup), self.expected("Message MY_MSG", "message"))
+
+    def test_other_comment_warns(self):
+        for comment in (
+            "This message is work-in-progress it can therefore change, and should NOT be used in stable production environments",
+            self.COMMENT.format("enum"),
+            "Some other comment",
+        ):
+            with self.subTest(comment=comment):
+                soup = self.message(f'<!-- {comment} -->')
+                self.assertEqual(
+                    self.warnings(check_wip_comments, "common.xml", soup), self.expected("Message MY_MSG", "message")
+                )
+
+    def test_comment_must_directly_follow_wip(self):
+        soup = parse_dialect(
+            '<messages><message id="1" name="MY_MSG"><wip since="2026-03"/><description>d</description>'
+            f'<!-- {self.COMMENT.format("message")} --></message></messages>'
+        )
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", soup), self.expected("Message MY_MSG", "message"))
+
+    def test_comment_names_what_is_marked(self):
+        def marked(kind):
+            return f'<wip since="2026-03"/><!-- {self.COMMENT.format(kind)} -->'
+
+        good = parse_dialect(
+            f'<enums><enum name="MY_ENUM">{marked("enum")}<entry value="1" name="MY_ENUM_A">{marked("entry")}</entry></enum>'
+            f'<enum name="MAV_CMD"><entry value="2" name="MAV_CMD_MY">{marked("command")}</entry></enum></enums>'
+        )
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", good), [])
+
+        bad = parse_dialect(
+            f'<enums><enum name="MY_ENUM">{marked("message")}<entry value="1" name="MY_ENUM_A">{marked("enum")}</entry></enum>'
+            f'<enum name="MAV_CMD"><entry value="2" name="MAV_CMD_MY">{marked("entry")}</entry></enum></enums>'
+        )
+        self.assertEqual(
+            self.warnings(check_wip_comments, "common.xml", bad),
+            self.expected("Enum: MY_ENUM", "enum")
+            + self.expected("Enum: MY_ENUM entry MY_ENUM_A", "entry")
+            + self.expected("Command MAV_CMD_MY", "command"),
+        )
 
 
 class CheckWipRequiredTest(ConsistencyCheckTestCase):
