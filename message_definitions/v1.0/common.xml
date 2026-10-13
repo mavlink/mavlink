@@ -1202,7 +1202,9 @@
         <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="2">Empty</param>
         <param index="3" label="Flags" enum="NAV_TAKEOFF_FLAGS">Bitmask of options flags.</param>
-        <param index="4" label="Yaw" units="deg">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
+        <param index="4" label="Yaw" units="deg" minValue="0" maxValue="360">Yaw angle (if magnetometer present), ignored without magnetometer.
+          NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).
+          When used as a command: for fixed wing a non-NaN (sentinel) value indicates the course held after takeoff climbout (latitude and longitude params are ignored).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
