@@ -19,6 +19,7 @@ _spec.loader.exec_module(check_api_break)
 parse_xml = check_api_break.parse_xml
 collect_names = check_api_break.collect_names
 find_mutations = check_api_break.find_mutations
+find_added_wire_fields = check_api_break.find_added_wire_fields
 MessageKey = check_api_break.MessageKey
 EnumKey = check_api_break.EnumKey
 FieldKey = check_api_break.FieldKey
@@ -62,6 +63,13 @@ def mutations_between(old_xml: str, new_xml: str):
     old_names, old_attrs = collect_names(parse_xml(old_xml))
     new_names, new_attrs = collect_names(parse_xml(new_xml))
     return find_mutations(old_names, new_names, old_attrs, new_attrs)
+
+
+def additions_between(old_xml: str, new_xml: str):
+    """Replicate main()'s wire-breaking-addition check."""
+    old_names, _ = collect_names(parse_xml(old_xml))
+    new_names, new_attrs = collect_names(parse_xml(new_xml))
+    return find_added_wire_fields(old_names, new_names, new_attrs)
 
 
 def removed_between(old_xml: str, new_xml: str):
@@ -322,6 +330,111 @@ class RemovalDetectionTests(unittest.TestCase):
         )
         removed = removed_between(old_xml, new_xml)
         self.assertNotIn(FieldKey(message=MessageKey(message_name="MY_MSG"), field_name="foo"), removed)
+
+
+class AddedWireFieldTests(unittest.TestCase):
+    """A field added ahead of <extensions/> changes CRC_EXTRA, so peers built
+    against the old definition drop the message. Adding one after the marker is
+    the supported way to grow a released message and must stay silent."""
+
+    def test_field_added_before_extensions_is_detected(self):
+        new_xml = EXT_XML.replace(
+            "  <extensions/>",
+            """  <field type="uint8_t" name="added">Added.</field>
+  <extensions/>""",
+        )
+        self.assertEqual(additions_between(EXT_XML, new_xml), ["field EXT_MSG.added"])
+
+    def test_appending_before_the_marker_is_still_detected(self):
+        """The new field goes last in its size class, so no existing field's
+        size_group_index moves. This is the case the index comparison alone
+        cannot see."""
+        new_xml = EXT_XML.replace(
+            """  <field type="int16_t" name="xacc">X acceleration.</field>""",
+            """  <field type="int16_t" name="xacc">X acceleration.</field>
+  <field type="int16_t" name="yacc">Y acceleration.</field>""",
+        )
+        self.assertEqual(mutations_between(EXT_XML, new_xml), [])
+        self.assertEqual(additions_between(EXT_XML, new_xml), ["field EXT_MSG.yacc"])
+
+    def test_appending_an_extension_field_is_not_an_addition(self):
+        new_xml = EXT_XML.replace(
+            """  <field type="int16_t" name="temperature">Temperature.</field>""",
+            """  <field type="int16_t" name="temperature">Temperature.</field>
+  <field type="uint8_t" name="tail">Tail.</field>""",
+        )
+        self.assertEqual(additions_between(EXT_XML, new_xml), [])
+
+    def test_field_of_a_brand_new_message_is_not_an_addition(self):
+        new_xml = EXT_XML.replace(
+            "</messages>",
+            """<message id="28" name="NEW_MSG">
+  <field type="uint8_t" name="fresh">Fresh.</field>
+</message>
+</messages>""",
+        )
+        self.assertEqual(additions_between(EXT_XML, new_xml), [])
+
+    def test_wip_field_addition_is_skipped(self):
+        new_xml = EXT_XML.replace(
+            "  <extensions/>",
+            """  <field type="uint8_t" name="added">Added.<wip/></field>
+  <extensions/>""",
+        )
+        self.assertEqual(additions_between(EXT_XML, new_xml), [])
+
+    def test_addition_to_a_message_leaving_wip_is_skipped(self):
+        old_xml = EXT_XML.replace(
+            """<message id="27" name="EXT_MSG">""",
+            """<message id="27" name="EXT_MSG"><wip/>""",
+        )
+        new_xml = EXT_XML.replace(
+            "  <extensions/>",
+            """  <field type="uint8_t" name="added">Added.</field>
+  <extensions/>""",
+        )
+        self.assertEqual(additions_between(old_xml, new_xml), [])
+
+    def test_unknown_type_before_the_marker_is_still_detected(self):
+        """Such a field records no size_group_index, so detection has to key off
+        the absence of extension_index rather than the presence of the other."""
+        new_xml = EXT_XML.replace(
+            "  <extensions/>",
+            """  <field type="nonsense_t" name="added">Added.</field>
+  <extensions/>""",
+        )
+        self.assertEqual(additions_between(EXT_XML, new_xml), ["field EXT_MSG.added"])
+
+    def test_message_with_no_extensions_marker_still_reports(self):
+        new_xml = BASE_XML.replace(
+            """  <field type="uint8_t" name="foo">desc</field>""",
+            """  <field type="uint8_t" name="foo">desc</field>
+  <field type="uint8_t" name="bar">desc</field>""",
+        )
+        self.assertEqual(additions_between(BASE_XML, new_xml), ["field MY_MSG.bar"])
+
+    def test_no_change_yields_no_additions(self):
+        self.assertEqual(additions_between(EXT_XML, EXT_XML), [])
+
+    def test_moving_an_existing_field_across_the_marker_is_not_an_addition(self):
+        """That move is a mutation of a field that already existed; counting it
+        here as well would report the same break twice."""
+        new_xml = EXT_XML.replace(
+            """  <field type="int16_t" name="xacc">X acceleration.</field>
+  <extensions/>""",
+            """  <extensions/>
+  <field type="int16_t" name="xacc">X acceleration.</field>""",
+        )
+        self.assertEqual(additions_between(EXT_XML, new_xml), [])
+        self.assertNotEqual(mutations_between(EXT_XML, new_xml), [])
+
+    def test_rename_reports_both_the_removal_and_the_new_field(self):
+        new_xml = EXT_XML.replace('name="xacc"', 'name="xaccel"')
+        self.assertEqual(additions_between(EXT_XML, new_xml), ["field EXT_MSG.xaccel"])
+        self.assertIn(
+            FieldKey(message=MessageKey(message_name="EXT_MSG"), field_name="xacc"),
+            removed_between(EXT_XML, new_xml),
+        )
 
 
 class BaseCommitTests(unittest.TestCase):
