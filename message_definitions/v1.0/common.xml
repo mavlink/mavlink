@@ -8371,10 +8371,10 @@
       <field type="int32_t" name="lat" units="degE7">Target's latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Target's longitude (WGS84)</field>
       <field type="float" name="alt" units="m">Target's altitude (AMSL)</field>
-      <field type="float[3]" name="vel" units="m/s" invalid="[0]">Target's velocity in its body frame</field>
-      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">Linear target's acceleration in its body frame</field>
-      <field type="float[4]" name="q_target" invalid="[0]">Quaternion of the target's orientation from its body frame to the vehicle's NED frame.</field>
-      <field type="float[3]" name="rates" units="rad/s" invalid="[0]">Target's roll, pitch and yaw rates</field>
+      <field type="float[3]" name="vel" units="m/s">Target's velocity in its body frame. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_VELOCITY is set in sensor_capabilities.</field>
+      <field type="float[3]" name="acc" units="m/s/s">Linear target's acceleration in its body frame. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_ACCELERATION is set in sensor_capabilities.</field>
+      <field type="float[4]" name="q_target">Quaternion of the target's orientation from its body frame to the vehicle's NED frame. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_ATTITUDE is set in sensor_capabilities.</field>
+      <field type="float[3]" name="rates" units="rad/s">Target's roll, pitch and yaw rates. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_RATES is set in sensor_capabilities.</field>
       <field type="float[2]" name="position_std" units="m">Standard deviation of horizontal (eph) and vertical (epv) position errors</field>
       <field type="float[3]" name="vel_std" units="m/s">Standard deviation of the target's velocity in its body frame</field>
       <field type="float[3]" name="acc_std" units="m/s/s">Standard deviation of the target's acceleration in its body frame</field>
