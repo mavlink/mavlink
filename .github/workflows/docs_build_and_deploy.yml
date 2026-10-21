@@ -8,11 +8,10 @@ on:
       - '*'
   workflow_dispatch: # Allows manual triggering
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# The deploy job pushes to mavlink-devguide with its own token, so GITHUB_TOKEN
+# only needs to read this repo.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   build:
