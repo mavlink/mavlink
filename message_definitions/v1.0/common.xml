@@ -4378,6 +4378,11 @@
       <entry value="4" name="MAV_ODID_ID_TYPE_SPECIFIC_SESSION_ID">
         <description>A 20 byte ID for a specific flight/session. The exact ID type is indicated by the first byte of uas_id and these type values are managed by ICAO.</description>
       </entry>
+      <entry value="5" name="MAV_ODID_ID_TYPE_CN_PRODUCT_ID">
+        <wip since="2026-10"/>
+        <!-- This enum value is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>China product identifier in GB/T 41300-2022 format: exactly 20 ASCII characters comprising a four-character manufacturer code, a four-character model code, and a twelve-character serial number. Only digits and uppercase letters excluding I and O are permitted; the fifth character is part of the model code, not a length code. This is distinct from the eight-character real-name registration mark carried in OPEN_DRONE_ID_OPERATOR_ID. This value identifies the MAVLink transport payload only; it does not allocate an ASTM F3411 over-the-air ID type. A GB 46750-2025 Remote ID encoder must interpret and encode this product identifier according to that protocol.</description>
+      </entry>
     </enum>
     <enum name="MAV_ODID_UA_TYPE">
       <entry value="0" name="MAV_ODID_UA_TYPE_NONE">
