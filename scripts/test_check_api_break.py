@@ -275,7 +275,12 @@ class SameSizeFieldOrderTests(unittest.TestCase):
         # A field with no known size cannot be given a position, so a reorder
         # involving it would pass unnoticed. Fail instead of skipping it.
         xml = SAME_SIZE_XML.replace('type="uint8_t" name="flags"', 'type="mystery_t" name="flags"')
-        with self.assertRaisesRegex(ValueError, r"'mystery_t' for field SS_MSG\.flags"):
+        with self.assertRaisesRegex(ValueError, r"SS_MSG\.flags has unknown type 'mystery_t'"):
+            collect_names(parse_xml(xml))
+
+    def test_missing_type_raises(self):
+        xml = SAME_SIZE_XML.replace('type="uint8_t" name="flags"', 'name="flags"')
+        with self.assertRaisesRegex(ValueError, r"SS_MSG\.flags has no type attribute"):
             collect_names(parse_xml(xml))
 
     def test_unknown_extension_field_type_is_not_checked(self):
@@ -576,6 +581,77 @@ class MainRemovedFileTests(unittest.TestCase):
             check_api_break.main()  # must not raise
 
         self.assertIn("Skipped removed_dialect.xml: removed since base.", stdout.getvalue())
+
+
+class MainUncheckedFileTests(unittest.TestCase):
+    """A file collect_names() cannot read must fail the run without stopping
+    the check of the other changed files."""
+
+    BAD_TYPE_XML = SAME_SIZE_XML.replace('type="uint8_t" name="flags"', 'type="unit8_t" name="flags"')
+    OTHER_XML = EXT_XML.replace('name="EXT_MSG"', 'name="OTHER_MSG"')
+
+    def run_main(self, base_files, new_files):
+        """Run main() with `base_files` as the base revision and `new_files`
+        as the working tree, returning (exit code, stdout, comment body)."""
+        from unittest.mock import patch
+        import contextlib
+        import io
+        import subprocess
+        import tempfile
+
+        def fake_check_output(cmd, **kwargs):
+            if cmd[:2] == ["git", "show"]:
+                return base_files[cmd[2].split(":", 1)[1]]
+            raise subprocess.CalledProcessError(1, cmd)
+
+        comments = []
+        stdout = io.StringIO()
+        cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            for name, content in new_files.items():
+                with open(os.path.join(tmp, name), "w", encoding="utf-8") as f:
+                    f.write(content)
+            os.chdir(tmp)
+            try:
+                with patch("sys.argv", ["check_api_break.py"]), \
+                     patch.object(check_api_break, "get_base_commit", return_value="deadbeef"), \
+                     patch.object(check_api_break, "get_changed_xml_files", return_value=sorted(new_files)), \
+                     patch.object(check_api_break, "write_pr_comment_artifact", side_effect=comments.append), \
+                     patch("subprocess.check_output", side_effect=fake_check_output), \
+                     contextlib.redirect_stdout(stdout):
+                    try:
+                        check_api_break.main()
+                        code = 0
+                    except SystemExit as exc:
+                        code = exc.code
+            finally:
+                os.chdir(cwd)
+        return code, stdout.getvalue(), comments[0] if comments else None
+
+    def test_unreadable_base_does_not_hide_a_break_in_another_file(self):
+        code, out, comment = self.run_main(
+            base_files={"a.xml": self.BAD_TYPE_XML, "b.xml": self.OTHER_XML},
+            new_files={
+                "a.xml": self.BAD_TYPE_XML.replace("Flags.", "Flag bits."),
+                "b.xml": self.OTHER_XML.replace('  <field type="int16_t" name="xacc">X acceleration.</field>\n', ""),
+            },
+        )
+        self.assertEqual(code, 1)
+        self.assertIn("Could not check a.xml:", out)
+        self.assertIn("base revision deadbeef: Field SS_MSG.flags has unknown type 'unit8_t'", out)
+        self.assertIn("Removed field OTHER_MSG.xacc", out)
+        self.assertIn("Could not check these files", comment)
+        self.assertIn("- `a.xml`", comment)
+
+    def test_unreadable_new_revision_is_reported_as_such(self):
+        code, out, comment = self.run_main(
+            base_files={"a.xml": SAME_SIZE_XML},
+            new_files={"a.xml": self.BAD_TYPE_XML},
+        )
+        self.assertEqual(code, 1)
+        self.assertIn("new revision: Field SS_MSG.flags has unknown type 'unit8_t'", out)
+        self.assertNotIn("base revision", out)
+        self.assertNotIn("please confirm", comment)
 
 
 class NumericAttributeTests(unittest.TestCase):
