@@ -495,7 +495,9 @@
     </message>
     <message id="405" name="NAV_CONTROLLER_PROGRESS">
       <wip since="2026-07"/>
-      <description>Progress of the current Nav Controller item.</description>
+      <description>Progress of the current Nav Controller task.
+        Note that a MAV_CMD might be composed from several sequential tasks, each that represents a distinct flight behaviour. For example, MAV_CMD_NAV_LOITER_TURNS consists of a task to navigate to a waypoint, followed by a task to execute a number of turns.
+      </description>
       <field type="uint8_t" name="percentage_complete" invalid="UINT8_MAX">Percentage complete. Set to UINT8_MAX if unknown.</field>
       <field type="float" name="distance_remaining" units="m" invalid="NaN">Distance remaining until the current Nav Controller item is complete. Set to NaN if unknown, or not applicable.</field>
       <field type="float" name="time_remaining" units="s" invalid="NaN">Time remaining until the current Nav Controller item is complete. Set to NaN if unknown, or not applicable.</field>
