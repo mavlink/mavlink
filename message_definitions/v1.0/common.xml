@@ -1230,11 +1230,8 @@
       <entry value="32" name="MAV_CMD_DO_FOLLOW" command="true">
         <description>Begin following a target</description>
         <param index="1" label="System ID" minValue="0" maxValue="255" increment="1">System ID (of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode.</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
         <param index="4" label="Altitude Mode" minValue="0" maxValue="2" increment="1">Altitude mode: 0: Keep current altitude, 1: keep altitude difference to target, 2: go to a fixed altitude above home.</param>
         <param index="5" label="Altitude" units="m">Altitude above home. (used if mode=2)</param>
-        <param index="6">Reserved</param>
         <param index="7" label="Time to Land" units="s" minValue="0">Time to land in which the MAV should go to the default position hold mode after a message RX timeout.</param>
       </entry>
       <entry value="33" name="MAV_CMD_DO_FOLLOW_REPOSITION" command="true">
@@ -1526,12 +1523,6 @@
       <entry value="193" name="MAV_CMD_DO_PAUSE_CONTINUE" mission="true" command="true">
         <description>If in a GPS controlled position mode, hold the current position or continue.</description>
         <param index="1" label="Continue" enum="MAV_BOOL">Continue mission (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE pauses the current mission or reposition command and holds current position (a VTOL capable vehicle should enter hover mode (multicopter and VTOL planes); a plane should loiter with the default loiter radius). Values not equal to 0 or 1 are invalid.</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
-        <param index="5">Reserved</param>
-        <param index="6">Reserved</param>
-        <param index="7">Reserved</param>
       </entry>
       <entry value="194" name="MAV_CMD_DO_SET_REVERSE" mission="true" command="true">
         <description>Set moving direction to forward or reverse.</description>
@@ -1751,19 +1742,11 @@
       <entry value="243" name="MAV_CMD_PREFLIGHT_UAVCAN" command="true">
         <description>Trigger UAVCAN configuration (actuator ID assignment and direction mapping). Note that this maps to the legacy UAVCAN v0 function UAVCAN_ENUMERATE, which is intended to be executed just once during initial vehicle configuration (it is not a normal pre-flight command and has been poorly named).</description>
         <param index="1" label="Actuator ID">1: Trigger actuator ID assignment and direction mapping. 0: Cancel command.</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
-        <param index="5">Reserved</param>
-        <param index="6">Reserved</param>
-        <param index="7">Reserved</param>
       </entry>
       <entry value="245" name="MAV_CMD_PREFLIGHT_STORAGE" command="true">
         <description>Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.</description>
         <param index="1" label="Parameter Storage" enum="PREFLIGHT_STORAGE_PARAMETER_ACTION">Action to perform on the persistent parameter storage</param>
-        <param index="2">Reserved</param>
         <param index="3" label="Logging Rate" units="Hz" minValue="-1" increment="1">Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, &gt; 1: logging rate (e.g. set to 1000 for 1000 Hz logging)</param>
-        <param index="4">Reserved</param>
       </entry>
       <entry value="246" name="MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN" command="true">
         <description>Request the reboot or shutdown of system components.</description>
@@ -1861,13 +1844,6 @@
         <superseded since="2022-04" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request the home position from the vehicle.
           The vehicle will ACK the command and emit the HOME_POSITION message.</description>
-        <param index="1">Reserved</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
-        <param index="5">Reserved</param>
-        <param index="6">Reserved</param>
-        <param index="7">Reserved</param>
       </entry>
       <entry value="420" name="MAV_CMD_INJECT_FAILURE" mission="true" command="true">
         <description>Inject artificial failure for testing purposes. Note that autopilots should implement an additional protection before accepting this command such as a specific param setting.</description>
@@ -1913,51 +1889,43 @@
         <deprecated since="2025-11" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request MAVLink protocol version compatibility. All receivers should ACK the command and then emit their capabilities in an PROTOCOL_VERSION message</description>
         <param index="1" label="Protocol" enum="MAV_BOOL">Request supported protocol versions by all nodes on the network (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
-        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="520" name="MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message</description>
         <param index="1" label="Version" enum="MAV_BOOL">Request autopilot version (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
-        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="521" name="MAV_CMD_REQUEST_CAMERA_INFORMATION" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request camera information (CAMERA_INFORMATION).</description>
         <param index="1" label="Capabilities" enum="MAV_BOOL">Request camera capabilities (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
-        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="522" name="MAV_CMD_REQUEST_CAMERA_SETTINGS" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request camera settings (CAMERA_SETTINGS).</description>
         <param index="1" label="Settings" enum="MAV_BOOL">Request camera settings (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
-        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="525" name="MAV_CMD_REQUEST_STORAGE_INFORMATION" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (0 for all, 1 for first, 2 for second, etc.)</param>
         <param index="2" label="Information" enum="MAV_BOOL">Request storage information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
-        <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="526" name="MAV_CMD_STORAGE_FORMAT" command="true">
         <description>Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.</description>
         <param index="1" label="Storage ID" minValue="0" increment="1">Storage ID (1 for first, 2 for second, etc.)</param>
         <param index="2" label="Format" enum="MAV_BOOL">Format storage (and reset image log) (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
         <param index="3" label="Reset Image Log" enum="MAV_BOOL">Reset Image Log (without formatting storage medium) (MAV_BOOL_TRUE). This will reset CAMERA_CAPTURE_STATUS.image_count and CAMERA_IMAGE_CAPTURED.image_index. Values not equal to 0 or 1 are invalid.</param>
-        <param index="4">Reserved (all remaining params)</param>
       </entry>
       <entry value="527" name="MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request camera capture status (CAMERA_CAPTURE_STATUS)</description>
         <param index="1" label="Capture Status" enum="MAV_BOOL">Request camera capture status (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
-        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="528" name="MAV_CMD_REQUEST_FLIGHT_INFORMATION" command="true">
         <superseded since="2019-08" replaced_by="MAV_CMD_REQUEST_MESSAGE"/>
         <description>Request flight information (FLIGHT_INFORMATION)</description>
         <param index="1" label="Flight Information" enum="MAV_BOOL">Request flight information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.</param>
-        <param index="2">Reserved (all remaining params)</param>
       </entry>
       <entry value="529" name="MAV_CMD_RESET_CAMERA_SETTINGS" command="true">
         <description>Reset all camera settings to Factory Default</description>
@@ -2238,10 +2206,6 @@
       </entry>
       <entry value="5000" name="MAV_CMD_NAV_FENCE_RETURN_POINT" hasLocation="true" isDestination="true" fence="true">
         <description>Fence return point (there can only be one such point in a geofence definition). If rally points are supported they should be used instead.</description>
-        <param index="1">Reserved</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
@@ -2252,53 +2216,35 @@
         </description>
         <param index="1" label="Vertex Count" minValue="3" increment="1">Polygon vertex count. This is the number of vertices in the current polygon (all vertices will have the same number).</param>
         <param index="2" label="Inclusion Group" minValue="0" increment="1">Vehicle must be inside ALL inclusion zones in a single group, vehicle must be inside at least one group, must be the same for all points in each polygon</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
-        <param index="7">Reserved</param>
       </entry>
       <entry value="5002" name="MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION" hasLocation="true" isDestination="false" fence="true">
         <description>Fence vertex for an exclusion polygon (the polygon must not be self-intersecting). The vehicle must stay outside this area. Minimum of 3 vertices required.
           The vertices for a polygon must be sent sequentially, each with param1 set to the total number of vertices in the polygon.
         </description>
         <param index="1" label="Vertex Count" minValue="3" increment="1">Polygon vertex count. This is the number of vertices in the current polygon (all vertices will have the same number).</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
-        <param index="7">Reserved</param>
       </entry>
       <entry value="5003" name="MAV_CMD_NAV_FENCE_CIRCLE_INCLUSION" hasLocation="true" isDestination="false" fence="true">
         <description>Circular fence area. The vehicle must stay inside this area.
         </description>
         <param index="1" label="Radius" units="m">Radius.</param>
         <param index="2" label="Inclusion Group" minValue="0" increment="1">Vehicle must be inside ALL inclusion zones in a single group, vehicle must be inside at least one group</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
-        <param index="7">Reserved</param>
       </entry>
       <entry value="5004" name="MAV_CMD_NAV_FENCE_CIRCLE_EXCLUSION" hasLocation="true" isDestination="false" fence="true">
         <description>Circular fence area. The vehicle must stay outside this area.
         </description>
         <param index="1" label="Radius" units="m">Radius.</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
-        <param index="7">Reserved</param>
       </entry>
       <entry value="5100" name="MAV_CMD_NAV_RALLY_POINT" hasLocation="true" isDestination="false" rally="true">
         <description>Rally point. You can have multiple rally points defined.
         </description>
-        <param index="1">Reserved</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
         <param index="7" label="Altitude" units="m">Altitude</param>
@@ -2349,12 +2295,6 @@
         <deprecated since="2021-06" replaced_by="">Last implemented in PX4 v1.10.2. Removed PX4 v1.11.0. Never implemented in ArduPilot.</deprecated>
         <description>Control the payload deployment.</description>
         <param index="1" label="Operation Mode" minValue="0" maxValue="101" increment="1">Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deployment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests.</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
-        <param index="4">Reserved</param>
-        <param index="5">Reserved</param>
-        <param index="6">Reserved</param>
-        <param index="7">Reserved</param>
       </entry>
       <!-- from ardupilotmega.xml (hence ID is in that range) -->
       <entry value="42006" name="MAV_CMD_FIXED_MAG_CAL_YAW" command="true">
