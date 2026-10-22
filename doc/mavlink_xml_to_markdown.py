@@ -1180,11 +1180,11 @@ def reservedParamDescription(index, default=None):
     Description for a reserved MAV_CMD param that has no description in the XML.
     """
     if default:
-        return f"Reserved (default:{default})"
+        return f"Reserved. Default: {default}."
     if index in (5, 6):
         # param5/param6 are int32 in COMMAND_INT/MISSION_ITEM_INT, which can't carry NaN
-        return "Reserved (default:NaN or INT32_MAX)"
-    return "Reserved (default:NaN)"
+        return "Reserved. Default: INT32_MAX (COMMAND_INT/MISSION_ITEM_INT) or NaN (COMMAND_LONG)."
+    return "Reserved. Default: NaN."
 
 
 def tidyDescription(desc_string, type="markdown"):
