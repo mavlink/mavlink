@@ -3700,6 +3700,40 @@
         <description>Default heading.</description>
       </entry>
     </enum>
+    <enum name="NAV_CONTROLLER_SETPOINT_FLAGS" bitmask="true">
+      <wip since="2026-10"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Flags in NAV_CONTROLLER_OUTPUT indicating which setpoints are valid and currently tracked by the navigation controller.</description>
+      <entry value="1" name="NAV_CONTROLLER_SETPOINT_FLAGS_COURSE_VALID">
+        <description>nav_bearing is the desired course over ground and is being controlled. If not set, nav_bearing may be either desired heading or course (implementation dependent).</description>
+      </entry>
+      <entry value="2" name="NAV_CONTROLLER_SETPOINT_FLAGS_HEADING_VALID">
+        <description>The heading setpoint in nav_heading is valid and controlled.</description>
+      </entry>
+      <entry value="4" name="NAV_CONTROLLER_SETPOINT_FLAGS_ALTITUDE_VALID">
+        <description>The altitude setpoint in nav_alt is valid and controlled.</description>
+      </entry>
+    </enum>
+    <enum name="NAV_CONTROLLER_SPEED_TYPE">
+      <wip since="2026-10"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Type of the speed setpoint in NAV_CONTROLLER_OUTPUT.</description>
+      <entry value="0" name="NAV_CONTROLLER_SPEED_TYPE_INVALID">
+        <description>Speed setpoint is not valid or not controlled.</description>
+      </entry>
+      <entry value="1" name="NAV_CONTROLLER_SPEED_TYPE_EQUIVALENT_AIRSPEED">
+        <description>Equivalent airspeed (EAS).</description>
+      </entry>
+      <entry value="2" name="NAV_CONTROLLER_SPEED_TYPE_TRUE_AIRSPEED">
+        <description>True airspeed (TAS).</description>
+      </entry>
+      <entry value="3" name="NAV_CONTROLLER_SPEED_TYPE_GROUNDSPEED">
+        <description>Horizontal speed over ground.</description>
+      </entry>
+      <entry value="4" name="NAV_CONTROLLER_SPEED_TYPE_SPEED_THROUGH_WATER">
+        <description>Horizontal speed through water.</description>
+      </entry>
+    </enum>
     <!-- ESTIMATOR_STATUS_FLAGS - these values should be bit-and with the messages flags field to know if flag has been set -->
     <enum name="ESTIMATOR_STATUS_FLAGS" bitmask="true">
       <description>Flags in ESTIMATOR_STATUS message</description>
@@ -6017,12 +6051,18 @@
       <description>The state of the navigation and position controller.</description>
       <field type="float" name="nav_roll" units="deg">Current desired roll</field>
       <field type="float" name="nav_pitch" units="deg">Current desired pitch</field>
-      <field type="int16_t" name="nav_bearing" units="deg">Current desired heading</field>
+      <field type="int16_t" name="nav_bearing" units="deg">Current desired course over ground (direction of travel). For vehicles that do not control course, the bearing the navigation controller is steering towards.</field>
       <field type="int16_t" name="target_bearing" units="deg">Bearing to current waypoint/target</field>
       <field type="uint16_t" name="wp_dist" units="m">Distance to active waypoint</field>
       <field type="float" name="alt_error" units="m">Current altitude error</field>
       <field type="float" name="aspd_error" units="m/s">Current airspeed error</field>
       <field type="float" name="xtrack_error" units="m">Current crosstrack error on x-y plane</field>
+      <extensions/>
+      <field type="uint8_t" name="setpoint_flags" enum="NAV_CONTROLLER_SETPOINT_FLAGS">Flags indicating which fields contain valid data and are being controlled in the indicated way. Note, if NAV_CONTROLLER_SETPOINT_FLAGS_COURSE_VALID is not set, the data in nav_bearing may still be valid but its meaning is implementation dependent.</field>
+      <field type="int16_t" name="nav_heading" units="deg">Current desired heading (direction the vehicle is pointing). Only valid if NAV_CONTROLLER_SETPOINT_FLAGS_HEADING_VALID is set.</field>
+      <field type="float" name="nav_alt" units="m">Current desired altitude (MSL). Only valid if NAV_CONTROLLER_SETPOINT_FLAGS_ALTITUDE_VALID is set.</field>
+      <field type="float" name="nav_speed" units="m/s">Current desired speed, of the type given in speed_type. Only valid if speed_type is not NAV_CONTROLLER_SPEED_TYPE_INVALID.</field>
+      <field type="uint8_t" name="speed_type" enum="NAV_CONTROLLER_SPEED_TYPE">Type of speed in nav_speed.</field>
     </message>
     <message id="63" name="GLOBAL_POSITION_INT_COV">
       <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It  is designed as scaled integer message since the resolution of float is not sufficient. NOTE: This message is intended for onboard networks / companion computers and higher-bandwidth links and optimized for accuracy and completeness. Please use the GLOBAL_POSITION_INT message for a minimal subset.</description>
