@@ -3705,7 +3705,7 @@
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Flags in NAV_CONTROLLER_OUTPUT indicating which setpoints are valid and currently tracked by the navigation controller.</description>
       <entry value="1" name="NAV_CONTROLLER_SETPOINT_FLAGS_COURSE_VALID">
-        <description>The course setpoint in nav_bearing is valid and controlled.</description>
+        <description>nav_bearing is the desired course over ground and is being controlled. If not set, nav_bearing may be either desired heading or course (implementation dependent).</description>
       </entry>
       <entry value="2" name="NAV_CONTROLLER_SETPOINT_FLAGS_HEADING_VALID">
         <description>The heading setpoint in nav_heading is valid and controlled.</description>
@@ -6058,10 +6058,10 @@
       <field type="float" name="aspd_error" units="m/s">Current airspeed error</field>
       <field type="float" name="xtrack_error" units="m">Current crosstrack error on x-y plane</field>
       <extensions/>
-      <field type="uint8_t" name="setpoint_flags" enum="NAV_CONTROLLER_SETPOINT_FLAGS">Setpoints that are valid and currently controlled. 0 if none are valid (e.g. sender does not support these fields).</field>
+      <field type="uint8_t" name="setpoint_flags" enum="NAV_CONTROLLER_SETPOINT_FLAGS">Flags indicating which fields contain valid data and are being controlled in the indicated way. Note, if NAV_CONTROLLER_SETPOINT_FLAGS_COURSE_VALID is not set, the data in nav_bearing may still be valid but its meaning is implementation dependent.</field>
       <field type="int16_t" name="nav_heading" units="deg">Current desired heading (direction the vehicle is pointing). Only valid if NAV_CONTROLLER_SETPOINT_FLAGS_HEADING_VALID is set.</field>
       <field type="float" name="nav_alt" units="m">Current desired altitude (MSL). Only valid if NAV_CONTROLLER_SETPOINT_FLAGS_ALTITUDE_VALID is set.</field>
-      <field type="float" name="nav_speed" units="m/s">Current desired horizontal speed magnitude. The speed type is given in speed_type. Only valid if speed_type is not NAV_CONTROLLER_SPEED_TYPE_INVALID.</field>
+      <field type="float" name="nav_speed" units="m/s">Current desired speed, of the type given in speed_type. Only valid if speed_type is not NAV_CONTROLLER_SPEED_TYPE_INVALID.</field>
       <field type="uint8_t" name="speed_type" enum="NAV_CONTROLLER_SPEED_TYPE">Type of speed in nav_speed.</field>
     </message>
     <message id="63" name="GLOBAL_POSITION_INT_COV">
