@@ -669,6 +669,22 @@
       <field type="float" name="state_of_charge" units="%" invalid="NaN">State of Charge (SoC). Remaining capacity relative to current fully-charged capacity as a percentage. Values: [0-100], NaN: field not provided. Note that the value may be calculated from design_capacity if current full_charge_capacity is not known (see BATTERY_INFO).</field>
       <field type="uint32_t" name="status_flags" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
     </message>
+    <message id="405" name="NAV_CONTROLLER_PROGRESS">
+      <wip since="2026-07"/>
+      <description>Progress of the current Nav Controller task.
+        Note that a MAV_CMD might be composed from several sequential tasks, each that represents a distinct flight behaviour. For example, MAV_CMD_NAV_LOITER_TURNS consists of a task to navigate to a waypoint, followed by a task to execute a number of turns.
+      </description>
+      <field type="uint8_t" name="percentage_complete" invalid="UINT8_MAX">Percentage complete. Set to UINT8_MAX if unknown.</field>
+      <field type="float" name="distance_remaining" units="m" invalid="NaN">Distance remaining until the current Nav Controller item is complete. Set to NaN if unknown, or not applicable.</field>
+      <field type="float" name="time_remaining" units="s" invalid="NaN">Time remaining until the current Nav Controller item is complete. Set to NaN if unknown, or not applicable.</field>
+      <field type="float" name="count_remaining" invalid="NaN">Count remaining until the current Nav Controller item is complete. Set to NaN if unknown, or not applicable.</field>
+      <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission item type. Use MAV_MISSION_TYPE_ALL for navigation tasks that are not part of a mission or rally plan (i.e. commands set via command protocol).</field>
+      <field type="uint16_t" name="seq">Sequence (mission item number). Set to 0 if not a mission item.</field>
+      <field type="int32_t" name="x" invalid="INT32_MAX">local: x position in meters * 1e4, global: latitude in degrees * 10^7. Set to INT32_MAX if no target. Corresponding mission item may be used for position if supplied.</field>
+      <field type="int32_t" name="y" invalid="INT32_MAX">y position: local: x position in meters * 1e4, global: longitude in degrees *10^7. Set to INT32_MAX if no target. Corresponding mission item may be used for position if supplied.</field>
+      <field type="float" name="z" units="m" invalid="NaN">z position: global: altitude in meters (relative or absolute, depending on frame. Set to NaN if no target. Corresponding mission item may be used for position if supplied.</field>
+      <field type="uint8_t" name="target_frame" enum="MAV_FRAME">Coordinate frame of target.</field>
+    </message>
     <message id="414" name="GROUP_START">
       <wip since="2021-09"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
