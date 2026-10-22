@@ -14,7 +14,7 @@ This repo defines the MAVLink message/dialect schema (XML) and reference generat
 Run the same checks CI runs:
 - `scripts/format_xml.sh -c`: XML formatting check (xmllint). Without `-c` it reformats the files in place instead.
 - `python3 scripts/xml_consistency_check.py --exception`: structural consistency (e.g. bitmask enums must carry the `bitmask` attribute). Without `--exception` it prints warnings but always exits 0.
-- `python3 scripts/check_api_break.py` — flags breaking changes (renamed/retyped/reordered fields, changed enum values or message/command IDs). What's generally allowed: adding new fields as message extensions, and editing descriptions as long as the semantic meaning doesn't change. Renaming enums/enum values is done only in rare cases, and message removal is rare — anything that changes the wire-compatible meaning of an existing field is not allowed.
+- `python3 scripts/check_api_break.py`: flags breaking changes (renamed/retyped/reordered fields, changed enum values or message/command IDs). What's generally allowed: adding new fields as message extensions, and editing descriptions as long as the semantic meaning doesn't change. Renaming enums/enum values is done only in rare cases, and message removal is rare — anything that changes the wire-compatible meaning of an existing field is not allowed.
 - `scripts/test.sh` runs the formatting check, generates every dialect in each language with mavgen (compiling the C and C++11 output), and runs the pymavlink JavaScript tests. It needs the `pymavlink` submodule and does not run the two Python checks above.
 
 ## Finding where a definition is used downstream
