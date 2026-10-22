@@ -283,6 +283,18 @@ class SameSizeFieldOrderTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, r"SS_MSG\.flags has no type attribute"):
             collect_names(parse_xml(xml))
 
+    def test_every_bad_field_is_reported_at_once(self):
+        # One CI round should be enough to see all of them.
+        xml = SAME_SIZE_XML.replace('type="uint8_t" name="flags"', 'type="mystery_t" name="flags"')
+        xml = xml.replace('type="float" name="roll"', 'name="roll"')
+        with self.assertRaises(ValueError) as ctx:
+            collect_names(parse_xml(xml))
+        self.assertEqual(
+            str(ctx.exception),
+            "Field SS_MSG.roll has no type attribute; "
+            "Field SS_MSG.flags has unknown type 'mystery_t'",
+        )
+
     def test_unknown_extension_field_type_is_not_checked(self):
         # Extension fields are ordered by XML position, not size, so their
         # type is never looked up here.
@@ -592,7 +604,8 @@ class MainUncheckedFileTests(unittest.TestCase):
 
     def run_main(self, base_files, new_files):
         """Run main() with `base_files` as the base revision and `new_files`
-        as the working tree, returning (exit code, stdout, comment body)."""
+        as the working tree, returning (exit code, stdout, comment body).
+        File contents may be str (written as UTF-8) or raw bytes."""
         from unittest.mock import patch
         import contextlib
         import io
@@ -601,7 +614,8 @@ class MainUncheckedFileTests(unittest.TestCase):
 
         def fake_check_output(cmd, **kwargs):
             if cmd[:2] == ["git", "show"]:
-                return base_files[cmd[2].split(":", 1)[1]]
+                content = base_files[cmd[2].split(":", 1)[1]]
+                return content if isinstance(content, bytes) else content.encode()
             raise subprocess.CalledProcessError(1, cmd)
 
         comments = []
@@ -609,7 +623,9 @@ class MainUncheckedFileTests(unittest.TestCase):
         cwd = os.getcwd()
         with tempfile.TemporaryDirectory() as tmp:
             for name, content in new_files.items():
-                with open(os.path.join(tmp, name), "w", encoding="utf-8") as f:
+                if isinstance(content, str):
+                    content = content.encode()
+                with open(os.path.join(tmp, name), "wb") as f:
                     f.write(content)
             os.chdir(tmp)
             try:
@@ -650,8 +666,55 @@ class MainUncheckedFileTests(unittest.TestCase):
         )
         self.assertEqual(code, 1)
         self.assertIn("new revision: Field SS_MSG.flags has unknown type 'unit8_t'", out)
+        self.assertIn("fix the type in the xml", out.lower())
         self.assertNotIn("base revision", out)
         self.assertNotIn("please confirm", comment)
+
+    def test_fixing_a_bad_base_type_is_not_told_to_fix_it(self):
+        code, out, _comment = self.run_main(
+            base_files={"a.xml": self.BAD_TYPE_XML},
+            new_files={"a.xml": SAME_SIZE_XML},
+        )
+        self.assertEqual(code, 1)
+        self.assertIn("base revision deadbeef: Field SS_MSG.flags has unknown type 'unit8_t'", out)
+        self.assertNotIn("fix the type", out.lower())
+
+    def test_malformed_xml_does_not_hide_a_break_in_another_file(self):
+        code, out, comment = self.run_main(
+            base_files={"a.xml": BASE_XML, "b.xml": self.OTHER_XML},
+            new_files={
+                "a.xml": BASE_XML.replace("</message>", "</msg>"),
+                "b.xml": self.OTHER_XML.replace('  <field type="int16_t" name="xacc">X acceleration.</field>\n', ""),
+            },
+        )
+        self.assertEqual(code, 1)
+        # The parser's own wording varies with the libxml2 version, so only
+        # check that the new revision of a.xml is the one reported.
+        self.assertRegex(out, r"Could not check a\.xml:\n - new revision: \S")
+        self.assertNotIn("fix the type", out.lower())
+        self.assertIn("Removed field OTHER_MSG.xacc", out)
+        self.assertIn("- `a.xml`", comment)
+
+    def test_bad_utf8_is_reported_as_unreadable(self):
+        code, out, comment = self.run_main(
+            base_files={"a.xml": BASE_XML},
+            new_files={"a.xml": BASE_XML.replace(">desc<", ">d\xe9sc<").encode("latin-1")},
+        )
+        self.assertEqual(code, 1)
+        self.assertRegex(out, r"Could not check a\.xml:\n - new revision: \S")
+        self.assertIn("- `a.xml`", comment)
+
+    def test_confirm_line_comes_before_the_unchecked_files(self):
+        _code, _out, comment = self.run_main(
+            base_files={"a.xml": SAME_SIZE_XML, "b.xml": self.OTHER_XML},
+            new_files={
+                "a.xml": self.BAD_TYPE_XML,
+                "b.xml": self.OTHER_XML.replace('type="int16_t" name="xacc"', 'type="int32_t" name="xacc"'),
+            },
+        )
+        confirm = comment.index("please confirm")
+        self.assertLess(comment.index("Detected wire-breaking attribute mutations"), confirm)
+        self.assertLess(confirm, comment.index("Could not check these files"))
 
 
 class NumericAttributeTests(unittest.TestCase):

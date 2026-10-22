@@ -108,10 +108,22 @@ def type_length(field_type: Optional[str]) -> Optional[int]:
     return TYPE_LENGTHS.get(base + "_t")
 
 
+# Advice for an unknown field type in the new revision. The base revision is
+# not given it: mavgen in CI keeps such types off master, so a bad type there
+# means this change is the fix.
+FIX_TYPE_ADVICE = (
+    "Fix the type in the XML, or add it to TYPE_LENGTHS if the generator now "
+    "supports it"
+)
+
+
 def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameKey, Dict[str, Any]]]:
-    """Collect names and wire-critical attributes (id, type, value) from a MAVLink XML root."""
+    """Collect names and wire-critical attributes (id, type, value) from a MAVLink XML root.
+
+    Raises ValueError naming every field whose size is unknown."""
     names = {}
     attrs = {}
+    bad_fields: List[str] = []
 
     for enum in root.findall(".//enum"):
         enum_name = enum.get("name")
@@ -178,17 +190,16 @@ def collect_names(root: etree._Element) -> Tuple[Dict[NameKey, bool], Dict[NameK
                         problem = "has no type attribute"
                     else:
                         problem = f"has unknown type {field_type!r}"
-                    raise ValueError(
-                        f"Field {message_name}.{field_name} {problem}: fix the "
-                        "type in the XML, or add it to TYPE_LENGTHS if the "
-                        "generator now supports it"
-                    )
+                    bad_fields.append(f"Field {message_name}.{field_name} {problem}")
+                    continue
                 position = size_group_counts.get(length, 0)
                 field_attrs["size_group_index"] = position
                 size_group_counts[length] = position + 1
             if field_attrs:
                 attrs[field_key] = field_attrs
 
+    if bad_fields:
+        raise ValueError("; ".join(bad_fields))
     return names, attrs
 
 
@@ -513,6 +524,11 @@ def build_removal_comment(
                 lines.append(f"  - Changed {desc}")
         lines.append("")
 
+    # The confirm line is about the changes above, so it goes before the
+    # unchecked files rather than reading as a request to confirm them.
+    if removed_by_file or mutations_by_file:
+        lines.extend(["If these changes are intentional, please confirm in the PR.", ""])
+
     if unchecked_by_file:
         lines.extend(["Could not check these files, so breaking changes in them may be missed:", ""])
         for xml in sorted(unchecked_by_file):
@@ -521,9 +537,7 @@ def build_removal_comment(
                 lines.append(f"  - {error}")
         lines.append("")
 
-    if removed_by_file or mutations_by_file:
-        lines.append("If these changes are intentional, please confirm in the PR.")
-    return "\n".join(lines)
+    return "\n".join(lines).rstrip("\n")
 
 
 def main() -> None:
@@ -551,33 +565,33 @@ def main() -> None:
         if xml.endswith("development.xml"):
             continue
 
+        # Both revisions are read as bytes so that lxml decodes them from the
+        # XML declaration; bad encoding then fails as an XMLSyntaxError below.
         try:
-            old_content = subprocess.check_output(
-                ["git", "show", f"{base}:{xml}"], text=True
-            )
+            old_content = subprocess.check_output(["git", "show", f"{base}:{xml}"])
         except subprocess.CalledProcessError:
             continue  # new file, nothing to compare against
 
         try:
-            new_content = open(xml).read()
+            with open(xml, "rb") as f:
+                new_content = f.read()
         except FileNotFoundError:
             print(f"Skipped {xml}: removed since base.")
             continue
-
-        old_root = parse_xml(old_content)
-        new_root = parse_xml(new_content)
 
         # A file that cannot be read is reported and fails the run, but the
         # other files are still checked so their breaks are not hidden.
         errors: List[str] = []
         try:
-            old_names, old_attrs = collect_names(old_root)
-        except ValueError as err:
+            old_names, old_attrs = collect_names(parse_xml(old_content))
+        except (ValueError, etree.XMLSyntaxError) as err:
             errors.append(f"base revision {base}: {err}")
         try:
-            new_names, new_attrs = collect_names(new_root)
-        except ValueError as err:
+            new_names, new_attrs = collect_names(parse_xml(new_content))
+        except etree.XMLSyntaxError as err:
             errors.append(f"new revision: {err}")
+        except ValueError as err:
+            errors.append(f"new revision: {err}. {FIX_TYPE_ADVICE}")
         if errors:
             unchecked_by_file[xml] = errors
             continue
@@ -623,15 +637,14 @@ def main() -> None:
                 print(f" - {xml}:")
                 for desc in descs:
                     print(f"   - {desc}")
+        for xml, errors in unchecked_by_file.items():
+            print(f"Could not check {xml}:")
+            for error in errors:
+                print(f" - {error}")
 
         write_pr_comment_artifact(
             build_removal_comment(removals_for_comment, mutations_for_comment, unchecked_by_file)
         )
-
-    for xml, errors in unchecked_by_file.items():
-        print(f"Could not check {xml}:")
-        for error in errors:
-            print(f" - {error}")
 
     if breaking_by_file:
         for xml, descs in breaking_by_file.items():
