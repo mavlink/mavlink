@@ -2037,9 +2037,9 @@
       </entry>
       <entry value="300" name="MAV_CMD_MISSION_START" command="true">
         <description>Start running a mission.
-        The autopilot may switch to its mission mode in order to start the mission.
-        This command must not arm the vehicle: arming is done separately with MAV_CMD_COMPONENT_ARM_DISARM.
-        If the vehicle is disarmed, the mission starts once the vehicle is armed.</description>
+        The autopilot should switch to its mission mode and start the mission if the vehicle is armed.
+        The command must be NACKED with an appropriate result if it cannot be executed as specified, and no changes (such as switching mode or setting the current mission counter) may be made.
+        For example, it should NACK with MAV_RESULT_TEMPORARILY_REJECTED if the vehicle is disarmed, MAV_RESULT_FAILED if no mission is present, or MAV_RESULT_DENIED if non-sentinel values are passed for unsupported params.</description>
         <param index="1" label="First Item" minValue="0" increment="1">The first mission item to run</param>
         <param index="2" label="Last Item" minValue="0" increment="1">The last mission item to run (after this item is run, the mission ends)</param>
       </entry>
