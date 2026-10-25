@@ -12,10 +12,10 @@ This repo defines the MAVLink message/dialect schema (XML) and reference generat
 
 ## Before proposing an XML change
 Run the same checks CI runs:
-- `scripts/format_xml.sh` — XML formatting (xmllint)
-- `python3 scripts/xml_consistency_check.py` — structural consistency (e.g. bitmask enums must carry the `bitmask` attribute)
-- `python3 scripts/check_api_break.py` — flags breaking changes (renamed/retyped/reordered fields, changed enum values or message/command IDs). What's generally allowed: adding new fields as message extensions, and editing descriptions as long as the semantic meaning doesn't change. Renaming enums/enum values is done only in rare cases, and message removal is rare — anything that changes the wire-compatible meaning of an existing field is not allowed.
-- `scripts/test.sh` wraps the above and mirrors what CI does.
+- `scripts/format_xml.sh -c`: XML formatting check (xmllint). Without `-c` it reformats the files in place instead.
+- `python3 scripts/xml_consistency_check.py --exception`: structural consistency (e.g. bitmask enums must carry the `bitmask` attribute). Without `--exception` it prints warnings but always exits 0.
+- `python3 scripts/check_api_break.py`: flags breaking changes (renamed/retyped/reordered fields, changed enum values or message/command IDs). What's generally allowed: adding new fields as message extensions, and editing descriptions as long as the semantic meaning doesn't change. Renaming enums/enum values is done only in rare cases, and message removal is rare — anything that changes the wire-compatible meaning of an existing field is not allowed.
+- `scripts/test.sh` runs the formatting check, generates every dialect in each language with mavgen (compiling the C and C++11 output), and runs the pymavlink JavaScript tests. It needs the `pymavlink` submodule and does not run the two Python checks above.
 
 ## Finding where a definition is used downstream
 This repo only defines the schema — actual usage lives in the consuming projects. When asked "where is this message/enum/field/command used" or "what would break if I change this," check upstream usage in at least these projects (clone or search each; do not assume based on this repo alone):
@@ -29,6 +29,6 @@ This repo only defines the schema — actual usage lives in the consuming projec
 These are the major flight-stack and ground-control consumers of MAVLink; a definition can be relied upon by any of them even if it looks unused within this repo.
 
 ## Conventions
-- All entries in development.xml should have a `<wip/>` where allowed and include the date attribute
+- All entries in development.xml must have `<wip since="YYYY-MM"/>` where allowed (messages, new enums, and entries added to an enum from another dialect, such as `MAV_CMD`). A `<wip>` in any other managed dialect (`common.xml`, `standard.xml`, `minimal.xml`) must also have a `since` date; other dialects may use a bare `<wip/>`. A `since` date on `<wip>`, `<deprecated>` or `<superseded>` must be `YYYY-MM` and not in the future. Every `<wip>` must be followed on the next line by the comment `<!-- This X is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->`, where X is `message`, `enum`, `command` (a `MAV_CMD` entry) or `entry`. `xml_consistency_check.py` enforces all of this.
 - New message/command ID ranges are reserved per-dialect (see comments in `all.xml`); don't invent IDs outside an owned range without checking for clashes.
 - This repo's own contribution conventions are thin (`CONTRIBUTING.md` just points to the external MAVLink Developer Guide, sourced from https://github.com/mavlink/mavlink-devguide and published at mavlink.io); when in doubt about process, defer to that guide rather than assuming.

@@ -5,7 +5,7 @@ Is each definition in the right file, with the right ID, carrying the right life
 ## Dialect choice
 
 - **common.xml** is for definitions that are stable and implemented (or committed to) by more than one system. New definitions normally start in `development.xml`; a new definition added straight to common.xml needs a reason in the PR description (e.g. a trivial enum entry, or a definition already proven in a vendor dialect).
-- **development.xml** is for proposals under test. Entries must carry `<wip since="YYYY-MM"/>` where the schema allows it, per `AGENTS.md` (some older entries have a bare `<wip/>`; new ones need the date).
+- **development.xml** is for proposals under test. Entries must carry `<wip since="YYYY-MM"/>` where the schema allows it, per `AGENTS.md`; `xml_consistency_check.py` reports a missing tag, a missing date on `<wip>`, a malformed or future `since` date on any of the three lifecycle tags, and a `<wip>` that is not followed by the standard work-in-progress comment.
 - **Vendor dialects** are owned by their projects. An edit from outside the owning project is `should-fix` with the suggestion to upstream it there; a generic feature proposed in a vendor dialect should be proposed to development.xml instead.
 - **minimal.xml / standard.xml** are for the heartbeat/identity core; additions here need strong justification.
 

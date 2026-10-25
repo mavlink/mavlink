@@ -361,7 +361,6 @@
       </entry>
     </enum>
     <enum name="FENCE_MITIGATE">
-      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Actions being taken to mitigate/prevent fence breach</description>
       <entry value="0" name="FENCE_MITIGATE_UNKNOWN">
         <description>Unknown</description>
@@ -704,7 +703,6 @@
       </entry>
     </enum>
     <enum name="ESC_CONNECTION_TYPE">
-      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Indicates the ESC connection type.</description>
       <entry value="0" name="ESC_CONNECTION_TYPE_PPM">
         <description>Traditional PPM ESC.</description>
@@ -726,7 +724,6 @@
       </entry>
     </enum>
     <enum name="ESC_FAILURE_FLAGS" bitmask="true">
-      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Flags to report ESC failures.</description>
       <entry value="1" name="ESC_FAILURE_OVER_CURRENT">
         <description>Over current failure.</description>
@@ -1606,9 +1603,9 @@
         <param index="2">Empty</param>
         <param index="3">Empty</param>
         <param index="4">Empty</param>
-        <param index="5" label="Latitude">Latitudee. 0: not used.</param>
-        <param index="6" label="Longitude">Longitudee. 0: not used.</param>
-        <param index="7" label="Altitude" units="m">Altitudee. 0: not used.</param>
+        <param index="5" label="Latitude">Latitude. 0: not used.</param>
+        <param index="6" label="Longitude">Longitude. 0: not used.</param>
+        <param index="7" label="Altitude" units="m">Altitude. 0: not used.</param>
       </entry>
       <entry value="189" name="MAV_CMD_DO_LAND_START" hasLocation="true" isDestination="false" mission="true" command="true">
         <description>Mission item to mark the start of a mission landing pattern, or a command to land with a mission landing pattern.
@@ -3003,7 +3000,8 @@
         <description>Command is invalid because a frame is required and the specified frame is not supported.</description>
       </entry>
       <entry value="10" name="MAV_RESULT_NOT_IN_CONTROL">
-        <wip/>
+        <wip since="2025-09"/>
+        <!-- This entry is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Command has been rejected because source system is not in control of the target system/component.</description>
       </entry>
     </enum>
@@ -3955,7 +3953,8 @@
         <description>Camera supports absolute thermal range (request CAMERA_THERMAL_RANGE with MAV_CMD_REQUEST_MESSAGE).</description>
       </entry>
       <entry value="8192" name="CAMERA_CAP_FLAGS_HAS_MTI">
-        <wip/>
+        <wip since="2025-08"/>
+        <!-- This entry is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
         <description>Camera supports Moving Target Indicators (MTI) on the camera view (using MAV_CMD_CAMERA_START_MTI).</description>
       </entry>
     </enum>
@@ -4952,7 +4951,6 @@
       </entry>
     </enum>
     <enum name="FAILURE_UNIT">
-      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>List of possible units where failures can be injected.</description>
       <entry value="0" name="FAILURE_UNIT_SENSOR_GYRO"/>
       <entry value="1" name="FAILURE_UNIT_SENSOR_ACCEL"/>
@@ -4994,7 +4992,6 @@
       </entry>
     </enum>
     <enum name="FAILURE_TYPE">
-      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>List of possible failure type to inject.</description>
       <entry value="0" name="FAILURE_TYPE_OK">
         <description>No failure injected, used to reset a previous failure.</description>
@@ -6207,7 +6204,7 @@
       <field type="uint8_t" name="target_component">Component ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
     </message>
     <message id="80" name="COMMAND_CANCEL">
-      <wip/>
+      <wip since="2020-06"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Cancel a long running command. The target system should respond with a COMMAND_ACK to the original command with result=MAV_RESULT_CANCELLED if the long running process was cancelled. If it has already completed, the cancel action can be ignored. The cancel action can be retried until some sort of acknowledgement to the original command has been received. The command microservice is documented at https://mavlink.io/en/services/command.html</description>
       <field type="uint8_t" name="target_system">System executing long running command. Should not be broadcast (0).</field>
@@ -6289,7 +6286,7 @@
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot). The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.</field>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL = 0, MAV_FRAME_GLOBAL_RELATIVE_ALT = 3, MAV_FRAME_GLOBAL_TERRAIN_ALT = 10 (MAV_FRAME_GLOBAL_INT, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT are allowed synonyms, but have been deprecated)</field>
+      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL = 0, MAV_FRAME_GLOBAL_RELATIVE_ALT = 3, MAV_FRAME_GLOBAL_TERRAIN_ALT = 10 (MAV_FRAME_GLOBAL_INT, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT are allowed synonyms, but have been superseded)</field>
       <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="int32_t" name="lat_int" units="degE7">Latitude in WGS84 frame</field>
       <field type="int32_t" name="lon_int" units="degE7">Longitude in WGS84 frame</field>
@@ -6306,7 +6303,7 @@
     <message id="87" name="POSITION_TARGET_GLOBAL_INT">
       <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_GLOBAL_INT if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot). The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.</field>
-      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL = 0, MAV_FRAME_GLOBAL_RELATIVE_ALT = 3, MAV_FRAME_GLOBAL_TERRAIN_ALT = 10 (MAV_FRAME_GLOBAL_INT, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT are allowed synonyms, but have been deprecated)</field>
+      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL = 0, MAV_FRAME_GLOBAL_RELATIVE_ALT = 3, MAV_FRAME_GLOBAL_TERRAIN_ALT = 10 (MAV_FRAME_GLOBAL_INT, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT are allowed synonyms, but have been superseded)</field>
       <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
       <field type="int32_t" name="lat_int" units="degE7">Latitude in WGS84 frame</field>
       <field type="int32_t" name="lon_int" units="degE7">Longitude in WGS84 frame</field>
@@ -8056,7 +8053,8 @@
       <field type="uint32_t" name="fuel_type" enum="MAV_FUEL_TYPE">Fuel type. Defines units for fuel capacity and consumption fields above.</field>
     </message>
     <message id="372" name="BATTERY_INFO">
-      <wip/>
+      <wip since="2024-02"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>
         Battery information that is static, or requires infrequent update.
         This message should requested using MAV_CMD_REQUEST_MESSAGE and/or streamed at very low rate.
@@ -8113,8 +8111,8 @@
       <field type="uint16_t" name="present" display="bitmask">Relay present. Relay instance numbers are represented as individual bits in this mask by offset.  Bits will be true if a relay instance is configured.</field>
     </message>
     <message id="380" name="TIME_ESTIMATE_TO_TARGET">
-      <wip/>
-      <!-- This message is work-in-progress it can therefore change, and should NOT be used in stable production environments -->
+      <wip since="2019-04"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Time/duration estimates for various events and actions given the current vehicle state and position.</description>
       <field type="int32_t" name="safe_return" units="s">Estimated time to complete the vehicle's configured "safe return" action from its current position (e.g. RTL, Smart RTL, etc.). -1 indicates that the vehicle is landed, or that no time estimate available.</field>
       <field type="int32_t" name="land" units="s">Estimated time for vehicle to complete the LAND action from its current position. -1 indicates that the vehicle is landed, or that no time estimate available.</field>

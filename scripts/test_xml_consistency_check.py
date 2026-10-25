@@ -6,9 +6,13 @@ Exercises check_enum/check_field/check_cmd_param against small in-memory XML
 fixtures, so regressions in the consistency checks are caught in CI instead
 of relying on manual testing against real message definitions.
 """
+import contextlib
+import datetime
 import importlib.util
+import io
 import os
 import unittest
+from unittest import mock
 
 from bs4 import BeautifulSoup as bs
 
@@ -20,6 +24,10 @@ _spec.loader.exec_module(xml_consistency_check)
 check_enum = xml_consistency_check.check_enum
 check_field = xml_consistency_check.check_field
 check_cmd_param = xml_consistency_check.check_cmd_param
+check_since_dates = xml_consistency_check.check_since_dates
+check_wip_comments = xml_consistency_check.check_wip_comments
+check_wip_required = xml_consistency_check.check_wip_required
+latest_since_month = xml_consistency_check.latest_since_month
 
 
 def parse_enum(xml):
@@ -368,6 +376,290 @@ class EnumFitsTypeTests(ConsistencyCheckTestCase):
             messages,
             ["test.xml: Message MY_MSG field mode enum MY_ENUM unexpected type: custom_t"],
         )
+
+
+def parse_dialect(body):
+    return bs(f"<mavlink>{body}</mavlink>", 'xml')
+
+
+class CheckSinceDatesTest(ConsistencyCheckTestCase):
+    """A <wip> in any dialect needs a valid since date that is not in the future."""
+
+    LATEST = "2026-10"
+
+    def message(self, wip):
+        return parse_dialect(
+            f'<messages><message id="1" name="MY_MSG">{wip}<description>d</description>'
+            '<field type="uint8_t" name="a">a</field></message></messages>'
+        )
+
+    def test_dated_wip_no_warning(self):
+        soup = self.message('<wip since="2026-03"/>')
+        self.assertEqual(self.warnings(check_since_dates, "common.xml", soup, self.LATEST), [])
+
+    def test_no_wip_no_warning(self):
+        soup = self.message('')
+        self.assertEqual(self.warnings(check_since_dates, "common.xml", soup, self.LATEST), [])
+
+    def test_current_month_no_warning(self):
+        soup = self.message('<wip since="2026-10"/>')
+        self.assertEqual(self.warnings(check_since_dates, "common.xml", soup, self.LATEST), [])
+
+    def test_bare_wip_warns(self):
+        soup = self.message('<wip/>')
+        self.assertEqual(
+            self.warnings(check_since_dates, "common.xml", soup, self.LATEST),
+            ["common.xml: Message MY_MSG <wip> has no since date"],
+        )
+
+    def test_bare_wip_allowed_when_date_not_required(self):
+        soup = self.message('<wip/>')
+        self.assertEqual(
+            self.warnings(check_since_dates, "storm32.xml", soup, self.LATEST, False), []
+        )
+
+    def test_bad_date_warns_even_when_date_not_required(self):
+        soup = self.message('<wip since="2027-01"/>')
+        self.assertEqual(
+            self.warnings(check_since_dates, "storm32.xml", soup, self.LATEST, False),
+            ['storm32.xml: Message MY_MSG <wip> since "2027-01" is in the future'],
+        )
+
+    def test_malformed_dates_warn(self):
+        for since in ("2026-13", "2026-00", "26-03", "2026-3", "2026-03-01", "2026/03", "1999-03", ""):
+            with self.subTest(since=since):
+                soup = self.message(f'<wip since="{since}"/>')
+                self.assertEqual(
+                    self.warnings(check_since_dates, "common.xml", soup, self.LATEST),
+                    [f'common.xml: Message MY_MSG <wip> since "{since}" is not a valid YYYY-MM date'],
+                )
+
+    def test_future_dates_warn(self):
+        for since in ("2026-11", "2027-01"):
+            with self.subTest(since=since):
+                soup = self.message(f'<wip since="{since}"/>')
+                self.assertEqual(
+                    self.warnings(check_since_dates, "common.xml", soup, self.LATEST),
+                    [f'common.xml: Message MY_MSG <wip> since "{since}" is in the future'],
+                )
+
+    def test_deprecated_and_superseded_dates_are_checked(self):
+        for tag in ("deprecated", "superseded"):
+            for since, problem in (("2026-13", "is not a valid YYYY-MM date"), ("2027-01", "is in the future")):
+                with self.subTest(tag=tag, since=since):
+                    soup = self.message(f'<{tag} since="{since}" replaced_by="X"/>')
+                    self.assertEqual(
+                        self.warnings(check_since_dates, "common.xml", soup, self.LATEST),
+                        [f'common.xml: Message MY_MSG <{tag}> since "{since}" {problem}'],
+                    )
+
+    def test_deprecated_and_superseded_valid_or_missing_date_no_warning(self):
+        # A missing since on these two is left to the schema, which requires it.
+        for marker in ('<deprecated since="2026-03" replaced_by="X"/>', '<superseded since="2026-10" replaced_by="X"/>',
+                       '<deprecated replaced_by="X"/>'):
+            with self.subTest(marker=marker):
+                soup = self.message(marker)
+                self.assertEqual(self.warnings(check_since_dates, "common.xml", soup, self.LATEST), [])
+
+    def test_enum_entry_and_command_labels(self):
+        soup = parse_dialect(
+            '<enums><enum name="MY_ENUM"><wip/><entry value="1" name="MY_ENUM_A"><wip/></entry></enum>'
+            '<enum name="MAV_CMD"><entry value="2" name="MAV_CMD_MY"><wip/></entry></enum></enums>'
+        )
+        self.assertEqual(
+            self.warnings(check_since_dates, "standard.xml", soup, self.LATEST),
+            [
+                "standard.xml: Enum: MY_ENUM <wip> has no since date",
+                "standard.xml: Enum: MY_ENUM entry MY_ENUM_A <wip> has no since date",
+                "standard.xml: Command MAV_CMD_MY <wip> has no since date",
+            ],
+        )
+
+    def test_latest_month_uses_furthest_ahead_timezone(self):
+        utc = datetime.timezone.utc
+        # 09:59 UTC on the last day of the month is still that month everywhere
+        self.assertEqual(latest_since_month(datetime.datetime(2026, 10, 31, 9, 59, tzinfo=utc)), "2026-10")
+        # 10:00 UTC is already the 1st of next month at UTC+14
+        self.assertEqual(latest_since_month(datetime.datetime(2026, 10, 31, 10, 0, tzinfo=utc)), "2026-11")
+        self.assertEqual(latest_since_month(datetime.datetime(2026, 12, 31, 12, 0, tzinfo=utc)), "2027-01")
+
+
+class CheckWipCommentsTest(ConsistencyCheckTestCase):
+    """A <wip> in any dialect must be followed by the standard comment."""
+
+    COMMENT = "This {} is work-in-progress and it can therefore change. It should NOT be used in stable production environments."
+
+    def message(self, after_wip):
+        return parse_dialect(
+            f'<messages><message id="1" name="MY_MSG">\n<wip since="2026-03"/>\n{after_wip}\n'
+            '<description>d</description></message></messages>'
+        )
+
+    def expected(self, label, kind):
+        return [f"common.xml: {label} <wip> is not followed by the comment: <!-- {self.COMMENT.format(kind)} -->"]
+
+    def test_comment_present_no_warning(self):
+        soup = self.message(f'<!-- {self.COMMENT.format("message")} -->')
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", soup), [])
+
+    def test_no_wip_no_warning(self):
+        soup = parse_dialect('<messages><message id="1" name="MY_MSG"><description>d</description></message></messages>')
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", soup), [])
+
+    def test_missing_comment_warns(self):
+        soup = self.message('')
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", soup), self.expected("Message MY_MSG", "message"))
+
+    def test_other_comment_warns(self):
+        for comment in (
+            "This message is work-in-progress it can therefore change, and should NOT be used in stable production environments",
+            self.COMMENT.format("enum"),
+            "Some other comment",
+        ):
+            with self.subTest(comment=comment):
+                soup = self.message(f'<!-- {comment} -->')
+                self.assertEqual(
+                    self.warnings(check_wip_comments, "common.xml", soup), self.expected("Message MY_MSG", "message")
+                )
+
+    def test_comment_must_directly_follow_wip(self):
+        soup = parse_dialect(
+            '<messages><message id="1" name="MY_MSG"><wip since="2026-03"/><description>d</description>'
+            f'<!-- {self.COMMENT.format("message")} --></message></messages>'
+        )
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", soup), self.expected("Message MY_MSG", "message"))
+
+    def test_comment_names_what_is_marked(self):
+        def marked(kind):
+            return f'<wip since="2026-03"/><!-- {self.COMMENT.format(kind)} -->'
+
+        good = parse_dialect(
+            f'<enums><enum name="MY_ENUM">{marked("enum")}<entry value="1" name="MY_ENUM_A">{marked("entry")}</entry></enum>'
+            f'<enum name="MAV_CMD"><entry value="2" name="MAV_CMD_MY">{marked("command")}</entry></enum></enums>'
+        )
+        self.assertEqual(self.warnings(check_wip_comments, "common.xml", good), [])
+
+        bad = parse_dialect(
+            f'<enums><enum name="MY_ENUM">{marked("message")}<entry value="1" name="MY_ENUM_A">{marked("enum")}</entry></enum>'
+            f'<enum name="MAV_CMD"><entry value="2" name="MAV_CMD_MY">{marked("entry")}</entry></enum></enums>'
+        )
+        self.assertEqual(
+            self.warnings(check_wip_comments, "common.xml", bad),
+            self.expected("Enum: MY_ENUM", "enum")
+            + self.expected("Enum: MY_ENUM entry MY_ENUM_A", "entry")
+            + self.expected("Command MAV_CMD_MY", "command"),
+        )
+
+
+class CheckWipRequiredTest(ConsistencyCheckTestCase):
+    """Everything in a work in progress dialect must be marked <wip>."""
+
+    def test_unmarked_message_warns(self):
+        soup = parse_dialect('<messages><message id="1" name="MY_MSG"><description>d</description></message></messages>')
+        self.assertEqual(
+            self.warnings(check_wip_required, "development.xml", soup, set()),
+            ['development.xml: Message MY_MSG is missing <wip since="YYYY-MM"/>'],
+        )
+
+    def test_marked_message_no_warning(self):
+        # The date itself is the job of check_since_dates, so a bare <wip/> is not reported twice.
+        for wip in ('<wip since="2026-03"/>', '<wip/>'):
+            with self.subTest(wip=wip):
+                soup = parse_dialect(f'<messages><message id="1" name="MY_MSG">{wip}</message></messages>')
+                self.assertEqual(self.warnings(check_wip_required, "development.xml", soup, set()), [])
+
+    def test_deprecated_or_superseded_no_warning(self):
+        for tag in ("deprecated", "superseded"):
+            with self.subTest(tag=tag):
+                soup = parse_dialect(
+                    f'<messages><message id="1" name="MY_MSG"><{tag} since="2026-03" replaced_by="X"/></message></messages>'
+                )
+                self.assertEqual(self.warnings(check_wip_required, "development.xml", soup, set()), [])
+
+    def test_new_enum_needs_wip_but_its_entries_do_not(self):
+        soup = parse_dialect(
+            '<enums><enum name="MARKED"><wip since="2026-03"/><entry value="1" name="MARKED_A"/></enum>'
+            '<enum name="UNMARKED"><entry value="1" name="UNMARKED_A"/></enum></enums>'
+        )
+        self.assertEqual(
+            self.warnings(check_wip_required, "development.xml", soup, set()),
+            ['development.xml: Enum: UNMARKED is missing <wip since="YYYY-MM"/>'],
+        )
+
+    def test_extended_enum_entries_need_wip_but_the_enum_does_not(self):
+        soup = parse_dialect(
+            '<enums><enum name="MAV_CMD"><entry value="1" name="MAV_CMD_MARKED"><wip since="2026-03"/></entry>'
+            '<entry value="2" name="MAV_CMD_UNMARKED"/></enum>'
+            '<enum name="MAV_RESULT"><entry value="9" name="MAV_RESULT_UNMARKED"/></enum></enums>'
+        )
+        self.assertEqual(
+            self.warnings(check_wip_required, "development.xml", soup, {"MAV_CMD", "MAV_RESULT"}),
+            [
+                'development.xml: Command MAV_CMD_UNMARKED is missing <wip since="YYYY-MM"/>',
+                'development.xml: Enum: MAV_RESULT entry MAV_RESULT_UNMARKED is missing <wip since="YYYY-MM"/>',
+            ],
+        )
+
+
+class WipDialectsTest(ConsistencyCheckTestCase):
+    def test_only_development_requires_wip(self):
+        self.assertEqual(xml_consistency_check.WIP_REQUIRED_DIALECTS, ["development.xml"])
+
+    def test_included_enum_names_follows_include_chain(self):
+        source_dir = os.path.join(os.path.dirname(__file__), "../message_definitions/v1.0/")
+        names = xml_consistency_check.included_enum_names(source_dir, "development.xml")
+        self.assertIn("MAV_CMD", names)  # common.xml
+        self.assertIn("MAV_PROTOCOL_CAPABILITY", names)  # standard.xml, via common.xml
+        self.assertIn("MAV_TYPE", names)  # minimal.xml, via standard.xml
+        self.assertEqual(xml_consistency_check.included_enum_names(source_dir, "minimal.xml"), set())
+
+
+class MainRunsLifecycleChecksTest(ConsistencyCheckTestCase):
+    """The checks above are only useful if main() calls them. The managed
+    dialects are clean, so a check that stopped running would not be noticed."""
+
+    def test_main_runs_lifecycle_checks(self):
+        with mock.patch.object(xml_consistency_check, "check_since_dates") as dates, \
+                mock.patch.object(xml_consistency_check, "check_wip_comments") as comments, \
+                mock.patch.object(xml_consistency_check, "check_wip_required") as required, \
+                mock.patch.object(xml_consistency_check, "latest_since_month", return_value="2026-10"), \
+                mock.patch("sys.argv", ["xml_consistency_check.py"]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            xml_consistency_check.main()
+
+        managed = ["common.xml", "development.xml", "minimal.xml", "standard.xml"]
+        self.assertEqual(sorted(call.args[0] for call in dates.call_args_list), managed)
+        # The month dates are compared with must be the one main() worked out
+        self.assertEqual({call.args[2] for call in dates.call_args_list}, {"2026-10"})
+        self.assertEqual({call.kwargs["wip_since_required"] for call in dates.call_args_list}, {True})
+        self.assertEqual(sorted(call.args[0] for call in comments.call_args_list), managed)
+        # Only development.xml requires everything to be marked wip
+        self.assertEqual([call.args[0] for call in required.call_args_list], ["development.xml"])
+        self.assertIn("MAV_CMD", required.call_args.args[2])
+
+    def test_other_dialects_only_get_date_validity(self):
+        # The schema allows a bare <wip/>, so a dialect this repository does not
+        # manage is not required to date its <wip> or add the comment.
+        with mock.patch.object(xml_consistency_check, "check_since_dates") as dates, \
+                mock.patch.object(xml_consistency_check, "check_wip_comments") as comments, \
+                mock.patch.object(xml_consistency_check, "check_wip_required") as required, \
+                mock.patch("sys.argv", ["xml_consistency_check.py", "-f", "storm32.xml"]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            xml_consistency_check.main()
+
+        self.assertEqual([call.args[0] for call in dates.call_args_list], ["storm32.xml"])
+        self.assertIs(dates.call_args.kwargs["wip_since_required"], False)
+        comments.assert_not_called()
+        required.assert_not_called()
+
+    def test_wip_required_for_development_however_it_is_named(self):
+        for name in ("development", "development.xml", "./development.xml"):
+            with self.subTest(name=name):
+                with mock.patch.object(xml_consistency_check, "check_wip_required") as required, \
+                        mock.patch("sys.argv", ["xml_consistency_check.py", "-f", name]), \
+                        contextlib.redirect_stdout(io.StringIO()):
+                    xml_consistency_check.main()
+                self.assertEqual(required.call_count, 1)
 
 
 if __name__ == "__main__":
