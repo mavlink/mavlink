@@ -46,7 +46,7 @@ while getopts ":hcd:o" opt; do
         ;;
     c)  mode="check"
         ;;
-    d)  xml_dir=${OPTARG}
+    d)  xml_dir="${OPTARG}"
         ;;
     o)  keep_old=1
         ;;
@@ -57,17 +57,23 @@ shift $(($OPTIND - 1))
 
 xml_file="$1"
 
-if [ "$xml_file" == "" ]
+xml_files=()
+if [ -z "$xml_file" ]
 then
-    xml_files=$(find $xml_dir -name "*.xml")
+    while IFS= read -r -d '' f; do
+        xml_files+=("$f")
+    done < <(find "$xml_dir" -name "*.xml" -print0)
 else
-    xml_files="$xml_dir/$xml_file"
+    xml_files=("$xml_dir/$xml_file")
 fi
 echo "processing file(s):"
-echo "$xml_files"
+for f in "${xml_files[@]}"
+do
+    echo "$f"
+done
 
 ret=0
-for f in $xml_files
+for f in "${xml_files[@]}"
 do
     xmllint -format "${f}" | sed 's/[[:blank:]]*$//' > "${f}".new
     case "$mode" in
@@ -75,7 +81,7 @@ do
         if ! cmp "${f}" "${f}".new >/dev/null 2>&1
         then
             echo "formatting $f"
-            if [ $keep_old -eq 1 ]
+            if [ "$keep_old" -eq 1 ]
             then
                 cp "${f}" "${f}".old
             fi
