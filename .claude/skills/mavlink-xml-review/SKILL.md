@@ -1,7 +1,7 @@
 ---
 name: mavlink-xml-review
 description: Reviews changes to the MAVLink XML message definitions (message_definitions/v1.0/*.xml) — new or changed messages, fields, enums and MAV_CMD commands — for wire compatibility, correct dialect/ID placement and lifecycle markers, definition quality (reserved params, string encoding, units, smallest adequate types, zero-default extensions, truncation-friendly ordering, wording consistent with similar fields), message design (prior art such as DroneCAN, splitting invariant from high-rate data), and downstream impact in PX4, ArduPilot, QGroundControl, MAVProxy and MissionPlanner. Use when reviewing a mavlink/mavlink PR (by number or URL) or local branch that touches message_definitions/, and consult it proactively when drafting an XML change yourself. PRs that change scripts/, doc/ tooling, workflows or the pymavlink submodule belong to mavlink-toolchain-review; a mixed PR is split between the two.
-allowed-tools: Bash(gh pr view:*) Bash(gh pr diff:*) Bash(gh pr list:*) Bash(gh api:*) Bash(git -C:*) Bash(git worktree:*) Bash(grep:*) Bash(python3 scripts/*) Bash(./scripts/format_xml.sh:*)
+allowed-tools: Bash(gh pr view:*) Bash(gh pr diff:*) Bash(gh pr list:*) Bash(gh api:*) Bash(git -C:*) Bash(git worktree:*) Bash(grep:*) Bash(diff:*) Bash(sort:*) Bash(cut:*) Bash(python3 scripts/*) Bash(./scripts/format_xml.sh:*)
 ---
 
 # MAVLink XML definition review
@@ -13,7 +13,7 @@ So this review is deliberately stricter on *new* definitions than on edits to ol
 Two modes:
 
 - **Review mode.** A PR (or local branch/diff) exists. Run Scope → Checks → Dispatch → Report below and produce a report the reviewer posts themselves.
-- **Authoring mode.** You are drafting an XML change yourself. Skip Scope/Dispatch/Report; before finishing, read `references/shared.md`, `references/definition-quality.md` and `references/message-design.md`, run the Checks step against your working tree, and hold your draft to the same rules — out loud in your response when something fails (e.g. "I've used `uint8_t` for `fuel_pct` but it feeds a remaining-fuel calculation, so 1% resolution may not be enough; flagging rather than guessing").
+- **Authoring mode.** You are drafting an XML change yourself. Skip Scope/Dispatch/Report; before finishing, read `references/shared.md`, `references/definition-quality.md` and `references/message-design.md`, run the Checks step against your working tree, and hold your draft to the same rules — out loud in your response when something fails (e.g. "I've used `uint8_t` for `fuel_pct` but it feeds a remaining-fuel calculation, so 1% resolution may not be enough; flagging rather than guessing"). When the draft moves a definition between dialects, commit the verbatim move first and every change, including removing `<wip>`, in a later commit (see `references/placement-lifecycle.md`, "Moves between dialects").
 
 **Read-only in review mode**, here and in every subagent it spawns: see `references/shared.md`.
 
@@ -68,6 +68,16 @@ python3 pymavlink/tools/mavgen.py --lang=C --wire-protocol=2.0 --strict-units --
 Record each failure verbatim; these become `bug` rows with the tool output as evidence.
 Also diff `scripts/xml_consistency_allowlist.txt`: every added line is a finding (`should-fix`) unless the PR explains why the warning can't be fixed now.
 If a tool can't run (missing dependency), say so in the report rather than silently skipping it.
+
+If any definition is classified *moved*, list the PR's commits (`gh api repos/mavlink/mavlink/pulls/<n>/commits --jq '.[].sha'`), take the first commit that touches both files of the move, and record whether it is verbatim.
+It is verbatim when the lines it removes and the lines it adds are the same, ignoring order and comment-only lines (such as a `<!-- X moved to common.xml -->` note left behind):
+
+```sh
+git -C <scratch>/head diff -U0 <c>^ <c> -- message_definitions/ | grep -vE '^(\+\+\+|---) ' | grep -vE '^[-+]\s*<!--.*-->\s*$' > <scratch>/move.diff
+diff <(grep '^-' <scratch>/move.diff | cut -c2- | sort) <(grep '^+' <scratch>/move.diff | cut -c2- | sort)
+```
+
+Empty output means verbatim; otherwise record the output for `placement-lifecycle.md`, which turns it into a finding.
 
 Also record, for every new or changed message, its **wire layout** as mavgen computes it (field order, offsets, total and minimum length); the lenses need it. The C output's `MAVLINK_MESSAGE_INFO_<NAME>` or the Python generator's `ordered_fieldnames` gives it directly.
 
