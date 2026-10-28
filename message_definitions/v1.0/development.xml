@@ -113,6 +113,8 @@
       </entry>
     </enum>
     <enum name="MAV_FUEL_STATUS_FLAGS" bitmask="true">
+      <wip since="2026-10"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Fuel status flags for fault, health and state indication of a single fuel source. These indicate conditions of the fuel source itself; they do not indicate the status of the aggregated energy system as a whole (see MAV_ENERGY_STATUS_FLAGS in ENERGY_SYSTEM_STATUS for that).</description>
       <entry value="1" name="MAV_FUEL_STATUS_FLAGS_NOT_READY_TO_USE">
         <description>
@@ -646,6 +648,8 @@
       </entry>
     </enum>
     <enum name="MAV_ENERGY_STATUS_FLAGS" bitmask="true">
+      <wip since="2026-10"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Status and configuration flags for an energy system, as reported in ENERGY_SYSTEM_STATUS.
         Applies to the energy system as a whole (not a specific battery or fuel tank contributing to it).
 
@@ -714,7 +718,7 @@
       <field type="uint32_t" name="status_flags" enum="MAV_BATTERY_STATUS_FLAGS">Fault, health, readiness, and other status indications.</field>
     </message>
     <message id="364" name="BATTERY_CELL_STATUS">
-      <wip/>
+      <wip since="2026-10"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Battery cell voltages.
         The id field matches the id field of the corresponding BATTERY_STATUS_V2 and BATTERY_INFO messages.
@@ -953,7 +957,7 @@
       <field type="int8_t" name="signal_quality" units="%" invalid="INT8_MAX">Signal quality (sensor-type specific). Represents the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. Values: [0-100], 0 = unusable signal, 100 = perfect signal. INT8_MAX = unknown/not provided.</field>
     </message>
     <message id="365" name="ENERGY_SYSTEM_INFO">
-      <wip/>
+      <wip since="2026-10"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Energy system (propulsion, avionics, payload, all, or user-defined) low rate/static information.
 
@@ -977,7 +981,7 @@
       <field type="char[25]" name="energy_system_name">User-defined energy system name (allows a GCS to provide a human readable string for an energy_system such as MAV_ENERGY_SYSTEM_USER_DEFINED1). Empty for predefined energy_system types. This is UTF-8 encoded and without null termination character.</field>
     </message>
     <message id="366" name="ENERGY_SYSTEM_STATUS">
-      <wip/>
+      <wip since="2026-10"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Energy system (propulsion, avionics, payload, all, or user-defined) status information.
 
@@ -990,7 +994,7 @@
       <field type="uint8_t" name="status_flags" enum="MAV_ENERGY_STATUS_FLAGS">Health and readiness state of overall power system and configuration flags.</field>
     </message>
     <message id="367" name="FUEL_INFORMATION_V2">
-      <wip/>
+      <wip since="2026-10"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Fuel information that is static, or requires infrequent update.
         This message should be requested using MAV_CMD_REQUEST_MESSAGE and/or streamed at very low rate.
@@ -1002,7 +1006,7 @@
       <field type="float" name="maximum_fuel">Capacity when full. Must be provided.</field>
     </message>
     <message id="368" name="FUEL_STATUS_V2">
-      <wip/>
+      <wip since="2026-10"/>
       <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
       <description>Fuel dynamic information.
         This should be streamed (nominally at 1Hz).
