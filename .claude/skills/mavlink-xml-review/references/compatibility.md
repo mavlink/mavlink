@@ -39,6 +39,7 @@ Breaking changes there are allowed, but each one should be stated in the PR desc
 ## Messages and commands moving between dialects
 
 A move from development.xml to common.xml must keep the ID, name and fields identical unless the PR says it's deliberately changing them — diff the two definitions field by field and report every difference.
+When the PR splits a verbatim move from later changes (`placement-lifecycle.md`, "Moves between dialects"), the diff of the later commits is that difference.
 
 ## What this lens doesn't cover
 
