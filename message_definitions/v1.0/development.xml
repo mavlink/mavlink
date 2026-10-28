@@ -978,7 +978,7 @@
       </description>
       <field type="uint8_t" name="index" instance="true">Index of this energy system. Matches the index field of the corresponding ENERGY_SYSTEM_STATUS message.</field>
       <field type="uint16_t" name="energy_systems" enum="MAV_ENERGY_SYSTEM_FLAGS">Energy system.</field>
-      <field type="char[25]" name="energy_system_name">User-defined energy system name (allows a GCS to provide a human readable string for an energy_system such as MAV_ENERGY_SYSTEM_USER_DEFINED1). Empty for predefined energy_system types. This is UTF-8 encoded and without null termination character.</field>
+      <field type="char[25]" name="energy_system_name">User-defined energy system name (allows a GCS to provide a human readable string for an energy_system such as MAV_ENERGY_SYSTEM_USER_DEFINED1). Empty for predefined energy_system types. UTF-8 encoded. NUL terminated and zero padded if shorter than 25 bytes, without a NUL terminator if exactly 25 bytes. All zero: empty name.</field>
     </message>
     <message id="366" name="ENERGY_SYSTEM_STATUS">
       <wip since="2026-10"/>
@@ -990,7 +990,8 @@
       <field type="uint8_t" name="index" instance="true">Index of this energy system. Matches the index field of the corresponding ENERGY_SYSTEM_INFO message.</field>
       <field type="float" name="remaining_capacity" units="%" invalid="NaN">Remaining capacity relative to full capacity as a percentage. Values: [0-100], NaN: field not provided.</field>
       <field type="float" name="remaining_time" units="s" invalid="NaN">Estimated time remaining at current consumption rate.
-        When landed, estimated time at nominal in-use consumption rate (such as during hover/cruise mode for normal propulsion) hover/cruise mode.</field>
+        When landed, estimated time at nominal in-use consumption rate (such as during hover/cruise mode for normal propulsion) hover/cruise mode.
+        NaN: field not provided</field>
       <field type="uint8_t" name="status_flags" enum="MAV_ENERGY_STATUS_FLAGS">Health and readiness state of overall power system and configuration flags.</field>
     </message>
     <message id="367" name="FUEL_INFORMATION_V2">
@@ -1013,7 +1014,7 @@
         Static/invariant fuel information is sent in FUEL_INFORMATION_V2.
       </description>
       <field type="uint8_t" name="id" instance="true">Fuel ID. Must match ID of other messages for same fuel system, such as FUEL_INFORMATION_V2.</field>
-      <field type="uint16_t" name="percent_remaining" units="%" multiplier="2E-3" invalid="UINT16_MAX">Percentage of remaining fuel, relative to full. Values: [0-100], UINT16_MAX: field not provided.</field>
+      <field type="uint16_t" name="percent_remaining" units="%" multiplier="2E-3" minValue="0" maxValue="50000" invalid="UINT16_MAX">Percentage of remaining fuel, relative to full. Encoded values: [0-50000], corresponding to [0-100] percent. UINT16_MAX: field not provided.</field>
       <field type="float" name="flow_rate" invalid="NaN">Positive value when emptying/using, and negative if filling/replacing. NaN: field not provided.</field>
       <field type="float" name="temperature" units="K" invalid="NaN">Fuel temperature. NaN: field not provided.</field>
       <field type="uint32_t" name="status_flags" enum="MAV_FUEL_STATUS_FLAGS">Fault, health, readiness, and other status indications for this fuel source.</field>
