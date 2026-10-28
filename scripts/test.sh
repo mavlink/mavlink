@@ -2,6 +2,7 @@
 set -e
 
 SRC_DIR=$(pwd)
+sep="##############################################"
 
 # NOTE: we must do all testing on the installed python package, not
 # on the build tree. Otherwise the testing is invalid and may not
@@ -9,21 +10,20 @@ SRC_DIR=$(pwd)
 
 test_format() {
     # check format
-    sep="##############################################"
-    echo $sep
+    echo "$sep"
     echo "FORMAT TEST"
-    echo $sep
+    echo "$sep"
     cd "$SRC_DIR"
     ./scripts/format_xml.sh -c
     echo PASS
 }
 
 generate_mavlink() {
-    echo $sep
+    echo "$sep"
     echo "GENERATING MAVLINK " \
 	    "protocol:${wire_protocol} language:${lang}"
     echo "DEFINITION : " "$msg_def"
-    echo $sep
+    echo "$sep"
     outdir="/tmp/mavlink_${wire_protocol}_${lang}"
     pymavlink/tools/mavgen.py --lang="${lang}" \
 	    --wire-protocol "${wire_protocol}" \
