@@ -722,8 +722,8 @@
         Note that the aggregate battery voltage is provided in BATTERY_STATUS_V2.voltage.
       </description>
       <field type="uint8_t" name="id" instance="true">Battery ID. Matches the id field of BATTERY_STATUS_V2.</field>
-      <field type="uint8_t" name="cells_instance">Instance of this message for the given energy system.  </field>
-      <field type="uint16_t[6]" name="voltages" units="mV" invalid="[UINT16_MAX]">Battery voltage of cells 6*cells_instance+1 to 6*cells_instance+7.</field>
+      <field type="uint8_t" name="cells_instance">Index of this message for the battery: 0 for cells 1 to 14, 1 for cells 15 to 28, and so on.</field>
+      <field type="uint16_t[14]" name="voltages" units="mV" invalid="[UINT16_MAX]">Battery voltage of cells 14*cells_instance+1 to 14*cells_instance+14.</field>
     </message>
     <message id="414" name="GROUP_START">
       <wip since="2021-09"/>
