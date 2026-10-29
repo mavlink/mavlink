@@ -195,6 +195,9 @@ def check_cmd_param(file_name, cmd_name, entry, enums, deprecated_enums=frozense
                 return
 
             num_steps = range / step
+            if not math.isfinite(num_steps):
+                warn(f"{file_name}: Command {cmd_name} param {index} range {min:f} => {max:f} incompatible with increment {step:f}")
+                return
             if not math.isclose(num_steps, round(num_steps), rel_tol=0, abs_tol=1e-6):
                 warn(f"{file_name}: Command {cmd_name} param {index} range {min:f} => {max:f} incompatible with increment {step:f}")
                 return
