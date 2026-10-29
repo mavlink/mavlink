@@ -10,6 +10,7 @@ from bs4 import Comment
 import os
 import re
 import itertools
+import math
 from datetime import datetime, timedelta, timezone
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
@@ -189,7 +190,15 @@ def check_cmd_param(file_name, cmd_name, entry, enums, deprecated_enums=frozense
 
         if increment is not None:
             step = float(increment)
-            if range % step != 0:
+            if step <= 0:
+                warn(f"{file_name}: Command {cmd_name} param {index} increment must be greater than 0 got {step:f}")
+                return
+
+            num_steps = range / step
+            if not math.isfinite(num_steps):
+                warn(f"{file_name}: Command {cmd_name} param {index} range {min:f} => {max:f} incompatible with increment {step:f}")
+                return
+            if not math.isclose(num_steps, round(num_steps), rel_tol=0, abs_tol=1e-6):
                 warn(f"{file_name}: Command {cmd_name} param {index} range {min:f} => {max:f} incompatible with increment {step:f}")
                 return
 
