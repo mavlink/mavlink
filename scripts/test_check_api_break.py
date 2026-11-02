@@ -571,6 +571,41 @@ class MainRemovedFileTests(unittest.TestCase):
 
         self.assertIn("Skipped removed_dialect.xml: removed since base.", stdout.getvalue())
 
+    def test_file_with_utf8_content_is_read_with_utf8_encoding(self):
+        # XML files can contain non-ASCII UTF-8 characters (e.g. ° in units or descriptions).
+        # Both git show and local file reads must specify utf-8 encoding to avoid platform-default
+        # encoding errors or decoding corruption on Windows.
+        from unittest.mock import patch
+        import tempfile
+        import subprocess
+
+        utf8_content = (
+            '<mavlink><messages>'
+            '<message id="999" name="UTF8_MSG">'
+            '<description>Sensor temperature in °C and µs interval</description>'
+            '<field type="uint8_t" name="val">field</field>'
+            '</message>'
+            '</messages></mavlink>'
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            xml_file = os.path.join(tmp, "utf8.xml")
+            with open(xml_file, "w", encoding="utf-8") as f:
+                f.write(utf8_content)
+
+            def fake_check_output(cmd, **kwargs):
+                if cmd[:2] == ["git", "show"]:
+                    self.assertEqual(kwargs.get("encoding"), "utf-8")
+                    return utf8_content
+                raise subprocess.CalledProcessError(1, cmd)
+
+            with patch("sys.argv", ["check_api_break.py"]), \
+                 patch.object(check_api_break, "get_base_commit", return_value="deadbeef"), \
+                 patch.object(check_api_break, "get_changed_xml_files", return_value=[xml_file]), \
+                 patch("subprocess.check_output", side_effect=fake_check_output):
+                check_api_break.main()  # must not raise
+
+
 
 class NumericAttributeTests(unittest.TestCase):
     """value= and id= are numbers. Rewriting one in a different notation leaves

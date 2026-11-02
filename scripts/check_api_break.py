@@ -530,13 +530,14 @@ def main() -> None:
 
         try:
             old_content = subprocess.check_output(
-                ["git", "show", f"{base}:{xml}"], text=True
+                ["git", "show", f"{base}:{xml}"], text=True, encoding="utf-8"
             )
         except subprocess.CalledProcessError:
             continue  # new file, nothing to compare against
 
         try:
-            new_content = open(xml).read()
+            with open(xml, "r", encoding="utf-8") as f:
+                new_content = f.read()
         except FileNotFoundError:
             print(f"Skipped {xml}: removed since base.")
             continue
