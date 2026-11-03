@@ -8366,9 +8366,9 @@
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="id" instance="true">The ID of the target if multiple targets are present</field>
       <field type="uint8_t" name="sensor_capabilities" enum="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS">Bitmap to indicate the sensor's reporting capabilities</field>
-      <field type="int32_t" name="lat" units="degE7">Target's latitude (WGS84)</field>
-      <field type="int32_t" name="lon" units="degE7">Target's longitude (WGS84)</field>
-      <field type="float" name="alt" units="m">Target's altitude (AMSL)</field>
+      <field type="int32_t" name="lat" units="degE7">Target's latitude (WGS84). Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_POSITION is set in sensor_capabilities.</field>
+      <field type="int32_t" name="lon" units="degE7">Target's longitude (WGS84). Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_POSITION is set in sensor_capabilities.</field>
+      <field type="float" name="alt" units="m">Target's altitude (AMSL). Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_POSITION is set in sensor_capabilities.</field>
       <field type="float[3]" name="vel" units="m/s">Target's velocity in its body frame. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_VELOCITY is set in sensor_capabilities.</field>
       <field type="float[3]" name="acc" units="m/s/s">Linear target's acceleration in its body frame. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_ACCELERATION is set in sensor_capabilities.</field>
       <field type="float[4]" name="q_target">Quaternion of the target's orientation from its body frame to the vehicle's NED frame. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_ATTITUDE is set in sensor_capabilities.</field>
