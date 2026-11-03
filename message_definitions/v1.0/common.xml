@@ -8364,7 +8364,10 @@
       <field type="float" name="max_strobe_period" units="s">Maximum strobing period in seconds</field>
     </message>
     <message id="510" name="TARGET_ABSOLUTE">
-      <description>Current motion information from sensors on a target</description>
+      <description>Global position and motion of a target as measured by sensors on the target.
+        Sent by the target, or a system acting for it, to vehicles that track, follow or land on it.
+        Fields are valid only if the corresponding bit in sensor_capabilities is set.
+      </description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time).</field>
       <field type="uint8_t" name="id">The ID of the target if multiple targets are present</field>
       <field type="uint8_t" name="sensor_capabilities" enum="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS">Bitmap to indicate the sensor's reporting capabilities</field>
