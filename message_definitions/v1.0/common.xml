@@ -8383,7 +8383,9 @@
       <field type="float[3]" name="acc_std" units="m/s/s">Standard deviation of the target's acceleration in its body frame</field>
     </message>
     <message id="511" name="TARGET_RELATIVE">
-      <description>The location of a target measured by MAV's onboard sensors. </description>
+      <description>Position and orientation of a target relative to the vehicle, as measured by the vehicle’s onboard sensors.
+        Values are expressed in the frame given by frame; for TARGET_OBS_FRAME_OTHER, q_sensor gives the rotation from the sensor frame to vehicle-carried NED.
+      </description>
       <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time)</field>
       <field type="uint8_t" name="id" instance="true">The ID of the target if multiple targets are present</field>
       <field type="uint8_t" name="frame" enum="TARGET_OBS_FRAME">Coordinate frame used for following fields.</field>
