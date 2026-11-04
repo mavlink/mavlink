@@ -6056,9 +6056,9 @@
       <field type="float" name="xtrack_error" units="m">Current crosstrack error on x-y plane</field>
       <extensions/>
       <field type="uint8_t" name="setpoint_flags" enum="NAV_CONTROLLER_SETPOINT_FLAGS">Flags indicating which fields contain valid data and are being controlled in the indicated way. Note, if NAV_CONTROLLER_SETPOINT_FLAGS_COURSE_VALID is not set, the data in nav_bearing may still be valid but its meaning is implementation dependent.</field>
-      <field type="int16_t" name="nav_heading" units="deg" minValue="0" maxValue="360">Current desired heading (direction the vehicle is pointing) in compass units (0=true north). Only valid if NAV_CONTROLLER_SETPOINT_FLAGS_HEADING_VALID is set.</field>
-      <field type="float" name="nav_alt" units="m">Current desired altitude (MSL). Only valid if NAV_CONTROLLER_SETPOINT_FLAGS_ALTITUDE_VALID is set.</field>
-      <field type="float" name="nav_speed" units="m/s">Current desired speed, of the type given in speed_type. Only valid if speed_type is not NAV_CONTROLLER_SPEED_TYPE_INVALID.</field>
+      <field type="int16_t" name="nav_heading" units="deg" minValue="0" maxValue="360" invalid="0">Current desired heading (direction the vehicle is pointing) in compass units (0=true north). Only valid if NAV_CONTROLLER_SETPOINT_FLAGS_HEADING_VALID is set.</field>
+      <field type="float" name="nav_alt" units="m" invalid="0">Current desired altitude (MSL). Only valid if NAV_CONTROLLER_SETPOINT_FLAGS_ALTITUDE_VALID is set.</field>
+      <field type="float" name="nav_speed" units="m/s" invalid="0">Current desired speed, of the type given in speed_type. Only valid if speed_type is not NAV_CONTROLLER_SPEED_TYPE_INVALID.</field>
       <field type="uint8_t" name="speed_type" enum="NAV_CONTROLLER_SPEED_TYPE">Type of speed in nav_speed.</field>
     </message>
     <message id="63" name="GLOBAL_POSITION_INT_COV">
