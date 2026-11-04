@@ -8373,9 +8373,9 @@
       <field type="float[3]" name="acc" units="m/s/s">Linear target's acceleration in its body frame. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_ACCELERATION is set in sensor_capabilities.</field>
       <field type="float[4]" name="q_target">Quaternion of the target's orientation from its body frame to the vehicle's NED frame. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_ATTITUDE is set in sensor_capabilities.</field>
       <field type="float[3]" name="rates" units="rad/s">Target's angular rates (roll, pitch, yaw) in MAV_FRAME_BODY_FRD. Valid if TARGET_ABSOLUTE_SENSOR_CAPABILITY_RATES is set in sensor_capabilities.</field>
-      <field type="float[2]" name="position_std" units="m">Standard deviation of horizontal (eph) and vertical (epv) position errors</field>
-      <field type="float[3]" name="vel_std" units="m/s">Standard deviation of the target's velocity in its body frame</field>
-      <field type="float[3]" name="acc_std" units="m/s/s">Standard deviation of the target's acceleration in its body frame</field>
+      <field type="float[2]" name="position_std" units="m" invalid="[NaN]">Standard deviation of horizontal (eph) and vertical (epv) position errors. NaN if unknown.</field>
+      <field type="float[3]" name="vel_std" units="m/s" invalid="[NaN]">Standard deviation of the target's velocity, in the same frame as vel. NaN if unknown.</field>
+      <field type="float[3]" name="acc_std" units="m/s/s" invalid="[NaN]">Standard deviation of the target's acceleration, in the same frame as acc. NaN if unknown.</field>
     </message>
     <message id="511" name="TARGET_RELATIVE">
       <description>Position and orientation of a target relative to the vehicle, as measured by the vehicle's onboard sensors.
