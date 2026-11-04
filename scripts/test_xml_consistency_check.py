@@ -662,5 +662,51 @@ class MainRunsLifecycleChecksTest(ConsistencyCheckTestCase):
                 self.assertEqual(required.call_count, 1)
 
 
+
+
+class FilePathResolutionAndEncodingTests(ConsistencyCheckTestCase):
+    """Verifies that xml_consistency_check handles file paths (relative to cwd
+    or absolute) and UTF-8 encoded files without crashing on Windows."""
+
+    def test_main_resolves_file_path_relative_to_working_directory(self):
+        rel_path = os.path.join("message_definitions", "v1.0", "minimal.xml")
+        with mock.patch("sys.argv", ["xml_consistency_check.py", "-f", rel_path]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            xml_consistency_check.main()
+
+    def test_main_resolves_absolute_file_path(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        abs_path = os.path.normpath(os.path.join(script_dir, "../message_definitions/v1.0/minimal.xml"))
+        with mock.patch("sys.argv", ["xml_consistency_check.py", "-f", abs_path]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            xml_consistency_check.main()
+
+    def test_main_reads_utf8_encoded_files(self):
+        import tempfile
+        utf8_content = (
+            '<mavlink><messages>'
+            '<message id="999" name="UTF8_MSG">'
+            '<description>Temperature in °C and interval in µs</description>'
+            '<field type="uint8_t" name="val">Sensor value</field>'
+            '</message>'
+            '</messages></mavlink>'
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            xml_file = os.path.join(tmp, "utf8_dialect.xml")
+            with open(xml_file, "w", encoding="utf-8") as f:
+                f.write(utf8_content)
+
+            with mock.patch("sys.argv", ["xml_consistency_check.py", "-f", xml_file]), \
+                    contextlib.redirect_stdout(io.StringIO()):
+                xml_consistency_check.main()
+
+    def test_included_enum_names_resolves_direct_path(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        dev_path = os.path.normpath(os.path.join(script_dir, "../message_definitions/v1.0/development.xml"))
+        source_dir = os.path.dirname(dev_path)
+        names = xml_consistency_check.included_enum_names(source_dir, dev_path)
+        self.assertIn("MAV_CMD", names)
+
+
 if __name__ == "__main__":
     unittest.main()

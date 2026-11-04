@@ -296,16 +296,26 @@ def included_enum_names(source_dir, file_name, seen=None):
     if seen is None:
         seen = set()
     names = set()
-    with open(os.path.join(source_dir, file_name), 'r') as f:
+    if os.path.isfile(file_name):
+        path = file_name
+    else:
+        path = os.path.join(source_dir, file_name)
+
+    with open(path, 'r', encoding='utf-8') as f:
         soup = bs(f.read(), 'xml')
+
+    file_dir = os.path.dirname(os.path.abspath(path))
     for include in soup.find_all('include'):
         included = include.text.strip()
         if included in seen:
             continue
         seen.add(included)
-        with open(os.path.join(source_dir, included), 'r') as f:
+        inc_path = os.path.join(file_dir, included)
+        if not os.path.isfile(inc_path):
+            inc_path = os.path.join(source_dir, included)
+        with open(inc_path, 'r', encoding='utf-8') as f:
             names.update(enum.get('name') for enum in bs(f.read(), 'xml').find_all('enum'))
-        names |= included_enum_names(source_dir, included, seen)
+        names |= included_enum_names(source_dir, inc_path, seen)
     return names
 
 
@@ -340,7 +350,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
     # Resolve paths relative to this script, not the working directory, so the
     # defaults work regardless of where the script is invoked from.
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    source_dir = os.path.join(script_dir, "../message_definitions/v1.0/")
+    source_dir = os.path.normpath(os.path.join(script_dir, "../message_definitions/v1.0"))
 
     # Dialects this repository controls. Other dialects (e.g. ardupilotmega.xml)
     # are vendored/synced from downstream projects, so we don't gate CI on their
@@ -360,7 +370,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
     allowlist_path = args.allowlist if args.allowlist is not None else default_allowlist
 
     if os.path.exists(allowlist_path):
-        with open(allowlist_path, 'r') as f:
+        with open(allowlist_path, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith('#'):
@@ -375,12 +385,18 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
     xml = {}
     for file in files:
         # Read the XML file
-        path = source_dir + file
-        with open(path, 'r') as f:
+        if os.path.isfile(file):
+            path = file
+            display_name = os.path.basename(file)
+        else:
+            path = os.path.join(source_dir, file)
+            display_name = file
+
+        with open(path, 'r', encoding='utf-8') as f:
             xml_content = f.read()
 
         # Initialize BeautifulSoup with the XML content
-        xml[file] = bs(xml_content, 'xml')
+        xml[display_name] = bs(xml_content, 'xml')
 
     # Get all enums
     all_enums = {}
