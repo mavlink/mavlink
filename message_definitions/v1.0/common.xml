@@ -8360,8 +8360,8 @@
     </message>
     <message id="510" name="TARGET_ABSOLUTE">
       <description>Global position and motion of a target as measured by sensors on the target.
-        Sent by the target, or a system acting for it, to vehicles that track, follow or land on it.
-        Fields are valid only if the corresponding bit in sensor_capabilities is set.
+        Sent by the target, or a system acting for it, to vehicles that track, follow or land on it, at the rate of the target's sensor measurements.
+        Position, velocity, acceleration, attitude and rates are valid only if the corresponding bit in sensor_capabilities is set.
       </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="id" instance="true">The ID of the target if multiple targets are present</field>
@@ -8379,7 +8379,8 @@
     </message>
     <message id="511" name="TARGET_RELATIVE">
       <description>Position and orientation of a target relative to the vehicle, as measured by the vehicle's onboard sensors.
-        Values are expressed in the frame given by frame; for TARGET_OBS_FRAME_OTHER, q_sensor gives the rotation from the sensor frame to vehicle-carried NED.
+        Sent by the onboard sensor or vision pipeline (e.g. a companion computer) to the autopilot, one message per observation.
+        Position, orientation and their uncertainties are expressed in the observation frame: the sensor frame if q_sensor is set, otherwise the frame given by frame.
       </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="id" instance="true">The ID of the target if multiple targets are present</field>
