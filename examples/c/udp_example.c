@@ -78,6 +78,10 @@ void receive_some(int socket_fd, struct sockaddr_in* src_addr, socklen_t* src_ad
     // We just receive one UDP datagram and then return again.
     char buffer[2048]; // enough for MTU 1500 bytes
 
+    // recvfrom() may overwrite *src_addr_len with the actual address size;
+    // reset it before each call so the full sockaddr_in is always filled in.
+    *src_addr_len = sizeof(*src_addr);
+
     const int ret = recvfrom(
             socket_fd, buffer, sizeof(buffer), 0, (struct sockaddr*)(src_addr), src_addr_len);
 

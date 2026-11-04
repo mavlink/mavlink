@@ -23,6 +23,15 @@ Is each definition in the right file, with the right ID, carrying the right life
 - **Removal** is rare: the definition must have been deprecated for a reasonable period, and `downstream.md` must show nothing still uses it. Otherwise `bug`.
 - **Dates** use the format already used in the file (check neighbours); an obviously stale or future date is `should-fix`.
 
+## Moves between dialects
+
+Applies to every definition classified *moved* (usually development.xml → common.xml, also vendor dialect → common.xml).
+
+- The move is its own commit, verbatim: the lines it removes from the old file are exactly the lines it adds to the new one. Every change — wording, units, attributes, removing `<wip>` and its comment — goes in a later commit, so reviewers can read the changes as their own diff.
+- A move mixed with changes in one commit, or a move commit the Check step reports as not verbatim, is `should-fix`: ask the author to split it (verbatim move first, changes second) and force-push, and list the differences the Check step found. PRs are squash-merged, so the split costs nothing in history.
+- A verbatim move with no later changes needs only one commit.
+- The diff of the later commits is the list of changes made during the move: check the PR description mentions each one.
+
 ## Promotion from development.xml to common.xml
 
 - The entry is removed from development.xml in the same PR (not duplicated).
