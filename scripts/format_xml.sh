@@ -61,17 +61,11 @@ xml_files=()
 if [ -z "$xml_file" ]
 then
     xml_list=$(mktemp)
-    if find "$xml_dir" -name "*.xml" -print0 > "$xml_list"
-    then
-        while IFS= read -r -d '' f; do
-            xml_files+=("$f")
-        done < "$xml_list"
-        rm -- "$xml_list"
-    else
-        find_status=$?
-        rm -- "$xml_list"
-        exit "$find_status"
-    fi
+    trap 'rm -f -- "$xml_list"' EXIT
+    find "$xml_dir" -name "*.xml" -print0 > "$xml_list"   # set -e exits with find's status
+    while IFS= read -r -d '' f; do
+        xml_files+=("$f")
+    done < "$xml_list"
 else
     xml_files=("$xml_dir/$xml_file")
 fi
