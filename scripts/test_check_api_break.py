@@ -602,8 +602,10 @@ class MainRemovedFileTests(unittest.TestCase):
             with patch("sys.argv", ["check_api_break.py"]), \
                  patch.object(check_api_break, "get_base_commit", return_value="deadbeef"), \
                  patch.object(check_api_break, "get_changed_xml_files", return_value=[xml_file]), \
-                 patch("subprocess.check_output", side_effect=fake_check_output):
+                 patch("subprocess.check_output", side_effect=fake_check_output), \
+                 patch("builtins.open", wraps=open) as mock_open:
                 check_api_break.main()  # must not raise
+                mock_open.assert_any_call(xml_file, "r", encoding="utf-8")
 
 
 
