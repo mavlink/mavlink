@@ -189,6 +189,54 @@ class CmdParamRangeTests(ConsistencyCheckTestCase):
         messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
         self.assertEqual(messages, [])
 
+    def test_fractional_increment_compatible_does_not_warn(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="1" increment="0.1">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(messages, [])
+
+    def test_fractional_increment_incompatible_warns(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="1" increment="0.3">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 range 0.000000 => 1.000000 "
+             "incompatible with increment 0.300000"],
+        )
+
+    def test_many_steps_incompatible_warns(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="360.003" increment="0.01">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 range 0.000000 => 360.003000 "
+             "incompatible with increment 0.010000"],
+        )
+
+    def test_increment_zero_or_negative_warns(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="10" increment="0">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 increment must be greater than 0 got 0.000000"],
+        )
+
+        param_neg = parse_param(
+            '<param index="1" minValue="0" maxValue="10" increment="-1">desc</param>'
+        )
+        messages_neg = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param_neg, {})
+        self.assertEqual(
+            messages_neg,
+            ["test.xml: Command MY_CMD param 1 increment must be greater than 0 got -1.000000"],
+        )
+
 
 class DeprecatedEnumReferenceTestCase(ConsistencyCheckTestCase):
     """A deprecated enum is skipped when the checker collects enums, so a
