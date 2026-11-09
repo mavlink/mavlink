@@ -218,6 +218,17 @@ class CmdParamRangeTests(ConsistencyCheckTestCase):
              "incompatible with increment 0.010000"],
         )
 
+    def test_increment_larger_than_range_warns(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="1" increment="1e7">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 range 0.000000 => 1.000000 "
+             "incompatible with increment 10000000.000000"],
+        )
+
     def test_increment_zero_or_negative_warns(self):
         param = parse_param(
             '<param index="1" minValue="0" maxValue="10" increment="0">desc</param>'
@@ -225,6 +236,15 @@ class CmdParamRangeTests(ConsistencyCheckTestCase):
         messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
         self.assertEqual(
             messages,
+            ["test.xml: Command MY_CMD param 1 increment must be greater than 0 got 0.000000"],
+        )
+
+        param_no_range = parse_param(
+            '<param index="1" increment="0">desc</param>'
+        )
+        messages_no_range = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param_no_range, {})
+        self.assertEqual(
+            messages_no_range,
             ["test.xml: Command MY_CMD param 1 increment must be greater than 0 got 0.000000"],
         )
 
