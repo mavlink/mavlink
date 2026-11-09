@@ -1501,9 +1501,22 @@
         <param index="1" label="Altitude" units="m">Break altitude</param>
         <param index="2" label="Speed" units="m/s">Landing speed</param>
       </entry>
-      <entry value="191" name="MAV_CMD_DO_GO_AROUND" command="true">
-        <description>Command to safely abort an autonomous landing.</description>
-        <param index="1" label="Altitude" units="m">Altitude</param>
+      <entry value="191" name="MAV_CMD_DO_GO_AROUND" hasLocation="true" isDestination="false" mission="true" command="true">
+        <description>Command to safely abort an autonomous landing, or a mission item to mark the start of a landing abort sequence.
+
+        When sent as a command it aborts the current landing.
+        If the mission contains landing abort sequences the vehicle may continue with one of them.
+        The location parameters are not used in this case, and should be set to 0.
+
+        When used in a mission, this is a marker for the start of a sequence of mission items that are flown if the landing is aborted.
+        It should be followed by the navigation items of the abort sequence.
+        The marker latitude and longitude are used only for selecting which abort sequence to use if several are defined in the mission (the selected sequence will be the one with the marker position horizontally closest to the vehicle when the landing is aborted).
+        Param 1 is not used in this case.
+        </description>
+        <param index="1" label="Altitude" units="m">Altitude above home to climb to when aborting (command only). 0: use the vehicle default.</param>
+        <param index="5" label="Latitude">Latitude for abort sequence selection. Ignored in commands (set 0).</param>
+        <param index="6" label="Longitude">Longitude for abort sequence selection. Ignored in commands (set 0).</param>
+        <param index="7" label="Altitude" units="m">Marker altitude, not used for abort sequence selection. Ignored in commands (set 0).</param>
       </entry>
       <entry value="192" name="MAV_CMD_DO_REPOSITION" hasLocation="true" isDestination="true" command="true">
         <description>Reposition the vehicle to a specific WGS84 global position. This command is intended for guided commands (for missions use MAV_CMD_NAV_WAYPOINT instead).</description>
