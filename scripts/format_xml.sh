@@ -97,7 +97,7 @@ do
             # xml_file is taken relative to xml_dir, so strip it from the path
             rel="${f#"$xml_dir"}"
             rel="${rel#/}"
-            printf 'file %s needs formatting - run %q -d %q %q\n' \
+            printf 'file %s needs formatting - run %q -d %q -- %q\n' \
                 "$f" "$0" "$xml_dir" "$rel"
             ret=1
         fi
