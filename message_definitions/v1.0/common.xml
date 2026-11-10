@@ -6900,7 +6900,6 @@
       <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
     </message>
     <message id="144" name="FOLLOW_TARGET">
-      <superseded since="2026-11" replaced_by="TARGET_ABSOLUTE">TARGET_ABSOLUTE adds a target id, per-field validity and velocity/acceleration uncertainty for fusion in the receiver's target estimator.</superseded>
       <description>Current motion information from a designated system</description>
       <field type="uint64_t" name="timestamp" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="est_capabilities" enum="FOLLOW_TARGET_CAP_FLAGS">Bitmask indicating which fields in this message contain valid data.</field>
@@ -6954,7 +6953,6 @@
     </message>
     <!-- <message id="148" name="AUTOPILOT_VERSION"> in standard.xml -->
     <message id="149" name="LANDING_TARGET">
-      <superseded since="2026-11" replaced_by="TARGET_RELATIVE">Superseded for sensors that report the target's position: TARGET_RELATIVE adds position/orientation uncertainty and the sensor orientation (q_sensor) for fusion in the autopilot's target estimator. Sensors that report only angles to the target (angle_x, angle_y with position_valid = 0) should continue to use LANDING_TARGET.</superseded>
       <description>The location of a landing target. See: https://mavlink.io/en/services/landing_target.html</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="target_num">The ID of the target if multiple targets are present</field>
@@ -8345,6 +8343,7 @@
     <message id="510" name="TARGET_ABSOLUTE">
       <description>Global position and motion of a target as determined from sensors on the target.
         Sent by the target, or a system acting for it, to vehicles that track, follow or land on it.
+        Complements FOLLOW_TARGET, adding a target id and velocity and acceleration uncertainty for fusion in the receiver's target estimator.
         Fields that are not measured are set to their invalid value.
       </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
@@ -8363,6 +8362,8 @@
     <message id="511" name="TARGET_RELATIVE">
       <description>Position and orientation of a target relative to the vehicle, as measured by the vehicle's onboard sensors.
         Sent by the onboard sensor or vision pipeline (e.g. a companion computer) to the autopilot, one message per observation.
+        Complements LANDING_TARGET, adding position and orientation uncertainty and the sensor orientation (q_sensor) for fusion in the autopilot's target estimator.
+        Sensors that report only angles to the target should use LANDING_TARGET.
         Position, orientation and their uncertainties are expressed in the observation frame: the sensor frame if q_sensor is set, otherwise the frame given by frame.
       </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
