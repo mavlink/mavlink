@@ -114,12 +114,48 @@
       </entry>
     </enum>
 
-    <enum name="STATE_SHARING_CONTROL_COMMAND">
-      <description>Commands for StateSharingControl message</description>
-      <entry value="0" name="COMMAND_NONE"/>
-      <entry value="1" name="COMMAND_START"/>
-      <entry value="2" name="COMMAND_STOP"/>
-      <entry value="3" name="COMMAND_UPDATE_PARAMS"/>
+    <enum name="STATE_SHARING_DATA_FLAGS" bitmask="true">
+      <description>Bitmask defining which telemetry fields are requested / transmitted in state sharing.</description>
+      <entry value="1" name="STATE_SHARING_DATA_FLAG_POSITION">
+        <description>Global position coordinates (lat, lon, alt).</description>
+      </entry>
+      <entry value="2" name="STATE_SHARING_DATA_FLAG_VELOCITY">
+        <description>NED ground velocity (velocity[3]).</description>
+      </entry>
+      <entry value="4" name="STATE_SHARING_DATA_FLAG_ATTITUDE">
+        <description>Attitude quaternion (q[4]).</description>
+      </entry>
+      <entry value="8" name="STATE_SHARING_DATA_FLAG_ACCELERATION">
+        <description>NED linear acceleration (acceleration[3]).</description>
+      </entry>
+      <entry value="16" name="STATE_SHARING_DATA_FLAG_AUX1">
+        <description>Auxiliary application telemetry field 1 (aux[0]).</description>
+      </entry>
+      <entry value="32" name="STATE_SHARING_DATA_FLAG_AUX2">
+        <description>Auxiliary application telemetry field 2 (aux[1]).</description>
+      </entry>
+      <entry value="64" name="STATE_SHARING_DATA_FLAG_AUX3">
+        <description>Auxiliary application telemetry field 3 (aux[2]).</description>
+      </entry>
+      <entry value="128" name="STATE_SHARING_DATA_FLAG_AUX4">
+        <description>Auxiliary application telemetry field 4 (aux[3]).</description>
+      </entry>
+    </enum>
+
+    <enum name="STATE_SHARING_COMMAND">
+      <description>Command type for STATE_SHARING_CONTROL message.</description>
+      <entry value="0" name="STATE_SHARING_COMMAND_NONE">
+        <description>No command.</description>
+      </entry>
+      <entry value="1" name="STATE_SHARING_COMMAND_START">
+        <description>Start broadcasting state sharing messages.</description>
+      </entry>
+      <entry value="2" name="STATE_SHARING_COMMAND_STOP">
+        <description>Stop broadcasting state sharing messages.</description>
+      </entry>
+      <entry value="3" name="STATE_SHARING_COMMAND_UPDATE_PARAMS">
+        <description>Update state sharing broadcast parameters.</description>
+      </entry>
     </enum>
 
     <!-- The MAV_CMD enum entries describe either: -->
@@ -905,21 +941,30 @@
       <field type="float" name="distance" units="m" invalid="NaN">Current distance reading. NaN if not provided.</field>
       <field type="int8_t" name="signal_quality" units="%" invalid="INT8_MAX">Signal quality (sensor-type specific). Represents the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. Values: [0-100], 0 = unusable signal, 100 = perfect signal. INT8_MAX = unknown/not provided.</field>
     </message>
-    <message id="42000" name="STATE_SHARING_CONTROL">
-      <description>PX4 State Sharing Control message for runtime control of state sharing module.</description>
-      <field type="uint64_t" name="timestamp">Timestamp (microseconds since boot or Unix epoch)</field>
-      <field type="uint8_t" name="command" enum="STATE_SHARING_CONTROL_COMMAND">Control command</field>
-      <field type="char[128]" name="args">Optional arguments (e.g., key-value pairs: "DELAY=1.0,PERIOD=0.5")</field>
+    <message id="12950" name="STATE_SHARING">
+      <description>Air-to-air peer state sharing message for decentralized swarm kinematics and collision avoidance.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (time since system boot).</field>
+      <field type="uint64_t" name="timestamp_real_time" units="us">Real-time synchronized epoch timestamp (0 if unavailable).</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude.</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude.</field>
+      <field type="float" name="alt" units="m">Altitude AMSL.</field>
+      <field type="uint16_t" name="data_flags" enum="STATE_SHARING_DATA_FLAGS">Bitmask of active telemetry fields present in this message.</field>
+      <!-- Optional trailing fields stripped by MAVLink 2 zero-truncation when omitted -->
+      <extensions/>
+      <field type="float[4]" name="q">Attitude quaternion (w, x, y, z).</field>
+      <field type="float[3]" name="velocity" units="m/s">NED ground velocity.</field>
+      <field type="float[3]" name="acceleration" units="m/s/s">NED linear acceleration.</field>
+      <field type="float[4]" name="aux">Auxiliary application-defined data fields.</field>
     </message>
-    <message id="42001" name="STATE_SHARING">
-      <description>PX4 State Sharing message for multi-agent state exchange.</description>
-      <field type="uint64_t" name="timestamp">Timestamp (microseconds since boot)</field>
-      <field type="uint64_t" name="timestamp_real_time">Timestamp real time (Unix epoch)</field>
-      <field type="uint16_t" name="agent_id">Agent identification</field>
-      <field type="float" name="global_position_lon">Longitude [deg]</field>
-      <field type="float" name="global_position_lat">Latitude [deg]</field>
-      <field type="float" name="global_position_alt">Altitude [m]</field>
-      <field type="float[4]" name="q">Quaternion (w, x, y, z)</field>
+    <message id="12951" name="STATE_SHARING_CONTROL">
+      <description>Control message to configure and trigger peer state sharing across the swarm.</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (time since system boot).</field>
+      <field type="uint64_t" name="sync_epoch_us" units="us">Scheduled start epoch time in real-time us (0 for immediate).</field>
+      <field type="float" name="sharing_period" units="s">Broadcast interval in seconds.</field>
+      <field type="float" name="delay_start" units="s">Initial delay before first transmission in seconds.</field>
+      <field type="uint16_t" name="data_flags" enum="STATE_SHARING_DATA_FLAGS">Bitmask specifying which telemetry fields the agent must publish.</field>
+      <field type="uint8_t" name="target_system">Target system ID (0 for all systems/broadcast).</field>
+      <field type="uint8_t" name="command" enum="STATE_SHARING_COMMAND">Command type (START, STOP, UPDATE_PARAMS).</field>
     </message>
   </messages>
 </mavlink>
