@@ -346,7 +346,11 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
                             formatter_class=RawDescriptionHelpFormatter)
 
     parser.add_argument('-f', '--file', default=None, nargs='+',
-                        help="XML file name(s) to check (defaults to the managed dialects)")
+                        help="XML file(s) to check: a path (absolute or relative to the current "
+                             "folder), or a dialect name looked up in message_definitions/v1.0/ "
+                             "(e.g. common). '.xml' is added if missing. Includes are looked up "
+                             "next to the file, then in message_definitions/v1.0/. "
+                             "Defaults to the managed dialects")
     parser.add_argument('-e', '--exception', action='store_true',
                         help="Throw error if any non-allowlisted warnings are found")
     parser.add_argument('-a', '--allowlist', default=None,
