@@ -5180,9 +5180,10 @@
         This can be emitted by flight controllers, onboard computers, or other components in the MAVLink network.
         Components that are using a less reliable time source, such as a battery-backed real time clock, can choose to match their system clock to that of a system that indicates a more recent time.
         This allows more broadly accurate date stamping of logs, and so on.
-        If precise time synchronization is needed then use TIMESYNC instead.</description>
-      <field type="uint64_t" name="time_unix_usec" units="us">Timestamp (UNIX epoch time).</field>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+        If precise time synchronization is needed then use TIMESYNC instead.
+        A decrease in time_boot_ms from the same component (other than when it wraps, after about 49.7 days) indicates that the component has rebooted.</description>
+      <field type="uint64_t" name="time_unix_usec" units="us" invalid="0">Timestamp (UNIX epoch time), or 0 if unknown.</field>
+      <field type="uint32_t" name="time_boot_ms" units="ms" invalid="0">Timestamp (time since system boot), or 0 if the sender has no boot time (e.g. a GCS).</field>
     </message>
     <message id="4" name="PING">
       <superseded since="2011-08" replaced_by="TIMESYNC">To be removed / merged with TIMESYNC</superseded>
