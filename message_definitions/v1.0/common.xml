@@ -1118,7 +1118,7 @@
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
-      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. Params 5, 6, 7 labelled Latitude/X, Longitude/Y, Altitude/Z are global or local coordinates according to the frame of the COMMAND_INT or MISSION_ITEM_INT that carries the command; the encoding is defined by the x, y, z fields of those messages. When sent in COMMAND_LONG (no frame field), params 5 and 6 are latitude and longitude, and the altitude frame is implementation-defined. This command list is similar to what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
       <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
         <description>Navigate to waypoint. This is intended for use in missions (for guided commands outside of missions use MAV_CMD_DO_REPOSITION).</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
@@ -1165,20 +1165,21 @@
         <param index="1" label="Abort Alt" units="m">Minimum target altitude if landing is aborted (0 = undefined/use system default).</param>
         <param index="2" label="Land Mode" enum="PRECISION_LAND_MODE">Precision land mode.</param>
         <param index="4" label="Yaw Angle" units="deg">Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
-        <param index="5" label="Latitude">Latitude.</param>
-        <param index="6" label="Longitude">Longitude.</param>
-        <param index="7" label="Altitude" units="m">Landing altitude (ground level in current frame).</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Landing altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
         <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="3" label="Flags" enum="NAV_TAKEOFF_FLAGS">Bitmask of options flags.</param>
         <param index="4" label="Yaw" units="deg">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="23" name="MAV_CMD_NAV_LAND_LOCAL" hasLocation="true" isDestination="true" mission="true" command="true">
+        <superseded since="2026-11" replaced_by="MAV_CMD_NAV_LAND">Use MAV_CMD_NAV_LAND in COMMAND_INT or MISSION_ITEM_INT with a local MAV_FRAME (e.g. MAV_FRAME_LOCAL_NED). Note that its params 5/6 are X/Y (swapped relative to this command) and yaw is in degrees. Set descent rate with MAV_CMD_DO_CHANGE_SPEED (SPEED_TYPE_DESCENT_SPEED). Landing target number and maximum offset have no equivalent.</superseded>
         <description>Land at local position (local frame only)</description>
         <param index="1" label="Target" minValue="0" increment="1">Landing target number (if available)</param>
         <param index="2" label="Offset" units="m" minValue="0">Maximum accepted offset from desired landing position - computed magnitude from spherical coordinates: d = sqrt(x^2 + y^2 + z^2), which gives the maximum accepted distance between the desired landing position and the position where the vehicle is about to land</param>
@@ -1189,6 +1190,7 @@
         <param index="7" label="Z Position" units="m">Z-axis / ground level position</param>
       </entry>
       <entry value="24" name="MAV_CMD_NAV_TAKEOFF_LOCAL" hasLocation="true" isDestination="true" mission="true" command="true">
+        <superseded since="2026-11" replaced_by="MAV_CMD_NAV_TAKEOFF">Use MAV_CMD_NAV_TAKEOFF in COMMAND_INT or MISSION_ITEM_INT with a local MAV_FRAME (e.g. MAV_FRAME_LOCAL_NED). Note that its params 5/6 are X/Y (swapped relative to this command) and pitch/yaw are in degrees. Set ascent rate with MAV_CMD_DO_CHANGE_SPEED (SPEED_TYPE_CLIMB_SPEED).</superseded>
         <description>Takeoff from local position (local frame only)</description>
         <param index="1" label="Pitch" units="rad">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="3" label="Ascend Rate" units="m/s">Takeoff ascend rate</param>
@@ -5735,8 +5737,8 @@
       <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
       <field type="float" name="param4">PARAM4, see MAV_CMD enum</field>
       <field type="int32_t" name="x">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
-      <field type="int32_t" name="y">PARAM6 / y position: local: x position in meters * 1e4, global: longitude in degrees *10^7</field>
-      <field type="float" name="z">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame.</field>
+      <field type="int32_t" name="y">PARAM6 / local: y position in meters * 1e4, global: longitude in degrees * 10^7</field>
+      <field type="float" name="z">PARAM7 / local: z position in meters, global: altitude in meters (relative or absolute, depending on frame).</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
@@ -5763,7 +5765,7 @@
       <field type="float" name="param4" invalid="NaN">PARAM4, see MAV_CMD enum</field>
       <field type="int32_t" name="x" invalid="INT32_MAX">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
       <field type="int32_t" name="y" invalid="INT32_MAX">PARAM6 / local: y position in meters * 1e4, global: longitude in degrees * 10^7</field>
-      <field type="float" name="z" invalid="NaN">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame).</field>
+      <field type="float" name="z" invalid="NaN">PARAM7 / local: z position in meters, global: altitude in meters (relative or absolute, depending on frame).</field>
     </message>
     <message id="76" name="COMMAND_LONG">
       <description>Send a command with up to seven parameters to the MAV. COMMAND_INT is generally preferred when sending MAV_CMD commands that include positional information; it offers higher precision and allows the MAV_FRAME to be specified (which may otherwise be ambiguous, particularly for altitude). The command microservice is documented at https://mavlink.io/en/services/command.html</description>
@@ -7575,7 +7577,7 @@
       <field type="float" name="radius" units="m">Radius of the orbit circle. Positive values orbit clockwise, negative values orbit counter-clockwise.</field>
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the fields: x, y, z.</field>
       <field type="int32_t" name="x">X coordinate of center point. Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
-      <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
+      <field type="int32_t" name="y">Y coordinate of center point. Coordinate system depends on frame field: local = y position in meters * 1e4, global = longitude in degrees * 1e7.</field>
       <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
     </message>
     <message id="370" name="SMART_BATTERY_INFO">
