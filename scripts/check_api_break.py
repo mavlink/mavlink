@@ -9,6 +9,13 @@ This script checks for the following changes:
 
 * Break: Field type, message ID, or enum value mutations
 
+* Break: Addition of a field ahead of <extensions/> in an existing message
+       <field type="float" name="yawspeed">Yaw angular speed</field>
++      <field type="float" name="tilt">Tilt angle</field>
+       <extensions/>
+
+* Allow: Addition of a field after <extensions/>
+
 * Allow: Removal/Addition of messages and enums
 -    <message id="67" name="DATA_STREAM">
 -      <description>Data stream status information.</description>
@@ -565,7 +572,9 @@ def build_removal_comment(
         lines.extend([
             "Detected fields added ahead of `<extensions/>` in an existing message. "
             "This changes the message's CRC_EXTRA, so peers built against the previous "
-            "definition will drop it. Add the field after `<extensions/>` instead:",
+            "definition will drop it. Add the field after `<extensions/>` instead, "
+            "adding the marker if the message has none. A renamed field also appears "
+            "here; renaming a field is a break either way:",
             "",
         ])
         for xml in sorted(additions_by_file):
