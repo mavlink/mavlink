@@ -7006,14 +7006,14 @@
     <message id="264" name="FLIGHT_INFORMATION">
       <description>Flight information.
         This includes time since boot for arm, takeoff, and land, and a flight number.
-        Takeoff and landing values reset to zero on arm.
+        Takeoff and landing values reset to zero on arm; the arming value resets to zero on disarm.
         This can be requested using MAV_CMD_REQUEST_MESSAGE.
         Note, some fields are misnamed - timestamps are from boot (not UTC) and the flight_uuid is a sequence number.
       </description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="uint64_t" name="arming_time_utc" units="us" invalid="0">Timestamp at arming (since system boot). Set to 0 on boot. Set value on arming. Note, field is misnamed UTC.</field>
+      <field type="uint64_t" name="arming_time_utc" units="us" invalid="0">Timestamp at arming (since system boot). Set to 0 on boot and on disarm. Set value on arming. Note, field is misnamed UTC.</field>
       <field type="uint64_t" name="takeoff_time_utc" units="us" invalid="0">Timestamp at takeoff (since system boot). Set to 0 at boot and on arming. Note, field is misnamed UTC.</field>
-      <field type="uint64_t" name="flight_uuid" invalid="0">Flight number. Note, field is misnamed UUID.</field>
+      <field type="uint64_t" name="flight_uuid" invalid="0">Flight number (e.g. incremented for each flight), or 0 if not supported. Note, field is misnamed UUID.</field>
       <extensions/>
       <field type="uint32_t" name="landing_time" units="ms" invalid="0">Timestamp at landing (in ms since system boot). Set to 0 at boot and on arming.</field>
     </message>
