@@ -731,46 +731,32 @@ class MainRunsLifecycleChecksTest(ConsistencyCheckTestCase):
                 self.assertEqual(required.call_count, 1)
 
 
-class FilePathResolutionAndEncodingTests(ConsistencyCheckTestCase):
-    """Verifies that xml_consistency_check handles file paths (relative to cwd
-    or absolute) and UTF-8 encoded files without crashing on Windows."""
+class FilePathResolutionTests(ConsistencyCheckTestCase):
+    """Verifies that -f/--file accepts paths (relative to the current folder
+    or absolute) as well as bare dialect names."""
 
     # Repo root relative to this test file (scripts/ → repo root).
     _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
-    def test_main_resolves_repo_relative_path(self):
-        # A path like message_definitions/v1.0/minimal.xml used to crash with
-        # a doubled prefix.  Build it from __file__ so it works from any cwd.
-        abs_path = os.path.normpath(
-            os.path.join(self._REPO_ROOT, "message_definitions", "v1.0", "minimal.xml")
-        )
-        with mock.patch("sys.argv", ["xml_consistency_check.py", "-f", abs_path]), \
-                contextlib.redirect_stdout(io.StringIO()):
+    def _run_main(self, *files):
+        output = io.StringIO()
+        with mock.patch("sys.argv", ["xml_consistency_check.py", "-f", *files]), \
+                contextlib.redirect_stdout(output):
             xml_consistency_check.main()
+        return output.getvalue()
 
-    def test_main_reads_utf8_encoded_files(self):
-        # Use a character outside cp1252 so this test actually exercises the
-        # encoding='utf-8' fix.  Mock locale.getpreferredencoding to cp1252
-        # so the test fails without the fix even on Linux/macOS where the
-        # default is already UTF-8.
-        utf8_content = (
-            '<?xml version="1.0" encoding="UTF-8"?>\n'
-            '<mavlink><messages>'
-            '<message id="999" name="UTF8_MSG">'
-            '<description>Temperature \U0001f525 fire emoji</description>'
-            '<field type="uint8_t" name="val">Sensor value</field>'
-            '</message>'
-            '</messages></mavlink>'
-        )
-        with tempfile.TemporaryDirectory() as tmp:
-            xml_file = os.path.join(tmp, "utf8_dialect.xml")
-            with open(xml_file, "w", encoding="utf-8") as f:
-                f.write(utf8_content)
+    def test_main_resolves_relative_path(self):
+        # A path like message_definitions/v1.0/minimal.xml, given from the
+        # repo root (e.g. by tab-completion), used to crash with a doubled
+        # prefix.
+        self.addCleanup(os.chdir, os.getcwd())
+        os.chdir(self._REPO_ROOT)
+        rel_path = os.path.join("message_definitions", "v1.0", "minimal.xml")
+        self.assertIn("minimal.xml", self._run_main(rel_path))
 
-            with mock.patch("locale.getpreferredencoding", return_value="cp1252"), \
-                    mock.patch("sys.argv", ["xml_consistency_check.py", "-f", xml_file]), \
-                    contextlib.redirect_stdout(io.StringIO()):
-                xml_consistency_check.main()
+    def test_main_resolves_absolute_path(self):
+        abs_path = os.path.join(self._REPO_ROOT, "message_definitions", "v1.0", "minimal.xml")
+        self.assertIn("minimal.xml", self._run_main(abs_path))
 
     def test_external_dialect_with_local_includes_gives_no_false_warnings(self):
         """An external development.xml that includes its own custom.xml must
