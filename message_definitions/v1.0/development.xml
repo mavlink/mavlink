@@ -128,6 +128,24 @@
         <description>Last-resort landing site where the airframe is considered expendable. Intended for use when no other landing site can be reached.</description>
       </entry>
     </enum>
+    <enum name="MAV_CORRIDOR_STATE">
+      <description>State of the vehicle with respect to the corridor graph.</description>
+      <entry value="0" name="MAV_CORRIDOR_STATE_NO_GRAPH">
+        <description>No corridor graph is loaded.</description>
+      </entry>
+      <entry value="1" name="MAV_CORRIDOR_STATE_IDLE">
+        <description>A corridor graph is loaded but the vehicle is not using it.</description>
+      </entry>
+      <entry value="2" name="MAV_CORRIDOR_STATE_JOINING">
+        <description>A route has been selected and the vehicle is flying to the point where it joins the corridor graph.</description>
+      </entry>
+      <entry value="3" name="MAV_CORRIDOR_STATE_FOLLOWING">
+        <description>The vehicle is on the corridor graph and following the selected route.</description>
+      </entry>
+      <entry value="4" name="MAV_CORRIDOR_STATE_NO_ROUTE">
+        <description>A route along the corridor graph was requested but none could be found. The vehicle is not using the graph (for example it has fallen back to a return that does not use corridors).</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -180,23 +198,23 @@
       <entry value="5110" name="MAV_CMD_NAV_CORRIDOR_NODE" hasLocation="true" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Defines a node in a flight corridor graph. Nodes are uploaded sequentially as part of a corridor graph mission upload and are referenced by index (zero-based, upload order). The graph describes pre-approved flight paths for corridor-constrained routing (e.g. urban air mobility RTL).</description>
+        <description>Defines a node in a flight corridor graph. Nodes are uploaded as part of a corridor graph mission upload and are referenced by their node ID (param 3), which must be unique within the graph and does not depend on upload order. The node position must be specified in MAV_FRAME_GLOBAL (altitude AMSL); other frames are not allowed. The graph describes pre-approved flight paths for corridor-constrained routing (e.g. urban air mobility RTL).</description>
         <param index="1" label="Type" enum="MAV_CORRIDOR_NODE_TYPE">Node type</param>
-        <param index="2">Reserved</param>
-        <param index="3">Reserved</param>
+        <param index="2" label="Radius" units="m" minValue="0" default="0">Radius of the corridor volume around the node (a sphere centered on the node position). 0: unspecified.</param>
+        <param index="3" label="Node ID" minValue="1" maxValue="65535" increment="1">ID of the node, unique within the corridor graph. Edges (MAV_CMD_NAV_CORRIDOR_EDGE) reference nodes by this ID. A node keeps its ID when other nodes are added or removed. 0 is not a valid ID.</param>
         <param index="4">Reserved</param>
         <param index="5" label="Latitude">Latitude of corridor node.</param>
         <param index="6" label="Longitude">Longitude of corridor node.</param>
-        <param index="7" label="Altitude" units="m">Altitude of corridor node (AMSL).</param>
+        <param index="7" label="Altitude" units="m">Altitude of corridor node (AMSL). This is the altitude of a waypoint node. For a landing node, it is the altitude to fly to before descending.</param>
       </entry>
       <entry value="5111" name="MAV_CMD_NAV_CORRIDOR_EDGE" hasLocation="false" isDestination="false">
         <wip/>
         <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-        <description>Defines a directed edge in a flight corridor graph connecting two previously uploaded corridor nodes (MAV_CMD_NAV_CORRIDOR_NODE). Edges must be uploaded after all nodes and sorted by node_from index to enable O(degree) Dijkstra traversal on the vehicle.</description>
-        <param index="1" label="Node From" minValue="0" increment="1">Zero-based index of the source corridor node.</param>
-        <param index="2" label="Node To" minValue="0" increment="1">Zero-based index of the destination corridor node.</param>
-        <param index="3" label="Cost" minValue="0" default="0">Pre-computed static cost for this edge (eg. risk, terrain, population density, forecast wind for MC). 0: use Euclidean distance only.</param>
-        <param index="4">Reserved</param>
+        <description>Defines a directed edge in a flight corridor graph connecting two previously uploaded corridor nodes (MAV_CMD_NAV_CORRIDOR_NODE), which are referenced by node ID. Edges must be uploaded after all nodes, and may otherwise be in any order. An edge has no location: the frame of the mission item must be MAV_FRAME_MISSION.</description>
+        <param index="1" label="Node From" minValue="1" maxValue="65535" increment="1">Node ID of the source corridor node.</param>
+        <param index="2" label="Node To" minValue="1" maxValue="65535" increment="1">Node ID of the destination corridor node.</param>
+        <param index="3" label="Cost" minValue="0" default="0">Pre-computed static cost for this edge (eg. risk, terrain, population density, forecast wind for MC). The cost is dimensionless and is only comparable with the costs of other edges in the same graph. It must not be interpreted as distance or energy. 0: use the 3D length of the edge. Either all edges in a graph have cost 0 or all have a cost greater than 0.</param>
+        <param index="4" label="Radius" units="m" minValue="0" default="0">Radius of the corridor volume around the edge (a cylinder around the line segment between the two nodes). 0: unspecified.</param>
         <param index="5">Reserved</param>
         <param index="6">Reserved</param>
         <param index="7">Reserved</param>
@@ -286,7 +304,7 @@
     <enum name="MAV_MISSION_TYPE">
       <description>Type of mission items being requested/sent in mission protocol.</description>
       <entry value="3" name="MAV_MISSION_TYPE_CORRIDOR">
-        <description>Specifies the flight corridor graph for the vehicle. Corridor graph is defined by MAV_CMD_NAV_CORRIDOR_NODE/EDGE items.</description>
+        <description>Specifies the flight corridor graph for the vehicle. Corridor graph is defined by MAV_CMD_NAV_CORRIDOR_NODE/EDGE items. Items of this mission type must be transferred using MISSION_ITEM_INT.</description>
       </entry>
     </enum>
     <enum name="GCS_CONTROL_STATUS_FLAGS" bitmask="true">
@@ -940,6 +958,19 @@
       <field type="uint8_t" name="id" instance="true">Sensor ID. Matches the id field of DISTANCE_SENSOR_INFO.</field>
       <field type="float" name="distance" units="m" invalid="NaN">Current distance reading. NaN if not provided.</field>
       <field type="int8_t" name="signal_quality" units="%" invalid="INT8_MAX">Signal quality (sensor-type specific). Represents the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. Values: [0-100], 0 = unusable signal, 100 = perfect signal. INT8_MAX = unknown/not provided.</field>
+    </message>
+    <message id="518" name="CORRIDOR_STATUS">
+      <wip since="2026-11"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Status of the corridor graph (MAV_MISSION_TYPE_CORRIDOR) stored on the vehicle, and of the route the vehicle is flying along it.
+        Emitted by the vehicle at a low rate (nominally 1 Hz) and whenever any field changes.
+        A GCS can use it to detect that the stored graph has changed and needs to be downloaded again, and to display where the vehicle is heading along the graph.</description>
+      <field type="uint32_t" name="corridor_id" invalid="0">Id of the current on-vehicle corridor graph plan. This is the opaque_id returned in MISSION_ACK when the graph was uploaded, and it changes whenever the stored graph changes. 0 if there is no corridor graph loaded or plan ids are not supported.</field>
+      <field type="uint16_t" name="destination_node" invalid="0">Node ID of the final node of the route the vehicle is flying along the corridor graph (for example the landing site selected for a return). 0 if the vehicle is not following the corridor graph.</field>
+      <field type="uint16_t" name="previous_node" invalid="0">Node ID of the node on the route that the vehicle most recently passed. Together with the first entry of route this identifies the edge the vehicle is on. 0 if the vehicle has not yet passed a node on the route, or is not following the corridor graph.</field>
+      <!-- state is uint16_t rather than uint8_t so that route is last in the wire order, and its unused (zero) entries are truncated. -->
+      <field type="uint16_t" name="state" enum="MAV_CORRIDOR_STATE">State of the vehicle with respect to the corridor graph.</field>
+      <field type="uint16_t[32]" name="route" invalid="[0]">Node IDs of the upcoming nodes on the route, in the order they will be flown. The first entry is the node the vehicle is currently flying towards. Unused entries are 0. If more than 32 nodes remain, only the next 32 are listed (the end of the route is given by destination_node).</field>
     </message>
   </messages>
 </mavlink>
