@@ -11,6 +11,7 @@ import datetime
 import importlib.util
 import io
 import os
+import tempfile
 import unittest
 from unittest import mock
 
@@ -728,6 +729,79 @@ class MainRunsLifecycleChecksTest(ConsistencyCheckTestCase):
                         contextlib.redirect_stdout(io.StringIO()):
                     xml_consistency_check.main()
                 self.assertEqual(required.call_count, 1)
+
+
+class FilePathResolutionTests(ConsistencyCheckTestCase):
+    """Verifies that -f/--file accepts paths (relative to the current folder
+    or absolute) as well as bare dialect names."""
+
+    # Repo root relative to this test file (scripts/ → repo root).
+    _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+
+    def _run_main(self, *files):
+        output = io.StringIO()
+        with mock.patch("sys.argv", ["xml_consistency_check.py", "-f", *files]), \
+                contextlib.redirect_stdout(output):
+            xml_consistency_check.main()
+        return output.getvalue()
+
+    def test_main_resolves_relative_path(self):
+        # A path like message_definitions/v1.0/minimal.xml, given from the
+        # repo root (e.g. by tab-completion), used to crash with a doubled
+        # prefix.
+        self.addCleanup(os.chdir, os.getcwd())
+        os.chdir(self._REPO_ROOT)
+        rel_path = os.path.join("message_definitions", "v1.0", "minimal.xml")
+        self.assertIn("minimal.xml", self._run_main(rel_path))
+
+    def test_main_resolves_absolute_path(self):
+        abs_path = os.path.join(self._REPO_ROOT, "message_definitions", "v1.0", "minimal.xml")
+        self.assertIn("minimal.xml", self._run_main(abs_path))
+
+    def test_external_dialect_with_local_includes_gives_no_false_warnings(self):
+        """An external development.xml that includes its own custom.xml must
+        resolve the include next to the dialect file, not in the repo's
+        definitions folder.  Without the paths fix this produces a false
+        'missing <wip>' warning."""
+        custom_xml = (
+            '<?xml version="1.0"?>\n'
+            '<mavlink><enums>'
+            '<enum name="MY_ENUM"><description>Custom.</description>'
+            '<entry value="0" name="MY_ENUM_A"><description>A.</description></entry>'
+            '</enum></enums>'
+            '<messages>'
+            '<message id="60000" name="MY_MSG"><description>Uses enum.</description>'
+            '<field type="uint8_t" name="x" enum="MY_ENUM">x.</field>'
+            '</message></messages></mavlink>'
+        )
+        dev_xml = (
+            '<?xml version="1.0"?>\n'
+            '<mavlink><include>custom.xml</include>'
+            '<enums><enum name="MY_ENUM">'
+            '<entry value="1" name="MY_ENUM_B">'
+            '<wip since="2026-01"/>'
+            '<!-- This entry is work-in-progress and it can therefore change. '
+            'It should NOT be used in stable production environments. -->'
+            '<description>B.</description></entry>'
+            '</enum></enums></mavlink>'
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "custom.xml"), "w", encoding="utf-8") as f:
+                f.write(custom_xml)
+            dev_path = os.path.join(tmp, "development.xml")
+            with open(dev_path, "w", encoding="utf-8") as f:
+                f.write(dev_xml)
+            custom_path = os.path.join(tmp, "custom.xml")
+
+            output = io.StringIO()
+            with mock.patch("sys.argv", [
+                        "xml_consistency_check.py", "-f", custom_path, dev_path
+                    ]), \
+                    contextlib.redirect_stdout(output):
+                xml_consistency_check.main()
+
+            # No 'missing <wip>' false positive for MY_ENUM
+            self.assertNotIn("missing", output.getvalue())
 
 
 if __name__ == "__main__":
