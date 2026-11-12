@@ -5273,17 +5273,17 @@
     <message id="26" name="SCALED_IMU">
       <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should contain the scaled values to the described units</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="int16_t" name="xacc" units="mG">X acceleration</field>
-      <field type="int16_t" name="yacc" units="mG">Y acceleration</field>
-      <field type="int16_t" name="zacc" units="mG">Z acceleration</field>
-      <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis</field>
-      <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis</field>
-      <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis</field>
+      <field type="int16_t" name="xacc" units="mG">X acceleration (body frame)</field>
+      <field type="int16_t" name="yacc" units="mG">Y acceleration (body frame)</field>
+      <field type="int16_t" name="zacc" units="mG">Z acceleration (body frame)</field>
+      <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis (body frame)</field>
+      <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis (body frame)</field>
+      <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis (body frame)</field>
       <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
       <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
       <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
       <extensions/>
-      <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="0">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
     </message>
     <message id="27" name="RAW_IMU">
       <description>The RAW IMU readings for a 9DOF sensor, which is identified by the id (default IMU1). This message should always contain the true raw values without any scaling to allow data capture and system debugging.</description>
@@ -5313,7 +5313,7 @@
       <description>The pressure readings for the typical setup of one absolute and differential pressure sensor. The units are as specified in each field.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="float" name="press_abs" units="hPa">Absolute pressure</field>
-      <field type="float" name="press_diff" units="hPa">Differential pressure 1</field>
+      <field type="float" name="press_diff" units="hPa">Differential pressure</field>
       <field type="int16_t" name="temperature" units="cdegC">Absolute pressure temperature</field>
       <extensions/>
       <field type="int16_t" name="temperature_press_diff" units="cdegC" invalid="0">Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.</field>
@@ -6214,12 +6214,12 @@
     <message id="116" name="SCALED_IMU2">
       <description>The RAW IMU readings for secondary 9DOF sensor setup. This message should contain the scaled values to the described units</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="int16_t" name="xacc" units="mG">X acceleration</field>
-      <field type="int16_t" name="yacc" units="mG">Y acceleration</field>
-      <field type="int16_t" name="zacc" units="mG">Z acceleration</field>
-      <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis</field>
-      <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis</field>
-      <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis</field>
+      <field type="int16_t" name="xacc" units="mG">X acceleration (body frame)</field>
+      <field type="int16_t" name="yacc" units="mG">Y acceleration (body frame)</field>
+      <field type="int16_t" name="zacc" units="mG">Z acceleration (body frame)</field>
+      <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis (body frame)</field>
+      <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis (body frame)</field>
+      <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis (body frame)</field>
       <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
       <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
       <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
@@ -6354,12 +6354,12 @@
     <message id="129" name="SCALED_IMU3">
       <description>The RAW IMU readings for 3rd 9DOF sensor setup. This message should contain the scaled values to the described units</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="int16_t" name="xacc" units="mG">X acceleration</field>
-      <field type="int16_t" name="yacc" units="mG">Y acceleration</field>
-      <field type="int16_t" name="zacc" units="mG">Z acceleration</field>
-      <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis</field>
-      <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis</field>
-      <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis</field>
+      <field type="int16_t" name="xacc" units="mG">X acceleration (body frame)</field>
+      <field type="int16_t" name="yacc" units="mG">Y acceleration (body frame)</field>
+      <field type="int16_t" name="zacc" units="mG">Z acceleration (body frame)</field>
+      <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis (body frame)</field>
+      <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis (body frame)</field>
+      <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis (body frame)</field>
       <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
       <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
       <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
