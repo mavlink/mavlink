@@ -1118,24 +1118,24 @@
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
-      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. Params 5, 6, 7 labelled Latitude/X, Longitude/Y, Altitude/Z are global or local coordinates according to the frame of the COMMAND_INT or MISSION_ITEM_INT that carries the command; the encoding is defined by the x, y, z fields of those messages. When sent in COMMAND_LONG (no frame field), the default frame documented by the command is used (e.g. MAV_CMD_DO_ORBIT); if none is documented, params 5 and 6 are latitude and longitude, and the altitude frame is implementation-defined. This command list is similar to what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
       <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
         <description>Navigate to waypoint. This is intended for use in missions (for guided commands outside of missions use MAV_CMD_DO_REPOSITION).</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
         <param index="2" label="Accept Radius" units="m" minValue="0">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
         <param index="3" label="Pass Radius" units="m">0 to pass through the WP, if &gt; 0 radius to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.</param>
         <param index="4" label="Yaw" units="deg">Desired yaw angle at waypoint (rotary wing). NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="17" name="MAV_CMD_NAV_LOITER_UNLIM" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Loiter around this waypoint an unlimited amount of time</description>
         <param index="3" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise</param>
         <param index="4" label="Yaw" units="deg">Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="18" name="MAV_CMD_NAV_LOITER_TURNS" hasLocation="true" isDestination="true" mission="true">
         <description>Loiter around this waypoint for X turns</description>
@@ -1143,19 +1143,19 @@
         <param index="2" label="Heading Required" enum="MAV_BOOL">Leave loiter circle only when track heads towards the next waypoint (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE causes leaving when turns complete. Values not equal to 0 or 1 are invalid.</param>
         <param index="3" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise</param>
         <param index="4" label="Xtrack Location">Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. NaN to use the current system default xtrack behaviour.</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="19" name="MAV_CMD_NAV_LOITER_TIME" hasLocation="true" isDestination="true" mission="true">
-        <description>Loiter at the specified latitude, longitude and altitude for a certain amount of time. Multicopter vehicles stop at the point (within a vehicle-specific acceptance radius). Forward-only moving vehicles (e.g. fixed-wing) circle the point with the specified radius/direction. If the Heading Required parameter (2) is non-zero forward moving aircraft will only leave the loiter circle once heading towards the next waypoint.</description>
-        <param index="1" label="Time" units="s" minValue="0">Loiter time (only starts once Lat, Lon and Alt is reached).</param>
+        <description>Loiter at the specified position for a certain amount of time. Multicopter vehicles stop at the point (within a vehicle-specific acceptance radius). Forward-only moving vehicles (e.g. fixed-wing) circle the point with the specified radius/direction. If the Heading Required parameter (2) is non-zero forward moving aircraft will only leave the loiter circle once heading towards the next waypoint.</description>
+        <param index="1" label="Time" units="s" minValue="0">Loiter time (only starts once the position is reached).</param>
         <param index="2" label="Heading Required" enum="MAV_BOOL">Leave loiter circle only when track heading towards the next waypoint (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE causes leaving on time expiry. Values not equal to 0 or 1 are invalid.</param>
         <param index="3" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise.</param>
         <param index="4" label="Xtrack Location">Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. NaN to use the current system default xtrack behaviour.</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="20" name="MAV_CMD_NAV_RETURN_TO_LAUNCH" mission="true" command="true">
         <description>Return to launch location</description>
@@ -1165,20 +1165,21 @@
         <param index="1" label="Abort Alt" units="m">Minimum target altitude if landing is aborted (0 = undefined/use system default).</param>
         <param index="2" label="Land Mode" enum="PRECISION_LAND_MODE">Precision land mode.</param>
         <param index="4" label="Yaw Angle" units="deg">Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
-        <param index="5" label="Latitude">Latitude.</param>
-        <param index="6" label="Longitude">Longitude.</param>
-        <param index="7" label="Altitude" units="m">Landing altitude (ground level in current frame).</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Landing altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="22" name="MAV_CMD_NAV_TAKEOFF" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode.</description>
         <param index="1" label="Pitch" units="deg">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="3" label="Flags" enum="NAV_TAKEOFF_FLAGS">Bitmask of options flags.</param>
         <param index="4" label="Yaw" units="deg">Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="23" name="MAV_CMD_NAV_LAND_LOCAL" hasLocation="true" isDestination="true" mission="true" command="true">
+        <superseded since="2026-11" replaced_by="MAV_CMD_NAV_LAND">Use MAV_CMD_NAV_LAND in COMMAND_INT or MISSION_ITEM_INT with a local MAV_FRAME (e.g. MAV_FRAME_LOCAL_NED). Note that its params 5/6 are X/Y (swapped relative to this command) and yaw is in degrees. Set descent rate with MAV_CMD_DO_CHANGE_SPEED (SPEED_TYPE_DESCENT_SPEED). Landing target number and maximum offset have no equivalent.</superseded>
         <description>Land at local position (local frame only)</description>
         <param index="1" label="Target" minValue="0" increment="1">Landing target number (if available)</param>
         <param index="2" label="Offset" units="m" minValue="0">Maximum accepted offset from desired landing position - computed magnitude from spherical coordinates: d = sqrt(x^2 + y^2 + z^2), which gives the maximum accepted distance between the desired landing position and the position where the vehicle is about to land</param>
@@ -1189,6 +1190,7 @@
         <param index="7" label="Z Position" units="m">Z-axis / ground level position</param>
       </entry>
       <entry value="24" name="MAV_CMD_NAV_TAKEOFF_LOCAL" hasLocation="true" isDestination="true" mission="true" command="true">
+        <superseded since="2026-11" replaced_by="MAV_CMD_NAV_TAKEOFF">Use MAV_CMD_NAV_TAKEOFF in COMMAND_INT or MISSION_ITEM_INT with a local MAV_FRAME (e.g. MAV_FRAME_LOCAL_NED). Note that its params 5/6 are X/Y (swapped relative to this command) and pitch/yaw are in degrees. Set ascent rate with MAV_CMD_DO_CHANGE_SPEED (SPEED_TYPE_CLIMB_SPEED).</superseded>
         <description>Takeoff from local position (local frame only)</description>
         <param index="1" label="Pitch" units="rad">Minimum pitch (if airspeed sensor present), desired pitch without sensor</param>
         <param index="3" label="Ascend Rate" units="m/s">Takeoff ascend rate</param>
@@ -1204,13 +1206,13 @@
         <param index="7" label="Altitude" units="m">Desired altitude</param>
       </entry>
       <entry value="31" name="MAV_CMD_NAV_LOITER_TO_ALT" hasLocation="true" isDestination="true" mission="true">
-        <description>Begin loiter at the specified Latitude and Longitude.  If Lat=Lon=0, then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached. Additionally, if the Heading Required parameter is non-zero the aircraft will not leave the loiter until heading toward the next waypoint.</description>
+        <description>Begin loiter at the specified position. If Lat=Lon=0 (global frame), then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached. Additionally, if the Heading Required parameter is non-zero the aircraft will not leave the loiter until heading toward the next waypoint.</description>
         <param index="1" label="Heading Required" enum="MAV_BOOL">Leave loiter circle only when track heading towards the next waypoint (MAV_BOOL_TRUE). A value of MAV_BOOL_FALSE causes leaving when altitude is reached. Values not equal to 0 or 1 are invalid.</param>
         <param index="2" label="Radius" units="m">Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.</param>
         <param index="4" label="Xtrack Location" minValue="0" maxValue="1" increment="1">Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. NaN to use the current system default xtrack behaviour.</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="32" name="MAV_CMD_DO_FOLLOW" command="true">
         <description>Begin following a target</description>
@@ -1235,9 +1237,9 @@
         <param index="2" label="Velocity" units="m/s">Tangential Velocity. NaN: Use vehicle default velocity, or current velocity if already orbiting.</param>
         <param index="3" label="Yaw Behavior" enum="ORBIT_YAW_BEHAVIOUR">Yaw behavior of the vehicle.</param>
         <param index="4" label="Orbits" units="rad" minValue="0" default="0">Orbit around the centre point for this many radians (i.e. for a three-quarter orbit set 270*Pi/180). 0: Orbit forever. NaN: Use vehicle default, or current value if already orbiting.</param>
-        <param index="5" label="Latitude/X">Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. INT32_MAX (COMMAND_INT) or NaN (COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
-        <param index="6" label="Longitude/Y">Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. INT32_MAX (COMMAND_INT) or NaN (COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
-        <param index="7" label="Altitude/Z">Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude.</param>
+        <param index="5" label="Latitude/X">Center point latitude (global frame) or X coordinate (local frame), according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed. INT32_MAX (COMMAND_INT) or NaN (COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
+        <param index="6" label="Longitude/Y">Center point longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed. INT32_MAX (COMMAND_INT) or NaN (COMMAND_LONG): Use current vehicle position, or current center if already orbiting.</param>
+        <param index="7" label="Altitude/Z">Center point altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed. NaN: Use current vehicle altitude.</param>
       </entry>
       <entry value="35" name="MAV_CMD_DO_FIGURE_EIGHT" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Fly a figure eight path as defined by the parameters.
@@ -1252,11 +1254,11 @@
         <param index="2" label="Minor Radius" units="m">Minor axis radius of the figure eight. Defines the radius of the two circles that make up the figure. Negative value has no effect.
         NaN: The radius will be set to the default loiter radius.</param>
         <param index="4" label="Orientation" units="rad">Orientation of the figure eight major axis with respect to true north (range: [-pi,pi]). NaN: use default orientation aligned to true north.</param>
-        <param index="5" label="Latitude/X">Center point latitude/X coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
+        <param index="5" label="Latitude/X">Center point latitude (global frame) or X coordinate (local frame), according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
         INT32_MAX (COMMAND_INT) or NaN (COMMAND_LONG): Use current vehicle position, or current center if already loitering.</param>
-        <param index="6" label="Longitude/Y">Center point longitude/Y coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
+        <param index="6" label="Longitude/Y">Center point longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
         INT32_MAX (COMMAND_INT) or NaN (COMMAND_LONG): Use current vehicle position, or current center if already loitering.</param>
-        <param index="7" label="Altitude/Z">Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
+        <param index="7" label="Altitude/Z">Center point altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed.
         INT32_MAX or NaN: Use current vehicle altitude.</param>
       </entry>
       <entry value="36" name="MAV_CMD_NAV_ARC_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
@@ -1265,9 +1267,9 @@
           The resulting path is a circular arc in the NE frame, with the difference in height being defined by the difference in waypoint altitudes.
         </description>
         <param index="1" label="Arc Angle" units="deg" minValue="-359" maxValue="359" increment="1">The angle in degrees from the starting position to the exit position of the arc in the NE frame. Positive values are CW arcs and negative values are CCW arcs.</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="80" name="MAV_CMD_NAV_ROI" hasLocation="true" isDestination="false" mission="true" command="true">
         <superseded since="2018-01" replaced_by="`MAV_CMD_DO_SET_ROI_*`"/>
@@ -1284,33 +1286,33 @@
         <param index="1" label="Local Ctrl" minValue="0" maxValue="2" increment="1">0: Disable local obstacle avoidance / local path planning (without resetting map), 1: Enable local path planning, 2: Enable and reset local path planning</param>
         <param index="2" label="Global Ctrl" minValue="0" maxValue="3" increment="1">0: Disable full path planning (without resetting map), 1: Enable, 2: Enable and reset map/occupancy grid, 3: Enable and reset planned route, but not occupancy grid</param>
         <param index="4" label="Yaw" units="deg">Yaw angle at goal</param>
-        <param index="5" label="Latitude/X">Latitude/X of goal</param>
-        <param index="6" label="Longitude/Y">Longitude/Y of goal</param>
-        <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
+        <param index="5" label="Latitude/X">Goal latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Goal longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z">Goal altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="82" name="MAV_CMD_NAV_SPLINE_WAYPOINT" hasLocation="true" isDestination="true" mission="true">
         <description>Navigate to waypoint using a spline path.</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
-        <param index="5" label="Latitude/X">Latitude/X of goal</param>
-        <param index="6" label="Longitude/Y">Longitude/Y of goal</param>
-        <param index="7" label="Altitude/Z">Altitude/Z of goal</param>
+        <param index="5" label="Latitude/X">Goal latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Goal longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z">Goal altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="84" name="MAV_CMD_NAV_VTOL_TAKEOFF" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Takeoff from ground using VTOL mode, and transition to forward flight with specified heading. The command should be ignored by vehicles that dont support both VTOL and fixed-wing flight (multicopters, boats,etc.).</description>
         <param index="2" label="Transition Heading" enum="VTOL_TRANSITION_HEADING">Front transition heading.</param>
         <param index="4" label="Yaw Angle" units="deg">Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="85" name="MAV_CMD_NAV_VTOL_LAND" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Land using VTOL mode</description>
         <param index="1" label="Land Options" enum="NAV_VTOL_LAND_OPTIONS">Landing behaviour.</param>
         <param index="3" label="Approach Altitude" units="m">Approach altitude (with the same reference as the Altitude field). NaN if unspecified.</param>
         <param index="4" label="Yaw" units="deg">Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Ground Altitude" units="m">Altitude (ground level) relative to the current coordinate frame. NaN to use system default landing altitude (ignore value).</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Landing altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME. NaN to use system default landing altitude (ignore value).</param>
       </entry>
       <!-- IDs 90 and 91 are reserved until the end of 2014,
                     as they were used in some conflicting proposals
@@ -1330,9 +1332,9 @@
       <entry value="94" name="MAV_CMD_NAV_PAYLOAD_PLACE" hasLocation="true" isDestination="true" mission="true" command="true">
         <description>Descend and place payload. Vehicle moves to specified location, descends until it detects a hanging payload has reached the ground, and then releases the payload. If ground is not detected before the reaching the maximum descent value (param1), the command will complete without releasing the payload.</description>
         <param index="1" label="Max Descent" units="m" minValue="0">Maximum distance to descend.</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="95" name="MAV_CMD_NAV_LAST">
         <description>NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumeration</description>
@@ -1491,14 +1493,14 @@
         <param index="1" label="Altitude" units="m">Altitude</param>
       </entry>
       <entry value="192" name="MAV_CMD_DO_REPOSITION" hasLocation="true" isDestination="true" command="true">
-        <description>Reposition the vehicle to a specific WGS84 global position. This command is intended for guided commands (for missions use MAV_CMD_NAV_WAYPOINT instead).</description>
+        <description>Reposition the vehicle to a specific position. This command is intended for guided commands (for missions use MAV_CMD_NAV_WAYPOINT instead).</description>
         <param index="1" label="Speed" units="m/s" minValue="-1">Ground speed, less than 0 (-1) for default</param>
         <param index="2" label="Bitmask" enum="MAV_DO_REPOSITION_FLAGS">Bitmask of option flags.</param>
         <param index="3" label="Radius" units="m">Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. </param>
         <param index="4" label="Yaw" units="rad">Yaw heading (heading reference defined in Bitmask field). NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)</param>
-        <param index="5" label="Latitude">Latitude</param>
-        <param index="6" label="Longitude">Longitude</param>
-        <param index="7" label="Altitude" units="m">Altitude</param>
+        <param index="5" label="Latitude/X">Latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">Longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">Altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="193" name="MAV_CMD_DO_PAUSE_CONTINUE" mission="true" command="true">
         <description>If in a GPS controlled position mode, hold the current position or continue.</description>
@@ -1511,9 +1513,9 @@
       <entry value="195" name="MAV_CMD_DO_SET_ROI_LOCATION" hasLocation="true" isDestination="false" mission="true" command="true">
         <description>Sets the region of interest (ROI) to a location. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras.</description>
         <param index="1" label="Gimbal device ID">Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).</param>
-        <param index="5" label="Latitude">Latitude of ROI location</param>
-        <param index="6" label="Longitude">Longitude of ROI location</param>
-        <param index="7" label="Altitude" units="m">Altitude of ROI location</param>
+        <param index="5" label="Latitude/X">ROI latitude (global frame) or X coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="6" label="Longitude/Y">ROI longitude (global frame) or Y coordinate (local frame), according to MAV_FRAME.</param>
+        <param index="7" label="Altitude/Z" units="m">ROI altitude (global frame) or Z coordinate (local frame), according to MAV_FRAME.</param>
       </entry>
       <entry value="196" name="MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET" mission="true">
         <description>Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message.</description>
@@ -5735,8 +5737,8 @@
       <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
       <field type="float" name="param4">PARAM4, see MAV_CMD enum</field>
       <field type="int32_t" name="x">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
-      <field type="int32_t" name="y">PARAM6 / y position: local: x position in meters * 1e4, global: longitude in degrees *10^7</field>
-      <field type="float" name="z">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame.</field>
+      <field type="int32_t" name="y">PARAM6 / local: y position in meters * 1e4, global: longitude in degrees * 10^7</field>
+      <field type="float" name="z">PARAM7 / local: z position in meters, global: altitude in meters (relative or absolute, depending on frame).</field>
       <extensions/>
       <field type="uint8_t" name="mission_type" enum="MAV_MISSION_TYPE">Mission type.</field>
     </message>
@@ -5763,7 +5765,7 @@
       <field type="float" name="param4" invalid="NaN">PARAM4, see MAV_CMD enum</field>
       <field type="int32_t" name="x" invalid="INT32_MAX">PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7</field>
       <field type="int32_t" name="y" invalid="INT32_MAX">PARAM6 / local: y position in meters * 1e4, global: longitude in degrees * 10^7</field>
-      <field type="float" name="z" invalid="NaN">PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame).</field>
+      <field type="float" name="z" invalid="NaN">PARAM7 / local: z position in meters, global: altitude in meters (relative or absolute, depending on frame).</field>
     </message>
     <message id="76" name="COMMAND_LONG">
       <description>Send a command with up to seven parameters to the MAV. COMMAND_INT is generally preferred when sending MAV_CMD commands that include positional information; it offers higher precision and allows the MAV_FRAME to be specified (which may otherwise be ambiguous, particularly for altitude). The command microservice is documented at https://mavlink.io/en/services/command.html</description>
@@ -7575,7 +7577,7 @@
       <field type="float" name="radius" units="m">Radius of the orbit circle. Positive values orbit clockwise, negative values orbit counter-clockwise.</field>
       <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the fields: x, y, z.</field>
       <field type="int32_t" name="x">X coordinate of center point. Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
-      <field type="int32_t" name="y">Y coordinate of center point.  Coordinate system depends on frame field: local = x position in meters * 1e4, global = latitude in degrees * 1e7.</field>
+      <field type="int32_t" name="y">Y coordinate of center point. Coordinate system depends on frame field: local = y position in meters * 1e4, global = longitude in degrees * 1e7.</field>
       <field type="float" name="z" units="m">Altitude of center point. Coordinate system depends on frame field.</field>
     </message>
     <message id="370" name="SMART_BATTERY_INFO">
