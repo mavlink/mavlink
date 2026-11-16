@@ -127,6 +127,20 @@
         </description>
       </entry>
     </enum>
+    <enum name="MAV_GNSS_GEOID_MODEL">
+      <wip since="2026-11"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Geoid model a GNSS receiver used for its height above mean sea level (see GNSS.height_above_geoid).</description>
+      <entry value="0" name="MAV_GNSS_GEOID_MODEL_UNKNOWN">
+        <description>Geoid model unknown.</description>
+      </entry>
+      <entry value="1" name="MAV_GNSS_GEOID_MODEL_EGM96">
+        <description>EGM96.</description>
+      </entry>
+      <entry value="2" name="MAV_GNSS_GEOID_MODEL_EGM2008">
+        <description>EGM2008.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -749,6 +763,7 @@
       <field type="float" name="height_above_geoid" units="m" invalid="NaN">Altitude above mean sea level (MSL), as reported by the receiver: the height above its geoid model. Positive for up. The geoid model is receiver-dependent; height_above_ellipsoid - height_above_geoid is the geoid undulation the receiver applied. NaN if there is no 3D fix or the receiver does not provide this height; do not derive it from height_above_ellipsoid.</field>
       <field type="float" name="height_above_ellipsoid" units="m" invalid="NaN">Height above the ellipsoid of datum. Positive for up. NaN if there is no 3D fix or the receiver does not provide this height; do not derive it from height_above_geoid.</field>
       <field type="uint8_t" name="datum" enum="MAV_GNSS_DATUM">Datum used for position.</field>
+      <field type="uint8_t" name="geoid_model" enum="MAV_GNSS_GEOID_MODEL">Geoid model the receiver used for height_above_geoid.</field>
       <field type="float" name="ground_speed" units="m/s" invalid="NaN">GPS ground speed. If unknown, set to: NaN</field>
       <field type="float" name="vertical_speed" units="m/s" invalid="NaN">Vertical speed, positive for up. If unknown, set to: NaN</field>
       <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground (NOT heading, but direction of movement): 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
