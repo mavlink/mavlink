@@ -771,8 +771,8 @@
       <field type="uint16_t" name="yaw" units="cdeg" invalid="UINT16_MAX">Yaw in earth frame from north: 0..35999, 0 is north. UINT16_MAX if this receiver does not provide yaw. UINT16_MAX-1 if this receiver is configured to provide yaw and is currently unable to provide it.</field>
       <field type="float" name="h_acc" units="m" invalid="NaN">Standard deviation (1-sigma) of horizontal position error. NaN if unknown.</field>
       <field type="float" name="v_acc" units="m" invalid="NaN">Standard deviation (1-sigma) of altitude error. NaN if unknown.</field>
-      <field type="float" name="vel_acc" units="m/s" invalid="NaN">Standard deviation (1-sigma) of velocity error. NaN if unknown.</field>
-      <field type="float" name="hdg_acc" units="deg" invalid="NaN">Standard deviation (1-sigma) of heading / track error. NaN if unknown.</field>
+      <field type="uint16_t" name="vel_acc" units="mm/s" invalid="UINT16_MAX">Standard deviation (1-sigma) of velocity error. Values above UINT16_MAX-1 are sent as UINT16_MAX-1. UINT16_MAX if unknown.</field>
+      <field type="uint16_t" name="hdg_acc" units="cdeg" invalid="UINT16_MAX">Standard deviation (1-sigma) of heading / track error. Values above UINT16_MAX-1 are sent as UINT16_MAX-1. UINT16_MAX if unknown.</field>
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
