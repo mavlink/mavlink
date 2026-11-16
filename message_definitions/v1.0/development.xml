@@ -742,21 +742,21 @@
       <!-- a replacement for GPS_RAW_INT and GPS2_RAW which includes an instance number -->
       <description>GNSS data.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot) of the position fix.</field>
-      <field type="uint8_t" name="id" instance="true">GNSS receiver id. Must match instance ids of other messages from same receiver.</field>
+      <field type="uint8_t" name="id" instance="true">GNSS receiver id. 0 is the first receiver. Must match instance ids of other messages from same receiver.</field>
       <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type.</field>
       <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
       <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
-      <field type="float" name="alt" units="m">Altitude (MSL). Positive for up.  Use NaN for a 2D fix.</field>
-      <field type="float" name="alt_above_datum" units="m">Altitude. Positive for up. Use NaN for a 2D fix.</field>
+      <field type="float" name="alt" units="m" invalid="NaN">Altitude (MSL). Positive for up. NaN if there is no 3D fix or the receiver does not provide this altitude; do not derive it from alt_above_datum.</field>
+      <field type="float" name="alt_above_datum" units="m" invalid="NaN">Height above the ellipsoid of datum. Positive for up. NaN if there is no 3D fix or the receiver does not provide this height; do not derive it from alt.</field>
       <field type="uint8_t" name="datum" enum="MAV_GNSS_DATUM">Datum used for position.</field>
-      <field type="float" name="ground_speed" units="m/s">GPS ground speed. If unknown, set to: NaN</field>
+      <field type="float" name="ground_speed" units="m/s" invalid="NaN">GPS ground speed. If unknown, set to: NaN</field>
       <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground (NOT heading, but direction of movement): 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
-      <field type="uint8_t" name="satellites_used">Number of satellites used in the PVT solution. If unknown, set to 255</field>
+      <field type="uint8_t" name="satellites_used" invalid="UINT8_MAX">Number of satellites used in the PVT solution. If unknown, set to: UINT8_MAX</field>
       <field type="uint16_t" name="yaw" units="cdeg">Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use 65535 if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north.</field>
-      <field type="float" name="h_acc" units="m">1-Sigma Position accuracy.  Set to NaN if not known.</field>
-      <field type="float" name="v_acc" units="m">1-Sigma Altitude accuracy.  Set to NaN if not known.</field>
-      <field type="float" name="vel_acc" units="m">1-Sigma Speed accuracy.  Set to NaN if not known.</field>
-      <field type="float" name="hdg_acc" units="deg">1-Sigma Heading / track accuracy.  Set to NaN if not known.</field>
+      <field type="float" name="h_acc" units="m" invalid="NaN">Standard deviation (1-sigma) of horizontal position error. NaN if unknown.</field>
+      <field type="float" name="v_acc" units="m" invalid="NaN">Standard deviation (1-sigma) of altitude error. NaN if unknown.</field>
+      <field type="float" name="vel_acc" units="m/s" invalid="NaN">Standard deviation (1-sigma) of ground speed error. NaN if unknown.</field>
+      <field type="float" name="hdg_acc" units="deg" invalid="NaN">Standard deviation (1-sigma) of heading / track error. NaN if unknown.</field>
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
