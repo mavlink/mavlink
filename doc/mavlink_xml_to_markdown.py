@@ -917,7 +917,8 @@ class MAVEnum:
 
 
 class MAVCommandParam:
-    def __init__(self, soup, parent):
+    def __init__(self, soup, parent, index=None):
+        # soup is None for a param that is not declared in the XML (implicitly reserved)
         # name, value, description='', end_marker=False, autovalue=False, origin_file='', origin_line=0, has_location=False
 
         self.index = None
@@ -932,7 +933,8 @@ class MAVCommandParam:
         self.default = None
         self.multiplier = None
 
-        for attr, value in soup.attrs.items():
+        attrs = soup.attrs if soup else {"index": str(index), "reserved": "true"}
+        for attr, value in attrs.items():
             # We do it this way to catch all of them. New additions will throw debug
             if attr == "index":
                 self.index = int(value)
@@ -949,9 +951,7 @@ class MAVCommandParam:
             elif attr == "increment":
                 self.increment = value
             elif attr == "reserved":
-                self.reserved = (
-                    True  # TODO is it ever reserved by default, and if so make happen
-                )
+                self.reserved = value.lower() in ("true", "1")  # xs:boolean
             elif attr == "default":
                 self.default = (
                     value  # TODO is it ever default by default, and if so make happen?
@@ -963,9 +963,18 @@ class MAVCommandParam:
                     f"Debug: MAVCommandParam: Unexpected attribute: {attr}, Value: {value}"
                 )
 
-        if soup.text:
+        if soup and soup.text:
             self.description = soup.text
-        if self.description:
+        # Reserved if undeclared, tagged reserved, blank, or the text starts with
+        # "Reserved", "Empty" etc. Any default or other text in the XML is ignored.
+        if (
+            self.reserved
+            or not (self.description or "").strip()
+            or RESERVED_PARAM_TEXT.match(self.description)
+        ):
+            self.reserved = True
+            self.description = reservedParamDescription(self.index)
+        else:
             self.description = tidyDescription(self.description, "table")
         # no deprecated or wip supported
         # self.autovalue = autovalue  # True if value was *not* specified in XML
@@ -1045,8 +1054,13 @@ class MAVCommand:
         self.params = []
         params = soup.find_all("param")
         for param in params:
-            # TODO: Decide if we want to add entries for non-existing param values
             self.params.append(MAVCommandParam(param, self))
+        # Params that are not declared in the XML are reserved
+        declared = {param.index for param in self.params}
+        for index in range(1, 8):
+            if index not in declared:
+                self.params.append(MAVCommandParam(None, self, index))
+        self.params.sort(key=lambda param: param.index)
 
     def getUsageBadges(self):
         """Return static-HTML badges (leading space included) for the contexts
@@ -1164,6 +1178,23 @@ class MAVCommand:
         string += "\n\n"
 
         return string
+
+
+# Param text that marks a MAV_CMD param as reserved/unused (e.g. "Empty.", "Reserved (set to 0)")
+RESERVED_PARAM_TEXT = re.compile(
+    r"\s*(reserved|empty|unused|not used|n/a|spare)(?=$|[\s.,:;(])", re.IGNORECASE
+)
+
+
+def reservedParamDescription(index):
+    """
+    Description for a reserved MAV_CMD param.
+    """
+    note = " Note: Implementations that currently accept 0 as the sentinel values are planning to migrate (check their documentation on the state)."
+    if index in (5, 6):
+        # param5/param6 are int32 in COMMAND_INT/MISSION_ITEM_INT, which can't carry NaN
+        return "Reserved. Default: INT32_MAX (COMMAND_INT/MISSION_ITEM_INT) or NaN (COMMAND_LONG)." + note
+    return "Reserved. Default: NaN." + note
 
 
 def tidyDescription(desc_string, type="markdown"):

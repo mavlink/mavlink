@@ -10,6 +10,7 @@ from bs4 import Comment
 import os
 import re
 import itertools
+import math
 from datetime import datetime, timedelta, timezone
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
@@ -179,6 +180,10 @@ def check_cmd_param(file_name, cmd_name, entry, enums, deprecated_enums=frozense
 
         enums[enum]["used"] = True
 
+    if increment is not None and float(increment) <= 0:
+        warn(f"{file_name}: Command {cmd_name} param {index} increment must be greater than 0 got {float(increment):f}")
+        return
+
     if minValue is not None and maxValue is not None :
         min = float(minValue)
         max = float(maxValue)
@@ -189,7 +194,10 @@ def check_cmd_param(file_name, cmd_name, entry, enums, deprecated_enums=frozense
 
         if increment is not None:
             step = float(increment)
-            if range % step != 0:
+            num_steps = range / step
+            if (not math.isfinite(num_steps)
+                    or round(num_steps) < 1
+                    or not math.isclose(num_steps, round(num_steps), rel_tol=0, abs_tol=1e-6)):
                 warn(f"{file_name}: Command {cmd_name} param {index} range {min:f} => {max:f} incompatible with increment {step:f}")
                 return
 
@@ -296,16 +304,26 @@ def included_enum_names(source_dir, file_name, seen=None):
     if seen is None:
         seen = set()
     names = set()
-    with open(os.path.join(source_dir, file_name), 'r') as f:
+    if os.path.isfile(file_name):
+        path = file_name
+    else:
+        path = os.path.join(source_dir, file_name)
+
+    with open(path, 'r', encoding='utf-8') as f:
         soup = bs(f.read(), 'xml')
+
+    file_dir = os.path.dirname(os.path.abspath(path))
     for include in soup.find_all('include'):
         included = include.text.strip()
         if included in seen:
             continue
         seen.add(included)
-        with open(os.path.join(source_dir, included), 'r') as f:
+        inc_path = os.path.join(file_dir, included)
+        if not os.path.isfile(inc_path):
+            inc_path = os.path.join(source_dir, included)
+        with open(inc_path, 'r', encoding='utf-8') as f:
             names.update(enum.get('name') for enum in bs(f.read(), 'xml').find_all('enum'))
-        names |= included_enum_names(source_dir, included, seen)
+        names |= included_enum_names(source_dir, inc_path, seen)
     return names
 
 
@@ -328,7 +346,11 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
                             formatter_class=RawDescriptionHelpFormatter)
 
     parser.add_argument('-f', '--file', default=None, nargs='+',
-                        help="XML file name(s) to check (defaults to the managed dialects)")
+                        help="XML file(s) to check: a path (absolute or relative to the current "
+                             "folder), or a dialect name looked up in message_definitions/v1.0/ "
+                             "(e.g. common). '.xml' is added if missing. Includes are looked up "
+                             "next to the file, then in message_definitions/v1.0/. "
+                             "Defaults to the managed dialects")
     parser.add_argument('-e', '--exception', action='store_true',
                         help="Throw error if any non-allowlisted warnings are found")
     parser.add_argument('-a', '--allowlist', default=None,
@@ -340,7 +362,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
     # Resolve paths relative to this script, not the working directory, so the
     # defaults work regardless of where the script is invoked from.
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    source_dir = os.path.join(script_dir, "../message_definitions/v1.0/")
+    source_dir = os.path.normpath(os.path.join(script_dir, "../message_definitions/v1.0"))
 
     # Dialects this repository controls. Other dialects (e.g. ardupilotmega.xml)
     # are vendored/synced from downstream projects, so we don't gate CI on their
@@ -360,7 +382,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
     allowlist_path = args.allowlist if args.allowlist is not None else default_allowlist
 
     if os.path.exists(allowlist_path):
-        with open(allowlist_path, 'r') as f:
+        with open(allowlist_path, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith('#'):
@@ -373,14 +395,20 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
     print(f"Files: {files}")
 
     xml = {}
+    paths = {}
     for file in files:
         # Read the XML file
-        path = source_dir + file
-        with open(path, 'r') as f:
+        path = file if os.path.isfile(file) else os.path.join(source_dir, file)
+        key = os.path.basename(path)
+        if key in xml:
+            raise SystemExit(f"Two files named {key} given: {paths[key]} and {path}")
+
+        with open(path, 'r', encoding='utf-8') as f:
             xml_content = f.read()
 
         # Initialize BeautifulSoup with the XML content
-        xml[file] = bs(xml_content, 'xml')
+        xml[key] = bs(xml_content, 'xml')
+        paths[key] = path
 
     # Get all enums
     all_enums = {}
@@ -493,7 +521,7 @@ so that CI can gate on new warnings while tolerating ones we can't fix yet.
         if managed:
             check_wip_comments(key, xml[key])
         if os.path.basename(key) in WIP_REQUIRED_DIALECTS:
-            check_wip_required(key, xml[key], included_enum_names(source_dir, key))
+            check_wip_required(key, xml[key], included_enum_names(source_dir, paths[key]))
 
     # Check for unused enums. Defining enums not referenced by any message or
     # command is a legitimate use of this library, so intended orphans should be

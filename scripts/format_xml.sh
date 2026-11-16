@@ -94,7 +94,11 @@ do
     check)
         if ! cmp "${f}" "${f}".new >/dev/null 2>&1
         then
-            echo "file $f needs formatting - run ./scripts/format_xml.sh $f"
+            # xml_file is taken relative to xml_dir, so strip it from the path
+            rel="${f#"$xml_dir"}"
+            rel="${rel#/}"
+            printf 'file %s needs formatting - run %q -d %q -- %q\n' \
+                "$f" "$0" "$xml_dir" "$rel"
             ret=1
         fi
         ;;

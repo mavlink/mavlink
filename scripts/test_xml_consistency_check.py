@@ -11,6 +11,7 @@ import datetime
 import importlib.util
 import io
 import os
+import tempfile
 import unittest
 from unittest import mock
 
@@ -81,6 +82,19 @@ def make_enum_entry(name, bitmask):
         "min": min(decoded["values"]),
         "max": max(decoded["values"]),
         "used": False,
+    }
+
+
+def make_enum_dict(name, bitmask=False, min_val=0, max_val=255):
+    """Build the dict that check_field expects, without parsing XML."""
+    return {
+        name: {
+            "name": name,
+            "bitmask": bitmask,
+            "min": min_val,
+            "max": max_val,
+            "used": False,
+        }
     }
 
 
@@ -189,6 +203,74 @@ class CmdParamRangeTests(ConsistencyCheckTestCase):
         messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
         self.assertEqual(messages, [])
 
+    def test_fractional_increment_compatible_does_not_warn(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="1" increment="0.1">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(messages, [])
+
+    def test_fractional_increment_incompatible_warns(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="1" increment="0.3">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 range 0.000000 => 1.000000 "
+             "incompatible with increment 0.300000"],
+        )
+
+    def test_many_steps_incompatible_warns(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="360.003" increment="0.01">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 range 0.000000 => 360.003000 "
+             "incompatible with increment 0.010000"],
+        )
+
+    def test_increment_larger_than_range_warns(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="1" increment="1e7">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 range 0.000000 => 1.000000 "
+             "incompatible with increment 10000000.000000"],
+        )
+
+    def test_increment_zero_or_negative_warns(self):
+        param = parse_param(
+            '<param index="1" minValue="0" maxValue="10" increment="0">desc</param>'
+        )
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 increment must be greater than 0 got 0.000000"],
+        )
+
+        param_no_range = parse_param(
+            '<param index="1" increment="0">desc</param>'
+        )
+        messages_no_range = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param_no_range, {})
+        self.assertEqual(
+            messages_no_range,
+            ["test.xml: Command MY_CMD param 1 increment must be greater than 0 got 0.000000"],
+        )
+
+        param_neg = parse_param(
+            '<param index="1" minValue="0" maxValue="10" increment="-1">desc</param>'
+        )
+        messages_neg = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param_neg, {})
+        self.assertEqual(
+            messages_neg,
+            ["test.xml: Command MY_CMD param 1 increment must be greater than 0 got -1.000000"],
+        )
+
 
 class DeprecatedEnumReferenceTestCase(ConsistencyCheckTestCase):
     """A deprecated enum is skipped when the checker collects enums, so a
@@ -268,7 +350,7 @@ class EnumBitmaskConsistencyTests(ConsistencyCheckTestCase):
             '</enum>'
         )
         messages = self.warnings(check_enum, enum, "test.xml")
-        self.assertIn("test.xml: Enum: MY_FLAGS bitmask should not contain 0", messages)
+        self.assertEqual(messages, ["test.xml: Enum: MY_FLAGS bitmask should not contain 0"])
 
     def test_sequential_powers_of_two_without_bitmask_flag_suggests_bitmask(self):
         enum = parse_enum(
@@ -318,27 +400,27 @@ class EnumBitmaskConsistencyTests(ConsistencyCheckTestCase):
 
 class FieldAndParamUnitsWithEnumTests(ConsistencyCheckTestCase):
     def test_field_with_both_units_and_enum_warns(self):
+        enums = make_enum_dict("MY_ENUM", min_val=1, max_val=5)
         field = parse_field('<field type="uint8_t" name="mode" enum="MY_ENUM" units="m">desc</field>')
-        messages = self.warnings(check_field, "test.xml", "MY_MSG", field, {})
-        self.assertIn("test.xml: Message MY_MSG field mode has both units and enum", messages)
+        messages = self.warnings(check_field, "test.xml", "MY_MSG", field, enums)
+        self.assertEqual(
+            messages,
+            ["test.xml: Message MY_MSG field mode has both units and enum"],
+        )
 
     def test_cmd_param_with_both_units_and_enum_warns(self):
+        enums = make_enum_dict("MY_ENUM", min_val=1, max_val=5)
         param = parse_param('<param index="1" enum="MY_ENUM" units="m">desc</param>')
-        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, {})
-        self.assertIn("test.xml: Command MY_CMD param 1 has both units and enum", messages)
+        messages = self.warnings(check_cmd_param, "test.xml", "MY_CMD", param, enums)
+        self.assertEqual(
+            messages,
+            ["test.xml: Command MY_CMD param 1 has both units and enum"],
+        )
 
 
 class EnumFitsTypeTests(ConsistencyCheckTestCase):
     def test_enum_value_exceeding_type_range_warns(self):
-        enums = {
-            "BIG_ENUM": {
-                "name": "BIG_ENUM",
-                "bitmask": False,
-                "min": 1,
-                "max": 300,
-                "used": False,
-            }
-        }
+        enums = make_enum_dict("BIG_ENUM", min_val=1, max_val=300)
         field = parse_field('<field type="uint8_t" name="mode" enum="BIG_ENUM">desc</field>')
         messages = self.warnings(check_field, "test.xml", "MY_MSG", field, enums)
         self.assertEqual(
@@ -347,29 +429,28 @@ class EnumFitsTypeTests(ConsistencyCheckTestCase):
         )
 
     def test_enum_value_fitting_type_range_does_not_warn(self):
-        enums = {
-            "FIT_ENUM": {
-                "name": "FIT_ENUM",
-                "bitmask": False,
-                "min": 1,
-                "max": 200,
-                "used": False,
-            }
-        }
+        enums = make_enum_dict("FIT_ENUM", min_val=1, max_val=200)
         field = parse_field('<field type="uint8_t" name="mode" enum="FIT_ENUM">desc</field>')
         messages = self.warnings(check_field, "test.xml", "MY_MSG", field, enums)
         self.assertEqual(messages, [])
 
+    def test_enum_negative_value_in_unsigned_type_warns(self):
+        enums = make_enum_dict("NEG_ENUM", min_val=-1, max_val=100)
+        field = parse_field('<field type="uint8_t" name="mode" enum="NEG_ENUM">desc</field>')
+        messages = self.warnings(check_field, "test.xml", "MY_MSG", field, enums)
+        self.assertEqual(
+            messages,
+            ["test.xml: Message MY_MSG field mode enum NEG_ENUM does not fit in type: uint8_t"],
+        )
+
+    def test_array_type_is_stripped_before_check(self):
+        enums = make_enum_dict("ARR_ENUM", min_val=1, max_val=200)
+        field = parse_field('<field type="uint8_t[4]" name="data" enum="ARR_ENUM">desc</field>')
+        messages = self.warnings(check_field, "test.xml", "MY_MSG", field, enums)
+        self.assertEqual(messages, [])
+
     def test_field_enum_unexpected_type_warns(self):
-        enums = {
-            "MY_ENUM": {
-                "name": "MY_ENUM",
-                "bitmask": False,
-                "min": 1,
-                "max": 5,
-                "used": False,
-            }
-        }
+        enums = make_enum_dict("MY_ENUM", min_val=1, max_val=5)
         field = parse_field('<field type="custom_t" name="mode" enum="MY_ENUM">desc</field>')
         messages = self.warnings(check_field, "test.xml", "MY_MSG", field, enums)
         self.assertEqual(
@@ -660,6 +741,125 @@ class MainRunsLifecycleChecksTest(ConsistencyCheckTestCase):
                         contextlib.redirect_stdout(io.StringIO()):
                     xml_consistency_check.main()
                 self.assertEqual(required.call_count, 1)
+
+
+class FilePathResolutionTests(ConsistencyCheckTestCase):
+    """Verifies that -f/--file accepts paths (relative to the current folder
+    or absolute) as well as bare dialect names."""
+
+    # Repo root relative to this test file (scripts/ → repo root).
+    _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+
+    def _run_main(self, *files):
+        output = io.StringIO()
+        with mock.patch("sys.argv", ["xml_consistency_check.py", "-f", *files]), \
+                contextlib.redirect_stdout(output):
+            xml_consistency_check.main()
+        return output.getvalue()
+
+    def test_main_resolves_relative_path(self):
+        # A path like message_definitions/v1.0/minimal.xml, given from the
+        # repo root (e.g. by tab-completion), used to crash with a doubled
+        # prefix.
+        self.addCleanup(os.chdir, os.getcwd())
+        os.chdir(self._REPO_ROOT)
+        rel_path = os.path.join("message_definitions", "v1.0", "minimal.xml")
+        self.assertIn("minimal.xml", self._run_main(rel_path))
+
+    def test_main_resolves_absolute_path(self):
+        abs_path = os.path.join(self._REPO_ROOT, "message_definitions", "v1.0", "minimal.xml")
+        self.assertIn("minimal.xml", self._run_main(abs_path))
+
+    def test_external_dialect_with_local_includes_gives_no_false_warnings(self):
+        """An external development.xml that includes its own custom.xml must
+        resolve the include next to the dialect file, not in the repo's
+        definitions folder.  Without the paths fix this produces a false
+        'missing <wip>' warning."""
+        custom_xml = (
+            '<?xml version="1.0"?>\n'
+            '<mavlink><enums>'
+            '<enum name="MY_ENUM"><description>Custom.</description>'
+            '<entry value="0" name="MY_ENUM_A"><description>A.</description></entry>'
+            '</enum></enums>'
+            '<messages>'
+            '<message id="60000" name="MY_MSG"><description>Uses enum.</description>'
+            '<field type="uint8_t" name="x" enum="MY_ENUM">x.</field>'
+            '</message></messages></mavlink>'
+        )
+        dev_xml = (
+            '<?xml version="1.0"?>\n'
+            '<mavlink><include>custom.xml</include>'
+            '<enums><enum name="MY_ENUM">'
+            '<entry value="1" name="MY_ENUM_B">'
+            '<wip since="2026-01"/>'
+            '<!-- This entry is work-in-progress and it can therefore change. '
+            'It should NOT be used in stable production environments. -->'
+            '<description>B.</description></entry>'
+            '</enum></enums></mavlink>'
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "custom.xml"), "w", encoding="utf-8") as f:
+                f.write(custom_xml)
+            dev_path = os.path.join(tmp, "development.xml")
+            with open(dev_path, "w", encoding="utf-8") as f:
+                f.write(dev_xml)
+            custom_path = os.path.join(tmp, "custom.xml")
+
+            output = io.StringIO()
+            with mock.patch("sys.argv", [
+                        "xml_consistency_check.py", "-f", custom_path, dev_path
+                    ]), \
+                    contextlib.redirect_stdout(output):
+                xml_consistency_check.main()
+
+            # No 'missing <wip>' false positive for MY_ENUM
+            self.assertNotIn("missing", output.getvalue())
+
+
+class EnumBitmaskEdgeCaseTests(ConsistencyCheckTestCase):
+    """Edge cases in the bitmask detection heuristic."""
+
+    def test_two_entry_enum_never_triggers_bitmask_suggestion(self):
+        """The checker needs >2 non-zero values to decide; a 2-entry enum
+        must never trigger the suggestion regardless of its values."""
+        enum = parse_enum(
+            '<enum name="TINY">'
+            '<entry name="TINY_A" value="1"/>'
+            '<entry name="TINY_B" value="2"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertEqual(messages, [])
+
+    def test_zero_is_removed_before_bitmask_check(self):
+        """A non-bitmask enum with values 0,1,2 must not trigger the bitmask
+        suggestion. Stripping 0 leaves only 2 values, which is below the >2
+        threshold. Without the removal, 0 never overlaps with 1 or 2 and would
+        falsely trigger the warning."""
+        enum = parse_enum(
+            '<enum name="ENUM_WITH_ZERO">'
+            '<entry name="ENUM_NONE" value="0"/>'
+            '<entry name="ENUM_A" value="1"/>'
+            '<entry name="ENUM_B" value="2"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertEqual(messages, [])
+
+    def test_hex_values_are_parsed_correctly(self):
+        """Entry values like 0x10 are parsed via int(..., 0)."""
+        enum = parse_enum(
+            '<enum name="HEX_FLAGS">'
+            '<entry name="HEX_A" value="0x01"/>'
+            '<entry name="HEX_B" value="0x02"/>'
+            '<entry name="HEX_C" value="0x04"/>'
+            '</enum>'
+        )
+        messages = self.warnings(check_enum, enum, "test.xml")
+        self.assertEqual(
+            messages,
+            ["test.xml: Enum: HEX_FLAGS should be a marked as bitmask?"],
+        )
 
 
 if __name__ == "__main__":
