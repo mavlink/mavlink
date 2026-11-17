@@ -5820,10 +5820,10 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint8_t" name="type_mask" enum="ATTITUDE_TARGET_TYPEMASK">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
-      <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0) from MAV_FRAME_LOCAL_NED to MAV_FRAME_BODY_FRD</field>
-      <field type="float" name="body_roll_rate" units="rad/s">Body roll rate</field>
-      <field type="float" name="body_pitch_rate" units="rad/s">Body pitch rate</field>
-      <field type="float" name="body_yaw_rate" units="rad/s">Body yaw rate</field>
+      <field type="float[4]" name="q">Attitude quaternion (Hamilton convention, w, x, y, z order, zero-rotation is [1, 0, 0, 0]) rotating from the body frame (MAV_FRAME_BODY_FRD: X-front, Y-right, Z-down) to the local NED earth frame (MAV_FRAME_LOCAL_NED)</field>
+      <field type="float" name="body_roll_rate" units="rad/s">Body roll angular rate (about the body frame X axis, not an Euler angle rate)</field>
+      <field type="float" name="body_pitch_rate" units="rad/s">Body pitch angular rate (about the body frame Y axis, not an Euler angle rate)</field>
+      <field type="float" name="body_yaw_rate" units="rad/s">Body yaw angular rate (about the body frame Z axis, not an Euler angle rate)</field>
       <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse thrust)</field>
       <extensions/>
       <field type="float[3]" name="thrust_body">3D thrust setpoint in the body NED frame, normalized to -1 .. 1</field>
@@ -5832,10 +5832,10 @@
       <description>Reports the current commanded attitude of the vehicle as specified by the autopilot. This should match the commands sent in a SET_ATTITUDE_TARGET message if the vehicle is being controlled this way.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="type_mask" enum="ATTITUDE_TARGET_TYPEMASK">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
-      <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
-      <field type="float" name="body_roll_rate" units="rad/s">Body roll rate</field>
-      <field type="float" name="body_pitch_rate" units="rad/s">Body pitch rate</field>
-      <field type="float" name="body_yaw_rate" units="rad/s">Body yaw rate</field>
+      <field type="float[4]" name="q">Attitude quaternion (Hamilton convention, w, x, y, z order, zero-rotation is [1, 0, 0, 0]) rotating from the body frame (MAV_FRAME_BODY_FRD: X-front, Y-right, Z-down) to the local NED earth frame (MAV_FRAME_LOCAL_NED)</field>
+      <field type="float" name="body_roll_rate" units="rad/s">Body roll angular rate (about the body frame X axis, not an Euler angle rate)</field>
+      <field type="float" name="body_pitch_rate" units="rad/s">Body pitch angular rate (about the body frame Y axis, not an Euler angle rate)</field>
+      <field type="float" name="body_yaw_rate" units="rad/s">Body yaw angular rate (about the body frame Z axis, not an Euler angle rate)</field>
       <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse thrust)</field>
     </message>
     <message id="84" name="SET_POSITION_TARGET_LOCAL_NED">
