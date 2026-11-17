@@ -2042,7 +2042,7 @@
         The command must be NACKed with an appropriate result if it cannot be executed as specified.
         It should be NACKed with MAV_RESULT_FAILED if no mission is present, or MAV_RESULT_DENIED if non-sentinel values are passed for unsupported params.</description>
         <param index="1" label="First Item" minValue="0" increment="1">The first mission item to run. 0 is ignored as default for backwards-compatibility.</param>
-        <param index="2" label="Last Item" minValue="0" increment="1" invalid="NaN">The last mission item to run (after this item is run, the mission ends). 0 is treated as invalid/default for backwards-compatibility.</param>
+        <param index="2" label="Last Item" minValue="0" increment="1">The last mission item to run (after this item is run, the mission ends). NaN is the default/invalid value (selects end of mission). 0 is treated as invalid/default for backwards-compatibility.</param>
       </entry>
       <entry value="310" name="MAV_CMD_ACTUATOR_TEST" command="true">
         <description>Actuator testing command. This is similar to MAV_CMD_DO_MOTOR_TEST but operates on the level of output functions, i.e. it is possible to test Motor1 independent from which output it is configured on. Autopilots must NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed.</description>
