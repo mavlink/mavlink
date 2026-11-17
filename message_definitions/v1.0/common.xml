@@ -8347,7 +8347,7 @@
         Fields that are not measured are set to their invalid value.
       </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
-      <field type="uint8_t" name="id" instance="true">The ID of the target if multiple targets are present</field>
+      <field type="uint8_t" name="id" instance="true">Target ID, unique within the sender (system and component). 0 if the sender only has one target. The receiver decides which TARGET_ABSOLUTE and TARGET_RELATIVE streams describe the same target.</field>
       <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Target's latitude (WGS84). INT32_MAX if unknown.</field>
       <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Target's longitude (WGS84). INT32_MAX if unknown.</field>
       <field type="float" name="alt" units="m" invalid="NaN">Target's altitude (AMSL). NaN if unknown.</field>
