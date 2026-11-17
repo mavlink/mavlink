@@ -762,7 +762,7 @@
       <field type="int32_t" name="lon" units="degE7">Longitude in datum.</field>
       <field type="float" name="height_above_geoid" units="m" invalid="NaN">Altitude above mean sea level (MSL), as reported by the receiver: the height above its geoid model. Positive for up. The geoid model is receiver-dependent; height_above_ellipsoid - height_above_geoid is the geoid undulation the receiver applied. NaN if there is no 3D fix or the receiver does not provide this height; do not derive it from height_above_ellipsoid.</field>
       <field type="float" name="height_above_ellipsoid" units="m" invalid="NaN">Height above the ellipsoid of datum. Positive for up. NaN if there is no 3D fix or the receiver does not provide this height; do not derive it from height_above_geoid.</field>
-      <field type="uint8_t" name="datum" enum="MAV_GNSS_DATUM">Datum used for position.</field>
+      <field type="uint8_t" name="datum" enum="MAV_GNSS_DATUM">Datum used for position. MAV_GNSS_DATUM_UNKNOWN unless the receiver reports its datum: a position corrected by DGNSS or RTK is in the datum of the correction source, which the receiver may not know.</field>
       <field type="uint8_t" name="geoid_model" enum="MAV_GNSS_GEOID_MODEL">Geoid model the receiver used for height_above_geoid.</field>
       <field type="float" name="ground_speed" units="m/s" invalid="NaN">GPS ground speed. If unknown, set to: NaN</field>
       <field type="float" name="vertical_speed" units="m/s" invalid="NaN">Vertical speed, positive for up. If unknown, set to: NaN</field>
