@@ -7,6 +7,8 @@ permissions:
 
 jobs:
   copy_and_push:
+    # Updates mavlink/mavlink itself: only run there, not in forks.
+    if: github.repository == 'mavlink/mavlink'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout this repo

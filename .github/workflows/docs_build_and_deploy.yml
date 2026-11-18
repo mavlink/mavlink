@@ -42,7 +42,9 @@ jobs:
           retention-days: 1
 
   deploy:
-    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged) }}
+    # Pushes to mavlink/mavlink-devguide with upstream's secrets: only run in
+    # mavlink/mavlink, not in forks (where a push to master also matches).
+    if: ${{ github.repository == 'mavlink/mavlink' && (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged)) }}
     needs: build
     runs-on: ubuntu-latest
 
