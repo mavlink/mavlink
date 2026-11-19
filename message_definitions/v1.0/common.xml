@@ -378,19 +378,19 @@
     <enum name="FENCE_LEVEL">
       <wip since="2026-11"/>
       <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
-      <description>Level of a fence area (geofence or pre-geofence).
+      <description>Level of a fence area (emergency or contingency geofence).
         This is set in `param3` of the fence polygon and circle commands, such as MAV_CMD_NAV_FENCE_POLYGON_VERTEX_INCLUSION.
         Each level is checked as a separate fence with its own areas, and has its own breach action configured on the vehicle.
         If both levels are breached, the more severe of the two breach actions is taken.
         Fence items with an unsupported level should be rejected with MAV_MISSION_INVALID_PARAM3.
-        Older flight stacks may ignore param3 and treat pre-geofence areas as geofence areas.
+        Older flight stacks may ignore param3 and treat contingency geofence areas as emergency geofence areas.
       </description>
-      <entry value="0" name="FENCE_LEVEL_GEOFENCE">
-        <description>Geofence area. Breaching the geofence triggers the geofence breach action.</description>
+      <entry value="0" name="FENCE_LEVEL_EMERGENCY">
+        <description>Emergency geofence area. Breaching the emergency geofence triggers the emergency geofence breach action.</description>
       </entry>
-      <entry value="1" name="FENCE_LEVEL_PRE_GEOFENCE">
-        <description>Pre-geofence area. Breaching the pre-geofence triggers the pre-geofence breach action, so the vehicle can act before it breaches the geofence.
-          Pre-geofence inclusion areas should lie inside the geofence inclusion areas, and pre-geofence exclusion areas should enclose the geofence exclusion areas.
+      <entry value="1" name="FENCE_LEVEL_CONTINGENCY">
+        <description>Contingency geofence area. Breaching the contingency geofence triggers the contingency geofence breach action, so the vehicle can act before it breaches the emergency geofence.
+          Contingency geofence inclusion areas should lie inside the emergency geofence inclusion areas, and contingency geofence exclusion areas should enclose the emergency geofence exclusion areas.
         </description>
       </entry>
     </enum>
@@ -2145,7 +2145,7 @@
         </description>
         <param index="1" label="Vertex Count" minValue="3" increment="1">Polygon vertex count. This is the number of vertices in the current polygon (all vertices will have the same number).</param>
         <param index="2" label="Inclusion Group" minValue="0" increment="1">Vehicle must be inside ALL inclusion zones in a single group, vehicle must be inside at least one group, must be the same for all points in each polygon</param>
-        <param index="3" label="Fence Level" enum="FENCE_LEVEL">Fence level. Must be the same for all vertices of the polygon. 0 or NaN: FENCE_LEVEL_GEOFENCE (for compatibility reasons).</param>
+        <param index="3" label="Fence Level" enum="FENCE_LEVEL">Fence level. Must be the same for all vertices of the polygon. 0 or NaN: FENCE_LEVEL_EMERGENCY (for compatibility reasons).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
       </entry>
@@ -2154,7 +2154,7 @@
           The vertices for a polygon must be sent sequentially, each with param1 set to the total number of vertices in the polygon.
         </description>
         <param index="1" label="Vertex Count" minValue="3" increment="1">Polygon vertex count. This is the number of vertices in the current polygon (all vertices will have the same number).</param>
-        <param index="3" label="Fence Level" enum="FENCE_LEVEL">Fence level. Must be the same for all vertices of the polygon. 0 or NaN: FENCE_LEVEL_GEOFENCE (for compatibility reasons).</param>
+        <param index="3" label="Fence Level" enum="FENCE_LEVEL">Fence level. Must be the same for all vertices of the polygon. 0 or NaN: FENCE_LEVEL_EMERGENCY (for compatibility reasons).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
       </entry>
@@ -2163,7 +2163,7 @@
         </description>
         <param index="1" label="Radius" units="m">Radius.</param>
         <param index="2" label="Inclusion Group" minValue="0" increment="1">Vehicle must be inside ALL inclusion zones in a single group, vehicle must be inside at least one group</param>
-        <param index="3" label="Fence Level" enum="FENCE_LEVEL">Fence level. 0 or NaN: FENCE_LEVEL_GEOFENCE (for compatibility reasons).</param>
+        <param index="3" label="Fence Level" enum="FENCE_LEVEL">Fence level. 0 or NaN: FENCE_LEVEL_EMERGENCY (for compatibility reasons).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
       </entry>
@@ -2171,7 +2171,7 @@
         <description>Circular fence area. The vehicle must stay outside this area.
         </description>
         <param index="1" label="Radius" units="m">Radius.</param>
-        <param index="3" label="Fence Level" enum="FENCE_LEVEL">Fence level. 0 or NaN: FENCE_LEVEL_GEOFENCE (for compatibility reasons).</param>
+        <param index="3" label="Fence Level" enum="FENCE_LEVEL">Fence level. 0 or NaN: FENCE_LEVEL_EMERGENCY (for compatibility reasons).</param>
         <param index="5" label="Latitude">Latitude</param>
         <param index="6" label="Longitude">Longitude</param>
       </entry>
