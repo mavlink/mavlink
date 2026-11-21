@@ -5329,17 +5329,17 @@
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
     </message>
     <message id="31" name="ATTITUDE_QUATERNION">
-      <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right), expressed as quaternion. Quaternion order is w, x, y, z and a zero rotation would be expressed as (1 0 0 0).</description>
+      <description>The attitude, expressed as a quaternion (Hamilton convention) rotating from the body frame (right-handed, X-front, Y-right, Z-down) to the NED (north-east-down) earth frame. Quaternion order is w, x, y, z and a zero rotation would be expressed as (1 0 0 0).</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="float" name="q1">Quaternion component 1, w (1 in null-rotation)</field>
       <field type="float" name="q2">Quaternion component 2, x (0 in null-rotation)</field>
       <field type="float" name="q3">Quaternion component 3, y (0 in null-rotation)</field>
       <field type="float" name="q4">Quaternion component 4, z (0 in null-rotation)</field>
-      <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
-      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
-      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
+      <field type="float" name="rollspeed" units="rad/s">Roll angular speed (about the body frame X axis)</field>
+      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed (about the body frame Y axis)</field>
+      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed (about the body frame Z axis)</field>
       <extensions/>
-      <field type="float[4]" name="repr_offset_q" invalid="[0]">Rotation offset by which the attitude quaternion and angular speed vector should be rotated for user display (quaternion with [w, x, y, z] order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if field not supported). This field is intended for systems in which the reference attitude may change during flight. For example, tailsitters VTOLs rotate their reference attitude by 90 degrees between hover mode and fixed wing mode, thus repr_offset_q is equal to [1, 0, 0, 0] in hover mode and equal to [0.7071, 0, 0.7071, 0] in fixed wing mode.</field>
+      <field type="float[4]" name="repr_offset_q" invalid="[0]">Rotation offset by which the attitude quaternion and angular speed vector should be rotated for user display (quaternion with [w, x, y, z] order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if there is no offset or the field is not supported). This field is intended for systems in which the reference attitude may change during flight. For example, tailsitters VTOLs rotate their reference attitude by 90 degrees between hover mode and fixed wing mode, thus repr_offset_q has no offset in hover mode and is equal to [0.7071, 0, 0.7071, 0] in fixed wing mode.</field>
     </message>
     <message id="32" name="LOCAL_POSITION_NED">
       <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
