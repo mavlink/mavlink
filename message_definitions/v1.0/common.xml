@@ -8365,6 +8365,7 @@
         Complements LANDING_TARGET, adding position and orientation uncertainty and the sensor orientation (q_sensor) for fusion in the autopilot's target estimator.
         Sensors that report only angles to the target should use LANDING_TARGET.
         Position, orientation and their uncertainties are expressed in the observation frame: the sensor frame if q_sensor is set, otherwise the frame given by frame.
+        The sender must correct for the sensor's mounting position (lever arm) on the vehicle: the receiver applies no translation, only the rotation from q_sensor or frame.
       </description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="uint8_t" name="id" instance="true">Target ID, unique within the sender (system and component). 0 if the sender only has one target. The receiver decides which TARGET_ABSOLUTE and TARGET_RELATIVE streams describe the same target.</field>
