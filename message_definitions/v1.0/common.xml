@@ -5351,7 +5351,7 @@
       <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
     </message>
     <message id="31" name="ATTITUDE_QUATERNION">
-      <description>The attitude, expressed as a quaternion (Hamilton convention) rotating from the body frame (right-handed, X-front, Y-right, Z-down) to the NED (north-east-down) earth frame. Quaternion order is w, x, y, z and a zero rotation would be expressed as (1 0 0 0).</description>
+      <description>The attitude of the vehicle body frame (right-handed, X-front, Y-right, Z-down), expressed as a Hamilton quaternion q (w, x, y, z order) that rotates vectors from the body frame to the NED (north-east-down) earth frame: v_NED = q * v_body * q^-1. A zero rotation (body axes aligned with NED) is expressed as (1 0 0 0). For VTOL vehicles the body frame is the one the autopilot uses (e.g. the multicopter or the fixed-wing frame of a tailsitter); repr_offset_q gives the rotation to the frame that should be displayed.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="float" name="q1">Quaternion component 1, w (1 in null-rotation)</field>
       <field type="float" name="q2">Quaternion component 2, x (0 in null-rotation)</field>
