@@ -83,6 +83,10 @@ test_node() {
         . ~/.bashrc
     fi
     (cd "$SRC_DIR/pymavlink/generator/javascript" && npm install)
+    # Build the C test programs that npm test's "from C" mocha tests are
+    # made from (generator/javascript/test/make_tests.py), and run the
+    # C-to-JavaScript packet tests. pymavlink's own CI runs this too.
+    (cd "$SRC_DIR/pymavlink" && ./test_gen_js.sh)
     (cd "$SRC_DIR/pymavlink/generator/javascript" && npm test)
 }
 
