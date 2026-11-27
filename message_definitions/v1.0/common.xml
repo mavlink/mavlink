@@ -1065,6 +1065,16 @@
       <entry value="5" name="REBOOT_SHUTDOWN_ACTION_REBOOT_TO_MASS_STORAGE">
         <description>Reboot component into a mass storage mode.</description>
       </entry>
+      <entry value="6" name="REBOOT_SHUTDOWN_ACTION_REBOOT_TO_ROM_BOOTLOADER">
+        <wip since="2026-11"/>
+        <!-- This entry is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+        <description>Reboot a component into its ROM bootloader.
+          This is the chips-vendors ROM bootloader (such as the STM32 USB DFU or NXP i.MX RT serial downloader, not the flight flight stack's own bootloader).
+          The ROM bootloader allows vendor tools to rewrite all of flash, including the flight stack's bootloader.
+          The component stays in the ROM bootloader until it is reset or power cycled.
+          Components should refuse this action while armed (even if REBOOT_SHUTDOWN_CONDITIONS_FORCE is set), and if they run secure (signed) firmware, since the ROM bootloader can write any image.
+        </description>
+      </entry>
     </enum>
     <enum name="REBOOT_SHUTDOWN_CONDITIONS">
       <description>Specifies the conditions under which the MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN command should be accepted.</description>
