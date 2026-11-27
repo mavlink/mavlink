@@ -113,6 +113,64 @@
         <description>Reserved (not used). If set, this will indicate that an additional status field exists for higher status values.</description>
       </entry>
     </enum>
+    <enum name="MAV_GNSS_DATUM">
+      <wip since="2024-08"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Possible datums location is specified in GNSS message.
+      </description>
+      <entry value="0" name="MAV_GNSS_DATUM_UNKNOWN">
+        <description>Datum unknown.
+        </description>
+      </entry>
+      <entry value="1" name="MAV_GNSS_DATUM_WGS84">
+        <description>WGS84 datum.
+        </description>
+      </entry>
+      <entry value="2" name="MAV_GNSS_DATUM_ETRS89">
+        <description>ETRS89, ETRF2000 realization.</description>
+      </entry>
+      <entry value="3" name="MAV_GNSS_DATUM_NAD83_2011">
+        <description>NAD83(2011), North American Datum.</description>
+      </entry>
+      <entry value="4" name="MAV_GNSS_DATUM_NAD83_PA11">
+        <description>NAD83(PA11), North American Datum, Pacific plate.</description>
+      </entry>
+      <entry value="5" name="MAV_GNSS_DATUM_NAD83_MA11">
+        <description>NAD83(MA11), North American Datum, Marianas plate.</description>
+      </entry>
+      <entry value="6" name="MAV_GNSS_DATUM_GDA94">
+        <description>GDA94, Geocentric Datum of Australia 1994 (2010 adjustment).</description>
+      </entry>
+      <entry value="7" name="MAV_GNSS_DATUM_GDA2020">
+        <description>GDA2020, Geocentric Datum of Australia 2020.</description>
+      </entry>
+      <entry value="8" name="MAV_GNSS_DATUM_JGD2011">
+        <description>JGD2011, Japanese Geodetic Datum 2011.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_GNSS_GEOID_MODEL">
+      <wip since="2026-11"/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Geoid model a GNSS receiver used for its height above mean sea level (see GNSS.height_above_geoid).</description>
+      <entry value="0" name="MAV_GNSS_GEOID_MODEL_UNKNOWN">
+        <description>Geoid model unknown.</description>
+      </entry>
+      <entry value="1" name="MAV_GNSS_GEOID_MODEL_EGM96">
+        <description>EGM96, from the full model or its official grid.</description>
+      </entry>
+      <entry value="2" name="MAV_GNSS_GEOID_MODEL_EGM2008">
+        <description>EGM2008, from the full model or its official grid.</description>
+      </entry>
+      <entry value="3" name="MAV_GNSS_GEOID_MODEL_EGM96_APPROXIMATION">
+        <description>An approximation of EGM96 built into the receiver, such as a coarse grid. It can differ from EGM96 by metres.</description>
+      </entry>
+      <entry value="4" name="MAV_GNSS_GEOID_MODEL_EGM2008_APPROXIMATION">
+        <description>An approximation of EGM2008 built into the receiver, such as a coarse grid. It can differ from EGM2008 by metres.</description>
+      </entry>
+      <entry value="5" name="MAV_GNSS_GEOID_MODEL_UBLOX_EGM96">
+        <description>The approximation of EGM96 built into u-blox receivers. It can differ from EGM96 by metres, but u-blox receivers agree with each other.</description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -696,6 +754,30 @@
       <field type="uint8_t" name="system_status_summary" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the overall status of the receiver, or 255 if not available.</field>
       <field type="uint8_t" name="gnss_signal_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the quality of incoming GNSS signals, or 255 if not available.</field>
       <field type="uint8_t" name="post_processing_quality" minValue="0" maxValue="10" invalid="UINT8_MAX">An abstract value representing the estimated PPK quality, or 255 if not available.</field>
+    </message>
+    <message id="443" name="GNSS">
+      <wip since="2024-08"/>
+      <!-- This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <!-- a replacement for GPS_RAW_INT and GPS2_RAW which includes an instance number -->
+      <description>GNSS data.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="id" instance="true">GNSS receiver id. 0 is the first receiver. Must match instance ids of other messages from same receiver.</field>
+      <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type.</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude in datum.</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude in datum.</field>
+      <field type="float" name="height_above_geoid" units="m" invalid="NaN">Altitude above mean sea level (MSL), as reported by the receiver: the height above its geoid model. Positive for up. The geoid model is receiver-dependent; height_above_ellipsoid - height_above_geoid is the geoid undulation the receiver applied. NaN if there is no 3D fix or the receiver does not provide this height; do not derive it from height_above_ellipsoid.</field>
+      <field type="float" name="height_above_ellipsoid" units="m" invalid="NaN">Height above the ellipsoid of datum. Positive for up. NaN if there is no 3D fix or the receiver does not provide this height; do not derive it from height_above_geoid.</field>
+      <field type="uint8_t" name="datum" enum="MAV_GNSS_DATUM">Datum used for position. MAV_GNSS_DATUM_UNKNOWN unless the receiver reports its datum: a position corrected by DGNSS or RTK is in the datum of the correction source, which the receiver may not know.</field>
+      <field type="uint8_t" name="geoid_model" enum="MAV_GNSS_GEOID_MODEL">Geoid model the receiver used for height_above_geoid.</field>
+      <field type="float" name="ground_speed" units="m/s" invalid="NaN">GPS ground speed. If unknown, set to: NaN</field>
+      <field type="float" name="vertical_speed" units="m/s" invalid="NaN">Vertical speed, positive for up. If unknown, set to: NaN</field>
+      <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground (NOT heading, but direction of movement): 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+      <field type="uint8_t" name="satellites_used" invalid="UINT8_MAX">Number of satellites used in the PVT solution. If unknown, set to: UINT8_MAX</field>
+      <field type="uint16_t" name="yaw" units="cdeg" invalid="UINT16_MAX">Vehicle yaw from true north, with the antenna mounting offset removed: 0..35999, 0 is north. A moving-baseline receiver measures the bearing of the baseline between its antennas, which differs from the vehicle yaw by the mounting angle. UINT16_MAX if this receiver does not provide yaw. UINT16_MAX-1 if this receiver is configured to provide yaw and is currently unable to provide it.</field>
+      <field type="float" name="h_acc" units="m" invalid="NaN">Standard deviation (1-sigma) of horizontal position error. NaN if unknown.</field>
+      <field type="float" name="v_acc" units="m" invalid="NaN">Standard deviation (1-sigma) of altitude error. NaN if unknown.</field>
+      <field type="uint16_t" name="vel_acc" units="mm/s" invalid="UINT16_MAX">Standard deviation (1-sigma) of velocity error. Values above UINT16_MAX-1 are sent as UINT16_MAX-1. UINT16_MAX if unknown.</field>
+      <field type="uint16_t" name="yaw_acc" units="cdeg" invalid="UINT16_MAX">Standard deviation (1-sigma) of yaw error. Values above UINT16_MAX-1 are sent as UINT16_MAX-1. UINT16_MAX if unknown.</field>
     </message>
     <!-- Target info from a sensor on the target -->
     <message id="510" name="TARGET_ABSOLUTE">
