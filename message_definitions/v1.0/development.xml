@@ -621,6 +621,36 @@
         <description>Exhaust-gas-recirculation (EGR) system fault.</description>
       </entry>
     </enum>
+    <enum name="CAMERA_DETECTION_TYPE">
+      <description>Type of object reported in CAMERA_DETECTION. The type sets the meaning of the CAMERA_DETECTION data field. The text field is an optional label for the object unless the type gives it another meaning.</description>
+      <entry value="0" name="CAMERA_DETECTION_TYPE_UNKNOWN">
+        <description>Object of unknown type. The data values are not used.</description>
+      </entry>
+      <entry value="1" name="CAMERA_DETECTION_TYPE_HEAT_SOURCE">
+        <description>Heat source seen by a thermal camera. data[0]: peak temperature (degC). data[1]: separation of the heat source from its background in the image histogram, which is the lowest heat source temperature minus the highest background temperature (degC, 0 or more).</description>
+      </entry>
+      <entry value="2" name="CAMERA_DETECTION_TYPE_PERSON">
+        <description>Person. The data values are not used.</description>
+      </entry>
+      <entry value="3" name="CAMERA_DETECTION_TYPE_VEHICLE">
+        <description>Vehicle. The data values are not used.</description>
+      </entry>
+      <entry value="4" name="CAMERA_DETECTION_TYPE_ANIMAL">
+        <description>Animal. The data values are not used.</description>
+      </entry>
+      <entry value="5" name="CAMERA_DETECTION_TYPE_NUMBER_PLATE">
+        <description>Vehicle number plate. The text field holds the characters read from the plate. The data values are not used.</description>
+      </entry>
+    </enum>
+    <enum name="CAMERA_DETECTION_FLAGS" bitmask="true">
+      <description>Flags for CAMERA_DETECTION.</description>
+      <entry value="1" name="CAMERA_DETECTION_FLAGS_FIRST_REPORT">
+        <description>This is the first report of this object ID.</description>
+      </entry>
+      <entry value="2" name="CAMERA_DETECTION_FLAGS_LOST">
+        <description>The object is no longer detected. This is the last report of this object ID. It holds the values and the image time of the last detection.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="354" name="SET_VELOCITY_LIMITS">
@@ -870,6 +900,26 @@
       <field type="uint8_t" name="id" instance="true">Sensor ID. Matches the id field of DISTANCE_SENSOR_INFO.</field>
       <field type="float" name="distance" units="m" invalid="NaN">Current distance reading. NaN if not provided.</field>
       <field type="int8_t" name="signal_quality" units="%" invalid="INT8_MAX">Signal quality (sensor-type specific). Represents the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. Values: [0-100], 0 = unusable signal, 100 = perfect signal. INT8_MAX = unknown/not provided.</field>
+    </message>
+    <message id="278" name="CAMERA_DETECTION">
+      <description>An object detected by a camera or other imaging sensor. One message is sent per detected object, and is repeated while the object remains detected. Any report makes the object known to a receiver, which must not rely on receiving the first or the last report of an object, and should discard an object when its reports stop.</description>
+      <field type="uint64_t" name="time_utc" units="us" invalid="0">Time (UNIX epoch, UTC) of the image the object was detected in. 0 if unknown.</field>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Time of the image the object was detected in, as time since boot of the component sending this message.</field>
+      <field type="uint32_t" name="object_id">ID of the detected object, chosen by the detection source. The same ID is used for each report of the same object. IDs are unique for the combination of sending system, sending component and camera_device_id, and are not reused for a different object while the sender is running.</field>
+      <field type="int32_t" name="lat" units="degE7" invalid="INT32_MAX">Latitude of the object (WGS84). INT32_MAX if unknown.</field>
+      <field type="int32_t" name="lon" units="degE7" invalid="INT32_MAX">Longitude of the object (WGS84). INT32_MAX if unknown.</field>
+      <field type="float" name="alt" units="m" invalid="NaN">Altitude of the object (MSL). NaN if unknown.</field>
+      <field type="float" name="h_acc" units="m" invalid="NaN">Horizontal position uncertainty of lat and lon, as the standard deviation of the horizontal distance error. NaN if unknown.</field>
+      <field type="float" name="radius" units="m" invalid="NaN">Size of the object, as the radius of the horizontal circle centred on lat and lon that contains it. NaN if unknown.</field>
+      <field type="float" name="vel_n" units="m/s" invalid="NaN">North velocity of the object over the ground. NaN if unknown.</field>
+      <field type="float" name="vel_e" units="m/s" invalid="NaN">East velocity of the object over the ground. NaN if unknown.</field>
+      <field type="float" name="heading" units="deg" invalid="NaN">Direction the object faces, clockwise from true north (0..360). This can differ from its direction of travel. NaN if unknown.</field>
+      <field type="float[6]" name="data" invalid="[NaN]">Values that depend on the detection type, see CAMERA_DETECTION_TYPE. NaN for a value that is unused or unknown.</field>
+      <field type="uint16_t" name="type" enum="CAMERA_DETECTION_TYPE">Type of the detected object.</field>
+      <field type="uint16_t" name="flags" enum="CAMERA_DETECTION_FLAGS">Detection flags.</field>
+      <field type="uint8_t" name="level" units="%" minValue="0" maxValue="100">Detection level, an approximate estimate of the probability that an object of the reported type is present.</field>
+      <field type="uint8_t" name="camera_device_id" default="0" minValue="0" maxValue="6">Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).</field>
+      <field type="char[32]" name="text">Text for the object in ASCII, see CAMERA_DETECTION_TYPE. Terminated by NULL if the length is less than 32 characters, and without a NULL if it is exactly 32. Empty if unused.</field>
     </message>
   </messages>
 </mavlink>
